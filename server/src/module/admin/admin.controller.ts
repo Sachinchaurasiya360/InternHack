@@ -12,7 +12,6 @@ import {
   updateUserStatusSchema,
   adminJobQuerySchema,
   adminUpdateJobStatusSchema,
-  activityLogQuerySchema,
   createCompanySchema,
   updateCompanySchema,
   updateReviewStatusSchema,
@@ -217,19 +216,6 @@ export class AdminController {
     } catch (error) {
       if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
       logger.error("Failed to delete admin job", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  // ==================== ACTIVITY LOGS ====================
-
-  async getActivityLogs(req: Request, res: Response) {
-    try {
-      const query = activityLogQuerySchema.parse(req.query);
-      const data = await this.adminService.getActivityLogs(query);
-      return res.status(200).json(data);
-    } catch (error) {
-      logger.error("Failed to get activity logs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

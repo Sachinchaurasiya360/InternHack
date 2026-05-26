@@ -156,13 +156,18 @@ export default function BlogListPage() {
               </div>
             )}
 
-          {/* Blog Grid Section */}
+          {/* Blog Grid */}
           <section className="mb-16">
             <div className="flex items-center gap-2 mb-6">
               <BookOpen className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9723468261dd6318179a41805040b4b0052ea90a
               <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
                 {category === "ALL" ? "All Articles" : CATEGORY_LABELS[category]}
               </h2>
+
               {pagination && (
                 <span className="text-sm text-stone-400 dark:text-stone-500 ml-2">
                   ({pagination.total} article{pagination.total !== 1 ? "s" : ""})
@@ -199,7 +204,7 @@ export default function BlogListPage() {
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-lime-400/50 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Previous
@@ -212,7 +217,7 @@ export default function BlogListPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
                   disabled={page >= pagination.totalPages}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-lime-400/50 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />
@@ -223,6 +228,10 @@ export default function BlogListPage() {
         </div>
       </main>
 
+<<<<<<< HEAD
+=======
+      {/* Footer stays full-width at the very bottom */}
+>>>>>>> 9723468261dd6318179a41805040b4b0052ea90a
       <Footer />
     </div>
   );

@@ -395,7 +395,10 @@ function VisualizeTab() {
   const cfg = PROBLEMS[problemKey];
   const [input, setInput] = useState(() => cfg.presets[0].value);
 
-  useEffect(() => { setInput(cfg.presets[0].value); }, [problemKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setInput(cfg.presets[0].value);
+  }, [problemKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const parsed = useMemo(() => cfg.parseInput(input), [input, cfg]);
   const labels = useMemo(() => cfg.baseLabels(parsed), [parsed, cfg]);
 

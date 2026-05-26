@@ -40,6 +40,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const mobileMenuId = "main-navigation-mobile";
 
   const handleLogout = () => {
     logout();
@@ -61,6 +62,8 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="fixed top-0 right-0 z-40 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-md border-b border-stone-200 dark:border-white/10"
+      role="navigation"
+      aria-label="Main navigation"
       style={{ left: sidebarOffset, transition: "left 300ms" }}
     >
       <div className="max-w-6xl mx-auto px-6">
@@ -86,7 +89,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                   ? location.pathname === "/"
                   : location.pathname.startsWith(item.href + "/") || location.pathname === item.href;
               return (
-                <Link key={item.href} to={item.href} className="no-underline">
+                <Link key={item.href} to={item.href} aria-current={active ? "page" : undefined} className="no-underline">
                   <button
                     className={cn(
                       "group relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-300 bg-transparent border-0 cursor-pointer",
@@ -100,8 +103,8 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                       className={cn(
                         "absolute left-1/2 -translate-x-1/2 -bottom-0.5 h-[2px] rounded-full bg-lime-400 transition-all duration-300 ease-out origin-center",
                         active
-                          ? "w-[72%] scale-x-100 opacity-100"
-                          : "w-[72%] scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100",
+                          ? "w-full scale-x-100 opacity-100"
+                          : "w-full scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100",
                       )}
                     />
                   </button>
@@ -113,24 +116,20 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
           <div className="hidden lg:flex items-center gap-2">
             <button
               onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
               className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 dark:text-stone-400 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors"
-              title={
-                theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
-              }
             >
               {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
                 <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
               )}
             </button>
 
             {isAuthenticated ? (
-              <Popover>
+                <Popover>
                 <PopoverTrigger asChild>
-                  <button className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
+                  <button aria-haspopup="menu" aria-label="Open user menu" className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
                     <Avatar className="h-full w-full rounded-none">
                       {user?.profilePic && (
                         <AvatarImage
@@ -220,15 +219,15 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               className="p-2 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50 rounded-md transition-colors"
             >
               {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
                 <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
               )}
             </button>
             {isAuthenticated && (
               <Popover modal>
                 <PopoverTrigger asChild>
-                  <button className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
+                  <button aria-haspopup="menu" aria-label="Open user menu" className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
                     <Avatar className="h-full w-full rounded-none">
                       {user?.profilePic && (
                         <AvatarImage
@@ -295,6 +294,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
             <button
               onClick={() => setIsOpen(!isOpen)}
               aria-expanded={isOpen}
+              aria-controls={mobileMenuId}
               aria-label={isOpen ? "Close menu" : "Open menu"}
               className="p-2 text-stone-700 hover:bg-stone-200/60 dark:text-stone-300 dark:hover:bg-white/5 rounded-md transition-colors"
             >
@@ -310,13 +310,14 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
         <AnimatePresence>
           {isOpen && (
             <motion.div
+              id={mobileMenuId}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="overflow-hidden lg:hidden"
             >
-              <div className="pt-2 pb-4 space-y-1 border-t border-stone-200 dark:border-white/10">
+                <div role="menu" aria-label="Mobile navigation" className="pt-2 pb-4 space-y-1 border-t border-stone-200 dark:border-white/10">
                 {NAV_ITEMS.map((item) => (
                   <MobileNavLink
                     key={item.href}

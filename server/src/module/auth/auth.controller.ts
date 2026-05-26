@@ -1,5 +1,16 @@
 import type { Request, Response } from "express";
-import { registerSchema, loginSchema, updateProfileSchema, importGitHubSchema } from "./auth.validation.js";
+import {
+  registerSchema,
+  loginSchema,
+  updateProfileSchema,
+  importGitHubSchema,
+  type forgotPasswordSchema,
+  type resetPasswordSchema,
+  type verifyEmailSchema,
+  type resendOtpSchema,
+  type googleAuthSchema,
+} from "./auth.validation.js";
+import type { z } from "zod";
 import { AuthService } from "./auth.service.js";
 import { setTokenCookie, clearTokenCookie } from "../../utils/cookie.utils.js";
 
@@ -58,24 +69,10 @@ export class AuthController {
 
   async googleAuth(req: Request, res: Response) {
     try {
-      const { credential, accessToken, role } = req.body as {
-        credential?: string;
-        accessToken?: string;
-        role?: string;
-      };
-      if (!credential && !accessToken) {
-        console.warn("[auth/google] empty body", {
-          contentType: req.headers["content-type"],
-          contentLength: req.headers["content-length"],
-          bodyType: typeof req.body,
-          bodyKeys: req.body && typeof req.body === "object" ? Object.keys(req.body) : null,
-          rawBody: req.body,
-        });
-        return res.status(400).json({ message: "Google credential is required" });
-      }
+      // Body is already validated & typed by route-level validateBody(googleAuthSchema)
+      const { credential, accessToken, role } = req.body as z.infer<typeof googleAuthSchema>;
 
-      const validRole = role === "RECRUITER" ? "RECRUITER" as const : "STUDENT" as const;
-      const input: { credential?: string; accessToken?: string; role: typeof validRole } = { role: validRole };
+      const input: { credential?: string; accessToken?: string; role: "STUDENT" | "RECRUITER" } = { role };
       if (credential) input.credential = credential;
       if (accessToken) input.accessToken = accessToken;
       const data = await this.authService.googleAuth(input);
@@ -163,11 +160,36 @@ export class AuthController {
     }
   }
 
-  async verifyEmail(req: Request, res: Response) {
-    const { email, otp } = req.body as { email?: string; otp?: string };
-    if (!email || !otp) {
-      return res.status(400).json({ message: "Email and OTP are required" });
+  async getGitHubStats(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const username = typeof req.query["username"] === "string" ? req.query["username"] : "";
+      if (!username.trim()) {
+        return res.status(400).json({ message: "GitHub username is required" });
+      }
+
+      const stats = await this.authService.getGitHubStats(username);
+      return res.status(200).json({ stats });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "GitHub user not found") {
+          return res.status(404).json({ message: error.message });
+        }
+        if (error.message === "GitHub username is required") {
+          return res.status(400).json({ message: error.message });
+        }
+      }
+      console.error(error);
+      return res.status(500).json({ message: "Failed to fetch GitHub stats" });
     }
+  }
+
+  async verifyEmail(req: Request, res: Response) {
+    // Body is already validated & typed by route-level validateBody(verifyEmailSchema)
+    const { email, otp } = req.body as z.infer<typeof verifyEmailSchema>;
     try {
       const data = await this.authService.verifyEmail(email, otp);
       setTokenCookie(res, data.token);
@@ -178,10 +200,8 @@ export class AuthController {
   }
 
   async resendOtp(req: Request, res: Response) {
-    const { email } = req.body as { email?: string };
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
+    // Body is already validated & typed by route-level validateBody(resendOtpSchema)
+    const { email } = req.body as z.infer<typeof resendOtpSchema>;
     try {
       await this.authService.resendOtp(email);
       return res.json({ message: "OTP sent successfully" });
@@ -191,10 +211,8 @@ export class AuthController {
   }
 
   async forgotPassword(req: Request, res: Response) {
-    const { email } = req.body as { email?: string };
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
+    // Body is already validated & typed by route-level validateBody(forgotPasswordSchema)
+    const { email } = req.body as z.infer<typeof forgotPasswordSchema>;
     try {
       await this.authService.forgotPassword(email);
       return res.json({ message: "If an account exists with this email, a reset code has been sent" });
@@ -230,13 +248,8 @@ export class AuthController {
   }
 
   async resetPassword(req: Request, res: Response) {
-    const { email, otp, newPassword } = req.body as { email?: string; otp?: string; newPassword?: string };
-    if (!email || !otp || !newPassword) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
-    }
+    // Body is already validated & typed by route-level validateBody(resetPasswordSchema)
+    const { email, otp, newPassword } = req.body as z.infer<typeof resetPasswordSchema>;
     try {
       await this.authService.resetPassword(email, otp, newPassword);
       return res.json({ message: "Password reset successfully" });

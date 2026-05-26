@@ -108,6 +108,7 @@ function MiniBars({
 
 function OutputStrip({
   values,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   states: _states,
   pointers,
 }: {

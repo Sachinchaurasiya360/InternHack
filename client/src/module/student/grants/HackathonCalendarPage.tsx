@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -19,11 +19,19 @@ import {
   Trophy,
   Loader2,
 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
+import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Link } from "react-router";
+type ParticipationStatus = "INTERESTED" | "PARTICIPATING";
 
+interface MyParticipation {
+  hackathonId: number;
+  status: ParticipationStatus;
+}
 type HackathonStatus = "upcoming" | "ongoing" | "past";
 type LocationType = "virtual" | "in-person" | "hybrid";
 
@@ -90,23 +98,40 @@ function formatDateRange(start: string, end: string): string {
 }
 
 export default function HackathonCalendarPage() {
-  const [hackathons, setHackathons] = useState<Hackathon[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<HackathonStatus | "ALL">("ALL");
   const [locationFilter, setLocationFilter] = useState<LocationType | "ALL">("ALL");
   const [ecosystemFilter, setEcosystemFilter] = useState<string>("ALL");
   const [selectedHackathon, setSelectedHackathon] = useState<Hackathon | null>(null);
+  const [showMine, setShowMine] = useState(false);
 
-  const fetchHackathons = useCallback(() => {
-    setLoading(true);
-    api.get("/hackathons").then((res) => {
-      setHackathons(res.data.hackathons);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+  const queryClient = useQueryClient();
+const { user } = useAuthStore();
 
-  useEffect(() => { fetchHackathons(); }, [fetchHackathons]);
+const { data, isLoading: loading } = useQuery({
+  queryKey: queryKeys.hackathons.list(),
+  queryFn: () => api.get("/hackathons").then((res) => res.data.hackathons as Hackathon[]),
+});
+const hackathons = data ?? [];
+
+const { data: myData } = useQuery({
+  queryKey: queryKeys.hackathons.myParticipations(),
+  queryFn: () => api.get("/hackathons/my").then((res) => res.data.participations as MyParticipation[]),
+  enabled: !!user,
+});
+const myParticipations = myData ?? [];
+const participationMap = new Map(myParticipations.map((p) => [p.hackathonId, p.status]));
+
+const participateMutation = useMutation({
+  mutationFn: ({ id, status }: { id: number; status: ParticipationStatus }) =>
+    api.post(`/hackathons/${id}/participate`, { status }),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.hackathons.myParticipations() }),
+});
+
+const removeMutation = useMutation({
+  mutationFn: (id: number) => api.delete(`/hackathons/${id}/participate`),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.hackathons.myParticipations() }),
+});
 
   const HACKATHON_ECOSYSTEMS = useMemo(
     () => Array.from(new Set(hackathons.map((h) => h.ecosystem))).sort(),
@@ -114,7 +139,8 @@ export default function HackathonCalendarPage() {
   );
 
   const filtered = useMemo(() => {
-    return hackathons.filter((h) => {
+  return hackathons.filter((h) => {
+    if (showMine && !participationMap.has(h.id)) return false;
       if (statusFilter !== "ALL" && h.status !== statusFilter) return false;
       if (locationFilter !== "ALL" && h.locationType !== locationFilter) return false;
       if (ecosystemFilter !== "ALL" && h.ecosystem !== ecosystemFilter) return false;
@@ -129,7 +155,7 @@ export default function HackathonCalendarPage() {
       }
       return true;
     });
-  }, [hackathons, search, statusFilter, locationFilter, ecosystemFilter]);
+  }, [hackathons, search, statusFilter, locationFilter, ecosystemFilter, showMine, participationMap]);
 
   const ongoingCount = hackathons.filter((h) => h.status === "ongoing").length;
   const upcomingCount = hackathons.filter((h) => h.status === "upcoming").length;
@@ -238,6 +264,18 @@ export default function HackathonCalendarPage() {
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
+          {user && (
+  <button
+    onClick={() => setShowMine((v) => !v)}
+    className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
+      showMine
+        ? "bg-indigo-600 text-white border-indigo-600"
+        : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+    }`}
+  >
+    My Hackathons
+  </button>
+)}
           {/* Status chips */}
           <div className="flex flex-wrap gap-2">
             {STATUS_OPTIONS.map((opt) => (
@@ -331,11 +369,15 @@ export default function HackathonCalendarPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filtered.map((hackathon, i) => (
               <HackathonCard
-                key={hackathon.id}
-                hackathon={hackathon}
-                index={i}
-                onClick={() => setSelectedHackathon(hackathon)}
-              />
+  key={hackathon.id}
+  hackathon={hackathon}
+  index={i}
+  onClick={() => setSelectedHackathon(hackathon)}
+  participation={participationMap.get(hackathon.id) ?? null}
+  isLoggedIn={!!user}
+  onParticipate={(status) => participateMutation.mutate({ id: hackathon.id, status })}
+  onRemove={() => removeMutation.mutate(hackathon.id)}
+/>
             ))}
           </div>
         )}
@@ -358,10 +400,18 @@ function HackathonCard({
   hackathon,
   index,
   onClick,
+  participation,
+  isLoggedIn,
+  onParticipate,
+  onRemove,
 }: {
   hackathon: Hackathon;
   index: number;
   onClick: () => void;
+  participation: ParticipationStatus | null;
+  isLoggedIn: boolean;
+  onParticipate: (status: ParticipationStatus) => void;
+  onRemove: () => void;
 }) {
   const statusCfg = STATUS_CONFIG[hackathon.status];
 
@@ -452,12 +502,36 @@ function HackathonCard({
           </div>
 
           {/* Bottom CTA */}
-          <div className="flex items-center justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
-            <span className="flex items-center gap-1 text-sm font-medium text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-              Details
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </span>
-          </div>
+<div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+  {isLoggedIn && (
+    <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+      <button
+        onClick={() => participation === "INTERESTED" ? onRemove() : onParticipate("INTERESTED")}
+        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+          participation === "INTERESTED"
+            ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+            : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400"
+        }`}
+      >
+        Interested
+      </button>
+      <button
+        onClick={() => participation === "PARTICIPATING" ? onRemove() : onParticipate("PARTICIPATING")}
+        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+          participation === "PARTICIPATING"
+            ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+            : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-600 dark:hover:text-emerald-400"
+        }`}
+      >
+        Participating
+      </button>
+    </div>
+  )}
+  <span className="flex items-center gap-1 text-sm font-medium text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors ml-auto">
+    Details
+    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+  </span>
+</div>
         </div>
       </button>
     </motion.div>

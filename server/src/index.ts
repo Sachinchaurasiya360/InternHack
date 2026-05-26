@@ -54,6 +54,7 @@ import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
 import { contactRouter } from "./module/contact/contact.routes.js";
+import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
@@ -69,6 +70,7 @@ import { startFollowUpCron } from "./cron/scheduled-emails.js";
 import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
 import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 import { startScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
+import { startWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -255,7 +257,7 @@ app.use("/api/learn", learnRouter);
 
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
-
+app.use("/api/hackathons", hackathonRouter);
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
 // Public ingest endpoint, external websites POST jobs here with API key
@@ -323,4 +325,14 @@ app.listen(PORT, async () => {
 
   // Start the scheduled-email worker (drains roadmap day-10, future digests)
   startScheduledEmailWorker();
+
+  // Start weekly roadmap progress digests from one owner only in production.
+  const runWeeklyDigestCron =
+    process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] !== "false");
+  if (runWeeklyDigestCron) {
+    startWeeklyRoadmapDigestCron();
+  } else {
+    console.log("[RoadmapDigest] Weekly digest cron disabled on this process");
+  }
 });

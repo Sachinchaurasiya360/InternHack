@@ -15,7 +15,7 @@ import { faqSchema, websiteSchema, platformOrganizationSchema } from "../../lib/
 
 export default function LandingPage(){
     return(
-        <div className="font-sans bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
+        <div className="font-sans bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 pt-16 md:pt-0">
             <SEO
               description="InternHack is an AI-powered career platform for students. Browse curated internships, score your resume with ATS AI, follow career roadmaps, and connect with recruiters."
               canonicalUrl={canonicalUrl("/")}

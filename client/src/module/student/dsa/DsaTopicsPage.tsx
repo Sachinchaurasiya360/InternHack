@@ -18,6 +18,7 @@ import { LoginGate } from "../../../components/LoginGate";
 import { LeetCodeSync } from "./components/LeetCodeSync";
 import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 import { DsaHeatmap } from "./components/DsaHeatmap";
+import { ResultCount } from "../../../components/ui/ResultCount";
 
 const FREE_LIMIT = 5;
 const TOPICS_PER_PAGE = 20;
@@ -376,6 +377,8 @@ export default function DsaTopicsPage() {
             topics / {totalTopics}
           </span>
         </div>
+
+        <ResultCount currentCount={paginatedTopics?.length ?? 0} totalCount={totalTopics} />
 
         {/* Topic list */}
         <div className="space-y-2">
