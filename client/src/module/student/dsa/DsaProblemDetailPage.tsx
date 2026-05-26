@@ -121,6 +121,7 @@ export default function DsaProblemDetailPage() {
     if (!slug) return;
     for (const lang of ["python", "cpp", "java"] as DsaLanguage[]) {
       const saved = localStorage.getItem(`dsa-code-${slug}-${lang}`);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (saved) setCodeMap((prev) => ({ ...prev, [lang]: saved }));
     }
   }, [slug]);
@@ -191,9 +192,9 @@ export default function DsaProblemDetailPage() {
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.dsa.submissions(problem!.id) });
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { status?: number; data?: { message?: string } } }) => {
       if (err?.response?.status === 429) {
-        toast.error(err.response.data?.message ?? "Daily limit reached");
+        toast.error(err.response?.data?.message ?? "Daily limit reached");
       } else {
         toast.error(err?.response?.data?.message ?? "Execution failed");
       }

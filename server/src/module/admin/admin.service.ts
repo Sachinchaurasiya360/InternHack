@@ -103,9 +103,7 @@ export class AdminService {
       data: { userId: user.id, tier: data.tier },
     });
 
-    await this.logActivity(creatorId, "ADMIN_CREATED", "user", user.id, {
-      tier: data.tier,
-    });
+
 
     return {
       user: {
@@ -320,14 +318,6 @@ export class AdminService {
       select: { id: true, name: true, email: true, role: true, isActive: true },
     });
 
-    await this.logActivity(
-      adminId,
-      isActive ? "USER_ACTIVATED" : "USER_DEACTIVATED",
-      "user",
-      userId,
-      { previousStatus: user.isActive, reason },
-    );
-
     return updated;
   }
 
@@ -357,9 +347,6 @@ export class AdminService {
     }
 
     await prisma.user.delete({ where: { id: userId } });
-    await this.logActivity(adminId, "USER_DELETED", "user", userId, {
-      deletedUser: { name: user.name, email: user.email, role: user.role },
-    });
   }
 
   // ==================== JOB MANAGEMENT ====================
@@ -440,12 +427,6 @@ export class AdminService {
       data: { status },
     });
 
-    await this.logActivity(adminId, "JOB_STATUS_CHANGED", "job", jobId, {
-      previousStatus: job.status,
-      newStatus: status,
-      reason,
-    });
-
     return updated;
   }
 
@@ -454,71 +435,6 @@ export class AdminService {
     if (!job) throw new Error("Job not found");
 
     await prisma.job.delete({ where: { id: jobId } });
-    await this.logActivity(adminId, "JOB_DELETED", "job", jobId, {
-      deletedJob: { title: job.title, company: job.company },
-    });
-  }
-
-  // ==================== ACTIVITY LOGS ====================
-
-  async logActivity(
-    adminId: number,
-    action: string,
-    targetType: string,
-    targetId: number,
-    details: object = {},
-    ipAddress?: string,
-  ) {
-    await prisma.adminActivityLog.create({
-      data: {
-        adminId,
-        action,
-        targetType,
-        targetId,
-        details: JSON.parse(JSON.stringify(details)),
-        ipAddress: ipAddress ?? null,
-      },
-    });
-  }
-
-  async getActivityLogs(query: {
-    page: number;
-    limit: number;
-    adminId?: number | undefined;
-    action?: string | undefined;
-    targetType?: string | undefined;
-  }) {
-    const where: Prisma.adminActivityLogWhereInput = {};
-
-    if (query.adminId) where.adminId = query.adminId;
-    if (query.action)
-      where.action = { contains: query.action, mode: "insensitive" };
-    if (query.targetType) where.targetType = query.targetType;
-
-    const skip = (query.page - 1) * query.limit;
-
-    const [logs, total] = await Promise.all([
-      prisma.adminActivityLog.findMany({
-        where,
-        skip,
-        take: query.limit,
-        orderBy: { createdAt: "desc" },
-        include: {
-          admin: { select: { id: true, name: true, email: true } },
-        },
-      }),
-      prisma.adminActivityLog.count({ where }),
-    ]);
-
-    return {
-      logs,
-      pagination: {
-        page: query.page,
-        limit: query.limit,
-        total,
-        totalPages: Math.ceil(total / query.limit),
-      },
-    };
   }
 
   async getErrorLogs(query: {
@@ -1725,14 +1641,6 @@ export class AdminService {
       if (i + batchSize < users.length) await emailSleep(throttleMs);
     }
 
-    await this.logActivity(input.adminId, "BROADCAST_EMAIL_SENT", "user", 0, {
-      subject: input.subject,
-      recipients: users.length,
-      sent,
-      failed,
-      filter: input.filter,
-    });
-
     return { test: false, sent, failed, recipients: users.length };
   }
 
@@ -1761,12 +1669,6 @@ export class AdminService {
     adminId: number,
   ) {
     await switchServiceProvider(service, provider, modelName);
-
-    await this.logActivity(adminId, "AI_PROVIDER_SWITCHED", "ai_config", 0, {
-      service,
-      provider,
-      modelName,
-    });
 
     return prisma.aiServiceConfig.findUnique({ where: { service } });
   }

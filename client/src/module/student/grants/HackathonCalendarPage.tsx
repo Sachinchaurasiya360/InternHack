@@ -106,7 +106,10 @@ export default function HackathonCalendarPage() {
     }).catch(() => setLoading(false));
   }, []);
 
-  useEffect(() => { fetchHackathons(); }, [fetchHackathons]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchHackathons();
+  }, [fetchHackathons]);
 
   const HACKATHON_ECOSYSTEMS = useMemo(
     () => Array.from(new Set(hackathons.map((h) => h.ecosystem))).sort(),

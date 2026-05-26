@@ -398,17 +398,6 @@ export interface AdminUser {
   _count: { applications: number; postedJobs: number };
 }
 
-export interface ActivityLog {
-  id: number;
-  adminId: number;
-  admin: { id: number; name: string; email: string };
-  action: string;
-  targetType: string;
-  targetId: number;
-  details: Record<string, unknown>;
-  ipAddress?: string;
-  createdAt: string;
-}
 
 export interface ErrorLog {
   id: number;

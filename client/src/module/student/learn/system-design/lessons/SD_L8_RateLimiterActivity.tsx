@@ -155,7 +155,7 @@ function DistributedDemo() {
       } else {
         setRedisCounter((c) => {
           let counter = c;
-          let now = Date.now();
+          const now = Date.now();
           if (now > redisResetAt) {
             counter = 0;
             setRedisResetAt(now + WINDOW_MS);

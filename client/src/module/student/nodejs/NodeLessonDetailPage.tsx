@@ -106,7 +106,9 @@ function ExerciseSection({
 
   useEffect(() => {
     if (!exercise) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowHints(0);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowSolution(false);
   }, [activeIdx, exercise?.id]);
 

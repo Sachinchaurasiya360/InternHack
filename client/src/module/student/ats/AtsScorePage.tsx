@@ -44,7 +44,7 @@ import {
 } from "recharts";
 
 /** Recharts custom tooltip — renders score, date, role, and resume name on dot hover. */
-function ScoreTooltip({ active, payload }: any) {
+function ScoreTooltip({ active, payload }: { active?: boolean; payload?: { payload: { fullDate: string; jobTitle: string; resumeName: string; score: number } }[] }) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
@@ -369,10 +369,12 @@ export default function AtsScorePage() {
 
   useEffect(() => {
     if (!file) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPreviewUrl("");
       return;
     }
     const url = URL.createObjectURL(file);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPreviewUrl(url);
     return () => URL.revokeObjectURL(url);
   }, [file]);
