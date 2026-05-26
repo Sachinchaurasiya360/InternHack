@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDebounce } from "../../../hooks/useDebouncedValue";
+import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";

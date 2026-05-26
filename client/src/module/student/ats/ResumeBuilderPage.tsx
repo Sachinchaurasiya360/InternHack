@@ -43,7 +43,7 @@ import type {
 import { defaultResumeData } from "./resume-builder/types";
 import { TEMPLATES, getTemplate } from "./resume-builder/templates";
 import AtsToolsNav from "./AtsToolsNav";
-import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 const STORAGE_KEY = "internhack-resume-data";
 const TEMPLATE_KEY = "internhack-resume-template";
@@ -442,8 +442,8 @@ export default function ResumeBuilderPage() {
   };
   const [mobileView, setMobileView] = useState<"form" | "preview">("form");
   const [skillInput, setSkillInput] = useState("");
-  const debouncedData = useDebouncedValue(data, 300);
-  const debouncedSectionOrder = useDebouncedValue(sectionOrder, 300);
+  const debouncedData = useDebounce(data, 300);
+  const debouncedSectionOrder = useDebounce(sectionOrder, 300);
   const printRef = useRef<HTMLDivElement>(null);
   const user = useAuthStore((s) => s.user);
 

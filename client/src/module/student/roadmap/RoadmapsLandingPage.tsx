@@ -19,7 +19,7 @@ import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { RoadmapListItem, RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useSearchParams } from "react-router";
-import { useDebounce } from "../../../hooks/useDebouncedValue";
+import { useDebounce } from "../../../hooks/useDebounce";
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
