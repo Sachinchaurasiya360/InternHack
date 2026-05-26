@@ -893,22 +893,32 @@ function InterviewRow({
           <span className="text-stone-300 dark:text-stone-700">/</span>
           <span>{interview.durationMinutes}m</span>
         </div>
-            {interview.status !== "CANCELLED" &&
-             interview.status !== "COMPLETED" &&
-            countdown ? (
-          <div className="mt-2">
-            <p className="text-xs font-semibold text-lime-600 dark:text-lime-400">
-              Interview starts in {countdown.days}d{" "}
-              {countdown.hours}h {countdown.minutes}m
-            </p>
-          </div>
-        ) : (
-          <div className="mt-2">
-            <p className="text-xs font-semibold text-red-500">
-              Interview In Progress
-            </p>
-          </div>
-        )}
+            {interview.status === "CANCELLED" ? (
+  <div className="mt-2">
+    <p className="text-xs font-semibold text-red-500">
+      Interview Cancelled
+    </p>
+  </div>
+) : interview.status === "COMPLETED" ? (
+  <div className="mt-2">
+    <p className="text-xs font-semibold text-stone-500">
+      Interview Completed
+    </p>
+  </div>
+) : countdown ? (
+  <div className="mt-2">
+    <p className="text-xs font-semibold text-lime-600 dark:text-lime-400">
+      Interview starts in {countdown.days}d{" "}
+      {countdown.hours}h {countdown.minutes}m
+    </p>
+  </div>
+) : (
+  <div className="mt-2">
+    <p className="text-xs font-semibold text-orange-500">
+      Interview In Progress
+    </p>
+  </div>
+)}
       </div>
 
       <div className="flex items-center gap-2 shrink-0">

@@ -25,8 +25,16 @@ export function useInterviewCountdown(targetDate: string) {
   const [timeLeft, setTimeLeft] = useState(calculate());
 
   useEffect(() => {
+    setTimeLeft(calculate());
+
     const interval = setInterval(() => {
-      setTimeLeft(calculate());
+      const updated = calculate();
+
+      setTimeLeft(updated);
+
+      if (!updated) {
+        clearInterval(interval);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
