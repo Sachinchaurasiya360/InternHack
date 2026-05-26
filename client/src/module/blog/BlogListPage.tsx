@@ -160,10 +160,6 @@ export default function BlogListPage() {
           <section className="mb-16">
             <div className="flex items-center gap-2 mb-6">
               <BookOpen className="w-5 h-5 text-stone-400 dark:text-stone-500" />
-<<<<<<< HEAD
-=======
-
->>>>>>> 9723468261dd6318179a41805040b4b0052ea90a
               <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
                 {category === "ALL" ? "All Articles" : CATEGORY_LABELS[category]}
               </h2>
@@ -228,10 +224,7 @@ export default function BlogListPage() {
         </div>
       </main>
 
-<<<<<<< HEAD
-=======
       {/* Footer stays full-width at the very bottom */}
->>>>>>> 9723468261dd6318179a41805040b4b0052ea90a
       <Footer />
     </div>
   );
