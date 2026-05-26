@@ -109,11 +109,11 @@ export default function DsaBookmarksPage() {
             <p className="text-sm text-stone-500 dark:text-stone-400 mb-6 max-w-sm">
               Save problems from any topic to keep them here and track your progress.
             </p>
-            <Link to="/student/dsa">
-              <Button>
+            <Button asChild>
+              <Link to="/student/dsa">
                 Browse Problems
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         ) : (
           <div className="space-y-2">
