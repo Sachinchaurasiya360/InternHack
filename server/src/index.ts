@@ -2,6 +2,7 @@ import "dotenv/config";
 import crypto from "crypto";
 import express from "express";
 import compression from "compression";
+import cors from 'cors';
 
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -93,6 +94,10 @@ app.set("trust proxy", 1);
 const PORT = process.env["PORT"] || 3000;
 const PAYMENT_WEBHOOK_PATH = "/api/payments/webhook";
 
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 // ── Security headers ──
 app.use(
   helmet({

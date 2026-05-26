@@ -10,6 +10,34 @@ interface SqlResultTableProps {
 }
 
 export default function SqlResultTable({ result, validation, showExpected, expectedOutput }: SqlResultTableProps) {
+  // ── CSV Download ──────────────────────────────────────────────────────────
+  const handleDownloadCSV = () => {
+    if (!result || result.error || result.columns.length === 0) return;
+
+    const headers = result.columns.map(h => `"${h}"`).join(',');
+
+    const csvRows = result.rows.map(row =>
+      row.map(cell => {
+        if (cell === null || cell === undefined) return '""';
+        const s = typeof cell === 'object' ? JSON.stringify(cell) : String(cell);
+        return `"${s.replace(/"/g, '""')}"`;
+      }).join(',')
+    );
+
+    const csv = [headers, ...csvRows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = `results_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+  // ─────────────────────────────────────────────────────────────────────────
+
   if (!result) {
     return (
       <div className="text-center py-8 text-[11px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
@@ -50,9 +78,34 @@ export default function SqlResultTable({ result, validation, showExpected, expec
             </span>
           )}
         </div>
-        <div className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 tabular-nums">
-          <Clock className="w-3 h-3" />
-          {result.timeMs}ms
+
+        {/* Right side: timing + CSV download */}
+        <div className="flex items-center gap-2">
+          {/* CSV download button — only shown when there are rows to export */}
+          {!result.error && result.rowCount > 0 && (
+            <button
+              onClick={handleDownloadCSV}
+              className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 rounded transition-colors cursor-pointer"
+              title="Download results as CSV"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-3 h-3"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              CSV
+            </button>
+          )}
+
+          <div className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 tabular-nums">
+            <Clock className="w-3 h-3" />
+            {result.timeMs}ms
+          </div>
         </div>
       </div>
 
