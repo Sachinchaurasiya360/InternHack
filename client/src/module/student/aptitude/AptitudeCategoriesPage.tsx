@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, Building2, ArrowUpRight, Brain, BookOpen, MessageSquare, Search } from "lucide-react";
+import { CheckCircle2, Building2, ArrowUpRight, Brain, BookOpen, MessageSquare, Search, X } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
-import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
 
 export default function AptitudeCategoriesPage() {
@@ -27,7 +27,12 @@ export default function AptitudeCategoriesPage() {
     queryFn: () => api.get<AptitudeProgress>("/aptitude/progress").then((r) => r.data),
     enabled: !!user,
   });
+const clearFilters = () => {
+    setTopicSearch("");
+    setActiveTab("all");
+  };
 
+  const hasFilters = topicSearch.trim() !== "" || activeTab !== "all";
   const totalQuestions = categories?.reduce((s, c) => s + c.questionCount, 0) ?? 0;
   const totalAnswered = categories?.reduce((s, c) => s + c.answeredCount, 0) ?? 0;
   const overallPct = totalQuestions > 0 ? Math.round((totalAnswered / totalQuestions) * 100) : 0;
@@ -224,6 +229,11 @@ export default function AptitudeCategoriesPage() {
                   </motion.button>
                 );
               },
+            )}
+            {hasFilters && (
+              <Button onClick={clearFilters} variant="ghost" size="sm">
+                <X className="w-3 h-3" /> clear
+              </Button>
             )}
           </div>
         </motion.div>
