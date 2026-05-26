@@ -19,6 +19,7 @@ import type { QueryResult, TableInfo } from "./lib/sql-engine";
 import { datasets } from "./data/datasets";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
+import { useAuthStore } from "../../../lib/auth.store";
 
 const PRELOADED_DATASETS = ["world", "nobel", "football", "movie", "school"];
 
@@ -32,14 +33,42 @@ const DATASET_LABELS: Record<string, string> = {
   election: "UK Elections",
 };
 
+type QueryHistoryItem = { query: string; time: number; rows: number; error?: string };
+
+const getHistoryKey = (userId?: number) => `sql-history-${userId ?? "guest"}`;
+
+function readQueryHistory(key: string): QueryHistoryItem[] {
+  try {
+    const saved = localStorage.getItem(key);
+    if (!saved) return [];
+    const parsed = JSON.parse(saved);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((item): item is QueryHistoryItem => typeof item?.query === "string")
+      .slice(0, 10);
+  } catch {
+    return [];
+  }
+}
+
+function writeQueryHistory(key: string, history: QueryHistoryItem[]) {
+  try {
+    localStorage.setItem(key, JSON.stringify(history.slice(0, 10)));
+  } catch {
+    // localStorage can fail in private mode or when quota is exceeded.
+  }
+}
+
 export default function SqlPlaygroundPage() {
+  const { user } = useAuthStore();
+  const historyKey = getHistoryKey(user?.id);
   const [code, setCode] = useState("SELECT name, continent, population\nFROM world\nORDER BY population DESC\nLIMIT 10;");
   const [results, setResults] = useState<QueryResult[]>([]);
   const [schema, setSchema] = useState<TableInfo[]>([]);
   const [expandedTables, setExpandedTables] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
-  const [history, setHistory] = useState<{ query: string; time: number; rows: number; error?: string }[]>([]);
+  const [history, setHistory] = useState<QueryHistoryItem[]>(() => readQueryHistory(getHistoryKey(user?.id)));
   const [showHistory, setShowHistory] = useState(false);
   const [sidebarSection, setSidebarSection] = useState<"tables" | "datasets">("tables");
 
@@ -65,12 +94,26 @@ export default function SqlPlaygroundPage() {
     const queryResult = await sqlEngine.execute(code);
     setResults((prev) => [...prev, queryResult]);
     setActiveTab(results.length);
-    setHistory((prev) => [
-      { query: code.trim(), time: queryResult.timeMs, rows: queryResult.rowCount, error: queryResult.error },
-      ...prev,
-    ].slice(0, 50));
+    setHistory((prev) => {
+      const trimmedQuery = code.trim();
+      const next = [
+        { query: trimmedQuery, time: queryResult.timeMs, rows: queryResult.rowCount, error: queryResult.error },
+        ...prev.filter((item) => item.query !== trimmedQuery),
+      ].slice(0, 10);
+      writeQueryHistory(historyKey, next);
+      return next;
+    });
     setSchema(sqlEngine.getSchema());
-  }, [code, results.length]);
+  }, [code, historyKey, results.length]);
+
+  const handleClearHistory = () => {
+    setHistory([]);
+    try {
+      localStorage.removeItem(historyKey);
+    } catch {
+      // Ignore localStorage cleanup failures.
+    }
+  };
 
   const handleLoadDataset = useCallback(async (name: string) => {
     if (datasets[name]) {
@@ -545,6 +588,18 @@ export default function SqlPlaygroundPage() {
                 </button>
               ))}
             </div>
+            {history.length > 0 && (
+              <div className="px-5 py-3 border-t border-stone-100 dark:border-white/5 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleClearHistory}
+                  className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-rose-500 transition-colors border-0 bg-transparent cursor-pointer"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  clear history
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
