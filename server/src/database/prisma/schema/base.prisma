@@ -43,8 +43,8 @@ model user {
   projects              Json                        @default("[]")
   achievements          Json                        @default("[]")
   leetcodeUrl           String?
+  unsubscribeDigest     Boolean                     @default(false)
   tokenVersion          Int                         @default(0)
-  adminActivityLogs     adminActivityLog[]          @relation("AdminActivityLogs")
   adminProfile          adminProfile?               @relation("AdminProfile")
   applications          application[]               @relation("StudentApplications")
   atsScores             atsScore[]                  @relation("StudentAtsScores")
@@ -116,22 +116,6 @@ model adminProfile {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      user      @relation("AdminProfile", fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model adminActivityLog {
-  id         Int      @id @default(autoincrement())
-  adminId    Int
-  action     String
-  targetType String
-  targetId   Int
-  details    Json     @default("{}")
-  ipAddress  String?
-  createdAt  DateTime @default(now())
-  admin      user     @relation("AdminActivityLogs", fields: [adminId], references: [id], onDelete: Cascade)
-
-  @@index([adminId])
-  @@index([targetType, targetId])
-  @@index([createdAt])
 }
 
 model job {
@@ -1252,6 +1236,7 @@ enum UsageAction {
   MOCK_INTERVIEW
   AI_JOB_CHAT
   CODE_RUN
+  GITHUB_STATS
 }
 
 enum EmailCampaignStatus {

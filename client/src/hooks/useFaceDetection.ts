@@ -29,7 +29,7 @@ export function useFaceDetection(config: FaceDetectionConfig) {
   } = config;
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const detectorRef = useRef<any>(null);
+  const detectorRef = useRef<{ detectForVideo: (video: HTMLVideoElement, ts: number) => { detections: unknown[] }; close: () => void } | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const detectionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const snapshotTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -63,18 +63,19 @@ export function useFaceDetection(config: FaceDetectionConfig) {
         video: { width: 320, height: 240, facingMode: "user" },
       });
       streamRef.current = stream;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const e = err as { name?: string; message?: string };
       let msg: string;
-      if (err?.name === "NotAllowedError") {
+      if (e?.name === "NotAllowedError") {
         const isPolicy =
-          err?.message?.toLowerCase().includes("permissions policy") ||
-          err?.message?.toLowerCase().includes("feature policy");
+          e?.message?.toLowerCase().includes("permissions policy") ||
+          e?.message?.toLowerCase().includes("feature policy");
         msg = isPolicy
           ? "Camera blocked by site security policy. Please contact support."
           : "Camera permission denied. Please allow camera access in your browser settings and try again.";
-      } else if (err?.name === "NotFoundError") {
+      } else if (e?.name === "NotFoundError") {
         msg = "No camera found. Please connect a camera and try again.";
-      } else if (err?.name === "NotReadableError") {
+      } else if (e?.name === "NotReadableError") {
         msg = "Camera is in use by another application. Please close it and try again.";
       } else {
         msg = "Camera not available. Please check your device and try again.";

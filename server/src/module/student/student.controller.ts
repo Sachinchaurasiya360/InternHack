@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { StudentService } from "./student.service.js";
-import { applyToJobSchema, submitRoundSchema } from "./student.validation.js";
+import { applyToJobSchema, mockInterviewFeedbackSchema, submitRoundSchema } from "./student.validation.js";
 import { prisma } from "../../database/db.js";
 import { getPlanTier } from "../../config/usage-limits.js";
 import { createLogger } from "../../utils/logger.js";
@@ -105,6 +105,23 @@ export class StudentController {
       return res.json({ message: "Mock interview booked successfully", used: used + 1, limit: 1 });
     } catch (err) {
       next(err);
+    }
+  }
+
+  async generateMockInterviewFeedback(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const result = mockInterviewFeedbackSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+      }
+
+      const feedback = await this.studentService.generateMockInterviewFeedback(result.data.topic, result.data.transcript);
+      return res.status(200).json(feedback);
+    } catch (error) {
+      logger.error("Failed to generate mock interview feedback", error);
+      return res.status(500).json({ message: "Failed to generate feedback" });
     }
   }
 

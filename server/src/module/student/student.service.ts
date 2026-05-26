@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { BadgeService } from "../badge/badge.service.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { milestoneEmailHtml } from "../../utils/email-templates.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const badgeService = new BadgeService();
 
@@ -15,6 +16,24 @@ interface ApplyData {
 interface SubmitRoundData {
   fieldAnswers: Record<string, unknown>;
   attachments: string[];
+}
+
+interface MockInterviewTranscriptEntry {
+  question: string;
+  answer: string;
+}
+
+interface MockInterviewFeedback {
+  communication: string;
+  technicalAccuracy: string;
+  areasToImprove: string[];
+  strengths: string[];
+  overallRating: number;
+}
+
+interface MockInterviewFeedbackResult {
+  feedback: MockInterviewFeedback;
+  fallbackUsed: boolean;
 }
 
 export class StudentService {
@@ -70,6 +89,118 @@ export class StudentService {
       }
       throw err;
     }
+  }
+
+  async generateMockInterviewFeedback(topic: string, transcript: MockInterviewTranscriptEntry[]): Promise<MockInterviewFeedbackResult> {
+    const fallbackFeedback = this.createMockInterviewFallbackFeedback(topic);
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+      return { feedback: fallbackFeedback, fallbackUsed: true };
+    }
+
+    try {
+      const prompt = this.buildMockInterviewFeedbackPrompt(topic, transcript);
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text().trim();
+      const parsed = this.parseMockInterviewFeedbackResponse(text);
+
+      if (!parsed) {
+        return { feedback: fallbackFeedback, fallbackUsed: true };
+      }
+
+      return { feedback: parsed, fallbackUsed: false };
+    } catch {
+      return { feedback: fallbackFeedback, fallbackUsed: true };
+    }
+  }
+
+  private buildMockInterviewFeedbackPrompt(topic: string, transcript: MockInterviewTranscriptEntry[]): string {
+    const transcriptText = transcript
+      .map((entry, index) => `Question ${index + 1}: ${entry.question}\nAnswer ${index + 1}: ${entry.answer}`)
+      .join("\n\n");
+
+    return `You are an expert mock interview coach.
+
+Evaluate the candidate's performance for the topic: ${topic}.
+
+Transcript:
+${transcriptText}
+
+Return ONLY valid JSON with this exact shape:
+{
+  "communication": "1-2 sentences on clarity, structure, and communication",
+  "technicalAccuracy": "1-2 sentences on correctness and depth of answers",
+  "areasToImprove": ["specific suggestion 1", "specific suggestion 2", "specific suggestion 3"],
+  "strengths": ["specific strength 1", "specific strength 2"],
+  "overallRating": 1
+}
+
+Rules:
+- areasToImprove must contain 2 to 3 specific, actionable suggestions.
+- strengths must contain 1 to 2 concise strengths.
+- overallRating must be an integer from 1 to 5.
+- Do not wrap the JSON in markdown fences.
+- Do not include any extra text outside the JSON object.`;
+  }
+
+  private parseMockInterviewFeedbackResponse(text: string): MockInterviewFeedback | null {
+    let cleaned = text.trim();
+
+    if (cleaned.startsWith("```")) {
+      cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+    }
+
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return null;
+
+    try {
+      const parsed = JSON.parse(jsonMatch[0]) as Record<string, unknown>;
+      const communication = typeof parsed.communication === "string" ? parsed.communication.trim() : "";
+      const technicalAccuracy = typeof parsed.technicalAccuracy === "string" ? parsed.technicalAccuracy.trim() : "";
+      const areasToImprove = Array.isArray(parsed.areasToImprove)
+        ? parsed.areasToImprove.map((item) => String(item).trim()).filter(Boolean).slice(0, 3)
+        : [];
+      const strengths = Array.isArray(parsed.strengths)
+        ? parsed.strengths.map((item) => String(item).trim()).filter(Boolean).slice(0, 2)
+        : [];
+      const overallRating = Number(parsed.overallRating);
+
+      if (!communication || !technicalAccuracy || areasToImprove.length < 2 || strengths.length < 1 || !Number.isFinite(overallRating)) {
+        return null;
+      }
+
+      return {
+        communication,
+        technicalAccuracy,
+        areasToImprove,
+        strengths,
+        overallRating: Math.min(5, Math.max(1, Math.round(overallRating))),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  private createMockInterviewFallbackFeedback(topic: string): MockInterviewFeedback {
+    return {
+      communication:
+        `Your answers were understandable, but you can improve clarity by leading with a direct answer, then adding one short explanation and a closing sentence.`,
+      technicalAccuracy:
+        `You showed a basic grasp of ${topic.toLowerCase()}, but the strongest answers would be more precise with clearer terminology and a few concrete examples.`,
+      areasToImprove: [
+        "Use a tighter answer structure: answer first, then explain the reasoning.",
+        "Add one concrete example, trade-off, or metric to support each response.",
+        "Pause briefly before answering so you can organize your thoughts.",
+      ],
+      strengths: [
+        "You stayed engaged throughout the session.",
+        "You were able to connect your answers back to practical situations.",
+      ],
+      overallRating: 3,
+    };
   }
 
   async getApplicationStatusByJob(jobId: number, studentId: number) {

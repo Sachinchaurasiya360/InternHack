@@ -236,6 +236,7 @@ export interface AtsCategoryScores {
 
 export interface AtsKeywordAnalysis {
   found: string[];
+  partial: string[];
   missing: string[];
 }
 
@@ -398,17 +399,6 @@ export interface AdminUser {
   _count: { applications: number; postedJobs: number };
 }
 
-export interface ActivityLog {
-  id: number;
-  adminId: number;
-  admin: { id: number; name: string; email: string };
-  action: string;
-  targetType: string;
-  targetId: number;
-  details: Record<string, unknown>;
-  ipAddress?: string;
-  createdAt: string;
-}
 
 export interface ErrorLog {
   id: number;
@@ -694,6 +684,35 @@ export interface RepoRequest {
   user?: { id: number; name: string; email: string; profilePic?: string | null };
   createdAt: string;
   updatedAt: string;
+}
+
+export interface OpenSourceContributionTrendPoint {
+  month: string;
+  label: string;
+  count: number;
+}
+
+export interface OpenSourceContributionTrendResponse {
+  trend: OpenSourceContributionTrendPoint[];
+  total: number;
+}
+
+export interface MockInterviewTranscriptEntry {
+  question: string;
+  answer: string;
+}
+
+export interface MockInterviewFeedback {
+  communication: string;
+  technicalAccuracy: string;
+  areasToImprove: string[];
+  strengths: string[];
+  overallRating: number;
+}
+
+export interface MockInterviewFeedbackResponse {
+  feedback: MockInterviewFeedback;
+  fallbackUsed: boolean;
 }
 
 // DSA Practice

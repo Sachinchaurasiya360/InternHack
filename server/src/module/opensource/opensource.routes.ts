@@ -9,6 +9,20 @@ import { parsePagination } from "../../utils/pagination.utils.js";
 
 export const opensourceRouter = Router();
 
+function addMonthsUTC(date: Date, months: number): Date {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1));
+}
+
+function getMonthKeyUTC(date: Date): string {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+}
+
+function getMonthLabelUTC(date: Date): string {
+  return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
+}
+
 // Public: list repos with optional filters
 opensourceRouter.get("/", async (req, res, next) => {
   try {
@@ -100,6 +114,45 @@ opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), a
       orderBy: { createdAt: "desc" },
     });
     res.json({ requests });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Student contribution trend
+opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
+  try {
+    const now = new Date();
+    const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const startMonth = addMonthsUTC(currentMonthStart, -5);
+    const endMonth = addMonthsUTC(currentMonthStart, 1);
+
+    const approvedRequests = await prisma.repoRequest.findMany({
+      where: {
+        userId: req.user!.id,
+        status: "APPROVED",
+        updatedAt: { gte: startMonth, lt: endMonth },
+      },
+      select: { updatedAt: true },
+    });
+
+    const countsByMonth = new Map<string, number>();
+    for (const request of approvedRequests) {
+      const monthKey = getMonthKeyUTC(request.updatedAt);
+      countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
+    }
+
+    const trend = Array.from({ length: 6 }, (_, index) => {
+      const monthStart = addMonthsUTC(startMonth, index);
+      const monthKey = getMonthKeyUTC(monthStart);
+      return {
+        month: monthKey,
+        label: getMonthLabelUTC(monthStart),
+        count: countsByMonth.get(monthKey) ?? 0,
+      };
+    });
+
+    res.json({ trend, total: approvedRequests.length });
   } catch (err) {
     next(err);
   }

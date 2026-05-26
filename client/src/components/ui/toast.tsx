@@ -107,6 +107,7 @@ const toast = {
   warning: (msg: string, opts?: ToastOptions) => show("warning", msg, opts),
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export default toast;
 
 /* ---------- Provider (renders in App.tsx) ---------- */

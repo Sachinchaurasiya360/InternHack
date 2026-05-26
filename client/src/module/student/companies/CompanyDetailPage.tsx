@@ -132,9 +132,9 @@ export default function CompanyDetailPage() {
   }
 
   if (companyIsError || reviewsIsError) {
-    const errorMsg = companyIsError 
-      ? (companyError as any)?.response?.data?.message || companyError?.message || "Failed to load company"
-      : (reviewsError as any)?.response?.data?.message || reviewsError?.message || "Failed to load reviews";
+    const errorMsg = companyIsError
+      ? (companyError as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || companyError?.message || "Failed to load company"
+      : (reviewsError as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || reviewsError?.message || "Failed to load reviews";
       
     const errorContent = (
       <div className="max-w-6xl mx-auto px-6 pt-24 text-center">

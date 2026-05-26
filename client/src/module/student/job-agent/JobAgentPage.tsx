@@ -129,6 +129,7 @@ export default function JobAgentPage() {
 
   useEffect(() => {
     if (voiceError === "not-allowed") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVoiceHint("Microphone access blocked - check browser settings");
     }
   }, [voiceError]);

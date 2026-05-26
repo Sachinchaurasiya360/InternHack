@@ -16,6 +16,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 import GitHubImportModal from "./GitHubImportModal";
+import GitHubStatsCard from "./GitHubStatsCard";
 import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 
@@ -820,6 +821,10 @@ export default function StudentProfilePage() {
               <BadgesSection studentId={user.id} />
             </motion.div>
           )}
+
+          <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible">
+            <GitHubStatsCard githubUrl={form.githubUrl} />
+          </motion.div>
         </aside>
 
         {/* ─── Right: Editable sections ─── */}

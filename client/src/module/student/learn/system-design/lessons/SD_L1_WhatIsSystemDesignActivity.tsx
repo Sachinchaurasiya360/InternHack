@@ -19,6 +19,9 @@ import {
 /*  TAB 1 - Zoom Out: from function to full system                     */
 /* ================================================================== */
 
+// Precomputed random opacities for the traffic bar visualization (stable across renders)
+const TRAFFIC_BAR_OPACITIES = Array.from({ length: 60 }, () => 0.6 + Math.random() * 0.4);
+
 const ZOOM_STAGES = [
   {
     key: "function",
@@ -263,12 +266,12 @@ function StageArt({ stage, idx }: { stage: typeof ZOOM_STAGES[number]; idx: numb
           <Users className="w-6 h-6" style={{ color: stage.badgeColor }} />
         </div>
         <div style={{ display: "flex", justifyContent: "center", gap: 3 }}>
-          {Array.from({ length: 60 }).map((_, i) => (
+          {TRAFFIC_BAR_OPACITIES.map((opacity, i) => (
             <div
               key={i}
               style={{
                 width: 2, height: 10, borderRadius: 1,
-                background: stage.badgeColor, opacity: 0.6 + Math.random() * 0.4,
+                background: stage.badgeColor, opacity,
                 animation: `sd-flicker-${i % 5} 0.6s infinite`,
               }}
             />

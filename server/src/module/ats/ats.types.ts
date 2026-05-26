@@ -9,6 +9,7 @@ export interface AtsCategoryScores {
 
 export interface AtsKeywordAnalysis {
   found: string[];
+  partial: string[];
   missing: string[];
 }
 
