@@ -46,7 +46,8 @@ export async function uploadToS3(
 
 async function getSignedS3Url(key: string, expiresIn = 3600): Promise<string> {
   const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
-  return getSignedUrl(s3Client as any, command, { expiresIn });
+  // @ts-expect-error SDK type mismatch for S3Client vs Client
+  return getSignedUrl(s3Client, command, { expiresIn });
 }
 
 export async function deleteFromS3(key: string): Promise<void> {
@@ -97,6 +98,7 @@ export const generatePresignedUploadUrl = async (fileKey: string, fileType: stri
   });
 
   // URL expires in 5 minutes (300 seconds)
-  const uploadUrl = await getSignedUrl(s3Client as any, command, { expiresIn: 300 });
+  // @ts-expect-error SDK type mismatch for S3Client vs Client
+  const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 });
   return uploadUrl;
 };

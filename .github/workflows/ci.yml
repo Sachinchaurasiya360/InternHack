@@ -70,7 +70,7 @@ jobs:
         working-directory: client
 
       - name: Run ESLint
-        run: npx eslint . --ext .ts,.tsx || echo "ESLint failed but allowing CI to pass"
+        run: npx eslint . --ext .ts,.tsx --max-warnings 250
         working-directory: client
 
   test-server:

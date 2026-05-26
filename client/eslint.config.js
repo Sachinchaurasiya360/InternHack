@@ -29,7 +29,14 @@ export default defineConfig([
       'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/set-state-in-effect': 'warn',
       'no-empty-pattern': 'warn',
-      'prefer-const': 'warn'
+      'prefer-const': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-non-null-asserted-optional-chain': 'warn',
+      '@typescript-eslint/no-unused-expressions': 'warn',
+      'no-async-promise-executor': 'warn',
+      'no-empty': 'warn',
+      'no-useless-escape': 'warn',
+      'react-refresh/only-export-components': 'warn'
     }
   }
 ])
