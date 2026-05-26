@@ -48,13 +48,13 @@
     "multer": "^2.1.1",
     "node-cache": "^5.1.2",
     "node-cron": "^4.2.1",
-    "nodemailer": "^8.0.7",
+    "nodemailer": "^8.0.9",
     "openai": "^6.39.0",
     "pdf-parse": "^2.4.5",
     "pdfkit": "^0.18.0",
     "pg": "^8.21.0",
     "prisma": "^7.8.0",
-    "resend": "^6.12.3",
+    "resend": "^6.12.4",
     "xlsx": "^0.18.5",
     "zod": "^4.4.3"
   },
@@ -76,7 +76,7 @@
     "globals": "^16.5.0",
     "tsx": "^4.22.3",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.59.4",
+    "typescript-eslint": "^8.60.0",
     "vitest": "^4.1.7"
   }
 }
