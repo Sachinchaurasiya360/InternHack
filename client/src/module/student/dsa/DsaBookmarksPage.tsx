@@ -9,7 +9,13 @@ import type { DsaBookmarkItem } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
-
+/**
+ * Renders the DSA Bookmarks page displaying the user's saved problems.
+ * Includes functionality to view and remove bookmarked problems, 
+ * and displays an empty state if no bookmarks exist.
+ *
+ * @returns {JSX.Element} The rendered bookmarks page component.
+ */
 export default function DsaBookmarksPage() {
   const queryClient = useQueryClient();
 
