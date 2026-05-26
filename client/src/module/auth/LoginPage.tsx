@@ -92,147 +92,148 @@ export default function LoginPage() {
           className="w-full max-w-md"
         >
           <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="w-full"
-        >
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
-            <span className="h-1.5 w-1.5 bg-lime-400" />
-            sign in
-          </div>
-          <h1 id="login-heading" className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
-            Welcome back.
-          </h1>
-          <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">
-            Sign in to pick up where you left off.
-          </p>
-
-          <div className="mt-8 space-y-5">
-            {error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-sm text-red-600 dark:text-red-400">
-                {error}
-              </div>
-            )}
-
-            <div>
-              <label className="block text-xs font-mono uppercase tracking-widest text-stone-500 mb-1.5">
-                I am a
-              </label>
-              <div className="grid grid-cols-2 gap-0 border border-stone-300 dark:border-white/10 rounded-md overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setRole("STUDENT")}
-                  aria-pressed={role === "STUDENT"}
-                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
-                    ? "bg-lime-400 text-stone-950"
-                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
-                    }`}
-                >
-                  Student
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole("RECRUITER")}
-                  aria-pressed={role === "RECRUITER"}
-                  className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
-                    ? "bg-lime-400 text-stone-950"
-                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
-                    }`}
-                >
-                  Recruiter
-                </button>
-              </div>
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="w-full"
+          >
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
+              <span className="h-1.5 w-1.5 bg-lime-400" />
+              sign in
             </div>
+            <h1 id="login-heading" className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+              Welcome back.
+            </h1>
+            <p className="mt-3 text-sm text-stone-600 dark:text-stone-400">
+              Sign in to pick up where you left off.
+            </p>
 
-            <GoogleAuthButton
-              label={isRecruiter ? "Sign in with Google Workspace" : "Continue with Google"}
-              onAccessToken={handleGoogleSuccess}
-              onError={() => setError("Google sign-in failed")}
-              disabled={loading}
-            />
+            <div className="mt-8 space-y-5">
+              {error && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-sm text-red-600 dark:text-red-400">
+                  {error}
+                </div>
+              )}
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-stone-200 dark:border-white/10" />
-              </div>
-              <div className="relative flex justify-center">
-                <span className="bg-stone-50 dark:bg-stone-950 px-3 text-xs font-mono uppercase tracking-widest text-stone-500">
-                  or with email
-                </span>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <FormField label={isRecruiter ? "Company email" : "Email"}>
-                <input
-                  type="email"
-                  aria-label={isRecruiter ? "Company email" : "Email"}
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
-                  placeholder={isRecruiter ? "you@company.com" : "you@example.com"}
-                  required
-                />
-              </FormField>
-
-              <FormField
-                label="Password"
-                right={
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs font-mono text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline"
-                  >
-                    forgot?
-                  </Link>
-                }
-              >
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    aria-label="Password"
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
-                    placeholder="Your password"
-                    required
-                  />
+              <div>
+                <label className="block text-xs font-mono uppercase tracking-widest text-stone-500 mb-1.5">
+                  I am a
+                </label>
+                <div className="grid grid-cols-2 gap-0 border border-stone-300 dark:border-white/10 rounded-md overflow-hidden">
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer"
+                    onClick={() => setRole("STUDENT")}
+                    aria-pressed={role === "STUDENT"}
+                    className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
+                      ? "bg-lime-400 text-stone-950"
+                      : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                      }`}
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    Student
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRole("RECRUITER")}
+                    aria-pressed={role === "RECRUITER"}
+                    className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer border-l border-stone-300 dark:border-white/10 ${role === "RECRUITER"
+                      ? "bg-lime-400 text-stone-950"
+                      : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                      }`}
+                  >
+                    Recruiter
                   </button>
                 </div>
-              </FormField>
+              </div>
 
-              <button
-                type="submit"
+              <GoogleAuthButton
+                label={isRecruiter ? "Sign in with Google Workspace" : "Continue with Google"}
+                onAccessToken={handleGoogleSuccess}
+                onError={() => setError("Google sign-in failed")}
                 disabled={loading}
-                className="group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0 disabled:opacity-50"
-              >
-                {loading ? "Signing in..." : "Sign in"}
-                {!loading && (
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                )}
-              </button>
-            </form>
+              />
 
-            <div className="pt-4">
-              <p className="text-sm text-stone-600 dark:text-stone-400">
-                Don't have an account?{" "}
-                <Link
-                  to={returnTo ? `/register?from=${encodeURIComponent(returnTo)}&role=${role}` : `/register?role=${role}`}
-                  className="text-stone-900 dark:text-stone-50 font-bold border-b border-stone-900 dark:border-stone-50 pb-0.5 no-underline"
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-stone-200 dark:border-white/10" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-stone-50 dark:bg-stone-950 px-3 text-xs font-mono uppercase tracking-widest text-stone-500">
+                    or with email
+                  </span>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <FormField label={isRecruiter ? "Company email" : "Email"}>
+                  <input
+                    type="email"
+                    aria-label={isRecruiter ? "Company email" : "Email"}
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                    placeholder={isRecruiter ? "you@company.com" : "you@example.com"}
+                    required
+                  />
+                </FormField>
+
+                <FormField
+                  label="Password"
+                  right={
+                    <Link
+                      to="/forgot-password"
+                      className="text-xs font-mono text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline"
+                    >
+                      forgot?
+                    </Link>
+                  }
                 >
-                  Sign up
-                </Link>
-              </p>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      aria-label="Password"
+                      value={form.password}
+                      onChange={(e) => setForm({ ...form, password: e.target.value })}
+                      className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                      placeholder="Your password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </FormField>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0 disabled:opacity-50"
+                >
+                  {loading ? "Signing in..." : "Sign in"}
+                  {!loading && (
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  )}
+                </button>
+              </form>
+
+              <div className="pt-4">
+                <p className="text-sm text-stone-600 dark:text-stone-400">
+                  Don't have an account?{" "}
+                  <Link
+                    to={returnTo ? `/register?from=${encodeURIComponent(returnTo)}&role=${role}` : `/register?role=${role}`}
+                    className="text-stone-900 dark:text-stone-50 font-bold border-b border-stone-900 dark:border-stone-50 pb-0.5 no-underline"
+                  >
+                    Sign up
+                  </Link>
+                </p>
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </main>
       </div>
     </div>
   );
