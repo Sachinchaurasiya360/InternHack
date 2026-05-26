@@ -120,10 +120,7 @@ export async function sendWeeklyRoadmapDigests(): Promise<void> {
         }),
       });
     } catch (err) {
-      console.error(
-        `[RoadmapDigest] Failed to send digest to user ${digest.user.id} (${digest.user.email}):`,
-        err,
-      );
+      console.error(`[RoadmapDigest] Failed to send digest to user ${digest.user.id}:`, err);
     }
   }
 }
