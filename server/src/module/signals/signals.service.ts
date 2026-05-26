@@ -15,7 +15,7 @@ interface SignalsQuery {
   source?: string | undefined;
   round?: string | undefined;
   industry?: string | undefined;
-  kind?: "funding" | "hiring" | "all" | undefined;
+  kind?: "funding" | "hiring" | "product_launch" | "all" | undefined;
   status?: "ACTIVE" | "STALE" | "ARCHIVED" | "ALL" | undefined;
   hiringOnly?: boolean | undefined;
   minAmountUsd?: bigint | undefined;
@@ -302,6 +302,13 @@ export class SignalsService {
       where.hiringSignal = true;
       where.fundingAmount = null;
       where.amountUsd = null;
+    } else if (query.kind === "product_launch") {
+      // Product launch: YC launches that are not pure funding rounds and not hiring-only
+      where.source = "yc-launches";
+      where.hiringSignal = false;
+      where.fundingAmount = null;
+      where.amountUsd = null;
+      where.fundingRound = null;
     }
 
     const orderBy: Prisma.fundingSignalOrderByWithRelationInput =

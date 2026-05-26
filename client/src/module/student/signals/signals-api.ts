@@ -5,7 +5,7 @@ import type {
   FundingSignalSource,
 } from "../../../lib/types";
 
-export type SignalKind = "funding" | "hiring" | "all";
+export type SignalKind = "funding" | "hiring" | "product_launch" | "all";
 
 export interface SignalsQuery {
   page: number;
