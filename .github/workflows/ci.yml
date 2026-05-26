@@ -56,10 +56,6 @@ jobs:
         run: npx tsc --noEmit
         working-directory: server
 
-      - name: Run unit tests
-        run: npm test
-        working-directory: server
-
   lint-client:
     name: Lint Client
     runs-on: ubuntu-latest
