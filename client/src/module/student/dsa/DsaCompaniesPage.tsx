@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "react-router";
 import {
@@ -18,6 +18,153 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+
+/* ── Company tier classification ─────────────────────────────────────── */
+
+type CompanyTier =
+  | "FAANG+"
+  | "PRODUCT_BASED"
+  | "BIG_TECH"
+  | "STARTUPS"
+  | "SERVICE_BASED"
+  | "OTHERS";
+
+const TIER_LABELS: Record<CompanyTier, string> = {
+  "FAANG+": "FAANG+",
+  PRODUCT_BASED: "Product Based",
+  BIG_TECH: "Big Tech",
+  STARTUPS: "Startups",
+  SERVICE_BASED: "Service Based",
+  OTHERS: "Others",
+};
+
+const TIER_ORDER: CompanyTier[] = [
+  "FAANG+",
+  "PRODUCT_BASED",
+  "BIG_TECH",
+  "STARTUPS",
+  "SERVICE_BASED",
+  "OTHERS",
+];
+
+/** FAANG+ (lowercased). */
+const FAANG_PLUS = new Set([
+  "google", "amazon", "apple", "meta", "facebook", "microsoft", "netflix",
+]);
+
+/** Product Based companies (lowercased). */
+const PRODUCT_BASED_COS = new Set([
+  "atlassian", "bloomberg", "flipkart", "goldman sachs", "linkedin", "adobe",
+  "airbnb", "uber", "spotify", "stripe", "reddit", "twitter", "pinterest", "shopify",
+]);
+
+/** Big Tech beyond FAANG (lowercased). */
+const BIG_TECH_COS = new Set([
+  "nvidia", "tesla", "openai", "ibm", "oracle", "samsung", "qualcomm", "intel", "salesforce", "cisco",
+]);
+
+/** Startups (lowercased). */
+const STARTUPS_COS = new Set([
+  "ola", "paytm", "groww", "zerodha", "nykaa", "udaan", "lenskart", "rapido", "slice", "bharatpe", "urban company"
+]);
+
+/** Service Based / IT Services & Consulting (lowercased). */
+const SERVICE_BASED_COS = new Set([
+  "tcs", "infosys", "wipro", "cognizant", "accenture", "capgemini", "hcl", "deloitte",
+]);
+
+function getCompanyTier(name: string): CompanyTier {
+  const key = name.toLowerCase().trim();
+  if (FAANG_PLUS.has(key)) return "FAANG+";
+  if (PRODUCT_BASED_COS.has(key)) return "PRODUCT_BASED";
+  if (BIG_TECH_COS.has(key)) return "BIG_TECH";
+  if (STARTUPS_COS.has(key)) return "STARTUPS";
+  if (SERVICE_BASED_COS.has(key)) return "SERVICE_BASED";
+  return "OTHERS";
+}
+
+/* ── Featured questions per tier ─────────────────────────────────────── */
+
+interface FeaturedQuestion {
+  title: string;
+  slug: string;
+  difficulty: string;
+  companies: string[];
+}
+
+const FEATURED_QUESTIONS: FeaturedQuestion[] = [
+  { title: "Two Sum", slug: "two-sum", difficulty: "Easy", companies: ["Google", "Amazon", "Meta"] },
+  { title: "LRU Cache", slug: "lru-cache", difficulty: "Medium", companies: ["Amazon", "Microsoft", "Meta"] },
+  { title: "Merge K Sorted Lists", slug: "merge-k-sorted-lists", difficulty: "Hard", companies: ["Google", "Meta", "Apple"] },
+  { title: "Median of Two Sorted Arrays", slug: "median-of-two-sorted-arrays", difficulty: "Hard", companies: ["Google", "Amazon", "Microsoft"] },
+  { title: "Group Anagrams", slug: "group-anagrams", difficulty: "Medium", companies: ["Flipkart", "Uber", "Spotify"] },
+  { title: "Longest Substring Without Repeating Characters", slug: "longest-substring-without-repeating-characters", difficulty: "Medium", companies: ["LinkedIn", "Airbnb", "Stripe"] },
+  { title: "Word Break", slug: "word-break", difficulty: "Medium", companies: ["Reddit", "Shopify", "Pinterest"] },
+  { title: "Clone Graph", slug: "clone-graph", difficulty: "Medium", companies: ["Twitter", "Uber", "Flipkart"] },
+  { title: "Design HashMap", slug: "design-hashmap", difficulty: "Easy", companies: ["Oracle", "Salesforce", "Adobe"] },
+  { title: "Number of Islands", slug: "number-of-islands", difficulty: "Medium", companies: ["Samsung", "IBM", "Cisco"] },
+  { title: "Course Schedule", slug: "course-schedule", difficulty: "Medium", companies: ["Adobe", "Nvidia"] },
+  { title: "Serialize and Deserialize Binary Tree", slug: "serialize-and-deserialize-binary-tree", difficulty: "Hard", companies: ["Oracle", "Samsung", "Qualcomm"] },
+  { title: "Valid Parentheses", slug: "valid-parentheses", difficulty: "Easy", companies: ["Ola", "Groww", "Zerodha"] },
+  { title: "Maximum Subarray", slug: "maximum-subarray", difficulty: "Medium", companies: ["Paytm", "Nykaa", "Udaan"] },
+  { title: "Reverse Linked List", slug: "reverse-linked-list", difficulty: "Easy", companies: ["Lenskart", "Rapido", "Slice"] },
+  { title: "Binary Tree Level Order Traversal", slug: "binary-tree-level-order-traversal", difficulty: "Medium", companies: ["Urban Company", "BharatPe", "Groww"] },
+  { title: "Fibonacci Number", slug: "fibonacci-number", difficulty: "Easy", companies: ["TCS", "Infosys", "Wipro"] },
+  { title: "Palindrome Linked List", slug: "palindrome-linked-list", difficulty: "Easy", companies: ["Cognizant", "Accenture", "Capgemini"] },
+  { title: "Best Time to Buy and Sell Stock", slug: "best-time-to-buy-and-sell-stock", difficulty: "Easy", companies: ["TCS", "Infosys", "HCL"] },
+  { title: "Rotate Array", slug: "rotate-array", difficulty: "Medium", companies: ["Wipro", "Accenture", "Deloitte"] },
+  { title: "Contains Duplicate", slug: "contains-duplicate", difficulty: "Easy", companies: [] },
+  { title: "Move Zeroes", slug: "move-zeroes", difficulty: "Easy", companies: [] },
+  { title: "3Sum", slug: "3sum", difficulty: "Medium", companies: [] },
+];
+
+function getTierFeaturedQuestions(tier: CompanyTier): FeaturedQuestion[] {
+  return FEATURED_QUESTIONS.filter((q) => {
+    if (q.companies.length === 0) {
+      return tier === "OTHERS";
+    }
+    return q.companies.some((company) => getCompanyTier(company) === tier);
+  });
+}
+
+function TierFeaturedQuestions({ tier }: { tier: CompanyTier }) {
+  const questions = useMemo(() => getTierFeaturedQuestions(tier), [tier]);
+  if (!questions || questions.length === 0) return null;
+
+  return (
+    <div className="space-y-2 mb-4">
+      {questions.map((q) => (
+        <Link
+          key={q.slug}
+          to={`/learn/dsa/problem/${q.slug}`}
+          className="group block bg-white dark:bg-stone-900 px-4 py-3 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap mb-1">
+                <span className={`text-[10px] font-mono uppercase tracking-widest ${DIFF_COLOR[q.difficulty] || "text-stone-500"}`}>
+                  / {q.difficulty.toLowerCase()}
+                </span>
+                <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+                  • popular question
+                </span>
+              </div>
+              <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors truncate">
+                {q.title}
+              </h4>
+              {q.companies && q.companies.length > 0 && (
+                <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1 truncate">
+                  Asked by: {q.companies.join(", ")}
+                </p>
+              )}
+            </div>
+            <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
 
 function CompanyInitial({ name }: { name: string }) {
   return (
@@ -53,15 +200,17 @@ export default function DsaCompaniesPage() {
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [companySearch, setCompanySearch] = useState("");
+  const [tierFilter, setTierFilter] = useState<CompanyTier | "ALL">("ALL");
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
   const [noteValues, setNoteValues] = useState<Record<number, string>>({});
   const [savingNotes, setSavingNotes] = useState<Set<number>>(new Set());
 
-  const { data: companies, isLoading } = useQuery({
+  const { data: companies = [], isPending: companiesLoading } = useQuery({
     queryKey: queryKeys.dsa.companies(),
     queryFn: () => api.get<DsaCompany[]>("/dsa/companies").then((r) => r.data),
     staleTime: 15 * 24 * 60 * 60 * 1000,
+    retry: 1,
   });
 
   const { data: problemData, isLoading: problemsLoading } = useQuery({
@@ -164,14 +313,45 @@ export default function DsaCompaniesPage() {
     });
   };
 
-  const filteredCompanies = companies?.filter((c) =>
-    !companySearch || c.name.toLowerCase().includes(companySearch.toLowerCase())
-  );
+  const filteredCompanies = useMemo(() => {
+    return companies.filter((c) => {
+      if (companySearch && !c.name.toLowerCase().includes(companySearch.toLowerCase())) return false;
+      if (tierFilter !== "ALL" && getCompanyTier(c.name) !== tierFilter) return false;
+      return true;
+    });
+  }, [companies, companySearch, tierFilter]);
 
-  if (isLoading) return <LoadingScreen />;
+  /** Group filtered companies by tier, sorted by count desc within each tier. */
+  const groupedCompanies = useMemo(() => {
+    const groups: Record<CompanyTier, typeof filteredCompanies> = {
+      "FAANG+": [],
+      PRODUCT_BASED: [],
+      BIG_TECH: [],
+      STARTUPS: [],
+      SERVICE_BASED: [],
+      OTHERS: [],
+    };
+    for (const c of filteredCompanies) {
+      groups[getCompanyTier(c.name)].push(c);
+    }
+    // Sort each tier by problem count descending
+    for (const tier of TIER_ORDER) {
+      groups[tier].sort((a, b) => b.count - a.count);
+    }
+    return groups;
+  }, [filteredCompanies]);
 
-  const totalCompanies = companies?.length ?? 0;
-  const totalCompanyProblems = companies?.reduce((s, c) => s + c.count, 0) ?? 0;
+  if (companiesLoading && companies.length === 0) return <LoadingScreen />;
+
+  // Global stats — always the same regardless of selected tier
+  const uniqueCompanyNames = new Set<string>();
+  for (const c of companies) uniqueCompanyNames.add(c.name.toLowerCase());
+  for (const q of FEATURED_QUESTIONS) {
+    for (const co of q.companies) uniqueCompanyNames.add(co.toLowerCase());
+  }
+
+  const totalCompanies = uniqueCompanyNames.size;
+  const totalCompanyProblems = companies.reduce((s, c) => s + c.count, 0) + FEATURED_QUESTIONS.length;
   const avgPerCompany = totalCompanies > 0 ? Math.round(totalCompanyProblems / totalCompanies) : 0;
 
   return (
@@ -223,7 +403,7 @@ export default function DsaCompaniesPage() {
             </motion.div>
 
             {/* Stats strip */}
-            {companies && companies.length > 0 && (
+            {companies.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -272,56 +452,165 @@ export default function DsaCompaniesPage() {
               />
             </motion.div>
 
-            {/* Section header */}
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-1 w-1 bg-lime-400"></div>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                companies / {filteredCompanies?.length ?? 0}
-              </span>
-            </div>
-
-            <div className="space-y-2">
-              {filteredCompanies?.map((company, i) => {
-                const num = String(i + 1).padStart(2, "0");
+            {/* Tier filter chips */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12 }}
+              className="flex items-center gap-2 flex-wrap mb-6"
+            >
+              {(["ALL", ...TIER_ORDER] as const).map((tier) => {
+                const isActive = tierFilter === tier;
+                const label = tier === "ALL" ? "All" : TIER_LABELS[tier];
                 return (
-                  <motion.button
-                    key={company.name}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i, 20) * 0.02 }}
-                    onClick={() => { setSelectedCompany(company.name); setPage(1); }}
-                    className="group w-full flex items-center gap-3 sm:gap-4 bg-white dark:bg-stone-900 px-3 sm:px-5 py-3 sm:py-4 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors text-left"
+                  <button
+                    key={tier}
+                    onClick={() => setTierFilter(tier)}
+                    className={`px-3 py-1.5 rounded-md text-[11px] font-mono uppercase tracking-widest transition-colors cursor-pointer border ${
+                      isActive
+                        ? "bg-stone-900 dark:bg-stone-50 text-lime-400 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                        : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+                    }`}
                   >
-                    <div className="flex flex-col items-center gap-1 shrink-0">
-                      <CompanyInitial name={company.name} />
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                        / {num}
-                      </span>
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50 capitalize truncate group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
-                        {company.name}
-                      </h3>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums mt-1 block">
-                        {company.count} problems
-                      </span>
-                    </div>
-
-                    <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </motion.button>
+                    {label}
+                  </button>
                 );
               })}
+            </motion.div>
 
-              {filteredCompanies?.length === 0 && (
-                <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-                  <Building2 className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-                  <p className="text-sm text-stone-600 dark:text-stone-400">No companies found.</p>
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
-                    {companySearch ? "try a different keyword" : "company data is not available yet"}
-                  </p>
-                </div>
-              )}
+            {/* Section header (only when viewing ALL – tier sections have their own) */}
+            {tierFilter === "ALL" && (
+              <div className="flex items-center gap-2 mb-3">
+                <div className="h-1 w-1 bg-lime-400"></div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  companies / {totalCompanies}
+                </span>
+              </div>
+            )}
+
+            {filteredCompanies.length === 0 && companySearch && (
+              <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
+                <Building2 className="w-8 h-8 text-stone-400 mx-auto mb-3" />
+                <p className="text-sm text-stone-600 dark:text-stone-400">No companies found.</p>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+                  try a different search term
+                </p>
+              </div>
+            )}
+
+            {/* Unified Featured questions list (only shown when viewing "ALL") */}
+            {tierFilter === "ALL" && (
+              <div className="space-y-2 mb-8">
+                {FEATURED_QUESTIONS.map((q) => (
+                  <Link
+                    key={q.slug}
+                    to={`/learn/dsa/problem/${q.slug}`}
+                    className="group block bg-white dark:bg-stone-900 px-4 py-3 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <span className={`text-[10px] font-mono uppercase tracking-widest ${DIFF_COLOR[q.difficulty] || "text-stone-500"}`}>
+                            / {q.difficulty.toLowerCase()}
+                          </span>
+                          <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+                            • popular question
+                          </span>
+                        </div>
+                        <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors truncate">
+                          {q.title}
+                        </h4>
+                        {q.companies && q.companies.length > 0 && (
+                          <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1 truncate">
+                            Asked by: {q.companies.join(", ")}
+                          </p>
+                        )}
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Grouped company sections */}
+            <div className="space-y-8">
+              {TIER_ORDER.filter(
+                (tier) => tierFilter === "ALL" || tierFilter === tier,
+              ).map((tier) => {
+                const group = groupedCompanies[tier];
+
+                const tierFeatured = getTierFeaturedQuestions(tier);
+                const tierCompanyNames = new Set<string>();
+                for (const c of group) tierCompanyNames.add(c.name.toLowerCase());
+                for (const q of tierFeatured) {
+                  for (const co of q.companies) {
+                    if (getCompanyTier(co) === tier) tierCompanyNames.add(co.toLowerCase());
+                  }
+                }
+                const tierCompanyCount = tierCompanyNames.size;
+
+                // In ALL view, hide tiers with no companies at all
+                if (tierFilter === "ALL" && tierCompanyCount === 0) return null;
+
+                return (
+                  <section key={tier}>
+                    {/* Tier section header */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="h-1 w-1 bg-lime-400"></div>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                        {TIER_LABELS[tier]} / {tierCompanyCount}
+                      </span>
+                    </div>
+
+                    {/* Featured questions for this tier */}
+                    {tierFilter !== "ALL" && <TierFeaturedQuestions tier={tier} />}
+
+                    <div className="space-y-2">
+                      {group.map((company, i) => {
+                        const num = String(i + 1).padStart(2, "0");
+                        return (
+                          <motion.button
+                            key={company.name}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: Math.min(i, 20) * 0.02 }}
+                            onClick={() => { setSelectedCompany(company.name); setPage(1); }}
+                            className="group w-full flex items-center gap-3 sm:gap-4 bg-white dark:bg-stone-900 px-3 sm:px-5 py-3 sm:py-4 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors text-left"
+                          >
+                            <div className="flex flex-col items-center gap-1 shrink-0">
+                              <CompanyInitial name={company.name} />
+                              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
+                                / {num}
+                              </span>
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50 capitalize truncate group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
+                                {company.name}
+                              </h3>
+                              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums mt-1 block">
+                                {company.count} problems
+                              </span>
+                            </div>
+
+                            <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                          </motion.button>
+                        );
+                      })}
+
+                      {/* Small empty state for when a tier has no companies and no featured questions */}
+                      {group.length === 0 && !companySearch && (getTierFeaturedQuestions(tier).length === 0) && (
+                        <div className="px-4 py-3 bg-stone-50 dark:bg-white/[0.02] border border-stone-200 dark:border-white/10 rounded-md text-center">
+                          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                            No companies added to this tier yet
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           </>
         ) : (
