@@ -19,7 +19,16 @@ import {
   ScanSearch,
   CheckCircle,
   UserPlus,
+  GripVertical,
 } from "lucide-react";
+import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import toast from "@/components/ui/toast";
 import { SEO } from "../../../components/SEO";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -67,6 +76,55 @@ const inputCls =
   "w-full px-3 py-2 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600";
 const labelCls =
   "block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5";
+
+const REORDERABLE_SECTIONS = [
+  "summary",
+  "experience",
+  "education",
+  "skills",
+  "projects",
+  "certifications",
+] as const;
+const ORDER_STORAGE_KEY = "internhack-resume-section-order";
+
+// ── Drag & Drop Wrapper ───────────────────────────────────────
+function SortableFormSection({
+  id,
+  children,
+}: {
+  id: string;
+  children: React.ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    position: "relative" as const,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute left-0 top-4 cursor-grab active:cursor-grabbing p-1 text-stone-300 hover:text-stone-500 dark:hover:text-stone-400 transition-colors z-10"
+        style={{ marginLeft: "-20px" }}
+      >
+        <GripVertical className="w-4 h-4" />
+      </div>
+      {children}
+    </div>
+  );
+}
 
 // ── Collapsible form section ────────────────────────────────────
 function FormSection({
@@ -347,6 +405,14 @@ const CertificationRow = React.memo(function CertificationRow({
 export default function ResumeBuilderPage() {
   const [data, setData] = useState<ResumeData>(loadSaved);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>(loadTemplate);
+  const [sectionOrder, setSectionOrder] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(ORDER_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [...REORDERABLE_SECTIONS];
+    } catch {
+      return [...REORDERABLE_SECTIONS];
+    }
+  });
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     personal: true,
     summary: false,
@@ -356,6 +422,23 @@ export default function ResumeBuilderPage() {
     projects: false,
     certifications: false,
   });
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setSectionOrder((prev) => {
+      const oldIdx = prev.indexOf(active.id as string);
+      const newIdx = prev.indexOf(over.id as string);
+      const next = arrayMove(prev, oldIdx, newIdx);
+      try {
+        localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
   const [mobileView, setMobileView] = useState<"form" | "preview">("form");
   const [skillInput, setSkillInput] = useState("");
   const printRef = useRef<HTMLDivElement>(null);
@@ -744,143 +827,181 @@ export default function ResumeBuilderPage() {
               </div>
             </FormSection>
 
-            <FormSection
-              kicker="section 02"
-              title="Professional summary"
-              icon={<FileText className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
-              open={openSections.summary!}
-              onToggle={() => toggle("summary")}
-              delay={0.22}
-            >
-              <textarea
-                className={`${inputCls} min-h-20 resize-y`}
-                placeholder="Experienced software engineer with 3+ years of expertise in React and Node.js..."
-                value={data.summary}
-                onChange={(e) => updateSummary(e.target.value)}
-              />
-            </FormSection>
+            <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+              <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
+                {sectionOrder.map((key, index) => {
+                  const kicker = `section ${String(index + 2).padStart(2, "0")}`;
+                  const delay = 0.22 + index * 0.02;
 
-            <FormSection
-              kicker={`section 03${data.experience.length ? ` · ${String(data.experience.length)}` : ""}`}
-              title="Work experience"
-              icon={<Briefcase className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
-              open={openSections.experience!}
-              onToggle={() => toggle("experience")}
-              delay={0.24}
-            >
-              <AnimatePresence>
-                {data.experience.map((exp) => (
-                  <ExperienceRow key={exp.id} exp={exp} onUpdate={updateExperience} onRemove={removeExperience} />
-                ))}
-              </AnimatePresence>
-              <button type="button" onClick={addExperience} className={btnAddCls}>
-                <Plus className="w-3.5 h-3.5" /> add experience
-              </button>
-            </FormSection>
-
-            <FormSection
-              kicker={`section 04${data.education.length ? ` · ${String(data.education.length)}` : ""}`}
-              title="Education"
-              icon={<GraduationCap className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
-              open={openSections.education!}
-              onToggle={() => toggle("education")}
-              delay={0.26}
-            >
-              <AnimatePresence>
-                {data.education.map((edu) => (
-                  <EducationRow key={edu.id} edu={edu} onUpdate={updateEducation} onRemove={removeEducation} />
-                ))}
-              </AnimatePresence>
-              <button type="button" onClick={addEducation} className={btnAddCls}>
-                <Plus className="w-3.5 h-3.5" /> add education
-              </button>
-            </FormSection>
-
-            <FormSection
-              kicker={`section 05${data.skills.length ? ` · ${String(data.skills.length)}` : ""}`}
-              title="Skills"
-              icon={<Code2 className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
-              open={openSections.skills!}
-              onToggle={() => toggle("skills")}
-              delay={0.28}
-            >
-              <div className="flex gap-2">
-                <input
-                  className={inputCls}
-                  placeholder="Type a skill and press Enter"
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addSkill();
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={addSkill}
-                  className="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer"
-                >
-                  Add
-                </button>
-              </div>
-              {data.skills.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-1">
-                  {data.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 rounded-md text-xs font-medium"
-                    >
-                      {skill}
-                      <button
-                        type="button"
-                        onClick={() => removeSkill(skill)}
-                        className="text-stone-400 dark:text-stone-600 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
-                      >
-                        &times;
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </FormSection>
-
-            <FormSection
-              kicker={`section 06${data.projects.length ? ` · ${String(data.projects.length)}` : ""}`}
-              title="Projects"
-              icon={<FolderOpen className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
-              open={openSections.projects!}
-              onToggle={() => toggle("projects")}
-              delay={0.3}
-            >
-              <AnimatePresence>
-                {data.projects.map((proj) => (
-                  <ProjectRow key={proj.id} proj={proj} onUpdate={updateProject} onRemove={removeProject} />
-                ))}
-              </AnimatePresence>
-              <button type="button" onClick={addProject} className={btnAddCls}>
-                <Plus className="w-3.5 h-3.5" /> add project
-              </button>
-            </FormSection>
-
-            <FormSection
-              kicker={`section 07${data.certifications.length ? ` · ${String(data.certifications.length)}` : ""}`}
-              title="Certifications"
-              icon={<Award className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
-              open={openSections.certifications!}
-              onToggle={() => toggle("certifications")}
-              delay={0.32}
-            >
-              <AnimatePresence>
-                {data.certifications.map((cert) => (
-                  <CertificationRow key={cert.id} cert={cert} onUpdate={updateCertification} onRemove={removeCertification} />
-                ))}
-              </AnimatePresence>
-              <button type="button" onClick={addCertification} className={btnAddCls}>
-                <Plus className="w-3.5 h-3.5" /> add certification
-              </button>
-            </FormSection>
+                  switch (key) {
+                    case "summary":
+                      return (
+                        <SortableFormSection key="summary" id="summary">
+                          <FormSection
+                            kicker={kicker}
+                            title="Professional summary"
+                            icon={<FileText className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+                            open={openSections.summary!}
+                            onToggle={() => toggle("summary")}
+                            delay={delay}
+                          >
+                            <textarea
+                              className={`${inputCls} min-h-20 resize-y`}
+                              placeholder="Experienced software engineer with 3+ years of expertise in React and Node.js..."
+                              value={data.summary}
+                              onChange={(e) => updateSummary(e.target.value)}
+                            />
+                          </FormSection>
+                        </SortableFormSection>
+                      );
+                    case "experience":
+                      return (
+                        <SortableFormSection key="experience" id="experience">
+                          <FormSection
+                            kicker={`${kicker}${data.experience.length ? ` · ${String(data.experience.length)}` : ""}`}
+                            title="Work experience"
+                            icon={<Briefcase className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+                            open={openSections.experience!}
+                            onToggle={() => toggle("experience")}
+                            delay={delay}
+                          >
+                            <AnimatePresence>
+                              {data.experience.map((exp) => (
+                                <ExperienceRow key={exp.id} exp={exp} onUpdate={updateExperience} onRemove={removeExperience} />
+                              ))}
+                            </AnimatePresence>
+                            <button type="button" onClick={addExperience} className={btnAddCls}>
+                              <Plus className="w-3.5 h-3.5" /> add experience
+                            </button>
+                          </FormSection>
+                        </SortableFormSection>
+                      );
+                    case "education":
+                      return (
+                        <SortableFormSection key="education" id="education">
+                          <FormSection
+                            kicker={`${kicker}${data.education.length ? ` · ${String(data.education.length)}` : ""}`}
+                            title="Education"
+                            icon={<GraduationCap className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+                            open={openSections.education!}
+                            onToggle={() => toggle("education")}
+                            delay={delay}
+                          >
+                            <AnimatePresence>
+                              {data.education.map((edu) => (
+                                <EducationRow key={edu.id} edu={edu} onUpdate={updateEducation} onRemove={removeEducation} />
+                              ))}
+                            </AnimatePresence>
+                            <button type="button" onClick={addEducation} className={btnAddCls}>
+                              <Plus className="w-3.5 h-3.5" /> add education
+                            </button>
+                          </FormSection>
+                        </SortableFormSection>
+                      );
+                    case "skills":
+                      return (
+                        <SortableFormSection key="skills" id="skills">
+                          <FormSection
+                            kicker={`${kicker}${data.skills.length ? ` · ${String(data.skills.length)}` : ""}`}
+                            title="Skills"
+                            icon={<Code2 className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+                            open={openSections.skills!}
+                            onToggle={() => toggle("skills")}
+                            delay={delay}
+                          >
+                            <div className="flex gap-2">
+                              <input
+                                className={inputCls}
+                                placeholder="Type a skill and press Enter"
+                                value={skillInput}
+                                onChange={(e) => setSkillInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    addSkill();
+                                  }
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={addSkill}
+                                className="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer"
+                              >
+                                Add
+                              </button>
+                            </div>
+                            {data.skills.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 mt-1">
+                                {data.skills.map((skill) => (
+                                  <span
+                                    key={skill}
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 rounded-md text-xs font-medium"
+                                  >
+                                    {skill}
+                                    <button
+                                      type="button"
+                                      onClick={() => removeSkill(skill)}
+                                      className="text-stone-400 dark:text-stone-600 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
+                                    >
+                                      &times;
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </FormSection>
+                        </SortableFormSection>
+                      );
+                    case "projects":
+                      return (
+                        <SortableFormSection key="projects" id="projects">
+                          <FormSection
+                            kicker={`${kicker}${data.projects.length ? ` · ${String(data.projects.length)}` : ""}`}
+                            title="Projects"
+                            icon={<FolderOpen className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+                            open={openSections.projects!}
+                            onToggle={() => toggle("projects")}
+                            delay={delay}
+                          >
+                            <AnimatePresence>
+                              {data.projects.map((proj) => (
+                                <ProjectRow key={proj.id} proj={proj} onUpdate={updateProject} onRemove={removeProject} />
+                              ))}
+                            </AnimatePresence>
+                            <button type="button" onClick={addProject} className={btnAddCls}>
+                              <Plus className="w-3.5 h-3.5" /> add project
+                            </button>
+                          </FormSection>
+                        </SortableFormSection>
+                      );
+                    case "certifications":
+                      return (
+                        <SortableFormSection key="certifications" id="certifications">
+                          <FormSection
+                            kicker={`${kicker}${data.certifications.length ? ` · ${String(data.certifications.length)}` : ""}`}
+                            title="Certifications"
+                            icon={<Award className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
+                            open={openSections.certifications!}
+                            onToggle={() => toggle("certifications")}
+                            delay={delay}
+                          >
+                            <AnimatePresence>
+                              {data.certifications.map((cert) => (
+                                <CertificationRow key={cert.id} cert={cert} onUpdate={updateCertification} onRemove={removeCertification} />
+                              ))}
+                            </AnimatePresence>
+                            <button type="button" onClick={addCertification} className={btnAddCls}>
+                              <Plus className="w-3.5 h-3.5" /> add certification
+                            </button>
+                          </FormSection>
+                        </SortableFormSection>
+                      );
+                    default:
+                      return null;
+                  }
+                })}
+              </SortableContext>
+            </DndContext>
           </div>
 
           {/* Right: live preview */}
@@ -915,7 +1036,7 @@ export default function ResumeBuilderPage() {
                   style={{ maxHeight: "calc(100vh - 180px)" }}
                 >
                   <div ref={printRef}>
-                    <TemplateComponent data={data} />
+                    <TemplateComponent data={data} sectionOrder={sectionOrder} />
                   </div>
                 </div>
               </div>

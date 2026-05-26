@@ -41,6 +41,7 @@ function Anatomy() {
   // Auto-advance when playing
   useEffect(() => {
     if (!playing) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (step >= 4) { setPlaying(false); return; }
     const delay = step === 1 ? 1400 : step === 2 ? 1000 : step === 3 ? 1400 : 400;
     const t = setTimeout(() => setStep((s) => Math.min(4, s + 1)), delay);
@@ -520,6 +521,7 @@ function Lifecycle() {
 
   useEffect(() => {
     if (!playing) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (step >= LIFECYCLE_MSGS.length - 1) { setPlaying(false); return; }
     const t = setTimeout(() => setStep((s) => s + 1), 1400);
     return () => clearTimeout(t);

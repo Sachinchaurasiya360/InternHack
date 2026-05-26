@@ -404,7 +404,9 @@ function SagaAnimation() {
     if (!playing) return;
     if (phase === "running") {
       if (progress >= STEPS.length - 1) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPhase("done");
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPlaying(false);
         return;
       }

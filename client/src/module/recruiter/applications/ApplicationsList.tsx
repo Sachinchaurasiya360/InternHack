@@ -43,7 +43,10 @@ export default function ApplicationsList() {
     }).catch(() => setLoading(false));
   };
 
-  useEffect(() => { fetchApplications(); }, [jobId, page, statusFilter, debouncedSearch]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchApplications();
+  }, [jobId, page, statusFilter, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleStatusChange = async (appId: number, status: string) => {
     try {

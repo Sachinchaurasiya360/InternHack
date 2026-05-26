@@ -34,4 +34,5 @@ studentRouter.put("/applications/:applicationId/rounds/:roundId/submit", (req, r
 // Mock interview
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));
 studentRouter.post("/mock-interview/book", (req, res, next) => studentController.bookMockInterview(req, res, next));
+studentRouter.post("/mock-interview/feedback", (req, res) => studentController.generateMockInterviewFeedback(req, res));
 

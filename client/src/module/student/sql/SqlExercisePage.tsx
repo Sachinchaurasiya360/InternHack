@@ -131,15 +131,22 @@ export default function SqlExercisePage() {
       setDbReady(true);
     };
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDbReady(false);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setResult(null);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValidation(null);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowHints(0);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowExpected(false);
 
     // Restore saved code or use starter
     const savedEntry = progress[exercise.id];
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCode(savedEntry?.code || exercise.starterCode);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSolved(!!savedEntry?.solved);
 
     load();

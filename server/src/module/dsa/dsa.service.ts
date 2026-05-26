@@ -855,7 +855,7 @@ Return ONLY a JSON array, no markdown fences:
     if (userId) {
       const submission = await prisma.dsaSubmission.findFirst({
         where: {
-          userId,
+          studentId: userId,
           problemId: selected.id,
         },
       });

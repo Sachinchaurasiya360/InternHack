@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useReactToPrint } from "react-to-print";
@@ -26,12 +26,15 @@ import {
   Mail,
   Wand2,
   Download,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
+import { useDebounce } from "../../../hooks/useDebounce";
 import type { AtsScore, UsageStats } from "../../../lib/types";
 import {
   LineChart,
@@ -44,7 +47,22 @@ import {
 } from "recharts";
 
 /** Recharts custom tooltip — renders score, date, role, and resume name on dot hover. */
-function ScoreTooltip({ active, payload }: any) {
+type ScoreTooltipPayload = {
+  payload: {
+    fullDate: string;
+    jobTitle: string;
+    resumeName: string;
+    score: number;
+  };
+};
+
+function ScoreTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: ScoreTooltipPayload[];
+}) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
@@ -114,6 +132,43 @@ const getScoreTier = (score: number): ScoreTier =>
 
 const JD_MAX_CHARS = 5000;
 const JD_WARN_CHARS = 4500;
+
+type AtsHistoryItem = {
+  id: number;
+  overallScore: number;
+  jobTitle: string | null;
+  jobDescription?: string | null;
+  resumeUrl: string;
+  createdAt: string;
+};
+
+function getResumeName(resumeUrl: string) {
+  return decodeURIComponent(
+    (resumeUrl.split("?")[0] ?? resumeUrl).split("/").pop() ?? "resume.pdf",
+  );
+}
+
+function getCompanyFromJobDescription(jobDescription?: string | null) {
+  if (!jobDescription) return "";
+
+  const firstLines = jobDescription
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  const text = firstLines.join(" ");
+  const patterns = [
+    /\bcompany\s*[:|-]\s*([A-Za-z0-9&.,'() -]{2,80})/i,
+    /\bat\s+([A-Z][A-Za-z0-9&.,'() -]{2,80})\b/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern)?.[1]?.trim();
+    if (match) return match.replace(/\s{2,}/g, " ");
+  }
+
+  return "";
+}
 
 // ── Shared UI primitives ─────────────────────────────────────────────────
 const cardCls =
@@ -218,7 +273,6 @@ export default function AtsScorePage() {
   const queryClient = useQueryClient();
   const printRef = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -227,6 +281,8 @@ export default function AtsScorePage() {
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState<ResultTab>("suggestions");
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
+  const [historySearch, setHistorySearch] = useState("");
+  const debouncedHistorySearch = useDebounce(historySearch, 300);
   const navigate = useNavigate();
 
   const handlePrint = useReactToPrint({
@@ -247,19 +303,10 @@ export default function AtsScorePage() {
     staleTime: 60_000,
   });
 
-  const scoreHistory = (historyData ?? []) as {
-    id: number;
-    overallScore: number;
-    jobTitle: string | null;
-    resumeUrl: string;
-    createdAt: string;
-  }[];
+  const scoreHistory = (historyData ?? []) as AtsHistoryItem[];
 
   const chartData = scoreHistory.map((h) => {
-    const resumeName = decodeURIComponent(
-      (h.resumeUrl.split("?")[0] ?? h.resumeUrl).split("/").pop() ??
-        "resume.pdf",
-    );
+    const resumeName = getResumeName(h.resumeUrl);
     return {
       key: h.createdAt,
       date: new Date(h.createdAt).toLocaleDateString("en-IN", {
@@ -279,6 +326,24 @@ export default function AtsScorePage() {
       resumeName,
     };
   });
+
+  const normalizedHistorySearch = debouncedHistorySearch.trim().toLowerCase();
+  const filteredHistory = [...scoreHistory]
+    .reverse()
+    .filter((item) => {
+      if (!normalizedHistorySearch) return true;
+
+      const searchableText = [
+        item.jobTitle,
+        getCompanyFromJobDescription(item.jobDescription),
+        getResumeName(item.resumeUrl),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(normalizedHistorySearch);
+    });
 
   const atsUsage = usageData?.usage.find((u) => u.action === "ATS_SCORE");
   const limitReached = atsUsage ? atsUsage.used >= atsUsage.limit : false;
@@ -366,13 +431,19 @@ export default function AtsScorePage() {
   });
 
   const loading = analyzeMutation.isPending;
+  const previewUrl = useMemo(() => {
+    if (!file) return "";
+    return URL.createObjectURL(file);
+  }, [file]);
 
   useEffect(() => {
     if (!file) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPreviewUrl("");
       return;
     }
     const url = URL.createObjectURL(file);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPreviewUrl(url);
     return () => URL.revokeObjectURL(url);
   }, [file]);
@@ -595,6 +666,74 @@ export default function AtsScorePage() {
                 />
               </LineChart>
             </ResponsiveContainer>
+          )}
+          {scoreHistory.length > 0 && (
+            <div className="mt-5 border-t border-stone-200 pt-5 dark:border-white/10">
+              <div className="relative mb-3">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+                <input
+                  type="search"
+                  value={historySearch}
+                  onChange={(e) => setHistorySearch(e.target.value)}
+                  placeholder="Search by company, role, or resume"
+                  className={`${inputCls} pl-9 pr-10`}
+                  aria-label="Search ATS score history"
+                />
+                {historySearch && (
+                  <button
+                    type="button"
+                    onClick={() => setHistorySearch("")}
+                    className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md border-0 bg-transparent text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-white/10 dark:hover:text-stone-200"
+                    aria-label="Clear history search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              {filteredHistory.length > 0 ? (
+                <div className="divide-y divide-stone-200 overflow-hidden rounded-md border border-stone-200 dark:divide-white/10 dark:border-white/10">
+                  {filteredHistory.map((item) => {
+                    const company = getCompanyFromJobDescription(
+                      item.jobDescription,
+                    );
+                    const tier = getScoreTier(item.overallScore);
+
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-4 bg-white px-4 py-3 dark:bg-stone-900"
+                      >
+                        <div
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-stone-100 text-sm font-bold tabular-nums dark:bg-stone-950 ${tier.text}`}
+                        >
+                          {item.overallScore}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold text-stone-900 dark:text-stone-50">
+                            {item.jobTitle ?? "General ATS analysis"}
+                          </p>
+                          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                            {company && <span>{company}</span>}
+                            <span>{getResumeName(item.resumeUrl)}</span>
+                          </div>
+                        </div>
+                        <span className="shrink-0 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                          {new Date(item.createdAt).toLocaleDateString(
+                            "en-IN",
+                            { month: "short", day: "numeric" },
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-md border border-dashed border-stone-300 px-4 py-6 text-center text-sm text-stone-500 dark:border-white/15">
+                  No ATS history matches that search.
+                </div>
+              )}
+            </div>
           )}
         </div>
       </motion.div>
@@ -1190,44 +1329,121 @@ export default function AtsScorePage() {
                           transition={{ duration: 0.18 }}
                           className="space-y-5"
                         >
-                          {result.keywordAnalysis.found.length > 0 && (
-                            <div>
-                              <div className={sectionKickerCls + " mb-3"}>
-                                <span className="h-1 w-1 bg-lime-400" />
-                                found · {result.keywordAnalysis.found.length}
+                          {/* ── Summary bar ── */}
+                          {(() => {
+                            const found = result.keywordAnalysis.found.length;
+                            const partial = (result.keywordAnalysis.partial ?? []).length;
+                            const missing = result.keywordAnalysis.missing.length;
+                            const total = found + partial + missing;
+                            if (total === 0) return null;
+                            const pFound = Math.round((found / total) * 100);
+                            const pPartial = Math.round((partial / total) * 100);
+                            const pMissing = 100 - pFound - pPartial;
+                            return (
+                              <div>
+                                <div className="flex items-center justify-between mb-1.5">
+                                  <span className={sectionKickerCls}>
+                                    <span className="h-1 w-1 bg-lime-400" />
+                                    {total} keywords analysed
+                                  </span>
+                                  <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                                    <span className="inline-flex items-center gap-1"><span className="w-2 h-2 bg-lime-400 rounded-sm" />{found} present</span>
+                                    <span className="inline-flex items-center gap-1"><span className="w-2 h-2 bg-amber-400 rounded-sm" />{partial} partial</span>
+                                    <span className="inline-flex items-center gap-1"><span className="w-2 h-2 bg-red-400 rounded-sm" />{missing} missing</span>
+                                  </div>
+                                </div>
+                                <div className="flex h-2 rounded-full overflow-hidden gap-0.5">
+                                  {pFound > 0 && (
+                                    <div className="bg-lime-400 rounded-full transition-all" style={{ width: `${String(pFound)}%` }} />
+                                  )}
+                                  {pPartial > 0 && (
+                                    <div className="bg-amber-400 rounded-full transition-all" style={{ width: `${String(pPartial)}%` }} />
+                                  )}
+                                  {pMissing > 0 && (
+                                    <div className="bg-red-400 rounded-full transition-all" style={{ width: `${String(pMissing)}%` }} />
+                                  )}
+                                </div>
                               </div>
-                              <div className="flex flex-wrap gap-1.5">
-                                {result.keywordAnalysis.found.map((kw) => (
+                            );
+                          })()}
+
+                          {/* ── Three columns ── */}
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            {/* Present */}
+                            <div className="rounded-md border border-lime-200 dark:border-lime-900/50 bg-lime-50 dark:bg-lime-400/5 overflow-hidden">
+                              <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-lime-200 dark:border-lime-900/50">
+                                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-lime-700 dark:text-lime-400">
+                                  <CheckCircle2 className="w-3.5 h-3.5" /> Present
+                                </span>
+                                <span className="text-[10px] font-mono tabular-nums bg-lime-100 dark:bg-lime-400/20 text-lime-700 dark:text-lime-400 px-1.5 py-0.5 rounded-sm">
+                                  {result.keywordAnalysis.found.length}
+                                </span>
+                              </div>
+                              <div className="p-3 flex flex-wrap gap-1.5 min-h-14">
+                                {result.keywordAnalysis.found.length === 0 ? (
+                                  <p className="text-xs text-stone-400 dark:text-stone-600 italic self-center w-full text-center">None detected</p>
+                                ) : result.keywordAnalysis.found.map((kw) => (
                                   <span
                                     key={kw}
-                                    className="px-2.5 py-1 bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 rounded-md text-xs font-medium border border-lime-200 dark:border-lime-400/30"
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 rounded-md text-xs font-medium border border-lime-200 dark:border-lime-400/30"
                                   >
-                                    {kw}
+                                    <span className="text-lime-500 font-bold">✓</span> {kw}
                                   </span>
                                 ))}
                               </div>
                             </div>
-                          )}
-                          {result.keywordAnalysis.missing.length > 0 && (
-                            <div>
-                              <div className={sectionKickerCls + " mb-3"}>
-                                <span className="h-1 w-1 bg-orange-500" />
-                                missing ·{" "}
-                                {result.keywordAnalysis.missing.length}
+
+                            {/* Partial */}
+                            <div className="rounded-md border border-dashed border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-400/5 overflow-hidden">
+                              <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-amber-200 dark:border-amber-900/50">
+                                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-amber-700 dark:text-amber-400">
+                                  <AlertCircle className="w-3.5 h-3.5" /> Partial
+                                </span>
+                                <span className="text-[10px] font-mono tabular-nums bg-amber-100 dark:bg-amber-400/20 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-sm">
+                                  {(result.keywordAnalysis.partial ?? []).length}
+                                </span>
                               </div>
-                              <div className="flex flex-wrap gap-1.5">
-                                {result.keywordAnalysis.missing.map((kw) => (
+                              <div className="p-3 flex flex-wrap gap-1.5 min-h-14">
+                                {(result.keywordAnalysis.partial ?? []).length === 0 ? (
+                                  <p className="text-xs text-stone-400 dark:text-stone-600 italic self-center w-full text-center">No partial keywords detected</p>
+                                ) : (result.keywordAnalysis.partial ?? []).map((kw) => (
                                   <span
                                     key={kw}
-                                    className="px-2.5 py-1 bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 rounded-md text-xs font-medium border border-dashed border-orange-200 dark:border-orange-900/50"
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 dark:bg-amber-400/10 text-amber-700 dark:text-amber-400 rounded-md text-xs font-medium border border-dashed border-amber-200 dark:border-amber-400/30"
                                   >
-                                    + {kw}
+                                    <span className="text-amber-500 font-bold">~</span> {kw}
                                   </span>
                                 ))}
                               </div>
                             </div>
-                          )}
+
+                            {/* Missing */}
+                            <div className="rounded-md border border-dashed border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-400/5 overflow-hidden">
+                              <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-red-200 dark:border-red-900/50">
+                                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-red-700 dark:text-red-400">
+                                  <XCircle className="w-3.5 h-3.5" /> Missing
+                                </span>
+                                <span className="text-[10px] font-mono tabular-nums bg-red-100 dark:bg-red-400/20 text-red-700 dark:text-red-400 px-1.5 py-0.5 rounded-sm">
+                                  {result.keywordAnalysis.missing.length}
+                                </span>
+                              </div>
+                              <div className="p-3 flex flex-wrap gap-1.5 min-h-14">
+                                {result.keywordAnalysis.missing.length === 0 ? (
+                                  <p className="text-xs text-stone-400 dark:text-stone-600 italic self-center w-full text-center">None — great coverage!</p>
+                                ) : result.keywordAnalysis.missing.map((kw) => (
+                                  <span
+                                    key={kw}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 dark:bg-red-400/10 text-red-700 dark:text-red-400 rounded-md text-xs font-medium border border-dashed border-red-200 dark:border-red-400/30"
+                                  >
+                                    <span className="text-red-500 font-bold">+</span> {kw}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
                           {result.keywordAnalysis.found.length === 0 &&
+                            (result.keywordAnalysis.partial ?? []).length === 0 &&
                             result.keywordAnalysis.missing.length === 0 && (
                               <p className="text-sm text-stone-500 text-center py-8">
                                 No keyword data available for this analysis.

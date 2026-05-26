@@ -90,9 +90,14 @@ body {
 @utility no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+@utility h-screen-minus-180 {
+  height: calc(100vh - 180px);
 }
 
 /* Glass card utility */
@@ -115,8 +120,13 @@ body {
 
 /* Animated gradient border */
 @keyframes border-rotate {
-  0% { --angle: 0deg; }
-  100% { --angle: 360deg; }
+  0% {
+    --angle: 0deg;
+  }
+
+  100% {
+    --angle: 360deg;
+  }
 }
 
 /* Noise texture overlay */
@@ -153,15 +163,41 @@ body {
 
 /* Luma spin loader */
 @keyframes loaderAnim {
-  0% { inset: 0 35px 35px 0; }
-  12.5% { inset: 0 35px 0 0; }
-  25% { inset: 35px 35px 0 0; }
-  37.5% { inset: 35px 0 0 0; }
-  50% { inset: 35px 0 0 35px; }
-  62.5% { inset: 0 0 0 35px; }
-  75% { inset: 0 0 35px 35px; }
-  87.5% { inset: 0 0 35px 0; }
-  100% { inset: 0 35px 35px 0; }
+  0% {
+    inset: 0 35px 35px 0;
+  }
+
+  12.5% {
+    inset: 0 35px 0 0;
+  }
+
+  25% {
+    inset: 35px 35px 0 0;
+  }
+
+  37.5% {
+    inset: 35px 0 0 0;
+  }
+
+  50% {
+    inset: 35px 0 0 35px;
+  }
+
+  62.5% {
+    inset: 0 0 0 35px;
+  }
+
+  75% {
+    inset: 0 0 35px 35px;
+  }
+
+  87.5% {
+    inset: 0 0 35px 0;
+  }
+
+  100% {
+    inset: 0 35px 35px 0;
+  }
 }
 
 /* Proctored test, lock down the page */

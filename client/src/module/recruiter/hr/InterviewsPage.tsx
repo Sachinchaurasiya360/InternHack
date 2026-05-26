@@ -138,7 +138,7 @@ export default function InterviewsPage() {
         interviewerIds: "",
       });
     },
-    onError: (error: any) => {
+    onError: (error: { response?: { status?: number } }) => {
       if (error.response?.status === 409) {
         toast.error("Scheduling conflict: One or more interviewers are already booked at this time.");
       } else {

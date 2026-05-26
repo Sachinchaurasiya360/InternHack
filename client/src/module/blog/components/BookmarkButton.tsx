@@ -18,6 +18,7 @@ export default function BookmarkButton({
 
     try {
       const parsed: number[] = JSON.parse(saved);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBookmarked(parsed.includes(postId));
     } catch {
       console.error("Failed to parse bookmarks");
