@@ -101,10 +101,15 @@ export default function FeaturedCarousel({
     <section className="relative">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">
+          {/* Kicker — lime dot + mono uppercase */}
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-3">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            featured
+          </div>
+          <h2 className="text-2xl md:text-3xl font-black text-stone-900 dark:text-stone-50">
             Featured Articles
           </h2>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
             Hand-picked insights and trending reads
           </p>
         </div>
@@ -113,14 +118,14 @@ export default function FeaturedCarousel({
           <div className="hidden sm:flex items-center gap-2">
             <button
               onClick={prevSlide}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 transition"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:border-lime-400 hover:text-lime-600 dark:hover:text-lime-400 transition"
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
 
             <button
               onClick={nextSlide}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 transition"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:border-lime-400 hover:text-lime-600 dark:hover:text-lime-400 transition"
             >
               <ArrowRight className="h-4 w-4" />
             </button>
@@ -128,7 +133,7 @@ export default function FeaturedCarousel({
         )}
       </div>
 
-      <div className="relative overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-800">
+      <div className="relative overflow-hidden rounded-3xl border border-stone-200 dark:border-white/10">
         <AnimatePresence mode="wait">
           <motion.div
             key={activePost.id}
@@ -139,7 +144,7 @@ export default function FeaturedCarousel({
           >
             <Link
               to={`/blog/${activePost.slug}`}
-              className="group grid md:grid-cols-2 bg-white dark:bg-gray-900 no-underline"
+              className="group grid md:grid-cols-2 bg-white dark:bg-stone-950 no-underline"
             >
               {/* Image */}
               <div className="relative h-72 md:h-full overflow-hidden">
@@ -170,17 +175,17 @@ export default function FeaturedCarousel({
                   {CATEGORY_LABELS[activePost.category]}
                 </span>
 
-                <h3 className="text-3xl md:text-4xl font-black leading-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3 className="text-3xl md:text-4xl font-black leading-tight text-stone-900 dark:text-stone-50 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors">
                   {activePost.title}
                 </h3>
 
-                <p className="mt-5 text-base leading-relaxed text-gray-600 dark:text-gray-400 line-clamp-4">
+                <p className="mt-5 text-base leading-relaxed text-stone-600 dark:text-stone-400 line-clamp-4">
                   {activePost.excerpt}
                 </p>
 
                 {/* Meta */}
-                <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">
+                <div className="mt-8 flex flex-wrap items-center gap-5 text-sm text-stone-500 dark:text-stone-400">
+                  <span className="font-medium text-stone-700 dark:text-stone-300">
                     {activePost.author.name}
                   </span>
 
@@ -203,11 +208,11 @@ export default function FeaturedCarousel({
                   </span>
                 </div>
 
-                {/* CTA */}
+                {/* CTA — homepage mono style */}
                 <div className="mt-8">
-                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400">
-                    Read article
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 group-hover:gap-3 transition-all">
+                    read article
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>
               </div>
@@ -225,8 +230,8 @@ export default function FeaturedCarousel({
               onClick={() => setCurrent(idx)}
               className={`h-2.5 rounded-full transition-all duration-300 ${
                 idx === current
-                  ? "w-8 bg-blue-600"
-                  : "w-2.5 bg-gray-300 dark:bg-gray-700"
+                  ? "w-8 bg-lime-400"
+                  : "w-2.5 bg-stone-300 dark:bg-stone-700"
               }`}
             />
           ))}

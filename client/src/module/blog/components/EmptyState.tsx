@@ -25,7 +25,7 @@ export default function EmptyState({
         <FileSearch className="h-8 w-8 text-stone-500 dark:text-stone-400" />
       </div>
 
-      <h3 className="mt-6 text-xl font-bold text-stone-900 dark:text-white">
+      <h3 className="mt-6 text-xl font-bold text-stone-900 dark:text-stone-50">
         {title}
       </h3>
 
@@ -36,7 +36,7 @@ export default function EmptyState({
       {onAction && (
         <button
           onClick={onAction}
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-stone-900 dark:bg-white px-5 py-2.5 text-sm font-medium text-white dark:text-stone-900 transition hover:bg-stone-800 dark:hover:bg-stone-100"
         >
           <RefreshCcw className="h-4 w-4" />
           {actionLabel}

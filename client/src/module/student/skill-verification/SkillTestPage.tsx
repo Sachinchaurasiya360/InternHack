@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useLayoutEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -38,10 +38,11 @@ const OPTION_LABELS = ["A", "B", "C", "D"] as const;
 function useCountdown(totalSeconds: number | null, onExpire: () => void) {
   const [remaining, setRemaining] = useState(totalSeconds ?? 0);
   const onExpireRef = useRef(onExpire);
-  onExpireRef.current = onExpire;
+  useLayoutEffect(() => { onExpireRef.current = onExpire; });
 
   useEffect(() => {
     if (!totalSeconds || totalSeconds <= 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRemaining(totalSeconds);
 
     const interval = setInterval(() => {
@@ -155,19 +156,20 @@ export default function SkillTestPage() {
       );
       setStarted(true);
       await proctor.requestFullscreen();
-    } catch (err: any) {
-      if (err?.response?.status === 429) {
-        setRetryAfter(new Date(err.response.data.retryAfter));
+    } catch (err: unknown) {
+      const e = err as { response?: { status?: number; data?: { retryAfter?: string; error?: string } } };
+      if (e?.response?.status === 429) {
+        setRetryAfter(new Date(e.response!.data!.retryAfter!));
         toast.error("Cooldown active! Please wait before retaking.");
       } else {
-        toast.error(err?.response?.data?.error ?? "Failed to start test");
+        toast.error(e?.response?.data?.error ?? "Failed to start test");
       }
     }
   }, [testId, proctor]);
 
   /* Submit ---------------------------------------------------------- */
   const handleSubmit = useCallback(
-    async (_auto = false) => {
+    async () => {
       if (!test || submittingRef.current) return;
       submittingRef.current = true;
       setSubmitting(true);
@@ -197,8 +199,9 @@ export default function SkillTestPage() {
         if (document.fullscreenElement) {
           document.exitFullscreen().catch(() => { });
         }
-      } catch (err: any) {
-        toast.error(err?.response?.data?.error ?? "Failed to submit test");
+      } catch (err: unknown) {
+        const e = err as { response?: { data?: { error?: string } } };
+        toast.error(e?.response?.data?.error ?? "Failed to submit test");
       } finally {
         submittingRef.current = false;
         setSubmitting(false);
@@ -209,7 +212,7 @@ export default function SkillTestPage() {
 
   // Wire terminate callback
   const terminateRef = useRef<() => void>(undefined);
-  terminateRef.current = () => handleSubmit(true);
+  terminateRef.current = () => handleSubmit();
 
   const selectAnswer = useCallback((questionId: number, optIdx: number) => {
     if (result) return;
@@ -294,7 +297,7 @@ export default function SkillTestPage() {
   // Initialize countdown from server remainingSecs to survive page refresh
   const { formatted: timerDisplay, isUrgent } = useCountdown(
     started && !result ? remainingSecs : null,
-    () => handleSubmit(true),
+    () => handleSubmit(),
   );
 
   /* Helpers --------------------------------------------------------- */
@@ -358,10 +361,24 @@ export default function SkillTestPage() {
         // Stop the preview stream - proctoring camera component will start its own
         stream.getTracks().forEach((t) => t.stop());
         streamRef.current = null;
-      } catch {
-        setCameraError(
-          "Camera access denied. Please allow camera permissions and try again.",
-        );
+      } catch (err: unknown) {
+        const e = err as { name?: string; message?: string };
+        let msg: string;
+        if (e?.name === "NotAllowedError") {
+          const isPolicy =
+            e?.message?.toLowerCase().includes("permissions policy") ||
+            e?.message?.toLowerCase().includes("feature policy");
+          msg = isPolicy
+            ? "Camera is blocked by a site security policy. This is a known issue — please contact support."
+            : "Camera permission denied. Please allow camera access in your browser settings and try again.";
+        } else if (e?.name === "NotFoundError") {
+          msg = "No camera detected. Please connect a camera and try again.";
+        } else if (e?.name === "NotReadableError") {
+          msg = "Camera is in use by another app. Please close it and try again.";
+        } else {
+          msg = "Camera not available. Please check your device and try again.";
+        }
+        setCameraError(msg);
       }
     };
 
@@ -847,7 +864,7 @@ export default function SkillTestPage() {
 
             {currentQ === totalQuestions - 1 ? (
               <Button
-                onClick={() => handleSubmit(false)}
+                onClick={() => handleSubmit()}
                 disabled={!allAnswered || submitting}
                 className="bg-green-600 hover:bg-green-700 text-white rounded-xl"
               >

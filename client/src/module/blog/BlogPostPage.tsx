@@ -71,7 +71,7 @@ function markdownToHtml(md: string): string {
       const placeholder = `%%CODEBLOCK_${codeBlocks.length}%%`;
 
       codeBlocks.push(`
-        <pre class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 overflow-x-auto text-sm my-6 border border-gray-200 dark:border-gray-700">
+        <pre class="bg-stone-100 dark:bg-stone-800 rounded-xl p-4 overflow-x-auto text-sm my-6 border border-stone-200 dark:border-white/10">
           <code>${escapeHtml(code.trim())}</code>
         </pre>
       `);
@@ -91,28 +91,28 @@ function markdownToHtml(md: string): string {
   // Inline code
   html = html.replace(
     /`([^`]+)`/g,
-    `<code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono border border-gray-200 dark:border-gray-700">$1</code>`
+    `<code class="bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded text-sm font-mono border border-stone-200 dark:border-white/10">$1</code>`
   );
 
   // Headings
   html = html.replace(
     /^#### (.+)$/gm,
-    `<h4 class="text-lg font-semibold text-gray-900 dark:text-white mt-8 mb-3">$1</h4>`
+    `<h4 class="text-lg font-semibold text-stone-900 dark:text-stone-50 mt-8 mb-3">$1</h4>`
   );
 
   html = html.replace(
     /^### (.+)$/gm,
-    `<h3 class="text-xl font-bold text-gray-900 dark:text-white mt-10 mb-4">$1</h3>`
+    `<h3 class="text-xl font-bold text-stone-900 dark:text-stone-50 mt-10 mb-4">$1</h3>`
   );
 
   html = html.replace(
     /^## (.+)$/gm,
-    `<h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-12 mb-5">$1</h2>`
+    `<h2 class="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-12 mb-5">$1</h2>`
   );
 
   html = html.replace(
     /^# (.+)$/gm,
-    `<h1 class="text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-5">$1</h1>`
+    `<h1 class="text-3xl font-bold text-stone-900 dark:text-stone-50 mt-12 mb-5">$1</h1>`
   );
 
   // Bold + Italic
@@ -127,7 +127,7 @@ function markdownToHtml(md: string): string {
       <img
         src="$2"
         alt="$1"
-        class="rounded-2xl my-8 w-full border border-gray-200 dark:border-gray-800"
+        class="rounded-2xl my-8 w-full border border-stone-200 dark:border-white/10"
       />
     `
   );
@@ -140,7 +140,7 @@ function markdownToHtml(md: string): string {
         href="$2"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-blue-600 dark:text-blue-400 underline underline-offset-4 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+        class="text-lime-700 dark:text-lime-400 underline underline-offset-4 hover:text-lime-900 dark:hover:text-lime-300 transition-colors"
       >
         $1
       </a>
@@ -150,18 +150,18 @@ function markdownToHtml(md: string): string {
   // Horizontal rule
   html = html.replace(
     /^---$/gm,
-    `<hr class="my-10 border-gray-200 dark:border-gray-700" />`
+    `<hr class="my-10 border-stone-200 dark:border-white/10" />`
   );
 
   // Lists
   html = html.replace(
     /^(?:- |\* )(.+)$/gm,
-    `<li class="ml-5 list-disc text-gray-700 dark:text-gray-300">$1</li>`
+    `<li class="ml-5 list-disc text-stone-700 dark:text-stone-300">$1</li>`
   );
 
   html = html.replace(
     /^\d+\. (.+)$/gm,
-    `<li class="ml-5 list-decimal text-gray-700 dark:text-gray-300">$1</li>`
+    `<li class="ml-5 list-decimal text-stone-700 dark:text-stone-300">$1</li>`
   );
 
   html = html.replace(
@@ -178,7 +178,7 @@ function markdownToHtml(md: string): string {
   html = html.replace(
     /^> (.+)$/gm,
     `
-      <blockquote class="border-l-4 border-blue-500 pl-5 py-2 my-6 italic text-gray-600 dark:text-gray-400 bg-blue-50/40 dark:bg-blue-950/20 rounded-r-xl">
+      <blockquote class="border-l-4 border-lime-400 pl-5 py-2 my-6 italic text-stone-600 dark:text-stone-400 bg-lime-50/40 dark:bg-lime-950/20 rounded-r-xl">
         $1
       </blockquote>
     `
@@ -197,7 +197,7 @@ function markdownToHtml(md: string): string {
       }
 
       return `
-        <p class="text-gray-700 dark:text-gray-300 leading-8 mb-5 text-[1.02rem]">
+        <p class="text-stone-700 dark:text-stone-300 leading-8 mb-5 text-base">
           ${trimmed.replace(/\n/g, "<br />")}
         </p>
       `;
@@ -245,7 +245,7 @@ export default function BlogPostPage() {
   // HTML content
   const renderedContent = useMemo(() => {
     if (!post?.content) return "";
-    return markdownToHtml(post.content);
+    return markdownToHtml(post?.content ?? "");
   }, [post?.content]);
 
   // Reading time fallback
@@ -259,7 +259,7 @@ export default function BlogPostPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+    <div className="font-sans min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       {post && (
         <SEO
           title={post.title}
@@ -307,7 +307,7 @@ export default function BlogPostPage() {
           >
             <Link
               to="/blog"
-              className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors no-underline mb-8"
+              className="inline-flex items-center gap-2 text-sm text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline mb-8"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to blog
@@ -338,7 +338,7 @@ export default function BlogPostPage() {
             >
               {/* Featured Image */}
               {post.featuredImage && (
-                <div className="overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-800 mb-8">
+                <div className="overflow-hidden rounded-3xl border border-stone-200 dark:border-white/10 mb-8">
                   <img
                     src={post.featuredImage}
                     alt={post.title}
@@ -357,20 +357,20 @@ export default function BlogPostPage() {
               )}
 
               {/* Title */}
-              <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight text-gray-950 dark:text-white mb-5">
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight text-stone-950 dark:text-stone-50 mb-5">
                 {post.title}
               </h1>
 
               {/* Excerpt */}
               {post.excerpt && (
-                <p className="text-lg text-gray-500 dark:text-gray-400 leading-8 mb-8">
+                <p className="text-lg text-stone-500 dark:text-stone-400 leading-8 mb-8">
                   {post.excerpt}
                 </p>
               )}
 
               {/* Meta */}
-              <div className="flex flex-wrap items-center justify-between gap-5 border-y border-gray-200 dark:border-gray-800 py-5 mb-10">
-                <div className="flex flex-wrap items-center gap-5 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex flex-wrap items-center justify-between gap-5 border-y border-stone-200 dark:border-white/10 py-5 mb-10">
+                <div className="flex flex-wrap items-center gap-5 text-sm text-stone-500 dark:text-stone-400">
                   {/* Author */}
                   <div className="flex items-center gap-2">
                     {post.author.profilePic ? (
@@ -380,12 +380,12 @@ export default function BlogPostPage() {
                         className="w-9 h-9 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                        <User className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      <div className="w-9 h-9 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center">
+                        <User className="w-4 h-4 text-stone-500 dark:text-stone-400" />
                       </div>
                     )}
 
-                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                    <span className="font-medium text-stone-700 dark:text-stone-300">
                       {post.author.name}
                     </span>
                   </div>
@@ -429,14 +429,14 @@ export default function BlogPostPage() {
 
               {/* Tags */}
               {post.tags.length > 0 && (
-                <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+                <div className="mt-12 pt-8 border-t border-stone-200 dark:border-white/10">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Tag className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-1" />
+                    <Tag className="w-4 h-4 text-stone-400 dark:text-stone-500 mr-1" />
 
                     {post.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-3 py-1 rounded-xl text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
+                        className="px-3 py-1 rounded-xl text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-white/10"
                       >
                         #{tag}
                       </span>
@@ -447,11 +447,11 @@ export default function BlogPostPage() {
 
               {/* Related */}
               {relatedPosts.length > 0 && (
-                <div className="mt-14 pt-10 border-t border-gray-200 dark:border-gray-800">
+                <div className="mt-14 pt-10 border-t border-stone-200 dark:border-white/10">
                   <div className="flex items-center gap-2 mb-6">
-                    <BookOpen className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                    <BookOpen className="w-5 h-5 text-stone-400 dark:text-stone-500" />
 
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
                       Related Articles
                     </h2>
                   </div>
@@ -461,10 +461,10 @@ export default function BlogPostPage() {
               )}
 
               {/* Footer CTA */}
-              <div className="mt-14 pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-wrap items-center justify-between gap-4">
+              <div className="mt-14 pt-8 border-t border-stone-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-4">
                 <Link
                   to="/blog"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors no-underline"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Back to all articles
@@ -480,7 +480,7 @@ export default function BlogPostPage() {
                         behavior: "smooth",
                       })
                     }
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-sm font-medium text-stone-700 dark:text-stone-300 hover:border-lime-400/50 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
                   >
                     <Share2 className="w-4 h-4" />
                     Back to top

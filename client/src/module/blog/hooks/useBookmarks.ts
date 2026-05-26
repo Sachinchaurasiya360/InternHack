@@ -17,6 +17,7 @@ export function useBookmarks() {
         ? raw.filter((x): x is number => typeof x === "number")
         : [];
 
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBookmarks(parsed);
     } catch (error) {
       console.error(

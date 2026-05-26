@@ -1,17 +1,23 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const connectionString = process.env["DATABASE_URL"] ?? "";
+// Strip sslmode from the URL so the explicit ssl option below takes full control.
+// Newer pg versions treat sslmode=require as verify-full and reject AWS RDS certs.
+const connectionString = (process.env["DATABASE_URL"] ?? "").replace(
+  /([?&])sslmode=[^&]*/,
+  (m) => (m.startsWith("?") ? "?" : ""),
+);
 
-// Pool size: Neon/Supabase free tiers allow ~20 connections.
-// Keep a comfortable margin below the hard limit.
 const adapter = new PrismaPg(
   {
     connectionString,
-    max: 10,
+    max: 20,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 5_000,
     keepAlive: true,
+    ssl: (process.env["DATABASE_URL"] ?? "").includes("sslmode=disable")
+      ? false
+      : { rejectUnauthorized: false },
   },
   {
     // Without these, an idle pg client erroring (managed Postgres dropping

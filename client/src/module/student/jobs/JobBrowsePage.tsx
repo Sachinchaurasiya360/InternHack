@@ -13,6 +13,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { ResultCount } from "../../../components/ui/ResultCount";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
@@ -228,7 +229,7 @@ export default function JobBrowsePage() {
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
-            {typeof internalTotal === "number" && (
+            {typeof internalTotal === "number" && internalTotal > 0 && (
               <span>
                 internal{" "}
                 <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
@@ -344,14 +345,24 @@ export default function JobBrowsePage() {
               );
             })}
 
-            <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 transition-colors cursor-pointer select-none">
+            <label
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors cursor-pointer select-none ${
+                hideExpired
+                  ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                  : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30"
+              }`}
+            >
               <input
                 type="checkbox"
                 checked={hideExpired}
                 onChange={(e) => setHideExpired(e.target.checked)}
-                className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20"
+                className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20 accent-lime-400"
               />
-              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span
+                className={`text-xs font-mono uppercase tracking-widest ${
+                  hideExpired ? "text-lime-700 dark:text-lime-400" : "text-stone-500"
+                }`}
+              >
                 Hide expired
               </span>
             </label>
@@ -392,6 +403,7 @@ export default function JobBrowsePage() {
               </div>
               <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">updated daily</span>
             </div>
+            {extData && <ResultCount currentCount={filteredExtJobs.length} totalCount={extData.total} />}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredExtJobs.map((job, i) => (
                 <motion.div key={`ext-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
@@ -438,6 +450,7 @@ export default function JobBrowsePage() {
               </div>
               <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">refreshed every 6h</span>
             </div>
+            {scrapedPagination && <ResultCount currentCount={scrapedJobs.length} totalCount={scrapedPagination.total} />}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {scrapedJobs.map((job, i) => (
                 <motion.div key={`scr-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
@@ -516,6 +529,7 @@ export default function JobBrowsePage() {
               </div>
             ) : (
               <>
+                {data?.pagination && <ResultCount currentCount={(data.jobs ?? []).length} totalCount={data.pagination.total} />}
                 <div className="relative">
                   {isFetching && (
                     <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">

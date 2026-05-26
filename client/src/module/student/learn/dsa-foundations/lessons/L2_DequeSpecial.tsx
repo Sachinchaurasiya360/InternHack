@@ -207,6 +207,7 @@ function DequeRow({ items, showIdx }: { items: { value: number; idx?: number; fl
 /*  Array bars for monotonic mode                                        */
 /* ------------------------------------------------------------------ */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ArrayBarsSimple({ values, states, windowLo: _windowLo, windowHi: _windowHi, iCur }: {
   values: number[];
   states: ("default" | "window" | "done" | "match")[];
