@@ -43,6 +43,7 @@ model user {
   projects              Json                        @default("[]")
   achievements          Json                        @default("[]")
   leetcodeUrl           String?
+  unsubscribeDigest     Boolean                     @default(false)
   tokenVersion          Int                         @default(0)
   adminActivityLogs     adminActivityLog[]          @relation("AdminActivityLogs")
   adminProfile          adminProfile?               @relation("AdminProfile")
