@@ -74,7 +74,7 @@ jobs:
         working-directory: client
 
       - name: Run ESLint
-        run: npx eslint . --ext .ts,.tsx
+        run: npx eslint . --ext .ts,.tsx --max-warnings 250
         working-directory: client
 
   test-server:
