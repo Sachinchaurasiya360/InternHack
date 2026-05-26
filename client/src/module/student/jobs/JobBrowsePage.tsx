@@ -229,7 +229,7 @@ export default function JobBrowsePage() {
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
-            {typeof internalTotal === "number" && (
+            {typeof internalTotal === "number" && internalTotal > 0 && (
               <span>
                 internal{" "}
                 <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
@@ -345,14 +345,24 @@ export default function JobBrowsePage() {
               );
             })}
 
-            <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 transition-colors cursor-pointer select-none">
+            <label
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors cursor-pointer select-none ${
+                hideExpired
+                  ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                  : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30"
+              }`}
+            >
               <input
                 type="checkbox"
                 checked={hideExpired}
                 onChange={(e) => setHideExpired(e.target.checked)}
-                className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20"
+                className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20 accent-lime-400"
               />
-              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span
+                className={`text-xs font-mono uppercase tracking-widest ${
+                  hideExpired ? "text-lime-700 dark:text-lime-400" : "text-stone-500"
+                }`}
+              >
                 Hide expired
               </span>
             </label>
