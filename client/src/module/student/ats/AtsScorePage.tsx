@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useReactToPrint } from "react-to-print";
@@ -34,6 +34,7 @@ import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
+import { useDebounce } from "../../../hooks/useDebounce";
 import type { AtsScore, UsageStats } from "../../../lib/types";
 import {
   LineChart,
@@ -46,7 +47,22 @@ import {
 } from "recharts";
 
 /** Recharts custom tooltip — renders score, date, role, and resume name on dot hover. */
-function ScoreTooltip({ active, payload }: any) {
+type ScoreTooltipPayload = {
+  payload: {
+    fullDate: string;
+    jobTitle: string;
+    resumeName: string;
+    score: number;
+  };
+};
+
+function ScoreTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: ScoreTooltipPayload[];
+}) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
@@ -116,6 +132,43 @@ const getScoreTier = (score: number): ScoreTier =>
 
 const JD_MAX_CHARS = 5000;
 const JD_WARN_CHARS = 4500;
+
+type AtsHistoryItem = {
+  id: number;
+  overallScore: number;
+  jobTitle: string | null;
+  jobDescription?: string | null;
+  resumeUrl: string;
+  createdAt: string;
+};
+
+function getResumeName(resumeUrl: string) {
+  return decodeURIComponent(
+    (resumeUrl.split("?")[0] ?? resumeUrl).split("/").pop() ?? "resume.pdf",
+  );
+}
+
+function getCompanyFromJobDescription(jobDescription?: string | null) {
+  if (!jobDescription) return "";
+
+  const firstLines = jobDescription
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  const text = firstLines.join(" ");
+  const patterns = [
+    /\bcompany\s*[:|-]\s*([A-Za-z0-9&.,'() -]{2,80})/i,
+    /\bat\s+([A-Z][A-Za-z0-9&.,'() -]{2,80})\b/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern)?.[1]?.trim();
+    if (match) return match.replace(/\s{2,}/g, " ");
+  }
+
+  return "";
+}
 
 // ── Shared UI primitives ─────────────────────────────────────────────────
 const cardCls =
@@ -220,7 +273,6 @@ export default function AtsScorePage() {
   const queryClient = useQueryClient();
   const printRef = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -229,6 +281,8 @@ export default function AtsScorePage() {
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState<ResultTab>("suggestions");
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
+  const [historySearch, setHistorySearch] = useState("");
+  const debouncedHistorySearch = useDebounce(historySearch, 300);
   const navigate = useNavigate();
 
   const handlePrint = useReactToPrint({
@@ -249,19 +303,10 @@ export default function AtsScorePage() {
     staleTime: 60_000,
   });
 
-  const scoreHistory = (historyData ?? []) as {
-    id: number;
-    overallScore: number;
-    jobTitle: string | null;
-    resumeUrl: string;
-    createdAt: string;
-  }[];
+  const scoreHistory = (historyData ?? []) as AtsHistoryItem[];
 
   const chartData = scoreHistory.map((h) => {
-    const resumeName = decodeURIComponent(
-      (h.resumeUrl.split("?")[0] ?? h.resumeUrl).split("/").pop() ??
-        "resume.pdf",
-    );
+    const resumeName = getResumeName(h.resumeUrl);
     return {
       key: h.createdAt,
       date: new Date(h.createdAt).toLocaleDateString("en-IN", {
@@ -281,6 +326,24 @@ export default function AtsScorePage() {
       resumeName,
     };
   });
+
+  const normalizedHistorySearch = debouncedHistorySearch.trim().toLowerCase();
+  const filteredHistory = [...scoreHistory]
+    .reverse()
+    .filter((item) => {
+      if (!normalizedHistorySearch) return true;
+
+      const searchableText = [
+        item.jobTitle,
+        getCompanyFromJobDescription(item.jobDescription),
+        getResumeName(item.resumeUrl),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(normalizedHistorySearch);
+    });
 
   const atsUsage = usageData?.usage.find((u) => u.action === "ATS_SCORE");
   const limitReached = atsUsage ? atsUsage.used >= atsUsage.limit : false;
@@ -368,16 +431,15 @@ export default function AtsScorePage() {
   });
 
   const loading = analyzeMutation.isPending;
+  const previewUrl = useMemo(() => {
+    if (!file) return "";
+    return URL.createObjectURL(file);
+  }, [file]);
 
   useEffect(() => {
-    if (!file) {
-      setPreviewUrl("");
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
+    if (!previewUrl) return undefined;
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
 
   const validateFile = (file: File): string | null => {
     if (file.size > MAX_SIZE) {
@@ -597,6 +659,74 @@ export default function AtsScorePage() {
                 />
               </LineChart>
             </ResponsiveContainer>
+          )}
+          {scoreHistory.length > 0 && (
+            <div className="mt-5 border-t border-stone-200 pt-5 dark:border-white/10">
+              <div className="relative mb-3">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+                <input
+                  type="search"
+                  value={historySearch}
+                  onChange={(e) => setHistorySearch(e.target.value)}
+                  placeholder="Search by company, role, or resume"
+                  className={`${inputCls} pl-9 pr-10`}
+                  aria-label="Search ATS score history"
+                />
+                {historySearch && (
+                  <button
+                    type="button"
+                    onClick={() => setHistorySearch("")}
+                    className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md border-0 bg-transparent text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-white/10 dark:hover:text-stone-200"
+                    aria-label="Clear history search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              {filteredHistory.length > 0 ? (
+                <div className="divide-y divide-stone-200 overflow-hidden rounded-md border border-stone-200 dark:divide-white/10 dark:border-white/10">
+                  {filteredHistory.map((item) => {
+                    const company = getCompanyFromJobDescription(
+                      item.jobDescription,
+                    );
+                    const tier = getScoreTier(item.overallScore);
+
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-4 bg-white px-4 py-3 dark:bg-stone-900"
+                      >
+                        <div
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-stone-100 text-sm font-bold tabular-nums dark:bg-stone-950 ${tier.text}`}
+                        >
+                          {item.overallScore}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold text-stone-900 dark:text-stone-50">
+                            {item.jobTitle ?? "General ATS analysis"}
+                          </p>
+                          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                            {company && <span>{company}</span>}
+                            <span>{getResumeName(item.resumeUrl)}</span>
+                          </div>
+                        </div>
+                        <span className="shrink-0 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                          {new Date(item.createdAt).toLocaleDateString(
+                            "en-IN",
+                            { month: "short", day: "numeric" },
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-md border border-dashed border-stone-300 px-4 py-6 text-center text-sm text-stone-500 dark:border-white/15">
+                  No ATS history matches that search.
+                </div>
+              )}
+            </div>
           )}
         </div>
       </motion.div>
