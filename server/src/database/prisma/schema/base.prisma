@@ -87,7 +87,7 @@ model user {
   generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
   leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
-
+hackathonParticipations hackathonParticipation[] @relation("UserHackathonParticipations")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -850,30 +850,50 @@ model jobAgentEmailLog {
 }
 
 model hackathon {
-  id           Int      @id @default(autoincrement())
-  name         String
-  organizer    String
-  logo         String?
-  description  String
-  prizePool    String
-  startDate    String
-  endDate      String
-  location     String
-  locationType String
-  website      String?
-  tags         String[] @default([])
-  tracks       String[] @default([])
-  eligibility  String?
-  status       String   @default("upcoming")
-  ecosystem    String
-  highlights   String[] @default([])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             Int                      @id @default(autoincrement())
+  name           String
+  organizer      String
+  logo           String?
+  description    String
+  prizePool      String
+  startDate      String
+  endDate        String
+  location       String
+  locationType   String
+  website        String?
+  tags           String[]                 @default([])
+  tracks         String[]                 @default([])
+  eligibility    String?
+  status         String                   @default("upcoming")
+  ecosystem      String
+  highlights     String[]                 @default([])
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  participations hackathonParticipation[]
 
   @@index([status])
   @@index([ecosystem])
 }
 
+enum HackathonParticipationStatus {
+  INTERESTED
+  PARTICIPATING
+}
+
+model hackathonParticipation {
+  id          Int                          @id @default(autoincrement())
+  userId      Int
+  hackathonId Int
+  status      HackathonParticipationStatus @default(INTERESTED)
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @updatedAt
+  user        user                         @relation("UserHackathonParticipations", fields: [userId], references: [id], onDelete: Cascade)
+  hackathon   hackathon                    @relation(fields: [hackathonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, hackathonId])
+  @@index([userId])
+  @@index([hackathonId])
+}
 model iitProfessor {
   id             Int      @id @default(autoincrement())
   collegeName    String
