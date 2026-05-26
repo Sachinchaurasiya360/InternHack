@@ -24,7 +24,7 @@
     "@aws-sdk/s3-presigned-post": "^3.1053.0",
     "@aws-sdk/s3-request-presigner": "^3.1053.0",
     "@google/generative-ai": "^0.24.1",
-    "@mistralai/mistralai": "^1.15.1",
+    "@mistralai/mistralai": "^2.2.5",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@types/nodemailer": "^8.0.0",
