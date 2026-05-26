@@ -306,8 +306,9 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
     "<up to 8 suggestions total>"
   ],
   "keywordAnalysis": {
-    "found": ["<keyword1>", "<keyword2>", "...up to 15 found keywords"],
-    "missing": ["<missing keyword1>", "<missing keyword2>", "...up to 10 missing keywords"]
+    "found": ["<keyword1>", "<keyword2>", "...up to 15 keywords fully present and prominent in the resume"],
+    "partial": ["<keyword1>", "<keyword2>", "...up to 8 keywords mentioned only once or under-represented"],
+    "missing": ["<missing keyword1>", "<missing keyword2>", "...up to 10 keywords from the JD completely absent from the resume"]
   }
 }`;
   }
@@ -385,12 +386,15 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
   }
 
   private validateKeywordAnalysis(raw: unknown): AtsKeywordAnalysis {
-    const defaults: AtsKeywordAnalysis = { found: [], missing: [] };
+    const defaults: AtsKeywordAnalysis = { found: [], partial: [], missing: [] };
     if (!raw || typeof raw !== "object") return defaults;
     const obj = raw as Record<string, unknown>;
     return {
       found: Array.isArray(obj["found"])
         ? obj["found"].filter((s): s is string => typeof s === "string")
+        : [],
+      partial: Array.isArray(obj["partial"])
+        ? obj["partial"].filter((s): s is string => typeof s === "string")
         : [],
       missing: Array.isArray(obj["missing"])
         ? obj["missing"].filter((s): s is string => typeof s === "string")
