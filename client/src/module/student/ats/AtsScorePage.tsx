@@ -29,7 +29,7 @@ import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
-import { useDebounce } from "../../../hooks/useDebounce";
+import { useDebounce } from "../../../hooks/useDebouncedValue";
 import type { AtsScore, UsageStats } from "../../../lib/types";
 import {
   LineChart,
