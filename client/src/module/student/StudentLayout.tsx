@@ -27,6 +27,7 @@ export default function StudentLayout() {
       </div>
       {sidebar}
       <main
+        aria-label="Student main content"
         className={`pt-16 lg:pt-24 px-4 pb-8 sm:px-6 lg:px-8 transition-all duration-300 overflow-auto ${
           collapsed ? "lg:ml-18" : "lg:ml-64"
         }`}
