@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "react-router";
 import {
@@ -127,40 +127,52 @@ function getTierFeaturedQuestions(tier: CompanyTier): FeaturedQuestion[] {
   });
 }
 
-function TierFeaturedQuestions({ tier }: { tier: CompanyTier }) {
-  const questions = useMemo(() => getTierFeaturedQuestions(tier), [tier]);
+const FeaturedQuestionCard = memo(function FeaturedQuestionCard({ q }: { q: FeaturedQuestion }) {
+  return (
+    <Link
+      to={`/learn/dsa/problem/${q.slug}`}
+      className="group block bg-white dark:bg-stone-900 px-4 py-3 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap mb-1">
+            <span className={`text-[10px] font-mono uppercase tracking-widest ${DIFF_COLOR[q.difficulty] || "text-stone-500"}`}>
+              / {q.difficulty.toLowerCase()}
+            </span>
+            <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+              • popular question
+            </span>
+          </div>
+          <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors truncate">
+            {q.title}
+          </h4>
+          {q.companies && q.companies.length > 0 && (
+            <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1 truncate">
+              Asked by: {q.companies.join(", ")}
+            </p>
+          )}
+        </div>
+        <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+      </div>
+    </Link>
+  );
+});
+
+function TierFeaturedQuestions({ tier, search }: { tier: CompanyTier; search?: string }) {
+  const questions = useMemo(() => {
+    let q = getTierFeaturedQuestions(tier);
+    if (search) {
+      const s = search.toLowerCase();
+      q = q.filter(x => x.companies.some(c => c.toLowerCase().includes(s)));
+    }
+    return q;
+  }, [tier, search]);
   if (!questions || questions.length === 0) return null;
 
   return (
     <div className="space-y-2 mb-4">
       {questions.map((q) => (
-        <Link
-          key={q.slug}
-          to={`/learn/dsa/problem/${q.slug}`}
-          className="group block bg-white dark:bg-stone-900 px-4 py-3 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap mb-1">
-                <span className={`text-[10px] font-mono uppercase tracking-widest ${DIFF_COLOR[q.difficulty] || "text-stone-500"}`}>
-                  / {q.difficulty.toLowerCase()}
-                </span>
-                <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-wider">
-                  • popular question
-                </span>
-              </div>
-              <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors truncate">
-                {q.title}
-              </h4>
-              {q.companies && q.companies.length > 0 && (
-                <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1 truncate">
-                  Asked by: {q.companies.join(", ")}
-                </p>
-              )}
-            </div>
-            <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </div>
-        </Link>
+        <FeaturedQuestionCard key={q.slug} q={q} />
       ))}
     </div>
   );
@@ -341,6 +353,22 @@ export default function DsaCompaniesPage() {
     return groups;
   }, [filteredCompanies]);
 
+  const filteredFeatured = useMemo(() => {
+    if (!companySearch) return FEATURED_QUESTIONS;
+    const s = companySearch.toLowerCase();
+    return FEATURED_QUESTIONS.filter((q) => 
+      q.companies.some((c) => c.toLowerCase().includes(s))
+    );
+  }, [companySearch]);
+
+  const hasFeaturedMatches = useMemo(() => {
+    if (tierFilter === "ALL") return filteredFeatured.length > 0;
+    const s = companySearch.toLowerCase();
+    return getTierFeaturedQuestions(tierFilter).some(q => 
+      !companySearch || q.companies.some(c => c.toLowerCase().includes(s))
+    );
+  }, [companySearch, tierFilter, filteredFeatured]);
+
   if (companiesLoading && companies.length === 0) return <LoadingScreen />;
 
   // Global stats — always the same regardless of selected tier
@@ -463,17 +491,15 @@ export default function DsaCompaniesPage() {
                 const isActive = tierFilter === tier;
                 const label = tier === "ALL" ? "All" : TIER_LABELS[tier];
                 return (
-                  <button
+                  <Button
                     key={tier}
+                    variant={isActive ? "mono" : "outline"}
+                    size="sm"
                     onClick={() => setTierFilter(tier)}
-                    className={`px-3 py-1.5 rounded-md text-[11px] font-mono uppercase tracking-widest transition-colors cursor-pointer border ${
-                      isActive
-                        ? "bg-stone-900 dark:bg-stone-50 text-lime-400 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                        : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-                    }`}
+                    className={`font-mono uppercase tracking-widest text-[11px] ${isActive ? "text-lime-400 dark:text-stone-900" : "text-stone-600 dark:text-stone-400"}`}
                   >
                     {label}
-                  </button>
+                  </Button>
                 );
               })}
             </motion.div>
@@ -488,7 +514,7 @@ export default function DsaCompaniesPage() {
               </div>
             )}
 
-            {filteredCompanies.length === 0 && companySearch && (
+            {filteredCompanies.length === 0 && companySearch && !hasFeaturedMatches && (
               <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
                 <Building2 className="w-8 h-8 text-stone-400 mx-auto mb-3" />
                 <p className="text-sm text-stone-600 dark:text-stone-400">No companies found.</p>
@@ -499,36 +525,10 @@ export default function DsaCompaniesPage() {
             )}
 
             {/* Unified Featured questions list (only shown when viewing "ALL") */}
-            {tierFilter === "ALL" && (
+            {tierFilter === "ALL" && filteredFeatured.length > 0 && (
               <div className="space-y-2 mb-8">
-                {FEATURED_QUESTIONS.map((q) => (
-                  <Link
-                    key={q.slug}
-                    to={`/learn/dsa/problem/${q.slug}`}
-                    className="group block bg-white dark:bg-stone-900 px-4 py-3 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className={`text-[10px] font-mono uppercase tracking-widest ${DIFF_COLOR[q.difficulty] || "text-stone-500"}`}>
-                            / {q.difficulty.toLowerCase()}
-                          </span>
-                          <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-wider">
-                            • popular question
-                          </span>
-                        </div>
-                        <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors truncate">
-                          {q.title}
-                        </h4>
-                        {q.companies && q.companies.length > 0 && (
-                          <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1 truncate">
-                            Asked by: {q.companies.join(", ")}
-                          </p>
-                        )}
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-                    </div>
-                  </Link>
+                {filteredFeatured.map((q) => (
+                  <FeaturedQuestionCard key={q.slug} q={q} />
                 ))}
               </div>
             )}
@@ -550,8 +550,8 @@ export default function DsaCompaniesPage() {
                 }
                 const tierCompanyCount = tierCompanyNames.size;
 
-                // In ALL view, hide tiers with no companies at all
-                if (tierFilter === "ALL" && tierCompanyCount === 0) return null;
+                // In ALL view, hide tiers with no companies to display
+                if (tierFilter === "ALL" && group.length === 0) return null;
 
                 return (
                   <section key={tier}>
@@ -564,7 +564,7 @@ export default function DsaCompaniesPage() {
                     </div>
 
                     {/* Featured questions for this tier */}
-                    {tierFilter !== "ALL" && <TierFeaturedQuestions tier={tier} />}
+                    {tierFilter !== "ALL" && <TierFeaturedQuestions tier={tier} search={companySearch} />}
 
                     <div className="space-y-2">
                       {group.map((company, i) => {
