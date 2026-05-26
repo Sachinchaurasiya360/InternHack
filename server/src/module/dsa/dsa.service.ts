@@ -330,6 +330,17 @@ export class DsaService {
     }));
   }
 
+  async reportProblem({userId, problemId, reason, message,}: { userId: number; problemId: number; reason: string; message?: string;}) { prisma
+    return prisma.dsaProblemReport.create({
+      data: {
+        userId,
+        problemId,
+        reason,
+        message,
+      },
+    });
+  }
+
   async getCompanies() {
     if (companiesCache && companiesCache.expiresAt > Date.now()) {
       return companiesCache.data;
