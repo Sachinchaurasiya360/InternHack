@@ -46,7 +46,19 @@ function getDeadlineBadge(deadline: string) {
   const now = new Date();
   const endDate = new Date(deadline);
 
-  const diffTime = endDate.getTime() - now.getTime();
+  const utcNow = Date.UTC(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+
+  const utcDeadline = Date.UTC(
+    endDate.getFullYear(),
+    endDate.getMonth(),
+    endDate.getDate()
+  );
+
+  const diffTime = utcDeadline - utcNow;
 
   const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 

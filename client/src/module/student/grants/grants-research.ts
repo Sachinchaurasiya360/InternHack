@@ -31,7 +31,7 @@ export const grantsResearch: Grant[] = [
     id: 72,
     name: "Wellcome Trust Research Grants",
      deadline: "2026-07-20",
-    organization: "Welcome Trust",
+    organization: "Wellcome Trust",
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
       "The Wellcome Trust funds bold research to improve health. Its grants support discovery research, technology development, and interventions across biomedical science, population health, humanities, and social science.",

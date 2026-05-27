@@ -56,7 +56,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 93,
     name: "Harvard Innovation Labs",
-     deadline: "2026-07-20",
+     deadline: "2026-06-02",
     organization: "Harvard University",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
@@ -82,7 +82,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 94,
     name: "Y Combinator Research",
-     deadline: "2026-07-20",
+     deadline: "2026-05-20",
     organization: "Y Combinator",
     logo: "https://placehold.co/100x100/EEE/999?text=Y",
     description:
