@@ -256,23 +256,23 @@ export class StudentController {
   }
 async getProjects(req: Request, res: Response, next: NextFunction) {
   try {
-    const studentId = req.user!.id;
-    const projects = await this.studentService.getProjects(studentId);
+    if (!req.user) return res.status(401).json({ message: "Authentication required" });
+    const projects = await this.studentService.getProjects(req.user.id);
     return res.status(200).json({ projects });
   } catch (err) {
     next(err);
   }
-  }
+}
 
-async upsertProjects(req: Request, res: Response, next: NextFunction) {
+ async upsertProjects(req: Request, res: Response, next: NextFunction) {
   try {
-    const studentId = req.user!.id;
+    if (!req.user) return res.status(401).json({ message: "Authentication required" });
     const { projects } = req.body;
     if (!Array.isArray(projects)) return res.status(400).json({ message: "projects must be an array" });
-    const result = await this.studentService.upsertProjects(studentId, projects);
+    const result = await this.studentService.upsertProjects(req.user.id, projects);
     return res.status(200).json(result);
   } catch (err) {
     next(err);
   }
-}
+ }
 }

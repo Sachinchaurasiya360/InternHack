@@ -17,6 +17,16 @@ interface SubmitRoundData {
   attachments: string[];
 }
 
+interface ProjectItemInput {
+  id: string;
+  title: string;
+  description?: string;
+  techStack?: string[];
+  liveUrl?: string;
+  repoUrl?: string;
+  builtAt?: string;
+}
+
 export class StudentService {
   async applyToJob(jobId: number, studentId: number, data: ApplyData) {
     const job = await prisma.job.findUnique({
@@ -299,21 +309,70 @@ export class StudentService {
 
     return submission;
   }
-async getProjects(studentId: number) {
+ async getProjects(studentId: number) {
   const user = await prisma.user.findUnique({
     where: { id: studentId },
     select: { projects: true },
   });
   if (!user) throw new Error("User not found");
   return user.projects;
-}
+ }
 
-async upsertProjects(studentId: number, projects: unknown[]) {
+ async upsertProjects(studentId: number, projects: unknown[]) {
   if (projects.length > 4) throw new Error("Maximum 4 projects allowed");
+
+  const urlRegex = /^https?:\/\/.+/;
+  const builtAtRegex = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+  const validated: ProjectItemInput[] = projects.map((p, index) => {
+    if (typeof p !== "object" || p === null) {
+      throw new Error(`Project at index ${index} is invalid`);
+    }
+
+    const item = p as Record<string, unknown>;
+
+    if (typeof item["id"] !== "string" || !item["id"].trim()) {
+      throw new Error(`Project at index ${index} is missing a valid id`);
+    }
+    if (typeof item["title"] !== "string" || !item["title"].trim()) {
+      throw new Error(`Project at index ${index} is missing a title`);
+    }
+    if (item["description"] !== undefined && typeof item["description"] !== "string") {
+      throw new Error(`Project at index ${index} has an invalid description`);
+    }
+    if (item["description"] && (item["description"] as string).length > 200) {
+      throw new Error(`Project at index ${index} description exceeds 200 characters`);
+    }
+    if (item["techStack"] !== undefined) {
+      if (!Array.isArray(item["techStack"]) || !(item["techStack"] as unknown[]).every((t) => typeof t === "string")) {
+        throw new Error(`Project at index ${index} has an invalid techStack`);
+      }
+    }
+    if (item["liveUrl"] && !urlRegex.test(item["liveUrl"] as string)) {
+      throw new Error(`Project at index ${index} has an invalid liveUrl`);
+    }
+    if (item["repoUrl"] && !urlRegex.test(item["repoUrl"] as string)) {
+      throw new Error(`Project at index ${index} has an invalid repoUrl`);
+    }
+    if (item["builtAt"] && !builtAtRegex.test(item["builtAt"] as string)) {
+      throw new Error(`Project at index ${index} has an invalid builtAt format (expected YYYY-MM)`);
+    }
+
+    return {
+      id: (item["id"] as string).trim(),
+      title: (item["title"] as string).trim(),
+      description: item["description"] ? (item["description"] as string).trim() : undefined,
+      techStack: (item["techStack"] as string[] | undefined) ?? [],
+      liveUrl: item["liveUrl"] ? (item["liveUrl"] as string).trim() : undefined,
+      repoUrl: item["repoUrl"] ? (item["repoUrl"] as string).trim() : undefined,
+      builtAt: item["builtAt"] ? (item["builtAt"] as string).trim() : undefined,
+    };
+  });
+
   return prisma.user.update({
     where: { id: studentId },
-    data: { projects: JSON.parse(JSON.stringify(projects)) },
+    data: { projects: validated  as unknown as Prisma.InputJsonValue[] },
     select: { projects: true },
   });
-}
+ }
 }

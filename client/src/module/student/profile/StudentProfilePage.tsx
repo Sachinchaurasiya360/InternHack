@@ -1344,14 +1344,24 @@ function ProjectsSection({ projects, onChange, errors }: {
   const dragOver = useRef<number | null>(null);
 
   const handleDragEnd = () => {
-    if (dragItem.current === null || dragOver.current === null) return;
-    if (dragItem.current === dragOver.current) return;
-    const reordered = [...projects];
-    const [moved] = reordered.splice(dragItem.current, 1);
-    reordered.splice(dragOver.current, 0, moved!);
-    onChange(reordered);
+    if (dragItem.current === null || dragOver.current === null) {
     dragItem.current = null;
     dragOver.current = null;
+    return;
+   }
+
+   if (dragItem.current === dragOver.current) {
+    dragItem.current = null;
+    dragOver.current = null;
+    return;
+   }
+
+   const reordered = [...projects];
+   const [moved] = reordered.splice(dragItem.current, 1);
+   reordered.splice(dragOver.current, 0, moved!);
+   onChange(reordered);
+   dragItem.current = null;
+   dragOver.current = null;
   };
 
   return (
@@ -1384,10 +1394,10 @@ function ProjectsSection({ projects, onChange, errors }: {
                 {p.repoUrl && <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline"><Github className="w-3 h-3" /> code</a>}
               </div>
             )}
-             {p.builtAt && (
-              <p className="text-[10px] font-mono text-stone-400 mt-1.5">
-                {new Date(p.builtAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
-              </p>
+            {p.builtAt && (
+             <p className="text-xs font-mono text-stone-400 mt-1.5">
+             {new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${p.builtAt}-01`))}
+             </p>
             )}
           </div>
           <div className="flex gap-1 shrink-0">
@@ -1409,7 +1419,14 @@ function ProjectsSection({ projects, onChange, errors }: {
           </div>
           <div>
             <label className={labelClass}>Description</label>
-            <textarea value={draft.description} onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))} className={`${inputClass} resize-none`} rows={2} placeholder="Brief description..." maxLength={500} />
+            <textarea
+             value={draft.description}
+             onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value.slice(0, 200) }))}
+             className={`${inputClass} resize-none`}
+             rows={2}
+             placeholder="Brief description..."
+             maxLength={200}
+            />
           </div>
           <div>
             <label className={labelClass}>Tech stack</label>
