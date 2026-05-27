@@ -269,7 +269,6 @@ export class ScraperService {
     //  },
     //]; 
      
-    // Filter scraped jobs to show only tech-related roles
   const conditions: Prisma.scrapedJobWhereInput[] = [
   {
     OR: [
@@ -281,9 +280,7 @@ export class ScraperService {
       { title: { contains: "full stack", mode: "insensitive" } },
       { title: { contains: "python", mode: "insensitive" } },
       { title: { contains: "java", mode: "insensitive" } },
-      { title: { contains: "react", mode: "insensitive" } },
-      { title: { contains: "ai", mode: "insensitive" } },
-      { title: { contains: "data", mode: "insensitive" } },
+      { title: { contains: "react", mode: "insensitive" } }, 
     ],
   },
 ];
