@@ -43,15 +43,25 @@ const coerceBoolean = z.preprocess((value) => {
  * Strict optional annual INR for JSON bodies (reject `12abc`; never use parseInt alone on free text).
  * Example: `z.union([z.string().regex(/^\d+$/).transform((s) => Number.parseInt(s, 10)), z.number().int().nonnegative()]).optional()`
  */
-function queryParamDigitsOnlyToInt(fieldLabel: string) {
-  return z.preprocess((val: unknown) => {
-    if (val === undefined || val === null) return undefined;
-    const raw = Array.isArray(val) ? val[0] : val;
-    if (typeof raw !== "string") return undefined;
-    const t = raw.trim();
-    return t === "" ? undefined : t;
-  }, z.union([z.undefined(), z.string().regex(/^\d+$/, `${fieldLabel} must be digits only`).transform((s) => Number.parseInt(s, 10))]));
-}
+const PG_INT_MAX = 2_147_483_647;
+
+ function queryParamDigitsOnlyToInt(fieldLabel: string) {
+   return z.preprocess((val: unknown) => {
+     if (val === undefined || val === null) return undefined;
+     const raw = Array.isArray(val) ? val[0] : val;
+     if (typeof raw !== "string") return undefined;
+     const t = raw.trim();
+     return t === "" ? undefined : t;
+ }, z.union([
+  z.undefined(),
+    z
+      .string()
+      .regex(/^\d+$/, `${fieldLabel} must be digits only`)
+      .transform((s) => Number.parseInt(s, 10))
+      .refine((n) => Number.isSafeInteger(n), `${fieldLabel} must be a safe integer`)
+      .refine((n) => n <= PG_INT_MAX, `${fieldLabel} must be <= ${PG_INT_MAX}`),
+  ]));
+ }
 
 export const createJobSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
