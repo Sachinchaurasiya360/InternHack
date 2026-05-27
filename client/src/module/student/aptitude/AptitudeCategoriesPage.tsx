@@ -12,6 +12,56 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
 
+// ── Streak Banner ──────────────────────────────────────────────────────────
+type StreakBannerProps = { streak: number };
+
+function StreakBanner({ streak }: StreakBannerProps) {
+  if (streak > 0) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          borderRadius: "8px",
+          backgroundColor: "#1c1a14",
+          border: "1px solid #a16207",
+          marginBottom: "24px",
+          color: "#fde68a",
+          fontSize: "14px",
+        }}
+      >
+        <span role="img" aria-label="flame" style={{ fontSize: "20px" }}>🔥</span>
+        <span>
+          <strong>{streak}-day streak</strong> — Keep it up! Practice today to continue your streak.
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        padding: "12px 16px",
+        borderRadius: "8px",
+        backgroundColor: "#0f172a",
+        border: "1px solid #334155",
+        marginBottom: "24px",
+        color: "#94a3b8",
+        fontSize: "14px",
+      }}
+    >
+      <span role="img" aria-label="target" style={{ fontSize: "20px" }}>🎯</span>
+      <span>
+        <strong>Start your aptitude streak today!</strong> Practice now and build your daily habit.
+      </span>
+    </div>
+  );
+}
+
 export default function AptitudeCategoriesPage() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<string>("all");
@@ -57,6 +107,7 @@ export default function AptitudeCategoriesPage() {
         keywords="aptitude practice, quantitative aptitude, logical reasoning, verbal ability, placement exam preparation"
         canonicalUrl={canonicalUrl("/learn/aptitude")}
       />
+            {user && <StreakBanner streak={progress?.currentStreak ?? 0} />}
 
       <div
         aria-hidden
