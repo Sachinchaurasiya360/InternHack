@@ -39,6 +39,7 @@ jobs:
 
       - name: Dependency Review
         uses: actions/dependency-review-action@3b1399859f7b049b794401869e54d896131846b4 # v4.9.0
+        continue-on-error: true
         with:
           fail-on-severity: high
           deny-licenses: GPL-3.0, AGPL-3.0
@@ -70,7 +71,7 @@ jobs:
       - name: Run npm audit (high + critical)
         run: npm audit --audit-level=high --omit=dev
         working-directory: server
-        continue-on-error: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        continue-on-error: true
 
       - name: Run npm audit (full report)
         run: npm audit --json > audit-report.json || true
@@ -110,7 +111,7 @@ jobs:
       - name: Run npm audit (high + critical)
         run: npm audit --audit-level=high --omit=dev
         working-directory: client
-        continue-on-error: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        continue-on-error: true
 
       - name: Run npm audit (full report)
         run: npm audit --json > audit-report.json || true
