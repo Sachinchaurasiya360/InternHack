@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
@@ -40,6 +40,15 @@ const FILTER_TAGS = [
   "Data Science",
 ] as const;
 
+function digitsOnlyAnnualInr(raw: string, maxLen = 14) {
+  return raw.replace(/\D/g, "").slice(0, maxLen);
+}
+
+function parseJobListPage(raw: string | null): number {
+  const n = Number.parseInt(raw ?? "", 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
 function MetaChip({
   icon,
   children,
@@ -57,15 +66,107 @@ function MetaChip({
 
 export default function JobBrowsePage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
-  const [search, setSearch] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialTagsRaw = searchParams.get("tags");
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+  const [locationFilter, setLocationFilter] = useState(
+    () => searchParams.get("location") ?? "",
+  );
+  const [selectedTags, setSelectedTags] = useState<string[]>(() =>
+    initialTagsRaw
+      ? initialTagsRaw.split(",").map((t) => t.trim()).filter(Boolean)
+      : [],
+  );
+  const [page, setPage] = useState(() => parseJobListPage(searchParams.get("page")));
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
   const debouncedSearch = useDebounce(search, 400);
   const debouncedLocation = useDebounce(locationFilter, 400);
-  const [hideExpired, setHideExpired] = useState(true);
+  const [hideExpired, setHideExpired] = useState(
+    () => searchParams.get("includeExpired") !== "true",
+  );
+  const [salaryMinStr, setSalaryMinStr] = useState(
+    () => searchParams.get("salaryMin") ?? "",
+  );
+  const [salaryMaxStr, setSalaryMaxStr] = useState(
+    () => searchParams.get("salaryMax") ?? "",
+  );
+  const debouncedSalaryMinStr = useDebounce(salaryMinStr, 400);
+  const debouncedSalaryMaxStr = useDebounce(salaryMaxStr, 400);
+
+  const salaryMinDigitsApi =
+    debouncedSalaryMinStr.trim() !== "" && /^\d+$/.test(debouncedSalaryMinStr.trim())
+      ? debouncedSalaryMinStr.trim()
+      : "";
+
+  const salaryMaxDigitsApi =
+    debouncedSalaryMaxStr.trim() !== "" && /^\d+$/.test(debouncedSalaryMaxStr.trim())
+      ? debouncedSalaryMaxStr.trim()
+      : "";
+
+  const salaryMinDigitsUrl =
+    salaryMinStr.trim() !== "" && /^\d+$/.test(salaryMinStr.trim())
+      ? salaryMinStr.trim()
+      : "";
+
+  const salaryMaxDigitsUrl =
+    salaryMaxStr.trim() !== "" && /^\d+$/.test(salaryMaxStr.trim())
+      ? salaryMaxStr.trim()
+      : "";
+
+  const skipFilterResetRef = useRef(true);
+  const tagsFilterKey = selectedTags.join(",");
+
+  useEffect(() => {
+    if (skipFilterResetRef.current) {
+      skipFilterResetRef.current = false;
+      return;
+    }
+    setPage(1);
+    setExtPage(1);
+    setScrPage(1);
+  }, [
+    debouncedSearch,
+    debouncedLocation,
+    debouncedSalaryMinStr,
+    debouncedSalaryMaxStr,
+    tagsFilterKey,
+    hideExpired,
+  ]);
+
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+
+    const setOrDelete = (key: string, value: string | undefined) => {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    };
+
+    setOrDelete("search", search.trim() || undefined);
+    setOrDelete("location", locationFilter.trim() || undefined);
+    setOrDelete("tags", selectedTags.length ? selectedTags.join(",") : undefined);
+    if (!hideExpired) next.set("includeExpired", "true");
+    else next.delete("includeExpired");
+    setOrDelete("salaryMin", salaryMinDigitsUrl || undefined);
+    setOrDelete("salaryMax", salaryMaxDigitsUrl || undefined);
+    if (page > 1) next.set("page", String(page));
+    else next.delete("page");
+
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+  }, [
+    search,
+    locationFilter,
+    salaryMinDigitsUrl,
+    salaryMaxDigitsUrl,
+    selectedTags,
+    hideExpired,
+    page,
+    searchParams,
+    setSearchParams,
+  ]);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: queryKeys.jobs.list({
@@ -74,6 +175,8 @@ export default function JobBrowsePage() {
       location: debouncedLocation,
       tags: selectedTags.join(","),
       includeExpired: !hideExpired,
+      salaryMin: salaryMinDigitsApi || undefined,
+      salaryMax: salaryMaxDigitsApi || undefined,
     }),
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), limit: "12" });
@@ -81,6 +184,8 @@ export default function JobBrowsePage() {
       if (debouncedLocation) params.set("location", debouncedLocation);
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
       params.set("includeExpired", String(!hideExpired));
+      if (salaryMinDigitsApi) params.set("salaryMin", salaryMinDigitsApi);
+      if (salaryMaxDigitsApi) params.set("salaryMax", salaryMaxDigitsApi);
       const res = await api.get(`/jobs?${params}`);
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
@@ -153,14 +258,22 @@ export default function JobBrowsePage() {
     setSearch("");
     setLocationFilter("");
     setSelectedTags([]);
+    setSalaryMinStr("");
+    setSalaryMaxStr("");
+    setHideExpired(true);
     setPage(1);
     setExtPage(1);
     setScrPage(1);
+    setSearchParams({}, { replace: true });
   };
 
-  const hasFilters = search || locationFilter || selectedTags.length > 0;
-
-  
+  const hasFilters =
+    !!search.trim() ||
+    !!locationFilter.trim() ||
+    selectedTags.length > 0 ||
+    !!salaryMinStr.trim() ||
+    !!salaryMaxStr.trim() ||
+    !hideExpired;
 
   const filteredExtJobs = extData?.jobs ?? [];
   const scrapedJobs = scrData?.jobs ?? [];
@@ -320,6 +433,45 @@ export default function JobBrowsePage() {
               />
             </div>
           </form>
+
+          <div
+            className="grid grid-cols-1 sm:grid-cols-[auto_1fr_1fr] gap-3 sm:gap-4 items-center min-h-14 px-3 py-3 sm:py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md"
+          >
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+              <IndianRupee className="w-4 h-4 shrink-0 text-stone-400" aria-hidden />
+              <span className="whitespace-nowrap">salary INR/yr</span>
+            </div>
+            <div className="min-w-0">
+              <label htmlFor="job-salary-min" className="sr-only">
+                Minimum annual salary in INR (partner listings only)
+              </label>
+              <input
+                id="job-salary-min"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="Min"
+                value={salaryMinStr}
+                onChange={(e) => setSalaryMinStr(digitsOnlyAnnualInr(e.target.value))}
+                className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-950 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 tabular-nums placeholder-stone-400 dark:placeholder-stone-600"
+              />
+            </div>
+            <div className="min-w-0">
+              <label htmlFor="job-salary-max" className="sr-only">
+                Maximum annual salary in INR (partner listings only)
+              </label>
+              <input
+                id="job-salary-max"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="Max"
+                value={salaryMaxStr}
+                onChange={(e) => setSalaryMaxStr(digitsOnlyAnnualInr(e.target.value))}
+                className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-950 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 tabular-nums placeholder-stone-400 dark:placeholder-stone-600"
+              />
+            </div>
+          </div>
 
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">

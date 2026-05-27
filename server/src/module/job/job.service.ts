@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
 import type { Prisma } from "@prisma/client";
+import { parseSalary } from "../job-index/job-normalizer.js";
 
 interface CreateJobData {
   title: string;
@@ -23,6 +24,8 @@ interface JobQuery {
   status?: string | undefined;
   tags?: string | undefined;
   includeExpired?: boolean | undefined;
+  salaryMin?: number | undefined;
+  salaryMax?: number | undefined;
 }
 
 
@@ -31,12 +34,15 @@ type UpdateJobData = {
 };
 export class JobService {
   async createJob(data: CreateJobData) {
+    const { min, max } = parseSalary(data.salary);
     return prisma.job.create({
       data: {
         title: data.title,
         description: data.description,
         location: data.location,
         salary: data.salary,
+        salaryAnnualMin: min,
+        salaryAnnualMax: max,
         company: data.company,
         status: data.status || "DRAFT",
         customFields: data.customFields ? JSON.parse(JSON.stringify(data.customFields)) : [],
@@ -83,6 +89,21 @@ export class JobService {
 
     if (query.tags) {
       where.tags = { hasSome: query.tags.split(",").map((t) => t.trim()) };
+    }
+
+    /** Range overlap vs filter band [qMin, qMax] in annual INR (jobs without parsed bounds are excluded). */
+    if (query.salaryMin !== undefined || query.salaryMax !== undefined) {
+      const PG_INT_MAX = 2_147_483_647;
+      const qMin = query.salaryMin ?? 0;
+      const qMax = query.salaryMax ?? PG_INT_MAX;
+      andFilters.push({
+        AND: [
+          { salaryAnnualMin: { not: null } },
+          { salaryAnnualMax: { not: null } },
+          { salaryAnnualMax: { gte: qMin } },
+          { salaryAnnualMin: { lte: qMax } },
+        ],
+      });
     }
 
     if (andFilters.length > 0) {
@@ -278,13 +299,25 @@ export class JobService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+    const salaryPayload =
+      data.salary !== undefined
+        ? (() => {
+            const b = parseSalary(data.salary);
+            return {
+              salary: data.salary,
+              salaryAnnualMin: b.min,
+              salaryAnnualMax: b.max,
+            };
+          })()
+        : {};
+
     return prisma.job.update({
       where: { id },
       data: {
         ...(data.title !== undefined && { title: data.title }),
         ...(data.description !== undefined && { description: data.description }),
         ...(data.location !== undefined && { location: data.location }),
-        ...(data.salary !== undefined && { salary: data.salary }),
+        ...salaryPayload,
         ...(data.company !== undefined && { company: data.company }),
         ...(data.customFields !== undefined && { customFields: JSON.parse(JSON.stringify(data.customFields)) }),
         ...(data.deadline !== undefined && { deadline: data.deadline ? new Date(data.deadline) : null }),

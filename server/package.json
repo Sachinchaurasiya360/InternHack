@@ -12,7 +12,8 @@
     "test": "vitest run",
     "seed": "tsx src/database/seeds/seed.ts",
     "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
-    "seed:admin": "tsx src/database/seed-admin.ts"
+    "seed:admin": "tsx src/database/seed-admin.ts",
+    "backfill:job-salary-bounds": "tsx src/database/backfill-job-salary-bounds.ts"
   },
   "keywords": [],
   "author": "Sachin Chaurasiya",

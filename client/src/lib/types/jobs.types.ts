@@ -60,6 +60,8 @@ export interface Job {
   description: string;
   location: string;
   salary: string;
+  salaryAnnualMin?: number | null;
+  salaryAnnualMax?: number | null;
   company: string;
   status: JobStatus;
   customFields: CustomFieldDefinition[];

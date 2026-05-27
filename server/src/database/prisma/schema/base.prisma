@@ -119,12 +119,14 @@ model adminProfile {
 }
 
 model job {
-  id           Int           @id @default(autoincrement())
-  title        String
-  description  String
-  location     String
-  salary       String
-  company      String
+  id               Int           @id @default(autoincrement())
+  title            String
+  description      String
+  location         String
+  salary           String
+  salaryAnnualMin  Int?
+  salaryAnnualMax  Int?
+  company          String
   status       JobStatus     @default(DRAFT)
   customFields Json          @default("[]")
   deadline     DateTime?
@@ -141,6 +143,9 @@ model job {
   @@index([status, createdAt])
   @@index([deadline])
   @@index([createdAt])
+  @@index([salaryAnnualMin])
+  @@index([salaryAnnualMax])
+  @@index([salaryAnnualMin, salaryAnnualMax])
 }
 
 model round {

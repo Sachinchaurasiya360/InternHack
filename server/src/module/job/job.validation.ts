@@ -39,6 +39,20 @@ const coerceBoolean = z.preprocess((value) => {
   return value;
 }, z.boolean());
 
+/**
+ * Strict optional annual INR for JSON bodies (reject `12abc`; never use parseInt alone on free text).
+ * Example: `z.union([z.string().regex(/^\d+$/).transform((s) => Number.parseInt(s, 10)), z.number().int().nonnegative()]).optional()`
+ */
+function queryParamDigitsOnlyToInt(fieldLabel: string) {
+  return z.preprocess((val: unknown) => {
+    if (val === undefined || val === null) return undefined;
+    const raw = Array.isArray(val) ? val[0] : val;
+    if (typeof raw !== "string") return undefined;
+    const t = raw.trim();
+    return t === "" ? undefined : t;
+  }, z.union([z.undefined(), z.string().regex(/^\d+$/, `${fieldLabel} must be digits only`).transform((s) => Number.parseInt(s, 10))]));
+}
+
 export const createJobSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
@@ -66,13 +80,29 @@ export const updateJobStatusSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]),
 });
 
-export const jobQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(10),
-  search: z.string().optional(),
-  location: z.string().optional(),
-  company: z.string().optional(),
-  status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]).optional(),
-  tags: z.string().optional(),
-  includeExpired: coerceBoolean.default(false),
-});
+export const jobQuerySchema = z
+  .object({
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(100).default(10),
+    search: z.string().optional(),
+    location: z.string().optional(),
+    company: z.string().optional(),
+    status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]).optional(),
+    tags: z.string().optional(),
+    includeExpired: coerceBoolean.default(false),
+    salaryMin: queryParamDigitsOnlyToInt("salaryMin"),
+    salaryMax: queryParamDigitsOnlyToInt("salaryMax"),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.salaryMin !== undefined &&
+      data.salaryMax !== undefined &&
+      data.salaryMin > data.salaryMax
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "salaryMin must be less than or equal to salaryMax",
+        path: ["salaryMin"],
+      });
+    }
+  });

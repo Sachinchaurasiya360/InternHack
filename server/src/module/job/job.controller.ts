@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { ZodError } from "zod";
 import { createJobSchema, updateJobSchema, updateJobStatusSchema, jobQuerySchema } from "./job.validation.js";
 import { JobService } from "./job.service.js";
 import { createLogger } from "../../utils/logger.js";
@@ -33,6 +34,9 @@ export class JobController {
       const data = await this.jobService.getJobs(query);
       return res.status(200).json(data);
     } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Validation failed", errors: error.flatten() });
+      }
       logger.error("Failed to get jobs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
@@ -102,6 +106,9 @@ export class JobController {
       const data = await this.jobService.getRecruiterJobs(req.user.id, query);
       return res.status(200).json(data);
     } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Validation failed", errors: error.flatten() });
+      }
       logger.error("Failed to get recruiter jobs", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
