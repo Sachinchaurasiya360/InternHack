@@ -143,6 +143,9 @@ model job {
   @@index([status, createdAt])
   @@index([deadline])
   @@index([createdAt])
+  @@index([salaryAnnualMin])
+  @@index([salaryAnnualMax])
+  @@index([salaryAnnualMin, salaryAnnualMax])
 }
 
 model round {

@@ -42,6 +42,7 @@ const FILTER_TAGS = [
 
 const LPA_TO_ANNUAL_INR = 100_000;
 
+/** Parses LPA from the browse filter into annual INR, or `undefined` if blank/invalid. */
 function parseAnnualInrFromLpaInput(raw: string): number | undefined {
   const trimmed = raw.trim();
   if (!trimmed) return undefined;
@@ -50,6 +51,7 @@ function parseAnnualInrFromLpaInput(raw: string): number | undefined {
   return Math.round(num * LPA_TO_ANNUAL_INR);
 }
 
+/** Formats annual INR for prefilling salary inputs when reading URL query params. */
 function formatLpaFromAnnualInr(inr: number): string {
   const lpa = inr / LPA_TO_ANNUAL_INR;
   if (Number.isInteger(lpa)) return String(lpa);
@@ -57,6 +59,7 @@ function formatLpaFromAnnualInr(inr: number): string {
   return s;
 }
 
+/** Builds an LPA display string from one `salaryMin` / `salaryMax` URL param (annual INR). */
 function lpaPlaceholderFromSearch(search: string, key: string): string {
   const p = new URLSearchParams(search);
   const raw = p.get(key);

@@ -29,6 +29,10 @@ interface JobQuery {
 }
 
 
+/**
+ * Turns the stored human-readable salary string into nullable annual INR bounds
+ * (`salaryAnnualMin` / `salaryAnnualMax`) using the same rules as job-index ingestion.
+ */
 function salaryBoundsFromString(salary: string): {
   salaryAnnualMin: number | null;
   salaryAnnualMax: number | null;
@@ -40,7 +44,10 @@ function salaryBoundsFromString(salary: string): {
   };
 }
 
-/** Overlap query range [salaryMin, salaryMax] with job [salaryAnnualMin, salaryAnnualMax]; missing bound = open. */
+/**
+ * Restricts listings to jobs whose stored range overlaps the optional query range.
+ * Jobs without both parsed bounds are excluded whenever any salary filter is active.
+ */
 function appendSalaryOverlapFilter(andFilters: Prisma.jobWhereInput[], query: JobQuery) {
   if (query.salaryMin === undefined && query.salaryMax === undefined) return;
 
@@ -63,6 +70,8 @@ function appendSalaryOverlapFilter(andFilters: Prisma.jobWhereInput[], query: Jo
 type UpdateJobData = {
   [K in keyof CreateJobData]?: CreateJobData[K] | undefined;
 };
+
+/** Persists recruiter job posts and resolves listing queries including optional salary overlap. */
 export class JobService {
   async createJob(data: CreateJobData) {
     const { salaryAnnualMin, salaryAnnualMax } = salaryBoundsFromString(data.salary);

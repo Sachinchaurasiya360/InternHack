@@ -66,13 +66,39 @@ export const updateJobStatusSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]),
 });
 
-const optionalAnnualInr = z.preprocess((v) => {
-  if (v === undefined || v === null || v === "") return undefined;
-  const n = typeof v === "string" ? Number.parseInt(v, 10) : Number(v);
-  if (!Number.isFinite(n) || n < 0) return undefined;
-  return Math.min(Math.trunc(n), Number.MAX_SAFE_INTEGER);
-}, z.number().int().optional());
+/**
+ * Express `req.query` value for optional annual INR filters.
+ * Omits empty input; rejects partial numbers like `"12abc"`. Allows non-negative integers only.
+ *
+ * @param field - Used in validation error paths/messages (`salaryMin` / `salaryMax`).
+ */
+function annualInrQueryField(field: "salaryMin" | "salaryMax") {
+  const msg = `${field} must be a non-negative integer (digits only)`;
+  return z.preprocess(
+    (v) => {
+      if (v === undefined || v === null || v === "") return undefined;
+      if (typeof v === "string" && v.trim() === "") return undefined;
+      if (typeof v === "number") {
+        if (!Number.isFinite(v) || !Number.isInteger(v) || v < 0) return "__invalid__";
+        return String(Math.min(v, Number.MAX_SAFE_INTEGER));
+      }
+      return String(v).trim();
+    },
+    z
+      .union([
+        z.undefined(),
+        z.literal("__invalid__").refine(() => false, { message: msg }),
+        z
+          .string()
+          .regex(/^\d{1,20}$/, { message: msg })
+          .transform((s) => Number.parseInt(s, 10))
+          .pipe(z.number().int().min(0).max(Number.MAX_SAFE_INTEGER)),
+      ])
+      .optional(),
+  );
+}
 
+/** Parsed `GET /jobs`-style listing query (digits-only salary bounds optional). */
 export const jobQuerySchema = z
   .object({
     page: z.coerce.number().int().positive().default(1),
@@ -83,8 +109,8 @@ export const jobQuerySchema = z
     status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]).optional(),
     tags: z.string().optional(),
     includeExpired: coerceBoolean.default(false),
-    salaryMin: optionalAnnualInr,
-    salaryMax: optionalAnnualInr,
+    salaryMin: annualInrQueryField("salaryMin"),
+    salaryMax: annualInrQueryField("salaryMax"),
   })
   .superRefine((data, ctx) => {
     if (
