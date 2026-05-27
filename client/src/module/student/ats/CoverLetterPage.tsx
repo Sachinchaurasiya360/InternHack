@@ -34,6 +34,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { CoverLetterTone, UsageStats } from "../../../lib/types";
+import jsPDF from "jspdf";
 
 
 const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
