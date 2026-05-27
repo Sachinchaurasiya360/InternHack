@@ -250,13 +250,34 @@ export class AptitudeService {
     const total = await prisma.aptitudeQuestion.count();
     const progress = await prisma.studentAptitudeProgress.findMany({
       where: { studentId },
-      select: { correct: true },
+      select: { correct: true , createdAt: true},
     });
+    
+    // Calculate current streak from aptitude practice history
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dates = [...new Set(progress.map((p) => {
+      const d = new Date(p.createdAt);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    }))].sort((a, b) => b - a);
+
+    let currentStreak = 0;
+    let expected = today.getTime();
+    for (const dateMs of dates) {
+      if (dateMs === expected) {
+        currentStreak++;
+        expected -= 86400000;
+      } else if (dateMs < expected) {
+        break;
+      }
+    }
 
     return {
       totalQuestions: total,
       totalAnswered: progress.length,
       totalCorrect: progress.filter((p) => p.correct).length,
+            currentStreak,
     };
   }
 }
