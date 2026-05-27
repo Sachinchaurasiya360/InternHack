@@ -54,6 +54,7 @@ import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
 import { contactRouter } from "./module/contact/contact.routes.js";
+import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
@@ -259,7 +260,7 @@ app.use("/api/learn", learnRouter);
 
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
-
+app.use("/api/hackathons", hackathonRouter);
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
 // Public ingest endpoint, external websites POST jobs here with API key
