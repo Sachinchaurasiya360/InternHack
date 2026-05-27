@@ -7,6 +7,7 @@ import { jobAgentJobsEmailHtml, jobAgentJobsEmailText } from "../../utils/email-
 const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]!);
 const JOB_EMAIL_COOLDOWN_SECONDS = 60;
 const JOB_EMAIL_DAILY_LIMIT = 5;
+const MAX_CONVERSATION_MESSAGES = 50;
 
 export class JobAgentEmailError extends Error {
   constructor(
@@ -172,6 +173,14 @@ async function upsertPreferences(userId: number, updatedPreferences: any): Promi
   return true;
 }
 
+async function persistCappedConversation(convId: number, history: any[], context: any) {
+  const cappedHistory = history.slice(-MAX_CONVERSATION_MESSAGES);
+  await prisma.jobAgentConversation.update({
+    where: { id: convId },
+    data: { messages: cappedHistory, context },
+  });
+}
+
 function truncateContext(context?: string | null): string | null {
   const trimmed = context?.replace(/\s+/g, " ").trim();
   if (!trimmed) return null;
@@ -271,12 +280,7 @@ export class JobAgentService {
       jobIds: jobs.map((j: any) => j.id),
     });
 
-    const cappedHistory = history.slice(-50);
-
-    await prisma.jobAgentConversation.update({
-      where: { id: conv.id },
-      data: { messages: cappedHistory, context: parsed.updatedPreferences || conv.context },
-    });
+    await persistCappedConversation(conv.id, history, parsed.updatedPreferences || conv.context);
 
     return { reply: parsed.reply, jobs, preferencesUpdated };
   }
@@ -388,12 +392,7 @@ export class JobAgentService {
       jobIds: jobs.map((j: any) => j.id),
     });
 
-    const cappedHistory = history.slice(-50);
-
-    await prisma.jobAgentConversation.update({
-      where: { id: conv.id },
-      data: { messages: cappedHistory, context: parsed.updatedPreferences || conv.context },
-    });
+    await persistCappedConversation(conv.id, history, parsed.updatedPreferences || conv.context);
   }
 
   async getConversation(userId: number) {
@@ -404,7 +403,7 @@ export class JobAgentService {
     if (!conv) return null;
 
     let messages = conv.messages as any[];
-    if (messages.length > 50) messages = messages.slice(-50);
+    if (messages.length > MAX_CONVERSATION_MESSAGES) messages = messages.slice(-MAX_CONVERSATION_MESSAGES);
     const allJobIds: number[] = [];
     for (const m of messages) {
       if (m.jobIds?.length) allJobIds.push(...m.jobIds);
