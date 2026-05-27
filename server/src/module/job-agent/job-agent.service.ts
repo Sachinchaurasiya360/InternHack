@@ -271,9 +271,11 @@ export class JobAgentService {
       jobIds: jobs.map((j: any) => j.id),
     });
 
+    const cappedHistory = history.slice(-50);
+
     await prisma.jobAgentConversation.update({
       where: { id: conv.id },
-      data: { messages: history, context: parsed.updatedPreferences || conv.context },
+      data: { messages: cappedHistory, context: parsed.updatedPreferences || conv.context },
     });
 
     return { reply: parsed.reply, jobs, preferencesUpdated };
@@ -386,9 +388,11 @@ export class JobAgentService {
       jobIds: jobs.map((j: any) => j.id),
     });
 
+    const cappedHistory = history.slice(-50);
+
     await prisma.jobAgentConversation.update({
       where: { id: conv.id },
-      data: { messages: history, context: parsed.updatedPreferences || conv.context },
+      data: { messages: cappedHistory, context: parsed.updatedPreferences || conv.context },
     });
   }
 
@@ -399,7 +403,8 @@ export class JobAgentService {
     });
     if (!conv) return null;
 
-    const messages = conv.messages as any[];
+    let messages = conv.messages as any[];
+    if (messages.length > 50) messages = messages.slice(-50);
     const allJobIds: number[] = [];
     for (const m of messages) {
       if (m.jobIds?.length) allJobIds.push(...m.jobIds);
