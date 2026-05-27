@@ -1,4 +1,5 @@
 import { Brain, Target, FileText, Map, BookOpen } from "lucide-react";
+import { memo } from "react";
 
 export interface WeakArea {
   type: "dsa" | "aptitude" | "skill" | "ats" | "roadmap";
@@ -20,7 +21,7 @@ interface Props {
   index: number;
 }
 
-export function RecommendationCard({ area, index }: Props) {
+export const RecommendationCard = memo(function RecommendationCard({ area, index }: Props) {
   const config = TYPE_CONFIG[area.type];
   const Icon = config.icon;
 

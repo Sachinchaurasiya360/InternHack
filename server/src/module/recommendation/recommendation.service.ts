@@ -67,7 +67,6 @@ async function computeWeakAreas(userId: number): Promise<WeakArea[]> {
     analyzeRoadmap(userId, weakAreas),
   ]);
 
-  console.log(`[Recommendations] userId=${userId} weakAreas=`, weakAreas);
   return weakAreas;
 }
 
@@ -154,13 +153,6 @@ async function analyzeSkillTests(
     include: { test: { select: { skillName: true, passThreshold: true } } },
     orderBy: { createdAt: "desc" },
   });
-
-  console.log(`[SkillTest] userId=${userId} found=${attempts.length}`);
-  for (const a of attempts) {
-    console.log(
-      `  attempt: skill=${a.test.skillName} passed=${a.passed} score=${a.score}`,
-    );
-  }
 
   if (attempts.length === 0) return;
 

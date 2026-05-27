@@ -134,7 +134,7 @@ export default function LearnHubPage() {
               </span>
             </div>
           </motion.div>
-          
+
           {/* Recommended for you */}
           {!loadingRecs && weakAreas.length > 0 && (
             <motion.section
@@ -152,7 +152,7 @@ export default function LearnHubPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {weakAreas.slice(0, 6).map((area, i) => (
                   <RecommendationCard
-                    key={`${area.type}-${area.topic}`}
+                    key={`${area.type}-${area.topic}-${i}`}
                     area={area}
                     index={i}
                   />
