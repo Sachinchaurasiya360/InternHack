@@ -66,13 +66,36 @@ export const updateJobStatusSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]),
 });
 
-export const jobQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(10),
-  search: z.string().optional(),
-  location: z.string().optional(),
-  company: z.string().optional(),
-  status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]).optional(),
-  tags: z.string().optional(),
-  includeExpired: coerceBoolean.default(false),
-});
+const optionalAnnualInr = z.preprocess((v) => {
+  if (v === undefined || v === null || v === "") return undefined;
+  const n = typeof v === "string" ? Number.parseInt(v, 10) : Number(v);
+  if (!Number.isFinite(n) || n < 0) return undefined;
+  return Math.min(Math.trunc(n), Number.MAX_SAFE_INTEGER);
+}, z.number().int().optional());
+
+export const jobQuerySchema = z
+  .object({
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(100).default(10),
+    search: z.string().optional(),
+    location: z.string().optional(),
+    company: z.string().optional(),
+    status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]).optional(),
+    tags: z.string().optional(),
+    includeExpired: coerceBoolean.default(false),
+    salaryMin: optionalAnnualInr,
+    salaryMax: optionalAnnualInr,
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.salaryMin !== undefined &&
+      data.salaryMax !== undefined &&
+      data.salaryMin > data.salaryMax
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "salaryMin must be <= salaryMax",
+        path: ["salaryMin"],
+      });
+    }
+  });

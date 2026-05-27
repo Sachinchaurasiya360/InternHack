@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
 import type { Prisma } from "@prisma/client";
+import { parseSalary } from "../job-index/job-normalizer.js";
 
 interface CreateJobData {
   title: string;
@@ -23,6 +24,39 @@ interface JobQuery {
   status?: string | undefined;
   tags?: string | undefined;
   includeExpired?: boolean | undefined;
+  salaryMin?: number | undefined;
+  salaryMax?: number | undefined;
+}
+
+
+function salaryBoundsFromString(salary: string): {
+  salaryAnnualMin: number | null;
+  salaryAnnualMax: number | null;
+} {
+  const { min, max } = parseSalary(salary);
+  return {
+    salaryAnnualMin: min,
+    salaryAnnualMax: max,
+  };
+}
+
+/** Overlap query range [salaryMin, salaryMax] with job [salaryAnnualMin, salaryAnnualMax]; missing bound = open. */
+function appendSalaryOverlapFilter(andFilters: Prisma.jobWhereInput[], query: JobQuery) {
+  if (query.salaryMin === undefined && query.salaryMax === undefined) return;
+
+  const conditions: Prisma.jobWhereInput[] = [
+    { salaryAnnualMin: { not: null } },
+    { salaryAnnualMax: { not: null } },
+  ];
+
+  if (query.salaryMin !== undefined) {
+    conditions.push({ salaryAnnualMax: { gte: query.salaryMin } });
+  }
+  if (query.salaryMax !== undefined) {
+    conditions.push({ salaryAnnualMin: { lte: query.salaryMax } });
+  }
+
+  andFilters.push({ AND: conditions });
 }
 
 
@@ -31,12 +65,16 @@ type UpdateJobData = {
 };
 export class JobService {
   async createJob(data: CreateJobData) {
+    const { salaryAnnualMin, salaryAnnualMax } = salaryBoundsFromString(data.salary);
+
     return prisma.job.create({
       data: {
         title: data.title,
         description: data.description,
         location: data.location,
         salary: data.salary,
+        salaryAnnualMin,
+        salaryAnnualMax,
         company: data.company,
         status: data.status || "DRAFT",
         customFields: data.customFields ? JSON.parse(JSON.stringify(data.customFields)) : [],
@@ -84,6 +122,8 @@ export class JobService {
     if (query.tags) {
       where.tags = { hasSome: query.tags.split(",").map((t) => t.trim()) };
     }
+
+    appendSalaryOverlapFilter(andFilters, query);
 
     if (andFilters.length > 0) {
       where.AND = andFilters;
@@ -240,11 +280,21 @@ export class JobService {
       where.status = query.status as "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
     }
 
+    const andParts: Prisma.jobWhereInput[] = [];
+
     if (query.search) {
-      where.OR = [
-        { title: { contains: query.search, mode: "insensitive" } },
-        { company: { contains: query.search, mode: "insensitive" } },
-      ];
+      andParts.push({
+        OR: [
+          { title: { contains: query.search, mode: "insensitive" } },
+          { company: { contains: query.search, mode: "insensitive" } },
+        ],
+      });
+    }
+
+    appendSalaryOverlapFilter(andParts, query);
+
+    if (andParts.length > 0) {
+      where.AND = andParts;
     }
 
     const skip = (query.page - 1) * query.limit;
@@ -278,13 +328,20 @@ export class JobService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+    const salaryBounds =
+      data.salary !== undefined ? salaryBoundsFromString(data.salary) : null;
+
     return prisma.job.update({
       where: { id },
       data: {
         ...(data.title !== undefined && { title: data.title }),
         ...(data.description !== undefined && { description: data.description }),
         ...(data.location !== undefined && { location: data.location }),
-        ...(data.salary !== undefined && { salary: data.salary }),
+        ...(data.salary !== undefined && {
+          salary: data.salary,
+          salaryAnnualMin: salaryBounds!.salaryAnnualMin,
+          salaryAnnualMax: salaryBounds!.salaryAnnualMax,
+        }),
         ...(data.company !== undefined && { company: data.company }),
         ...(data.customFields !== undefined && { customFields: JSON.parse(JSON.stringify(data.customFields)) }),
         ...(data.deadline !== undefined && { deadline: data.deadline ? new Date(data.deadline) : null }),

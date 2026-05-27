@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
@@ -40,6 +40,32 @@ const FILTER_TAGS = [
   "Data Science",
 ] as const;
 
+const LPA_TO_ANNUAL_INR = 100_000;
+
+function parseAnnualInrFromLpaInput(raw: string): number | undefined {
+  const trimmed = raw.trim();
+  if (!trimmed) return undefined;
+  const num = Number(trimmed);
+  if (!Number.isFinite(num) || num < 0) return undefined;
+  return Math.round(num * LPA_TO_ANNUAL_INR);
+}
+
+function formatLpaFromAnnualInr(inr: number): string {
+  const lpa = inr / LPA_TO_ANNUAL_INR;
+  if (Number.isInteger(lpa)) return String(lpa);
+  const s = lpa.toFixed(2).replace(/\.?0+$/, "");
+  return s;
+}
+
+function lpaPlaceholderFromSearch(search: string, key: string): string {
+  const p = new URLSearchParams(search);
+  const raw = p.get(key);
+  if (!raw) return "";
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0) return "";
+  return formatLpaFromAnnualInr(n);
+}
+
 function MetaChip({
   icon,
   children,
@@ -56,16 +82,77 @@ function MetaChip({
 }
 
 export default function JobBrowsePage() {
-  const isInsideLayout = useLocation().pathname.startsWith("/student/");
+  const location = useLocation();
+  const isInsideLayout = location.pathname.startsWith("/student/");
+  const [, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
+  const [salaryMinInput, setSalaryMinInput] = useState("");
+  const [salaryMaxInput, setSalaryMaxInput] = useState("");
   const debouncedSearch = useDebounce(search, 400);
   const debouncedLocation = useDebounce(locationFilter, 400);
+  const debouncedSalaryMinInput = useDebounce(salaryMinInput, 400);
+  const debouncedSalaryMaxInput = useDebounce(salaryMaxInput, 400);
+  const debouncedSalaryMinAnnual = parseAnnualInrFromLpaInput(debouncedSalaryMinInput);
+  const debouncedSalaryMaxAnnual = parseAnnualInrFromLpaInput(debouncedSalaryMaxInput);
   const [hideExpired, setHideExpired] = useState(true);
+
+  const trimmedSalaryMin = salaryMinInput.trim();
+  const trimmedSalaryMax = salaryMaxInput.trim();
+  /** Empty field drops the bound immediately so clear / deletes are not delayed by debounce. */
+  const salaryMinAnnualForApi =
+    trimmedSalaryMin === "" ? undefined : debouncedSalaryMinAnnual;
+  const salaryMaxAnnualForApi =
+    trimmedSalaryMax === "" ? undefined : debouncedSalaryMaxAnnual;
+
+  useEffect(() => {
+    const minShown = lpaPlaceholderFromSearch(location.search, "salaryMin");
+    const maxShown = lpaPlaceholderFromSearch(location.search, "salaryMax");
+    /* eslint-disable react-hooks/set-state-in-effect -- sync LPA fields with salary* URL params on navigation/share links */
+    setSalaryMinInput(minShown);
+    setSalaryMaxInput(maxShown);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [location.search]);
+
+  useEffect(() => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      let changed = false;
+
+      if (salaryMinAnnualForApi !== undefined) {
+        const s = String(salaryMinAnnualForApi);
+        if (next.get("salaryMin") !== s) {
+          next.set("salaryMin", s);
+          changed = true;
+        }
+      } else if (next.has("salaryMin")) {
+        next.delete("salaryMin");
+        changed = true;
+      }
+
+      if (salaryMaxAnnualForApi !== undefined) {
+        const s = String(salaryMaxAnnualForApi);
+        if (next.get("salaryMax") !== s) {
+          next.set("salaryMax", s);
+          changed = true;
+        }
+      } else if (next.has("salaryMax")) {
+        next.delete("salaryMax");
+        changed = true;
+      }
+
+      return changed ? next : prev;
+    });
+  }, [salaryMinAnnualForApi, salaryMaxAnnualForApi, setSearchParams]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- invalidate page when overlap filter changes so pagination stays valid
+    setPage(1);
+  }, [salaryMinAnnualForApi, salaryMaxAnnualForApi]);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: queryKeys.jobs.list({
@@ -74,6 +161,12 @@ export default function JobBrowsePage() {
       location: debouncedLocation,
       tags: selectedTags.join(","),
       includeExpired: !hideExpired,
+      ...(salaryMinAnnualForApi !== undefined && {
+        salaryMin: salaryMinAnnualForApi,
+      }),
+      ...(salaryMaxAnnualForApi !== undefined && {
+        salaryMax: salaryMaxAnnualForApi,
+      }),
     }),
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), limit: "12" });
@@ -81,6 +174,12 @@ export default function JobBrowsePage() {
       if (debouncedLocation) params.set("location", debouncedLocation);
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
       params.set("includeExpired", String(!hideExpired));
+      if (salaryMinAnnualForApi !== undefined) {
+        params.set("salaryMin", String(salaryMinAnnualForApi));
+      }
+      if (salaryMaxAnnualForApi !== undefined) {
+        params.set("salaryMax", String(salaryMaxAnnualForApi));
+      }
       const res = await api.get(`/jobs?${params}`);
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
@@ -153,12 +252,25 @@ export default function JobBrowsePage() {
     setSearch("");
     setLocationFilter("");
     setSelectedTags([]);
+    setSalaryMinInput("");
+    setSalaryMaxInput("");
     setPage(1);
     setExtPage(1);
     setScrPage(1);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete("salaryMin");
+      next.delete("salaryMax");
+      return next;
+    });
   };
 
-  const hasFilters = search || locationFilter || selectedTags.length > 0;
+  const hasFilters =
+    search ||
+    locationFilter ||
+    selectedTags.length > 0 ||
+    salaryMinAnnualForApi !== undefined ||
+    salaryMaxAnnualForApi !== undefined;
 
   
 
@@ -320,6 +432,56 @@ export default function JobBrowsePage() {
               />
             </div>
           </form>
+
+          <div className="min-h-[3.75rem] flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+            <div className="flex items-center gap-2 shrink-0 sm:pb-px">
+              <span className="flex h-9 w-9 items-center justify-center rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-500 shrink-0">
+                <IndianRupee className="w-4 h-4" aria-hidden />
+              </span>
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
+                salary /
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 flex-1 w-full">
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-mono uppercase tracking-widest text-stone-400">
+                  min (lpa)
+                </span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step={0.5}
+                  value={salaryMinInput}
+                  placeholder="Any"
+                  onChange={(e) => setSalaryMinInput(e.target.value)}
+                  autoComplete="off"
+                  aria-label="Minimum salary in lakhs per annum"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm tabular-nums text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-mono uppercase tracking-widest text-stone-400">
+                  max (lpa)
+                </span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step={0.5}
+                  value={salaryMaxInput}
+                  placeholder="Any"
+                  onChange={(e) => setSalaryMaxInput(e.target.value)}
+                  autoComplete="off"
+                  aria-label="Maximum salary in lakhs per annum"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm tabular-nums text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
+                />
+              </label>
+            </div>
+          </div>
+          <p className="text-xs text-stone-500 font-mono -mt-3 sm:-mt-1">
+            Applies to partner (internal) roles with a parseable salary. External and scraped lists ignore this filter for now.
+          </p>
 
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
