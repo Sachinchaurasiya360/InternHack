@@ -86,7 +86,7 @@ export default function ApplicationProgressPage() {
                   title: `${application.job?.title} @ ${application.job?.company} — Application Deadline`,
                   details: `Applied via InternHack: https://internhack.xyz/student/applications/${application.id}\\nCompany: ${application.job?.company}\\nRole: ${application.job?.title}\\nLocation: ${application.job?.location || "Remote"}`,
                   start: new Date(application.job?.deadline ?? ""),
-end: new Date(new Date(application.job?.deadline ?? "").getTime() + 30 * 60000),
+                  end: new Date(new Date(application.job?.deadline ?? "").getTime() + 30 * 60000),
                 }), '_blank')}
               >
                 <CalendarIcon className="w-3 h-3" /> Google Calendar
@@ -117,9 +117,8 @@ end: new Date(new Date(application.job?.deadline ?? "").getTime() + 30 * 60000),
 
           return (
             <motion.div key={round.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              className={`bg-white dark:bg-gray-900 rounded-xl border shadow-sm overflow-hidden ${
-                isActive ? "border-black dark:border-white" : "border-gray-100 dark:border-gray-800"
-              }`}>
+              className={`bg-white dark:bg-gray-900 rounded-xl border shadow-sm overflow-hidden ${isActive ? "border-black dark:border-white" : "border-gray-100 dark:border-gray-800"
+                }`}>
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-2">
                   {isCompleted ? (
@@ -130,11 +129,10 @@ end: new Date(new Date(application.job?.deadline ?? "").getTime() + 30 * 60000),
                     <Circle className="w-5 h-5 text-gray-300 dark:text-gray-600" />
                   )}
                   <h3 className="font-semibold text-gray-900 dark:text-white">Round {i + 1}: {round.name}</h3>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    isCompleted ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
-                    isActive ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
-                    "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500"
-                  }`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${isCompleted ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
+                      isActive ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                        "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500"
+                    }`}>
                     {isCompleted ? "Completed" : isActive ? "In Progress" : "Pending"}
                   </span>
                   {round.activateAt && (
@@ -207,28 +205,28 @@ end: new Date(new Date(application.job?.deadline ?? "").getTime() + 30 * 60000),
                             />
                           )}
                           <div className="space-y-2">
-  {submitError && (
-    <div aria-live="polite" className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg text-sm text-red-600 dark:text-red-400">
-      <span>{submitError}</span>
-      <Button
-        variant="mono"
-        size="sm"
-        aria-label="Retry submission"
-        disabled={submitting}
-        onClick={() => lastPayload.current && handleSubmitRound(lastPayload.current.roundId, lastPayload.current.answers)}
-      >
-        {submitting ? "Retrying..." : "Retry"}
-      </Button>
-    </div>
-  )}
-  <div className="flex items-center gap-3">
-    <Button variant="mono" onClick={() => handleSubmitRound(round.id)} disabled={submitting}>
-      <Send className="w-4 h-4" />
-      {submitting ? "Submitting..." : "Submit Round"}
-    </Button>
-    <Button variant="ghost" onClick={() => setActiveRoundId(null)} className="text-gray-500 hover:text-black dark:hover:text-white">Cancel</Button>
-  </div>
-</div>
+                            {submitError && (
+                              <div aria-live="polite" className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg text-sm text-red-600 dark:text-red-400">
+                                <span>{submitError}</span>
+                                <Button
+                                  variant="mono"
+                                  size="sm"
+                                  aria-label="Retry submission"
+                                  disabled={submitting}
+                                  onClick={() => lastPayload.current && handleSubmitRound(lastPayload.current.roundId, lastPayload.current.answers)}
+                                >
+                                  {submitting ? "Retrying..." : "Retry"}
+                                </Button>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-3">
+                              <Button variant="mono" onClick={() => handleSubmitRound(round.id)} disabled={submitting}>
+                                <Send className="w-4 h-4" />
+                                {submitting ? "Submitting..." : "Submit Round"}
+                              </Button>
+                              <Button variant="ghost" onClick={() => { setActiveRoundId(null); setSubmitError(null); }} className="text-gray-500 hover:text-black dark:hover:text-white">Cancel</Button>
+                            </div>
+                          </div>
                         </div>
                       )
                     ) : (
