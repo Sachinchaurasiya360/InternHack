@@ -224,7 +224,11 @@ export default function JobBrowsePage() {
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
-  const [hideExpired, setHideExpired] = useState(true); // ← kept from main
+  const [salaryMin, setSalaryMin] = useState("");
+  const [salaryMax, setSalaryMax] = useState("");
+  const debouncedSalaryMin = useDebounce(salaryMin, 500);
+  const debouncedSalaryMax = useDebounce(salaryMax, 500);
+  const [hideExpired, setHideExpired] = useState(true);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
@@ -250,6 +254,8 @@ export default function JobBrowsePage() {
       location: debouncedLocation,
       tags: selectedTags.join(","),
       includeExpired: !hideExpired,
+      salaryMin: debouncedSalaryMin || undefined,
+      salaryMax: debouncedSalaryMax || undefined,
     }),
     queryFn: async () => {
       const params = new URLSearchParams({
@@ -260,7 +266,9 @@ export default function JobBrowsePage() {
       if (debouncedLocation) params.set("location", debouncedLocation);
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
       params.set("includeExpired", String(!hideExpired));
-      const res = await api.get(`/scraped-jobs?${params}`);
+      if (debouncedSalaryMin) params.set("salaryMin", debouncedSalaryMin);
+      if (debouncedSalaryMax) params.set("salaryMax", debouncedSalaryMax);
+      const res = await api.get(`/jobs?${params}`);
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
     placeholderData: keepPreviousData,
@@ -343,13 +351,15 @@ export default function JobBrowsePage() {
     setDebouncedSearch("");
     setDebouncedLocation("");
     setSelectedTags([]);
-    setSearchParams({}); // wipes all URL params
+    setSalaryMin("");
+    setSalaryMax("");
+    setSearchParams({});
     setPage(1);
     setExtPage(1);
     setScrPage(1);
   };
 
-  const hasFilters = search || locationFilter || selectedTags.length > 0;
+  const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
 
   const submitSearch = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -526,6 +536,42 @@ export default function JobBrowsePage() {
               />
             </div>
           </form>
+
+          {/* Salary range inputs */}
+          <div className="flex items-center gap-2 flex-wrap mt-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1 flex items-center gap-1">
+              <IndianRupee className="w-3 h-3" />
+              salary /
+            </span>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 pointer-events-none font-mono">min</span>
+                <input
+                  id="salary-min-input"
+                  type="number"
+                  min={0}
+                  value={salaryMin}
+                  onChange={(e) => { setSalaryMin(e.target.value); setPage(1); }}
+                  className="w-28 pl-9 pr-2 py-1.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-xs text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="0"
+                />
+              </div>
+              <span className="text-stone-400 text-xs">—</span>
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 pointer-events-none font-mono">max</span>
+                <input
+                  id="salary-max-input"
+                  type="number"
+                  min={0}
+                  value={salaryMax}
+                  onChange={(e) => { setSalaryMax(e.target.value); setPage(1); }}
+                  className="w-28 pl-9 pr-2 py-1.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-xs text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="∞"
+                />
+              </div>
+              <span className="text-xs font-mono text-stone-400">LPA</span>
+            </div>
+          </div>
 
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
