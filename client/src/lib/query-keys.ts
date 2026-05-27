@@ -225,6 +225,7 @@ export const queryKeys = {
     submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
     importStatus: () => ["dsa", "import-status"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
+    similar: (id: number) => ["dsa", "similar", id] as const,
   },
 
   // Roadmaps

@@ -287,4 +287,16 @@ export class DsaController {
       next(err);
     }
   }
+
+  async getSimilarProblems(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(req.params.id as string, 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 3, 1), 10);
+      const data = await this.dsaService.getSimilarProblems(id, limit);
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

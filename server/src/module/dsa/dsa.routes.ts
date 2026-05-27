@@ -43,5 +43,6 @@ dsaRouter.get("/companies", optionalAuthMiddleware, (req, res, next) => dsaContr
 dsaRouter.get("/companies/:company", optionalAuthMiddleware, (req, res, next) => dsaController.getCompanyProblems(req, res, next));
 dsaRouter.get("/patterns", optionalAuthMiddleware, (req, res, next) => dsaController.getPatterns(req, res, next));
 dsaRouter.get("/patterns/:pattern", optionalAuthMiddleware, (req, res, next) => dsaController.getPatternProblems(req, res, next));
+dsaRouter.get("/problems/:id/similar", optionalAuthMiddleware, (req, res, next) => dsaController.getSimilarProblems(req, res, next));
 dsaRouter.get("/problems/:slug", optionalAuthMiddleware, (req, res, next) => dsaController.getProblemBySlug(req, res, next));
 dsaRouter.get("/topics/:slug", optionalAuthMiddleware, (req, res, next) => dsaController.getTopicBySlug(req, res, next));

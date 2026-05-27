@@ -6,12 +6,12 @@ import {
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
-  History, Terminal, Lock, Crown, Code2,Flag
+  History, Terminal, Lock, Crown, Code2, Flag, X,
 } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary } from "../../../lib/types";
+import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary, DsaSimilarProblem } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
@@ -107,6 +107,7 @@ export default function DsaProblemDetailPage() {
   const [showAllCompanies, setShowAllCompanies] = useState(false);
   const [expandedHint, setExpandedHint] = useState<number | null>(null);
   const [showNotes, setShowNotes] = useState(false);
+  const [showNextPanel, setShowNextPanel] = useState(false);
   const [noteValue, setNoteValue] = useState("");
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState("");
@@ -159,6 +160,17 @@ export default function DsaProblemDetailPage() {
     enabled: !!user && !!problem && isPremium,
     staleTime: 60 * 1000,
   });
+
+  const { data: similarProblems = [] } = useQuery({
+    queryKey: queryKeys.dsa.similar(problem?.id ?? 0),
+    queryFn: () =>
+      api.get<DsaSimilarProblem[]>(`/dsa/problems/${problem!.id}/similar?limit=3`)
+        .then((r) => r.data),
+    enabled: !!problem && showNextPanel,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  useEffect(() => { setShowNextPanel(false); }, [slug]);
 
   const toggleMutation = useMutation({
     mutationFn: (problemId: number) => api.post(`/dsa/problems/${problemId}/toggle`).then((r) => r.data),
@@ -221,6 +233,7 @@ export default function DsaProblemDetailPage() {
         toast.success("All test cases passed!");
         queryClient.invalidateQueries({ queryKey: queryKeys.dsa.problem(slug!) });
         queryClient.invalidateQueries({ queryKey: queryKeys.dsa.progress() });
+        setShowNextPanel(true);
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.dsa.submissions(problem!.id) });
     },
@@ -771,13 +784,10 @@ export default function DsaProblemDetailPage() {
       {showReportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
-
             <h2 className="text-sm font-bold uppercase tracking-widest mb-4">
               Report Issue
             </h2>
-
             <div className="space-y-4">
-
               <select
                 value={reportReason}
                 onChange={(e) => setReportReason(e.target.value)}
@@ -789,23 +799,19 @@ export default function DsaProblemDetailPage() {
                 <option value="Broken editor">Broken editor</option>
                 <option value="Other">Other</option>
               </select>
-
               <textarea
                 value={reportMessage}
                 onChange={(e) => setReportMessage(e.target.value)}
                 placeholder="Additional details (optional)"
                 className="w-full h-28 px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 text-sm resize-none"
               />
-
               <div className="flex justify-end gap-2">
-
                 <button
                   onClick={() => setShowReportModal(false)}
                   className="px-3 py-2 text-xs font-mono uppercase border border-stone-300 dark:border-white/10 rounded-md"
                 >
                   Cancel
                 </button>
-
                 <button
                   disabled={!reportReason || reportIssueMutation.isPending}
                   onClick={() =>
@@ -819,12 +825,77 @@ export default function DsaProblemDetailPage() {
                 >
                   {reportIssueMutation.isPending ? "Submitting" : "Submit"}
                 </button>
-
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* ── "Try Next" slide-up panel ── */}
+      <AnimatePresence>
+        {showNextPanel && isPremium && similarProblems.length > 0 && (
+          <motion.div
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10 shadow-2xl"
+          >
+            <div className="max-w-5xl mx-auto px-4 py-4 pb-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+                  <span className="h-1.5 w-1.5 bg-lime-400 rounded-full animate-pulse" />
+                  try next
+                </div>
+                <button
+                  onClick={() => setShowNextPanel(false)}
+                  className="w-7 h-7 inline-flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {similarProblems.map((sp) => (
+                  <Link
+                    key={sp.id}
+                    to={`/learn/dsa/problem/${sp.slug}`}
+                    className="group block border border-stone-200 dark:border-white/10 rounded-md p-3.5 hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline bg-stone-50 dark:bg-stone-950"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider border rounded-md ${DIFF_STYLE[sp.difficulty] || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
+                        {sp.difficulty}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-stone-900 dark:text-stone-50 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors leading-snug truncate">
+                      {sp.title}
+                    </p>
+                    <div className="mt-2 flex gap-1.5 overflow-hidden">
+                      {sp.tags.slice(0, 2).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[9px] font-mono uppercase tracking-wider text-stone-500 bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded-sm truncate"
+                        >
+                          {tag.replace(/-/g, " ")}
+                        </span>
+                      ))}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              {problem.tags[0] && (
+                <div className="mt-3 text-center">
+                  <Link
+                    to={`/learn/dsa/${problem.tags[0]}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-lime-600 dark:hover:text-lime-400 transition-colors no-underline"
+                  >
+                    back to topic
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
