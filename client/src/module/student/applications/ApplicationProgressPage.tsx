@@ -45,7 +45,6 @@ export default function ApplicationProgressPage() {
       lastPayload.current = null;
       queryClient.invalidateQueries({ queryKey: queryKeys.applications.progress(applicationId!) });
     } catch {
-      toast.error("Failed to submit round");
       setSubmitError("Submission failed. Please try again.");
     } finally {
       setSubmitting(false);
