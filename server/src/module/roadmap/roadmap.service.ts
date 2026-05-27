@@ -18,7 +18,7 @@ export async function findDuplicateRoadmap(
       ownerUserId: userId,
       isAiGenerated: true,
       title: {
-        equals: title.trim(),
+        contains: title.trim(),
         mode: "insensitive",
       },
     },

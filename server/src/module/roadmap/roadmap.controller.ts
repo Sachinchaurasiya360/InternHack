@@ -444,7 +444,7 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
   userId
 );
 
-if (duplicate) {
+if (duplicate && !input.forceCreate) {
   res.status(409).json({
     message: "Similar roadmap already exists",
     roadmap: duplicate,
