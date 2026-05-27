@@ -67,6 +67,7 @@ interface TopicNodeData {
   status: RoadmapTopicStatus;
   bookmarked: boolean;
   isNext: boolean;
+  isWeak: boolean;
   index: number;
   onClick: () => void;
 }
@@ -155,7 +156,11 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             title={data.isCollapsed ? "Expand section" : "Collapse section"}
             className="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors pointer-events-auto mr-1 cursor-pointer"
           >
-            {data.isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+            {data.isCollapsed ? (
+              <ChevronDown className="w-5 h-5" />
+            ) : (
+              <ChevronUp className="w-5 h-5" />
+            )}
           </button>
         )}
 
@@ -164,7 +169,11 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             type="button"
             onClick={data.onRegenerate}
             disabled={data.isRegenerating}
-            title={data.isRegenerating ? "Regenerating section…" : "Regenerate this section with AI"}
+            title={
+              data.isRegenerating
+                ? "Regenerating section…"
+                : "Regenerate this section with AI"
+            }
             className="p-1 rounded hover:bg-lime-100 dark:hover:bg-lime-950/40 text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors pointer-events-auto mr-2 cursor-pointer"
           >
             {data.isRegenerating ? (
@@ -234,7 +243,7 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
 
 // ─── Custom node: topic card ────────────────────────────────────────────────
 function TopicNode({ data }: NodeProps<TopicNodeData>) {
-  const { status, topic, isNext, bookmarked, index } = data;
+  const { status, topic, isNext, bookmarked, index, isWeak } = data;
   const isCompleted = status === "COMPLETED";
   const isInProgress = status === "IN_PROGRESS";
 
@@ -243,6 +252,9 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
     : isInProgress
       ? "bg-amber-400"
       : "bg-stone-200 dark:bg-stone-800";
+
+  const weakRing =
+    isWeak && !isCompleted ? "ring-2 ring-amber-400 ring-offset-1" : "";
 
   const cardBorder = isNext
     ? "border-lime-400 dark:border-lime-500"
@@ -260,7 +272,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
       whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
       whileTap={{ scale: 0.98 }}
       onClick={data.onClick}
-      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-grab active:cursor-grabbing w-72 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10`}
+      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-grab active:cursor-grabbing w-72 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10 ${weakRing}`}
     >
       <Handle
         type="target"
@@ -399,13 +411,41 @@ export default function RoadmapCanvasPage() {
   const queryClient = useQueryClient();
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
-  const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">("LINEAR");
+  const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">(
+    "LINEAR",
+  );
   // Track which sectionId is currently being regenerated
-  const [regeneratingSectionId, setRegeneratingSectionId] = useState<number | null>(null);
+  const [regeneratingSectionId, setRegeneratingSectionId] = useState<
+    number | null
+  >(null);
   // Modal state for the regenerate instructions dialog
-  const [regenModal, setRegenModal] = useState<{ sectionId: number; sectionTitle: string } | null>(null);
+  const [regenModal, setRegenModal] = useState<{
+    sectionId: number;
+    sectionTitle: string;
+  } | null>(null);
   const [regenInstructions, setRegenInstructions] = useState("");
-  const [collapsedSections, setCollapsedSections] = useState<Set<number>>(new Set());
+  const [collapsedSections, setCollapsedSections] = useState<Set<number>>(
+    new Set(),
+  );
+  const [weakTopicTitles, setWeakTopicTitles] = useState<Set<string>>(
+    new Set(),
+  );
+
+  useEffect(() => {
+    api
+      .get<{ weakAreas: { type: string; topic: string }[] }>(
+        "/student/recommendations",
+      )
+      .then((res) => {
+        const titles = new Set(
+          res.data.weakAreas
+            .filter((w) => w.type === "roadmap")
+            .map((w) => w.topic),
+        );
+        setWeakTopicTitles(titles);
+      })
+      .catch(() => {});
+  }, []);
 
   const toggleSection = useCallback((id: number) => {
     setCollapsedSections((prev) => {
@@ -420,9 +460,18 @@ export default function RoadmapCanvasPage() {
   const prevPercentRef = useRef<number | null>(null);
   const hasShownCompletionRef = useRef(false);
 
-  const { data: enrollmentsList, isLoading: enrollmentsLoading, error: enrollmentsError } = useQuery({
+  const {
+    data: enrollmentsList,
+    isLoading: enrollmentsLoading,
+    error: enrollmentsError,
+  } = useQuery({
     queryKey: queryKeys.roadmaps.enrollments(),
-    queryFn: () => api.get<{ enrollments: { id: number; roadmap: { slug: string } }[] }>("/roadmaps/me/enrollments").then(res => res.data),
+    queryFn: () =>
+      api
+        .get<{
+          enrollments: { id: number; roadmap: { slug: string } }[];
+        }>("/roadmaps/me/enrollments")
+        .then((res) => res.data),
   });
 
   useEffect(() => {
@@ -431,7 +480,9 @@ export default function RoadmapCanvasPage() {
     }
   }, [enrollmentsError, navigate, slug]);
 
-  const enrollmentMatch = enrollmentsList?.enrollments.find((x) => x.roadmap.slug === slug);
+  const enrollmentMatch = enrollmentsList?.enrollments.find(
+    (x) => x.roadmap.slug === slug,
+  );
 
   useEffect(() => {
     if (enrollmentsList && !enrollmentMatch && !enrollmentsLoading) {
@@ -441,9 +492,16 @@ export default function RoadmapCanvasPage() {
 
   const enrollmentId = enrollmentMatch?.id || null;
 
-  const { data, isLoading: detailLoading, isError: detailError } = useQuery({
+  const {
+    data,
+    isLoading: detailLoading,
+    isError: detailError,
+  } = useQuery({
     queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId!),
-    queryFn: () => api.get<EnrollmentResponse>(`/roadmaps/me/enrollments/${enrollmentId}`).then(res => res.data),
+    queryFn: () =>
+      api
+        .get<EnrollmentResponse>(`/roadmaps/me/enrollments/${enrollmentId}`)
+        .then((res) => res.data),
     enabled: !!enrollmentId,
   });
 
@@ -505,15 +563,23 @@ export default function RoadmapCanvasPage() {
     return data.enrollment.roadmap.sections.flatMap((s) => s.topics);
   }, [data]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<TopicNodeData | SectionLabelData>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<
+    TopicNodeData | SectionLabelData
+  >([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
-  const isAiOwned = !!(data?.enrollment.roadmap.isAiGenerated && data?.enrollment.roadmap.ownerUserId);
+  const isAiOwned = !!(
+    data?.enrollment.roadmap.isAiGenerated &&
+    data?.enrollment.roadmap.ownerUserId
+  );
 
-  const openRegenModal = useCallback((sectionId: number, sectionTitle: string) => {
-    setRegenInstructions("");
-    setRegenModal({ sectionId, sectionTitle });
-  }, []);
+  const openRegenModal = useCallback(
+    (sectionId: number, sectionTitle: string) => {
+      setRegenInstructions("");
+      setRegenModal({ sectionId, sectionTitle });
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!data) return;
@@ -587,12 +653,19 @@ export default function RoadmapCanvasPage() {
           newNodes.push({
             id: String(topic.id),
             type: "topic",
-            position: viewMode === "GRAPH" ? { x: TOPIC_X + (Math.random() * 100 - 50), y: cursorY + (Math.random() * 50 - 25) } : { x: TOPIC_X, y: cursorY },
+            position:
+              viewMode === "GRAPH"
+                ? {
+                    x: TOPIC_X + (Math.random() * 100 - 50),
+                    y: cursorY + (Math.random() * 50 - 25),
+                  }
+                : { x: TOPIC_X, y: cursorY },
             data: {
               topic,
               status: p?.status ?? "NOT_STARTED",
               bookmarked: p?.bookmarked ?? false,
               isNext: topic.id === nextTopicId,
+              isWeak: weakTopicTitles.has(topic.title),
               index: globalIdx,
               onClick: () => handleNodeClick(topic.id),
             },
@@ -603,7 +676,8 @@ export default function RoadmapCanvasPage() {
 
           if (tIdx > 0) {
             const prev = section.topics[tIdx - 1];
-            const prevDone = progressByTopicId.get(prev.id)?.status === "COMPLETED";
+            const prevDone =
+              progressByTopicId.get(prev.id)?.status === "COMPLETED";
             const isFrontier = prevDone && topic.id === nextTopicId;
             newEdges.push({
               id: `e${prev.id}-${topic.id}`,
@@ -639,13 +713,30 @@ export default function RoadmapCanvasPage() {
         });
       }
 
-      prevSectionLastTopicId = !isCollapsed ? (section.topics[section.topics.length - 1]?.id ?? prevSectionLastTopicId) : prevSectionLastTopicId;
+      prevSectionLastTopicId = !isCollapsed
+        ? (section.topics[section.topics.length - 1]?.id ??
+          prevSectionLastTopicId)
+        : prevSectionLastTopicId;
       cursorY += SECTION_GAP;
     });
 
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [data, allTopics, progressByTopicId, nextTopicId, handleNodeClick, viewMode, collapsedSections, isAiOwned, openRegenModal, regeneratingSectionId, setNodes, setEdges]);
+  }, [
+    data,
+    allTopics,
+    progressByTopicId,
+    nextTopicId,
+    handleNodeClick,
+    viewMode,
+    collapsedSections,
+    isAiOwned,
+    openRegenModal,
+    regeneratingSectionId,
+    setNodes,
+    setEdges,
+    weakTopicTitles,
+  ]);
 
   const drawerTopic = useMemo(() => {
     if (!drawerTopicId || !data) return null;
@@ -666,8 +757,12 @@ export default function RoadmapCanvasPage() {
         `/roadmaps/me/enrollments/${enrollmentId}/topics/${topicId}`,
         patch,
       );
-      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollments() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollments(),
+      });
     } catch {
       toast.error("Could not save progress");
     }
@@ -696,11 +791,21 @@ export default function RoadmapCanvasPage() {
 
   // ── Section regeneration mutation ────────────────────────────────────────
   const regenerateMutation = useMutation({
-    mutationFn: ({ sectionId, instructions }: { sectionId: number; instructions?: string }) =>
-      api.post<{ message: string; section: RoadmapSection }>(
-        `/roadmaps/${slug}/sections/${sectionId}/regenerate`,
-        { instructions: instructions?.trim() || undefined },
-      ).then((r) => r.data),
+    mutationFn: ({
+      sectionId,
+      instructions,
+    }: {
+      sectionId: number;
+      instructions?: string;
+    }) =>
+      api
+        .post<{
+          message: string;
+          section: RoadmapSection;
+        }>(`/roadmaps/${slug}/sections/${sectionId}/regenerate`, {
+          instructions: instructions?.trim() || undefined,
+        })
+        .then((r) => r.data),
     onMutate: ({ sectionId }) => {
       setRegeneratingSectionId(sectionId);
     },
@@ -708,14 +813,20 @@ export default function RoadmapCanvasPage() {
       toast.success("Section regenerated");
       // Refresh the enrollment detail so the canvas re-renders with new topics
       if (enrollmentId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId) });
-        queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollments() });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollments(),
+        });
       }
       setRegenModal(null);
       setRegenInstructions("");
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
-      const msg = err?.response?.data?.message ?? "Could not regenerate section. Please try again.";
+      const msg =
+        err?.response?.data?.message ??
+        "Could not regenerate section. Please try again.";
       toast.error(msg);
     },
     onSettled: () => {
@@ -725,7 +836,10 @@ export default function RoadmapCanvasPage() {
 
   const confirmRegen = () => {
     if (!regenModal) return;
-    regenerateMutation.mutate({ sectionId: regenModal.sectionId, instructions: regenInstructions });
+    regenerateMutation.mutate({
+      sectionId: regenModal.sectionId,
+      instructions: regenInstructions,
+    });
   };
 
   // useStudentSidebar must be called unconditionally (rules of hooks). It always
@@ -764,9 +878,15 @@ export default function RoadmapCanvasPage() {
         </div>
         {sidebar}
         <div className="flex flex-col items-center justify-center pt-32 px-6 text-center">
-          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">Could not load your roadmap</p>
-          <p className="text-sm text-stone-500 mb-6">There was a problem connecting to the server. Please try again.</p>
-          <Button onClick={() => window.location.reload()} variant="outline">Retry</Button>
+          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">
+            Could not load your roadmap
+          </p>
+          <p className="text-sm text-stone-500 mb-6">
+            There was a problem connecting to the server. Please try again.
+          </p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry
+          </Button>
         </div>
       </div>
     );
@@ -822,29 +942,29 @@ export default function RoadmapCanvasPage() {
             </div>
 
             <div className="hidden md:flex items-center gap-5 shrink-0">
-            <div className="flex bg-stone-900/50 p-1 rounded-lg border border-stone-800">
-              <button
-                onClick={() => setViewMode("LINEAR")}
-                className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "LINEAR" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
-                title="Linear View"
-              >
-                <GitCommit className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("GRID")}
-                className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRID" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
-                title="Grid View"
-              >
-                <LayoutTemplate className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("GRAPH")}
-                className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRAPH" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
-                title="Graph View"
-              >
-                <Network className="w-4 h-4" />
-              </button>
-            </div>
+              <div className="flex bg-stone-900/50 p-1 rounded-lg border border-stone-800">
+                <button
+                  onClick={() => setViewMode("LINEAR")}
+                  className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "LINEAR" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
+                  title="Linear View"
+                >
+                  <GitCommit className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("GRID")}
+                  className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRID" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
+                  title="Grid View"
+                >
+                  <LayoutTemplate className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("GRAPH")}
+                  className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRAPH" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
+                  title="Graph View"
+                >
+                  <Network className="w-4 h-4" />
+                </button>
+              </div>
               <Stat
                 icon={Target}
                 label="progress"
@@ -1119,37 +1239,39 @@ export default function RoadmapCanvasPage() {
                         resources
                       </p>
                       <ul className="space-y-1">
-                        {drawerTopic.resources.map((r: RoadmapResource, i: number) => (
-                          <motion.li
-                            key={r.id}
-                            initial={{ opacity: 0, x: 8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{
-                              delay: 0.25 + i * 0.04,
-                              duration: 0.3,
-                            }}
-                          >
-                            <a
-                              href={r.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors group no-underline"
+                        {drawerTopic.resources.map(
+                          (r: RoadmapResource, i: number) => (
+                            <motion.li
+                              key={r.id}
+                              initial={{ opacity: 0, x: 8 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{
+                                delay: 0.25 + i * 0.04,
+                                duration: 0.3,
+                              }}
                             >
-                              <span className="text-[9px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-500 shrink-0 w-12">
-                                {r.kind}
-                              </span>
-                              <span className="flex-1 text-sm text-stone-700 dark:text-stone-300 group-hover:text-stone-950 dark:group-hover:text-stone-50">
-                                {r.title}
-                                {r.source && (
-                                  <span className="text-stone-400 ml-1.5">
-                                    ({r.source})
-                                  </span>
-                                )}
-                              </span>
-                              <ExternalLink className="w-3 h-3 text-stone-300 dark:text-stone-700 shrink-0 group-hover:text-lime-500 transition-colors" />
-                            </a>
-                          </motion.li>
-                        ))}
+                              <a
+                                href={r.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors group no-underline"
+                              >
+                                <span className="text-[9px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-500 shrink-0 w-12">
+                                  {r.kind}
+                                </span>
+                                <span className="flex-1 text-sm text-stone-700 dark:text-stone-300 group-hover:text-stone-950 dark:group-hover:text-stone-50">
+                                  {r.title}
+                                  {r.source && (
+                                    <span className="text-stone-400 ml-1.5">
+                                      ({r.source})
+                                    </span>
+                                  )}
+                                </span>
+                                <ExternalLink className="w-3 h-3 text-stone-300 dark:text-stone-700 shrink-0 group-hover:text-lime-500 transition-colors" />
+                              </a>
+                            </motion.li>
+                          ),
+                        )}
                       </ul>
                     </motion.div>
                   )}
@@ -1231,7 +1353,9 @@ export default function RoadmapCanvasPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                onClick={() => !regenerateMutation.isPending && setRegenModal(null)}
+                onClick={() =>
+                  !regenerateMutation.isPending && setRegenModal(null)
+                }
                 className="fixed inset-0 z-[60] bg-stone-950/60 backdrop-blur-sm"
               />
               {/* Dialog */}
@@ -1254,7 +1378,10 @@ export default function RoadmapCanvasPage() {
                         <RefreshCw className="w-3.5 h-3.5 text-stone-950" />
                       </div>
                       <div>
-                        <p id="regen-dialog-title" className="text-sm font-bold text-stone-50">
+                        <p
+                          id="regen-dialog-title"
+                          className="text-sm font-bold text-stone-50"
+                        >
                           Regenerate section
                         </p>
                         <p className="text-[10px] font-mono text-stone-500 truncate max-w-60">
@@ -1276,7 +1403,9 @@ export default function RoadmapCanvasPage() {
                   {/* Body */}
                   <div className="px-5 py-4 space-y-4">
                     <p className="text-xs text-stone-400 leading-relaxed">
-                      AI will rewrite this section's topics and resources while keeping the rest of your roadmap intact. Your progress on existing topics will be cleared for this section.
+                      AI will rewrite this section's topics and resources while
+                      keeping the rest of your roadmap intact. Your progress on
+                      existing topics will be cleared for this section.
                     </p>
 
                     <div>
@@ -1323,7 +1452,9 @@ export default function RoadmapCanvasPage() {
                       ) : (
                         <Sparkles className="w-3.5 h-3.5" />
                       )}
-                      {regenerateMutation.isPending ? "Regenerating…" : "Regenerate"}
+                      {regenerateMutation.isPending
+                        ? "Regenerating…"
+                        : "Regenerate"}
                     </Button>
                   </div>
                 </div>

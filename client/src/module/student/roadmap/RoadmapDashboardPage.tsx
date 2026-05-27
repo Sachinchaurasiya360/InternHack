@@ -1,7 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, BookOpen, Download, Map, Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  Clock,
+  BookOpen,
+  Download,
+  Map,
+  Loader2,
+  Sparkles,
+} from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
@@ -9,13 +17,34 @@ import toast from "../../../components/ui/toast";
 import type { RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import {
+  RecommendationCard,
+  type WeakArea,
+} from "../learn/components/RecommendationCard";
 
 export default function RoadmapDashboardPage() {
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
 
-  const { data, isLoading: loading, isError } = useQuery({
+  useEffect(() => {
+    api
+      .get<{ weakAreas: WeakArea[] }>("/student/recommendations")
+      .then((res) => setWeakAreas(res.data.weakAreas ?? []))
+      .catch(() => {});
+  }, []);
+
+  const {
+    data,
+    isLoading: loading,
+    isError,
+  } = useQuery({
     queryKey: queryKeys.roadmaps.enrollments(),
-    queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+    queryFn: () =>
+      api
+        .get<{
+          enrollments: RoadmapEnrollmentListItem[];
+        }>("/roadmaps/me/enrollments")
+        .then((res) => res.data),
   });
 
   const enrollments = data?.enrollments || [];
@@ -23,7 +52,9 @@ export default function RoadmapDashboardPage() {
   const downloadPdf = async (id: number, slug: string) => {
     setDownloadingId(id);
     try {
-      const res = await api.get(`/roadmaps/me/enrollments/${id}/pdf`, { responseType: "blob" });
+      const res = await api.get(`/roadmaps/me/enrollments/${id}/pdf`, {
+        responseType: "blob",
+      });
       const url = URL.createObjectURL(res.data as Blob);
       const a = document.createElement("a");
       a.href = url;
@@ -55,25 +86,71 @@ export default function RoadmapDashboardPage() {
         </p>
       </motion.div>
 
+      {weakAreas.length > 0 && (
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-4 h-4 text-lime-500" />
+            <span className="text-sm font-bold text-gray-950 dark:text-white">
+              Skill gaps to address
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {weakAreas.slice(0, 4).map((area, i) => (
+              <RecommendationCard
+                key={`${area.type}-${area.topic}`}
+                area={area}
+                index={i}
+              />
+            ))}
+          </div>
+        </motion.section>
+      )}
+
       {loading ? (
-        <div aria-busy="true" aria-label="Loading your roadmaps" className="grid sm:grid-cols-2 gap-4">
+        <div
+          aria-busy="true"
+          aria-label="Loading your roadmaps"
+          className="grid sm:grid-cols-2 gap-4"
+        >
           {[0, 1].map((i) => (
-            <div key={i} className="h-44 bg-gray-100 dark:bg-gray-900 rounded-2xl animate-pulse" />
+            <div
+              key={i}
+              className="h-44 bg-gray-100 dark:bg-gray-900 rounded-2xl animate-pulse"
+            />
           ))}
         </div>
       ) : isError ? (
         <div className="bg-white dark:bg-gray-900 border border-red-100 dark:border-red-900/30 rounded-2xl p-10 text-center">
-          <p className="text-base font-bold text-red-600 dark:text-red-400 mb-1">Failed to load roadmaps</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">There was an error fetching your data. Please try again.</p>
-          <Button onClick={() => window.location.reload()} variant="outline" size="sm">
+          <p className="text-base font-bold text-red-600 dark:text-red-400 mb-1">
+            Failed to load roadmaps
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
+            There was an error fetching your data. Please try again.
+          </p>
+          <Button
+            onClick={() => window.location.reload()}
+            variant="outline"
+            size="sm"
+          >
             Retry
           </Button>
         </div>
       ) : enrollments.length === 0 ? (
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-10 text-center">
-          <Map className="w-10 h-10 text-gray-300 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-base font-bold text-gray-950 dark:text-white mb-1">No roadmaps yet</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">Pick a path that fits your goal.</p>
+          <Map
+            className="w-10 h-10 text-gray-300 mx-auto mb-3"
+            aria-hidden="true"
+          />
+          <p className="text-base font-bold text-gray-950 dark:text-white mb-1">
+            No roadmaps yet
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
+            Pick a path that fits your goal.
+          </p>
           <Button asChild variant="mono">
             <Link to="/roadmaps">Browse roadmaps</Link>
           </Button>
@@ -81,8 +158,13 @@ export default function RoadmapDashboardPage() {
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
           {enrollments.map((e, i) => {
-            const completed = e.topicProgress.filter((p) => p.status === "COMPLETED").length;
-            const pct = e.roadmap.topicCount === 0 ? 0 : Math.round((completed / e.roadmap.topicCount) * 100);
+            const completed = e.topicProgress.filter(
+              (p) => p.status === "COMPLETED",
+            ).length;
+            const pct =
+              e.roadmap.topicCount === 0
+                ? 0
+                : Math.round((completed / e.roadmap.topicCount) * 100);
             return (
               <motion.article
                 key={e.id}
@@ -93,7 +175,9 @@ export default function RoadmapDashboardPage() {
                 className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5"
               >
                 <div className="flex items-start justify-between gap-3 mb-3">
-                  <h2 className="text-lg font-bold text-gray-950 dark:text-white">{e.roadmap.title}</h2>
+                  <h2 className="text-lg font-bold text-gray-950 dark:text-white">
+                    {e.roadmap.title}
+                  </h2>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">
                   {e.roadmap.shortDescription}
@@ -102,8 +186,18 @@ export default function RoadmapDashboardPage() {
                 {/* Progress bar */}
                 <div className="mb-4">
                   <div className="flex items-baseline justify-between mb-1.5">
-                    <span className="text-xs font-mono text-gray-400" aria-hidden="true">progress</span>
-                    <span className="text-xs font-mono font-bold text-gray-700 dark:text-gray-300" aria-hidden="true">{pct}%</span>
+                    <span
+                      className="text-xs font-mono text-gray-400"
+                      aria-hidden="true"
+                    >
+                      progress
+                    </span>
+                    <span
+                      className="text-xs font-mono font-bold text-gray-700 dark:text-gray-300"
+                      aria-hidden="true"
+                    >
+                      {pct}%
+                    </span>
                   </div>
                   <div
                     role="progressbar"
@@ -126,8 +220,14 @@ export default function RoadmapDashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 font-mono mb-4">
-                  <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" aria-hidden="true" /> {e.hoursPerWeek}h/wk</span>
-                  <span className="inline-flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" aria-hidden="true" /> {e.roadmap.estimatedHours}h total</span>
+                  <span className="inline-flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" aria-hidden="true" />{" "}
+                    {e.hoursPerWeek}h/wk
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />{" "}
+                    {e.roadmap.estimatedHours}h total
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -142,11 +242,20 @@ export default function RoadmapDashboardPage() {
                     size="sm"
                     onClick={() => downloadPdf(e.id, e.roadmap.slug)}
                     disabled={downloadingId === e.id}
-                    aria-label={downloadingId === e.id ? `Downloading PDF for ${e.roadmap.title}` : `Download PDF for ${e.roadmap.title}`}
+                    aria-label={
+                      downloadingId === e.id
+                        ? `Downloading PDF for ${e.roadmap.title}`
+                        : `Download PDF for ${e.roadmap.title}`
+                    }
                   >
-                    {downloadingId === e.id
-                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
-                      : <Download className="w-3.5 h-3.5" aria-hidden="true" />}
+                    {downloadingId === e.id ? (
+                      <Loader2
+                        className="w-3.5 h-3.5 animate-spin"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <Download className="w-3.5 h-3.5" aria-hidden="true" />
+                    )}
                     PDF
                   </Button>
                 </div>

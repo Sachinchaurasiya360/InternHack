@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { invalidateRecommendations } from "../recommendation/recommendation.service.js";
 import type { Prisma } from "@prisma/client";
 import type { EnrollInput } from "./roadmap.validation.js";
 
@@ -367,7 +368,7 @@ export async function updateTopicProgress(args: {
       roadmapCompleted = summary.percentComplete === 100;
     }
   }
-
+  await invalidateRecommendations(args.userId).catch(() => {})
   return { progress, roadmapCompleted };
 }
 
