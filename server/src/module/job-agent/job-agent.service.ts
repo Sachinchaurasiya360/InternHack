@@ -1,8 +1,22 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
 import { jobIndexService } from "../job-index/job-index.service.js";
+import { sendEmail } from "../../utils/email.utils.js";
+import { jobAgentJobsEmailHtml, jobAgentJobsEmailText } from "../../utils/email-templates.js";
 
 const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]!);
+const JOB_EMAIL_COOLDOWN_SECONDS = 60;
+const JOB_EMAIL_DAILY_LIMIT = 5;
+
+export class JobAgentEmailError extends Error {
+  constructor(
+    public statusCode: number,
+    message: string,
+    public retryAfter?: number,
+  ) {
+    super(message);
+  }
+}
 
 const SYSTEM_PROMPT = (user: any, pref: any) => `You are InternHack AI, the user's friendly, supportive job hunting assistant. You're like that one well-connected friend who's always got leads and genuinely wants to see them succeed. You're warm, encouraging, and professional while still being approachable and conversational.
 
@@ -156,6 +170,45 @@ async function upsertPreferences(userId: number, updatedPreferences: any): Promi
     update: { ...updates, hasEmbedding: false },
   });
   return true;
+}
+
+function truncateContext(context?: string | null): string | null {
+  const trimmed = context?.replace(/\s+/g, " ").trim();
+  if (!trimmed) return null;
+  return trimmed.length > 200 ? `${trimmed.slice(0, 199).trimEnd()}...` : trimmed;
+}
+
+function startOfToday(): Date {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function appUrl(): string {
+  return (process.env["CLIENT_URL"] || "https://www.internhack.xyz").replace(/\/+$/, "");
+}
+
+function buildFallbackJobUrl(): string {
+  return `${appUrl()}/jobs`;
+}
+
+function buildJobUrl(job: { sourceType: string; sourceId: number }, adminSlugs: Map<number, string | null>): string {
+  const baseUrl = appUrl();
+
+  if (job.sourceType === "INTERNAL") {
+    return `${baseUrl}/jobs/${job.sourceId}`;
+  }
+
+  if (job.sourceType === "ADMIN") {
+    const slug = adminSlugs.get(job.sourceId);
+    return slug ? `${baseUrl}/jobs/ext/${slug}` : buildFallbackJobUrl();
+  }
+
+  if (job.sourceType === "SCRAPED") {
+    return `${baseUrl}/external-jobs/${job.sourceId}`;
+  }
+
+  return buildFallbackJobUrl();
 }
 
 export class JobAgentService {
@@ -378,6 +431,134 @@ export class JobAgentService {
       where: { userId, isActive: true },
       data: { isActive: false },
     });
+  }
+
+  async emailJobs(userId: number, input: { jobIds: number[]; context?: string }) {
+    const now = new Date();
+    const context = truncateContext(input.context);
+
+    const [user, lastEmail, sentToday] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true, email: true },
+      }),
+      prisma.jobAgentEmailLog.findFirst({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        select: { createdAt: true },
+      }),
+      prisma.jobAgentEmailLog.count({
+        where: { userId, createdAt: { gte: startOfToday() } },
+      }),
+    ]);
+
+    if (!user) {
+      throw new JobAgentEmailError(401, "User not found");
+    }
+
+    if (lastEmail) {
+      const secondsSinceLastSend = Math.floor((now.getTime() - lastEmail.createdAt.getTime()) / 1000);
+      if (secondsSinceLastSend < JOB_EMAIL_COOLDOWN_SECONDS) {
+        throw new JobAgentEmailError(
+          429,
+          "Email sent recently. Please wait before trying again.",
+          JOB_EMAIL_COOLDOWN_SECONDS - secondsSinceLastSend,
+        );
+      }
+    }
+
+    if (sentToday >= JOB_EMAIL_DAILY_LIMIT) {
+      const tomorrow = startOfToday();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const retryAfter = Math.max(1, Math.ceil((tomorrow.getTime() - now.getTime()) / 1000));
+      throw new JobAgentEmailError(429, "Daily email limit reached. Try again tomorrow.", retryAfter);
+    }
+
+    const uniqueJobIds = [...new Set(input.jobIds)];
+    const jobs = await prisma.jobIndex.findMany({
+      where: {
+        id: { in: uniqueJobIds },
+        isActive: true,
+        OR: [{ deadline: null }, { deadline: { gte: now } }],
+      },
+      select: {
+        id: true,
+        sourceType: true,
+        sourceId: true,
+        title: true,
+        company: true,
+        location: true,
+        salary: true,
+        description: true,
+        deadline: true,
+      },
+    });
+
+    const jobMap = new Map(jobs.map((job) => [job.id, job]));
+    const orderedJobs = uniqueJobIds.map((id) => jobMap.get(id)).filter((job): job is (typeof jobs)[number] => Boolean(job));
+
+    if (orderedJobs.length === 0) {
+      throw new JobAgentEmailError(400, "No active jobs to email");
+    }
+
+    const adminSourceIds = orderedJobs
+      .filter((job) => job.sourceType === "ADMIN")
+      .map((job) => job.sourceId);
+    const adminRows = adminSourceIds.length
+      ? await prisma.adminJob.findMany({
+          where: { id: { in: adminSourceIds }, isActive: true, expiresAt: { gt: now } },
+          select: { id: true, slug: true },
+        })
+      : [];
+    const adminSlugs = new Map(adminRows.map((job) => [job.id, job.slug]));
+
+    const emailJobs = orderedJobs.map((job) => ({
+      title: job.title,
+      company: job.company,
+      location: job.location,
+      salary: job.salary,
+      deadline: job.deadline,
+      description: job.description,
+      url: buildJobUrl(job, adminSlugs),
+    }));
+
+    const count = emailJobs.length;
+    const subject = `${count} job${count === 1 ? "" : "s"} from your InternHack search`;
+    const settingsUrl = `${appUrl()}/student/profile`;
+    const emailArgs = {
+      studentName: user.name,
+      context,
+      jobs: emailJobs,
+      settingsUrl,
+    };
+
+    let emailSent = false;
+    try {
+      emailSent = await sendEmail({
+        to: user.email,
+        subject,
+        html: jobAgentJobsEmailHtml(emailArgs),
+        text: jobAgentJobsEmailText(emailArgs),
+      });
+    } catch (err) {
+      console.error("[JobAgent] Failed to send jobs email:", err);
+      throw new JobAgentEmailError(503, "Email service is temporarily unavailable");
+    }
+
+    if (!emailSent) {
+      throw new JobAgentEmailError(503, "Email service is not configured");
+    }
+
+    await prisma.jobAgentEmailLog.create({
+      data: {
+        userId,
+        jobIds: orderedJobs.map((job) => job.id),
+        context,
+        sentCount: count,
+      },
+    });
+
+    return { sent: true, count };
   }
 }
 

@@ -7,7 +7,7 @@ export const signalsListSchema = z.object({
   source: z.string().trim().min(1).max(60).optional(),
   round: z.string().trim().min(1).max(60).optional(),
   industry: z.string().trim().min(1).max(60).optional(),
-  kind: z.enum(["funding", "hiring", "all"]).default("all"),
+  kind: z.enum(["funding", "hiring", "product_launch", "all"]).default("all"),
   hiringOnly: z
     .union([z.literal("true"), z.literal("false"), z.boolean()])
     .optional()

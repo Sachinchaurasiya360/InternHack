@@ -800,6 +800,7 @@ Return ONLY a JSON array, no markdown fences:
     });
   }
 
+
   async getActivity(studentId: number, year: number) {
     const startDate = new Date(Date.UTC(year, 0, 1));
     const endDate = new Date(Date.UTC(year + 1, 0, 1));
@@ -830,5 +831,54 @@ Return ONLY a JSON array, no markdown fences:
     return Array.from(activityMap.entries())
       .map(([date, count]) => ({ date, count }))
       .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  async getDailyProblem(userId?: number) {
+    const today = new Date().toISOString().slice(0, 10);
+
+    const problems = await prisma.dsaProblem.findMany();
+
+    if (!problems.length) {
+      throw new Error("No DSA problems found");
+    }
+
+    const seed = today
+      .split("-")
+      .join("")
+      .split("")
+      .reduce((a, b) => a + Number(b), 0);
+
+    const selected = problems[seed % problems.length];
+
+    let solvedToday = false;
+
+    if (userId) {
+      const submission = await prisma.dsaSubmission.findFirst({
+        where: {
+          studentId: userId,
+          problemId: selected.id,
+        },
+      });
+
+      solvedToday = !!submission;
+    }
+
+    return {
+      problem: selected,
+      date: today,
+      solvedToday,
+    };
+  }
+
+  async getUserDsaStreak(userId: number) {
+    const today = new Date().toISOString().slice(0, 10);
+    const daily = await this.getDailyProblem(userId);
+
+    return {
+      currentStreak: daily.solvedToday ? 1 : 0,
+      longestStreak: daily.solvedToday ? 1 : 0,
+      solvedToday: daily.solvedToday,
+      lastSolvedDate: daily.solvedToday ? today : null,
+    };
   }
 }

@@ -19,6 +19,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import api from "../../../lib/axios";
 import { hrKeys } from "./hr-query-keys";
 import HRStatusBadge from "./components/HRStatusBadge";
@@ -27,6 +28,7 @@ import HRModal from "./components/HRModal";
 import type { HRInterview, InterviewType } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { formatLabel } from "./hr-utils";
 
 const INTERVIEW_TYPES: InterviewType[] = [
   "PHONE",
@@ -47,13 +49,6 @@ const TYPE_ICON: Record<InterviewType, typeof Video> = {
 };
 
 type ViewMode = "list" | "calendar";
-
-function formatLabel(value: string) {
-  return value
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 function initials(name?: string) {
   if (!name) return "?";
@@ -94,6 +89,7 @@ export default function InterviewsPage() {
     durationMinutes: 60,
     meetingLink: "",
     location: "",
+    interviewerIds: "",
   });
   const [saving, setSaving] = useState(false);
   const [showFeedback, setShowFeedback] = useState<number | null>(null);
@@ -114,13 +110,22 @@ export default function InterviewsPage() {
   const createMutation = useMutation({
     mutationFn: async () => {
       setSaving(true);
+      const parsedIds = form.interviewerIds
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0)
+        .map(Number)
+        .filter((n) => !isNaN(n));
+
       await api.post("/hr/interviews", {
         ...form,
         applicationId: Number(form.applicationId),
         durationMinutes: Number(form.durationMinutes),
+        interviewerIds: parsedIds,
       });
     },
     onSuccess: () => {
+      toast.success("Interview scheduled successfully!");
       queryClient.invalidateQueries({ queryKey: ["hr", "interviews"] });
       setShowCreate(false);
       setForm({
@@ -130,7 +135,15 @@ export default function InterviewsPage() {
         durationMinutes: 60,
         meetingLink: "",
         location: "",
+        interviewerIds: "",
       });
+    },
+    onError: (error: { response?: { status?: number } }) => {
+      if (error.response?.status === 409) {
+        toast.error("Scheduling conflict: One or more interviewers are already booked at this time.");
+      } else {
+        toast.error("Failed to schedule interview.");
+      }
     },
     onSettled: () => setSaving(false),
   });
@@ -676,6 +689,20 @@ export default function InterviewsPage() {
               }
               className="w-full px-3 py-2.5 text-sm border border-stone-200 dark:border-white/10 rounded-lg bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors"
             />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5">
+              Interviewer IDs
+            </label>
+            <input
+              value={form.interviewerIds}
+              onChange={(e) =>
+                setForm({ ...form, interviewerIds: e.target.value })
+              }
+              placeholder="e.g. 1, 2, 5"
+              className="w-full px-3 py-2.5 text-sm border border-stone-200 dark:border-white/10 rounded-lg bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder:text-stone-400 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors"
+            />
+            <p className="mt-1.5 text-[10px] text-stone-500">Comma-separated user IDs</p>
           </div>
           <div className="col-span-2">
             <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5">

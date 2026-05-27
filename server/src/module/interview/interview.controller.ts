@@ -18,6 +18,7 @@ export class InterviewController {
       if (error instanceof Error) {
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "One or more interviewers are already scheduled during this time.") return res.status(409).json({ message: error.message });
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -69,6 +70,7 @@ export class InterviewController {
       if (error instanceof Error) {
         if (error.message === "Interview not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "One or more interviewers are already scheduled during this time.") return res.status(409).json({ message: error.message });
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });

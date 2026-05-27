@@ -28,6 +28,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
+import { ResultCount } from "../../../components/ui/ResultCount";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { cn } from "@/lib/utils";
@@ -182,9 +183,9 @@ function UpgradeBanner({
 }
 
 // ─── Cards ──────────────────────────────────────────────
-const CompanyCard = React.memo(function CompanyCard({ company }: { company: Company }) {
+const CompanyCard = React.memo(function CompanyCard({ company, insideLayout }: { company: Company; insideLayout: boolean }) {
   return (
-    <Link to={`/companies/${company.slug}`} className={cardBase}>
+    <Link to={`${insideLayout ? "/student" : ""}/companies/${company.slug}`} className={cardBase}>
       <div className="flex items-start gap-3 mb-3">
         <CompanyMark label={company.name} src={company.logo} />
         <div className="flex-1 min-w-0">
@@ -247,9 +248,9 @@ const CompanyCard = React.memo(function CompanyCard({ company }: { company: Comp
   );
 });
 
-const YCCard = React.memo(function YCCard({ company }: { company: YCCompany }) {
+const YCCard = React.memo(function YCCard({ company, insideLayout }: { company: YCCompany; insideLayout: boolean }) {
   return (
-    <Link to={`/yc/${company.slug}`} className={cardBase}>
+    <Link to={`${insideLayout ? "/student" : ""}/yc/${company.slug}`} className={cardBase}>
       <div className="flex items-start gap-3 mb-3">
         <CompanyMark label={company.name} src={company.smallLogoUrl} />
         <div className="flex-1 min-w-0">
@@ -1026,13 +1027,17 @@ export default function CompanyListPage() {
             {loading ? (
               <LoadingScreen compact />
             ) : companies.length === 0 ? (
-              <EmptyState
-                icon={<Building2 className="w-5 h-5" />}
-                title="No companies found"
-                hint="try different search criteria"
-              />
+              <>
+                {pagination && <ResultCount currentCount={companies.length} totalCount={pagination.total} />}
+                <EmptyState
+                  icon={<Building2 className="w-5 h-5" />}
+                  title="No companies found"
+                  hint="try different search criteria"
+                />
+              </>
             ) : (
               <>
+                {pagination && <ResultCount currentCount={companies.length} totalCount={pagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {companies.map((company, i) => (
                     <motion.div
@@ -1041,7 +1046,8 @@ export default function CompanyListPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
-                      <CompanyCard company={company} />
+                     <CompanyCard company={company} insideLayout={isInsideLayout} />
+
                     </motion.div>
                   ))}
                 </div>
@@ -1149,13 +1155,17 @@ export default function CompanyListPage() {
             {ycLoading ? (
               <Spinner />
             ) : ycCompanies.length === 0 ? (
-              <EmptyState
-                icon={<Rocket className="w-5 h-5" />}
-                title="No YC companies found"
-                hint="try different search criteria"
-              />
+              <>
+                {ycPagination && <ResultCount currentCount={ycCompanies.length} totalCount={ycPagination.total} />}
+                <EmptyState
+                  icon={<Rocket className="w-5 h-5" />}
+                  title="No YC companies found"
+                  hint="try different search criteria"
+                />
+              </>
             ) : (
               <>
+                {ycPagination && <ResultCount currentCount={ycCompanies.length} totalCount={ycPagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {ycCompanies.map((company, i) => (
                     <motion.div
@@ -1164,7 +1174,7 @@ export default function CompanyListPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
-                      <YCCard company={company} />
+                     <YCCard company={company} insideLayout={isInsideLayout} />
                     </motion.div>
                   ))}
                 </div>
@@ -1247,13 +1257,17 @@ export default function CompanyListPage() {
             {profLoading ? (
               <Spinner />
             ) : professors.length === 0 ? (
-              <EmptyState
-                icon={<GraduationCap className="w-5 h-5" />}
-                title="No professors found"
-                hint="try different search criteria"
-              />
+              <>
+                {profPagination && <ResultCount currentCount={professors.length} totalCount={profPagination.total} />}
+                <EmptyState
+                  icon={<GraduationCap className="w-5 h-5" />}
+                  title="No professors found"
+                  hint="try different search criteria"
+                />
+              </>
             ) : (
               <>
+                {profPagination && <ResultCount currentCount={professors.length} totalCount={profPagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {professors.map((prof, i) => (
                     <motion.div
@@ -1337,13 +1351,17 @@ export default function CompanyListPage() {
             {interviewLoading ? (
               <Spinner />
             ) : interviewCompanies.length === 0 ? (
-              <EmptyState
-                icon={<MessageCircle className="w-5 h-5" />}
-                title="No interview experiences yet"
-                hint="be the first to share, earn a badge"
-              />
+              <>
+                {interviewPagination && <ResultCount currentCount={interviewCompanies.length} totalCount={interviewPagination.total} />}
+                <EmptyState
+                  icon={<MessageCircle className="w-5 h-5" />}
+                  title="No interview experiences yet"
+                  hint="be the first to share, earn a badge"
+                />
+              </>
             ) : (
               <>
+                {interviewPagination && <ResultCount currentCount={interviewCompanies.length} totalCount={interviewPagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {interviewCompanies.map((company, i) => (
                     <motion.div

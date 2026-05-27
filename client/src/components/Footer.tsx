@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import api from "../lib/axios";
 
 const linkClass =
-  "text-sm text-stone-400 hover:text-stone-50 transition-colors no-underline";
+  "text-sm text-stone-400 hover:text-stone-50 transition-all duration-300 no-underline hover:-translate-y-0.5 hover:shadow-md hover:shadow-lime-400/20";
 
 const SOCIAL_LINKS = {
   email: "mailto:mrsachinchaurasiya@gmail.com",
@@ -19,17 +19,35 @@ export function Footer() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  const handleNavigation = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
+
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
     setSubmitting(true);
     setError("");
     try {
-      await api.post("/newsletter/subscribe", { email: email.trim() });
-      setSubscribed(true);
-      setEmail("");
-    } catch {
-      setError("Failed to subscribe. Try again.");
+      const res = await api.post("/newsletter/subscribe", { email: email.trim() });
+      if (res.status === 201) {
+        setSubscribed(true);
+        setEmail("");
+      } else if (res.status === 200) {
+        setError("You're already subscribed!");
+      }
+    } catch (err: unknown) {
+      const response = (err as { response?: { status?: number; data?: { message?: string } } }).response;
+      if (response?.status === 400) {
+        setError(response.data?.message || "Please enter a valid email address.");
+      } else if (response?.status === 409) {
+        setError(response.data?.message || "You're already subscribed!");
+      } else {
+        setError("Failed to subscribe. Try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -120,10 +138,11 @@ export function Footer() {
                 Account
               </h4>
               <ul className="space-y-3">
-                <li><Link to="/register" className={linkClass}>Start free</Link></li>
-                <li><Link to="/login" className={linkClass}>Sign in</Link></li>
-                <li><Link to="/blog" className={linkClass}>Blog</Link></li>
-                <li><Link to="/contact" className={linkClass}>Contact</Link></li>
+                <li><Link to="/register" className={linkClass} onClick={handleNavigation}>Start free</Link></li>
+                <li><Link to="/login" className={linkClass} onClick={handleNavigation}>Sign in</Link></li>
+                <li><Link to="/blog" className={linkClass} onClick={handleNavigation}>Blog</Link></li>
+                <li><Link to="/contact" className={linkClass} onClick={handleNavigation}> Contact </Link></li>
+                <li> <Link to="/contributors" className={linkClass} onClick={handleNavigation}> Contributors </Link></li>
               </ul>
             </div>
           </div>
@@ -185,46 +204,12 @@ export function Footer() {
             &copy; {new Date().getFullYear()} InternHack. built in india.
           </p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <Link
-          to="/terms"
-             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="hover:text-stone-400 transition-colors no-underline"
-              >
-                Terms
-          </Link>
-
-          <Link
-          to="/privacy"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                className="hover:text-stone-400 transition-colors no-underline"
-                >
-                  Privacy
-          </Link>
-
-          <Link
-          to="/refund"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                 className="hover:text-stone-400 transition-colors no-underline"
-                 >
-                  Refunds
-          </Link>
-
-          <Link
-               to="/shipping"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="hover:text-stone-400 transition-colors no-underline"
-                  >
-                    Shipping
-          </Link>
-
-          <Link
-              to="/contact"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="hover:text-stone-400 transition-colors no-underline"
-          >
-              Contact
-          </Link>
-        </div>
+            <Link to="/terms" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Terms</Link>
+            <Link to="/privacy" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Privacy</Link>
+            <Link to="/refund" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Refunds</Link>
+            <Link to="/shipping" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Shipping</Link>
+            <Link to="/contact" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Contact</Link>
+          </div>
         </div>
       </div>
     </footer>

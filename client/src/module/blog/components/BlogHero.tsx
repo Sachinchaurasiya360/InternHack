@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Search, Sparkles } from "lucide-react";
+import { Search } from "lucide-react";
 
 interface BlogHeroProps {
   search: string;
@@ -11,43 +11,69 @@ export default function BlogHero({
   setSearch,
 }: BlogHeroProps) {
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-14 md:px-10 md:py-20">
-      {/* Background glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-violet-500/10 blur-3xl" />
-      </div>
+    <section className="relative overflow-hidden bg-stone-50 dark:bg-stone-950 border-b border-stone-200 dark:border-white/10 px-6 pt-32 pb-14 md:pt-40 md:pb-20">
+      {/* Vertical line background — light mode */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none dark:hidden"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(23,23,23,0.04) 1px, transparent 1px)",
+          backgroundSize: "140px 100%",
+        }}
+      />
+      {/* Vertical line background — dark mode */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none hidden dark:block"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "140px 100%",
+        }}
+      />
 
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
+      <div className="relative z-10 max-w-6xl mx-auto text-center">
+        {/* Kicker — pulsing lime dot + mono uppercase */}
         <motion.div
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500"
         >
-          <Sparkles className="w-4 h-4 text-yellow-500" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Insights, career growth & tech trends
-          </span>
+          <motion.span
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            className="h-1.5 w-1.5 bg-lime-400"
+          />
+          insights, career growth & tech trends
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05, duration: 0.45 }}
-          className="text-4xl md:text-6xl font-black tracking-tight text-gray-900 dark:text-white leading-tight"
+          transition={{ delay: 0.08, duration: 0.6 }}
+          className="mt-8 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none text-stone-900 dark:text-stone-50"
         >
-          Explore the{" "}
-          <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-            InternHack Blog
+          Explore the
+          <br />
+          <span className="relative inline-block align-baseline">
+            <span className="relative z-10">InternHack Blog.</span>
+            <motion.span
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.7, delay: 0.9, ease: "easeOut" }}
+              aria-hidden
+              className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+            />
           </span>
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.45 }}
-          className="mt-6 text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto"
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="mt-8 text-base md:text-lg text-stone-600 dark:text-stone-400 leading-relaxed max-w-2xl mx-auto"
         >
           Discover interview tips, resume strategies, salary guides,
           career advice, and the latest trends shaping the tech industry.
@@ -55,20 +81,21 @@ export default function BlogHero({
 
         {/* Search */}
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.45 }}
+          transition={{ delay: 0.28, duration: 0.5 }}
           className="mt-10 max-w-2xl mx-auto"
         >
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" aria-hidden />
 
             <input
               type="text"
               placeholder="Search articles, topics, tags..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-14 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 pl-12 pr-4 text-sm md:text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+              aria-label="Search blog articles"
+              className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
             />
           </div>
         </motion.div>

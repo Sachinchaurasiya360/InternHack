@@ -7,6 +7,7 @@ import type { JsProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
+import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
 const FREE_LIMIT = 5;
 
@@ -18,30 +19,25 @@ function getLocalProgress(): JsProgress {
   }
 }
 
-const DIFF_COLOR: Record<string, string> = {
-  Beginner: "text-emerald-600 dark:text-emerald-400",
-  Intermediate: "text-amber-600 dark:text-amber-400",
-  Advanced: "text-rose-600 dark:text-rose-400",
-};
-
 export default function JsSectionPage() {
   const { sectionSlug } = useParams();
   const basePath = "/learn/javascript";
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const progress: JsProgress = getLocalProgress();
+
+ const progress: JsProgress = getLocalProgress();
 
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
 
-  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
-    return <Navigate to={basePath} replace />;
-  }
-
+  // ✅ moved above both early returns
   const sectionLessons = useMemo(
     () => lessons.filter((l) => l.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
     [sectionSlug]
   );
+  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
+    return <Navigate to={basePath} replace />;
+  }
 
   if (!section) {
     return (

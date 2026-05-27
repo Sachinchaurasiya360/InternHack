@@ -1,6 +1,17 @@
 # InternHack
 
-**Prepare. Practice. Placed.**, An open-source, full-stack career platform that helps students land jobs through AI-powered tools, structured learning, and recruiter dashboards. InternHack brings together job discovery, skill development, and hiring workflows into a single unified platform, enabling students to seamlessly move from learning to applying. It provides AI-powered tools such as resume scoring, job matching, and mock interviews to enhance preparation and improve outcomes. Recruiters can efficiently manage job postings, evaluate candidates, and streamline multi-round hiring processes. With dedicated features for students, recruiters, and administrators, InternHack aims to make the hiring ecosystem more accessible, efficient, and data-driven.
+**Prepare. Practice. Placed.**
+
+## About InternHack
+- AI-powered career and hiring platform
+- Helps students prepare for placements and internships
+- Provides resume scoring and job matching tools
+- Offers mock interview practice and learning resources
+- Supports job discovery and application tracking
+- Enables recruiters to manage job postings and candidates
+- Streamlines hiring workflows and interview processes
+- Includes dedicated dashboards for students, recruiters, and admins
+- Built to make hiring more accessible, efficient, and data-driven
 
 Live at **[internhack.xyz](https://www.internhack.xyz)**
 
@@ -8,54 +19,56 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, Vite 7, TailwindCSS 4, React Router 7, Framer Motion, Zustand, React Query |
-| Backend | Express 5, TypeScript 5, Prisma 7 |
-| Database | PostgreSQL |
-| AI | Google Gemini (`gemini-2.5-flash`) |
-| Auth | JWT + Google OAuth |
-| Payments | Dodo Payments |
-| Storage | AWS S3 (with local fallback) |
-| Email | Resend |
+| Category | Technologies |
+|----------|--------------|
+| **Frontend** | React 18, Vite 7, TailwindCSS 4, React Router 7, Framer Motion, Zustand, React Query |
+| **Backend** | Express 5, TypeScript 5, Prisma ORM |
+| **Database** | PostgreSQL |
+| **AI Integration** | Google Gemini (`gemini-2.5-flash`) |
+| **Authentication** | JWT Authentication, Google OAuth |
+| **Payments** | Dodo Payments |
+| **Cloud Storage** | AWS S3 with Local Storage Fallback |
+| **Email Services** | Resend |
+| **Development Tools** | ESLint, Prettier, Nodemon, tsx |
 
 ---
 
 ## Features
 
-### For Students
+### Features for Students
 
-- **Job Board**: Browse recruiter-posted jobs with search, filters, tags, and one-click apply
-- **External Jobs**: Curated listings from external sources, updated regularly
-- **AI Job Agent**: Chat-based AI assistant that finds jobs matching your profile and skills
-- **ATS Resume Scorer**: Upload resume + JD, get an AI-powered match score with keyword gap analysis
-- **Cover Letter Generator**: AI-generated cover letters tailored to specific job postings
-- **AI Resume Builder**: Generate professional LaTeX resumes with AI assistance
-- **Mock Interviews**: Practice with AI-driven interview simulations
-- **Learning Hub**: 3,300+ DSA problems, SQL practice, aptitude questions, and 500+ lessons across 12 technologies
-- **Skill Tests**: Timed assessments with auto-grading and verified skill badges
-- **Career Roadmaps**: Guided paths for Full-Stack, Frontend, Backend, Data Science, DevOps, and more
-- **Company Explorer**: Reviews, ratings, salaries, HR contacts, and open positions
-- **Application Tracker**: Track applications from applied through hiring rounds to offer
-- **Open Source Guide**: Step-by-step guides for reading codebases and contributing to OSS
+- **Job Board** — Browse recruiter-posted jobs with advanced search, filters, tags, and one-click applications.
+- **External Job Listings** — Access curated opportunities aggregated from external platforms and updated regularly.
+- **AI Job Agent** — AI-powered assistant that recommends jobs based on user profiles, skills, and interests.
+- **ATS Resume Scorer** — Upload resumes and job descriptions to receive AI-generated compatibility scores and keyword gap analysis.
+- **Cover Letter Generator** — Generate personalized cover letters tailored to specific job applications.
+- **AI Resume Builder** — Create professional LaTeX-based resumes with AI-assisted content generation.
+- **Mock Interviews** — Practice technical and behavioral interviews through AI-driven interview simulations.
+- **Learning Hub** — Access 3,300+ DSA problems, SQL practice sets, aptitude questions, and 500+ lessons across multiple technologies.
+- **Skill Assessments** — Participate in timed assessments with automated grading and verified skill badges.
+- **Career Roadmaps** — Follow structured learning paths for Full-Stack, Frontend, Backend, Data Science, DevOps, and other domains.
+- **Company Explorer** — Explore company reviews, ratings, salary insights, HR contacts, and active openings.
+- **Application Tracker** — Monitor application progress from submission to interview rounds and final offers.
+- **Open Source Guide** — Step-by-step guidance for understanding codebases and contributing to open-source projects.
 
-### For Recruiters
+### Features for Recruiters
 
-- **Dashboard**: Overview of posted jobs, applications, and hiring pipeline
-- **Job Management**: Create jobs with custom fields, multiple interview rounds, and auto-assessments
-- **Multi-Round Hiring**: Coding, DSA, HR, system design rounds with per-round evaluations
-- **Application Review**: Filter applicants, advance/reject through rounds, ATS scores per resume
-- **Talent Pools**: Save and organize promising candidates
-- **Campus Drives**: Manage campus recruitment drives
+- **Recruiter Dashboard** — Centralized overview of job postings, applications, and hiring pipelines.
+- **Job Management** — Create and manage job postings with custom fields, interview workflows, and automated assessments.
+- **Multi-Round Hiring Workflow** — Conduct coding, DSA, HR, and system design interview rounds with structured evaluations.
+- **Application Review System** — Filter applicants, track candidate progress, and manage round-wise selection or rejection processes.
+- **ATS Resume Analysis** — Access AI-generated ATS scores and resume evaluations for better candidate screening.
+- **Talent Pool Management** — Save, organize, and manage promising candidates for future opportunities.
+- **Campus Recruitment Drives** — Plan and manage campus hiring campaigns efficiently.
 
-### For Admins
+### Features for Admins
 
-- **Platform Dashboard**: Real-time stats across the platform
-- **User & Job Management**: Moderate users, jobs, companies, reviews
-- **External Job Management**: Post and manage curated external job listings
-- **AI Provider Management**: Switch between AI providers (Gemini, Groq, Claude, etc.)
-- **Content Management**: DSA problems, aptitude questions, skill tests, hackathons, blog
-- **Activity & Error Logs**: Full audit trail
+- **Admin Dashboard** — Monitor real-time platform statistics, user activity, and system performance.
+- **User & Job Management** — Manage users, recruiters, job postings, companies, and platform reviews.
+- **External Job Management** — Create, manage, and moderate curated external job listings.
+- **AI Provider Management** — Configure and switch between multiple AI providers such as Gemini, Groq, and Claude.
+- **Content Management System** — Manage DSA problems, aptitude questions, skill assessments, hackathons, blogs, and learning resources.
+- **Activity & Error Logging** — Maintain detailed audit trails, activity logs, and system error monitoring.
 
 ---
 

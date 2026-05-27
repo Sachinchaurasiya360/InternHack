@@ -122,8 +122,9 @@ export default function ExternalJobDetailPage() {
     );
   }
 
+  const now = Date.now(); // eslint-disable-line react-hooks/purity
   const daysLeft = job.expiresAt
-    ? Math.ceil((new Date(job.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    ? Math.ceil((new Date(job.expiresAt).getTime() - now) / (1000 * 60 * 60 * 24))
     : null;
 
   return (

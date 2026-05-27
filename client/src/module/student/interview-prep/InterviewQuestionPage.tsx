@@ -18,38 +18,19 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
+import api from "../../../lib/axios";
 
 async function getServerProgress() {
-  const res = await fetch("/api/interview-progress", {
-    method: "GET",
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch progress");
-  }
-
-  return res.json();
+  const { data } = await api.get("/interview-progress");
+  return data;
 }
 
 async function updateServerProgress(
   questionId: string,
   action: "complete" | "uncomplete" | "visit"
 ) {
-  const res = await fetch(`/api/interview-progress`, {
-    method: "PATCH",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ questionId, action }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to update progress");
-  }
-
-  return res.json();
+  const { data } = await api.patch("/interview-progress", { questionId, action });
+  return data;
 }
 
 const DIFF_STYLE: Record<string, string> = {

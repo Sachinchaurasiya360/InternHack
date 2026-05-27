@@ -6,6 +6,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+import { Footer } from "../../components/Footer";
 import api from "../../lib/axios";
 import { queryKeys } from "../../lib/query-keys";
 import { Navbar } from "../../components/Navbar";
@@ -116,7 +117,7 @@ export default function BlogListPage() {
   const featuredPosts = featuredData?.posts ?? [];
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+    <div className="font-sans min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
         title="Blog & Resources"
         description="Career tips, interview strategies, salary insights, and industry trends to help you land your dream role. Read expert articles on InternHack."
@@ -124,116 +125,108 @@ export default function BlogListPage() {
         canonicalUrl={canonicalUrl("/blog")}
       />
 
+      {/* Navbar stays full-width at the very top */}
       <Navbar />
 
-      {/* Hero */}
-      <BlogHero
-        search={search}
-        setSearch={handleSearchChange}
-      />
-
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Category Pills */}
-        <CategoryPills
-          selected={category}
-          onChange={(value) => {
-            setCategory(value);
-            setPage(1);
-          }}
-        />
-
-        {/* Featured */}
-        {featuredPosts.length > 0 &&
-          category === "ALL" &&
-          !debouncedSearch &&
-          page === 1 && (
-            <div className="mb-12">
-              <FeaturedCarousel
-                posts={featuredPosts.slice(0, 3)}
-              />
-            </div>
-          )}
-
-        {/* Blog Grid */}
-        <section className="mb-16">
-          <div className="flex items-center gap-2 mb-6">
-            <BookOpen className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              {category === "ALL"
-                ? "All Articles"
-                : CATEGORY_LABELS[category]}
-            </h2>
-
-            {pagination && (
-              <span className="text-sm text-gray-400 dark:text-gray-500 ml-2">
-                ({pagination.total} article
-                {pagination.total !== 1 ? "s" : ""})
-              </span>
-            )}
-          </div>
-
-          {isLoading ? (
-            <BlogSkeleton count={6} />
-          ) : posts.length === 0 ? (
-            <EmptyState
-              title="No articles found"
-              description={
-                debouncedSearch
-                  ? `No results for "${debouncedSearch}". Try a different search term.`
-                  : "No articles in this category yet. Check back soon!"
-              }
-            />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map((post, i) => (
-                <BlogCard
-                  key={post.id}
-                  post={post}
-                  index={i}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Pagination */}
-          {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3 mt-10">
-              <button
-                onClick={() =>
-                  setPage((p) => Math.max(1, p - 1))
-                }
-                disabled={page <= 1}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Previous
-              </button>
-
-              <span className="text-sm text-gray-500 dark:text-gray-400 px-3">
-                Page {pagination.page} of{" "}
-                {pagination.totalPages}
-              </span>
-
-              <button
-                onClick={() =>
-                  setPage((p) =>
-                    Math.min(
-                      pagination.totalPages,
-                      p + 1
-                    )
-                  )
-                }
-                disabled={page >= pagination.totalPages}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+      {/* Main content body wrapper */}
+      <main>
+        {/* Hero Banner Area */}
+        <section className="relative overflow-hidden bg-stone-50 dark:bg-stone-950 px-6 py-14 md:px-10 md:py-20">
+          <BlogHero search={search} setSearch={handleSearchChange} />
         </section>
-      </div>
+
+        {/* Articles Feed Content Container */}
+        <div className="max-w-6xl mx-auto px-6 mt-6">
+          {/* Category Pills */}
+          <CategoryPills
+            selected={category}
+            onChange={(value) => {
+              setCategory(value as BlogCategory | "ALL");
+              setPage(1);
+            }}
+          />
+
+          {/* Featured */}
+          {featuredPosts.length > 0 &&
+            category === "ALL" &&
+            !debouncedSearch &&
+            page === 1 && (
+              <div className="mb-12">
+                <FeaturedCarousel posts={featuredPosts.slice(0, 3)} />
+              </div>
+            )}
+
+          {/* Blog Grid */}
+          <section className="mb-16">
+            <div className="flex items-center gap-2 mb-6">
+              <BookOpen className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+
+              <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
+                {category === "ALL" ? "All Articles" : CATEGORY_LABELS[category]}
+              </h2>
+
+              {pagination && (
+                <span className="text-sm text-stone-400 dark:text-stone-500 ml-2">
+                  ({pagination.total} article{pagination.total !== 1 ? "s" : ""})
+                </span>
+              )}
+            </div>
+
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <BlogSkeleton key={i} />
+                ))}
+              </div>
+            ) : posts.length === 0 ? (
+              <EmptyState
+                title="No articles found"
+                description={
+                  debouncedSearch
+                    ? `No results for "${debouncedSearch}". Try a different search term.`
+                    : "No articles in this category yet. Check back soon!"
+                }
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {posts.map((post, i) => (
+                  <BlogCard key={post.id} post={post} index={i} />
+                ))}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {pagination && pagination.totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 mt-10">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-lime-400/50 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </button>
+
+                <span className="text-sm text-stone-500 dark:text-stone-400 px-3">
+                  Page {pagination.page} of {pagination.totalPages}
+                </span>
+
+                <button
+                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                  disabled={page >= pagination.totalPages}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-lime-400/50 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </section>
+        </div>
+      </main>
+
+      {/* Footer stays full-width at the very bottom */}
+      <Footer />
     </div>
   );
 }
