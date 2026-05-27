@@ -335,7 +335,10 @@ export class StudentService {
       throw new Error(`Project at index ${index} is missing a valid id`);
     }
     if (typeof item["title"] !== "string" || !item["title"].trim()) {
-      throw new Error(`Project at index ${index} is missing a title`);
+    throw new Error(`Project at index ${index} is missing a title`);
+    }
+    if ((item["title"] as string).length > 100) {
+    throw new Error(`Project at index ${index} title exceeds 100 characters`);
     }
     if (item["description"] !== undefined && typeof item["description"] !== "string") {
       throw new Error(`Project at index ${index} has an invalid description`);
@@ -344,8 +347,11 @@ export class StudentService {
       throw new Error(`Project at index ${index} description exceeds 200 characters`);
     }
     if (item["techStack"] !== undefined) {
-      if (!Array.isArray(item["techStack"]) || !(item["techStack"] as unknown[]).every((t) => typeof t === "string")) {
-        throw new Error(`Project at index ${index} has an invalid techStack`);
+      if (!Array.isArray(item["techStack"]) || !(item["techStack"] as unknown[]).every((t)  => typeof t === "string")) {
+       throw new Error(`Project at index ${index} has an invalid techStack`);
+      }
+      if ((item["techStack"] as unknown[]).length > 10) {
+       throw new Error(`Project at index ${index} techStack exceeds 10 items`);
       }
     }
     if (item["liveUrl"] && !urlRegex.test(item["liveUrl"] as string)) {

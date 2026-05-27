@@ -272,7 +272,13 @@ async getProjects(req: Request, res: Response, next: NextFunction) {
     const result = await this.studentService.upsertProjects(req.user.id, projects);
     return res.status(200).json(result);
   } catch (err) {
-    next(err);
+  if (err instanceof Error && (
+    err.message.startsWith("Maximum") ||
+    err.message.startsWith("Project at index")
+  )) {
+    return res.status(400).json({ message: err.message });
   }
+  next(err);
+ }
  }
 }
