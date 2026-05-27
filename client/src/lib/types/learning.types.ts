@@ -290,4 +290,5 @@ export interface AptitudeProgress {
   totalQuestions: number;
   totalAnswered: number;
   totalCorrect: number;
+    currentStreak: number;
 }
