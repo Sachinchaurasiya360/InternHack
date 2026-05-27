@@ -12,55 +12,30 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
 
-// ── Streak Banner ──────────────────────────────────────────────────────────
+// — Streak Banner ———————————————————————————————————————————
 type StreakBannerProps = { streak: number };
 
 function StreakBanner({ streak }: StreakBannerProps) {
   if (streak > 0) {
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          padding: "12px 16px",
-          borderRadius: "8px",
-          backgroundColor: "#1c1a14",
-          border: "1px solid #a16207",
-          marginBottom: "24px",
-          color: "#fde68a",
-          fontSize: "14px",
-        }}
-      >
-        <span role="img" aria-label="flame" style={{ fontSize: "20px" }}>🔥</span>
+      <div className="flex items-center gap-2 px-4 py-3 mb-6 rounded-lg bg-yellow-950 border border-yellow-700 text-yellow-200 text-sm">
+        <span role="img" aria-label="flame" className="text-xl">🔥</span>
         <span>
           <strong>{streak}-day streak</strong> — Keep it up! Practice today to continue your streak.
         </span>
       </div>
     );
   }
+
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        padding: "12px 16px",
-        borderRadius: "8px",
-        backgroundColor: "#0f172a",
-        border: "1px solid #334155",
-        marginBottom: "24px",
-        color: "#94a3b8",
-        fontSize: "14px",
-      }}
-    >
-      <span role="img" aria-label="target" style={{ fontSize: "20px" }}>🎯</span>
+    <div className="flex items-center gap-2 px-4 py-3 mb-6 rounded-lg bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-sm">
+      <span role="img" aria-label="target" className="text-xl">🎯</span>
       <span>
         <strong>Start your aptitude streak today!</strong> Practice now and build your daily habit.
       </span>
     </div>
   );
-}
+}}
 
 export default function AptitudeCategoriesPage() {
   const { user } = useAuthStore();
