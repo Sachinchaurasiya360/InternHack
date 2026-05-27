@@ -253,31 +253,35 @@ export class AptitudeService {
       select: { correct: true , createdAt: true},
     });
     
-    // Calculate current streak from aptitude practice history
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const dates = [...new Set(progress.map((p) => {
-      const d = new Date(p.createdAt);
-      d.setHours(0, 0, 0, 0);
-      return d.getTime();
-    }))].sort((a, b) => b - a);
+        // Calculate current streak from aptitude practice history (UTC-based to avoid timezone/DST issues)
+        const todayUTC = new Date();
+        todayUTC.setUTCHours(0, 0, 0, 0);
+        const yesterdayUTC = todayUTC.getTime() - 86400000;
 
-    let currentStreak = 0;
-    let expected = today.getTime();
-    for (const dateMs of dates) {
-      if (dateMs === expected) {
-        currentStreak++;
-        expected -= 86400000;
-      } else if (dateMs < expected) {
-        break;
-      }
-    }
+        const dates = [...new Set(progress.map((p) => {
+          const d = new Date(p.createdAt);
+          d.setUTCHours(0, 0, 0, 0);
+          return d.getTime();
+        }))].sort((a, b) => b - a);
+
+        let currentStreak = 0;
+        // Allow streak to start from today or yesterday (so user doesn't lose streak if they haven't practiced yet today)
+        let expected = dates[0] === todayUTC.getTime() ? todayUTC.getTime() : yesterdayUTC;
+
+        for (const dateMs of dates) {
+          if (dateMs === expected) {
+            currentStreak++;
+            expected -= 86400000;
+          } else if (dateMs < expected) {
+            break;
+          }
+        }    }
 
     return {
       totalQuestions: total,
       totalAnswered: progress.length,
       totalCorrect: progress.filter((p) => p.correct).length,
-            currentStreak,
+      currentStreak,
     };
   }
 }
