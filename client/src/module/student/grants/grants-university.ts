@@ -4,6 +4,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 91,
     name: "MIT Solve",
+    deadline: "2026-06-09",
     organization: "MIT",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -29,6 +30,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 92,
     name: "Stanford Social Innovation Review Grants",
+     deadline: "2026-07-20",
     organization: "Stanford University",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -54,6 +56,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 93,
     name: "Harvard Innovation Labs",
+     deadline: "2026-07-20",
     organization: "Harvard University",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
@@ -79,6 +82,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 94,
     name: "Y Combinator Research",
+     deadline: "2026-07-20",
     organization: "Y Combinator",
     logo: "https://placehold.co/100x100/EEE/999?text=Y",
     description:
@@ -104,6 +108,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 95,
     name: "Oxford Foundry Grant",
+     deadline: "2026-07-20",
     organization: "University of Oxford",
     logo: "https://placehold.co/100x100/EEE/999?text=O",
     description:
@@ -129,6 +134,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 96,
     name: "SINE (IIT Bombay)",
+     deadline: "2026-07-20",
     organization: "IIT Bombay",
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
@@ -154,6 +160,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 97,
     name: "FITT (IIT Delhi)",
+     deadline: "2026-07-20",
     organization: "IIT Delhi",
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
@@ -179,6 +186,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 98,
     name: "IISc STEP",
+     deadline: "2026-07-20",
     organization: "IISc Bangalore",
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
@@ -204,6 +212,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 99,
     name: "NUS Enterprise",
+     deadline: "2026-07-20",
     organization: "National University of Singapore",
     logo: "https://placehold.co/100x100/EEE/999?text=N",
     description:
@@ -229,6 +238,7 @@ export const grantsUniversity: Grant[] = [
   {
     id: 100,
     name: "ETH Zurich Pioneer Fellowship",
+     deadline: "2026-07-20",
     organization: "ETH Zurich",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
