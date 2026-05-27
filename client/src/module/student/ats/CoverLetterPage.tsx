@@ -25,7 +25,7 @@ import {
   AlertCircle,
   Loader2,
   ArrowRight,
-  Zap,
+  Zap
 } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
@@ -333,6 +333,7 @@ useEffect(() => {
     if (!coverLetter) return;
     setShowDownloadMenu(false);
 
+<<<<<<< HEAD
     // Build a slug-safe company name for the filename
     const safeCompany = (companyName || "company")
       .toLowerCase()
@@ -1016,15 +1017,16 @@ useEffect(() => {
                                 onClick={handleDownloadPdf}
                                 className="w-full flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors border-0 bg-transparent cursor-pointer"
                               >
-                                <FileText className="w-3.5 h-3.5 text-stone-500" />{" "}
+                                <FileText className="w-3.5 h-3.5 text-stone-500" />
                                 PDF
                               </button>
+
                               <button
                                 type="button"
                                 onClick={handleDownloadDocx}
                                 className="w-full flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors border-t border-stone-200 dark:border-white/10 bg-transparent cursor-pointer"
                               >
-                                <FileText className="w-3.5 h-3.5 text-stone-500" />{" "}
+                                <FileText className="w-3.5 h-3.5 text-stone-500" />
                                 DOCX
                               </button>
                             </motion.div>
@@ -1059,7 +1061,9 @@ useEffect(() => {
                   />
                 </div>
               </motion.div>
-            )}
+            )
+            }
+            
 
             {!loading && !coverLetter && !error && (
               <motion.div
