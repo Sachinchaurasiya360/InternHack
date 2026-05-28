@@ -15,9 +15,8 @@ import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import type { RoadmapEnrollmentListItem } from "../../../lib/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
-import LoadingSpinner from "@/components/ui/loading-spinner";
 
 export default function RoadmapDashboardPage() {
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
@@ -26,6 +25,7 @@ export default function RoadmapDashboardPage() {
   const [selectedRoadmapId, setSelectedRoadmapId] = useState<number | null>(
     null,
   );
+  const queryClient = useQueryClient();
 
   const {
     data,
@@ -69,13 +69,15 @@ export default function RoadmapDashboardPage() {
 
   const handleDeleteYes = async () => {
     try {
-      // alert(`Confirmed: Roadmap ${selectedRoadmapId} will be deleted!`);
       setIsDeleting(true);
       const res = await api.delete(
         `/roadmaps/me/enrollments/${selectedRoadmapId}`,
       );
       if (res.status === 204) {
         toast.success("Roadmap left successfully!");
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollments(),
+        });
       } else {
         toast.error("Failed to leave roadmap. Please try again.");
       }
@@ -85,7 +87,6 @@ export default function RoadmapDashboardPage() {
       setIsDeleting(false);
       setDeleteDialogOpen(false);
       setSelectedRoadmapId(null);
-      window.location.reload();
     }
   };
 
@@ -268,11 +269,10 @@ export default function RoadmapDashboardPage() {
                   <div className="ml-auto" id="popover-roadmap">
                     {/* Delete Button */}
                     <Button
-                      variant="outline"
+                      variant="destructive"
                       size="sm"
                       onClick={() => handleDeleteClick(e.id)}
                       aria-label={`Delete ${e.roadmap.title} roadmap`}
-                      className="p-2 rounded-lg border-2 border-red-600 bg-white hover:border-red-700 hover:bg-red-500  hover:text-white  transition-colors text-red-600 dark:bg-red-700 dark:hover:bg-red-700 dark:text-white"
                     >
                       Leave Roadmap
                     </Button>
@@ -345,7 +345,14 @@ export default function RoadmapDashboardPage() {
                               disabled={isDeleting}
                               className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              {isDeleting ? <LoadingSpinner /> : "Yes"}
+                              {isDeleting ? (
+                                <Loader2
+                                  className="w-4 h-4 animate-spin"
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                "Yes"
+                              )}
                             </button>
                           </div>
                         </div>
