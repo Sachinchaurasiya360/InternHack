@@ -135,7 +135,7 @@ export class AptitudeService {
     await prisma.studentAptitudeProgress.upsert({
       where: { studentId_questionId: { studentId, questionId } },
       create: { studentId, questionId, answered: true, correct: isCorrect },
-      update: { answered: true, correct: isCorrect },
+      update: { answered: true, correct: isCorrect, lastPracticedAt: new Date() },
     });
 
     // Fire-and-forget milestone check
@@ -250,7 +250,7 @@ export class AptitudeService {
     const total = await prisma.aptitudeQuestion.count();
     const progress = await prisma.studentAptitudeProgress.findMany({
       where: { studentId },
-      select: { correct: true , createdAt: true},
+      select: { correct: true , lastPracticedAt: true},
     });
     
         // Calculate current streak from aptitude practice history (UTC-based to avoid timezone/DST issues)
@@ -259,7 +259,7 @@ export class AptitudeService {
         const yesterdayUTC = todayUTC.getTime() - 86400000;
 
         const dates = [...new Set(progress.map((p) => {
-          const d = new Date(p.createdAt);
+          const d = new Date(p.lastPracticedAt);
           d.setUTCHours(0, 0, 0, 0);
           return d.getTime();
         }))].sort((a, b) => b - a);
