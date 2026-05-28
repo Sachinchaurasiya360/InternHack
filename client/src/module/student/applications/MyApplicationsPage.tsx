@@ -227,9 +227,9 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
 
 const PAGE_SIZE = 10;
 const STATUS_ORDER: Record<string, number> = {
-  IN_PROGRESS: 0,
-  SHORTLISTED: 1,
-  APPLIED: 2,
+  APPLIED: 0,
+  IN_PROGRESS: 1,
+  SHORTLISTED: 2,
   HIRED: 3,
   REJECTED: 4,
   WITHDRAWN: 5,
@@ -285,20 +285,26 @@ export default function MyApplicationsPage() {
     const base = !debouncedSearch.trim()
       ? applications
       : applications.filter(
-          (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
-        );
+        (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+      );
     return sortApplications(base, sortOption);
   }, [applications, debouncedSearch, sortOption]);
 
-  const filteredExternal = useMemo(() => {
-    if (!debouncedSearch.trim()) return externalApplications;
-    const q = debouncedSearch.toLowerCase();
-    return externalApplications.filter(
-      (a) =>
-        a.adminJob.role?.toLowerCase().includes(q) ||
-        a.adminJob.company?.toLowerCase().includes(q)
-    );
-  }, [externalApplications, debouncedSearch]);
+ const filteredExternal = useMemo(() => {
+  const base = !debouncedSearch.trim()
+    ? externalApplications
+    : externalApplications.filter(
+        (a) =>
+          a.adminJob.role?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+      );
+  return [...base].sort((a, b) => {
+    if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
+    return 0;
+  });
+}, [externalApplications, debouncedSearch, sortOption]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;
@@ -379,7 +385,7 @@ export default function MyApplicationsPage() {
 
   if (isLoading) return <LoadingScreen />;
 
- 
+
 
   const hasSearch = search.trim().length > 0;
 
@@ -422,20 +428,18 @@ export default function MyApplicationsPage() {
           </p>
         </div>
         {totalAll > 0 && (
-           <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-           {hasSearch ? "showing" : "total"}{" "}
-           <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-           {hasSearch ? totalFiltered : totalAll}
-          </span>
-          {hasSearch && (
-          <span className="ml-1">of {totalAll}</span>
-           )}
-        </div>
-       )}
+          <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            {hasSearch ? "showing" : "total"}{" "}
+            <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+              {hasSearch ? totalFiltered : totalAll}
+            </span>
+            {hasSearch && (
+              <span className="ml-1">of {totalAll}</span>
+            )}
+          </div>
+        )}
       </motion.div>
 
-      {/* Search */}
-      <div className="mb-5 relative">
       {/* Sort */}
       <div className="mb-4 flex items-center gap-2">
         <label htmlFor="sort" className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -453,6 +457,8 @@ export default function MyApplicationsPage() {
           <option value="status">Status</option>
         </select>
       </div>
+      {/* Search */}
+      <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
         <input
           type="text"
@@ -510,9 +516,9 @@ export default function MyApplicationsPage() {
             | { kind: "internal"; app: Application }
             | { kind: "external"; app: ExternalApplication }
           > = [
-            ...filtered.map((app) => ({ kind: "internal" as const, app })),
-            ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
-          ];
+              ...filtered.map((app) => ({ kind: "internal" as const, app })),
+              ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
+            ];
           const totalResults = combined.length;
           const totalPages = Math.max(1, Math.ceil(totalResults / PAGE_SIZE));
           const safePage = Math.min(page, totalPages);
