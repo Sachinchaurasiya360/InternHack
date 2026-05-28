@@ -1,7 +1,6 @@
 import "dotenv/config";
-import crypto from "crypto";
-import express from "express";
 import compression from "compression";
+import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -338,3 +337,11 @@ app.listen(PORT, async () => {
     console.log("[RoadmapDigest] Weekly digest cron disabled on this process");
   }
 });
+
+
+
+app.get("/", (req, res) => {
+  res.send("Server Running Successfully");
+});
+
+
