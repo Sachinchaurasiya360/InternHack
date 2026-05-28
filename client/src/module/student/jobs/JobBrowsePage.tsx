@@ -248,11 +248,14 @@ export default function JobBrowsePage() {
       tags: selectedTags.join(","),
     }),
     queryFn: async () => {
-      const params = new URLSearchParams({ page: String(page), limit: "12" });
+      const params = new URLSearchParams({
+        page: String(scrPage),
+        limit: "12",
+      });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
-      const res = await api.get(`/jobs?${params}`);
+      const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
     placeholderData: keepPreviousData,
@@ -311,48 +314,51 @@ export default function JobBrowsePage() {
   });
 
   const toggleTag = (tag: string) => {
-  const updated = selectedTags.includes(tag)
-    ? selectedTags.filter((t) => t !== tag)
-    : [...selectedTags, tag];
+    const updated = selectedTags.includes(tag)
+      ? selectedTags.filter((t) => t !== tag)
+      : [...selectedTags, tag];
 
-  setSelectedTags(updated);
+    setSelectedTags(updated);
 
-  const next = new URLSearchParams(searchParams);
-  if (updated.length > 0) next.set("tags", updated.join(",")); else next.delete("tags");
-  setSearchParams(next, { replace: true });
+    const next = new URLSearchParams(searchParams);
+    if (updated.length > 0) next.set("tags", updated.join(","));
+    else next.delete("tags");
+    setSearchParams(next, { replace: true });
 
-  setPage(1);
-  setExtPage(1);
-  setScrPage(1);
-};
+    setPage(1);
+    setExtPage(1);
+    setScrPage(1);
+  };
   const clearAll = () => {
-  setSearch("");
-  setLocationFilter("");
-  setDebouncedSearch("");
-  setDebouncedLocation("");
-  setSelectedTags([]);
-  setSearchParams({});   // wipes all URL params
-  setPage(1);
-  setExtPage(1);
-  setScrPage(1);
-};
+    setSearch("");
+    setLocationFilter("");
+    setDebouncedSearch("");
+    setDebouncedLocation("");
+    setSelectedTags([]);
+    setSearchParams({}); // wipes all URL params
+    setPage(1);
+    setExtPage(1);
+    setScrPage(1);
+  };
 
   const hasFilters = search || locationFilter || selectedTags.length > 0;
 
   const submitSearch = () => {
-  if (timerRef.current) clearTimeout(timerRef.current);
-  setDebouncedSearch(search);
-  setDebouncedLocation(locationFilter);
-  setPage(1);
-  setExtPage(1);
-  setScrPage(1);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setDebouncedSearch(search);
+    setDebouncedLocation(locationFilter);
+    setPage(1);
+    setExtPage(1);
+    setScrPage(1);
 
-  // Immediately sync to URL on form submit
-  const next = new URLSearchParams(searchParams);
-  if (search) next.set("search", search); else next.delete("search");
-  if (locationFilter) next.set("location", locationFilter); else next.delete("location");
-  setSearchParams(next, { replace: true });
-};
+    // Immediately sync to URL on form submit
+    const next = new URLSearchParams(searchParams);
+    if (search) next.set("search", search);
+    else next.delete("search");
+    if (locationFilter) next.set("location", locationFilter);
+    else next.delete("location");
+    setSearchParams(next, { replace: true });
+  };
 
   const filteredExtJobs = extData?.jobs ?? [];
   const scrapedJobs = scrData?.jobs ?? [];
