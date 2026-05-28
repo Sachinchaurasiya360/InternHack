@@ -335,12 +335,10 @@ app.listen(PORT, async () => {
   }
 });
 
-const app = express();
+
 
 app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
 
-app.listen(5000, () => {
-  console.log("Server started on http://localhost:5000");
-});
+
