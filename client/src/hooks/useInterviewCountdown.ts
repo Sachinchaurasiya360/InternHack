@@ -1,34 +1,27 @@
 import { useEffect, useState } from "react";
 
-export function useInterviewCountdown(targetDate: string) {
-  const calculate = () => {
-    const difference =
-      new Date(targetDate).getTime() - Date.now();
+function calculateTimeLeft(targetDate: string) {
+  const difference = new Date(targetDate).getTime() - Date.now();
 
-    if (difference <= 0) {
-      return null;
-    }
+  if (difference <= 0) {
+    return null;
+  }
 
-    return {
-      days: Math.floor(
-        difference / (1000 * 60 * 60 * 24)
-      ),
-      hours: Math.floor(
-        (difference / (1000 * 60 * 60)) % 24
-      ),
-      minutes: Math.floor(
-        (difference / (1000 * 60)) % 60
-      ),
-    };
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / (1000 * 60)) % 60),
   };
+}
 
-  const [timeLeft, setTimeLeft] = useState(calculate());
+export function useInterviewCountdown(targetDate: string) {
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetDate));
 
   useEffect(() => {
-    setTimeLeft(calculate());
+    setTimeLeft(calculateTimeLeft(targetDate));
 
     const interval = setInterval(() => {
-      const updated = calculate();
+      const updated = calculateTimeLeft(targetDate);
 
       setTimeLeft(updated);
 

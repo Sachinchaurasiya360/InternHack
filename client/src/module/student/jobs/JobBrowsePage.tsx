@@ -144,7 +144,7 @@ const ScrapedJobCard = React.memo(function ScrapedJobCard({
     : false;
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
-    
+    <a
       href={job.applicationUrl}
       target="_blank"
       rel="noopener noreferrer"
@@ -333,10 +333,6 @@ export default function JobBrowsePage() {
   setScrPage(1);
 };
 
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
-  };
   const clearAll = () => {
     setSearch("");
     setLocationFilter("");
@@ -693,11 +689,11 @@ export default function JobBrowsePage() {
             <div className="w-14 h-14 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
               <Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />
             </div>
-<h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-              Partner roles
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              No jobs found
             </h2>
-          </div>
-        </div>
+          </motion.div>
+        )}
         {isLoading ? (
           <div className="py-20 text-center">
             <div className="inline-flex flex-col items-center gap-3">
@@ -733,7 +729,11 @@ export default function JobBrowsePage() {
                   <span className="h-1 w-1 bg-lime-400" />
                   internal / live
                 </div>
-              )}
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                  Platform opportunities
+                </h2>
+              </div>
+            </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(data?.jobs ?? []).map((job, i) => (
                   <motion.div
@@ -802,8 +802,6 @@ export default function JobBrowsePage() {
                   </motion.div>
                 ))}
               </div>
-            </div>
-
             {isLoading ? (
               <div className="py-20 text-center">
                 <div className="inline-flex flex-col items-center gap-3">
