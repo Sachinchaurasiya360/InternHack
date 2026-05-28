@@ -2,7 +2,6 @@ import "dotenv/config";
 import crypto from "crypto";
 import express from "express";
 import compression from "compression";
-
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
