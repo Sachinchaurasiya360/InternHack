@@ -13,6 +13,31 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { Button } from "../../../components/ui/button";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
 
+// — Streak Banner ———————————————————————————————————————————
+type StreakBannerProps = { streak: number };
+
+function StreakBanner({ streak }: StreakBannerProps) {
+  if (streak > 0) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-3 mb-6 rounded-lg bg-yellow-950 border border-yellow-700 text-yellow-200 text-sm">
+        <span role="img" aria-label="flame" className="text-xl">🔥</span>
+        <span>
+          <strong>{streak}-day streak</strong> — Keep it up! Practice today to continue your streak.
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2 px-4 py-3 mb-6 rounded-lg bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-sm">
+      <span role="img" aria-label="target" className="text-xl">🎯</span>
+      <span>
+        <strong>Start your aptitude streak today!</strong> Practice now and build your daily habit.
+      </span>
+    </div>
+  );
+}
+
 export default function AptitudeCategoriesPage() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<string>("all");
@@ -23,7 +48,7 @@ export default function AptitudeCategoriesPage() {
     queryFn: () => api.get<AptitudeCategory[]>("/aptitude/categories").then((r) => r.data),
   });
 
-  const { data: progress } = useQuery({
+  const { data: progress, isSuccess } = useQuery({
     queryKey: queryKeys.aptitude.progress(),
     queryFn: () => api.get<AptitudeProgress>("/aptitude/progress").then((r) => r.data),
     enabled: !!user,
@@ -63,6 +88,7 @@ const clearFilters = () => {
         keywords="aptitude practice, quantitative aptitude, logical reasoning, verbal ability, placement exam preparation"
         canonicalUrl={canonicalUrl("/learn/aptitude")}
       />
+            {user && isSuccess && <StreakBanner streak={progress.currentStreak} />}
 
       <div
         aria-hidden
