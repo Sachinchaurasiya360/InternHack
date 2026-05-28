@@ -159,7 +159,7 @@ export default function InterviewsPage() {
     },
   });
 
-  const now = new Date();
+  const now = useMemo(() => new Date(), []);
 
   const filteredInterviews = useMemo(() => {
     let list = interviews ?? [];

@@ -112,7 +112,7 @@ export default function TasksPage() {
     },
   });
 
-  const allTasks = tasks?.tasks ?? [];
+  const allTasks = useMemo(() => tasks?.tasks ?? [], [tasks]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
