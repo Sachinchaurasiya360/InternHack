@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
@@ -6,7 +7,6 @@ import {
   Search,
   MapPin,
   IndianRupee,
-  Wallet,
   Clock,
   X,
   Landmark,
@@ -48,20 +48,6 @@ function MetaChip({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
-
-function MetaChip({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
       <span className="text-stone-400">{icon}</span>
       {children}
@@ -69,140 +55,6 @@ function MetaChip({
   );
 }
 
-const ExternalJobCard = React.memo(function ExternalJobCard({
-  job,
-}: {
-  job: ExternalJob;
-}) {
-  const salaryHasCurrency = job.salary
-    ? SALARY_HAS_CURRENCY.test(job.salary)
-    : false;
-  const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
-  return (
-    <Link to={job.slug ? `/jobs/ext/${job.slug}` : "#"} className={cardBase}>
-      <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
-        <span className="h-1 w-1 bg-lime-400" />
-        external
-      </span>
-      <div className="flex items-start gap-3 mb-3 pr-16">
-        <CompanyMark label={job.company || "?"} />
-        <div className="flex-1 min-w-0">
-          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
-            {job.role || "Open Role"}
-          </h3>
-          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
-            {job.company || "company"}
-          </span>
-        </div>
-      </div>
-      {job.description && (
-        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
-          {job.description}
-        </p>
-      )}
-      <div className="flex flex-wrap gap-1.5 mb-4">
-        {job.location && (
-          <MetaChip icon={<MapPin className="w-3 h-3" />}>
-            {job.location}
-          </MetaChip>
-        )}
-        {job.salary && (
-          <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>
-            {job.salary}
-          </MetaChip>
-        )}
-      </div>
-      {job.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {job.tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
-      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
-          view role
-        </span>
-        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
-      </div>
-    </Link>
-  );
-});
-
-const ScrapedJobCard = React.memo(function ScrapedJobCard({
-  job,
-}: {
-  job: ScrapedJob;
-}) {
-  const salaryHasCurrency = job.salary
-    ? SALARY_HAS_CURRENCY.test(job.salary)
-    : false;
-  const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
-  return (
-    <a
-      href={job.applicationUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={cardBase}
-    >
-      <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
-        <span className="h-1 w-1 bg-lime-400" />
-        {job.source}
-      </span>
-      <div className="flex items-start gap-3 mb-3 pr-20">
-        <CompanyMark label={job.company || "?"} />
-        <div className="flex-1 min-w-0">
-          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
-            {job.title || "Open Role"}
-          </h3>
-          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
-            {job.company || "company"}
-          </span>
-        </div>
-      </div>
-      {job.description && (
-        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
-          {job.description}
-        </p>
-      )}
-      <div className="flex flex-wrap gap-1.5 mb-4">
-        {job.location && (
-          <MetaChip icon={<MapPin className="w-3 h-3" />}>
-            {job.location}
-          </MetaChip>
-        )}
-        {job.salary && (
-          <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>
-            {job.salary}
-          </MetaChip>
-        )}
-      </div>
-      {job.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {job.tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
-      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
-          view role
-        </span>
-        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
-      </div>
-    </a>
-  );
-});
 
 export default function JobBrowsePage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
@@ -338,15 +190,11 @@ export default function JobBrowsePage() {
     if (updated.length > 0) next.set("tags", updated.join(","));
     else next.delete("tags");
     setSearchParams(next, { replace: true });
-  setPage(1);
-  setExtPage(1);
-  setScrPage(1);
-};
-
     setPage(1);
     setExtPage(1);
     setScrPage(1);
   };
+
   const clearAll = () => {
     setSearch("");
     setLocationFilter("");
@@ -362,23 +210,6 @@ export default function JobBrowsePage() {
   };
 
   const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
-
-  const submitSearch = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setDebouncedSearch(search);
-    setDebouncedLocation(locationFilter);
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
-
-    // Immediately sync to URL on form submit
-    const next = new URLSearchParams(searchParams);
-    if (search) next.set("search", search);
-    else next.delete("search");
-    if (locationFilter) next.set("location", locationFilter);
-    else next.delete("location");
-    setSearchParams(next, { replace: true });
-  };
 
   const filteredExtJobs = extData?.jobs ?? [];
   const scrapedJobs = scrData?.jobs ?? [];
@@ -741,11 +572,11 @@ export default function JobBrowsePage() {
             <div className="w-14 h-14 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
               <Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />
             </div>
-<h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-              Partner roles
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              No results found
             </h2>
-          </div>
-        </div>
+          </motion.div>
+        )}
         {isLoading ? (
           <div className="py-20 text-center">
             <div className="inline-flex flex-col items-center gap-3">
@@ -781,74 +612,6 @@ export default function JobBrowsePage() {
                   <span className="h-1 w-1 bg-lime-400" />
                   internal / live
                 </div>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(data?.jobs ?? []).map((job, i) => (
-                  <motion.div
-                    key={job.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.03 }}
-                  >
-                    <Link to={`/jobs/${job.id}`} className={cardBase}>
-                      <div className="flex items-start gap-3 mb-3">
-                        <CompanyMark label={job.company || "C"} />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
-                            {job.title}
-                          </h3>
-                          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
-                            {job.company}
-                          </span>
-                        </div>
-                        {job._count && (
-                          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 shrink-0">
-                            {job._count.applications} applied
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
-                        {job.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        <MetaChip icon={<MapPin className="w-3 h-3" />}>
-                          {job.location}
-                        </MetaChip>
-                        <MetaChip icon={<IndianRupee className="w-3 h-3" />}>
-                          {job.salary}
-                        </MetaChip>
-                        {job.deadline &&
-                          (new Date(job.deadline) < new Date() ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
-                              <Clock className="w-3 h-3" /> expired
-                            </span>
-                          ) : (
-                            <MetaChip icon={<Clock className="w-3 h-3" />}>
-                              {new Date(job.deadline).toLocaleDateString()}
-                            </MetaChip>
-                          ))}
-                      </div>
-                      {job.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-4">
-                          {job.tags.slice(0, 3).map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
-                          view role
-                        </span>
-                        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
               </div>
             </div>
 

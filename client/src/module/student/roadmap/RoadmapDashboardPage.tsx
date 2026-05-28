@@ -299,7 +299,7 @@ export default function RoadmapDashboardPage() {
                   </Button>
                   <div className="ml-auto">
                     <Button
-                      variant="danger"
+                      variant="destructive"
                       size="sm"
                       onClick={() => handleDeleteClick(e.id)}
                       aria-label={`Leave ${e.roadmap.title} roadmap`}
@@ -365,7 +365,7 @@ export default function RoadmapDashboardPage() {
                               No
                             </Button>
                             <Button
-                              variant="danger"
+                              variant="destructive"
                               size="sm"
                               onClick={handleDeleteYes}
                               disabled={isDeleting}
