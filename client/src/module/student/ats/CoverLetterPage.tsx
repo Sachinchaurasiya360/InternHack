@@ -56,7 +56,7 @@ const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
   },
   { id: "formal", label: "Formal", description: "Executive and measured" },
   { id: "concise", label: "Concise", description: "Short and direct" },
-  { id: "startup", label: "Startup", description: "Bold and mission-driven" },
+  { id: "startup", label: "Startup-Casual", description: "Bold and mission-driven" },
 ];
 const LENGTHS = [
   {
