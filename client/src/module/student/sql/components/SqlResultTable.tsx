@@ -1,4 +1,5 @@
 import { CheckCircle2, XCircle, Clock, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";             // Fix 3: project Button
 import type { QueryResult } from "../lib/sql-engine";
 import type { ValidationResult } from "../lib/query-validator";
 
@@ -11,20 +12,27 @@ interface SqlResultTableProps {
 
 export default function SqlResultTable({ result, validation, showExpected, expectedOutput }: SqlResultTableProps) {
   // ── CSV Download ──────────────────────────────────────────────────────────
+
+  // Fix 2: shared escaper applied to BOTH headers and data cells
+  const escapeCSV = (value: string) => `"${value.replace(/"/g, '""')}"`;
+
   const handleDownloadCSV = () => {
     if (!result || result.error || result.columns.length === 0) return;
 
-    const headers = result.columns.map(h => `"${h}"`).join(',');
+    // Fix 2: headers now go through escapeCSV
+    const headers = result.columns.map(col => escapeCSV(col)).join(',');
 
     const csvRows = result.rows.map(row =>
       row.map(cell => {
         if (cell === null || cell === undefined) return '""';
         const s = typeof cell === 'object' ? JSON.stringify(cell) : String(cell);
-        return `"${s.replace(/"/g, '""')}"`;
+        return escapeCSV(s);                                 // Fix 2: reuses same escaper
       }).join(',')
     );
 
-    const csv = [headers, ...csvRows].join('\n');
+    // Fix 4: CRLF line endings per RFC 4180
+    const csv = [headers, ...csvRows].join('\r\n');
+
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -36,6 +44,7 @@ export default function SqlResultTable({ result, validation, showExpected, expec
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
   // ─────────────────────────────────────────────────────────────────────────
 
   if (!result) {
@@ -79,14 +88,16 @@ export default function SqlResultTable({ result, validation, showExpected, expec
           )}
         </div>
 
-        {/* Right side: timing + CSV download */}
+        {/* Right side: CSV download + timing */}
         <div className="flex items-center gap-2">
-          {/* CSV download button — only shown when there are rows to export */}
+          {/* Fix 3: uses project Button component instead of raw <button> */}
           {!result.error && result.rowCount > 0 && (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleDownloadCSV}
-              className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 rounded transition-colors cursor-pointer"
               title="Download results as CSV"
+              className="h-6 px-2 text-[10px] font-mono uppercase tracking-widest gap-1.5"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -99,7 +110,7 @@ export default function SqlResultTable({ result, validation, showExpected, expec
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
               </svg>
               CSV
-            </button>
+            </Button>
           )}
 
           <div className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 tabular-nums">
