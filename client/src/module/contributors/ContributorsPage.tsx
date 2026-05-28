@@ -15,21 +15,38 @@ type Contributor = {
 
 export default function ContributorsPage() {
   const [contributors, setContributors] = useState<Contributor[]>([]);
+  const [allContributors, setAllContributors] = useState<Contributor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchContributors = async () => {
       try {
-        const response = await fetch(
-          "https://api.github.com/repos/Sachinchaurasiya360/InternHack/contributors?per_page=100"
-        );
+        let page = 1;
+        let allData: Contributor[] = [];
 
-        const data = await response.json();
+        while (true) {
+          const response = await fetch(
+            `https://api.github.com/repos/Sachinchaurasiya360/InternHack/contributors?per_page=100&page=${page}`
+          );
 
-        // Only show contributors with 3+ contributions
-        const filteredContributors = data.filter(
-          (contributor: Contributor) => contributor.contributions >= 3
+          if (!response.ok) break;
+
+          const data: Contributor[] = await response.json();
+
+          if (!Array.isArray(data) || data.length === 0) break;
+
+          allData = [...allData, ...data];
+
+          if (data.length < 100) break;
+          page++;
+        }
+
+        setAllContributors(allData);
+
+        // Only show contributors with more than 5 contributions
+        const filteredContributors = allData.filter(
+          (contributor) => contributor.contributions > 5
         );
 
         setContributors(filteredContributors);
@@ -45,11 +62,11 @@ export default function ContributorsPage() {
   }, []);
 
   const totalContributions = useMemo(() => {
-    return contributors.reduce(
+    return allContributors.reduce(
       (acc, curr) => acc + curr.contributions,
       0
     );
-  }, [contributors]);
+  }, [allContributors]);
 
   return (
     <>
@@ -105,7 +122,7 @@ export default function ContributorsPage() {
               </p>
 
               <h2 className="text-4xl font-bold">
-                {contributors.length}+
+                {allContributors.length}+
               </h2>
             </motion.div>
 
