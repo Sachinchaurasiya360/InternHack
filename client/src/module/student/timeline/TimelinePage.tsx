@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { Briefcase, Video, ShieldCheck, Award, Clock } from "lucide-react";
-import { api } from "../../../lib/api";
+import api from "../../../lib/axios";
 
 type ActivityType = 
   | "APPLICATION_SUBMITTED"
@@ -17,7 +17,7 @@ interface ActivityLog {
   userId: number;
   title: string;
   type: ActivityType;
-  metadata: Record<string, unknown> | null;
+  metadata: Record<string, string | number | boolean> | null;
   createdAt: string;
 }
 
