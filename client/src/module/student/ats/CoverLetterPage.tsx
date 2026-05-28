@@ -333,7 +333,6 @@ useEffect(() => {
     if (!coverLetter) return;
     setShowDownloadMenu(false);
 
-<<<<<<< HEAD
     // Build a slug-safe company name for the filename
     const safeCompany = (companyName || "company")
       .toLowerCase()

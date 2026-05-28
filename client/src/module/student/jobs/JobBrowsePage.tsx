@@ -144,7 +144,7 @@ const ScrapedJobCard = React.memo(function ScrapedJobCard({
     : false;
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
-    
+    <a
       href={job.applicationUrl}
       target="_blank"
       rel="noopener noreferrer"
