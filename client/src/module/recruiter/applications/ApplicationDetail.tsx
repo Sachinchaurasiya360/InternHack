@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, Download, CheckCircle, XCircle, Clock, FileText, ShieldCheck } from "lucide-react";
@@ -16,14 +16,14 @@ export default function ApplicationDetail() {
   const [evaluatingRoundId, setEvaluatingRoundId] = useState<number | null>(null);
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
 
-  const fetchDetail = () => {
+  const fetchDetail = useCallback(() => {
     api.get(`/recruiter/applications/${applicationId}`).then((res) => {
       setApplication(res.data.application);
       setLoading(false);
     }).catch(() => setLoading(false));
-  };
+  }, [applicationId]);
 
-  useEffect(() => { fetchDetail(); }, [applicationId]);
+  useEffect(() => { fetchDetail(); }, [fetchDetail]);
 
   useEffect(() => {
     if (application?.student?.id) {
