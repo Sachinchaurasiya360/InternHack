@@ -35,7 +35,7 @@ function StreakBanner({ streak }: StreakBannerProps) {
       </span>
     </div>
   );
-}}
+}
 
 export default function AptitudeCategoriesPage() {
   const { user } = useAuthStore();
