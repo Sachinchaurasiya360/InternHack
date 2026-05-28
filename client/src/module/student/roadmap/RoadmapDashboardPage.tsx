@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -9,6 +9,7 @@ import {
   Map,
   Loader2,
   X,
+  Sparkles,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -17,6 +18,10 @@ import toast from "../../../components/ui/toast";
 import type { RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import {
+  RecommendationCard,
+  type WeakArea,
+} from "../learn/components/RecommendationCard";
 
 export default function RoadmapDashboardPage() {
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
@@ -25,8 +30,15 @@ export default function RoadmapDashboardPage() {
   const [selectedRoadmapId, setSelectedRoadmapId] = useState<number | null>(
     null,
   );
+  const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
   const queryClient = useQueryClient();
 
+  useEffect(() => {
+    api
+      .get<{ weakAreas: WeakArea[] }>("/student/recommendations")
+      .then((res) => setWeakAreas(res.data.weakAreas ?? []))
+      .catch(() => {});
+  }, []);
   const {
     data,
     isLoading: loading,
@@ -112,6 +124,30 @@ export default function RoadmapDashboardPage() {
           Resume where you left off, or start a new path.
         </p>
       </motion.div>
+
+      {weakAreas.length > 0 && (
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-4 h-4 text-lime-500" />
+            <span className="text-sm font-bold text-gray-950 dark:text-white">
+              Skill gaps to address
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {weakAreas.slice(0, 4).map((area, i) => (
+              <RecommendationCard
+                key={`${area.type}-${area.topic}`}
+                area={area}
+                index={i}
+              />
+            ))}
+          </div>
+        </motion.section>
+      )}
 
       {loading ? (
         <div

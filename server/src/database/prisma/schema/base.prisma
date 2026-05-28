@@ -88,7 +88,8 @@ model user {
   generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
   leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
-hackathonParticipations hackathonParticipation[] @relation("UserHackathonParticipations")
+  recommendation            userRecommendation?          @relation("UserRecommendation")
+  hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -1378,6 +1379,17 @@ model interviewExperienceUpvote {
 
   @@unique([experienceId, userId])
   @@index([experienceId])
+}
+
+model userRecommendation {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  weakAreas       Json     @default("[]")
+  lastRefreshedAt DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            user     @relation("UserRecommendation", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum InterviewSource {

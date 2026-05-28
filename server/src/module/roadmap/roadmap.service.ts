@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { invalidateRecommendations } from "../recommendation/recommendation.service.js";
 import type { Prisma } from "@prisma/client";
 import type { EnrollInput } from "./roadmap.validation.js";
 
@@ -27,7 +28,12 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
  * the user's hoursPerWeek budget. Returns weeks with start/end dates.
  */
 export function buildWeeklyPlan(
-  topics: { slug: string; estimatedHours: number; sectionOrder: number; topicOrder: number }[],
+  topics: {
+    slug: string;
+    estimatedHours: number;
+    sectionOrder: number;
+    topicOrder: number;
+  }[],
   hoursPerWeek: number,
   startDate: Date,
 ): { plan: WeeklyPlanWeek[]; targetEndDate: Date } {
@@ -55,7 +61,10 @@ export function buildWeeklyPlan(
   current = startWeek(weekIndex);
 
   for (const t of sorted) {
-    if (weekHours + t.estimatedHours > hoursPerWeek && current.topicSlugs.length > 0) {
+    if (
+      weekHours + t.estimatedHours > hoursPerWeek &&
+      current.topicSlugs.length > 0
+    ) {
       plan.push(current);
       weekIndex += 1;
       current = startWeek(weekIndex);
@@ -88,7 +97,11 @@ export async function listPublishedRoadmaps(opts: {
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
-    where.level = opts.level as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS";
+    where.level = opts.level as
+      | "BEGINNER"
+      | "INTERMEDIATE"
+      | "ADVANCED"
+      | "ALL_LEVELS";
   }
   // if (opts.tag) {
   //   andConditions.push({ tags: { has: opts.tag } });
@@ -97,12 +110,12 @@ export async function listPublishedRoadmaps(opts: {
   //   andConditions.push({ tags: { has: opts.category } });
   // }
   const tagFilters: string[] = [];
-if (opts.tag) tagFilters.push(opts.tag);
-if (opts.category) tagFilters.push(opts.category);
+  if (opts.tag) tagFilters.push(opts.tag);
+  if (opts.category) tagFilters.push(opts.category);
 
-if (tagFilters.length > 0) {
-  andConditions.push({ tags: { hasSome: tagFilters } });
-}
+  if (tagFilters.length > 0) {
+    andConditions.push({ tags: { hasSome: tagFilters } });
+  }
   if (opts.search) {
     const s = opts.search.trim();
     if (s) {
@@ -185,7 +198,14 @@ export async function getTopicBySlug(roadmapSlug: string, topicSlug: string) {
           slug: true,
           title: true,
           orderIndex: true,
-          roadmap: { select: { slug: true, title: true, isPublished: true, ownerUserId: true } },
+          roadmap: {
+            select: {
+              slug: true,
+              title: true,
+              isPublished: true,
+              ownerUserId: true,
+            },
+          },
         },
       },
     },
@@ -206,7 +226,8 @@ export async function enrollUser(args: {
       },
     },
   });
-  if (!roadmap) throw Object.assign(new Error("Roadmap not found"), { status: 404 });
+  if (!roadmap)
+    throw Object.assign(new Error("Roadmap not found"), { status: 404 });
 
   const flatTopics = roadmap.sections.flatMap((section) =>
     section.topics.map((t) => ({
@@ -218,14 +239,22 @@ export async function enrollUser(args: {
   );
 
   const startDate = new Date();
-  const { plan, targetEndDate } = buildWeeklyPlan(flatTopics, args.input.hoursPerWeek, startDate);
+  const { plan, targetEndDate } = buildWeeklyPlan(
+    flatTopics,
+    args.input.hoursPerWeek,
+    startDate,
+  );
 
   const enrollment = await prisma.$transaction(async (tx) => {
     const existing = await tx.roadmapEnrollment.findUnique({
-      where: { userId_roadmapId: { userId: args.userId, roadmapId: roadmap.id } },
+      where: {
+        userId_roadmapId: { userId: args.userId, roadmapId: roadmap.id },
+      },
     });
     if (existing) {
-      throw Object.assign(new Error("Already enrolled in this roadmap"), { status: 409 });
+      throw Object.assign(new Error("Already enrolled in this roadmap"), {
+        status: 409,
+      });
     }
 
     const created = await tx.roadmapEnrollment.create({
@@ -257,7 +286,10 @@ export async function enrollUser(args: {
   return { enrollment, weeklyPlan: plan };
 }
 
-export async function getEnrollmentForUser(args: { userId: number; enrollmentId: number }) {
+export async function getEnrollmentForUser(args: {
+  userId: number;
+  enrollmentId: number;
+}) {
   const enrollment = await prisma.roadmapEnrollment.findFirst({
     where: { id: args.enrollmentId, userId: args.userId },
     include: {
@@ -331,13 +363,17 @@ export async function updateTopicProgress(args: {
     where: { id: args.enrollmentId, userId: args.userId },
     select: { id: true, roadmapId: true },
   });
-  if (!enrollment) throw Object.assign(new Error("Enrollment not found"), { status: 404 });
+  if (!enrollment)
+    throw Object.assign(new Error("Enrollment not found"), { status: 404 });
 
   const topic = await prisma.roadmapTopic.findFirst({
     where: { id: args.topicId, section: { roadmapId: enrollment.roadmapId } },
     select: { id: true },
   });
-  if (!topic) throw Object.assign(new Error("Topic not in this roadmap"), { status: 400 });
+  if (!topic)
+    throw Object.assign(new Error("Topic not in this roadmap"), {
+      status: 400,
+    });
 
   const data: Prisma.roadmapTopicProgressUncheckedUpdateInput = {};
   const create: Prisma.roadmapTopicProgressUncheckedCreateInput = {
@@ -364,9 +400,10 @@ export async function updateTopicProgress(args: {
     create.notes = args.notes;
   }
 
-
   const progress = await prisma.roadmapTopicProgress.upsert({
-    where: { enrollmentId_topicId: { enrollmentId: enrollment.id, topicId: topic.id } },
+    where: {
+      enrollmentId_topicId: { enrollmentId: enrollment.id, topicId: topic.id },
+    },
     update: data,
     create,
   });
@@ -383,11 +420,15 @@ export async function updateTopicProgress(args: {
       roadmapCompleted = summary.percentComplete === 100;
     }
   }
+  void invalidateRecommendations(args.userId).catch((error) => {
+    console.warn("[RoadmapService] Recommendation invalidation failed", {
+      userId: args.userId,
+      error,
+    });
+  });
 
   return { progress, roadmapCompleted };
 }
-
-
 
 export async function recomputePace(args: {
   userId: number;
@@ -407,7 +448,8 @@ export async function recomputePace(args: {
       },
     },
   });
-  if (!enrollment) throw Object.assign(new Error("Enrollment not found"), { status: 404 });
+  if (!enrollment)
+    throw Object.assign(new Error("Enrollment not found"), { status: 404 });
 
   const flatTopics = enrollment.roadmap.sections.flatMap((s) =>
     s.topics.map((t) => ({
@@ -451,7 +493,9 @@ export function summarizeProgress(
   const totalTopics = allTopics.length;
   const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0);
 
-  const progressByTopicId = new Map(enrollment.topicProgress.map((p) => [p.topicId, p]));
+  const progressByTopicId = new Map(
+    enrollment.topicProgress.map((p) => [p.topicId, p]),
+  );
   let completedTopics = 0;
   let inProgressTopics = 0;
   let bookmarkedTopics = 0;
@@ -474,7 +518,8 @@ export function summarizeProgress(
     completedTopics,
     inProgressTopics,
     bookmarkedTopics,
-    percentComplete: totalTopics === 0 ? 0 : Math.round((completedTopics / totalTopics) * 100),
+    percentComplete:
+      totalTopics === 0 ? 0 : Math.round((completedTopics / totalTopics) * 100),
     hoursDone,
     hoursTotal,
   };
