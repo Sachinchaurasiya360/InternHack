@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, useEffect, useCallback } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -43,53 +43,67 @@ import api from "../../../lib/axios";
 import { Button } from "../../../components/ui/button";
 import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
-import type { SkillTest, SkillTestAttempt, VerifiedSkill, TestDifficulty } from "../../../lib/types";
+import type {
+  SkillTest,
+  SkillTestAttempt,
+  VerifiedSkill,
+  TestDifficulty,
+} from "../../../lib/types";
 
 /* ------------------------------------------------------------------ */
 /*  Skill icon + color mapping                                         */
 /* ------------------------------------------------------------------ */
 const SKILL_ICONS: Record<string, { icon: LucideIcon; fg: string }> = {
-  javascript:        { icon: Braces,       fg: "text-yellow-600 dark:text-yellow-400" },
-  python:            { icon: Code,         fg: "text-blue-600 dark:text-blue-400" },
-  react:             { icon: Zap,          fg: "text-cyan-600 dark:text-cyan-400" },
-  nodejs:            { icon: Server,       fg: "text-green-600 dark:text-green-400" },
-  sql:               { icon: Database,     fg: "text-indigo-600 dark:text-indigo-400" },
-  java:              { icon: FileCode,     fg: "text-orange-600 dark:text-orange-400" },
-  typescript:        { icon: FileCode,     fg: "text-blue-600 dark:text-blue-400" },
-  "html-css":        { icon: Palette,      fg: "text-pink-600 dark:text-pink-400" },
-  git:               { icon: GitBranch,    fg: "text-red-600 dark:text-red-400" },
-  "data-structures": { icon: Network,      fg: "text-violet-600 dark:text-violet-400" },
-  express:           { icon: Zap,          fg: "text-stone-700 dark:text-stone-300" },
-  mongodb:           { icon: Database,     fg: "text-emerald-600 dark:text-emerald-400" },
-  docker:            { icon: Box,          fg: "text-sky-600 dark:text-sky-400" },
-  aws:               { icon: Cloud,        fg: "text-orange-600 dark:text-orange-400" },
-  graphql:           { icon: Workflow,     fg: "text-pink-600 dark:text-pink-400" },
-  nextjs:            { icon: Globe,        fg: "text-stone-700 dark:text-stone-300" },
-  redis:             { icon: Layers,       fg: "text-red-600 dark:text-red-400" },
-  websocket:         { icon: Radio,        fg: "text-violet-600 dark:text-violet-400" },
-  "rest-api":        { icon: Globe,        fg: "text-teal-600 dark:text-teal-400" },
-  cpp:               { icon: Cpu,          fg: "text-blue-600 dark:text-blue-400" },
-  go:                { icon: Terminal,     fg: "text-cyan-600 dark:text-cyan-400" },
-  rust:              { icon: Shield,       fg: "text-orange-600 dark:text-orange-400" },
-  django:            { icon: Code,         fg: "text-green-600 dark:text-green-400" },
-  kubernetes:        { icon: Box,          fg: "text-blue-600 dark:text-blue-400" },
-  linux:             { icon: Terminal,     fg: "text-stone-700 dark:text-stone-300" },
-  "system-design":   { icon: Workflow,     fg: "text-indigo-600 dark:text-indigo-400" },
-  cybersecurity:     { icon: Lock,         fg: "text-red-600 dark:text-red-400" },
-  "machine-learning":{ icon: FlaskConical, fg: "text-purple-600 dark:text-purple-400" },
-  devops:            { icon: Workflow,     fg: "text-teal-600 dark:text-teal-400" },
-  tailwindcss:       { icon: Paintbrush,   fg: "text-sky-600 dark:text-sky-400" },
-  flutter:           { icon: Smartphone,   fg: "text-blue-600 dark:text-blue-400" },
-  "react-native":    { icon: Smartphone,   fg: "text-cyan-600 dark:text-cyan-400" },
-  postgres:          { icon: Database,     fg: "text-blue-600 dark:text-blue-400" },
-  firebase:          { icon: Zap,          fg: "text-amber-600 dark:text-amber-400" },
-  vue:               { icon: Code,         fg: "text-emerald-600 dark:text-emerald-400" },
-  angular:           { icon: Code,         fg: "text-red-600 dark:text-red-400" },
-  php:               { icon: Code,         fg: "text-indigo-600 dark:text-indigo-400" },
-  csharp:            { icon: FileCode,     fg: "text-purple-600 dark:text-purple-400" },
-  swift:             { icon: Smartphone,   fg: "text-orange-600 dark:text-orange-400" },
-  kotlin:            { icon: Smartphone,   fg: "text-violet-600 dark:text-violet-400" },
-  "web-security":    { icon: Shield,       fg: "text-red-600 dark:text-red-400" },
+  javascript: { icon: Braces, fg: "text-yellow-600 dark:text-yellow-400" },
+  python: { icon: Code, fg: "text-blue-600 dark:text-blue-400" },
+  react: { icon: Zap, fg: "text-cyan-600 dark:text-cyan-400" },
+  nodejs: { icon: Server, fg: "text-green-600 dark:text-green-400" },
+  sql: { icon: Database, fg: "text-indigo-600 dark:text-indigo-400" },
+  java: { icon: FileCode, fg: "text-orange-600 dark:text-orange-400" },
+  typescript: { icon: FileCode, fg: "text-blue-600 dark:text-blue-400" },
+  "html-css": { icon: Palette, fg: "text-pink-600 dark:text-pink-400" },
+  git: { icon: GitBranch, fg: "text-red-600 dark:text-red-400" },
+  "data-structures": {
+    icon: Network,
+    fg: "text-violet-600 dark:text-violet-400",
+  },
+  express: { icon: Zap, fg: "text-stone-700 dark:text-stone-300" },
+  mongodb: { icon: Database, fg: "text-emerald-600 dark:text-emerald-400" },
+  docker: { icon: Box, fg: "text-sky-600 dark:text-sky-400" },
+  aws: { icon: Cloud, fg: "text-orange-600 dark:text-orange-400" },
+  graphql: { icon: Workflow, fg: "text-pink-600 dark:text-pink-400" },
+  nextjs: { icon: Globe, fg: "text-stone-700 dark:text-stone-300" },
+  redis: { icon: Layers, fg: "text-red-600 dark:text-red-400" },
+  websocket: { icon: Radio, fg: "text-violet-600 dark:text-violet-400" },
+  "rest-api": { icon: Globe, fg: "text-teal-600 dark:text-teal-400" },
+  cpp: { icon: Cpu, fg: "text-blue-600 dark:text-blue-400" },
+  go: { icon: Terminal, fg: "text-cyan-600 dark:text-cyan-400" },
+  rust: { icon: Shield, fg: "text-orange-600 dark:text-orange-400" },
+  django: { icon: Code, fg: "text-green-600 dark:text-green-400" },
+  kubernetes: { icon: Box, fg: "text-blue-600 dark:text-blue-400" },
+  linux: { icon: Terminal, fg: "text-stone-700 dark:text-stone-300" },
+  "system-design": {
+    icon: Workflow,
+    fg: "text-indigo-600 dark:text-indigo-400",
+  },
+  cybersecurity: { icon: Lock, fg: "text-red-600 dark:text-red-400" },
+  "machine-learning": {
+    icon: FlaskConical,
+    fg: "text-purple-600 dark:text-purple-400",
+  },
+  devops: { icon: Workflow, fg: "text-teal-600 dark:text-teal-400" },
+  tailwindcss: { icon: Paintbrush, fg: "text-sky-600 dark:text-sky-400" },
+  flutter: { icon: Smartphone, fg: "text-blue-600 dark:text-blue-400" },
+  "react-native": { icon: Smartphone, fg: "text-cyan-600 dark:text-cyan-400" },
+  postgres: { icon: Database, fg: "text-blue-600 dark:text-blue-400" },
+  firebase: { icon: Zap, fg: "text-amber-600 dark:text-amber-400" },
+  vue: { icon: Code, fg: "text-emerald-600 dark:text-emerald-400" },
+  angular: { icon: Code, fg: "text-red-600 dark:text-red-400" },
+  php: { icon: Code, fg: "text-indigo-600 dark:text-indigo-400" },
+  csharp: { icon: FileCode, fg: "text-purple-600 dark:text-purple-400" },
+  swift: { icon: Smartphone, fg: "text-orange-600 dark:text-orange-400" },
+  kotlin: { icon: Smartphone, fg: "text-violet-600 dark:text-violet-400" },
+  "web-security": { icon: Shield, fg: "text-red-600 dark:text-red-400" },
 };
 
 const DEFAULT_ICON = { icon: Binary, fg: "text-stone-500 dark:text-stone-400" };
@@ -99,9 +113,12 @@ function getSkillIcon(skillName: string) {
 }
 
 const DIFFICULTY_STYLE: Record<TestDifficulty, string> = {
-  BEGINNER:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
-  INTERMEDIATE: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
-  ADVANCED:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
+  BEGINNER:
+    "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
+  INTERMEDIATE:
+    "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
+  ADVANCED:
+    "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
 
 function SkillMark({ skill, verified }: { skill: string; verified?: boolean }) {
@@ -109,14 +126,26 @@ function SkillMark({ skill, verified }: { skill: string; verified?: boolean }) {
   const Icon = verified ? CheckCircle2 : si.icon;
   return (
     <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
-      <Icon className={`w-5 h-5 ${verified ? "text-lime-600 dark:text-lime-400" : si.fg}`} />
+      <Icon
+        className={`w-5 h-5 ${verified ? "text-lime-600 dark:text-lime-400" : si.fg}`}
+      />
     </div>
   );
 }
 
-function MetaChip({ icon, children, className = "" }: { icon?: React.ReactNode; children: React.ReactNode; className?: string }) {
+function MetaChip({
+  icon,
+  children,
+  className = "",
+}: {
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider border rounded-md ${className || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider border rounded-md ${className || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}
+    >
       {icon && <span className="text-stone-400">{icon}</span>}
       {children}
     </span>
@@ -169,13 +198,64 @@ const AttemptHistoryItem = memo(function AttemptHistoryItem({
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
+function CooldownTimer({ retakeAvailableAt }: { retakeAvailableAt: string }) {
+  const getTimeLeft = useCallback(() => {
+    const diff = new Date(retakeAvailableAt).getTime() - Date.now();
+    if (diff <= 0) return null;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return { hours, minutes };
+  }, [retakeAvailableAt]);
+
+  const [timeLeft, setTimeLeft] = useState(getTimeLeft);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft(getTimeLeft());
+    }, 60_000); // update every minute
+    return () => clearInterval(interval);
+  }, [getTimeLeft]);
+
+  if (!timeLeft) return null;
+
+  return (
+    <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-900/60 text-amber-700 dark:text-amber-400">
+      <Clock className="w-3.5 h-3.5 shrink-0" />
+      <span className="text-xs font-mono">
+        Retake available in {timeLeft.hours > 0 && `${timeLeft.hours}h `}
+        {timeLeft.minutes}m
+      </span>
+    </div>
+  );
+}
 export default function SkillVerificationPage() {
   const { user } = useAuthStore();
   const [tab, setTab] = useState<"my-skills" | "browse">("browse");
   const [search, setSearch] = useState("");
   const [diffFilter, setDiffFilter] = useState<TestDifficulty | "ALL">("ALL");
-  const [expandedHistorySkill, setExpandedHistorySkill] = useState<string | null>(null);
+  const [expandedHistorySkill, setExpandedHistorySkill] = useState<
+    string | null
+  >(null);
+  const [cooldownMap, setCooldownMap] = useState<Record<string, string>>({}); // testId → retakeAvailableAt
 
+  const handleStartTest = useCallback(async (testId: string | number) => {
+    try {
+      await api.post(`/skill-tests/${testId}/start`);
+      window.open(`/test/${testId}`, "_blank");
+    } catch (err: unknown) {
+      const data = (
+        err as { response?: { data?: { retakeAvailableAt?: string } } }
+      )?.response?.data;
+      if (data?.retakeAvailableAt) {
+        setCooldownMap((prev) => ({
+          ...prev,
+          [testId]: data.retakeAvailableAt!,
+        }));
+      } else {
+        window.open(`/test/${testId}`, "_blank");
+      }
+    }
+  }, []);
   const { data: tests = [], isLoading: loadingTests } = useQuery({
     queryKey: queryKeys.skillTests.list(),
     queryFn: async () => {
@@ -202,7 +282,9 @@ export default function SkillVerificationPage() {
 
   const isLoading = loadingTests || loadingVerified || loadingAttempts;
 
-  const verifiedMap = new Map(verified.map((v) => [v.skillName.toLowerCase(), v]));
+  const verifiedMap = new Map(
+    verified.map((v) => [v.skillName.toLowerCase(), v]),
+  );
   const userSkills = user?.skills ?? [];
 
   const testsBySkill = new Map<string, SkillTest>();
@@ -239,7 +321,8 @@ export default function SkillVerificationPage() {
         aria-hidden
         className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
         style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
+          backgroundImage:
+            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
           backgroundSize: "120px 100%",
         }}
       />
@@ -271,7 +354,8 @@ export default function SkillVerificationPage() {
               </span>
             </h1>
             <p className="mt-3 text-sm text-stone-500 max-w-md">
-              Timed, proctored tests that convert into verified badges on your profile, visible to every recruiter who opens your application.
+              Timed, proctored tests that convert into verified badges on your
+              profile, visible to every recruiter who opens your application.
             </p>
           </div>
           <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -303,11 +387,10 @@ export default function SkillVerificationPage() {
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`relative pb-3 text-xs font-mono uppercase tracking-widest transition-colors cursor-pointer bg-transparent border-0 ${
-                  active
+                className={`relative pb-3 text-xs font-mono uppercase tracking-widest transition-colors cursor-pointer bg-transparent border-0 ${active
                     ? "text-stone-900 dark:text-stone-50"
                     : "text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
-                }`}
+                  }`}
               >
                 {t === "my-skills" ? "my skills" : "browse tests"}
                 {active && (
@@ -384,7 +467,8 @@ export default function SkillVerificationPage() {
                   const skillKey = skill.toLowerCase();
                   const v = verifiedMap.get(skillKey);
                   const test = testsBySkill.get(skillKey);
-                  const recentAttempts = attemptsBySkill.get(skillKey)?.slice(0, 3) ?? [];
+                  const recentAttempts =
+                    attemptsBySkill.get(skillKey)?.slice(0, 3) ?? [];
                   const historyOpen = expandedHistorySkill === skillKey;
                   return (
                     <motion.div
@@ -423,16 +507,18 @@ export default function SkillVerificationPage() {
                           </div>
                         </div>
                         {!v && test && (
-                          <Button asChild variant="outline" size="sm" className="font-mono uppercase tracking-widest shrink-0 hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900">
-                            <a
-                              href={`/test/${test.id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="no-underline"
+                          cooldownMap[test.id] ? (
+                            <CooldownTimer retakeAvailableAt={cooldownMap[test.id]} />
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleStartTest(test.id)}
+                              className="font-mono uppercase tracking-widest shrink-0 hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900"
                             >
                               take test <ArrowUpRight className="w-3 h-3" />
-                            </a>
-                          </Button>
+                            </Button>
+                          )
                         )}
                       </div>
 
@@ -440,13 +526,17 @@ export default function SkillVerificationPage() {
                         type="button"
                         variant="ghost"
                         autoHeight
-                        onClick={() => setExpandedHistorySkill(historyOpen ? null : skillKey)}
+                        onClick={() =>
+                          setExpandedHistorySkill(historyOpen ? null : skillKey)
+                        }
                         className="w-full rounded-none flex items-center justify-between gap-3 px-5 py-3 border-t border-stone-100 dark:border-white/5 bg-stone-50/70 dark:bg-white/[0.02] text-left hover:bg-stone-100 dark:hover:bg-white/[0.04]"
                       >
                         <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
                           <History className="w-3.5 h-3.5 text-stone-400" />
                           attempt history
-                          <span className="text-stone-400">({recentAttempts.length})</span>
+                          <span className="text-stone-400">
+                            ({recentAttempts.length})
+                          </span>
                         </span>
                         {historyOpen ? (
                           <ChevronDown className="w-4 h-4 text-stone-400" />
@@ -515,25 +605,28 @@ export default function SkillVerificationPage() {
                 <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
                   difficulty /
                 </span>
-                {(["ALL", "BEGINNER", "INTERMEDIATE", "ADVANCED"] as const).map((d, i) => {
-                  const active = diffFilter === d;
-                  return (
-                    <motion.button
-                      key={d}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.03, duration: 0.2 }}
-                      onClick={() => setDiffFilter(d)}
-                      className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
-                        active
-                          ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                          : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                      }`}
-                    >
-                      {d === "ALL" ? "All" : d.charAt(0) + d.slice(1).toLowerCase()}
-                    </motion.button>
-                  );
-                })}
+                {(["ALL", "BEGINNER", "INTERMEDIATE", "ADVANCED"] as const).map(
+                  (d, i) => {
+                    const active = diffFilter === d;
+                    return (
+                      <motion.button
+                        key={d}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.03, duration: 0.2 }}
+                        onClick={() => setDiffFilter(d)}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${active
+                            ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                            : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
+                          }`}
+                      >
+                        {d === "ALL"
+                          ? "All"
+                          : d.charAt(0) + d.slice(1).toLowerCase()}
+                      </motion.button>
+                    );
+                  },
+                )}
                 <AnimatePresence>
                   {hasFilters && (
                     <motion.button
@@ -570,7 +663,9 @@ export default function SkillVerificationPage() {
             {/* Grid */}
             {filteredTests.length === 0 ? (
               <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-                <p className="text-sm text-stone-600 dark:text-stone-400">No tests match your filters.</p>
+                <p className="text-sm text-stone-600 dark:text-stone-400">
+                  No tests match your filters.
+                </p>
                 <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
                   try different search criteria
                 </p>
@@ -586,12 +681,7 @@ export default function SkillVerificationPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03 }}
                     >
-                      <a
-                        href={`/test/${test.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline"
-                      >
+                      <div className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full">
                         {v && (
                           <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 inline-flex items-center gap-1.5">
                             <CheckCircle2 className="w-3 h-3" /> {v.score}%
@@ -616,7 +706,9 @@ export default function SkillVerificationPage() {
                         )}
 
                         <div className="flex flex-wrap gap-1.5 mb-4">
-                          <MetaChip className={DIFFICULTY_STYLE[test.difficulty]}>
+                          <MetaChip
+                            className={DIFFICULTY_STYLE[test.difficulty]}
+                          >
                             {test.difficulty}
                           </MetaChip>
                           <MetaChip icon={<HelpCircle className="w-3 h-3" />}>
@@ -628,13 +720,23 @@ export default function SkillVerificationPage() {
                           <MetaChip>pass {test.passThreshold}%</MetaChip>
                         </div>
 
-                        <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-                          <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
-                            {v ? "retake test" : "take test"}
-                          </span>
-                          <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+                        <div className="mt-auto pt-3 border-t border-stone-100 dark:border-white/5">
+                          {cooldownMap[test.id] ? (
+                            <CooldownTimer
+                              retakeAvailableAt={cooldownMap[test.id]}
+                            />
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleStartTest(test.id)}
+                              className="w-full flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
+                            >
+                              {v ? "retake test" : "take test"}
+                              <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+                            </button>
+                          )}
                         </div>
-                      </a>
+                      </div>
                     </motion.div>
                   );
                 })}
