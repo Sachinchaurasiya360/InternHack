@@ -260,8 +260,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
       whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
       whileTap={{ scale: 0.98 }}
       onClick={data.onClick}
-      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-grab active:cursor-grabbing w-72 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10`}
-    >
+      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-grab active:cursor-grabbing w-80 sm:w-72 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10`}    >
       <Handle
         type="target"
         position={Position.Top}
@@ -293,8 +292,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
       )}
 
       {/* Card body */}
-      <div className="pl-5 pr-3.5 py-3">
-        {/* Top row: step + status */}
+      <div className="pl-5 pr-3.5 py-4">        {/* Top row: step + status */}
         <div className="flex items-center justify-between mb-1.5 min-h-3.5">
           <div className="inline-flex items-center gap-1.5 text-[9.5px] font-mono uppercase tracking-[0.18em] text-stone-400">
             <span className="tabular-nums font-bold text-stone-500 dark:text-stone-400">
@@ -399,8 +397,22 @@ export default function RoadmapCanvasPage() {
   const queryClient = useQueryClient();
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
-  const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">("LINEAR");
-  // Track which sectionId is currently being regenerated
+  const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">(
+  window.innerWidth < 768 ? "LINEAR" : "GRAPH"
+);
+
+const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+ // Track which sectionId is currently being regenerated
   const [regeneratingSectionId, setRegeneratingSectionId] = useState<number | null>(null);
   // Modal state for the regenerate instructions dialog
   const [regenModal, setRegenModal] = useState<{ sectionId: number; sectionTitle: string } | null>(null);
@@ -919,7 +931,7 @@ export default function RoadmapCanvasPage() {
         </motion.header>
 
         {/* ─── Canvas ──────────────────────────────────────────────────────── */}
-        <div className="flex-1 relative">
+          <div className="flex-1 relative overflow-hidden">        
           <ReactFlowProvider>
             <ReactFlow
               nodes={nodes}
@@ -938,7 +950,10 @@ export default function RoadmapCanvasPage() {
               nodesDraggable={true}
               nodesConnectable={false}
               elementsSelectable={true}
-              panOnDrag={[1, 2]}
+              panOnScroll={!isMobile}
+              zoomOnScroll={!isMobile}
+              zoomOnPinch={!isMobile}
+              panOnDrag={!isMobile}
               minZoom={0.4}
               maxZoom={1.5}
               className="bg-stone-50 dark:bg-stone-950"
@@ -954,7 +969,8 @@ export default function RoadmapCanvasPage() {
                 showInteractive={false}
                 className="bg-white! dark:bg-stone-900! border! border-stone-200! dark:border-stone-800! rounded-md! shadow-sm! [&_button]:border-stone-200! dark:[&_button]:border-stone-800! [&_button:hover]:bg-lime-50! dark:[&_button:hover]:bg-lime-950/30!"
               />
-              <MiniMap
+              {!isMobile && (
+                <MiniMap
                 pannable
                 zoomable
                 maskColor="rgba(245, 245, 244, 0.6)"
@@ -967,6 +983,7 @@ export default function RoadmapCanvasPage() {
                   return "#d6d3d1";
                 }}
               />
+           )}
             </ReactFlow>
           </ReactFlowProvider>
 
@@ -1003,8 +1020,12 @@ export default function RoadmapCanvasPage() {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 28, stiffness: 280 }}
-                className="fixed inset-y-0 right-0 w-full sm:w-115 bg-white dark:bg-stone-950 border-l border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto"
-              >
+                className={`fixed bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto
+  ${
+    isMobile
+      ? "bottom-0 left-0 right-0 h-[75vh] rounded-t-2xl border-t"
+      : "inset-y-0 right-0 w-full sm:w-115 border-l"
+  }`}              >
                 <div className="sticky top-0 z-10 bg-white/90 dark:bg-stone-950/90 backdrop-blur border-b border-stone-200 dark:border-stone-800 px-5 py-3 flex items-center justify-between">
                   <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-stone-400">
                     <span className="h-1 w-1 bg-lime-500" />
