@@ -366,8 +366,8 @@ export function ProjectsSection({
         <Button
           type="button"
           onClick={startAdd}
-          variant="secondary"
-          className="w-full h-auto py-3 text-sm text-stone-600 dark:text-stone-400 border border-dashed border-stone-300 dark:border-white/10 bg-transparent hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 mt-3"
+          variant="dashed"
+          className="w-full h-auto py-3 text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 mt-3"
         >
           <Plus className="w-4 h-4" /> Add project
         </Button>
