@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 
-// eslint-disable-next-line react-refresh/only-export-components
+ 
 export interface StepPlayer<T> {
   current: T | undefined;
   index: number;
@@ -28,7 +28,7 @@ export function useStepPlayer<T>(frames: T[], speedMs = 700): StepPlayer<T> {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIndex(0);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setIsPlaying(false);
   }, [frames.length]);
 

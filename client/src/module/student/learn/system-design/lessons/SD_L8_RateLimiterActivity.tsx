@@ -114,9 +114,9 @@ interface Server { id: number; counter: number; resetAt: number; }
 
 function DistributedDemo() {
   const [mode, setMode] = useState<Mode>("per-instance");
-  const [servers, setServers] = useState<Server[]>([{ id: 1, counter: 0, resetAt: Date.now() + WINDOW_MS }, { id: 2, counter: 0, resetAt: Date.now() + WINDOW_MS }, { id: 3, counter: 0, resetAt: Date.now() + WINDOW_MS }]);
+  const [servers, setServers] = useState<Server[]>(() => [{ id: 1, counter: 0, resetAt: Date.now() + WINDOW_MS }, { id: 2, counter: 0, resetAt: Date.now() + WINDOW_MS }, { id: 3, counter: 0, resetAt: Date.now() + WINDOW_MS }]);
   const [redisCounter, setRedisCounter] = useState(0);
-  const [redisResetAt, setRedisResetAt] = useState(Date.now() + WINDOW_MS);
+  const [redisResetAt, setRedisResetAt] = useState(() => Date.now() + WINDOW_MS);
   const [running, setRunning] = useState(false);
   const [stats, setStats] = useState({ totalRequests: 0, allowed: 0, blocked: 0 });
 

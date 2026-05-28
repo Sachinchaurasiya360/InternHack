@@ -78,7 +78,7 @@ export default function WorkflowsPage() {
     },
   });
 
-  const instances = instancesData?.instances ?? [];
+  const instances = useMemo(() => instancesData?.instances ?? [], [instancesData]);
 
   const createMutation = useMutation({
     mutationFn: async () => {
