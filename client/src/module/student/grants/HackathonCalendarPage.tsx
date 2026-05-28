@@ -112,15 +112,15 @@ const { data, isLoading: loading } = useQuery({
   queryKey: queryKeys.hackathons.list(),
   queryFn: () => api.get("/hackathons").then((res) => res.data.hackathons as Hackathon[]),
 });
-const hackathons = data ?? [];
+const hackathons = useMemo(() => data ?? [], [data]);
 
 const { data: myData } = useQuery({
   queryKey: queryKeys.hackathons.myParticipations(),
   queryFn: () => api.get("/hackathons/my").then((res) => res.data.participations as MyParticipation[]),
   enabled: !!user,
 });
-const myParticipations = myData ?? [];
-const participationMap = new Map(myParticipations.map((p) => [p.hackathonId, p.status]));
+const myParticipations = useMemo(() => myData ?? [], [myData]);
+const participationMap = useMemo(() => new Map(myParticipations.map((p) => [p.hackathonId, p.status])), [myParticipations]);
 
 const participateMutation = useMutation({
   mutationFn: ({ id, status }: { id: number; status: ParticipationStatus }) =>

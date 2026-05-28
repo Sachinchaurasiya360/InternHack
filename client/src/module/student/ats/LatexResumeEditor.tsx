@@ -158,6 +158,7 @@ export default function LatexResumeEditor() {
   const historyRef = useRef<string[]>([code]);
   const historyPosRef = useRef(0);
   const skipHistoryRef = useRef(false);
+  const [historyState, setHistoryState] = useState({ pos: 0, length: 1 });
 
   const pushHistory = useCallback((val: string) => {
     if (skipHistoryRef.current) return;
@@ -167,6 +168,7 @@ export default function LatexResumeEditor() {
     historyRef.current.push(val);
     if (historyRef.current.length > 50) historyRef.current.shift();
     historyPosRef.current = historyRef.current.length - 1;
+    setHistoryState({ pos: historyPosRef.current, length: historyRef.current.length });
   }, []);
 
   const handleCodeChange = useCallback((val: string) => {
@@ -180,6 +182,7 @@ export default function LatexResumeEditor() {
     skipHistoryRef.current = true;
     setCode(historyRef.current[historyPosRef.current]);
     skipHistoryRef.current = false;
+    setHistoryState({ pos: historyPosRef.current, length: historyRef.current.length });
   }, [setCode]);
 
   const handleRedo = useCallback(() => {
@@ -188,6 +191,7 @@ export default function LatexResumeEditor() {
     skipHistoryRef.current = true;
     setCode(historyRef.current[historyPosRef.current]);
     skipHistoryRef.current = false;
+    setHistoryState({ pos: historyPosRef.current, length: historyRef.current.length });
   }, [setCode]);
 
   const handleApplyCode = useCallback((newCode: string) => {
@@ -404,7 +408,7 @@ export default function LatexResumeEditor() {
           <button
             type="button"
             onClick={handleUndo}
-            disabled={historyPosRef.current <= 0}
+            disabled={historyState.pos <= 0}
             className={ghostBtnCls}
             title="Undo"
           >
@@ -414,7 +418,7 @@ export default function LatexResumeEditor() {
           <button
             type="button"
             onClick={handleRedo}
-            disabled={historyPosRef.current >= historyRef.current.length - 1}
+            disabled={historyState.pos >= historyState.length - 1}
             className={ghostBtnCls}
             title="Redo"
           >

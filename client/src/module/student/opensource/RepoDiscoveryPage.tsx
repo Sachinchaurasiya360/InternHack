@@ -67,7 +67,7 @@ export default function RepoDiscoveryPage() {
     placeholderData: (prev) => prev,
   });
 
-  const repos = data?.repos ?? [];
+  const repos = useMemo(() => data?.repos ?? [], [data]);
   const pagination = data?.pagination;
 
   const stats = useMemo(() => {

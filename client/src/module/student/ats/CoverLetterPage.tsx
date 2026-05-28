@@ -25,7 +25,7 @@ import {
   AlertCircle,
   Loader2,
   ArrowRight,
-  Zap,
+  Zap
 } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
@@ -56,7 +56,7 @@ const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
   },
   { id: "formal", label: "Formal", description: "Executive and measured" },
   { id: "concise", label: "Concise", description: "Short and direct" },
-  { id: "startup", label: "Startup", description: "Bold and mission-driven" },
+  { id: "startup", label: "Startup-Casual", description: "Bold and mission-driven" },
 ];
 const LENGTHS = [
   {
@@ -332,45 +332,121 @@ useEffect(() => {
   const handleDownloadPdf = async () => {
     if (!coverLetter) return;
     setShowDownloadMenu(false);
+
+    // Build a slug-safe company name for the filename
+    const safeCompany = (companyName || "company")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    const dateStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const filename = `cover-letter-${safeCompany}-${dateStr}.pdf`;
+
     const html2pdf = (await import("html2pdf.js")).default;
+
+    // Build a nicely formatted HTML container
     const container = document.createElement("div");
     container.style.cssText =
-      "font-family:Georgia,serif;max-width:700px;padding:40px;line-height:1.7;color:#1a1a1a;font-size:14px;white-space:pre-wrap;";
-    container.innerText = coverLetter;
+      "font-family:Georgia,serif;max-width:680px;padding:48px 52px;color:#1a1a1a;font-size:13.5px;line-height:1.75;";
+
+    // Header block
+    const header = document.createElement("div");
+    header.style.cssText = "margin-bottom:24px;";
+
+    if (user?.name) {
+      const nameEl = document.createElement("p");
+      nameEl.style.cssText =
+        "font-size:22px;font-weight:700;margin:0 0 4px 0;letter-spacing:-0.3px;";
+      nameEl.textContent = user.name;
+      header.appendChild(nameEl);
+    }
+
+    if (companyName || jobTitle) {
+      const subEl = document.createElement("p");
+      subEl.style.cssText =
+        "font-size:12px;color:#666;margin:0 0 16px 0;letter-spacing:0.5px;text-transform:uppercase;";
+      const parts = [jobTitle, companyName].filter(Boolean);
+      subEl.textContent = parts.join(" · ");
+      header.appendChild(subEl);
+    }
+
+    const divider = document.createElement("hr");
+    divider.style.cssText =
+      "border:none;border-top:2px solid #1a1a1a;margin:0 0 24px 0;";
+    header.appendChild(divider);
+
+    container.appendChild(header);
+
+    // Body — preserve line breaks
+    const body = document.createElement("div");
+    body.style.cssText = "white-space:pre-wrap;";
+    body.textContent = coverLetter;
+    container.appendChild(body);
+
     document.body.appendChild(container);
+
     await html2pdf()
       .set({
-        margin: 20,
-        filename: "cover-letter.pdf",
+        margin: [14, 14, 14, 14],
+        filename,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       })
       .from(container)
       .save();
+
     document.body.removeChild(container);
   };
 
   const handleDownloadDocx = async () => {
     if (!coverLetter) return;
     setShowDownloadMenu(false);
-    const { Document, Paragraph, TextRun, Packer } = await import("docx");
+    const { Document, Paragraph, TextRun, Packer, HeadingLevel } = await import("docx");
     const { saveAs } = await import("file-saver");
 
-    const paragraphs = coverLetter.split("\n").map(
-      (line) =>
+    const safeCompany = (companyName || "company")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const filename = `cover-letter-${safeCompany}-${dateStr}.docx`;
+
+    const children = [];
+
+    if (user?.name) {
+      children.push(
+        new Paragraph({
+          text: user.name,
+          heading: HeadingLevel.HEADING_1,
+          spacing: { after: 80 },
+        }),
+      );
+    }
+
+    if (companyName || jobTitle) {
+      const subtitle = [jobTitle, companyName].filter(Boolean).join(" · ");
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: subtitle, font: "Georgia", size: 20, color: "666666", allCaps: true }),
+          ],
+          spacing: { after: 200 },
+        }),
+      );
+    }
+
+    coverLetter.split("\n").forEach((line) => {
+      children.push(
         new Paragraph({
           children: [new TextRun({ text: line, font: "Georgia", size: 24 })],
           spacing: { after: 120 },
         }),
-    );
-
-    const doc = new Document({
-      sections: [{ children: paragraphs }],
+      );
     });
 
+    const doc = new Document({ sections: [{ children }] });
     const blob = await Packer.toBlob(doc);
-    saveAs(blob, "cover-letter.docx");
+    saveAs(blob, filename);
   };
 
   return (
@@ -919,24 +995,12 @@ useEffect(() => {
                       <div className="relative" ref={downloadMenuRef}>
                         <button
                           type="button"
+                          disabled={loading}
                           onClick={() => setShowDownloadMenu((v) => !v)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Download className="w-3 h-3" /> Download
                         </button>
-
-                        <button
-  type="button"
-  onClick={() => {
-    setCoverLetter(originalCoverLetter);
-    setIsModified(false);
-    localStorage.setItem(STORAGE_KEY, originalCoverLetter);
-  }}
-  disabled={!isModified}
-  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
->
-  Reset
-</button>
 
                         <AnimatePresence>
                           {showDownloadMenu && (
@@ -952,21 +1016,34 @@ useEffect(() => {
                                 onClick={handleDownloadPdf}
                                 className="w-full flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors border-0 bg-transparent cursor-pointer"
                               >
-                                <FileText className="w-3.5 h-3.5 text-stone-500" />{" "}
+                                <FileText className="w-3.5 h-3.5 text-stone-500" />
                                 PDF
                               </button>
+
                               <button
                                 type="button"
                                 onClick={handleDownloadDocx}
                                 className="w-full flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors border-t border-stone-200 dark:border-white/10 bg-transparent cursor-pointer"
                               >
-                                <FileText className="w-3.5 h-3.5 text-stone-500" />{" "}
+                                <FileText className="w-3.5 h-3.5 text-stone-500" />
                                 DOCX
                               </button>
                             </motion.div>
                           )}
                         </AnimatePresence>
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCoverLetter(originalCoverLetter);
+                          setIsModified(false);
+                          localStorage.setItem(STORAGE_KEY, originalCoverLetter);
+                        }}
+                        disabled={!isModified}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      >
+                        Reset
+                      </button>
                     </div>
                   }
                 />
@@ -983,7 +1060,9 @@ useEffect(() => {
                   />
                 </div>
               </motion.div>
-            )}
+            )
+            }
+            
 
             {!loading && !coverLetter && !error && (
               <motion.div

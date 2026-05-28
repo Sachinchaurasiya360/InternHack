@@ -1,16 +1,42 @@
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, Building2, ArrowUpRight, Brain, BookOpen, MessageSquare, Search } from "lucide-react";
+import { CheckCircle2, Building2, ArrowUpRight, Brain, BookOpen, MessageSquare, Search, X } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
-import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
+
+// — Streak Banner ———————————————————————————————————————————
+type StreakBannerProps = { streak: number };
+
+function StreakBanner({ streak }: StreakBannerProps) {
+  if (streak > 0) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-3 mb-6 rounded-lg bg-yellow-950 border border-yellow-700 text-yellow-200 text-sm">
+        <span role="img" aria-label="flame" className="text-xl">🔥</span>
+        <span>
+          <strong>{streak}-day streak</strong> — Keep it up! Practice today to continue your streak.
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2 px-4 py-3 mb-6 rounded-lg bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-sm">
+      <span role="img" aria-label="target" className="text-xl">🎯</span>
+      <span>
+        <strong>Start your aptitude streak today!</strong> Practice now and build your daily habit.
+      </span>
+    </div>
+  );
+}
 
 export default function AptitudeCategoriesPage() {
   const { user } = useAuthStore();
@@ -22,12 +48,17 @@ export default function AptitudeCategoriesPage() {
     queryFn: () => api.get<AptitudeCategory[]>("/aptitude/categories").then((r) => r.data),
   });
 
-  const { data: progress } = useQuery({
+  const { data: progress, isSuccess } = useQuery({
     queryKey: queryKeys.aptitude.progress(),
     queryFn: () => api.get<AptitudeProgress>("/aptitude/progress").then((r) => r.data),
     enabled: !!user,
   });
+const clearFilters = () => {
+    setTopicSearch("");
+    setActiveTab("all");
+  };
 
+  const hasFilters = topicSearch.trim() !== "" || activeTab !== "all";
   const totalQuestions = categories?.reduce((s, c) => s + c.questionCount, 0) ?? 0;
   const totalAnswered = categories?.reduce((s, c) => s + c.answeredCount, 0) ?? 0;
   const overallPct = totalQuestions > 0 ? Math.round((totalAnswered / totalQuestions) * 100) : 0;
@@ -57,6 +88,7 @@ export default function AptitudeCategoriesPage() {
         keywords="aptitude practice, quantitative aptitude, logical reasoning, verbal ability, placement exam preparation"
         canonicalUrl={canonicalUrl("/learn/aptitude")}
       />
+            {user && isSuccess && <StreakBanner streak={progress.currentStreak} />}
 
       <div
         aria-hidden
@@ -224,6 +256,11 @@ export default function AptitudeCategoriesPage() {
                   </motion.button>
                 );
               },
+            )}
+            {hasFilters && (
+              <Button onClick={clearFilters} variant="ghost" size="sm">
+                <X className="w-3 h-3" /> clear
+              </Button>
             )}
           </div>
         </motion.div>
