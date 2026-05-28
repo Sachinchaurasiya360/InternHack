@@ -3,6 +3,7 @@ import { prisma } from "../../database/db.js";
 export interface WeakArea {
   type: "dsa" | "aptitude" | "skill" | "ats" | "roadmap";
   topic: string;
+  topicSlug?: string;
   reason: string;
   score?: number;
 }
@@ -205,7 +206,7 @@ async function analyzeRoadmap(userId: number, out: WeakArea[]): Promise<void> {
       status: { in: ["SKIPPED", "IN_PROGRESS"] },
     },
     include: {
-      topic: { select: { title: true } },
+      topic: { select: { title: true, slug: true } },
     },
     take: 5,
     orderBy: { updatedAt: "asc" }, // oldest stuck topics first
@@ -215,6 +216,7 @@ async function analyzeRoadmap(userId: number, out: WeakArea[]): Promise<void> {
     out.push({
       type: "roadmap",
       topic: p.topic.title,
+      topicSlug: p.topic.slug,
       reason:
         p.status === "SKIPPED"
           ? "Skipped in your roadmap"

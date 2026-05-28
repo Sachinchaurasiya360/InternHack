@@ -4,16 +4,42 @@ import { memo } from "react";
 export interface WeakArea {
   type: "dsa" | "aptitude" | "skill" | "ats" | "roadmap";
   topic: string;
+  topicSlug?: string;
   reason: string;
   score?: number;
 }
 
 const TYPE_CONFIG = {
-  dsa: { label: "DSA", icon: Brain, color: "text-violet-500", bg: "bg-violet-50 dark:bg-violet-900/20" },
-  aptitude: { label: "Aptitude", icon: Target, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-900/20" },
-  skill: { label: "Skill", icon: BookOpen, color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-900/20" },
-  ats: { label: "Resume", icon: FileText, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20" },
-  roadmap: { label: "Roadmap", icon: Map, color: "text-lime-500", bg: "bg-lime-50 dark:bg-lime-900/20" },
+  dsa: {
+    label: "DSA",
+    icon: Brain,
+    color: "text-violet-500",
+    bg: "bg-violet-50 dark:bg-violet-900/20",
+  },
+  aptitude: {
+    label: "Aptitude",
+    icon: Target,
+    color: "text-amber-500",
+    bg: "bg-amber-50 dark:bg-amber-900/20",
+  },
+  skill: {
+    label: "Skill",
+    icon: BookOpen,
+    color: "text-rose-500",
+    bg: "bg-rose-50 dark:bg-rose-900/20",
+  },
+  ats: {
+    label: "Resume",
+    icon: FileText,
+    color: "text-blue-500",
+    bg: "bg-blue-50 dark:bg-blue-900/20",
+  },
+  roadmap: {
+    label: "Roadmap",
+    icon: Map,
+    color: "text-lime-500",
+    bg: "bg-lime-50 dark:bg-lime-900/20",
+  },
 };
 
 interface Props {
@@ -21,7 +47,10 @@ interface Props {
   index: number;
 }
 
-export const RecommendationCard = memo(function RecommendationCard({ area, index }: Props) {
+export const RecommendationCard = memo(function RecommendationCard({
+  area,
+  index,
+}: Props) {
   const config = TYPE_CONFIG[area.type];
   const Icon = config.icon;
 
@@ -47,8 +76,10 @@ export const RecommendationCard = memo(function RecommendationCard({ area, index
         <p className="mt-0.5 text-sm font-semibold text-stone-900 dark:text-stone-50 truncate">
           {area.topic}
         </p>
-        <p className="mt-0.5 text-xs text-stone-500 leading-snug">{area.reason}</p>
+        <p className="mt-0.5 text-xs text-stone-500 leading-snug">
+          {area.reason}
+        </p>
       </div>
     </div>
   );
-})
+});

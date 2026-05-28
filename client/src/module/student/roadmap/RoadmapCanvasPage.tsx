@@ -433,16 +433,16 @@ export default function RoadmapCanvasPage() {
 
   useEffect(() => {
     api
-      .get<{ weakAreas: { type: string; topic: string }[] }>(
-        "/student/recommendations",
-      )
+      .get<{
+        weakAreas: { type: string; topic: string; topicSlug?: string }[];
+      }>("/student/recommendations")
       .then((res) => {
-        const titles = new Set(
+        const slugs = new Set(
           res.data.weakAreas
-            .filter((w) => w.type === "roadmap")
-            .map((w) => w.topic),
+            .filter((w) => w.type === "roadmap" && w.topicSlug)
+            .map((w) => w.topicSlug as string),
         );
-        setWeakTopicTitles(titles);
+        setWeakTopicTitles(slugs);
       })
       .catch(() => {});
   }, []);
@@ -665,7 +665,7 @@ export default function RoadmapCanvasPage() {
               status: p?.status ?? "NOT_STARTED",
               bookmarked: p?.bookmarked ?? false,
               isNext: topic.id === nextTopicId,
-              isWeak: weakTopicTitles.has(topic.title),
+              isWeak: weakTopicTitles.has(topic.slug),
               index: globalIdx,
               onClick: () => handleNodeClick(topic.id),
             },
@@ -1231,6 +1231,8 @@ export default function RoadmapCanvasPage() {
                     </StatusChip>
                     <button
                       type="button"
+                      aria-label={drawerProgress?.bookmarked ? "Remove bookmark" : "Add bookmark"}
+                      title={drawerProgress?.bookmarked ? "Remove bookmark" : "Add bookmark"}
                       onClick={() =>
                         updateProgress(drawerTopic.id, {
                           bookmarked: !drawerProgress?.bookmarked,
