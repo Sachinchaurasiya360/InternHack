@@ -170,6 +170,7 @@ export function bgLabel(b: AiGenerateInput["background"]): string {
     case "CAREER_SWITCHER": return "career switcher from another field";
     case "HOBBYIST": return "hobbyist";
     case "WORKING_PRO": return "working professional looking to upskill";
+    default: return b;
   }
 }
 
@@ -179,5 +180,6 @@ export function goalLabel(g: AiGenerateInput["goal"]): string {
     case "SIDE_PROJECT": return "build a working side project";
     case "SCHOOL": return "supplement school coursework";
     case "CURIOUS": return "satisfy curiosity";
+    default: return g;
   }
 }
