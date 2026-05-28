@@ -228,7 +228,11 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
         }
       }
     } catch (err) {
-      console.error("[Roadmap] Welcome email/PDF failed:", err);
+      console.error("[Roadmap] Welcome email/PDF failed:", {
+  enrollmentId: enrollment.id,
+  userId: req.user!.id,
+  err,
+});
     }
 
     res.status(201).json({
@@ -641,7 +645,11 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
         });
       }
     } catch (err) {
-      console.error("[Roadmap AI] Welcome email/PDF failed:", err);
+      console.error("[Roadmap AI] Welcome email/PDF failed:", {
+  enrollmentId: enrollment.id,
+  userId,
+  err,
+});
     }
 
     res.status(201).json({
