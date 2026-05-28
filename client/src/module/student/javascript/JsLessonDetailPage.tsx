@@ -26,6 +26,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
+import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
 const FREE_LIMIT = 5;
 
@@ -44,15 +45,6 @@ function toggleProgress(lessonId: string): boolean {
   localStorage.setItem("js-progress", JSON.stringify(progress));
   return !current;
 }
-
-const DIFF_COLOR: Record<string, string> = {
-  Beginner: "text-emerald-600 dark:text-emerald-400",
-  Intermediate: "text-amber-600 dark:text-amber-400",
-  Advanced: "text-rose-600 dark:text-rose-400",
-  Easy: "text-emerald-600 dark:text-emerald-400",
-  Medium: "text-amber-600 dark:text-amber-400",
-  Hard: "text-rose-600 dark:text-rose-400",
-};
 
 function CodeBlock({ example }: { example: CodeExample }) {
   const [copied, setCopied] = useState(false);
@@ -121,10 +113,15 @@ function ExerciseSection({
 
   useEffect(() => {
     if (!exercise) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCode(exercise.starterCode);
+     
     setResult(null);
+     
     setIsCorrect(null);
+     
     setShowHints(0);
+     
     setShowSolution(false);
   }, [activeIdx, exercise?.id]);
 

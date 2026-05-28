@@ -43,14 +43,6 @@ export const adminUpdateJobStatusSchema = z.object({
   reason: z.string().optional(),
 });
 
-export const activityLogQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
-  adminId: z.coerce.number().int().optional(),
-  action: z.string().optional(),
-  targetType: z.string().optional(),
-});
-
 export const errorLogQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
@@ -341,7 +333,7 @@ export const broadcastEmailSchema = z.object({
 // ==================== AI PROVIDER MANAGEMENT ====================
 
 export const switchAIProviderSchema = z.object({
-  service: z.enum(["ATS_SCORE", "COVER_LETTER", "RESUME_GEN", "LATEX_CHAT"]),
+  service: z.enum(["ATS_SCORE", "COVER_LETTER", "RESUME_GEN", "LATEX_CHAT","AI_ROADMAP_GENERATION"]),
   provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL", "CLAUDE"]),
   modelName: z.string().min(1, "Model name is required"),
 });

@@ -25,6 +25,8 @@ import type {
   Roadmap,
   RoadmapEnrollmentListItem,
 } from "../../../lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 
 const DAYS: DayOfWeek[] = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 const DAY_LABEL: Record<DayOfWeek, string> = {
@@ -74,8 +76,6 @@ export default function RoadmapEnrollPage() {
   const { slug = "" } = useParams();
   const navigate = useNavigate();
   const { collapsed, sidebarWidth, sidebar } = useStudentSidebar();
-  const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState(0);
 
@@ -84,32 +84,30 @@ export default function RoadmapEnrollPage() {
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel>("NEW");
   const [goal, setGoal] = useState<EnrollmentGoal>("JOB_READY");
 
-  const [enrollments, setEnrollments] = useState<RoadmapEnrollmentListItem[]>([]);
+  const { data: roadmapData, isLoading: roadmapLoading, isError: roadmapError } = useQuery({
+    queryKey: queryKeys.roadmaps.detail(slug),
+    queryFn: () => api.get<{ roadmap: Roadmap }>(`/roadmaps/${slug}`).then(res => res.data),
+    enabled: !!slug,
+  });
+
+  const { data: enrollmentsData } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+  });
+
+  const roadmap = roadmapData?.roadmap || null;
+  const enrollments = enrollmentsData?.enrollments || [];
+  const loading = roadmapLoading;
 
   useEffect(() => {
-    let mounted = true;
-    api.get<{ roadmap: Roadmap }>(`/roadmaps/${slug}`)
-      .then((res) => mounted && setRoadmap(res.data.roadmap))
-      .catch(() => mounted && setRoadmap(null))
-      .finally(() => mounted && setLoading(false));
-    return () => { mounted = false; };
-  }, [slug]);
-
-  useEffect(() => {
-    let mounted = true;
-    api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments")
-      .then((res) => {
-        if (!mounted) return;
-        setEnrollments(res.data.enrollments);
-        const existing = res.data.enrollments.find((e) => e.roadmap.slug === slug);
-        if (existing) {
-          // Already enrolled, jump them to the canvas instead of letting them re-enroll
-          navigate(`/learn/roadmaps/${slug}`, { replace: true });
-        }
-      })
-      .catch(() => { /* ok */ });
-    return () => { mounted = false; };
-  }, [slug, navigate]);
+    if (enrollmentsData) {
+      const existing = enrollmentsData.enrollments.find((e) => e.roadmap.slug === slug);
+      if (existing) {
+        // Already enrolled, jump them to the canvas instead of letting them re-enroll
+        navigate(`/learn/roadmaps/${slug}`, { replace: true });
+      }
+    }
+  }, [enrollmentsData, slug, navigate]);
 
   const targetWeeks = useMemo(() => {
     if (!roadmap) return 0;
@@ -160,6 +158,18 @@ export default function RoadmapEnrollPage() {
       </Chrome>
     );
   }
+  if (roadmapError) {
+    return (
+      <Chrome {...chromeProps}>
+        <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
+          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">Could not load enrollment data</p>
+          <p className="text-sm text-stone-500 mb-6">There was a problem connecting to the server.</p>
+          <Button onClick={() => window.location.reload()} variant="outline" size="sm">Retry</Button>
+        </div>
+      </Chrome>
+    );
+  }
+
   if (!roadmap) {
     return (
       <Chrome {...chromeProps}>
@@ -221,21 +231,22 @@ export default function RoadmapEnrollPage() {
           </h1>
         </motion.div>
 
-        {/* Step progress dots */}
+        {/* Step progress indicator */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.05 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" role="list" aria-label="Enrollment steps">
             {STEPS.map((s) => {
               const done = s.id < step;
               const active = s.id === step;
               return (
-                <div key={s.id} className="flex-1">
+                <div key={s.id} className="flex-1" role="listitem">
                   <div className="flex items-center gap-2 mb-1.5">
                     <span
+                      aria-hidden="true"
                       className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-mono font-bold tabular-nums transition-colors ${
                         active
                           ? "bg-stone-950 dark:bg-stone-50 text-stone-50 dark:text-stone-950"
@@ -252,11 +263,12 @@ export default function RoadmapEnrollPage() {
                           ? "text-stone-900 dark:text-stone-100"
                           : "text-stone-400"
                       }`}
+                      aria-current={active ? "step" : undefined}
                     >
                       {s.label}
                     </span>
                   </div>
-                  <div className="h-0.5 w-full bg-stone-200 dark:bg-stone-800 overflow-hidden rounded-full">
+                  <div className="h-0.5 w-full bg-stone-200 dark:bg-stone-800 overflow-hidden rounded-full" aria-hidden="true">
                     <motion.div
                       className="h-full bg-lime-500"
                       initial={{ width: 0 }}
@@ -268,7 +280,7 @@ export default function RoadmapEnrollPage() {
               );
             })}
           </div>
-          <div className="mt-2 text-right text-[10px] font-mono uppercase tracking-widest text-stone-400 tabular-nums">
+          <div className="mt-2 text-right text-[10px] font-mono uppercase tracking-widest text-stone-400 tabular-nums" aria-live="polite" aria-atomic="true">
             {Math.round(progress)}% / step {step + 1} of {STEPS.length}
           </div>
         </motion.div>
@@ -311,6 +323,10 @@ export default function RoadmapEnrollPage() {
                   step={1}
                   value={hoursPerWeek}
                   onChange={(e) => setHoursPerWeek(Number(e.target.value))}
+                  aria-label={`Hours per week: ${hoursPerWeek}`}
+                  aria-valuemin={2}
+                  aria-valuemax={40}
+                  aria-valuenow={hoursPerWeek}
                   className="w-full accent-lime-500"
                 />
                 <div className="mt-2 flex justify-between text-[9px] font-mono text-stone-400">
@@ -340,6 +356,8 @@ export default function RoadmapEnrollPage() {
                         key={d}
                         type="button"
                         onClick={() => toggleDay(d)}
+                        aria-pressed={active}
+                        aria-label={`${DAY_LABEL[d]}${active ? ", selected" : ""}`}
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.05 + i * 0.04, duration: 0.3 }}
@@ -379,6 +397,7 @@ export default function RoadmapEnrollPage() {
                         key={o.value}
                         type="button"
                         onClick={() => setExperienceLevel(o.value)}
+                        aria-pressed={experienceLevel === o.value}
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.05 + i * 0.04, duration: 0.3 }}
@@ -403,6 +422,7 @@ export default function RoadmapEnrollPage() {
                         key={o.value}
                         type="button"
                         onClick={() => setGoal(o.value)}
+                        aria-pressed={goal === o.value}
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + i * 0.04, duration: 0.3 }}

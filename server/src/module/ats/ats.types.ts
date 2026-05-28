@@ -9,6 +9,7 @@ export interface AtsCategoryScores {
 
 export interface AtsKeywordAnalysis {
   found: string[];
+  partial: string[];
   missing: string[];
 }
 
@@ -23,4 +24,8 @@ export interface ScoreResumeInput {
   resumeUrl: string;
   jobTitle?: string | undefined;
   jobDescription?: string | undefined;
+}
+
+export interface ApplySuggestionsInput extends ScoreResumeInput {
+  suggestions: string[];
 }

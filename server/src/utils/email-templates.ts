@@ -1097,6 +1097,85 @@ export function roadmapDay10EmailHtml(args: {
 </html>`;
 }
 
+export function roadmapWeeklyDigestEmailHtml(args: {
+  name: string;
+  roadmaps: {
+    title: string;
+    slug: string;
+    percentComplete: number;
+    completedThisWeek: number;
+    nextTopicTitle: string | null;
+    nextTopicSlug: string | null;
+  }[];
+}): string {
+  const firstName = escapeHtml(args.name.split(" ")[0] || args.name || "there");
+  const dashboardUrl = "https://www.internhack.xyz/dashboard/roadmaps";
+  const rows = args.roadmaps.map((roadmap) => {
+    const title = escapeHtml(roadmap.title);
+    const nextTopicTitle = roadmap.nextTopicTitle ? escapeHtml(roadmap.nextTopicTitle) : "";
+    const resumeUrl = roadmap.nextTopicSlug
+      ? `https://www.internhack.xyz/learn/roadmaps/${roadmap.slug}/${roadmap.nextTopicSlug}`
+      : `https://www.internhack.xyz/learn/roadmaps/${roadmap.slug}`;
+    const nudge = roadmap.completedThisWeek === 0
+      ? "No topics completed this week. A 20-minute restart still counts."
+      : `${roadmap.completedThisWeek} topic${roadmap.completedThisWeek === 1 ? "" : "s"} completed this week.`;
+
+    return `
+      <tr><td style="padding:16px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:10px;">
+        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#18181b;">${title}</p>
+        <p style="margin:0 0 12px;font-size:12px;color:#71717a;">${nudge}</p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
+          <tr><td style="height:8px;background-color:#e4e4e7;border-radius:999px;overflow:hidden;">
+            <div style="height:8px;width:${Math.max(0, Math.min(100, roadmap.percentComplete))}%;background-color:#a3e635;"></div>
+          </td></tr>
+        </table>
+        <p style="margin:0 0 10px;font-size:12px;color:#52525b;">
+          <strong style="color:#18181b;">${roadmap.percentComplete}% complete</strong>
+          ${nextTopicTitle ? ` - Next: ${nextTopicTitle}` : ""}
+        </p>
+        <a href="${resumeUrl}" style="display:inline-block;padding:10px 14px;background-color:#18181b;color:#ffffff;text-decoration:none;border-radius:6px;font-size:12px;font-weight:700;">
+          Resume roadmap
+        </a>
+      </td></tr>
+      <tr><td style="height:10px;"></td></tr>`;
+  }).join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
+    <tr><td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
+      <p style="margin:6px 0 0;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;color:#a3e635;text-transform:uppercase;">weekly roadmap digest</p>
+    </td></tr>
+    <tr><td style="background-color:#ffffff;padding:32px 24px;">
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}, your weekly roadmap check-in is here.</h2>
+      <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#52525b;">
+        Here is where your active roadmap progress stands, plus the next topic to pick up.
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:22px;">
+        ${rows}
+      </table>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 14px;">
+        <tr><td style="background-color:#0a0a0a;border-radius:8px;">
+          <a href="${dashboardUrl}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">
+            Open roadmap dashboard
+          </a>
+        </td></tr>
+      </table>
+      <p style="margin:18px 0 0;font-size:12px;color:#a1a1aa;text-align:center;">
+        You can turn off roadmap digests from your account preferences.
+      </p>
+    </td></tr>
+    <tr><td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+      <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 type ApplicationStatusEmailStatus = "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED";
 
 const STATUS_COPY: Record<
@@ -1214,4 +1293,146 @@ export function applicationStatusEmailHtml(args: {
   </table>
 </body>
 </html>`;
+}
+
+type JobAgentEmailJob = {
+  title: string;
+  company: string;
+  location: string;
+  salary?: string | null;
+  deadline?: Date | string | null;
+  description?: string | null;
+  url: string;
+};
+
+type JobAgentJobsEmailArgs = {
+  studentName: string;
+  context?: string | null;
+  jobs: JobAgentEmailJob[];
+  settingsUrl: string;
+};
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function snippet(value?: string | null, max = 200): string {
+  const text = (value || "").replace(/\s+/g, " ").trim();
+  if (text.length <= max) return text;
+  return `${text.slice(0, max - 1).trimEnd()}...`;
+}
+
+function formatJobDeadline(value?: Date | string | null): string | null {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+export function jobAgentJobsEmailHtml(args: JobAgentJobsEmailArgs): string {
+  const firstName = escapeHtml(args.studentName.split(" ")[0] || args.studentName || "there");
+  const context = args.context ? escapeHtml(snippet(args.context, 200)) : "";
+  const settingsUrl = escapeHtml(args.settingsUrl);
+  const rows = args.jobs.map((job) => {
+    const safeTitle = escapeHtml(job.title);
+    const safeCompany = escapeHtml(job.company);
+    const meta = [job.location, job.salary]
+      .map((item) => item?.trim())
+      .filter((item): item is string => Boolean(item))
+      .map(escapeHtml)
+      .join(" &middot; ");
+    const desc = escapeHtml(snippet(job.description, 200));
+    const deadline = formatJobDeadline(job.deadline);
+    const safeUrl = escapeHtml(job.url);
+
+    return `
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px;border:1px solid #e4e4e7;border-radius:8px;background-color:#ffffff;">
+          <tr>
+            <td style="padding:18px 18px 16px;">
+              <p style="margin:0 0 4px;font-size:16px;font-weight:700;color:#18181b;line-height:1.35;">${safeTitle} &mdash; ${safeCompany}</p>
+              ${meta ? `<p style="margin:0 0 10px;font-size:13px;color:#71717a;line-height:1.5;">${meta}</p>` : ""}
+              ${desc ? `<p style="margin:0 0 12px;font-size:14px;color:#52525b;line-height:1.6;">${desc}</p>` : ""}
+              ${deadline ? `<p style="margin:0 0 14px;font-size:13px;color:#3f3f46;">Apply by ${escapeHtml(deadline)}</p>` : ""}
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color:#84cc16;border-radius:6px;">
+                    <a href="${safeUrl}" target="_blank" style="display:inline-block;padding:11px 22px;font-size:14px;font-weight:700;color:#18181b;text-decoration:none;">View job &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>`;
+  }).join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your jobs from InternHack</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;">
+    <tr>
+      <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
+        <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;">InternHack</h1>
+        <p style="margin:6px 0 0;font-size:11px;font-family:'Courier New',Courier,monospace;letter-spacing:2px;color:#a3e635;text-transform:uppercase;">job agent results</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#ffffff;padding:30px 24px;">
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#18181b;">Your jobs from InternHack</h2>
+        <p style="margin:0 0 18px;font-size:15px;line-height:1.7;color:#52525b;">Hi ${firstName},</p>
+        <p style="margin:0 0 22px;font-size:15px;line-height:1.7;color:#52525b;">
+          Here are the jobs from your recent chat${context ? ` based on: &quot;${context}&quot;.` : "."}
+        </p>
+        ${rows}
+        <p style="margin:20px 0 0;font-size:12px;color:#a1a1aa;line-height:1.6;text-align:center;">
+          You received this because you clicked "Email me these jobs" in your InternHack chat.
+          <br />
+          Manage email preferences in your <a href="${settingsUrl}" style="color:#18181b;text-decoration:underline;">account settings</a>.
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#fafafa;padding:20px 24px;text-align:center;border-top:1px solid #e4e4e7;">
+        <p style="margin:0;font-size:11px;color:#a1a1aa;">&copy; ${new Date().getFullYear()} InternHack. All rights reserved.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export function jobAgentJobsEmailText(args: JobAgentJobsEmailArgs): string {
+  const firstName = args.studentName.split(" ")[0] || args.studentName || "there";
+  const contextLine = args.context ? `\nBased on: "${snippet(args.context, 200)}"\n` : "";
+  const jobLines = args.jobs.map((job, index) => {
+    const parts = [
+      `${index + 1}. ${job.title} - ${job.company}`,
+      job.location ? `Location: ${job.location}` : null,
+      job.salary ? `Salary: ${job.salary}` : null,
+      formatJobDeadline(job.deadline) ? `Apply by: ${formatJobDeadline(job.deadline)}` : null,
+      snippet(job.description, 200) || null,
+      `View job: ${job.url}`,
+    ].filter(Boolean);
+
+    return parts.join("\n");
+  }).join("\n\n");
+
+  return `Your jobs from InternHack
+
+Hi ${firstName},
+Here are the jobs from your recent chat.${contextLine}
+${jobLines}
+
+You received this because you clicked "Email me these jobs" in your InternHack chat.
+Manage email preferences: ${args.settingsUrl}
+`;
 }

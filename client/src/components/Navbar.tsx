@@ -1,5 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Settings, LogOut, LayoutDashboard, Sun, Moon } from "lucide-react";
+import {
+  Menu,
+  X,
+  Settings,
+  LogOut,
+  LayoutDashboard,
+  Sun,
+  Moon,
+} from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import { useAuthStore } from "../lib/auth.store";
@@ -32,14 +40,21 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const mobileMenuId = "main-navigation-mobile";
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
-  const dashboardLink = user?.role === "ADMIN" ? "/admin" : user?.role === "RECRUITER" ? "/recruiters" : "/student/applications";
-  const profileLink = user?.role === "RECRUITER" ? "/recruiters/profile" : "/student/profile";
+  const dashboardLink =
+    user?.role === "ADMIN"
+      ? "/admin"
+      : user?.role === "RECRUITER"
+        ? "/recruiters"
+        : "/student/applications";
+  const profileLink =
+    user?.role === "RECRUITER" ? "/recruiters/profile" : "/student/profile";
 
   return (
     <motion.nav
@@ -47,13 +62,19 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="fixed top-0 right-0 z-40 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-md border-b border-stone-200 dark:border-white/10"
+      role="navigation"
+      aria-label="Main navigation"
       style={{ left: sidebarOffset, transition: "left 300ms" }}
     >
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5 no-underline">
             <div className="relative">
-              <img src="/logo.png" alt="InternHack" className="h-8 w-8 rounded-md object-contain" />
+              <img
+                src="/logo.png"
+                alt="InternHack"
+                className="h-8 w-8 rounded-md object-contain"
+              />
               <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 bg-lime-400" />
             </div>
             <span className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50">
@@ -63,21 +84,29 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
 
           <div className="hidden lg:flex items-center gap-1">
             {NAV_ITEMS.map((item) => {
-              const active = location.pathname === item.href;
+              const active =
+                item.href === "/"
+                  ? location.pathname === "/"
+                  : location.pathname.startsWith(item.href + "/") || location.pathname === item.href;
               return (
-                <Link key={item.href} to={item.href} className="no-underline">
+                <Link key={item.href} to={item.href} aria-current={active ? "page" : undefined} className="no-underline">
                   <button
                     className={cn(
-                      "relative px-3 py-1.5 text-sm font-medium rounded-md transition-colors bg-transparent border-0 cursor-pointer",
+                      "group relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-300 bg-transparent border-0 cursor-pointer",
                       active
                         ? "text-stone-900 dark:text-stone-50"
-                        : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                        : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50",
                     )}
                   >
                     {item.label}
-                    {active && (
-                      <span className="absolute left-3 right-3 -bottom-0.5 h-0.5 bg-lime-400" />
-                    )}
+                    <span
+                      className={cn(
+                        "absolute left-1/2 -translate-x-1/2 -bottom-0.5 h-[2px] rounded-full bg-lime-400 transition-all duration-300 ease-out origin-center",
+                        active
+                          ? "w-full scale-x-100 opacity-100"
+                          : "w-full scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100",
+                      )}
+                    />
                   </button>
                 </Link>
               );
@@ -87,19 +116,26 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
           <div className="hidden lg:flex items-center gap-2">
             <button
               onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
               className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 dark:text-stone-400 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors"
-              title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             >
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === "dark" ? (
+                <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
+              )}
             </button>
 
             {isAuthenticated ? (
-              <Popover>
+                <Popover>
                 <PopoverTrigger asChild>
-                  <button className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
+                  <button aria-haspopup="menu" aria-label="Open user menu" className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
                     <Avatar className="h-full w-full rounded-none">
                       {user?.profilePic && (
-                        <AvatarImage src={user.profilePic} alt={user?.name ?? ""} />
+                        <AvatarImage
+                          src={user.profilePic}
+                          alt={user?.name ?? ""}
+                        />
                       )}
                       <AvatarFallback className="rounded-none">
                         {user?.name?.charAt(0).toUpperCase() ?? "U"}
@@ -112,15 +148,22 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                     <div className="flex items-center gap-3">
                       <Avatar className="h-10 w-10 rounded-md">
                         {user?.profilePic && (
-                          <AvatarImage src={user.profilePic} alt={user?.name ?? ""} />
+                          <AvatarImage
+                            src={user.profilePic}
+                            alt={user?.name ?? ""}
+                          />
                         )}
                         <AvatarFallback className="rounded-md">
                           {user?.name?.charAt(0).toUpperCase() ?? "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div className="min-w-0">
-                        <PopoverTitle className="text-sm truncate">{user?.name}</PopoverTitle>
-                        <PopoverDescription className="text-xs truncate">{user?.email}</PopoverDescription>
+                        <PopoverTitle className="text-sm truncate">
+                          {user?.name}
+                        </PopoverTitle>
+                        <PopoverDescription className="text-xs truncate">
+                          {user?.email}
+                        </PopoverDescription>
                       </div>
                     </div>
                   </PopoverHeader>
@@ -168,17 +211,29 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
           <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={toggleTheme}
+              aria-label={
+                theme === "dark"
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"
+              }
               className="p-2 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50 rounded-md transition-colors"
             >
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === "dark" ? (
+                <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
+              )}
             </button>
             {isAuthenticated && (
               <Popover modal>
                 <PopoverTrigger asChild>
-                  <button className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
+                  <button aria-haspopup="menu" aria-label="Open user menu" className="h-9 w-9 rounded-md cursor-pointer border border-stone-200 dark:border-white/10 p-0 bg-transparent overflow-hidden">
                     <Avatar className="h-full w-full rounded-none">
                       {user?.profilePic && (
-                        <AvatarImage src={user.profilePic} alt={user?.name ?? ""} />
+                        <AvatarImage
+                          src={user.profilePic}
+                          alt={user?.name ?? ""}
+                        />
                       )}
                       <AvatarFallback className="rounded-none">
                         {user?.name?.charAt(0).toUpperCase() ?? "U"}
@@ -191,15 +246,22 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                     <div className="flex items-center gap-3">
                       <Avatar className="h-10 w-10 rounded-md">
                         {user?.profilePic && (
-                          <AvatarImage src={user.profilePic} alt={user?.name ?? ""} />
+                          <AvatarImage
+                            src={user.profilePic}
+                            alt={user?.name ?? ""}
+                          />
                         )}
                         <AvatarFallback className="rounded-md">
                           {user?.name?.charAt(0).toUpperCase() ?? "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div className="min-w-0">
-                        <PopoverTitle className="text-sm truncate">{user?.name}</PopoverTitle>
-                        <PopoverDescription className="text-xs truncate">{user?.email}</PopoverDescription>
+                        <PopoverTitle className="text-sm truncate">
+                          {user?.name}
+                        </PopoverTitle>
+                        <PopoverDescription className="text-xs truncate">
+                          {user?.email}
+                        </PopoverDescription>
                       </div>
                     </div>
                   </PopoverHeader>
@@ -231,9 +293,16 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
             )}
             <button
               onClick={() => setIsOpen(!isOpen)}
+              aria-expanded={isOpen}
+              aria-controls={mobileMenuId}
+              aria-label={isOpen ? "Close menu" : "Open menu"}
               className="p-2 text-stone-700 hover:bg-stone-200/60 dark:text-stone-300 dark:hover:bg-white/5 rounded-md transition-colors"
             >
-              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -241,37 +310,57 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
         <AnimatePresence>
           {isOpen && (
             <motion.div
+              id={mobileMenuId}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="overflow-hidden lg:hidden"
             >
-              <div className="pt-2 pb-4 space-y-1 border-t border-stone-200 dark:border-white/10">
+                <div role="menu" aria-label="Mobile navigation" className="pt-2 pb-4 space-y-1 border-t border-stone-200 dark:border-white/10">
                 {NAV_ITEMS.map((item) => (
-                  <MobileNavLink key={item.href} href={item.href} onClick={() => setIsOpen(false)}>
+                  <MobileNavLink
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                  >
                     {item.label}
                   </MobileNavLink>
                 ))}
                 <div className="pt-3 space-y-2">
                   {isAuthenticated ? (
                     <>
-                      <Link to={dashboardLink} onClick={() => setIsOpen(false)}
-                        className="block px-3 py-2 text-sm text-stone-700 dark:text-stone-300 font-medium rounded-md hover:bg-stone-100 dark:hover:bg-white/5 no-underline">
+                      <Link
+                        to={dashboardLink}
+                        onClick={() => setIsOpen(false)}
+                        className="block px-3 py-2 text-sm text-stone-700 dark:text-stone-300 font-medium rounded-md hover:bg-stone-100 dark:hover:bg-white/5 no-underline"
+                      >
                         Dashboard
                       </Link>
-                      <button onClick={() => { handleLogout(); setIsOpen(false); }}
-                        className="w-full px-3 py-2 text-sm text-stone-700 dark:text-stone-300 font-medium text-left rounded-md hover:bg-stone-100 dark:hover:bg-white/5 bg-transparent border-0">
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setIsOpen(false);
+                        }}
+                        className="w-full px-3 py-2 text-sm text-stone-700 dark:text-stone-300 font-medium text-left rounded-md hover:bg-stone-100 dark:hover:bg-white/5 bg-transparent border-0"
+                      >
                         Logout
                       </button>
                     </>
                   ) : (
                     <>
-                      <Link to="/login" onClick={() => setIsOpen(false)}
-                        className="block px-3 py-2 text-sm text-stone-700 dark:text-stone-300 font-medium rounded-md hover:bg-stone-100 dark:hover:bg-white/5 no-underline">
+                      <Link
+                        to="/login"
+                        onClick={() => setIsOpen(false)}
+                        className="block px-3 py-2 text-sm text-stone-700 dark:text-stone-300 font-medium rounded-md hover:bg-stone-100 dark:hover:bg-white/5 no-underline"
+                      >
                         Sign In
                       </Link>
-                      <Link to="/register" onClick={() => setIsOpen(false)} className="block no-underline">
+                      <Link
+                        to="/register"
+                        onClick={() => setIsOpen(false)}
+                        className="block no-underline"
+                      >
                         <button className="w-full px-4 py-2.5 bg-lime-400 text-stone-950 text-sm font-bold rounded-md hover:bg-lime-300 transition-colors border-0">
                           Start free
                         </button>

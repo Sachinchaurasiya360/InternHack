@@ -263,7 +263,7 @@ function QueueViz({ items }: { items: string[] }) {
 function VisualizeTab() {
   const [inputStr, setInputStr] = useState("A-B, A-C, B-D, C-D, C-E, D-F, E-F, F-G");
   const [source, setSource] = useState("A");
-  const parsed = parseEdgeList(inputStr);
+  const parsed = useMemo(() => parseEdgeList(inputStr), [inputStr]);
   const ids = parsed?.nodeIds ?? [];
   const edges = parsed?.edges ?? [];
 

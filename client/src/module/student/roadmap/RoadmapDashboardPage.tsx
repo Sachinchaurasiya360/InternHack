@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Clock, BookOpen, Download, Map, Loader2 } from "lucide-react";
@@ -7,20 +7,18 @@ import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import type { RoadmapEnrollmentListItem } from "../../../lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 
 export default function RoadmapDashboardPage() {
-  const [enrollments, setEnrollments] = useState<RoadmapEnrollmentListItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments")
-      .then((res) => mounted && setEnrollments(res.data.enrollments))
-      .catch(() => mounted && setEnrollments([]))
-      .finally(() => mounted && setLoading(false));
-    return () => { mounted = false; };
-  }, []);
+  const { data, isLoading: loading, isError } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+  });
+
+  const enrollments = data?.enrollments || [];
 
   const downloadPdf = async (id: number, slug: string) => {
     setDownloadingId(id);
@@ -40,7 +38,7 @@ export default function RoadmapDashboardPage() {
   };
 
   return (
-    <div className="pb-12">
+    <main className="pb-12">
       <SEO title="My Roadmaps" noIndex />
 
       <motion.div
@@ -58,14 +56,22 @@ export default function RoadmapDashboardPage() {
       </motion.div>
 
       {loading ? (
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div aria-busy="true" aria-label="Loading your roadmaps" className="grid sm:grid-cols-2 gap-4">
           {[0, 1].map((i) => (
             <div key={i} className="h-44 bg-gray-100 dark:bg-gray-900 rounded-2xl animate-pulse" />
           ))}
         </div>
+      ) : isError ? (
+        <div className="bg-white dark:bg-gray-900 border border-red-100 dark:border-red-900/30 rounded-2xl p-10 text-center">
+          <p className="text-base font-bold text-red-600 dark:text-red-400 mb-1">Failed to load roadmaps</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">There was an error fetching your data. Please try again.</p>
+          <Button onClick={() => window.location.reload()} variant="outline" size="sm">
+            Retry
+          </Button>
+        </div>
       ) : enrollments.length === 0 ? (
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-10 text-center">
-          <Map className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+          <Map className="w-10 h-10 text-gray-300 mx-auto mb-3" aria-hidden="true" />
           <p className="text-base font-bold text-gray-950 dark:text-white mb-1">No roadmaps yet</p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">Pick a path that fits your goal.</p>
           <Button asChild variant="mono">
@@ -78,8 +84,9 @@ export default function RoadmapDashboardPage() {
             const completed = e.topicProgress.filter((p) => p.status === "COMPLETED").length;
             const pct = e.roadmap.topicCount === 0 ? 0 : Math.round((completed / e.roadmap.topicCount) * 100);
             return (
-              <motion.div
+              <motion.article
                 key={e.id}
+                aria-label={`${e.roadmap.title} — ${pct}% complete`}
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 + i * 0.05, duration: 0.4 }}
@@ -95,10 +102,17 @@ export default function RoadmapDashboardPage() {
                 {/* Progress bar */}
                 <div className="mb-4">
                   <div className="flex items-baseline justify-between mb-1.5">
-                    <span className="text-xs font-mono text-gray-400">progress</span>
-                    <span className="text-xs font-mono font-bold text-gray-700 dark:text-gray-300">{pct}%</span>
+                    <span className="text-xs font-mono text-gray-400" aria-hidden="true">progress</span>
+                    <span className="text-xs font-mono font-bold text-gray-700 dark:text-gray-300" aria-hidden="true">{pct}%</span>
                   </div>
-                  <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    role="progressbar"
+                    aria-valuenow={pct}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${e.roadmap.title} progress: ${pct}%`}
+                    className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden"
+                  >
                     <motion.div
                       className="h-full bg-lime-500"
                       initial={{ width: 0 }}
@@ -112,15 +126,15 @@ export default function RoadmapDashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 font-mono mb-4">
-                  <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {e.hoursPerWeek}h/wk</span>
-                  <span className="inline-flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" /> {e.roadmap.estimatedHours}h total</span>
+                  <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" aria-hidden="true" /> {e.hoursPerWeek}h/wk</span>
+                  <span className="inline-flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" aria-hidden="true" /> {e.roadmap.estimatedHours}h total</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Button asChild variant="mono" size="sm">
                     <Link to={`/learn/roadmaps/${e.roadmap.slug}`}>
                       Resume
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                     </Link>
                   </Button>
                   <Button
@@ -128,16 +142,19 @@ export default function RoadmapDashboardPage() {
                     size="sm"
                     onClick={() => downloadPdf(e.id, e.roadmap.slug)}
                     disabled={downloadingId === e.id}
+                    aria-label={downloadingId === e.id ? `Downloading PDF for ${e.roadmap.title}` : `Download PDF for ${e.roadmap.title}`}
                   >
-                    {downloadingId === e.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                    {downloadingId === e.id
+                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                      : <Download className="w-3.5 h-3.5" aria-hidden="true" />}
                     PDF
                   </Button>
                 </div>
-              </motion.div>
+              </motion.article>
             );
           })}
         </div>
       )}
-    </div>
+    </main>
   );
 }

@@ -296,6 +296,13 @@ async function seedCompanies() {
     { name: "CyberShield Security", slug: "cybershield-security", description: "Cybersecurity firm offering threat detection, penetration testing, and compliance services.", industry: "Cybersecurity", size: "MEDIUM" as const, city: "Delhi", state: "Delhi", website: "https://cybershield.example.com", technologies: ["Python", "Go", "Rust", "Elasticsearch"], hiringStatus: true, foundedYear: 2018 },
     { name: "EduTech Pro", slug: "edutech-pro", description: "EdTech startup building adaptive learning platforms for K-12 and higher education.", industry: "Education Technology", size: "STARTUP" as const, city: "Bangalore", state: "Karnataka", website: "https://edutechpro.example.com", technologies: ["React", "Node.js", "MongoDB", "AI/ML"], hiringStatus: true, foundedYear: 2022 },
     { name: "HealthBridge Systems", slug: "healthbridge-systems", description: "Healthcare IT company building EHR systems and telemedicine platforms.", industry: "Healthcare IT", size: "LARGE" as const, city: "Noida", state: "Uttar Pradesh", website: "https://healthbridge.example.com", technologies: ["Java", "Spring Boot", "Angular", "PostgreSQL"], hiringStatus: true, foundedYear: 2012 },
+    // extra testcases added to match seedInterviewExperiences()
+    { name: "Google", slug: "google", description: "Global technology company specializing in internet services, cloud computing, AI, and digital advertising products.", industry: "Technology", size: "ENTERPRISE" as const, city: "Bangalore", state: "Karnataka", website: "https://google.com", technologies: ["Go", "C++", "Python", "Kubernetes", "TensorFlow"], hiringStatus: true, foundedYear: 1998 },
+    { name: "Microsoft", slug: "microsoft", description: "Multinational technology corporation developing software, cloud computing platforms, and AI-powered productivity solutions.", industry: "Technology", size: "ENTERPRISE" as const, city: "Hyderabad", state: "Telangana", website: "https://microsoft.com", technologies: ["C#", ".NET", "Azure", "TypeScript", "React"], hiringStatus: true, foundedYear: 1975 },
+    { name: "Amazon", slug: "amazon", description: "Global e-commerce and cloud computing company known for AWS, logistics innovation, and scalable distributed systems.", industry: "E-Commerce", size: "ENTERPRISE" as const, city: "Hyderabad", state: "Telangana", website: "https://amazon.com", technologies: ["Java", "AWS", "DynamoDB", "React", "Node.js"], hiringStatus: true, foundedYear: 1994 },
+    { name: "Flipkart", slug: "flipkart", description: "Indian e-commerce giant providing online shopping, digital payments, and supply chain technology solutions.", industry: "E-Commerce", size: "LARGE" as const, city: "Bangalore", state: "Karnataka", website: "https://flipkart.com", technologies: ["Java", "Spring Boot", "React", "Kafka", "Redis"], hiringStatus: true, foundedYear: 2007 },
+    { name: "Adobe", slug: "adobe", description: "Software company known for creative tools, digital media products, and experience cloud solutions.", industry: "Software", size: "LARGE" as const, city: "Noida", state: "Uttar Pradesh", website: "https://adobe.com", technologies: ["Java", "C++", "React", "Adobe Experience Cloud", "Python"], hiringStatus: true, foundedYear: 1982 },
+    { name: "Atlassian", slug: "atlassian", description: "Enterprise software company building collaboration and productivity tools like Jira, Confluence, and Trello.", industry: "Software", size: "LARGE" as const, city: "Bangalore", state: "Karnataka", website: "https://atlassian.com", technologies: ["Java", "Kotlin", "React", "AWS", "PostgreSQL"], hiringStatus: true, foundedYear: 2002 },
   ];
 
   let count = 0;
@@ -466,12 +473,12 @@ async function seedOpensourceRepos() {
 // ─── 9. Government Internships ────────────────────────────────────────
 async function seedGovInternships() {
   const internships = [
-    { name: "ISRO Space Science Internship", category: "Research", timeline: "May - July (10 weeks)", organizer: "ISRO", domain: "Space Science & Engineering", stipend: "₹10,000/month", eligibility: "B.Tech/M.Tech students in relevant branches", reality: "Hands-on research experience at ISRO centres. Competitive selection." },
-    { name: "DRDO Summer Internship", category: "Research", timeline: "June - August (8 weeks)", organizer: "DRDO", domain: "Defence Technology", stipend: "₹10,000-15,000/month", eligibility: "Engineering students with 7.0+ CGPA", reality: "Lab-based research in defence technologies. NDAs required." },
-    { name: "NITI Aayog Internship", category: "Policy", timeline: "Rolling (6-8 weeks)", organizer: "NITI Aayog", domain: "Public Policy & Economics", stipend: "Unpaid", eligibility: "Graduate/Postgraduate students", reality: "Policy research and report writing. Certificate provided." },
-    { name: "Indian Academy of Sciences (IASc) SRFP", category: "Research", timeline: "May - July (8 weeks)", organizer: "Indian Academy of Sciences", domain: "Science & Engineering", stipend: "₹5,000/month + travel", eligibility: "2nd/3rd year B.Sc/B.E students", reality: "Research under top faculty at premier institutions." },
-    { name: "SEBI Legal Internship", category: "Legal", timeline: "Rolling (4 weeks)", organizer: "SEBI", domain: "Securities & Finance Law", stipend: "Unpaid (certificate provided)", eligibility: "Law students (3rd year onwards)", reality: "Exposure to securities regulation. Limited seats." },
-    { name: "Ministry of Electronics and IT (MeitY)", category: "Technology", timeline: "Summer (8 weeks)", organizer: "MeitY", domain: "Digital Governance & IT", stipend: "₹10,000/month", eligibility: "B.Tech/MCA students", reality: "Work on e-governance projects and digital India initiatives." },
+    { name: "ISRO Space Science Internship", category: "Research", timeline: "May - July (10 weeks)", organizer: "ISRO", domain: "Space Science & Engineering", stipend: "₹10,000/month", eligibility: "B.Tech/M.Tech students in relevant branches", reality: "Hands-on research experience at ISRO centres. Competitive selection.", applyUrl: "https://www.isro.gov.in/InternshipAndProjects.html" },
+    { name: "DRDO Summer Internship", category: "Research", timeline: "June - August (8 weeks)", organizer: "DRDO", domain: "Defence Technology", stipend: "₹10,000-15,000/month", eligibility: "Engineering students with 7.0+ CGPA", reality: "Lab-based research in defence technologies. NDAs required.", applyUrl: "https://drdo.gov.in/drdo/en/search/node?keys=Internship" },
+    { name: "NITI Aayog Internship", category: "Policy", timeline: "Rolling (6-8 weeks)", organizer: "NITI Aayog", domain: "Public Policy & Economics", stipend: "Unpaid", eligibility: "Graduate/Postgraduate students", reality: "Policy research and report writing. Certificate provided.", applyUrl: "https://niti.gov.in/internship" },
+    { name: "Indian Academy of Sciences (IASc) SRFP", category: "Research", timeline: "May - July (8 weeks)", organizer: "Indian Academy of Sciences", domain: "Science & Engineering", stipend: "₹5,000/month + travel", eligibility: "2nd/3rd year B.Sc/B.E students", reality: "Research under top faculty at premier institutions.", applyUrl: "https://www.ias.ac.in" },
+    { name: "SEBI Legal Internship", category: "Legal", timeline: "Rolling (4 weeks)", organizer: "SEBI", domain: "Securities & Finance Law", stipend: "Unpaid (certificate provided)", eligibility: "Law students (3rd year onwards)", reality: "Exposure to securities regulation. Limited seats.", applyUrl: "https://www.sebi.gov.in/sebiweb/other/OtherAction.do?doLegalIntership2022=yes" },
+    { name: "Ministry of Electronics and IT (MeitY)", category: "Technology", timeline: "Summer (8 weeks)", organizer: "MeitY", domain: "Digital Governance & IT", stipend: "₹10,000/month", eligibility: "B.Tech/MCA students", reality: "Work on e-governance projects and digital India initiatives.", applyUrl: "https://intern.meity.gov.in" },
   ];
 
   let count = 0;
@@ -1046,13 +1053,31 @@ async function seedInterviewExperiences() {
   let count = 0;
   for (const e of experiences) {
     const existing = await prisma.interviewExperience.findFirst({
-      where: { companyName: e.companyName, role: e.role, userId: student.id },
+      where: {
+  companyId: companyMap[e.companyName]!,
+  role: e.role,
+  userId: student.id,
+},
     });
     if (!existing) {
       await prisma.interviewExperience.create({
         data: {
-          ...e,
-          companyId: companyMap[e.companyName] ?? null,
+          role: e.role,
+          experienceYears: e.experienceYears,
+          interviewYear: e.interviewYear,
+          interviewMonth: e.interviewMonth,
+          source: e.source,
+          difficulty: e.difficulty,
+          outcome: e.outcome,
+          offered: e.offered,
+          ctcLpa: e.ctcLpa,
+          totalRounds: e.totalRounds,
+          overallRating: e.overallRating,
+          tips: e.tips,
+          status: e.status,
+          upvotes: e.upvotes,
+          views: e.views,
+          companyId: companyMap[e.companyName]!,
           userId: student.id,
           rounds: e.rounds,
           prepResources: e.prepResources,

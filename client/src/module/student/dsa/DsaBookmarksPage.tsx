@@ -8,13 +8,14 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaBookmarkItem } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
-
-const DIFF_COLOR: Record<string, string> = {
-  Easy: "text-emerald-600 dark:text-emerald-400",
-  Medium: "text-amber-600 dark:text-amber-400",
-  Hard: "text-rose-600 dark:text-rose-400",
-};
-
+import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+/**
+ * Renders the DSA Bookmarks page displaying the user's saved problems.
+ * Includes functionality to view and remove bookmarked problems, 
+ * and displays an empty state if no bookmarks exist.
+ *
+ * @returns {JSX.Element} The rendered bookmarks page component.
+ */
 export default function DsaBookmarksPage() {
   const queryClient = useQueryClient();
 
@@ -106,12 +107,19 @@ export default function DsaBookmarksPage() {
             ))}
           </div>
         ) : bookmarks?.length === 0 ? (
-          <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-            <Bookmark className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-            <p className="text-sm text-stone-600 dark:text-stone-400 mb-1">No bookmarked problems yet.</p>
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              save problems from any topic to keep them here
+          <div className="py-20 flex flex-col items-center justify-center text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md bg-white dark:bg-stone-900/50">
+            <Bookmark className="w-12 h-12 text-stone-400 dark:text-stone-500 mb-4" />
+            <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mb-2">
+              No bookmarks yet
+            </h2>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mb-6 max-w-sm">
+              Save problems from any topic to keep them here and track your progress.
             </p>
+            <Button asChild>
+              <Link to="/student/dsa">
+                Browse Problems
+              </Link>
+            </Button>
           </div>
         ) : (
           <div className="space-y-2">

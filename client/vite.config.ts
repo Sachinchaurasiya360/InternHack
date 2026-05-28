@@ -79,19 +79,25 @@ export default defineConfig({
       loader: { '.keep': 'text' },
     },
   },
-  server: {
-    headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
-      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+server: {
+  headers: {
+    'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+    'Cross-Origin-Embedder-Policy': 'unsafe-none',
+  },
+  proxy: {
+    // Proxy sitemap.xml to backend so it works in development
+    '/sitemap.xml': {
+      target: 'http://localhost:3000',
+      changeOrigin: true,
     },
-    proxy: {
-      // Proxy sitemap.xml to backend so it works in development
-      '/sitemap.xml': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-      },
+    // Proxy API requests to backend in development. 
+    '/api': {
+      target: 'http://localhost:3000',
+      changeOrigin: true,
+      secure: false,
     },
   },
+},
   build: {
     chunkSizeWarningLimit: 600,
     rollupOptions: {

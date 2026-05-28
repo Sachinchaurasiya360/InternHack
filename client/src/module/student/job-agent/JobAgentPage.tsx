@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -10,18 +10,28 @@ import {
   Zap,
   Crown,
   ArrowUpIcon,
+  Mic,
+  MicOff,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { JobAgentMessage, JobAgentResponse, JobFeedMatch } from "../../../lib/types";
+import type {
+  JobAgentMessage,
+  JobAgentResponse,
+  JobFeedMatch,
+} from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { AgentMessage } from "./AgentMessage";
 import { ThinkingIndicator } from "./ThinkingIndicator";
+import { useSpeechRecognition } from "./useSpeechRecognition";
 
 interface DisplayMessage {
+  id: string;
   role: "user" | "assistant";
   content: string;
   jobs?: JobFeedMatch["job"][];
@@ -36,7 +46,13 @@ const QUICK_PROMPTS = [
   { icon: Zap, text: "Show me DevOps opportunities" },
 ];
 
-function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; maxHeight?: number }) {
+function useAutoResizeTextarea({
+  minHeight,
+  maxHeight,
+}: {
+  minHeight: number;
+  maxHeight?: number;
+}) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const adjustHeight = useCallback(
@@ -48,7 +64,10 @@ function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; ma
         return;
       }
       textarea.style.height = `${minHeight}px`;
-      const newHeight = Math.max(minHeight, Math.min(textarea.scrollHeight, maxHeight ?? Number.POSITIVE_INFINITY));
+      const newHeight = Math.max(
+        minHeight,
+        Math.min(textarea.scrollHeight, maxHeight ?? Number.POSITIVE_INFINITY),
+      );
       textarea.style.height = `${newHeight}px`;
     },
     [minHeight, maxHeight],
@@ -71,18 +90,55 @@ function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; ma
 export default function JobAgentPage() {
   const { user } = useAuthStore();
   const isPremium =
-    (user?.subscriptionPlan === "MONTHLY" || user?.subscriptionPlan === "YEARLY") &&
+    (user?.subscriptionPlan === "MONTHLY" ||
+      user?.subscriptionPlan === "YEARLY") &&
     user?.subscriptionStatus === "ACTIVE";
 
   const qc = useQueryClient();
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<DisplayMessage[]>([]);
-  const [hitFreeLimit, setHitFreeLimit] = useState(false);
-  const hasChattedRef = useRef(false);
+  const [interimText, setInterimText] = useState("");
+  const [localMessages, setLocalMessages] = useState<DisplayMessage[]>([]);
+  const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [hasChatted, setHasChatted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 200 });
+  const { textareaRef, adjustHeight } = useAutoResizeTextarea({
+    minHeight: 44,
+    maxHeight: 200,
+  });
 
-  const userMsgCount = messages.filter((m) => m.role === "user").length;
+  // Voice input
+  const {
+    supported: voiceSupported,
+    isListening,
+    error: voiceError,
+    start: startListening,
+    stop: stopListening,
+  } = useSpeechRecognition({
+    onInterim: (text) => setInterimText(text),
+    onFinal: (text) => {
+      setInput((prev) => (prev ? `${prev} ${text}` : text));
+      setInterimText("");
+      setTimeout(() => adjustHeight(), 0);
+    },
+  });
+
+  const displayValue = input + (interimText ? " " + interimText : "");
+
+  const [voiceHint, setVoiceHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (voiceError === "not-allowed") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setVoiceHint("Microphone access blocked - check browser settings");
+    }
+  }, [voiceError]);
+
+  useEffect(() => {
+    if (!voiceHint) return;
+    const timer = setTimeout(() => setVoiceHint(null), 5000);
+    return () => clearTimeout(timer);
+  }, [voiceHint]);
 
   const { data: conversation } = useQuery({
     queryKey: queryKeys.jobAgent.conversation(),
@@ -90,29 +146,34 @@ export default function JobAgentPage() {
       const res = await api.get("/job-agent/conversation");
       return res.data as { messages: JobAgentMessage[] } | null;
     },
-    enabled: !hasChattedRef.current,
+    enabled: !hasChatted,
     retry: false,
     staleTime: Infinity,
   });
 
-  useEffect(() => {
-    if (conversation?.messages?.length && !hasChattedRef.current) {
-      setMessages(
-        conversation.messages.map((m: any) => ({
-          role: m.role,
-          content: m.content,
-          jobs: m.jobs?.length ? m.jobs : undefined,
-        })),
-      );
-      if (!isPremium) {
-        const userMsgs = conversation.messages.filter((m) => m.role === "user").length;
-        if (userMsgs >= FREE_LIMIT) setHitFreeLimit(true);
-      }
-    }
-  }, [conversation, isPremium]);
+  const conversationMessages = useMemo<DisplayMessage[]>(
+    () =>
+      conversation?.messages?.map((m, index) => ({
+        id: m.id ?? `${m.role}-${m.timestamp}-${index}`,
+        role: m.role,
+        content: m.content,
+        jobs: m.jobs?.length ? m.jobs : undefined,
+      })) ?? [],
+    [conversation],
+  );
 
+  const messages =
+    hasChatted || localMessages.length > 0
+      ? localMessages
+      : conversationMessages;
+  const userMsgCount = messages.filter((m) => m.role === "user").length;
+  const hitFreeLimit =
+    manualHitFreeLimit || (!isPremium && userMsgCount >= FREE_LIMIT);
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   const chatMut = useMutation({
@@ -121,10 +182,11 @@ export default function JobAgentPage() {
       return res.data as JobAgentResponse;
     },
     onSuccess: (data) => {
-      hasChattedRef.current = true;
-      setMessages((prev) => [
+      setHasChatted(true);
+      setLocalMessages((prev) => [
         ...prev,
         {
+          id: crypto.randomUUID(),
           role: "assistant",
           content: data.reply,
           jobs: data.jobs.length > 0 ? data.jobs : undefined,
@@ -132,18 +194,42 @@ export default function JobAgentPage() {
       ]);
     },
     onError: (err: unknown) => {
-      const resp = (err as { response?: { status?: number; data?: { freeLimit?: boolean } } })?.response;
-      if (resp?.status === 403 && resp?.data?.freeLimit) {
-        setHitFreeLimit(true);
-        setMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
-        }]);
+      const resp = (
+        err as {
+          response?: {
+            status?: number;
+            data?: {
+              usage?: { action?: string; tier?: string };
+            };
+          };
+        }
+      )?.response;
+      const isFreeLimitError =
+        resp?.status === 429 &&
+        resp.data?.usage?.action === "AI_JOB_CHAT" &&
+        resp.data?.usage?.tier === "FREE";
+
+      if (isFreeLimitError) {
+        setManualHitFreeLimit(true);
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content:
+              "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
+          },
+        ]);
       } else {
-        setMessages((prev) => [...prev, {
-          role: "assistant",
-          content: "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
-        }]);
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content:
+              "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
+          },
+        ]);
       }
     },
   });
@@ -151,19 +237,29 @@ export default function JobAgentPage() {
   const resetMut = useMutation({
     mutationFn: () => api.delete("/job-agent/conversation"),
     onSuccess: () => {
-      hasChattedRef.current = false;
-      setHitFreeLimit(false);
-      setMessages([]);
+      setHasChatted(false);
+      setManualHitFreeLimit(false);
+      setLocalMessages([]);
       qc.invalidateQueries({ queryKey: queryKeys.jobAgent.conversation() });
     },
   });
 
   const handleSend = (text?: string) => {
-    const msg = (text ?? input).trim();
+    const committedInput = interimText
+      ? input
+        ? `${input} ${interimText}`
+        : interimText
+      : input;
+    const msg = (text ?? committedInput).trim();
     if (!msg || chatMut.isPending) return;
     setInput("");
+    setInterimText("");
     adjustHeight(true);
-    setMessages((prev) => [...prev, { role: "user", content: msg }]);
+    setHasChatted(true);
+    setLocalMessages([
+      ...messages,
+      { id: crypto.randomUUID(), role: "user", content: msg },
+    ]);
     chatMut.mutate(msg);
   };
 
@@ -174,11 +270,35 @@ export default function JobAgentPage() {
     }
   };
 
+  useEffect(() => {
+    if (!isListening) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        stopListening();
+        setInterimText("");
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isListening, stopListening]);
+
+  useEffect(() => {
+    if (!isListening) {
+      const raf = requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+        const len = input.length;
+        textareaRef.current?.setSelectionRange(len, len);
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isListening]);
+
   const isEmpty = messages.length === 0;
   const inputDisabled = chatMut.isPending || hitFreeLimit;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-stone-50 dark:bg-stone-950">
+    <div className="flex flex-col h-[calc(100vh-8rem)] overflow-hidden bg-stone-50 dark:bg-stone-950">
       <SEO title="InternHack AI" noIndex />
 
       {/* Editorial header */}
@@ -197,8 +317,13 @@ export default function JobAgentPage() {
             <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest">
               {!isPremium ? (
                 <span className="text-stone-500 dark:text-stone-400">
-                  <span className="text-stone-900 dark:text-stone-50">{Math.min(userMsgCount, FREE_LIMIT)}</span>
-                  <span className="text-stone-400 dark:text-stone-600"> / {FREE_LIMIT} free</span>
+                  <span className="text-stone-900 dark:text-stone-50">
+                    {Math.min(userMsgCount, FREE_LIMIT)}
+                  </span>
+                  <span className="text-stone-400 dark:text-stone-600">
+                    {" "}
+                    / {FREE_LIMIT} free
+                  </span>
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 text-lime-600 dark:text-lime-400">
@@ -207,23 +332,41 @@ export default function JobAgentPage() {
                 </span>
               )}
               {messages.length > 0 && (
-                <button
+                <Button
                   type="button"
-                  onClick={() => resetMut.mutate()}
+                  onClick={() => {
+                    if (messages.length === 0) return;
+                    setShowResetConfirm(true);
+                  }}
                   disabled={resetMut.isPending}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <RotateCcw className="w-3 h-3" />
                   new chat
-                </button>
+                </Button>
               )}
             </div>
+            <ConfirmDialog
+              open={showResetConfirm}
+              title="Start a new chat?"
+              description="This will permanently delete your current conversation. This action cannot be undone."
+              confirmLabel="Delete and start new"
+              cancelLabel="Cancel"
+              onConfirm={() => {
+                resetMut.mutate();
+                setShowResetConfirm(false);
+              }}
+              onCancel={() => setShowResetConfirm(false)}
+            />
           </div>
         </div>
       </div>
 
       {/* Messages area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-8 py-6">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-4 sm:px-8 pt-2 pb-4"
+      >
         <div className="max-w-4xl mx-auto">
           <AnimatePresence mode="wait">
             {isEmpty ? (
@@ -233,10 +376,10 @@ export default function JobAgentPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3 }}
-                className="flex flex-col items-center justify-center py-12"
+                className="flex flex-col items-center pt-10 pb-6"
               >
                 {/* Hero icon box */}
-                <div className="relative mb-6">
+                <div className="relative mb-5 mt-4">
                   <div className="w-16 h-16 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center">
                     <BotMessageSquare className="w-8 h-8 text-stone-50 dark:text-stone-900" />
                   </div>
@@ -246,14 +389,15 @@ export default function JobAgentPage() {
                 <h2 className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5">
                   Hey{user?.name ? `, ${user.name.split(" ")[0]}` : ""}.
                 </h2>
-                <p className="text-sm text-stone-600 dark:text-stone-400 mb-6 text-center max-w-md">
-                  Tell me what you're looking for and I'll surface the best matches from the live job feed.
+                <p className="text-sm text-stone-600 dark:text-stone-400 mb-5 text-center max-w-md leading-relaxed">
+                  Tell me what you're looking for and I'll surface the best
+                  matches from the live job feed.
                 </p>
 
                 {/* Quick prompt numbered grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 w-full max-w-2xl border-t border-l border-stone-200 dark:border-white/10">
                   {QUICK_PROMPTS.map((q, i) => (
-                    <button
+                    <Button
                       key={q.text}
                       type="button"
                       onClick={() => handleSend(q.text)}
@@ -270,29 +414,45 @@ export default function JobAgentPage() {
                           </span>
                         </div>
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
 
                 {!isPremium && (
-                  <p className="text-[11px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mt-6">
-                    {FREE_LIMIT} free messages.{" "}
+                  <p className="mt-6 text-center text-xs text-stone-500 dark:text-stone-400">
+                    Free plan: {FREE_LIMIT} messages per day{" - "}
                     <Link
                       to="/student/checkout"
-                      className="text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 no-underline"
+                      className="font-medium text-lime-600 dark:text-lime-400 hover:text-lime-500 dark:hover:text-lime-300 hover:underline no-underline"
                     >
-                      <span className="underline decoration-lime-400 decoration-2 underline-offset-4">
-                        upgrade for unlimited
-                      </span>
+                      Upgrade for unlimited
                     </Link>
                   </p>
                 )}
               </motion.div>
             ) : (
-              <motion.div key="messages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                {messages.map((msg, i) => (
-                  <AgentMessage key={i} role={msg.role} content={msg.content} jobs={msg.jobs} />
-                ))}
+              <motion.div
+                key="messages"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-5"
+              >
+                {messages.map((msg, index) => {
+                  const precedingUserPrompt =
+                    msg.role === "assistant"
+                      ? [...messages.slice(0, index)].reverse().find((m) => m.role === "user")?.content
+                      : undefined;
+
+                  return (
+                    <AgentMessage
+                      key={msg.id}
+                      role={msg.role}
+                      content={msg.content}
+                      jobs={msg.jobs}
+                      precedingUserPrompt={precedingUserPrompt}
+                    />
+                  );
+                })}
                 {chatMut.isPending && <ThinkingIndicator />}
               </motion.div>
             )}
@@ -321,14 +481,15 @@ export default function JobAgentPage() {
       )}
 
       {/* Input bar */}
-      <div className="shrink-0 px-4 sm:px-8 py-4 border-t border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950">
+      <div className="shrink-0 px-4 sm:px-8 py-3 border-t border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950">
         <div className="max-w-4xl mx-auto">
           <div className="relative bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 focus-within:border-stone-400 dark:focus-within:border-white/25 transition-colors">
             <div className="overflow-y-auto">
               <textarea
                 ref={textareaRef}
-                value={input}
+                value={displayValue}
                 onChange={(e) => {
+                  setInterimText("");
                   setInput(e.target.value);
                   adjustHeight();
                 }}
@@ -344,6 +505,8 @@ export default function JobAgentPage() {
                 className={cn(
                   "w-full px-4 py-3",
                   "resize-none",
+                  "overflow-y-auto",
+                  "scrollbar-thin",
                   "bg-transparent",
                   "border-none",
                   "text-stone-900 dark:text-stone-50 text-sm",
@@ -352,33 +515,86 @@ export default function JobAgentPage() {
                   "placeholder:text-stone-400 dark:placeholder:text-stone-500 placeholder:text-sm",
                   "disabled:opacity-50 disabled:cursor-not-allowed",
                 )}
-                style={{ overflow: "hidden", minHeight: "44px" }}
+                style={{ minHeight: "44px" }}
               />
             </div>
 
             <div className="flex items-center justify-between px-3 pb-2.5">
               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                {hitFreeLimit ? "limit reached" : "enter to send, shift + enter for newline"}
+                {hitFreeLimit
+                  ? "limit reached"
+                  : "enter to send, shift + enter for newline"}
               </span>
-              <button
-                type="button"
-                onClick={() => handleSend()}
-                disabled={!input.trim() || inputDisabled}
-                className={cn(
-                  "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
-                  input.trim() && !inputDisabled
-                    ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
-                    : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
+              <div className="flex items-center gap-1">
+                {voiceSupported && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (isListening) {
+                        setInterimText("");
+                        stopListening();
+                      } else {
+                        startListening();
+                      }
+                    }}
+                    aria-label={
+                      isListening ? "Stop recording" : "Start voice input"
+                    }
+                    aria-pressed={isListening}
+                    className={cn(
+                      "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer",
+                      isListening
+                        ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                        : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800",
+                    )}
+                  >
+                    {isListening ? (
+                      <motion.span
+                        animate={{ scale: [1, 1.15, 1] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1.2,
+                          ease: "easeInOut",
+                        }}
+                        className="inline-flex items-center justify-center"
+                      >
+                        <MicOff className="w-4 h-4" />
+                      </motion.span>
+                    ) : (
+                      <Mic className="w-4 h-4" />
+                    )}
+                  </Button>
                 )}
-                aria-label="Send"
-              >
-                <ArrowUpIcon className="w-4 h-4" />
-              </button>
+                <Button
+                  type="button"
+                  size="icon"
+                  onClick={() => handleSend()}
+                  disabled={
+                    !(input.trim() || interimText.trim()) || inputDisabled
+                  }
+                  className={cn(
+                    "inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed",
+                    (input.trim() || interimText.trim()) && !inputDisabled
+                      ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
+                      : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
+                  )}
+                  aria-label="Send"
+                >
+                  <ArrowUpIcon className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
+            {voiceHint && (
+              <p className="text-xs text-red-500 dark:text-red-400 mt-1 text-center">
+                {voiceHint}
+              </p>
+            )}
+            <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
+              powered by Neural Network, always verify job details
+            </p>
           </div>
-          <p className="text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mt-2">
-            powered by Neural Network , always verify job details
-          </p>
         </div>
       </div>
     </div>
