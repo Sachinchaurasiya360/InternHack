@@ -141,17 +141,20 @@ function buildIndex(): Record<string, number[]> {
 
 function LiveIndex() {
   const [query, setQuery] = useState("python web");
-  const index = useMemo(buildIndex, []);
-  const queryTerms = tokenize(query);
-  const matches = queryTerms.length === 0 ? [] : queryTerms.map((t) => ({ term: t, docs: index[t] ?? [] }));
-  const intersection = useMemo(() => {
-    if (matches.length === 0) return [];
-    let result = new Set(matches[0].docs);
-    for (let i = 1; i < matches.length; i++) {
-      result = new Set([...result].filter((id) => matches[i].docs.includes(id)));
+  const index = useMemo(() => buildIndex(), []);
+  const { queryTerms, matches, intersection } = useMemo(() => {
+    const qTerms = tokenize(query);
+    const m = qTerms.length === 0 ? [] : qTerms.map((t) => ({ term: t, docs: index[t] ?? [] }));
+    let intersect: number[] = [];
+    if (m.length > 0) {
+      let result = new Set(m[0].docs);
+      for (let i = 1; i < m.length; i++) {
+        result = new Set([...result].filter((id) => m[i].docs.includes(id)));
+      }
+      intersect = Array.from(result).sort((a, b) => a - b);
     }
-    return Array.from(result).sort((a, b) => a - b);
-  }, [matches]);
+    return { queryTerms: qTerms, matches: m, intersection: intersect };
+  }, [query, index]);
 
   return (
     <div>

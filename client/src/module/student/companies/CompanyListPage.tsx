@@ -28,6 +28,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
+import { ResultCount } from "../../../components/ui/ResultCount";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { cn } from "@/lib/utils";
@@ -182,9 +183,9 @@ function UpgradeBanner({
 }
 
 // ─── Cards ──────────────────────────────────────────────
-const CompanyCard = React.memo(function CompanyCard({ company }: { company: Company }) {
+const CompanyCard = React.memo(function CompanyCard({ company, insideLayout }: { company: Company; insideLayout: boolean }) {
   return (
-    <Link to={`/companies/${company.slug}`} className={cardBase}>
+    <Link to={`${insideLayout ? "/student" : ""}/companies/${company.slug}`} className={cardBase}>
       <div className="flex items-start gap-3 mb-3">
         <CompanyMark label={company.name} src={company.logo} />
         <div className="flex-1 min-w-0">
@@ -247,9 +248,9 @@ const CompanyCard = React.memo(function CompanyCard({ company }: { company: Comp
   );
 });
 
-const YCCard = React.memo(function YCCard({ company }: { company: YCCompany }) {
+const YCCard = React.memo(function YCCard({ company, insideLayout }: { company: YCCompany; insideLayout: boolean }) {
   return (
-    <Link to={`/yc/${company.slug}`} className={cardBase}>
+    <Link to={`${insideLayout ? "/student" : ""}/yc/${company.slug}`} className={cardBase}>
       <div className="flex items-start gap-3 mb-3">
         <CompanyMark label={company.name} src={company.smallLogoUrl} />
         <div className="flex-1 min-w-0">
@@ -533,6 +534,7 @@ export default function CompanyListPage() {
   const [ycSearch, setYcSearch] = useState("");
   const [ycBatch, setYcBatch] = useState("");
   const [ycIndustry, setYcIndustry] = useState("");
+  const [ycHiring, setYcHiring] = useState(false);
   const [ycPage, setYcPage] = useState(1);
 
   // Professor filters
@@ -642,6 +644,7 @@ export default function CompanyListPage() {
   if (ycSearch) ycQueryParams["search"] = ycSearch;
   if (ycBatch) ycQueryParams["batch"] = ycBatch;
   if (ycIndustry) ycQueryParams["industry"] = ycIndustry;
+  if (ycHiring) ycQueryParams["isHiring"] = "true";
 
   const { data: ycData, isLoading: ycLoading } = useQuery<{
     companies: YCCompany[];
@@ -706,7 +709,7 @@ export default function CompanyListPage() {
   const tabs: { key: Tab; label: string; icon: React.ReactNode; count?: number | string }[] = [
     { key: "all", label: "Companies", icon: <Building2 className="w-4 h-4" />, count: pagination?.total },
     { key: "interviews", label: "Interviews", icon: <MessageCircle className="w-4 h-4" />, count: interviewPagination?.total },
-    { key: "yc", label: "YC", icon: <Rocket className="w-4 h-4" />, count: ycStats?.total },
+    { key: "yc", label: "YC", icon: <Rocket className="w-4 h-4" />, count: ycPagination?.total ?? ycStats?.total },
     { key: "professors", label: "Professors", icon: <GraduationCap className="w-4 h-4" />, count: profStats?.total },
   ];
 
@@ -1024,13 +1027,17 @@ export default function CompanyListPage() {
             {loading ? (
               <LoadingScreen compact />
             ) : companies.length === 0 ? (
-              <EmptyState
-                icon={<Building2 className="w-5 h-5" />}
-                title="No companies found"
-                hint="try different search criteria"
-              />
+              <>
+                {pagination && <ResultCount currentCount={companies.length} totalCount={pagination.total} />}
+                <EmptyState
+                  icon={<Building2 className="w-5 h-5" />}
+                  title="No companies found"
+                  hint="try different search criteria"
+                />
+              </>
             ) : (
               <>
+                {pagination && <ResultCount currentCount={companies.length} totalCount={pagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {companies.map((company, i) => (
                     <motion.div
@@ -1039,7 +1046,8 @@ export default function CompanyListPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
-                      <CompanyCard company={company} />
+                     <CompanyCard company={company} insideLayout={isInsideLayout} />
+
                     </motion.div>
                   ))}
                 </div>
@@ -1111,13 +1119,30 @@ export default function CompanyListPage() {
                   })),
                 ]}
               />
-              {(ycSearch || ycBatch || ycIndustry) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setYcHiring((prev) => !prev);
+                  setYcPage(1);
+                }}
+                className={cn(
+                  "inline-flex items-center gap-2 h-10 px-3 rounded-md text-xs font-mono uppercase tracking-widest border transition-colors cursor-pointer shrink-0",
+                  ycHiring
+                    ? "bg-lime-500 text-stone-900 border-lime-500"
+                    : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30"
+                )}
+              >
+                <span className={cn("h-1.5 w-1.5 rounded-none", ycHiring ? "bg-stone-900" : "bg-lime-500")} />
+                hiring
+              </button>
+              {(ycSearch || ycBatch || ycIndustry || ycHiring) && (
                 <button
                   onClick={() => {
                     setYcSearchInput("");
                     setYcSearch("");
                     setYcBatch("");
                     setYcIndustry("");
+                    setYcHiring(false);
                     setYcPage(1);
                   }}
                   className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
@@ -1130,13 +1155,17 @@ export default function CompanyListPage() {
             {ycLoading ? (
               <Spinner />
             ) : ycCompanies.length === 0 ? (
-              <EmptyState
-                icon={<Rocket className="w-5 h-5" />}
-                title="No YC companies found"
-                hint="try different search criteria"
-              />
+              <>
+                {ycPagination && <ResultCount currentCount={ycCompanies.length} totalCount={ycPagination.total} />}
+                <EmptyState
+                  icon={<Rocket className="w-5 h-5" />}
+                  title="No YC companies found"
+                  hint="try different search criteria"
+                />
+              </>
             ) : (
               <>
+                {ycPagination && <ResultCount currentCount={ycCompanies.length} totalCount={ycPagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {ycCompanies.map((company, i) => (
                     <motion.div
@@ -1145,7 +1174,7 @@ export default function CompanyListPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03, duration: 0.3 }}
                     >
-                      <YCCard company={company} />
+                     <YCCard company={company} insideLayout={isInsideLayout} />
                     </motion.div>
                   ))}
                 </div>
@@ -1228,13 +1257,17 @@ export default function CompanyListPage() {
             {profLoading ? (
               <Spinner />
             ) : professors.length === 0 ? (
-              <EmptyState
-                icon={<GraduationCap className="w-5 h-5" />}
-                title="No professors found"
-                hint="try different search criteria"
-              />
+              <>
+                {profPagination && <ResultCount currentCount={professors.length} totalCount={profPagination.total} />}
+                <EmptyState
+                  icon={<GraduationCap className="w-5 h-5" />}
+                  title="No professors found"
+                  hint="try different search criteria"
+                />
+              </>
             ) : (
               <>
+                {profPagination && <ResultCount currentCount={professors.length} totalCount={profPagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {professors.map((prof, i) => (
                     <motion.div
@@ -1318,13 +1351,17 @@ export default function CompanyListPage() {
             {interviewLoading ? (
               <Spinner />
             ) : interviewCompanies.length === 0 ? (
-              <EmptyState
-                icon={<MessageCircle className="w-5 h-5" />}
-                title="No interview experiences yet"
-                hint="be the first to share, earn a badge"
-              />
+              <>
+                {interviewPagination && <ResultCount currentCount={interviewCompanies.length} totalCount={interviewPagination.total} />}
+                <EmptyState
+                  icon={<MessageCircle className="w-5 h-5" />}
+                  title="No interview experiences yet"
+                  hint="be the first to share, earn a badge"
+                />
+              </>
             ) : (
               <>
+                {interviewPagination && <ResultCount currentCount={interviewCompanies.length} totalCount={interviewPagination.total} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {interviewCompanies.map((company, i) => (
                     <motion.div

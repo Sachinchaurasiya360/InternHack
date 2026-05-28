@@ -22,6 +22,7 @@ interface JobQuery {
   company?: string | undefined;
   status?: string | undefined;
   tags?: string | undefined;
+  includeExpired?: boolean | undefined;
 }
 
 
@@ -48,6 +49,7 @@ export class JobService {
 
   async getJobs(query: JobQuery) {
     const where: Prisma.jobWhereInput = {};
+    const andFilters: Prisma.jobWhereInput[] = [];
 
     if (query.status) {
       where.status = query.status as "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
@@ -56,11 +58,19 @@ export class JobService {
     }
 
     if (query.search) {
-      where.OR = [
-        { title: { contains: query.search, mode: "insensitive" } },
-        { description: { contains: query.search, mode: "insensitive" } },
-        { company: { contains: query.search, mode: "insensitive" } },
-      ];
+      andFilters.push({
+        OR: [
+          { title: { contains: query.search, mode: "insensitive" } },
+          { description: { contains: query.search, mode: "insensitive" } },
+          { company: { contains: query.search, mode: "insensitive" } },
+        ],
+      });
+    }
+
+    if (!query.includeExpired) {
+      andFilters.push({
+        OR: [{ deadline: null }, { deadline: { gte: new Date() } }],
+      });
     }
 
     if (query.location) {
@@ -73,6 +83,10 @@ export class JobService {
 
     if (query.tags) {
       where.tags = { hasSome: query.tags.split(",").map((t) => t.trim()) };
+    }
+
+    if (andFilters.length > 0) {
+      where.AND = andFilters;
     }
 
     const skip = (query.page - 1) * query.limit;
@@ -177,6 +191,44 @@ export class JobService {
         recruiter: { select: { id: true, name: true, company: true, designation: true } },
         rounds: { orderBy: { orderIndex: "asc" } },
         _count: { select: { applications: true } },
+      },
+    });
+  }
+
+  async getRelatedJobs(jobId: number, limit = 4) {
+    const job = await prisma.job.findUnique({
+      where: { id: jobId },
+      select: { id: true, title: true, tags: true },
+    });
+    if (!job) return null;
+
+    const titleKeywords = job.title
+      .split(/[^a-zA-Z0-9+#.]+/)
+      .map((word) => word.trim())
+      .filter((word) => word.length >= 3)
+      .slice(0, 5);
+
+    const matchFilters: Prisma.jobWhereInput[] = [
+      ...(job.tags.length > 0 ? [{ tags: { hasSome: job.tags } }] : []),
+      ...titleKeywords.map((keyword) => ({
+        title: { contains: keyword, mode: "insensitive" as const },
+      })),
+    ];
+
+    if (matchFilters.length === 0) return [];
+
+    return prisma.job.findMany({
+      where: {
+        id: { not: job.id },
+        status: "PUBLISHED",
+        OR: matchFilters,
+        AND: [{ OR: [{ deadline: null }, { deadline: { gte: new Date() } }] }],
+      },
+      take: Math.min(Math.max(limit, 1), 8),
+      orderBy: { createdAt: "desc" },
+      include: {
+        recruiter: { select: { id: true, name: true, company: true } },
+        _count: { select: { applications: true, rounds: true } },
       },
     });
   }

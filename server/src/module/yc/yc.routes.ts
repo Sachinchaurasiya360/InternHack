@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
+import { Prisma } from "@prisma/client";
 import type { Request, Response } from "express";
 import * as cheerio from "cheerio";
 import { ycListQuerySchema, ycSlugSchema } from "./yc.validation.js";
@@ -268,7 +269,7 @@ router.get("/companies/:slug", async (req: Request, res: Response) => {
           const updated = await prisma.ycCompany.update({
             where: { id: company.id },
             data: {
-              founders: scraped.founders.length > 0 ? scraped.founders : undefined,
+              founders: scraped.founders.length > 0 ? (scraped.founders as unknown as Prisma.InputJsonValue) : undefined,
               socialLinks:
                 Object.keys(scraped.socialLinks).length > 0 ? scraped.socialLinks : undefined,
               scrapedAt: new Date(),

@@ -36,14 +36,15 @@ model roadmap {
 }
 
 model roadmapSection {
-  id         Int            @id @default(autoincrement())
-  roadmapId  Int
-  roadmap    roadmap        @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
-  slug       String
-  title      String
-  summary    String
-  orderIndex Int
-  topics     roadmapTopic[]
+  id              Int            @id @default(autoincrement())
+  roadmapId       Int
+  roadmap         roadmap        @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  slug            String
+  title           String
+  summary         String
+  orderIndex      Int
+  aiRegeneratedAt DateTime?
+  topics          roadmapTopic[]
 
   @@unique([roadmapId, slug])
   @@index([roadmapId])

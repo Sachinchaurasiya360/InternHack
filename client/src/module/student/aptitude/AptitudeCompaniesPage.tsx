@@ -116,7 +116,10 @@ export default function AptitudeCompaniesPage() {
     return () => clearInterval(id);
   }, [selectedCompany, timerRunning, companyData?.questions.length]);
 
-  useEffect(() => { setCurrentQ(0); }, [page]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentQ(0);
+  }, [page]);
 
   const submitMutation = useMutation({
     mutationFn: ({ questionId, answer }: { questionId: number; answer: string }) =>

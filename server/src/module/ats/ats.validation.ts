@@ -11,3 +11,7 @@ export const scoreResumeSchema = z.object({
   jobTitle: z.string().max(200).optional(),
   jobDescription: z.string().max(5000).optional(),
 });
+
+export const applySuggestionsSchema = scoreResumeSchema.extend({
+  suggestions: z.array(z.string()).min(1, "At least one suggestion is required"),
+});

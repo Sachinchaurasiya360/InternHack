@@ -1,10 +1,11 @@
 import type { Request, Response, NextFunction } from "express";
 import type { AtsService } from "./ats.service.js";
-import { scoreResumeSchema } from "./ats.validation.js";
+import { applySuggestionsSchema, scoreResumeSchema } from "./ats.validation.js";
 import { prisma } from "../../database/db.js";
 import { DAILY_LIMITS, getPlanTier } from "../../config/usage-limits.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { atsScoreReportHtml } from "../../utils/email-templates.js";
+import { isPremiumUser } from "../../utils/premium.utils.js";
 
 // Only email the report when the score row was just created; cached hits
 // (re-scoring the same resume+JD within the service's 24h window) reuse the
@@ -59,6 +60,52 @@ export class AtsController {
         }
       }
       next(err);
+    }
+  }
+
+  async applySuggestions(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
+      const isPremium = await isPremiumUser(req.user.id);
+      if (!isPremium) {
+        res.status(403).json({ message: "Premium subscription required to apply AI suggestions" });
+        return;
+      }
+
+      const result = applySuggestionsSchema.safeParse(req.body);
+      if (!result.success) {
+        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+        return;
+      }
+
+      const response = await this.atsService.applySuggestions(req.user.id, result.data);
+
+      await prisma.usageLog.create({ data: { userId: req.user.id, action: "GENERATE_RESUME" } });
+
+      res.json(response);
+    } catch (err) {
+      console.error("ATS apply suggestions error:", err);
+
+      if (err instanceof Error) {
+        if (err.message.includes("429")) {
+          res.status(429).json({ message: "AI usage limit reached. Please try again later." });
+          return;
+        }
+        if (err.message.includes("Could not extract")) {
+          res.status(400).json({ message: err.message });
+          return;
+        }
+        if (err.message.includes("ENOENT")) {
+          res.status(404).json({ message: "Resume file not found. Please upload again." });
+          return;
+        }
+      }
+
+      res.status(500).json({ message: "Failed to improve resume. Please try again." });
     }
   }
 
@@ -143,5 +190,19 @@ export class AtsController {
 
     const subject = `Your resume scored ${score.overallScore}/100 on InternHack`;
     await sendEmail({ to: user.email, subject, html });
+  }
+
+  /** GET /api/ats/history — returns the authenticated student's recent score history. */
+  async getScoreHistory(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const history = await this.atsService.getScoreHistory(req.user.id);
+      res.json({ history });
+    } catch (err) {
+      next(err);
+    }
   }
 }
