@@ -103,7 +103,7 @@ export default function TimelinePage() {
           {logs.map((log) => (
             <div key={log.id} className="relative pl-8 group">
               {/* Timeline marker */}
-              <div className="absolute -left-[21px] p-2 rounded-full bg-white dark:bg-stone-950 border-2 border-stone-200 dark:border-stone-800 group-hover:border-lime-400 transition-colors shadow-sm">
+              <div className="absolute -left-6 p-2 rounded-full bg-white dark:bg-stone-950 border-2 border-stone-200 dark:border-stone-800 group-hover:border-lime-400 transition-colors shadow-sm">
                 {getActivityIcon(log.type)}
               </div>
 

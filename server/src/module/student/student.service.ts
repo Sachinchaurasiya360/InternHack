@@ -132,14 +132,16 @@ export class StudentService {
         return { feedback: fallbackFeedback, fallbackUsed: true };
       }
 
-      prisma.activityLog.create({
-        data: {
-          userId: studentId,
-          type: "MOCK_INTERVIEW_COMPLETED",
-          title: `Completed Mock Interview`,
-          metadata: { topic, rating: parsed.overallRating }
-        }
-      }).catch(e => console.error("Failed to log activity:", e));
+      if (prisma.activityLog && typeof prisma.activityLog.create === 'function') {
+        prisma.activityLog.create({
+          data: {
+            userId: studentId,
+            type: "MOCK_INTERVIEW_COMPLETED",
+            title: `Completed Mock Interview`,
+            metadata: { topic, rating: parsed.overallRating }
+          }
+        }).catch(e => console.error("Failed to log activity:", e));
+      }
 
       return { feedback: parsed, fallbackUsed: false };
     } catch {

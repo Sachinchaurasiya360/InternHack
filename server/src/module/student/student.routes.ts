@@ -4,6 +4,8 @@ import { StudentService } from "./student.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
+import { validateRequest } from "../../middleware/validation.middleware.js";
+import { applyToJobSchema, submitRoundSchema, mockInterviewFeedbackSchema, getActivityLogsSchema } from "./student.validation.js";
 
 const studentService = new StudentService();
 const studentController = new StudentController(studentService);
@@ -14,8 +16,8 @@ export const studentRouter = Router();
 studentRouter.use(authMiddleware, requireRole("STUDENT"));
 
 // Applications
-studentRouter.get("/activity-logs", (req, res, next) => studentController.getActivityLogs(req, res, next));
-studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, res, next) => studentController.applyToJob(req, res, next));
+studentRouter.get("/activity-logs", validateRequest(getActivityLogsSchema), (req, res, next) => studentController.getActivityLogs(req, res, next));
+studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), validateRequest(applyToJobSchema), (req, res, next) => studentController.applyToJob(req, res, next));
 studentRouter.get("/jobs/:jobId/application-status", (req, res) => studentController.getApplicationStatusByJob(req, res));
 studentRouter.get("/applications", (req, res) => studentController.getMyApplications(req, res));
 studentRouter.get("/applications/:applicationId", (req, res) => studentController.getApplicationDetail(req, res));
@@ -29,11 +31,11 @@ studentRouter.delete("/external-applications/:applicationId", (req, res) => stud
 
 // Round submissions
 studentRouter.get("/applications/:applicationId/rounds/:roundId", (req, res) => studentController.getRoundInfo(req, res));
-studentRouter.post("/applications/:applicationId/rounds/:roundId/submit", (req, res) => studentController.submitRound(req, res));
-studentRouter.put("/applications/:applicationId/rounds/:roundId/submit", (req, res) => studentController.submitRound(req, res));
+studentRouter.post("/applications/:applicationId/rounds/:roundId/submit", validateRequest(submitRoundSchema), (req, res) => studentController.submitRound(req, res));
+studentRouter.put("/applications/:applicationId/rounds/:roundId/submit", validateRequest(submitRoundSchema), (req, res) => studentController.submitRound(req, res));
 
 // Mock interview
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));
 studentRouter.post("/mock-interview/book", (req, res, next) => studentController.bookMockInterview(req, res, next));
-studentRouter.post("/mock-interview/feedback", (req, res) => studentController.generateMockInterviewFeedback(req, res));
+studentRouter.post("/mock-interview/feedback", validateRequest(mockInterviewFeedbackSchema), (req, res) => studentController.generateMockInterviewFeedback(req, res));
 

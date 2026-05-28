@@ -7,7 +7,7 @@ CREATE TABLE "activityLog" (
     "userId" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
     "type" "ActivityType" NOT NULL,
-    "metadata" JSONB,
+    "metadata" JSONB NOT NULL DEFAULT '{}',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "activityLog_pkey" PRIMARY KEY ("id")
