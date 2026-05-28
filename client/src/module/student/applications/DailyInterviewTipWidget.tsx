@@ -51,10 +51,14 @@ export default function DailyInterviewTipWidget() {
   };
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(`[${tip.category}] ${tip.tip}`);
+  try {
+    await navigator.clipboard?.writeText(`[${tip.category}] ${tip.tip}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  } catch {
+    // silently fail
+  }
+};
 
   return (
     <div className="mb-8 p-5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md">
@@ -93,4 +97,8 @@ export default function DailyInterviewTipWidget() {
     </div>
   );
 }
+
+
+
+
 
