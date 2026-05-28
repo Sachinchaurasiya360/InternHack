@@ -3,6 +3,7 @@ import { GeminiProvider } from "../../lib/providers/gemini.provider.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
 import { slugify } from "../../utils/slug.utils.js";
 import type { AiGenerateInput } from "./roadmap.validation.js";
+import { buildRoadmapPrompt, buildSectionPrompt } from "./roadmap.ai.prompts.js";
 
 // ── Output schema (what the AI must return) ────────────────────────────────
 const aiResourceSchema = z.object({
@@ -57,7 +58,7 @@ export async function generateAiRoadmap(
   userId: number,
 ): Promise<GeneratedRoadmap> {
   const provider = new GeminiProvider("gemini-2.5-flash-lite");
-  const prompt = buildPrompt(input);
+  const prompt = buildRoadmapPrompt(input);
   const response = await provider.generateText(prompt);
 
   let parsed: unknown;
@@ -266,97 +267,4 @@ export async function regenerateSection(
   }
 
   return result.data;
-}
-
-function buildSectionPrompt(input: RegenerateSectionInput): string {
-  const neighbours = input.neighbourSections
-    .sort((a, b) => a.orderIndex - b.orderIndex)
-    .map((s) => `  - Section ${s.orderIndex + 1}: "${s.title}"`)
-    .join("\n");
-
-  const currentTopics = input.targetSection.topics
-    .map((t) => `  - ${t.title} (~${t.estimatedHours}h)`)
-    .join("\n");
-
-  const instructionLine = input.instructions?.trim()
-    ? `\nUSER INSTRUCTIONS\n${input.instructions.trim()}\n`
-    : "";
-
-  return `You are a senior software engineer and learning coach. Your task is to rewrite ONE section of an existing learning roadmap.
-
-ROADMAP CONTEXT
-- Title: ${input.roadmapTitle}
-- Description: ${input.roadmapDescription}
-
-OTHER SECTIONS IN THIS ROADMAP (do NOT change these, just use them for context)
-${neighbours || "  (none)"}
-
-SECTION TO REWRITE (Section ${input.targetSection.orderIndex + 1})
-- Current title: "${input.targetSection.title}"
-- Current summary: "${input.targetSection.summary}"
-- Current topics:
-${currentTopics}
-${instructionLine}
-CONSTRAINTS
-- Keep the section logically consistent with the surrounding sections listed above.
-- Do not repeat topics already covered in neighbouring sections.
-- Produce 2 to 8 topics. Each topic must have a real summary, contentMd (2 to 4 short paragraphs, plain text or simple bullets, no markdown headings), realistic estimatedHours, difficulty 1-5, a concrete miniProject, and a self-check question.
-- Each topic must have 2 to 5 RESOURCES with REAL, well-known URLs. Prefer official docs (mdn, react.dev, postgresql.org), university sites (MIT, freeCodeCamp), or canonical tutorials (javascript.info). Do not invent URLs.
-- Resources must be free.
-- Use natural English. Do not use the em dash character.
-
-OUTPUT FORMAT
-Return ONLY valid JSON matching this exact shape. No markdown fences, no explanation.
-
-{
-  "title": "Section title",
-  "summary": "One-sentence summary of the section",
-  "topics": [
-    {
-      "title": "Topic title",
-      "summary": "One-sentence summary",
-      "contentMd": "Plain text explanation, 2-4 short paragraphs.",
-      "estimatedHours": <integer 1-40>,
-      "difficulty": <integer 1-5>,
-      "prerequisiteSlugs": [],
-      "miniProject": "One paragraph describing a small but real project",
-      "selfCheck": "One open question to test understanding",
-      "resources": [
-        {
-          "kind": "VIDEO" | "ARTICLE" | "DOCS" | "COURSE" | "BOOK" | "PROJECT" | "OTHER",
-          "title": "Resource title",
-          "url": "https://...",
-          "source": "Site name"
-        }
-      ]
-    }
-  ]
-}
-
-Respond with ONLY the JSON object.`;
-}
-
-function expLabel(e: AiGenerateInput["experienceLevel"]): string {
-  return e === "NEW" ? "brand new (never coded or very little)" :
-    e === "SOME" ? "some experience (tutorials, school, side dabbling)" :
-    "experienced (comfortable building, wants to formalize)";
-}
-
-function bgLabel(b: AiGenerateInput["background"]): string {
-  switch (b) {
-    case "CS_STUDENT": return "computer science student";
-    case "SELF_TAUGHT": return "self-taught learner";
-    case "CAREER_SWITCHER": return "career switcher from another field";
-    case "HOBBYIST": return "hobbyist";
-    case "WORKING_PRO": return "working professional looking to upskill";
-  }
-}
-
-function goalLabel(g: AiGenerateInput["goal"]): string {
-  switch (g) {
-    case "JOB_READY": return "get a job in the field";
-    case "SIDE_PROJECT": return "build a working side project";
-    case "SCHOOL": return "supplement school coursework";
-    case "CURIOUS": return "satisfy curiosity";
-  }
 }
