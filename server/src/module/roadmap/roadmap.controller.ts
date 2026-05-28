@@ -451,7 +451,7 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     // 2. Slugify section + topic titles
     const { sections } = slugifyRoadmap(generated);
     const topicCount = sections.reduce((sum, s) => sum + s.topics.length, 0);
-    const slug = buildRoadmapSlug(userId, generated.title);
+    const slug = buildRoadmapSlug(generated.title);
 
     // 3. Persist roadmap + sections + topics + resources, then create enrollment
     const startDate = new Date();

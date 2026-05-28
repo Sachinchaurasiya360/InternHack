@@ -111,12 +111,11 @@ export function slugifyRoadmap(generated: GeneratedRoadmap): {
   return { sections };
 }
 
-export function buildRoadmapSlug(userId: number, title: string): string {
+export function buildRoadmapSlug(title: string): string {
   const base = slugifyPart(title) || "roadmap";
-  const stamp = Date.now().toString(36);
-  return `ai-${userId}-${base}-${stamp}`.slice(0, 100);
+  const random = Math.random().toString(36).substring(2, 8);
+  return `ai-${base}-${random}`.slice(0, 100);
 }
-
 // ── Prompt ────────────────────────────────────────────────────────────────
 function buildPrompt(input: AiGenerateInput): string {
   const knownSkills = input.knownSkills.length > 0 ? input.knownSkills.join(", ") : "none specified";
