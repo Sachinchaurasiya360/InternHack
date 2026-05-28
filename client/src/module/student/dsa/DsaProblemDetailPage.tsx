@@ -6,7 +6,7 @@ import {
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
-  History, Terminal, Lock, Crown, Code2,
+  History, Terminal, Lock, Crown, Code2,Flag
 } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
@@ -108,6 +108,9 @@ export default function DsaProblemDetailPage() {
   const [expandedHint, setExpandedHint] = useState<number | null>(null);
   const [showNotes, setShowNotes] = useState(false);
   const [noteValue, setNoteValue] = useState("");
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportMessage, setReportMessage] = useState("");
 
   const [activeTab, setActiveTab] = useState<"problem" | "code">("problem");
   const [rightTab, setRightTab] = useState<"results" | "history" | "output">("results");
@@ -178,6 +181,34 @@ export default function DsaProblemDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.dsa.problem(slug!) });
       toast.success("Notes saved");
+    },
+  });
+  // Report issue mutation
+  const reportIssueMutation = useMutation({
+    mutationFn: ({
+      problemId,
+      reason,
+      message,
+    }: {
+      problemId: number;
+      reason: string;
+      message: string;
+    }) =>
+      api.post(`/dsa/problems/${problemId}/report`, {
+        reason,
+        message,
+      }),
+
+    onSuccess: () => {
+      toast.success("Issue reported successfully");
+
+      setShowReportModal(false);
+      setReportReason("");
+      setReportMessage("");
+    },
+
+    onError: () => {
+      toast.error("Failed to report issue");
     },
   });
 
@@ -283,6 +314,9 @@ export default function DsaProblemDetailPage() {
                     }`}
                 >
                   {problem.bookmarked ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                </button>
+                <button onClick={() => setShowReportModal(true)} title="Report issue" className="w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30">
+                    <Flag className="w-4 h-4" />
                 </button>
               </>
             )}
@@ -733,6 +767,64 @@ export default function DsaProblemDetailPage() {
           </div>
         </div>
       </div>
+      {/* ── Report Issue Modal ── */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
+
+            <h2 className="text-sm font-bold uppercase tracking-widest mb-4">
+              Report Issue
+            </h2>
+
+            <div className="space-y-4">
+
+              <select
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+                className="w-full px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 text-sm"
+              >
+                <option value="">Select a reason</option>
+                <option value="Wrong test case">Wrong test case</option>
+                <option value="Unclear statement">Unclear statement</option>
+                <option value="Broken editor">Broken editor</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <textarea
+                value={reportMessage}
+                onChange={(e) => setReportMessage(e.target.value)}
+                placeholder="Additional details (optional)"
+                className="w-full h-28 px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 text-sm resize-none"
+              />
+
+              <div className="flex justify-end gap-2">
+
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="px-3 py-2 text-xs font-mono uppercase border border-stone-300 dark:border-white/10 rounded-md"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  disabled={!reportReason || reportIssueMutation.isPending}
+                  onClick={() =>
+                    reportIssueMutation.mutate({
+                      problemId: problem.id,
+                      reason: reportReason,
+                      message: reportMessage,
+                    })
+                  }
+                  className="px-3 py-2 text-xs font-mono uppercase bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md disabled:opacity-50"
+                >
+                  {reportIssueMutation.isPending ? "Submitting" : "Submit"}
+                </button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

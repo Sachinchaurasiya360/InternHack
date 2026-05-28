@@ -67,6 +67,7 @@ const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
 const PrivacyPage = lazyWithRetry(() => import("./module/legal/PrivacyPage"));
 const ShippingPage = lazyWithRetry(() => import("./module/legal/ShippingPage"));
 const ContactPage = lazyWithRetry(() => import("./module/legal/ContactPage"));
+const AboutPage = lazyWithRetry(() => import("./module/legal/AboutPage"));
 const RefundPage = lazyWithRetry(() => import("./module/legal/RefundPage"));
 
 // Student pages
@@ -358,6 +359,7 @@ function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/shipping" element={<ShippingPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/refund" element={<RefundPage />} />
           {/* Learning Hub - all learning content under /learn */}
           <Route path="/learn" element={<LearnLayout />}>
