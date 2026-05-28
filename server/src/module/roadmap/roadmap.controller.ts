@@ -229,10 +229,10 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
       }
     } catch (err) {
       console.error("[Roadmap] Welcome email/PDF failed:", {
-  enrollmentId: enrollment.id,
-  userId: req.user!.id,
-  err,
-});
+        enrollmentId: enrollment.id,
+        userId: req.user!.id,
+        err,
+      });
     }
 
     res.status(201).json({
@@ -297,7 +297,7 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
     }
 
 
-  const { progress, roadmapCompleted } = await updateTopicProgress({
+    const { progress, roadmapCompleted } = await updateTopicProgress({
       userId: req.user!.id,
       enrollmentId: params.data.id,
       topicId: params.data.topicId,
@@ -646,10 +646,10 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
       }
     } catch (err) {
       console.error("[Roadmap AI] Welcome email/PDF failed:", {
-  enrollmentId: enrollment.id,
-  userId,
-  err,
-});
+        enrollmentId: enrollment.id,
+        userId,
+        err,
+      });
     }
 
     res.status(201).json({
