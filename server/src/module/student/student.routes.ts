@@ -37,5 +37,5 @@ studentRouter.put("/applications/:applicationId/rounds/:roundId/submit", validat
 // Mock interview
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));
 studentRouter.post("/mock-interview/book", (req, res, next) => studentController.bookMockInterview(req, res, next));
-studentRouter.post("/mock-interview/feedback", validateRequest(mockInterviewFeedbackSchema), (req, res) => studentController.generateMockInterviewFeedback(req, res));
+studentRouter.post("/mock-interview/feedback", validateRequest(mockInterviewFeedbackSchema), usageLimit("MOCK_INTERVIEW"), (req, res) => studentController.generateMockInterviewFeedback(req, res));
 
