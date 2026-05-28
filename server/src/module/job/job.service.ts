@@ -82,7 +82,10 @@ export class JobService {
     }
 
     if (query.tags) {
-      where.tags = { hasSome: query.tags.split(",").map((t) => t.trim()) };
+      const tagList = query.tags.split(",").map((t) => t.trim()).filter(Boolean);
+      if (tagList.length > 0) {
+        where.tags = { hasSome: tagList };
+      }
     }
 
     if (andFilters.length > 0) {

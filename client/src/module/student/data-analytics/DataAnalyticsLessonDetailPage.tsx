@@ -124,7 +124,7 @@ function ExerciseSection({
     setShowHints(0);
      
     setShowSolution(false);
-  }, [activeIdx, exercise?.id]);
+  }, [activeIdx, exercise]);
 
   const handleRun = useCallback(async () => {
     if (!exercise || running) return;

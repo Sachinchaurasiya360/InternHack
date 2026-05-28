@@ -226,7 +226,7 @@ export default function OpenSourceAnalyticsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const allOrgs = orgsData ?? [];
+  const allOrgs = useMemo(() => orgsData ?? [], [orgsData]);
   const contributionTrend = contributionTrendData?.trend ?? [];
   const contributionTotal = contributionTrendData?.total ?? 0;
   const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);

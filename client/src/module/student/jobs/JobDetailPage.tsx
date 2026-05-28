@@ -163,13 +163,18 @@ export default function JobDetailPage() {
       </Link>
     )
   ) : !isAuthenticated ? (
+  <div className="flex flex-col items-start gap-2">
     <Link
       to={`/login?from=${encodeURIComponent(inStudentLayout ? `/student/jobs/${id}` : `/jobs/${Number(id)}`)}`}
       className="inline-flex items-center gap-2 px-6 py-3 bg-lime-400 text-stone-900 font-semibold rounded-md hover:bg-lime-500 transition-colors no-underline text-sm"
     >
       Sign in to apply <ArrowUpRight className="w-4 h-4" />
     </Link>
-  ) : null;
+    <p className="text-xs text-stone-500 dark:text-stone-400">
+      Create a free account to apply for this role.
+    </p>
+  </div>
+) : null;
 
   const page = (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
