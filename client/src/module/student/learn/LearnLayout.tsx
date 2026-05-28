@@ -41,42 +41,42 @@ const SEGMENT_NAMES: Record<string, string> = {
   "two-pointer-window": "Two-Pointer & Window",
   "singly-linked-list": "Singly Linked List",
   "doubly-circular-list": "Doubly & Circular List",
-  "deque": "Deques",
-  "hashing": "Hashing",
+  deque: "Deques",
+  hashing: "Hashing",
   "binary-tree-traversals": "Binary Tree Traversals",
-  "bst": "BST",
-  "avl": "AVL Trees",
+  bst: "BST",
+  avl: "AVL Trees",
   "red-black": "Red-Black Trees",
-  "heaps": "Heaps",
-  "tries": "Tries",
+  heaps: "Heaps",
+  tries: "Tries",
   "segment-fenwick": "Segment & Fenwick",
   "b-plus-tree": "B+ Trees",
   "graph-representation": "Graph Representation",
-  "bfs": "BFS",
-  "dfs": "DFS",
+  bfs: "BFS",
+  dfs: "DFS",
   "topological-sort": "Topological Sort",
-  "dijkstra": "Dijkstra",
+  dijkstra: "Dijkstra",
   "bellman-ford": "Bellman-Ford",
-  "mst": "MST",
+  mst: "MST",
   "bubble-selection": "Bubble & Selection",
-  "insertion": "Insertion Sort",
-  "merge": "Merge Sort",
-  "quick": "Quick Sort",
+  insertion: "Insertion Sort",
+  merge: "Merge Sort",
+  quick: "Quick Sort",
   "non-comparison": "Non-Comparison Sorts",
   "binary-search": "Binary Search",
-  "recursion": "Recursion",
+  recursion: "Recursion",
   "divide-conquer": "Divide & Conquer",
-  "backtracking": "Backtracking",
+  backtracking: "Backtracking",
   "dp-1d": "DP (1D)",
   "dp-2d": "DP (2D)",
-  "greedy": "Greedy",
+  greedy: "Greedy",
   "bit-manipulation": "Bit Manipulation",
-  "dsu": "DSU",
+  dsu: "DSU",
   "advanced-ds": "Advanced DS",
   "rabin-karp": "Rabin-Karp",
-  "kmp": "KMP",
+  kmp: "KMP",
   "z-manacher": "Z & Manacher",
-  "lca": "LCA",
+  lca: "LCA",
   "advanced-graphs": "Advanced Graphs",
   "tarjan-lowlink": "Tarjan's Low-Link",
   "max-flow": "Max Flow",
@@ -98,13 +98,19 @@ const SEGMENT_NAMES: Record<string, string> = {
   problem: "Problem",
 };
 
-const LOWERCASE_WORDS = new Set(["and", "or", "the", "in", "on", "at", "to", "for", "of", "with", "a", "an"]);
+const LOWERCASE_WORDS = new Set([
+  "and", "or", "the", "in", "on", "at", "to", "for", "of", "with", "a", "an",
+]);
 
 function formatSegment(segment: string): string {
   if (SEGMENT_NAMES[segment]) return SEGMENT_NAMES[segment];
   return segment
     .split("-")
-    .map((w, i) => (i > 0 && LOWERCASE_WORDS.has(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1))
+    .map((w, i) =>
+      i > 0 && LOWERCASE_WORDS.has(w)
+        ? w
+        : w.charAt(0).toUpperCase() + w.slice(1)
+    )
     .join(" ");
 }
 
@@ -124,9 +130,13 @@ function LearnBreadcrumb() {
     <nav className="flex items-center gap-1.5 text-sm mb-6 flex-wrap">
       {items.map((item, i) => (
         <Fragment key={item.path}>
-          {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 shrink-0" />}
+          {i > 0 && (
+            <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 shrink-0" />
+          )}
           {item.isLast ? (
-            <span className="text-gray-700 dark:text-gray-300 font-medium">{item.name}</span>
+            <span className="text-gray-700 dark:text-gray-300 font-medium">
+              {item.name}
+            </span>
           ) : (
             <Link
               to={item.path}
@@ -152,7 +162,8 @@ export default function LearnLayout() {
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 pt-28 pb-12">
+      {/* ✅ Fixed: was pt-28 (112px), now pt-20 (80px = 64px navbar + 16px gap) */}
+      <main className="max-w-4xl mx-auto px-4 pt-3 pb-12">
         <LearnBreadcrumb />
         <Outlet />
       </main>
@@ -170,8 +181,9 @@ function StudentLearnLayout() {
         <Navbar sidebarOffset={sidebarWidth} />
       </div>
       {sidebar}
+      {/* ✅ Fixed: was lg:pt-24 (96px), now lg:pt-20 (80px = 64px navbar + 16px gap) */}
       <main
-        className={`pt-16 lg:pt-24 px-4 pb-8 sm:px-6 lg:px-8 transition-all duration-300 overflow-auto ${
+        className={`pt-10 lg:pt-10 px-4 pb-8 sm:px-6 lg:px-8 transition-all duration-300 overflow-auto ${
           collapsed ? "lg:ml-18" : "lg:ml-64"
         }`}
       >
