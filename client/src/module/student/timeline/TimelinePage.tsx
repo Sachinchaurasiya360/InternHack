@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import { Briefcase, Video, ShieldCheck, Award, Clock, ArrowRight } from "lucide-react";
+import { Briefcase, Video, ShieldCheck, Award, Clock } from "lucide-react";
 import { api } from "../../../lib/api";
 
 type ActivityType = 
@@ -17,7 +17,7 @@ interface ActivityLog {
   userId: number;
   title: string;
   type: ActivityType;
-  metadata: any;
+  metadata: Record<string, unknown> | null;
   createdAt: string;
 }
 

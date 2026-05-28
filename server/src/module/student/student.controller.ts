@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { StudentService } from "./student.service.js";
-import { applyToJobSchema, mockInterviewFeedbackSchema, submitRoundSchema } from "./student.validation.js";
+import { applyToJobSchema, mockInterviewFeedbackSchema, submitRoundSchema, getActivityLogsSchema } from "./student.validation.js";
 import { prisma } from "../../database/db.js";
 import { getPlanTier } from "../../config/usage-limits.js";
 import { createLogger } from "../../utils/logger.js";
@@ -13,11 +13,15 @@ export class StudentController {
   async getActivityLogs(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
-      const { page, limit, type } = req.query as { page?: string, limit?: string, type?: import("@prisma/client").ActivityType };
+      
+      const parsed = getActivityLogsSchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Invalid query parameters" });
+      
+      const { page, limit, type } = parsed.data;
       const logs = await this.studentService.getActivityLogs(
         req.user.id, 
-        page ? parseInt(page, 10) : 1, 
-        limit ? parseInt(limit, 10) : 20, 
+        page, 
+        limit, 
         type
       );
       return res.status(200).json({ logs });

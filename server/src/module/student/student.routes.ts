@@ -13,11 +13,8 @@ export const studentRouter = Router();
 // All routes require authentication and STUDENT role
 studentRouter.use(authMiddleware, requireRole("STUDENT"));
 
-import { validateRequest } from "../../middleware/validation.middleware.js";
-import { getActivityLogsSchema } from "./student.validation.js";
-
 // Applications
-studentRouter.get("/activity-logs", validateRequest(getActivityLogsSchema), (req, res, next) => studentController.getActivityLogs(req, res, next));
+studentRouter.get("/activity-logs", (req, res, next) => studentController.getActivityLogs(req, res, next));
 studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, res, next) => studentController.applyToJob(req, res, next));
 studentRouter.get("/jobs/:jobId/application-status", (req, res) => studentController.getApplicationStatusByJob(req, res));
 studentRouter.get("/applications", (req, res) => studentController.getMyApplications(req, res));

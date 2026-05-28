@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
     },
     activityLog: {
       create: vi.fn().mockResolvedValue({}),
+      findMany: vi.fn().mockResolvedValue([]),
     },
   },
   badgeService: {
