@@ -205,4 +205,30 @@ describe("StudentService", () => {
       await expect(service.getApplicationStatusByJob(15, 44)).resolves.toBeNull();
     });
   });
+
+  describe("getActivityLogs", () => {
+    it("returns activity logs for a student with pagination and filtering", async () => {
+      mocks.prisma.activityLog.findMany = vi.fn().mockResolvedValue([{ id: 1, type: "APPLICATION_SUBMITTED" }]);
+
+      await expect(service.getActivityLogs(44, 2, 10, "APPLICATION_SUBMITTED")).resolves.toEqual([{ id: 1, type: "APPLICATION_SUBMITTED" }]);
+      expect(mocks.prisma.activityLog.findMany).toHaveBeenCalledWith({
+        where: { userId: 44, type: "APPLICATION_SUBMITTED" },
+        orderBy: { createdAt: "desc" },
+        skip: 10,
+        take: 10,
+      });
+    });
+
+    it("returns activity logs with default pagination and no type filter", async () => {
+      mocks.prisma.activityLog.findMany = vi.fn().mockResolvedValue([{ id: 1 }]);
+
+      await expect(service.getActivityLogs(44)).resolves.toEqual([{ id: 1 }]);
+      expect(mocks.prisma.activityLog.findMany).toHaveBeenCalledWith({
+        where: { userId: 44 },
+        orderBy: { createdAt: "desc" },
+        skip: 0,
+        take: 20,
+      });
+    });
+  });
 });

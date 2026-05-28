@@ -20,3 +20,17 @@ export const mockInterviewFeedbackSchema = z.object({
   topic: z.string().min(1),
   transcript: z.array(mockInterviewTranscriptSchema).min(1),
 });
+
+export const getActivityLogsSchema = z.object({
+  page: z.coerce.number().int().min(1).optional().default(1),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+  type: z.enum([
+    "APPLICATION_SUBMITTED",
+    "APPLICATION_STATUS_UPDATED",
+    "MOCK_INTERVIEW_COMPLETED",
+    "SKILL_VERIFIED",
+    "BADGE_EARNED",
+    "ROADMAP_ENROLLED",
+    "COURSE_COMPLETED"
+  ]).optional()
+});

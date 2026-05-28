@@ -13,7 +13,13 @@ export class StudentController {
   async getActivityLogs(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
-      const logs = await this.studentService.getActivityLogs(req.user.id);
+      const { page, limit, type } = req.query as { page?: string, limit?: string, type?: import("@prisma/client").ActivityType };
+      const logs = await this.studentService.getActivityLogs(
+        req.user.id, 
+        page ? parseInt(page, 10) : 1, 
+        limit ? parseInt(limit, 10) : 20, 
+        type
+      );
       return res.status(200).json({ logs });
     } catch (error) {
       logger.error("Failed to get activity logs", error);

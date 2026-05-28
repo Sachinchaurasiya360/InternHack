@@ -37,11 +37,12 @@ interface MockInterviewFeedbackResult {
 }
 
 export class StudentService {
-  async getActivityLogs(userId: number) {
+  async getActivityLogs(userId: number, page: number = 1, limit: number = 20, type?: import("@prisma/client").ActivityType) {
     return prisma.activityLog.findMany({
-      where: { userId },
+      where: { userId, ...(type ? { type } : {}) },
       orderBy: { createdAt: "desc" },
-      take: 50,
+      skip: (page - 1) * limit,
+      take: limit,
     });
   }
 
