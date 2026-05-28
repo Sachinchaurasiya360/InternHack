@@ -943,27 +943,48 @@ export default function RoadmapCanvasPage() {
 
             <div className="hidden md:flex items-center gap-5 shrink-0">
               <div className="flex bg-stone-900/50 p-1 rounded-lg border border-stone-800">
-                <button
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
                   onClick={() => setViewMode("LINEAR")}
-                  className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "LINEAR" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
                   title="Linear View"
+                  className={
+                    viewMode === "LINEAR"
+                      ? "bg-stone-800 text-stone-50"
+                      : "text-stone-400 hover:text-stone-200"
+                  }
                 >
                   <GitCommit className="w-4 h-4" />
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
                   onClick={() => setViewMode("GRID")}
-                  className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRID" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
                   title="Grid View"
+                  className={
+                    viewMode === "GRID"
+                      ? "bg-stone-800 text-stone-50"
+                      : "text-stone-400 hover:text-stone-200"
+                  }
                 >
                   <LayoutTemplate className="w-4 h-4" />
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
                   onClick={() => setViewMode("GRAPH")}
-                  className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRAPH" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
                   title="Graph View"
+                  className={
+                    viewMode === "GRAPH"
+                      ? "bg-stone-800 text-stone-50"
+                      : "text-stone-400 hover:text-stone-200"
+                  }
                 >
                   <Network className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
               <Stat
                 icon={Target}

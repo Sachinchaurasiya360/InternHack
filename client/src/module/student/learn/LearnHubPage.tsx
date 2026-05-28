@@ -119,7 +119,7 @@ export default function LearnHubPage() {
                 season.
               </p>
             </div>
-            <div className="flex items-center gap-x-4 gap-y-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 flex-wrap">
+            <div className="flex items-center gap-x-4 gap-y-2 text-xs font-mono uppercase tracking-widest text-stone-500 flex-wrap">
               <span>
                 tracks
                 <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-2">
@@ -183,7 +183,7 @@ export default function LearnHubPage() {
               />
             </div>
             {search && (
-              <p className="mt-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <p className="mt-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                 {totalShown} match{totalShown === 1 ? "" : "es"}
               </p>
             )}
@@ -195,7 +195,7 @@ export default function LearnHubPage() {
               <p className="text-sm text-stone-600 dark:text-stone-400">
                 No tracks match your search.
               </p>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
                 try a different keyword
               </p>
             </div>
@@ -204,7 +204,7 @@ export default function LearnHubPage() {
               <section key={group.category} className={gi === 0 ? "" : "mt-14"}>
                 <div className="flex items-end justify-between gap-4 mb-6 flex-wrap">
                   <div className="min-w-0">
-                    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                    <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                       <span className="h-1 w-1 bg-lime-400" />
                       section / {String(group.category)}
                     </div>
@@ -212,7 +212,7 @@ export default function LearnHubPage() {
                       {CATEGORY_LABEL[group.category]}
                     </h2>
                   </div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">
                     {group.tracks.length} track
                     {group.tracks.length === 1 ? "" : "s"}
                   </span>
