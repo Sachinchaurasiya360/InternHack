@@ -47,7 +47,7 @@ export default function AptitudeCategoriesPage() {
     queryFn: () => api.get<AptitudeCategory[]>("/aptitude/categories").then((r) => r.data),
   });
 
-  const { data: progress } = useQuery({
+  const { data: progress, isSuccess } = useQuery({
     queryKey: queryKeys.aptitude.progress(),
     queryFn: () => api.get<AptitudeProgress>("/aptitude/progress").then((r) => r.data),
     enabled: !!user,
@@ -82,7 +82,7 @@ export default function AptitudeCategoriesPage() {
         keywords="aptitude practice, quantitative aptitude, logical reasoning, verbal ability, placement exam preparation"
         canonicalUrl={canonicalUrl("/learn/aptitude")}
       />
-            {user && <StreakBanner streak={progress?.currentStreak ?? 0} />}
+            {user && isSuccess && <StreakBanner streak={progress.currentStreak} />}
 
       <div
         aria-hidden
