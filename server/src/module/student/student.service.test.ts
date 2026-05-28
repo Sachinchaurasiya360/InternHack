@@ -13,6 +13,9 @@ const mocks = vi.hoisted(() => ({
     roundSubmission: {
       create: vi.fn(),
     },
+    activityLog: {
+      create: vi.fn().mockResolvedValue({}),
+    },
   },
   badgeService: {
     checkAndAwardBadges: vi.fn().mockResolvedValue(undefined),
