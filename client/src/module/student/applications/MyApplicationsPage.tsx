@@ -226,6 +226,27 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
 });
 
 const PAGE_SIZE = 10;
+const STATUS_ORDER: Record<string, number> = {
+  IN_PROGRESS: 0,
+  SHORTLISTED: 1,
+  APPLIED: 2,
+  HIRED: 3,
+  REJECTED: 4,
+  WITHDRAWN: 5,
+};
+
+function sortApplications(
+  apps: Application[],
+  option: "newest" | "oldest" | "company" | "status"
+): Application[] {
+  return [...apps].sort((a, b) => {
+    if (option === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (option === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (option === "company") return (a.job?.company ?? "").localeCompare(b.job?.company ?? "");
+    if (option === "status") return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
+    return 0;
+  });
+}
 
 type PendingDelete =
   | { kind: "internal"; id: number }
@@ -237,6 +258,7 @@ export default function MyApplicationsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 200);
@@ -260,12 +282,13 @@ export default function MyApplicationsPage() {
   const externalApplications = data?.externalApplications ?? [];
 
   const filtered = useMemo(() => {
-    if (!debouncedSearch.trim()) return applications;
-    const q = debouncedSearch.toLowerCase();
-    return applications.filter(
-      (a) => a.job?.title?.toLowerCase().includes(q) || a.job?.company?.toLowerCase().includes(q)
-    );
-  }, [applications, debouncedSearch]);
+    const base = !debouncedSearch.trim()
+      ? applications
+      : applications.filter(
+          (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+        );
+    return sortApplications(base, sortOption);
+  }, [applications, debouncedSearch, sortOption]);
 
   const filteredExternal = useMemo(() => {
     if (!debouncedSearch.trim()) return externalApplications;
@@ -413,6 +436,23 @@ export default function MyApplicationsPage() {
 
       {/* Search */}
       <div className="mb-5 relative">
+      {/* Sort */}
+      <div className="mb-4 flex items-center gap-2">
+        <label htmlFor="sort" className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          Sort by
+        </label>
+        <select
+          id="sort"
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value as typeof sortOption)}
+          className="text-xs font-mono bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-2 py-1.5 text-stone-900 dark:text-stone-50 focus:outline-none focus:border-lime-400 transition-colors cursor-pointer"
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="company">Company A–Z</option>
+          <option value="status">Status</option>
+        </select>
+      </div>
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
         <input
           type="text"
