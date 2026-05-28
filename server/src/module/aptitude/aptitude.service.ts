@@ -134,7 +134,7 @@ export class AptitudeService {
 
     await prisma.studentAptitudeProgress.upsert({
       where: { studentId_questionId: { studentId, questionId } },
-      create: { studentId, questionId, answered: true, correct: isCorrect },
+      create: { studentId, questionId, answered: true, correct: isCorrect , lastPracticedAt: new Date()},
       update: { answered: true, correct: isCorrect, lastPracticedAt: new Date() },
     });
 
