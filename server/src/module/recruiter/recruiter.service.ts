@@ -301,6 +301,17 @@ export class RecruiterService {
       });
     }
 
+    if (previousStatus !== status) {
+      prisma.activityLog.create({
+        data: {
+          userId: application.studentId,
+          type: "APPLICATION_STATUS_UPDATED",
+          title: `Application status for ${application.job.title} updated to ${status}`,
+          metadata: { jobId: application.jobId, status }
+        }
+      }).catch(e => console.error("Failed to log activity:", e));
+    }
+
     return updated;
   }
 
@@ -309,7 +320,7 @@ export class RecruiterService {
       const application = await tx.application.findUnique({
         where: { id: applicationId },
         include: {
-          job: { select: { id: true, recruiterId: true } },
+          job: { select: { id: true, recruiterId: true, title: true } },
           roundSubmissions: { include: { round: true } },
         },
       });
@@ -348,10 +359,22 @@ export class RecruiterService {
         create: { applicationId, roundId: nextRound.id, status: "IN_PROGRESS" },
       });
 
-      return tx.application.update({
+      const updated = await tx.application.update({
         where: { id: applicationId },
         data: { currentRoundId: nextRound.id, status: "IN_PROGRESS" },
       });
+
+      // Log activity
+      await tx.activityLog.create({
+        data: {
+          userId: application.studentId,
+          type: "APPLICATION_STATUS_UPDATED",
+          title: `Advanced to ${nextRound.name} for ${application.job.title}`,
+          metadata: { jobId: application.jobId, roundName: nextRound.name }
+        }
+      });
+
+      return updated;
     });
   }
 

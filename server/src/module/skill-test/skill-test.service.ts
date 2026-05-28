@@ -298,6 +298,16 @@ export class SkillTestService {
           verifiedAt: new Date(),
         },
       });
+
+      // Log activity for earning skill badge
+      await prisma.activityLog.create({
+        data: {
+          userId: studentId,
+          type: "SKILL_VERIFIED",
+          title: `Earned verified skill in ${test.skillName}`,
+          metadata: { skillName: test.skillName, score }
+        }
+      });
     }
 
     return {

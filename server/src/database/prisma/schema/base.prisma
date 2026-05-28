@@ -87,11 +87,14 @@ model user {
   generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
   leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
-hackathonParticipations hackathonParticipation[] @relation("UserHackathonParticipations")
+  hackathonParticipations hackathonParticipation[] @relation("UserHackathonParticipations")
+  activityLogs          activityLog[]               @relation("UserActivityLogs")
+
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
 }
+
 
 model userInterviewProgress {
   id            Int       @id @default(autoincrement())
@@ -1387,4 +1390,27 @@ enum InterviewOutcome {
   WITHDRAWN
   PENDING
   GHOSTED
+}
+
+model activityLog {
+  id        Int          @id @default(autoincrement())
+  userId    Int
+  title     String
+  type      ActivityType
+  metadata  Json         @default("{}")
+  createdAt DateTime     @default(now())
+
+  user      user         @relation("UserActivityLogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+enum ActivityType {
+  APPLICATION_SUBMITTED
+  APPLICATION_STATUS_UPDATED
+  MOCK_INTERVIEW_COMPLETED
+  SKILL_VERIFIED
+  BADGE_EARNED
+  ROADMAP_ENROLLED
+  COURSE_COMPLETED
 }

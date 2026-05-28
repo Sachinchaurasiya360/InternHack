@@ -37,6 +37,14 @@ interface MockInterviewFeedbackResult {
 }
 
 export class StudentService {
+  async getActivityLogs(userId: number) {
+    return prisma.activityLog.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+  }
+
   async applyToJob(jobId: number, studentId: number, data: ApplyData) {
     const job = await prisma.job.findUnique({
       where: { id: jobId },
@@ -82,6 +90,16 @@ export class StudentService {
       // Check 10-application milestone (fire-and-forget)
       this.checkApplicationMilestone(studentId).catch(() => {});
 
+      // Log activity
+      prisma.activityLog.create({
+        data: {
+          userId: studentId,
+          type: "APPLICATION_SUBMITTED",
+          title: `Applied to ${application.job.title} at ${application.job.company}`,
+          metadata: { jobId: application.job.id, company: application.job.company }
+        }
+      }).catch(e => console.error("Failed to log activity:", e));
+
       return application;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
@@ -91,7 +109,7 @@ export class StudentService {
     }
   }
 
-  async generateMockInterviewFeedback(topic: string, transcript: MockInterviewTranscriptEntry[]): Promise<MockInterviewFeedbackResult> {
+  async generateMockInterviewFeedback(topic: string, transcript: MockInterviewTranscriptEntry[], studentId: number): Promise<MockInterviewFeedbackResult> {
     const fallbackFeedback = this.createMockInterviewFallbackFeedback(topic);
     const apiKey = process.env.GEMINI_API_KEY;
 
@@ -110,6 +128,15 @@ export class StudentService {
       if (!parsed) {
         return { feedback: fallbackFeedback, fallbackUsed: true };
       }
+
+      prisma.activityLog.create({
+        data: {
+          userId: studentId,
+          type: "MOCK_INTERVIEW_COMPLETED",
+          title: `Completed Mock Interview`,
+          metadata: { topic, rating: parsed.overallRating }
+        }
+      }).catch(e => console.error("Failed to log activity:", e));
 
       return { feedback: parsed, fallbackUsed: false };
     } catch {

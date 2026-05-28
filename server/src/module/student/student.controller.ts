@@ -10,6 +10,17 @@ const logger = createLogger("StudentController");
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
+  async getActivityLogs(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const logs = await this.studentService.getActivityLogs(req.user.id);
+      return res.status(200).json({ logs });
+    } catch (error) {
+      logger.error("Failed to get activity logs", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   async applyToJob(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -117,7 +128,7 @@ export class StudentController {
         return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
       }
 
-      const feedback = await this.studentService.generateMockInterviewFeedback(result.data.topic, result.data.transcript);
+      const feedback = await this.studentService.generateMockInterviewFeedback(result.data.topic, result.data.transcript, req.user.id);
       return res.status(200).json(feedback);
     } catch (error) {
       logger.error("Failed to generate mock interview feedback", error);

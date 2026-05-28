@@ -109,6 +109,7 @@ const SkillTestPage = lazyWithRetry(() => import("./module/student/skill-verific
 const SqlExercisePage = lazyWithRetry(() => import("./module/student/sql/SqlExercisePage"));
 const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPlaygroundPage"));
 const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewPage"));
+const TimelinePage = lazyWithRetry(() => import("./module/student/timeline/TimelinePage"));
 const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
 const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
@@ -506,6 +507,7 @@ function App() {
             <Route path="interviews/:id" element={<InterviewExperienceDetailPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="profile" element={<StudentProfilePage />} />
+            <Route path="timeline" element={<TimelinePage />} />
             <Route path="roadmaps" element={<RoadmapDashboardPage />} />
           </Route>
 
