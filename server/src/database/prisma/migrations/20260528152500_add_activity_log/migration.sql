@@ -13,5 +13,8 @@ CREATE TABLE "activityLog" (
     CONSTRAINT "activityLog_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateIndex
+CREATE INDEX "activityLog_userId_createdAt_idx" ON "activityLog"("userId", "createdAt");
+
 -- AddForeignKey
 ALTER TABLE "activityLog" ADD CONSTRAINT "activityLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
