@@ -38,7 +38,8 @@ interface UpdateProfileInput {
   portfolioUrl?: string;
   leetcodeUrl?: string;
   jobStatus?: string | null;
-  projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string }[];
+  // Added builtAt for GSSoC '26 Featured Projects
+  projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string; builtAt?: string }[];
   achievements?: { id: string; title: string; description: string; date?: string }[];
   isProfilePublic?: boolean;
 }

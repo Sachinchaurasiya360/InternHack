@@ -295,13 +295,17 @@ export default function PublicProfilePage() {
             <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible"
               className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white mb-4 flex items-center gap-2">
-                <FolderGit2 className="w-4 h-4 text-amber-500" /> Projects
+                {/* GSSoC '26: Updated title to Featured Projects */}
+                <FolderGit2 className="w-4 h-4 text-amber-500" /> Featured Projects
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {profile.projects.map((p) => (
                   <div key={p.id} className="px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                    <h4 className="text-sm font-semibold text-gray-950 dark:text-white">{p.title}</h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{p.description}</p>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <h4 className="text-sm font-semibold text-gray-950 dark:text-white truncate">{p.title}</h4>
+                      {p.builtAt && <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1 shrink-0"><Calendar className="w-3 h-3" /> {p.builtAt}</span>}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{p.description}</p>
                     {p.techStack.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {p.techStack.map((t, i) => (
