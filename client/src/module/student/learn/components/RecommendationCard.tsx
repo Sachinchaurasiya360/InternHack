@@ -51,4 +51,4 @@ export const RecommendationCard = memo(function RecommendationCard({ area, index
       </div>
     </div>
   );
-}
+})
