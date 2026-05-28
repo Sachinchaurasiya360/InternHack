@@ -1,19 +1,40 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Search, MapPin, IndianRupee, Wallet, Clock, X, Landmark, ArrowUpRight } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  IndianRupee,
+  Wallet,
+  Clock,
+  X,
+  Landmark,
+  ArrowUpRight,
+} from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { ExternalJob, Job, Pagination, ScrapedJob } from "../../../lib/types";
+import type {
+  ExternalJob,
+  Job,
+  Pagination,
+  ScrapedJob,
+} from "../../../lib/types";
 
 const FILTER_TAGS = [
-  "Frontend", "Backend", "Full Stack", "Python", "Java", "DevOps",
-  "AI", "Cloud", "Data Science",
+  "Frontend",
+  "Backend",
+  "Full Stack",
+  "Python",
+  "Java",
+  "DevOps",
+  "AI",
+  "Cloud",
+  "Data Science",
 ] as const;
 
 const SALARY_HAS_CURRENCY = /[₹$€£¥]|\b(USD|EUR|GBP|INR|JPY|CAD|AUD)\b/i;
@@ -29,7 +50,13 @@ function CompanyMark({ label }: { label: string }) {
   );
 }
 
-function MetaChip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+function MetaChip({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
       <span className="text-stone-400">{icon}</span>
@@ -38,8 +65,14 @@ function MetaChip({ icon, children }: { icon: React.ReactNode; children: React.R
   );
 }
 
-const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: ExternalJob }) {
-  const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
+const ExternalJobCard = React.memo(function ExternalJobCard({
+  job,
+}: {
+  job: ExternalJob;
+}) {
+  const salaryHasCurrency = job.salary
+    ? SALARY_HAS_CURRENCY.test(job.salary)
+    : false;
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
     <Link to={job.slug ? `/jobs/ext/${job.slug}` : "#"} className={cardBase}>
@@ -59,31 +92,52 @@ const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: Exte
         </div>
       </div>
       {job.description && (
-        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>
+        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+          {job.description}
+        </p>
       )}
       <div className="flex flex-wrap gap-1.5 mb-4">
-        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
-        {job.salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{job.salary}</MetaChip>}
+        {job.location && (
+          <MetaChip icon={<MapPin className="w-3 h-3" />}>
+            {job.location}
+          </MetaChip>
+        )}
+        {job.salary && (
+          <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>
+            {job.salary}
+          </MetaChip>
+        )}
       </div>
       {job.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-4">
           {job.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
+            <span
+              key={tag}
+              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
+            >
               {tag}
             </span>
           ))}
         </div>
       )}
       <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+          view role
+        </span>
         <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
       </div>
     </Link>
   );
 });
 
-const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: ScrapedJob }) {
-  const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
+const ScrapedJobCard = React.memo(function ScrapedJobCard({
+  job,
+}: {
+  job: ScrapedJob;
+}) {
+  const salaryHasCurrency = job.salary
+    ? SALARY_HAS_CURRENCY.test(job.salary)
+    : false;
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
     <a
@@ -108,23 +162,38 @@ const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: Scrape
         </div>
       </div>
       {job.description && (
-        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>
+        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+          {job.description}
+        </p>
       )}
       <div className="flex flex-wrap gap-1.5 mb-4">
-        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
-        {job.salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{job.salary}</MetaChip>}
+        {job.location && (
+          <MetaChip icon={<MapPin className="w-3 h-3" />}>
+            {job.location}
+          </MetaChip>
+        )}
+        {job.salary && (
+          <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>
+            {job.salary}
+          </MetaChip>
+        )}
       </div>
       {job.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-4">
           {job.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
+            <span
+              key={tag}
+              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
+            >
               {tag}
             </span>
           ))}
         </div>
       )}
       <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+          view role
+        </span>
         <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
       </div>
     </a>
@@ -133,11 +202,22 @@ const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: Scrape
 
 export default function JobBrowsePage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
-  const [search, setSearch] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [debouncedLocation, setDebouncedLocation] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Seed initial input values from URL (handles refresh + shared links)
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+  const [locationFilter, setLocationFilter] = useState(
+    () => searchParams.get("location") ?? "",
+  );
+  const [debouncedSearch, setDebouncedSearch] = useState(
+    () => searchParams.get("search") ?? "",
+  );
+  const [debouncedLocation, setDebouncedLocation] = useState(
+    () => searchParams.get("location") ?? "",
+  );
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    () => searchParams.get("tags")?.split(",").filter(Boolean) ?? [],
+  );
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
@@ -148,6 +228,14 @@ export default function JobBrowsePage() {
       setDebouncedSearch(search);
       setDebouncedLocation(locationFilter);
       setPage(1);
+
+      // Sync text filters to URL after debounce
+      const next = new URLSearchParams(searchParams);
+      if (search) next.set("search", search);
+      else next.delete("search");
+      if (locationFilter) next.set("location", locationFilter);
+      else next.delete("location");
+      setSearchParams(next, { replace: true });
     }, 400);
     return () => clearTimeout(timerRef.current);
   }, [search, locationFilter]);
@@ -173,15 +261,28 @@ export default function JobBrowsePage() {
   const { data: extData } = useQuery({
     queryKey: [
       "public-external-jobs",
-      { page: extPage, search: debouncedSearch, location: debouncedLocation, tags: selectedTags.join(",") },
+      {
+        page: extPage,
+        search: debouncedSearch,
+        location: debouncedLocation,
+        tags: selectedTags.join(","),
+      },
     ],
     queryFn: async () => {
-      const params = new URLSearchParams({ page: String(extPage), limit: "12" });
+      const params = new URLSearchParams({
+        page: String(extPage),
+        limit: "12",
+      });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
       const res = await api.get(`/external-jobs?${params}`);
-      return res.data as { jobs: ExternalJob[]; total: number; totalPages: number; page: number };
+      return res.data as {
+        jobs: ExternalJob[];
+        total: number;
+        totalPages: number;
+        page: number;
+      };
     },
     placeholderData: keepPreviousData,
   });
@@ -189,10 +290,18 @@ export default function JobBrowsePage() {
   const { data: scrData } = useQuery({
     queryKey: [
       "public-scraped-jobs",
-      { page: scrPage, search: debouncedSearch, location: debouncedLocation, tags: selectedTags.join(",") },
+      {
+        page: scrPage,
+        search: debouncedSearch,
+        location: debouncedLocation,
+        tags: selectedTags.join(","),
+      },
     ],
     queryFn: async () => {
-      const params = new URLSearchParams({ page: String(scrPage), limit: "12" });
+      const params = new URLSearchParams({
+        page: String(scrPage),
+        limit: "12",
+      });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
       const res = await api.get(`/scraped-jobs?${params}`);
@@ -202,33 +311,48 @@ export default function JobBrowsePage() {
   });
 
   const toggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
-  };
+  const updated = selectedTags.includes(tag)
+    ? selectedTags.filter((t) => t !== tag)
+    : [...selectedTags, tag];
 
+  setSelectedTags(updated);
+
+  const next = new URLSearchParams(searchParams);
+  if (updated.length > 0) next.set("tags", updated.join(",")); else next.delete("tags");
+  setSearchParams(next, { replace: true });
+
+  setPage(1);
+  setExtPage(1);
+  setScrPage(1);
+};
   const clearAll = () => {
-    setSearch("");
-    setLocationFilter("");
-    setSelectedTags([]);
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
-  };
+  setSearch("");
+  setLocationFilter("");
+  setDebouncedSearch("");
+  setDebouncedLocation("");
+  setSelectedTags([]);
+  setSearchParams({});   // wipes all URL params
+  setPage(1);
+  setExtPage(1);
+  setScrPage(1);
+};
 
   const hasFilters = search || locationFilter || selectedTags.length > 0;
 
   const submitSearch = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setDebouncedSearch(search);
-    setDebouncedLocation(locationFilter);
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
-  };
+  if (timerRef.current) clearTimeout(timerRef.current);
+  setDebouncedSearch(search);
+  setDebouncedLocation(locationFilter);
+  setPage(1);
+  setExtPage(1);
+  setScrPage(1);
+
+  // Immediately sync to URL on form submit
+  const next = new URLSearchParams(searchParams);
+  if (search) next.set("search", search); else next.delete("search");
+  if (locationFilter) next.set("location", locationFilter); else next.delete("location");
+  setSearchParams(next, { replace: true });
+};
 
   const filteredExtJobs = extData?.jobs ?? [];
   const scrapedJobs = scrData?.jobs ?? [];
@@ -253,7 +377,8 @@ export default function JobBrowsePage() {
         aria-hidden
         className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
         style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
+          backgroundImage:
+            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
           backgroundSize: "120px 100%",
         }}
       />
@@ -285,23 +410,33 @@ export default function JobBrowsePage() {
               </span>
             </h1>
             <p className="mt-3 text-sm text-stone-500 max-w-md">
-              Open positions from partner companies plus curated external listings, updated daily.
+              Open positions from partner companies plus curated external
+              listings, updated daily.
             </p>
           </div>
           <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500">
             {typeof internalTotal === "number" && (
               <span>
-                internal <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">{internalTotal}</span>
+                internal{" "}
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                  {internalTotal}
+                </span>
               </span>
             )}
             {typeof externalTotal === "number" && (
               <span>
-                external <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">{externalTotal}</span>
+                external{" "}
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                  {externalTotal}
+                </span>
               </span>
             )}
             {typeof scrapedTotal === "number" && (
               <span>
-                scraped <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">{scrapedTotal}</span>
+                scraped{" "}
+                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                  {scrapedTotal}
+                </span>
               </span>
             )}
           </div>
@@ -417,7 +552,12 @@ export default function JobBrowsePage() {
 
         {/* External / curated jobs */}
         {filteredExtJobs.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-14"
+          >
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
                 <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -434,7 +574,12 @@ export default function JobBrowsePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredExtJobs.map((job, i) => (
-                <motion.div key={`ext-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+                <motion.div
+                  key={`ext-${job.id}`}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03 }}
+                >
                   <ExternalJobCard job={job} />
                 </motion.div>
               ))}
@@ -451,7 +596,12 @@ export default function JobBrowsePage() {
 
         {/* Scraped / sourced jobs */}
         {scrapedJobs.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-14"
+          >
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
                 <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -468,7 +618,12 @@ export default function JobBrowsePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {scrapedJobs.map((job, i) => (
-                <motion.div key={`scr-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+                <motion.div
+                  key={`scr-${job.id}`}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03 }}
+                >
                   <ScrapedJobCard job={job} />
                 </motion.div>
               ))}
@@ -500,13 +655,19 @@ export default function JobBrowsePage() {
           <div className="py-20 text-center">
             <div className="inline-flex flex-col items-center gap-3">
               <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">loading roles...</span>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                loading roles...
+              </span>
             </div>
           </div>
         ) : (data?.jobs ?? []).length === 0 ? (
           <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-            <p className="text-sm text-stone-600 dark:text-stone-400">No jobs found.</p>
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">try different search criteria</p>
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+              No jobs found.
+            </p>
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+              try different search criteria
+            </p>
           </div>
         ) : (
           <>
@@ -518,7 +679,12 @@ export default function JobBrowsePage() {
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(data?.jobs ?? []).map((job, i) => (
-                  <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+                  <motion.div
+                    key={job.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                  >
                     <Link to={`/jobs/${job.id}`} className={cardBase}>
                       <div className="flex items-start gap-3 mb-3">
                         <CompanyMark label={job.company || "C"} />
@@ -540,10 +706,14 @@ export default function JobBrowsePage() {
                         {job.description}
                       </p>
                       <div className="flex flex-wrap gap-1.5 mb-3">
-                        <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
-                        <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
-                        {job.deadline && (
-                          new Date(job.deadline) < new Date() ? (
+                        <MetaChip icon={<MapPin className="w-3 h-3" />}>
+                          {job.location}
+                        </MetaChip>
+                        <MetaChip icon={<IndianRupee className="w-3 h-3" />}>
+                          {job.salary}
+                        </MetaChip>
+                        {job.deadline &&
+                          (new Date(job.deadline) < new Date() ? (
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
                               <Clock className="w-3 h-3" /> expired
                             </span>
@@ -551,20 +721,24 @@ export default function JobBrowsePage() {
                             <MetaChip icon={<Clock className="w-3 h-3" />}>
                               {new Date(job.deadline).toLocaleDateString()}
                             </MetaChip>
-                          )
-                        )}
+                          ))}
                       </div>
                       {job.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-4">
                           {job.tags.slice(0, 3).map((tag) => (
-                            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
+                            <span
+                              key={tag}
+                              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
+                            >
                               {tag}
                             </span>
                           ))}
                         </div>
                       )}
                       <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
+                        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+                          view role
+                        </span>
                         <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
                       </div>
                     </Link>
