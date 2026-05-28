@@ -25,6 +25,7 @@ dsaRouter.get("/import/status", authMiddleware, requireRole("STUDENT"), (req, re
 dsaRouter.post("/problems/:problemId/toggle", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.toggleProblem(req, res, next));
 dsaRouter.put("/problems/:problemId/notes", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.updateNotes(req, res, next));
 dsaRouter.post("/problems/:problemId/bookmark", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.toggleBookmark(req, res, next));
+dsaRouter.post("/problems/:problemId/report", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.reportProblem(req, res, next));
 dsaRouter.get("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getBookmarks(req, res, next));
 dsaRouter.get("/my-progress", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getMyProgress(req, res, next));
 dsaRouter.get("/activity", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getActivity(req, res, next));
