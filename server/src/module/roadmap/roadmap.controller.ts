@@ -26,6 +26,7 @@ import {
   recomputePace,
   summarizeProgress,
   updateTopicProgress,
+  deleteEnrollment,
 } from "./roadmap.service.js";
 import {
   buildRoadmapSlug,
@@ -274,6 +275,35 @@ export async function getMyEnrollment(req: Request, res: Response, next: NextFun
       enrollment,
       summary: summarizeProgress(enrollment),
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteMyEnrollment(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = enrollmentIdParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+    const enrollment = await getEnrollmentForUser({
+      userId: req.user!.id,
+      enrollmentId: params.data.id,
+    });
+
+    if (!enrollment) {
+      res.status(404).json({ message: "Enrollment not found" });
+      return;
+    }
+    
+    await deleteEnrollment({
+      userId: req.user!.id,
+      enrollmentId: params.data.id,
+    });
+    
+    res.status(204).json({});
+
   } catch (err) {
     next(err);
   }

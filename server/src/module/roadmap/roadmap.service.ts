@@ -280,6 +280,29 @@ export async function getEnrollmentForUser(args: { userId: number; enrollmentId:
   return enrollment;
 }
 
+// Deletes the enrollment and all associated progress, and decrements the roadmap's enrolled count
+export async function deleteEnrollment(args: { userId: number; enrollmentId: number; }) {
+
+  
+  const enrollment = await prisma.roadmapEnrollment.findFirst({
+    where: { id: args.enrollmentId, userId: args.userId },
+  });
+  if (!enrollment) throw Object.assign(new Error("Enrollment not found"), { status: 404 });
+
+
+  
+  await prisma.$transaction(async (tx) => {
+    await tx.roadmapTopicProgress.deleteMany({ where: { enrollmentId: enrollment.id } });
+    await tx.roadmapEnrollment.delete({ where: { id: enrollment.id } });
+    await tx.roadmap.update({
+      where: { id: enrollment.roadmapId },
+      data: { enrolledCount: { decrement: 1 } },
+    });
+  });
+
+console.log("Enrollment deleted successfully with ID:", args.enrollmentId);
+}
+
 export async function listEnrollmentsForUser(userId: number) {
   return prisma.roadmapEnrollment.findMany({
     where: { userId },
