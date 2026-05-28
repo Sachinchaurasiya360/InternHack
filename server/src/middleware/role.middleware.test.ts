@@ -75,6 +75,7 @@ describe("requireRole middleware", () => {
     middleware(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ message: "Insufficient permissions" });
     expect(next).not.toHaveBeenCalled();
   });
 });

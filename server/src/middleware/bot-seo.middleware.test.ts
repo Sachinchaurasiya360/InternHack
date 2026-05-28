@@ -85,6 +85,7 @@ describe("botSeoMiddleware", () => {
     botSeoMiddleware(req, res, next);
 
     expect(res._headers["X-Is-Bot"]).toBeUndefined();
+    expect(res.setHeader).toHaveBeenCalledWith("Vary", "User-Agent");
     expect(next).toHaveBeenCalledOnce();
   });
 

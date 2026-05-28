@@ -168,34 +168,38 @@ describe("errorMiddleware", () => {
   describe("unknown errors", () => {
     it("should return 500 with generic message in production", () => {
       const originalEnv = process.env["NODE_ENV"];
-      process.env["NODE_ENV"] = "production";
+      try {
+        process.env["NODE_ENV"] = "production";
 
-      const err = new Error("something secret broke");
-      const req = mockReq();
-      const res = mockRes();
+        const err = new Error("something secret broke");
+        const req = mockReq();
+        const res = mockRes();
 
-      errorMiddleware(err, req, res, noop);
+        errorMiddleware(err, req, res, noop);
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ message: "Internal Server Error" });
-
-      process.env["NODE_ENV"] = originalEnv;
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ message: "Internal Server Error" });
+      } finally {
+        process.env["NODE_ENV"] = originalEnv;
+      }
     });
 
     it("should return 500 with actual message in development", () => {
       const originalEnv = process.env["NODE_ENV"];
-      process.env["NODE_ENV"] = "development";
+      try {
+        process.env["NODE_ENV"] = "development";
 
-      const err = new Error("detailed dev error");
-      const req = mockReq();
-      const res = mockRes();
+        const err = new Error("detailed dev error");
+        const req = mockReq();
+        const res = mockRes();
 
-      errorMiddleware(err, req, res, noop);
+        errorMiddleware(err, req, res, noop);
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ message: "detailed dev error" });
-
-      process.env["NODE_ENV"] = originalEnv;
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ message: "detailed dev error" });
+      } finally {
+        process.env["NODE_ENV"] = originalEnv;
+      }
     });
   });
 
@@ -209,6 +213,7 @@ describe("errorMiddleware", () => {
           email: "user@test.com",
           password: "secret123",
           token: "jwt-token",
+          cvv: "123",
           name: "Test User",
         },
       });
@@ -226,6 +231,7 @@ describe("errorMiddleware", () => {
         email: "user@test.com",
         password: "[REDACTED]",
         token: "[REDACTED]",
+        cvv: "[REDACTED]",
         name: "Test User",
       });
     });
