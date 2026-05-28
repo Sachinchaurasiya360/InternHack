@@ -275,7 +275,7 @@ export class AptitudeService {
           } else if (dateMs < expected) {
             break;
           }
-        }    }
+        }    
 
     return {
       totalQuestions: total,
