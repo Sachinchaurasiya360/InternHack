@@ -91,14 +91,16 @@ export class StudentService {
       this.checkApplicationMilestone(studentId).catch(() => {});
 
       // Log activity
-      prisma.activityLog.create({
-        data: {
-          userId: studentId,
-          type: "APPLICATION_SUBMITTED",
-          title: `Applied to ${application.job.title} at ${application.job.company}`,
-          metadata: { jobId: application.job.id, company: application.job.company }
-        }
-      }).catch(e => console.error("Failed to log activity:", e));
+      if (prisma.activityLog && typeof prisma.activityLog.create === 'function') {
+        prisma.activityLog.create({
+          data: {
+            userId: studentId,
+            type: "APPLICATION_SUBMITTED",
+            title: `Applied to ${application.job.title} at ${application.job.company}`,
+            metadata: { jobId: application.job.id, company: application.job.company }
+          }
+        }).catch(e => console.error("Failed to log activity:", e));
+      }
 
       return application;
     } catch (err) {
