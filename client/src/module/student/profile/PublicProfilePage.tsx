@@ -303,13 +303,13 @@ export default function PublicProfilePage() {
                   <div key={p.id} className="px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
                     <div className="flex items-center gap-2 mb-0.5">
                       <h4 className="text-sm font-semibold text-gray-950 dark:text-white truncate">{p.title}</h4>
-                      {p.builtAt && <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1 shrink-0"><Calendar className="w-3 h-3" /> {p.builtAt}</span>}
+                      {p.builtAt && <span className="text-xs text-gray-500 font-mono flex items-center gap-1 shrink-0"><Calendar className="w-3 h-3" /> {p.builtAt}</span>}
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{p.description}</p>
                     {p.techStack.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {p.techStack.map((t, i) => (
-                          <span key={i} className="px-2 py-0.5 text-[10px] font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-md">{t}</span>
+                          <span key={i} className="px-2 py-0.5 text-xs font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-md">{t}</span>
                         ))}
                       </div>
                     )}
