@@ -81,6 +81,43 @@ export class DsaController {
     }
   }
 
+  async reportProblem(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+      }
+
+      const problemId = Number(req.params.problemId);
+
+      if (Number.isNaN(problemId)) {
+        return res.status(400).json({
+          message: "Invalid problem ID",
+        });
+      }
+
+      const { reason, message } = req.body;
+
+      if (!reason) {
+        return res.status(400).json({
+          message: "Reason is required",
+        });
+      }
+
+      const report = await this.dsaService.reportProblem({
+        userId: req.user.id,
+        problemId,
+        reason,
+        message,
+      });
+
+      res.status(201).json(report);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getBookmarks(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;

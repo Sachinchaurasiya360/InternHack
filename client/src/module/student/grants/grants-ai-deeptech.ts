@@ -4,6 +4,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 121,
     name: "Google Research Scholar Program",
+     deadline: "2026-07-20",
     organization: "Google",
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
@@ -29,6 +30,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 122,
     name: "Microsoft Research Grants",
+     deadline: "2026-07-20",
     organization: "Microsoft",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -54,6 +56,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 123,
     name: "NVIDIA Academic Hardware Grant",
+     deadline: "2026-07-20",
     organization: "NVIDIA",
     logo: "https://placehold.co/100x100/EEE/999?text=N",
     description:
@@ -79,6 +82,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 124,
     name: "Meta Research Awards",
+     deadline: "2026-07-20",
     organization: "Meta",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -104,6 +108,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 125,
     name: "Amazon Science Research Awards",
+     deadline: "2026-07-20",
     organization: "Amazon",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -129,6 +134,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 126,
     name: "OpenAI Researcher Access Program",
+     deadline: "2026-07-20",
     organization: "OpenAI",
     logo: "https://placehold.co/100x100/EEE/999?text=O",
     description:
@@ -154,6 +160,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 127,
     name: "AI2 Grants (Allen Institute for AI)",
+     deadline: "2026-07-20",
     organization: "Allen Institute for AI",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -179,6 +186,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 128,
     name: "Samsung AI Research Fund",
+     deadline: "2026-07-20",
     organization: "Samsung",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -204,6 +212,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 129,
     name: "Huawei Spark Program",
+     deadline: "2026-07-20",
     organization: "Huawei",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
@@ -229,6 +238,7 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 130,
     name: "Intel oneAPI Innovation Program",
+     deadline: "2026-07-20",
     organization: "Intel",
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:

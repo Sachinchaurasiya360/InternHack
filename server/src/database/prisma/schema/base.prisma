@@ -55,6 +55,7 @@ model user {
   contributions         companyContribution[]       @relation("UserContributions")
   companyReviews        companyReview[]             @relation("UserReviews")
   dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
+  dsaProblemReports     dsaProblemReport[]          
   emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
   employeeProfile       employee?                   @relation("EmployeeUser")
   postedJobs            job[]                       @relation("RecruiterJobs")
@@ -623,9 +624,21 @@ model dsaProblem {
   progress         studentDsaProgress[]
   testCases        dsaTestCase[]
   submissions      dsaSubmission[]
+  reports          dsaProblemReport[]
 
   @@index([difficulty])
   @@index([leetcodeId])
+}
+
+model dsaProblemReport {
+  id         Int        @id @default(autoincrement())
+  reason     String
+  message    String?
+  createdAt  DateTime   @default(now())
+  userId     Int
+  user       user       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId  Int
+  problem    dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 }
 
 model studentDsaProgress {

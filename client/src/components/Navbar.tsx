@@ -32,6 +32,7 @@ const NAV_ITEMS = [
   { label: "Companies", href: "/companies" },
   { label: "Recruiters", href: "/for-recruiters" },
   { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
 ];
 
 export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
