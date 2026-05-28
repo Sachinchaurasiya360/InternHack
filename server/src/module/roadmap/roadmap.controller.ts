@@ -171,7 +171,8 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
             experienceLevel: full.experienceLevel,
             goal: full.goal,
           },
-          weeklyPlan: weeklyPlan.map((w) => ({
+          // Add a || [] to ensure it always has something to map over
+          weeklyPlan: (weeklyPlan || []).map((w) => ({
             week: w.week,
             topicSlugs: w.topicSlugs,
             totalHours: w.totalHours,
@@ -293,7 +294,7 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
     }
 
 
-  const { progress, roadmapCompleted } = await updateTopicProgress({
+    const { progress, roadmapCompleted } = await updateTopicProgress({
       userId: req.user!.id,
       enrollmentId: params.data.id,
       topicId: params.data.topicId,
