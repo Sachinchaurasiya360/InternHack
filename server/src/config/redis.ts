@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
 /**
  * Shared Redis client singleton.
@@ -18,7 +18,7 @@ if (url) {
   });
 
   redis.on("connect", () => console.log("[Redis] Connected"));
-  redis.on("error", (err) => console.error("[Redis] Connection error:", err.message));
+  redis.on("error", (err: Error) => console.error("[Redis] Connection error:", err.message));
 } else {
   console.log("[Redis] REDIS_URL not set — using in-memory rate-limit stores");
 }
