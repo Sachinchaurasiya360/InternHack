@@ -17,7 +17,8 @@ export default function LandingPage(){
     return(
         <div className="font-sans bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 pt-16 md:pt-0">
             <SEO
-              description="InternHack is an AI-powered career platform for students. Browse curated internships, score your resume with ATS AI, follow career roadmaps, and connect with recruiters."
+              title="Free ATS Resume Scorer, Internships & Career Roadmaps for Students"
+              description="Score your resume with AI, browse 1,200+ curated internships, follow developer career roadmaps, and get placed. Trusted by students at IITs, NITs, and 200+ colleges. Free to start."
               canonicalUrl={canonicalUrl("/")}
               structuredData={[
                 websiteSchema(),

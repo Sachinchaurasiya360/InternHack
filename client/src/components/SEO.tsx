@@ -38,9 +38,6 @@ export function SEO({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
 
-      {/* Primary Meta Tags */}
-      <meta name="title" content={fullTitle} />
-
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={effectiveCanonical} />
@@ -48,9 +45,12 @@ export function SEO({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={absoluteOgImage} />
       <meta property="og:site_name" content={SITE_NAME} />
+      <meta property="og:locale" content="en_US" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@internhack" />
+      <meta name="twitter:creator" content="@internhack" />
       <meta name="twitter:url" content={effectiveCanonical} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />

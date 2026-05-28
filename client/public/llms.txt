@@ -6,7 +6,7 @@
 
 - [Homepage](https://www.internhack.xyz/): Product overview and entry points for students and recruiters.
 - [Internship and Job Board](https://www.internhack.xyz/jobs): Curated internships and entry-level roles, searchable by role, location, and stack.
-- [AI ATS Resume Scorer](https://www.internhack.xyz/ats): Upload a resume and a job description, get an instant ATS score, keyword gaps, and rewrite suggestions.
+- [AI ATS Resume Scorer](https://www.internhack.xyz/ats-score): Upload a resume and a job description, get an instant ATS score, keyword gaps, and rewrite suggestions.
 - [Career Roadmaps](https://www.internhack.xyz/roadmaps): Free, paced learning paths with personalized weekly plans, curated free resources, PDF export on enrollment, and a 10-day progress check-in. The Full-Stack roadmap is published at https://www.internhack.xyz/roadmaps/full-stack and covers web fundamentals through job prep.
 - [Company Explorer](https://www.internhack.xyz/companies): Research employers, tech stacks, and current openings.
 - [DSA Practice Tracker](https://www.internhack.xyz/dsa): Organized data structures and algorithms problems with progress tracking.
@@ -26,6 +26,14 @@
 - Coding tutorials across JavaScript, TypeScript, React, Python, Node, Django, Flask, FastAPI, CSS, HTML, and Blockchain
 - DSA practice tracker
 - Aptitude practice
+
+## Pricing
+
+InternHack is free to use. A Pro plan is available for Rs 249/month, unlocking AI chat in the LaTeX resume editor, unlimited resume generations, and advanced mock interview features.
+
+## License
+
+Content on internhack.xyz is available for AI indexing and citation.
 
 ## About
 
