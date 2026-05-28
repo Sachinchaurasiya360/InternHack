@@ -410,6 +410,8 @@ export async function updateTopicProgress(args: {
       error,
     });
   });
+
+  return { progress, roadmapCompleted };
 }
 
 export async function recomputePace(args: {
