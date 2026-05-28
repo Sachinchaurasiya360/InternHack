@@ -258,17 +258,7 @@ export class ScraperService {
     // Restrict adzuna rows to the IT category. Older rows (pre-tech-only
     // scraper) tagged with "Sales Jobs", "HR Jobs", etc. are excluded here
     // so users only see tech roles even before the 48h expiry sweep clears
-    // them. Other sources (linkedin, arbeitnow) are tech-focused already.
-    
-    //const conditions: Prisma.scrapedJobWhereInput[] = [
-    //  {
-    //    OR: [
-    //      { source: { not: "adzuna" } },
-    //     { tags: { hasSome: ["IT Jobs"] } },
-    //    ],
-    //  },
-    //]; 
-     
+    // them. Other sources (linkedin, arbeitnow) are tech-focused already.  
   const conditions: Prisma.scrapedJobWhereInput[] = [
   {
     OR: [
@@ -309,12 +299,6 @@ export class ScraperService {
       where.source = query.source;
     }
 
-    //if (query.tags) {
-    //  const tagList = query.tags.split(",").map((t) => t.trim()).filter(Boolean);
-    //  if (tagList.length > 0) {
-    //    where.tags = { hasSome: tagList };
-    //  }
-    // }
   if (query.tags) {
   const tagList = query.tags
     .split(",")
