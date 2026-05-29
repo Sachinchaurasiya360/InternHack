@@ -184,20 +184,6 @@ export default function ApplicationProgressPage() {
                 {/* Active round: show form or assessment */}
                 {isActive && !isCompleted && (
                   <div className="ml-8 mt-4">
-                    {submitError && (
-                      <div aria-live="polite" className="flex items-center gap-3 p-3 mb-3 bg-red-50 dark:bg-red-900/30 rounded-lg text-sm text-red-600 dark:text-red-400">
-                        <span>{submitError}</span>
-                        <Button
-                          variant="mono"
-                          size="sm"
-                          aria-label="Retry submission"
-                          disabled={submitting}
-                          onClick={() => lastPayload.current && handleSubmitRound(lastPayload.current.roundId, lastPayload.current.answers)}
-                        >
-                          {submitting ? "Retrying..." : "Retry"}
-                        </Button>
-                      </div>
-                    )}
                     {activeRoundId === round.id ? (
                       hasAssessment ? (
                         <AssessmentTestView
@@ -217,7 +203,22 @@ export default function ApplicationProgressPage() {
                               onChange={(fieldId, value) => setFieldAnswers({ ...fieldAnswers, [fieldId]: value })}
                             />
                           )}
-                          <div className="flex items-center gap-3">
+                          <div className="space-y-2">
+                            {submitError && (
+                              <div aria-live="polite" className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg text-sm text-red-600 dark:text-red-400">
+                                <span>{submitError}</span>
+                                <Button
+                                  variant="mono"
+                                  size="sm"
+                                  aria-label="Retry submission"
+                                  disabled={submitting}
+                                  onClick={() => lastPayload.current && handleSubmitRound(lastPayload.current.roundId, lastPayload.current.answers)}
+                                >
+                                  {submitting ? "Retrying..." : "Retry"}
+                                </Button>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-3">
                               <Button variant="mono" onClick={() => handleSubmitRound(round.id)} disabled={submitting}>
                                 <Send className="w-4 h-4" />
                                 {submitting ? "Submitting..." : "Submit Round"}
@@ -225,7 +226,7 @@ export default function ApplicationProgressPage() {
                               <Button variant="ghost" onClick={() => { setActiveRoundId(null); setSubmitError(null); }} className="text-gray-500 hover:text-black dark:hover:text-white">Cancel</Button>
                             </div>
                           </div>
-                        
+                        </div>
                       )
                     ) : (
                       <Button variant="mono" onClick={() => setActiveRoundId(round.id)}>
