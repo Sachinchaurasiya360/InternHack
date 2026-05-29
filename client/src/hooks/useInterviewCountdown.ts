@@ -1,6 +1,12 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useInterviewCountdown(targetDate: string) {
+  const [timeLeft, setTimeLeft] = useState<{
+    days: number;
+    hours: number;
+    minutes: number;
+  } | null>(null);
+
   const calculate = useCallback(() => {
     const difference =
       new Date(targetDate).getTime() - Date.now();
@@ -10,26 +16,17 @@ export function useInterviewCountdown(targetDate: string) {
     }
 
     return {
-      days: Math.floor(
-        difference / (1000 * 60 * 60 * 24)
-      ),
-      hours: Math.floor(
-        (difference / (1000 * 60 * 60)) % 24
-      ),
-      minutes: Math.floor(
-        (difference / (1000 * 60)) % 60
-      ),
+      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((difference / (1000 * 60)) % 60),
     };
   }, [targetDate]);
-
-  const [timeLeft, setTimeLeft] = useState(() => calculate());
 
   useEffect(() => {
     setTimeLeft(calculate());
 
     const interval = setInterval(() => {
       const updated = calculate();
-
       setTimeLeft(updated);
 
       if (!updated) {
@@ -41,4 +38,4 @@ export function useInterviewCountdown(targetDate: string) {
   }, [calculate]);
 
   return timeLeft;
-}
+}
