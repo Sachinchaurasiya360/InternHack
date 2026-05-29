@@ -1,26 +1,181 @@
+/**
+ * @feature Featured Projects Section
+ * @description Drag-and-drop sortable projects section with built-at date.
+ * Added as a contribution for GSSoC '26.
+ */
 import { useState } from "react";
-import { ExternalLink, Github, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ExternalLink, Github, Pencil, Plus, Trash2, X, GripVertical, Calendar } from "lucide-react";
+import { Button } from "../../../../components/ui/button";
 import type { ProjectItem } from "../../../../lib/types";
 import { inputClass, labelClass } from "./styles";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-export function ProjectsSection({ projects, onChange, errors }: {
+function SortableProjectItem({
+  project,
+  isEditing,
+  onEdit,
+  onRemove,
+}: {
+  project: ProjectItem;
+  isEditing: boolean;
+  onEdit: () => void;
+  onRemove: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: project.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-start gap-3 px-4 py-3 border rounded-md bg-white dark:bg-transparent ${
+        isEditing
+          ? "border-lime-400 dark:border-lime-700/50 shadow-sm"
+          : "border-stone-200 dark:border-white/10"
+      }`}
+    >
+      <div
+        {...attributes}
+        {...listeners}
+        className="mt-1 shrink-0 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 cursor-grab active:cursor-grabbing"
+      >
+        <GripVertical className="w-4 h-4" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">{project.title}</h4>
+          {project.builtAt && (
+            <span className="text-xs text-stone-500 font-mono flex items-center gap-1 shrink-0">
+              <Calendar className="w-3 h-3" /> {project.builtAt}
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-stone-500 mt-1 line-clamp-2 leading-relaxed">{project.description}</p>
+        {project.techStack.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {project.techStack.map((t, i) => (
+              <span
+                key={i}
+                className="px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-full border border-stone-200 dark:border-white/10"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+        {(project.liveUrl || project.repoUrl) && (
+          <div className="flex gap-3 mt-2.5">
+            {project.liveUrl && (
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline">
+                <ExternalLink className="w-3 h-3" /> live
+              </a>
+            )}
+            {project.repoUrl && (
+              <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline">
+                <Github className="w-3 h-3" /> code
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="flex gap-1 shrink-0">
+        <Button
+          type="button"
+          onClick={onEdit}
+          aria-label="Edit project"
+          variant="ghost"
+          mode="icon"
+          size="sm"
+          className="text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+        >
+          <Pencil className="w-3.5 h-3.5" />
+        </Button>
+        <Button
+          type="button"
+          onClick={onRemove}
+          aria-label="Delete project"
+          variant="destructive"
+          appearance="ghost"
+          mode="icon"
+          size="sm"
+          className="text-stone-400 hover:text-red-500"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function ProjectsSection({
+  projects,
+  onChange,
+  errors,
+}: {
   projects: ProjectItem[];
   onChange: (p: ProjectItem[]) => void;
   errors?: string[];
 }) {
   const [editing, setEditing] = useState<string | null>(null);
-  const [draft, setDraft] = useState<ProjectItem>({ id: "", title: "", description: "", techStack: [], liveUrl: "", repoUrl: "" });
+  const [draft, setDraft] = useState<ProjectItem>({
+    id: "",
+    title: "",
+    description: "",
+    techStack: [],
+    liveUrl: "",
+    repoUrl: "",
+    builtAt: "",
+  });
   const [techInput, setTechInput] = useState("");
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = projects.findIndex((p) => p.id === active.id);
+      const newIndex = projects.findIndex((p) => p.id === over.id);
+      if (oldIndex >= 0 && newIndex >= 0) {
+        onChange(arrayMove(projects, oldIndex, newIndex));
+      }
+    }
+  };
+
   const startAdd = () => {
-    if (projects.length >= 10) return;
+    if (projects.length >= 4) return;
     const id = crypto.randomUUID();
-    setDraft({ id, title: "", description: "", techStack: [], liveUrl: "", repoUrl: "" });
+    setDraft({ id, title: "", description: "", techStack: [], liveUrl: "", repoUrl: "", builtAt: "" });
     setEditing(id);
   };
 
   const startEdit = (p: ProjectItem) => {
-    setDraft({ ...p });
+    setDraft({ ...p, builtAt: p.builtAt || "" });
     setEditing(p.id);
     setTechInput("");
   };
@@ -51,117 +206,169 @@ export function ProjectsSection({ projects, onChange, errors }: {
   return (
     <div className="px-5 py-5 space-y-3">
       {errors && errors.length > 0 && (
-        <p className="text-xs text-red-500 dark:text-red-400 px-1 font-mono">Project URLs must be valid (e.g. https://...)</p>
+        <p className="text-xs text-red-500 dark:text-red-400 px-1 font-mono">
+          Project URLs must be valid (e.g. https://...)
+        </p>
       )}
-      {projects.filter((p) => p.id !== editing).map((p) => (
-        <div key={p.id} className="flex items-start gap-3 px-4 py-3 border border-stone-200 dark:border-white/10 rounded-md">
-          <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">{p.title}</h4>
-            <p className="text-xs text-stone-500 mt-1 line-clamp-2 leading-relaxed">{p.description}</p>
-            {p.techStack.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {p.techStack.map((t, i) => (
-                  <span key={i} className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-md border border-stone-200 dark:border-white/10">{t}</span>
-                ))}
-              </div>
-            )}
-            {(p.liveUrl || p.repoUrl) && (
-              <div className="flex gap-3 mt-2.5">
-                {p.liveUrl && <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline"><ExternalLink className="w-3 h-3" /> live</a>}
-                {p.repoUrl && <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline"><Github className="w-3 h-3" /> code</a>}
-              </div>
-            )}
+
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={projects.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+          <div className="space-y-3">
+            {projects.map((p) => (
+              <SortableProjectItem
+                key={p.id}
+                project={p}
+                isEditing={editing === p.id}
+                onEdit={() => startEdit(p)}
+                onRemove={() => remove(p.id)}
+              />
+            ))}
           </div>
-          <div className="flex gap-1 shrink-0">
-            <button type="button" onClick={() => startEdit(p)} aria-label="Edit project" className="p-1.5 rounded-md text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors bg-transparent border-0 cursor-pointer">
-              <Pencil className="w-3.5 h-3.5" />
-            </button>
-            <button type="button" onClick={() => remove(p.id)} aria-label="Delete project" className="p-1.5 rounded-md text-stone-400 hover:text-red-500 transition-colors bg-transparent border-0 cursor-pointer">
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      ))}
+        </SortableContext>
+      </DndContext>
 
       {editing && (
-        <div className="px-4 py-4 border border-lime-300 dark:border-lime-700/40 bg-lime-50/40 dark:bg-lime-900/5 rounded-md space-y-3">
+        <div className="px-4 py-4 border border-lime-300 dark:border-lime-700/40 bg-lime-50/40 dark:bg-lime-900/5 rounded-md space-y-3 mt-3 shadow-sm transition-all">
           <div>
             <label className={labelClass}>Title</label>
-            <input type="text" value={draft.title} onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))} className={inputClass} placeholder="Project title" maxLength={100} />
+            <input
+              type="text"
+              value={draft.title}
+              onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
+              className={inputClass}
+              placeholder="Project title"
+              maxLength={100}
+            />
           </div>
           <div>
             <label className={labelClass}>Description</label>
-            <textarea value={draft.description} onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))} className={`${inputClass} resize-none`} rows={2} placeholder="Brief description..." maxLength={500} />
+            <textarea
+              value={draft.description}
+              onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
+              className={`${inputClass} resize-none`}
+              rows={2}
+              placeholder="Brief description..."
+              maxLength={200}
+            />
           </div>
           <div>
             <label className={labelClass}>Tech stack</label>
             <div className="flex flex-wrap gap-1.5 mb-2">
               {draft.techStack.map((t, i) => (
-                <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-md border border-stone-200 dark:border-white/10">
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-full border border-stone-200 dark:border-white/10"
+                >
                   {t}
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setDraft((d) => ({ ...d, techStack: d.techStack.filter((_, j) => j !== i) }))}
                     aria-label={`Remove ${t}`}
-                    className="opacity-60 hover:opacity-100 bg-transparent border-0 cursor-pointer p-0"
+                    variant="ghost"
+                    mode="icon"
+                    size="sm"
+                    className="opacity-60 hover:opacity-100 h-auto p-0 w-auto"
                   >
                     <X className="w-3 h-3" />
-                  </button>
+                  </Button>
                 </span>
               ))}
             </div>
             <div className="flex gap-2">
-              <input type="text" value={techInput} onChange={(e) => setTechInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTech(); } }}
-                className={`${inputClass} flex-1`} placeholder="Add technology" />
-              <button
+              <input
+                type="text"
+                value={techInput}
+                onChange={(e) => setTechInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTech();
+                  }
+                }}
+                className={`${inputClass} flex-1`}
+                placeholder="Add technology"
+              />
+              <Button
                 type="button"
                 onClick={addTech}
                 aria-label="Add technology"
-                className="shrink-0 inline-flex items-center justify-center w-10 h-10 border border-stone-300 dark:border-white/10 rounded-md text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-900 dark:hover:border-stone-50 transition-colors bg-transparent cursor-pointer"
+                variant="secondary"
+                mode="icon"
+                size="sm"
+                className="shrink-0 w-10 h-10 border border-stone-300 dark:border-white/10 bg-transparent text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-900 dark:hover:border-stone-50"
               >
                 <Plus className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className={labelClass}><ExternalLink className="w-3 h-3" /> Live URL</label>
-              <input type="url" value={draft.liveUrl ?? ""} onChange={(e) => setDraft((d) => ({ ...d, liveUrl: e.target.value }))} className={inputClass} placeholder="https://..." />
+              <label className={labelClass}>
+                <ExternalLink className="w-3 h-3" /> Live URL
+              </label>
+              <input
+                type="url"
+                value={draft.liveUrl ?? ""}
+                onChange={(e) => setDraft((d) => ({ ...d, liveUrl: e.target.value }))}
+                className={inputClass}
+                placeholder="https://..."
+              />
             </div>
             <div>
-              <label className={labelClass}><Github className="w-3 h-3" /> Repo URL</label>
-              <input type="url" value={draft.repoUrl ?? ""} onChange={(e) => setDraft((d) => ({ ...d, repoUrl: e.target.value }))} className={inputClass} placeholder="https://github.com/..." />
+              <label className={labelClass}>
+                <Github className="w-3 h-3" /> Repo URL
+              </label>
+              <input
+                type="url"
+                value={draft.repoUrl ?? ""}
+                onChange={(e) => setDraft((d) => ({ ...d, repoUrl: e.target.value }))}
+                className={inputClass}
+                placeholder="https://github.com/..."
+              />
+            </div>
+            <div>
+              <label className={labelClass}>
+                <Calendar className="w-3 h-3" /> Built At
+              </label>
+              <input
+                type="month"
+                value={draft.builtAt ?? ""}
+                onChange={(e) => setDraft((d) => ({ ...d, builtAt: e.target.value }))}
+                className={inputClass}
+              />
             </div>
           </div>
           <div className="flex gap-2 pt-1">
-            <button
+            <Button
               type="button"
               onClick={save}
               disabled={!draft.title.trim()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-lime-400 text-stone-950 rounded-md text-xs font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+              variant="primary"
+              className="bg-lime-400 text-stone-950 hover:bg-lime-300 text-xs font-bold"
             >
               Save
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setEditing(null)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 border border-stone-300 dark:border-white/10 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 hover:border-stone-500 dark:hover:border-white/30 transition-colors bg-transparent cursor-pointer"
+              variant="outline"
+              className="text-xs font-bold text-stone-700 dark:text-stone-300 hover:border-stone-500 dark:hover:border-white/30"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
-      {projects.length < 10 && !editing && (
-        <button
+      {projects.length < 4 && !editing && (
+        <Button
           type="button"
           onClick={startAdd}
-          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-stone-300 dark:border-white/15 rounded-md text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent cursor-pointer"
+          variant="secondary"
+          className="w-full h-auto py-3 text-sm text-stone-600 dark:text-stone-400 border border-dashed border-stone-300 dark:border-white/10 bg-transparent hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 mt-3"
         >
           <Plus className="w-4 h-4" /> Add project
-        </button>
+        </Button>
       )}
     </div>
   );
