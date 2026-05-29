@@ -13,6 +13,9 @@ export async function findDuplicateRoadmap(
   goalDescription: string,
   userId: number
 ) {
+  const normalizedGoal = goalDescription.trim();
+  if (!normalizedGoal) return null;
+
   return prisma.roadmap.findFirst({
     where: {
       ownerUserId: userId,
@@ -21,9 +24,9 @@ export async function findDuplicateRoadmap(
         startsWith: 'ai-',
       },
       title: {
-        contains: goalDescription.slice(0, 30).trim(),
+        contains: normalizedGoal.slice(0, 30),
         mode: 'insensitive',
-      }
+      },
     },
   });
 }
