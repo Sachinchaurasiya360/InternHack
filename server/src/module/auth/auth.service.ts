@@ -451,6 +451,9 @@ export class AuthService {
         updateData.projects = data.projects.map((p: any) => {
           if (!p || typeof p !== "object") return p;
           const proj = { ...p };
+          if (proj.builtAt != null && typeof proj.builtAt !== "string") {
+            throw Object.assign(new Error("Invalid type for builtAt. Expected string."), { statusCode: 400 });
+          }
           if (typeof proj.builtAt === "string") {
             const trimmed = proj.builtAt.trim();
             if (trimmed) {
