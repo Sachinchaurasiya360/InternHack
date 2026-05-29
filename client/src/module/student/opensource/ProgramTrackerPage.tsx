@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
@@ -478,6 +478,8 @@ const PROGRAMS: Program[] = [
   },
 ];
 
+const STORAGE_KEY = "program_tracker_filters";
+
 const ELIGIBILITY_OPTIONS = ["All", "Students", "Open to All", "Diversity-focused"];
 const STATUS_OPTIONS = ["All", "Annual", "Ongoing", "Batch"];
 const STIPEND_OPTIONS = ["All", "Paid", "High ($5k+)", "Medium ($1k–5k)", "Low/None"];
@@ -645,10 +647,41 @@ function ProgramCard({ program }: { program: Program }) {
 
 // ─── Page ────────────────────────────────────────────────────────
 export default function ProgramTrackerPage() {
+  // Load saved filters from localStorage on mount, fall back to defaults
+  const getSavedFilters = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // ignore parse errors
+    }
+    return { status: "All", eligibility: "All", stipend: "All" };
+  };
+
+  const savedFilters = getSavedFilters();
+
   const [search, setSearch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("All");
-  const [selectedEligibility, setSelectedEligibility] = useState("All");
-  const [selectedStipend, setSelectedStipend] = useState("All");
+  const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
+  const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
+  const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          status: selectedStatus,
+          eligibility: selectedEligibility,
+          stipend: selectedStipend,
+        })
+      );
+    } catch {
+      // ignore storage errors
+    }
+  }, [selectedStatus, selectedEligibility, selectedStipend]);
 
   const filtered = useMemo(() => {
     let list = [...PROGRAMS];
