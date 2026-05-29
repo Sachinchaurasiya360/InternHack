@@ -31,6 +31,23 @@ opensourceRouter.get("/", async (req, res, next) => {
       res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
       return;
     }
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const requestCount = await prisma.repoRequest.count({
+      where: {
+        userId: req.user!.id,
+        createdAt: {
+          gte: twentyFourHoursAgo,
+        },
+      },
+    });
+
+    if (requestCount >= 5) {
+      res.status(429).json({
+        message: "You can submit at most 5 repo suggestions per day. Try again tomorrow.",
+      });
+      return;
+    }
     const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = parsed.data;
 
     const where: Record<string, unknown> = {};
