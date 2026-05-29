@@ -119,8 +119,8 @@ export default function BlogListPage() {
   return (
     <div className="font-sans min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
-        title="Blog & Resources"
-        description="Career tips, interview strategies, salary insights, and industry trends to help you land your dream role. Read expert articles on InternHack."
+        title="Career Advice Blog | Interview Tips, Resume Guides & Job Search"
+        description="Practical guides on resume writing, technical interviews, salary negotiation, and internship applications. Updated weekly for students and early-career engineers."
         keywords="career blog, interview tips, salary guide, resume tips, tech trends, career advice, industry insights"
         canonicalUrl={canonicalUrl("/blog")}
       />
@@ -156,13 +156,14 @@ export default function BlogListPage() {
               </div>
             )}
 
-          {/* Blog Grid Section */}
+          {/* Blog Grid */}
           <section className="mb-16">
             <div className="flex items-center gap-2 mb-6">
               <BookOpen className="w-5 h-5 text-stone-400 dark:text-stone-500" />
               <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
                 {category === "ALL" ? "All Articles" : CATEGORY_LABELS[category]}
               </h2>
+
               {pagination && (
                 <span className="text-sm text-stone-400 dark:text-stone-500 ml-2">
                   ({pagination.total} article{pagination.total !== 1 ? "s" : ""})
@@ -199,7 +200,7 @@ export default function BlogListPage() {
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-lime-400/50 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Previous
@@ -212,7 +213,7 @@ export default function BlogListPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
                   disabled={page >= pagination.totalPages}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-lime-400/50 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />
@@ -222,6 +223,8 @@ export default function BlogListPage() {
           </section>
         </div>
       </main>
+
+      {/* Footer stays full-width at the very bottom */}
       <Footer />
     </div>
   );

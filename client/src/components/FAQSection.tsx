@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const FAQ_ITEMS = [
   {
     question: "What is InternHack?",

@@ -87,7 +87,7 @@ export default function FirstPRSectionPage() {
     setCompleted((prev) => {
       const next = new Set(prev);
       if (!step) return next;
-      next.has(step.id) ? next.delete(step.id) : next.add(step.id);
+      if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
       return next;
     });

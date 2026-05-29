@@ -43,8 +43,8 @@ model user {
   projects              Json                        @default("[]")
   achievements          Json                        @default("[]")
   leetcodeUrl           String?
+  unsubscribeDigest     Boolean                     @default(false)
   tokenVersion          Int                         @default(0)
-  adminActivityLogs     adminActivityLog[]          @relation("AdminActivityLogs")
   adminProfile          adminProfile?               @relation("AdminProfile")
   applications          application[]               @relation("StudentApplications")
   atsScores             atsScore[]                  @relation("StudentAtsScores")
@@ -55,6 +55,7 @@ model user {
   contributions         companyContribution[]       @relation("UserContributions")
   companyReviews        companyReview[]             @relation("UserReviews")
   dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
+  dsaProblemReports     dsaProblemReport[]          
   emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
   employeeProfile       employee?                   @relation("EmployeeUser")
   postedJobs            job[]                       @relation("RecruiterJobs")
@@ -87,7 +88,8 @@ model user {
   generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
   leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
-
+  recommendation            userRecommendation?          @relation("UserRecommendation")
+  hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -116,22 +118,6 @@ model adminProfile {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      user      @relation("AdminProfile", fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model adminActivityLog {
-  id         Int      @id @default(autoincrement())
-  adminId    Int
-  action     String
-  targetType String
-  targetId   Int
-  details    Json     @default("{}")
-  ipAddress  String?
-  createdAt  DateTime @default(now())
-  admin      user     @relation("AdminActivityLogs", fields: [adminId], references: [id], onDelete: Cascade)
-
-  @@index([adminId])
-  @@index([targetType, targetId])
-  @@index([createdAt])
 }
 
 model job {
@@ -639,9 +625,21 @@ model dsaProblem {
   progress         studentDsaProgress[]
   testCases        dsaTestCase[]
   submissions      dsaSubmission[]
+  reports          dsaProblemReport[]
 
   @@index([difficulty])
   @@index([leetcodeId])
+}
+
+model dsaProblemReport {
+  id         Int        @id @default(autoincrement())
+  reason     String
+  message    String?
+  createdAt  DateTime   @default(now())
+  userId     Int
+  user       user       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId  Int
+  problem    dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 }
 
 model studentDsaProgress {
@@ -767,6 +765,7 @@ model studentAptitudeProgress {
   answered   Boolean          @default(false)
   correct    Boolean          @default(false)
   createdAt  DateTime         @default(now())
+  lastPracticedAt DateTime @default(now())
   question   aptitudeQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
   student    user             @relation("StudentAptitudeProgress", fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -866,30 +865,50 @@ model jobAgentEmailLog {
 }
 
 model hackathon {
-  id           Int      @id @default(autoincrement())
-  name         String
-  organizer    String
-  logo         String?
-  description  String
-  prizePool    String
-  startDate    String
-  endDate      String
-  location     String
-  locationType String
-  website      String?
-  tags         String[] @default([])
-  tracks       String[] @default([])
-  eligibility  String?
-  status       String   @default("upcoming")
-  ecosystem    String
-  highlights   String[] @default([])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             Int                      @id @default(autoincrement())
+  name           String
+  organizer      String
+  logo           String?
+  description    String
+  prizePool      String
+  startDate      String
+  endDate        String
+  location       String
+  locationType   String
+  website        String?
+  tags           String[]                 @default([])
+  tracks         String[]                 @default([])
+  eligibility    String?
+  status         String                   @default("upcoming")
+  ecosystem      String
+  highlights     String[]                 @default([])
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  participations hackathonParticipation[]
 
   @@index([status])
   @@index([ecosystem])
 }
 
+enum HackathonParticipationStatus {
+  INTERESTED
+  PARTICIPATING
+}
+
+model hackathonParticipation {
+  id          Int                          @id @default(autoincrement())
+  userId      Int
+  hackathonId Int
+  status      HackathonParticipationStatus @default(INTERESTED)
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @updatedAt
+  user        user                         @relation("UserHackathonParticipations", fields: [userId], references: [id], onDelete: Cascade)
+  hackathon   hackathon                    @relation(fields: [hackathonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, hackathonId])
+  @@index([userId])
+  @@index([hackathonId])
+}
 model iitProfessor {
   id             Int      @id @default(autoincrement())
   collegeName    String
@@ -1252,6 +1271,7 @@ enum UsageAction {
   MOCK_INTERVIEW
   AI_JOB_CHAT
   CODE_RUN
+  GITHUB_STATS
 }
 
 enum EmailCampaignStatus {
@@ -1359,6 +1379,17 @@ model interviewExperienceUpvote {
 
   @@unique([experienceId, userId])
   @@index([experienceId])
+}
+
+model userRecommendation {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  weakAreas       Json     @default("[]")
+  lastRefreshedAt DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            user     @relation("UserRecommendation", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum InterviewSource {

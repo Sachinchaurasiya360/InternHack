@@ -155,12 +155,15 @@ function ThreeStrategies() {
   });
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHits({
       fixed: precompute("fixed"),
       expo: precompute("expo"),
       jitter: precompute("jitter"),
     });
+     
     setTNow(0);
+     
     setRunning(false);
     // seed used to force re-precompute even if other deps are equal
     void seed;

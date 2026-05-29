@@ -18,6 +18,7 @@ import {
 import {
   buildWeeklyPlan,
   enrollUser,
+  findDuplicateRoadmap,
   getEnrollmentForUser,
   getRoadmapBySlug,
   getTopicBySlug,
@@ -26,6 +27,7 @@ import {
   recomputePace,
   summarizeProgress,
   updateTopicProgress,
+  deleteEnrollment,
 } from "./roadmap.service.js";
 import {
   buildRoadmapSlug,
@@ -228,7 +230,11 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
         }
       }
     } catch (err) {
-      console.error("[Roadmap] Welcome email/PDF failed:", err);
+      console.error("[Roadmap] Welcome email/PDF failed:", {
+        enrollmentId: enrollment.id,
+        userId: req.user!.id,
+        err,
+      });
     }
 
     res.status(201).json({
@@ -279,6 +285,29 @@ export async function getMyEnrollment(req: Request, res: Response, next: NextFun
   }
 }
 
+export async function deleteMyEnrollment(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = enrollmentIdParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    await deleteEnrollment({
+      userId: req.user!.id,
+      enrollmentId: params.data.id,
+    });
+
+    res.status(204).send();
+  } catch (err: any) {
+    if (err?.status === 404) {
+      res.status(404).json({ message: err.message });
+      return;
+    }
+    next(err);
+  }
+}
+
 export async function patchTopicProgress(req: Request, res: Response, next: NextFunction) {
   try {
     const params = enrollmentTopicParams.safeParse(req.params);
@@ -293,7 +322,7 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
     }
 
 
-  const { progress, roadmapCompleted } = await updateTopicProgress({
+    const { progress, roadmapCompleted } = await updateTopicProgress({
       userId: req.user!.id,
       enrollmentId: params.data.id,
       topicId: params.data.topicId,
@@ -437,6 +466,20 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     }
     const userId = req.user!.id;
     const input = parsed.data;
+
+    const duplicate = await findDuplicateRoadmap(
+  input.goalDescription,
+  userId
+);
+
+if (duplicate && !input.forceCreate) {
+  res.status(409).json({
+    message: "Similar roadmap already exists",
+    roadmap: duplicate,
+  });
+
+  return;
+}
 
     // 1. Generate via Gemini, validate shape
     let generated;
@@ -641,7 +684,11 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
         });
       }
     } catch (err) {
-      console.error("[Roadmap AI] Welcome email/PDF failed:", err);
+      console.error("[Roadmap AI] Welcome email/PDF failed:", {
+        enrollmentId: enrollment.id,
+        userId,
+        err,
+      });
     }
 
     res.status(201).json({
@@ -722,7 +769,6 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
 }
 
 
-
 // ─── Section Regeneration ─────────────────────────────────────────────────
 export async function postRegenerateSection(req: Request, res: Response, next: NextFunction) {
   try {
@@ -741,7 +787,6 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
     const userId = req.user!.id;
     const { slug, sectionId } = params.data;
 
-    // 1. Load the roadmap — must be AI-generated and owned by this user
     const roadmap = await prisma.roadmap.findUnique({
       where: { slug },
       include: {
@@ -767,19 +812,16 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
       return;
     }
 
-    // 2. Find the target section
     const targetSection = roadmap.sections.find((s) => s.id === sectionId);
     if (!targetSection) {
       res.status(404).json({ message: "Section not found in this roadmap" });
       return;
     }
 
-    // 3. Build neighbour context (all other sections)
     const neighbourSections = roadmap.sections
       .filter((s) => s.id !== sectionId)
       .map((s) => ({ title: s.title, orderIndex: s.orderIndex }));
 
-    // 4. Call AI
     let generated;
     try {
       generated = await regenerateSection(
@@ -806,7 +848,6 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
       return;
     }
 
-    // 5. Slugify new topics (unique within the section)
     const usedSlugs = new Set<string>();
     const slugify = (s: string, idx: number) => {
       const base = s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || `topic-${idx + 1}`;
@@ -817,27 +858,19 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
       return slug;
     };
 
-    // 6. Persist: delete old topics (cascade deletes resources + progress),
-    //    then recreate section title/summary + new topics + resources.
-    //    We do NOT delete the section row itself so enrollment foreign keys
-    //    and orderIndex stay intact.
     const updatedSection = await prisma.$transaction(async (tx) => {
-      // Delete all existing topics for this section (resources cascade)
+      
       await tx.roadmapTopic.deleteMany({ where: { sectionId } });
 
-      // Update section metadata
       await tx.roadmapSection.update({
         where: { id: sectionId },
         data: {
           title: generated.title,
           summary: generated.summary,
-          // Mark the section as AI-regenerated with a timestamp
           aiRegeneratedAt: new Date(),
         },
       });
 
-      // Create new topics
-      const createdTopics: { id: number; index: number }[] = [];
       for (const [tIdx, topic] of generated.topics.entries()) {
         const topicSlug = slugify(topic.title, tIdx);
         const created = await tx.roadmapTopic.create({
@@ -855,9 +888,7 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
             selfCheck: topic.selfCheck ?? null,
           },
         });
-        createdTopics.push({ id: created.id, index: tIdx });
 
-        // Create resources for this topic
         if (topic.resources?.length) {
           await tx.roadmapResource.createMany({
             data: topic.resources.map((r, rIdx) => ({
@@ -873,7 +904,6 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
         }
       }
 
-      // Recompute roadmap-level topicCount
       const newTopicCount = roadmap.sections.reduce((sum, s) => {
         if (s.id === sectionId) return sum + generated.topics.length;
         return sum + s.topics.length;
@@ -884,7 +914,6 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
         data: { topicCount: newTopicCount, updatedAt: new Date() },
       });
 
-      // Return the freshly created section with topics + resources
       return tx.roadmapSection.findUnique({
         where: { id: sectionId },
         include: {
@@ -904,3 +933,4 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
     next(err);
   }
 }
+

@@ -3,10 +3,11 @@ import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-quer
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
-  CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, Search, BookOpen, TrendingUp, Target, Download,
+CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
+  Lock, Search, BookOpen, TrendingUp, Target, Download, X,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { DsaTopicsResponse, DsaProgress, LeetcodeImportStatus } from "../../../lib/types";
@@ -18,6 +19,7 @@ import { LoginGate } from "../../../components/LoginGate";
 import { LeetCodeSync } from "./components/LeetCodeSync";
 import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 import { DsaHeatmap } from "./components/DsaHeatmap";
+import { ResultCount } from "../../../components/ui/ResultCount";
 
 const FREE_LIMIT = 5;
 const TOPICS_PER_PAGE = 20;
@@ -68,7 +70,13 @@ export default function DsaTopicsPage() {
     }, 300);
     return () => clearTimeout(t);
   }, [topicSearch]);
+const clearFilters = () => {
+    setTopicSearch("");
+    setActiveTab("all");
+    setPage(1);
+  };
 
+  const hasFilters = topicSearch.trim() !== "" || activeTab !== "all";
   const difficultyParam =
     activeTab === "easy" ? "Easy" :
       activeTab === "medium-hard" ? "Medium,Hard" :
@@ -366,6 +374,11 @@ export default function DsaTopicsPage() {
                 </button>
               );
             })}
+{hasFilters && (
+              <Button onClick={clearFilters} variant="ghost" size="sm">
+                <X className="w-3 h-3" /> clear
+              </Button>
+            )}
           </div>
         </motion.div>
 
@@ -376,6 +389,8 @@ export default function DsaTopicsPage() {
             topics / {totalTopics}
           </span>
         </div>
+
+        <ResultCount currentCount={paginatedTopics?.length ?? 0} totalCount={totalTopics} />
 
         {/* Topic list */}
         <div className="space-y-2">

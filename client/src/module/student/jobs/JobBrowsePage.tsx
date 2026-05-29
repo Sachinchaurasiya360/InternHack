@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
@@ -13,6 +13,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { ResultCount } from "../../../components/ui/ResultCount";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
@@ -47,24 +48,56 @@ function MetaChip({
   children: React.ReactNode;
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
       <span className="text-stone-400">{icon}</span>
       {children}
     </span>
   );
 }
 
+
 export default function JobBrowsePage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
-  const [search, setSearch] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+  const [locationFilter, setLocationFilter] = useState(
+    () => searchParams.get("location") ?? "",
+  );
+  const [debouncedSearch, setDebouncedSearch] = useState(
+    () => searchParams.get("search") ?? "",
+  );
+  const [debouncedLocation, setDebouncedLocation] = useState(
+    () => searchParams.get("location") ?? "",
+  );
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    () => searchParams.get("tags")?.split(",").filter(Boolean) ?? [],
+  );
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
-  const debouncedSearch = useDebounce(search, 400);
-  const debouncedLocation = useDebounce(locationFilter, 400);
+  const [salaryMin, setSalaryMin] = useState("");
+  const [salaryMax, setSalaryMax] = useState("");
+  const debouncedSalaryMin = useDebounce(salaryMin, 500);
+  const debouncedSalaryMax = useDebounce(salaryMax, 500);
   const [hideExpired, setHideExpired] = useState(true);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    timerRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+      setDebouncedLocation(locationFilter);
+      setPage(1);
+
+      const next = new URLSearchParams(searchParams);
+      if (search) next.set("search", search);
+      else next.delete("search");
+      if (locationFilter) next.set("location", locationFilter);
+      else next.delete("location");
+      setSearchParams(next, { replace: true });
+    }, 400);
+    return () => clearTimeout(timerRef.current);
+  }, [search, locationFilter]);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: queryKeys.jobs.list({
@@ -73,13 +106,20 @@ export default function JobBrowsePage() {
       location: debouncedLocation,
       tags: selectedTags.join(","),
       includeExpired: !hideExpired,
+      salaryMin: debouncedSalaryMin || undefined,
+      salaryMax: debouncedSalaryMax || undefined,
     }),
     queryFn: async () => {
-      const params = new URLSearchParams({ page: String(page), limit: "12" });
+      const params = new URLSearchParams({
+        page: String(scrPage),
+        limit: "12",
+      });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
       params.set("includeExpired", String(!hideExpired));
+      if (debouncedSalaryMin) params.set("salaryMin", debouncedSalaryMin);
+      if (debouncedSalaryMax) params.set("salaryMax", debouncedSalaryMax);
       const res = await api.get(`/jobs?${params}`);
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
@@ -132,7 +172,9 @@ export default function JobBrowsePage() {
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
+
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
+
       const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
@@ -140,9 +182,14 @@ export default function JobBrowsePage() {
   });
 
   const toggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
+  const updated = selectedTags.includes(tag)
+      ? selectedTags.filter((t) => t !== tag)
+      : [...selectedTags, tag];
+    setSelectedTags(updated);
+    const next = new URLSearchParams(searchParams);
+    if (updated.length > 0) next.set("tags", updated.join(","));
+    else next.delete("tags");
+    setSearchParams(next, { replace: true });
     setPage(1);
     setExtPage(1);
     setScrPage(1);
@@ -151,15 +198,18 @@ export default function JobBrowsePage() {
   const clearAll = () => {
     setSearch("");
     setLocationFilter("");
+    setDebouncedSearch("");
+    setDebouncedLocation("");
     setSelectedTags([]);
+    setSalaryMin("");
+    setSalaryMax("");
+    setSearchParams({});
     setPage(1);
     setExtPage(1);
     setScrPage(1);
   };
 
-  const hasFilters = search || locationFilter || selectedTags.length > 0;
-
-  
+  const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
 
   const filteredExtJobs = extData?.jobs ?? [];
   const scrapedJobs = scrData?.jobs ?? [];
@@ -228,7 +278,7 @@ export default function JobBrowsePage() {
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
-            {typeof internalTotal === "number" && (
+            {typeof internalTotal === "number" && internalTotal > 0 && (
               <span>
                 internal{" "}
                 <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
@@ -320,6 +370,42 @@ export default function JobBrowsePage() {
             </div>
           </form>
 
+          {/* Salary range inputs */}
+          <div className="flex items-center gap-2 flex-wrap mt-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1 flex items-center gap-1">
+              <IndianRupee className="w-3 h-3" />
+              salary /
+            </span>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 pointer-events-none font-mono">min</span>
+                <input
+                  id="salary-min-input"
+                  type="number"
+                  min={0}
+                  value={salaryMin}
+                  onChange={(e) => { setSalaryMin(e.target.value); setPage(1); }}
+                  className="w-28 pl-9 pr-2 py-1.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-xs text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="0"
+                />
+              </div>
+              <span className="text-stone-400 text-xs">—</span>
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 pointer-events-none font-mono">max</span>
+                <input
+                  id="salary-max-input"
+                  type="number"
+                  min={0}
+                  value={salaryMax}
+                  onChange={(e) => { setSalaryMax(e.target.value); setPage(1); }}
+                  className="w-28 pl-9 pr-2 py-1.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-xs text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="∞"
+                />
+              </div>
+              <span className="text-xs font-mono text-stone-400">LPA</span>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
               filter /
@@ -344,14 +430,24 @@ export default function JobBrowsePage() {
               );
             })}
 
-            <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 transition-colors cursor-pointer select-none">
+            <label
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors cursor-pointer select-none ${
+                hideExpired
+                  ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                  : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30"
+              }`}
+            >
               <input
                 type="checkbox"
                 checked={hideExpired}
                 onChange={(e) => setHideExpired(e.target.checked)}
-                className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20"
+                className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20 accent-lime-400"
               />
-              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span
+                className={`text-xs font-mono uppercase tracking-widest ${
+                  hideExpired ? "text-lime-700 dark:text-lime-400" : "text-stone-500"
+                }`}
+              >
                 Hide expired
               </span>
             </label>
@@ -392,6 +488,7 @@ export default function JobBrowsePage() {
               </div>
               <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">updated daily</span>
             </div>
+            {extData && <ResultCount currentCount={filteredExtJobs.length} totalCount={extData.total} />}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredExtJobs.map((job, i) => (
                 <motion.div key={`ext-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
@@ -438,6 +535,7 @@ export default function JobBrowsePage() {
               </div>
               <span className="text-xs font-mono uppercase tracking-widest text-stone-500 hidden sm:block">refreshed every 6h</span>
             </div>
+            {scrapedPagination && <ResultCount currentCount={scrapedJobs.length} totalCount={scrapedPagination.total} />}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {scrapedJobs.map((job, i) => (
                 <motion.div key={`scr-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
@@ -474,6 +572,22 @@ export default function JobBrowsePage() {
             <div className="w-14 h-14 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
               <Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />
             </div>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              No results found
+            </h2>
+          </motion.div>
+        )}
+        {isLoading ? (
+          <div className="py-20 text-center">
+            <div className="inline-flex flex-col items-center gap-3">
+              <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                loading roles...
+              </span>
+            </div>
+          </div>
+        ) : (data?.jobs ?? []).length === 0 ? (
+          <motion.div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4">
             <div>
               <p className="text-sm font-bold text-stone-900 dark:text-stone-50">No jobs match your filters</p>
               <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
@@ -490,10 +604,7 @@ export default function JobBrowsePage() {
               </button>
             )}
           </motion.div>
-        )}
-
-        {/* Internal jobs — hidden when everything is empty */}
-        {!allEmpty && (
+        ) : (
           <>
             <div className="flex items-end justify-between gap-4 mb-6">
               <div>
@@ -501,9 +612,6 @@ export default function JobBrowsePage() {
                   <span className="h-1 w-1 bg-lime-400" />
                   internal / live
                 </div>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-                  Partner roles
-                </h2>
               </div>
             </div>
 
@@ -516,6 +624,7 @@ export default function JobBrowsePage() {
               </div>
             ) : (
               <>
+                {data?.pagination && <ResultCount currentCount={(data.jobs ?? []).length} totalCount={data.pagination.total} />}
                 <div className="relative">
                   {isFetching && (
                     <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">

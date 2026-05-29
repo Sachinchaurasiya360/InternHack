@@ -88,30 +88,47 @@ RESPONSE FORMAT:
   private parseResponse(text: string): ChatResponse {
     console.log("[LatexChat] Raw AI length:", text.length, "| has <reply>:", text.includes("<reply>"), "| has <latex>:", text.includes("<latex>"), "| has </latex>:", text.includes("</latex>"));
 
-    // Primary: extract from XML-style tags (robust with LaTeX backslashes)
-    const replyMatch = text.match(/<reply>([\s\S]*?)<\/reply>/);
-    // Use greedy match for <latex>, it's always the last/largest block
-    let latexMatch = text.match(/<latex>([\s\S]*)<\/latex>/);
+    const hasXmlTags = text.includes("<reply>") || text.includes("<latex>");
 
-    // Fallback: if <latex> exists but no closing tag (model truncated), take everything after it
-    if (!latexMatch && text.includes("<latex>")) {
-      const idx = text.indexOf("<latex>") + "<latex>".length;
-      const raw = text.slice(idx).trim();
-      if (raw.length > 20) {
-        latexMatch = [raw, raw] as unknown as RegExpMatchArray;
+    if (hasXmlTags) {
+      // Primary: extract from XML-style tags (robust with LaTeX backslashes)
+      const replyMatch = text.match(/<reply>([\s\S]*?)<\/reply>/);
+      let replyText = replyMatch ? replyMatch[1].trim() : "";
+
+      // Fallback: if there's a <reply> but no closing tag
+      if (!replyMatch && text.includes("<reply>")) {
+        const startIdx = text.indexOf("<reply>") + "<reply>".length;
+        const endIdx = text.indexOf("<latex>");
+        if (endIdx > startIdx) {
+          replyText = text.slice(startIdx, endIdx).trim();
+        } else {
+          replyText = text.slice(startIdx).trim();
+        }
       }
-    }
 
-    // Also handle ```latex fences inside <latex> tag
-    let latexCode = latexMatch ? latexMatch[1].trim() : undefined;
-    if (latexCode?.startsWith("```")) {
-      latexCode = latexCode.replace(/^```(?:latex)?\n?/, "").replace(/\n?```$/, "");
-    }
+      // Use greedy match for <latex>, it's always the last/largest block
+      const latexMatch = text.match(/<latex>([\s\S]*)<\/latex>/);
+      let latexCode: string | undefined;
 
-    if (replyMatch) {
-      console.log("[LatexChat] Parsed reply:", replyMatch[1].trim().slice(0, 80), "| latex:", latexCode ? `${latexCode.length} chars` : "none");
+      if (latexMatch) {
+        latexCode = latexMatch[1].trim();
+      } else if (text.includes("<latex>")) {
+        // Fallback: if <latex> exists but no closing tag (model truncated), take everything after it
+        const idx = text.indexOf("<latex>") + "<latex>".length;
+        const raw = text.slice(idx).trim();
+        if (raw.length > 20) {
+          latexCode = raw;
+        }
+      }
+
+      // Also handle ```latex fences inside <latex> tag
+      if (latexCode?.startsWith("```")) {
+        latexCode = latexCode.replace(/^```(?:latex)?\n?/, "").replace(/\n?```$/, "");
+      }
+
+      console.log("[LatexChat] Parsed reply:", replyText.slice(0, 80), "| latex:", latexCode ? `${latexCode.length} chars` : "none");
       return {
-        reply: replyMatch[1].trim(),
+        reply: replyText || "Here is your updated resume.",
         updatedLatex: latexCode || undefined,
       };
     }

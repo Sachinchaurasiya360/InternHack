@@ -67,7 +67,7 @@ const plans: Plan[] = [
     key: "pro",
     name: "Pro",
     price: 249,
-    yearlyPrice: 2999,
+    yearlyPrice: 2499,
     badge: "Most Popular",
     description: "Unlock every tool to stand out and land your dream internship.",
     icon: <Rocket className="w-5 h-5" />,
@@ -130,11 +130,6 @@ const HOW_IT_WORKS = [
 export default function CheckoutPage() {
   const { user, setUser } = useAuthStore();
   const navigate = useNavigate();
-
-  // Redirect premium users - they already have an active subscription
-  if (user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE") {
-    return <Navigate to="/student/profile" replace />;
-  }
 
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
@@ -202,6 +197,11 @@ export default function CheckoutPage() {
       DodoPayments.Checkout.close();
     };
   }, []);
+
+  // Redirect premium users - they already have an active subscription
+  if (user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE") {
+    return <Navigate to="/student/profile" replace />;
+  }
 
   const handleSelectPlan = async (planKey: PlanKey) => {
     if (planKey === "free") return;

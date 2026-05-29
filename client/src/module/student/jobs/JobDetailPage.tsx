@@ -63,12 +63,12 @@ export default function JobDetailPage() {
     enabled: !!id && isAuthenticated && user?.role === "STUDENT",
   });
 
-  const { data: relatedJobs = [] } = useQuery({
-    queryKey: queryKeys.jobs.list({ related: id!, tags: job?.tags?.join(",") || "" }),
+  const { data: relatedJobs = [], isLoading: isRelatedJobsLoading } = useQuery({
+    queryKey: queryKeys.jobs.related(id!),
     queryFn: () =>
-      api.get("/jobs", { params: { tags: job!.tags.join(","), limit: 4 } })
-        .then((res) => (res.data.jobs as Job[]).filter((j) => j.id !== Number(id))),
-    enabled: !!job && job.tags.length > 0,
+      api.get(`/jobs/${id}/related`, { params: { limit: 4 } })
+        .then((res) => res.data.jobs as Job[]),
+    enabled: !!id && !!job,
   });
 
   const { data: relatedPosts = [] } = useQuery({
@@ -163,13 +163,18 @@ export default function JobDetailPage() {
       </Link>
     )
   ) : !isAuthenticated ? (
+  <div className="flex flex-col items-start gap-2">
     <Link
-      to="/login"
+      to={`/login?from=${encodeURIComponent(inStudentLayout ? `/student/jobs/${id}` : `/jobs/${Number(id)}`)}`}
       className="inline-flex items-center gap-2 px-6 py-3 bg-lime-400 text-stone-900 font-semibold rounded-md hover:bg-lime-500 transition-colors no-underline text-sm"
     >
       Sign in to apply <ArrowUpRight className="w-4 h-4" />
     </Link>
-  ) : null;
+    <p className="text-xs text-stone-500 dark:text-stone-400">
+      Create a free account to apply for this role.
+    </p>
+  </div>
+) : null;
 
   const page = (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -355,14 +360,30 @@ export default function JobDetailPage() {
           </div>
 
           {/* Related jobs */}
-          {relatedJobs.length > 0 && (
+          {(isRelatedJobsLoading || relatedJobs.length > 0) && (
             <motion.div variants={fadeUp}>
               <Kicker>related / similar roles</Kicker>
               <h2 className="mt-3 text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-5">
-                Similar positions.
+                Similar Jobs
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {relatedJobs.slice(0, 4).map((rj) => (
+                {isRelatedJobsLoading &&
+                  Array.from({ length: 4 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="animate-pulse rounded-md border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900"
+                    >
+                      <div className="mb-3 flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-md bg-stone-200 dark:bg-stone-800" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 w-2/3 rounded bg-stone-200 dark:bg-stone-800" />
+                          <div className="h-3 w-1/3 rounded bg-stone-200 dark:bg-stone-800" />
+                        </div>
+                      </div>
+                      <div className="h-3 w-1/2 rounded bg-stone-200 dark:bg-stone-800" />
+                    </div>
+                  ))}
+                {!isRelatedJobsLoading && relatedJobs.slice(0, 4).map((rj) => (
                   <Link
                     key={rj.id}
                     to={inStudentLayout ? `/student/jobs/${rj.id}` : `/jobs/${rj.id}`}

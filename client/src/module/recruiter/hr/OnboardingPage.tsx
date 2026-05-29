@@ -97,7 +97,7 @@ export default function OnboardingPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["hr", "onboarding"] }),
   });
 
-  const all = checklists ?? [];
+  const all = useMemo(() => checklists ?? [], [checklists]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
