@@ -1,0 +1,51 @@
+name: CI — Lint & Type Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & TypeScript Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            server/package-lock.json
+            client/package-lock.json
+
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: TypeScript type check (server)
+        working-directory: server
+        run: npx tsc --noEmit
+
+      - name: TypeScript type check (client)
+        working-directory: client
+        run: npx tsc --noEmit
+
+      - name: Lint (server)
+        working-directory: server
+        run: npm run lint --if-present
+
+      - name: Lint (client)
+        working-directory: client
+        run: npm run lint --if-present
