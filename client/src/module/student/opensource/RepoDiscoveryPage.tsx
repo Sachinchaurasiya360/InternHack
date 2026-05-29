@@ -40,6 +40,14 @@ const ghostBtnCls =
 export default function RepoDiscoveryPage() {
   const [search, setSearch] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [selectedDomain, setSelectedDomain] = useState("ALL");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("ALL");
+  const [sortKey, setSortKey] = useState("stars");
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -48,16 +56,24 @@ export default function RepoDiscoveryPage() {
         e.preventDefault();
         searchRef.current?.focus();
       }
+      if (e.key === "Escape") {
+        setSortOpen(false);
+      }
     };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
 
-  const [selectedDomain, setSelectedDomain] = useState("ALL");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("ALL");
-  const [sortKey, setSortKey] = useState("stars");
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
+        setSortOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const [page, setPage] = useState(1);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const { user } = useAuthStore();
@@ -270,28 +286,50 @@ export default function RepoDiscoveryPage() {
           </button>
 
           {/* Sort dropdown */}
-          <div className="relative group">
-            <button type="button" className={ghostBtnCls}>
+          <div className="relative" ref={sortDropdownRef}>
+            <button 
+              type="button" 
+              className={ghostBtnCls}
+              onClick={() => setSortOpen(!sortOpen)}
+              aria-haspopup="listbox"
+              aria-expanded={sortOpen}
+            >
               <TrendingUp className="w-3 h-3" />
               {SORT_OPTIONS.find((s) => s.key === sortKey)?.label ?? "Sort"}
-              <ChevronDown className="w-3 h-3" />
+              <ChevronDown className={`w-3 h-3 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
             </button>
-            <div className="absolute right-0 top-full z-20 mt-1 hidden min-w-44 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
-              {SORT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => updateFilter(setSortKey, opt.key)}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
-                    sortKey === opt.key
-                      ? "bg-stone-900 dark:bg-stone-50 text-lime-400"
-                      : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
-                  }`}
+            <AnimatePresence>
+              {sortOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl origin-top"
+                  role="listbox"
                 >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+                  {SORT_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      role="option"
+                      aria-selected={sortKey === opt.key}
+                      onClick={() => {
+                        updateFilter(setSortKey, opt.key);
+                        setSortOpen(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
+                        sortKey === opt.key
+                          ? "bg-stone-900 dark:bg-stone-50 text-lime-400"
+                          : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
