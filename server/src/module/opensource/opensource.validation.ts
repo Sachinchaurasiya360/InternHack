@@ -27,3 +27,12 @@ export const submitRepoRequestSchema = z.object({
   tags: z.array(z.string()).default([]),
   reason: z.string().min(10, "Please explain why this repo should be listed").max(1000),
 });
+
+export const approveRequestOverrideSchema = z.object({
+  adminNote: z.string().max(2000).optional(),
+  name: z.string().min(1, "Repository name is required").max(300).optional(),
+  description: z.string().min(10, "Description must be at least 10 characters").max(2000).optional(),
+  domain: z.enum(["AI", "WEB", "DEVOPS", "MOBILE", "BLOCKCHAIN", "DATA", "SECURITY", "CLOUD", "GAMING", "OTHER"]).optional(),
+  difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
+  tags: z.array(z.string()).optional(),
+});
