@@ -43,7 +43,6 @@ const ghostBtnCls =
 
 
 export default function RepoDiscoveryPage() {
-  // CONFLICT 1 RESOLVED: single useSearchParams declaration
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Initialize filter states directly from the URL
@@ -58,6 +57,12 @@ export default function RepoDiscoveryPage() {
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
   const searchRef = useRef<HTMLInputElement>(null);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -85,18 +90,29 @@ export default function RepoDiscoveryPage() {
         e.preventDefault();
         searchRef.current?.focus();
       }
+      if (e.key === "Escape") {
+        setSortOpen(false);
+      }
     };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
+        setSortOpen(false);
+      }
+    };
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
-  // Local UI states
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const { user } = useAuthStore();
-  // CONFLICT 2 RESOLVED: keep both recently-viewed AND deep-linking, unified into one handler
+
   const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
@@ -363,7 +379,7 @@ export default function RepoDiscoveryPage() {
         {/* Guidance Cards */}
         <GuidanceCards />
 
-        {/* CONFLICT 3 RESOLVED: keep both Recently Viewed AND Recommended */}
+        {/* Recently viewed & recommended */}
         <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
 
         {user?.role === "STUDENT" && (
@@ -426,28 +442,50 @@ export default function RepoDiscoveryPage() {
           </button>
 
           {/* Sort dropdown */}
-          <div className="relative group">
-            <button type="button" className={ghostBtnCls}>
+          <div className="relative" ref={sortDropdownRef}>
+            <button 
+              type="button" 
+              className={ghostBtnCls}
+              onClick={() => setSortOpen(!sortOpen)}
+              aria-haspopup="listbox"
+              aria-expanded={sortOpen}
+            >
               <TrendingUp className="w-3 h-3" />
               {SORT_OPTIONS.find((s) => s.key === sortKey)?.label ?? "Sort"}
-              <ChevronDown className="w-3 h-3" />
+              <ChevronDown className={`w-3 h-3 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
             </button>
-            <div className="absolute right-0 top-full z-20 mt-1 hidden min-w-44 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
-              {SORT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => updateFilter("sort", opt.key)}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
-                    sortKey === opt.key
-                      ? "bg-stone-900 dark:bg-stone-50 text-lime-400"
-                      : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
-                  }`}
+            <AnimatePresence>
+              {sortOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl origin-top"
+                  role="listbox"
                 >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+                  {SORT_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      role="option"
+                      aria-selected={sortKey === opt.key}
+                      onClick={() => {
+                        updateFilter("sort", opt.key);
+                        setSortOpen(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
+                        sortKey === opt.key
+                          ? "bg-stone-900 dark:bg-stone-50 text-lime-400"
+                          : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -480,7 +518,7 @@ export default function RepoDiscoveryPage() {
                   <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     language
                   </label>
-                  {/* CONFLICT 5 RESOLVED: was updateFilter(setSelectedLanguage, ...) — now correct string key */}
+
                   <select
                     value={selectedLanguage}
                     onChange={(e) => updateFilter("language", e.target.value)}
@@ -563,7 +601,7 @@ export default function RepoDiscoveryPage() {
         )}
 
         {/* Cards grid */}
-        {/* CONFLICT 4 RESOLVED: unified handler is handleOpenRepo (tracks recently viewed + deep link) */}
+
         {!isLoading && !isError && repos.length > 0 && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
