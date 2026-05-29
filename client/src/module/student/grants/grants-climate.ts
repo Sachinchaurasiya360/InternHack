@@ -4,6 +4,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 111,
     name: "Breakthrough Energy Fellows",
+     deadline: "2026-07-20",
     organization: "Breakthrough Energy",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
@@ -29,6 +30,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 112,
     name: "EIT Climate-KIC Accelerator",
+     deadline: "2026-07-20",
     organization: "EIT Climate-KIC",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -54,6 +56,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 113,
     name: "Green Climate Fund",
+     deadline: "2026-07-20",
     organization: "UNFCCC",
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
@@ -79,6 +82,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 114,
     name: "ARPA-E (Clean Energy Innovation)",
+     deadline: "2026-07-20",
     organization: "US Department of Energy",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -104,6 +108,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 115,
     name: "Shell GameChanger",
+     deadline: "2026-07-20",
     organization: "Shell",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -129,6 +134,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 116,
     name: "Bloomberg Philanthropies Environment Grants",
+     deadline: "2026-07-20",
     organization: "Bloomberg Philanthropies",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
@@ -154,6 +160,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 117,
     name: "Climate50 Innovation Fund",
+     deadline: "2026-07-20",
     organization: "Climate50",
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
@@ -179,6 +186,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 118,
     name: "Earthshot Prize",
+     deadline: "2026-07-20",
     organization: "Royal Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -204,6 +212,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 119,
     name: "Elemental Excelerator",
+     deadline: "2026-07-20",
     organization: "Elemental Excelerator",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -229,6 +238,7 @@ export const grantsClimate: Grant[] = [
   {
     id: 120,
     name: "Patagonia Environmental Grants",
+     deadline: "2026-07-20",
     organization: "Patagonia",
     logo: "https://placehold.co/100x100/EEE/999?text=P",
     description:

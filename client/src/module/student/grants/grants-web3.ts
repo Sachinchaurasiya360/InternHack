@@ -4,6 +4,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 1,
     name: "Ecosystem Support Program (ESP)",
+     deadline: "2026-06-20",
     organization: "Ethereum Foundation",
     logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg",
     description:
@@ -29,6 +30,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 2,
     name: "Community Grants Program",
+     deadline: "2026-06-20",
     organization: "Polygon Labs",
     logo: "https://cryptologos.cc/logos/polygon-matic-logo.svg",
     description:
@@ -54,6 +56,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 3,
     name: "Foundation Grants",
+     deadline: "2026-06-20",
     organization: "Solana Foundation",
     logo: "https://cryptologos.cc/logos/solana-sol-logo.svg",
     description:
@@ -79,6 +82,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 4,
     name: "Community Grant Program",
+     deadline: "2026-06-20",
     organization: "Chainlink",
     logo: "https://cryptologos.cc/logos/chainlink-link-logo.svg",
     description:
@@ -104,6 +108,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 5,
     name: "Foundation Grants Program",
+     deadline: "2026-06-20",
     organization: "Uniswap Foundation",
     logo: "https://cryptologos.cc/logos/uniswap-uni-logo.svg",
     description:
@@ -129,6 +134,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 6,
     name: "Aave Grants DAO",
+     deadline: "2026-06-20",
     organization: "Aave",
     logo: "https://cryptologos.cc/logos/aave-aave-logo.svg",
     description:
@@ -154,6 +160,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 7,
     name: "Retro Funding (RPGF)",
+     deadline: "2026-06-20",
     organization: "Optimism",
     logo: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.svg",
     description:
@@ -179,6 +186,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 8,
     name: "Foundation Grant Program",
+     deadline: "2026-06-20",
     organization: "Arbitrum Foundation",
     logo: "https://cryptologos.cc/logos/arbitrum-arb-logo.svg",
     description:
@@ -204,6 +212,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 9,
     name: "Web3 Foundation Grants",
+     deadline: "2026-06-20",
     organization: "Polkadot / Web3 Foundation",
     logo: "https://cryptologos.cc/logos/polkadot-new-dot-logo.svg",
     description:
@@ -229,6 +238,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 11,
     name: "ATOM Accelerator DAO",
+     deadline: "2026-06-20",
     organization: "Cosmos / Interchain Foundation",
     logo: "https://cryptologos.cc/logos/cosmos-atom-logo.svg",
     description:
@@ -254,6 +264,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 12,
     name: "Developer Grants & ProPGF",
+     deadline: "2026-06-20",
     organization: "Filecoin Foundation",
     logo: "https://cryptologos.cc/logos/filecoin-fil-logo.svg",
     description:
@@ -279,6 +290,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 13,
     name: "Blizzard Fund",
+     deadline: "2026-06-20",
     organization: "Avalanche Foundation",
     logo: "https://cryptologos.cc/logos/avalanche-avax-logo.svg",
     description:
@@ -304,6 +316,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 14,
     name: "Builder Grants",
+     deadline: "2026-06-20",
     organization: "BNB Chain",
     logo: "https://cryptologos.cc/logos/bnb-bnb-logo.svg",
     description:
@@ -329,6 +342,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 15,
     name: "Foundation Grants",
+     deadline: "2026-06-20",
     organization: "Sui Foundation",
     logo: "https://cdn.prod.website-files.com/6425f546844727ce5fb9e5ab/659a55a32fcb71d65908adc3_sui-mark.svg",
     description:
@@ -354,6 +368,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 16,
     name: "Grants Program",
+     deadline: "2026-06-20",
     organization: "Aptos Foundation",
     logo: "https://cryptologos.cc/logos/aptos-apt-logo.svg",
     description:
@@ -378,6 +393,7 @@ export const grantsWeb3: Grant[] = [
   },
   {
     id: 17,
+     deadline: "2026-06-20",
     name: "Seed & Growth Grants",
     organization: "Starknet Foundation",
     logo: "https://www.starknet.io/wp-content/uploads/2024/01/Symbol.svg",
@@ -404,6 +420,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 19,
     name: "Project Catalyst",
+     deadline: "2026-06-20",
     organization: "Cardano / IOHK",
     logo: "https://cryptologos.cc/logos/cardano-ada-logo.svg",
     description:
@@ -429,6 +446,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 20,
     name: "HBAR Foundation Grants",
+     deadline: "2026-06-20",
     organization: "Hedera Foundation",
     logo: "https://cryptologos.cc/logos/hedera-hbar-logo.svg",
     description:
@@ -454,6 +472,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 21,
     name: "Gitcoin Grants",
+     deadline: "2026-06-20",
     organization: "Gitcoin",
     logo: "https://cryptologos.cc/logos/gitcoin-gtc-logo.svg",
     description:
@@ -479,6 +498,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 23,
     name: "Developer Grant Program",
+     deadline: "2026-06-20",
     organization: "DFINITY Foundation",
     logo: "https://cryptologos.cc/logos/internet-computer-icp-logo.svg",
     description:
@@ -504,6 +524,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 24,
     name: "Ecosystem Grants",
+     deadline: "2026-06-20",
     organization: "Tezos Foundation",
     logo: "https://cryptologos.cc/logos/tezos-xtz-logo.svg",
     description:
@@ -529,6 +550,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 25,
     name: "Base Ecosystem Fund",
+     deadline: "2026-06-20",
     organization: "Coinbase / Base",
     logo: "https://avatars.githubusercontent.com/u/108554348",
     description:
@@ -554,6 +576,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 26,
     name: "xGov Grants & Accelerator",
+     deadline: "2026-06-20",
     organization: "Algorand Foundation",
     logo: "https://cryptologos.cc/logos/algorand-algo-logo.svg",
     description:
@@ -579,6 +602,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 27,
     name: "Compound Foundation Grants",
+     deadline: "2026-06-20",
     organization: "Compound DAO",
     logo: "https://cryptologos.cc/logos/compound-comp-logo.svg",
     description:
@@ -604,6 +628,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 28,
     name: "LEGO Grants",
+     deadline: "2026-06-20",
     organization: "Lido DAO",
     logo: "https://cryptologos.cc/logos/lido-dao-ldo-logo.svg",
     description:
@@ -629,6 +654,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 29,
     name: "Community Grants",
+     deadline: "2026-06-20",
     organization: "MakerDAO / Sky Protocol",
     logo: "https://cryptologos.cc/logos/maker-mkr-logo.svg",
     description:
@@ -654,6 +680,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 30,
     name: "WAGBI Developer Grants",
+     deadline: "2026-06-20",
     organization: "Alchemy",
     logo: "https://www.alchemy.com/best/cdn-cgi/image/width=256,height=256/https://static.alchemyapi.io/images/marketing/alchemy-logo.png",
     description:
@@ -679,6 +706,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 31,
     name: "MetaMask Grants DAO",
+     deadline: "2026-06-20",
     organization: "ConsenSys",
     logo: "https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg",
     description:
@@ -704,6 +732,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 32,
     name: "XRPL Grants",
+     deadline: "2026-06-20",
     organization: "Ripple / XRPL Foundation",
     logo: "https://cryptologos.cc/logos/xrp-xrp-logo.svg",
     description:
@@ -729,6 +758,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 33,
     name: "Stellar Community Fund",
+     deadline: "2026-06-20",
     organization: "Stellar Development Foundation",
     logo: "https://cryptologos.cc/logos/stellar-xlm-logo.svg",
     description:
@@ -754,6 +784,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 36,
     name: "Grants Program",
+     deadline: "2026-06-20",
     organization: "The Graph Foundation",
     logo: "https://cryptologos.cc/logos/the-graph-grt-logo.svg",
     description:
@@ -779,6 +810,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 37,
     name: "OceanDAO & Shipyard",
+     deadline: "2026-06-20",
     organization: "Ocean Protocol",
     logo: "https://cryptologos.cc/logos/ocean-protocol-ocean-logo.svg",
     description:
@@ -804,6 +836,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 38,
     name: "Community Grants",
+     deadline: "2026-06-20",
     organization: "Celo Foundation",
     logo: "https://cryptologos.cc/logos/celo-celo-logo.svg",
     description:
@@ -829,6 +862,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 39,
     name: "DAO Grants",
+     deadline: "2026-06-20",
     organization: "Decentraland",
     logo: "https://cryptologos.cc/logos/decentraland-mana-logo.svg",
     description:
@@ -854,6 +888,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 40,
     name: "Game Maker Fund & DAO",
+     deadline: "2026-06-20",
     organization: "The Sandbox",
     logo: "https://cryptologos.cc/logos/the-sandbox-sand-logo.svg",
     description:
@@ -879,6 +914,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 41,
     name: "Ecosystem Working Group Grants",
+     deadline: "2026-06-20",
     organization: "ENS DAO",
     logo: "https://cryptologos.cc/logos/ethereum-name-service-ens-logo.svg",
     description:
@@ -904,6 +940,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 42,
     name: "Zcash Community Grants",
+     deadline: "2026-06-20",
     organization: "Zcash / Financial Privacy Foundation",
     logo: "https://cryptologos.cc/logos/zcash-zec-logo.svg",
     description:
@@ -929,6 +966,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 43,
     name: "1inch Grants Program",
+     deadline: "2026-06-20",
     organization: "1inch Foundation",
     logo: "https://cryptologos.cc/logos/1inch-1inch-logo.svg",
     description:
@@ -954,6 +992,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 44,
     name: "Radicle Grants",
+     deadline: "2026-06-20",
     organization: "Radworks",
     logo: "https://app.radworks.org/favicon.ico",
     description:
@@ -979,6 +1018,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 45,
     name: "Navigators & Core Grants",
+     deadline: "2026-06-20",
     organization: "Mina Foundation",
     logo: "https://cryptologos.cc/logos/mina-protocol-mina-logo.svg",
     description:
@@ -1004,6 +1044,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 46,
     name: "Sonic Innovator Fund",
+     deadline: "2026-06-20",
     organization: "Fantom / Sonic Foundation",
     logo: "https://cryptologos.cc/logos/fantom-ftm-logo.svg",
     description:
@@ -1029,6 +1070,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 47,
     name: "Foundation Grants",
+     deadline: "2026-06-20",
     organization: "Moonbeam Foundation",
     logo: "https://moonbeam.network/wp-content/uploads/2020/03/cropped-Moonbeam-Favicon-550px-32x32.png",
     description:
@@ -1054,7 +1096,8 @@ export const grantsWeb3: Grant[] = [
   {
     id: 49,
     name: "Kadena Grants",
-    organization: "Kadena",
+     deadline: "2026-06-20",
+    organization: "Kadena",  
     logo: "https://cryptologos.cc/logos/kadena-kda-logo.svg",
     description:
       "A $50M grant initiative with dual focus: $25M toward real-world asset (RWA) tokenization and $25M toward EVM and AI-driven innovation. Strong focus on Chainweb EVM tooling.",
@@ -1079,6 +1122,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 50,
     name: "Harmony Grants",
+     deadline: "2026-06-20",
     organization: "Harmony Foundation",
     logo: "https://cryptologos.cc/logos/harmony-one-logo.svg",
     description:

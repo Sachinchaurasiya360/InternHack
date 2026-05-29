@@ -79,7 +79,7 @@ export default function LoginPage() {
       <SEO
         title="Login"
         description="Sign in to InternHack to browse jobs, track applications, score your resume with AI, and connect with recruiters."
-        keywords="login, sign in, InternHack, student login, recruiter login"
+        noIndex
       />
 
       <AuthPromoPanel isRecruiter={isRecruiter} />

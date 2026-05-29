@@ -1,5 +1,6 @@
 import cron from "node-cron";
 import { prisma } from "../database/db.js";
+import { withAdvisoryLock } from "../utils/cron-lock.js";
 
 let cronJob: cron.ScheduledTask | null = null;
 
@@ -32,12 +33,14 @@ export function startSubscriptionExpiryCron(): void {
   if (cronJob) return;
 
   // Run daily at midnight
-  cronJob = cron.schedule("0 0 * * *", async () => {
-    try {
-      await expireSubscriptions();
-    } catch (err) {
-      console.error("[Cron] Subscription expiry error:", err);
-    }
+  cronJob = cron.schedule("0 0 * * *", () => {
+    void withAdvisoryLock("subscription-expiry", async () => {
+      try {
+        await expireSubscriptions();
+      } catch (err) {
+        console.error("[Cron] Subscription expiry error:", err);
+      }
+    });
   });
 
   console.log("[Cron] Subscription expiry cron started (daily at midnight)");

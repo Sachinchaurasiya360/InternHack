@@ -1,14 +1,13 @@
 import "dotenv/config";
-import crypto from "crypto";
-import express from "express";
 import compression from "compression";
-
+import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import { createRateLimitStore } from "./utils/rate-limit-store.js";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
 import { recruiterRouter } from "./module/recruiter/recruiter.routes.js";
@@ -54,13 +53,14 @@ import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
 import { contactRouter } from "./module/contact/contact.routes.js";
-import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
+// import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
 import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
+import { recommendationRouter } from "./module/recommendation/recommendation.routes.js";
 import { learnRouter } from "./module/learn/learn.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
@@ -71,6 +71,7 @@ import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
 import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 import { startScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
+
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -88,6 +89,8 @@ process.on("unhandledRejection", (reason) => {
 });
 process.on("uncaughtException", (err) => {
   console.error("[process] uncaughtException:", err);
+
+  process.exit(1);
 });
 
 const app = express();
@@ -178,6 +181,7 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  store: createRateLimitStore("global"),
   skip: (req) => {
     const path = req.originalUrl.split("?")[0];
     return path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook";
@@ -189,6 +193,7 @@ app.use("/api/", globalLimiter);
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
+  store: createRateLimitStore("auth"),
   message: { message: "Too many login attempts, please try again later" },
 });
 app.use("/api/auth/login", authLimiter);
@@ -198,6 +203,7 @@ app.use("/api/admin/login", authLimiter);
 const latexLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
+  store: createRateLimitStore("latex"),
   message: { message: "LaTeX compilation limit reached. Try again later." },
 });
 app.use("/api/latex/compile", latexLimiter);
@@ -206,6 +212,7 @@ app.use("/api/latex/compile", latexLimiter);
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobRouter);
 app.use("/api/recruiter", recruiterRouter);
+app.use("/api/student/recommendations", recommendationRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/scraped-jobs", scraperRouter);
@@ -257,7 +264,7 @@ app.use("/api/learn", learnRouter);
 
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
-app.use("/api/hackathons", hackathonRouter);
+// app.use("/api/hackathons", hackathonRouter);
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
 // Public ingest endpoint, external websites POST jobs here with API key
@@ -336,3 +343,11 @@ app.listen(PORT, async () => {
     console.log("[RoadmapDigest] Weekly digest cron disabled on this process");
   }
 });
+
+
+
+app.get("/", (req, res) => {
+  res.send("Server Running Successfully");
+});
+
+

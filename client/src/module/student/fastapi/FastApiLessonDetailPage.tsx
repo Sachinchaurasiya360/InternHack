@@ -114,7 +114,7 @@ function ExerciseSection({
     setShowHints(0);
      
     setShowSolution(false);
-  }, [activeIdx, exercise?.id]);
+  }, [activeIdx, exercise]);
 
   const handleReset = useCallback(() => {
     if (!exercise) return;

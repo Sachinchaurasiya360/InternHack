@@ -119,8 +119,8 @@ export default function BlogListPage() {
   return (
     <div className="font-sans min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
-        title="Blog & Resources"
-        description="Career tips, interview strategies, salary insights, and industry trends to help you land your dream role. Read expert articles on InternHack."
+        title="Career Advice Blog | Interview Tips, Resume Guides & Job Search"
+        description="Practical guides on resume writing, technical interviews, salary negotiation, and internship applications. Updated weekly for students and early-career engineers."
         keywords="career blog, interview tips, salary guide, resume tips, tech trends, career advice, industry insights"
         canonicalUrl={canonicalUrl("/blog")}
       />
@@ -160,7 +160,6 @@ export default function BlogListPage() {
           <section className="mb-16">
             <div className="flex items-center gap-2 mb-6">
               <BookOpen className="w-5 h-5 text-stone-400 dark:text-stone-500" />
-
               <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
                 {category === "ALL" ? "All Articles" : CATEGORY_LABELS[category]}
               </h2>
