@@ -88,7 +88,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
 
   return (
-    <div className="relative pb-12">
+    <div className="relative pb-24">
       <SEO
         title={`${step.title} - ${seoSuffix}`}
         description={step.description}
@@ -102,11 +102,11 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
 
       {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-6"
-      >
+  initial={{ opacity: 0, y: 15 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, delay: 0.35 }}
+  className="sticky bottom-0 sm:static bg-white/90 dark:bg-stone-900/90 backdrop-blur-md border-t border-stone-200 dark:border-white/10 p-4 flex items-center justify-between gap-3 mt-auto shadow-[0_-4px_8px_rgba(0,0,0,0.05)]"
+>
         <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-6 py-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
