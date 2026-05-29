@@ -298,7 +298,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               type="submit"
               variant="mono"
               size="lg"
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || !parsedRepo}
               className="w-full rounded-xl"
             >
               {mutation.isPending ? (
