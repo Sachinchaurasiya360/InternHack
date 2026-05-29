@@ -11,9 +11,7 @@
     "start": "node dist/index.js",
     "pretest": "prisma generate --schema=src/database/prisma/schema",
     "test": "vitest run",
-    "pretest": "npm run prisma:generate",
     "prisma:generate": "npx prisma generate --config src/database/prisma.config.ts",
-    "postinstall": "npm run prisma:generate",
     "seed": "tsx src/database/seeds/seed.ts",
     "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
     "seed:admin": "tsx src/database/seed-admin.ts"
