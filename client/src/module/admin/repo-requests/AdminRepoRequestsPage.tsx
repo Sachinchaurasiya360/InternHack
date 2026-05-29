@@ -7,6 +7,7 @@ import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import type { RepoRequest, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import { Button } from "../../../components/ui/button";
 
 export default function AdminRepoRequestsPage() {
   const [requests, setRequests] = useState<RepoRequest[]>([]);
@@ -14,6 +15,7 @@ export default function AdminRepoRequestsPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("PENDING");
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -32,6 +34,23 @@ export default function AdminRepoRequestsPage() {
 
   useEffect(() => { setPage(1); }, [statusFilter]);
   useEffect(() => { fetchRequests(); }, [statusFilter, page]);
+  useEffect(() => { setSelectedIds([]); }, [statusFilter, page]);
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const pendingOnPage = requests.filter((r) => r.status === "PENDING").map((r) => r.id);
+    const allSelected = pendingOnPage.every((id) => selectedIds.includes(id));
+    if (allSelected) {
+      setSelectedIds((prev) => prev.filter((id) => !pendingOnPage.includes(id)));
+    } else {
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...pendingOnPage])));
+    }
+  };
 
   const handleApprove = async (id: number) => {
     try {
@@ -50,6 +69,30 @@ export default function AdminRepoRequestsPage() {
       fetchRequests();
     } catch {
       toast.error("Failed to reject request");
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await api.put("/opensource/requests/bulk", { ids: selectedIds, action: "approve" });
+      toast.success(`Successfully approved ${selectedIds.length} repositories`);
+      setSelectedIds([]);
+      fetchRequests();
+    } catch {
+      toast.error("Failed to approve selected requests");
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await api.put("/opensource/requests/bulk", { ids: selectedIds, action: "reject" });
+      toast.success(`Successfully rejected ${selectedIds.length} requests`);
+      setSelectedIds([]);
+      fetchRequests();
+    } catch {
+      toast.error("Failed to reject selected requests");
     }
   };
 
@@ -86,6 +129,24 @@ export default function AdminRepoRequestsPage() {
         ))}
       </div>
 
+      {statusFilter === "PENDING" && requests.length > 0 && (
+        <div className="flex items-center gap-3 mb-6 bg-gray-800/40 border border-gray-700 p-3 rounded-lg w-fit">
+          <input
+            type="checkbox"
+            id="selectAll"
+            className="w-4 h-4 rounded-sm border-gray-600 bg-gray-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 cursor-pointer"
+            checked={
+              requests.length > 0 &&
+              requests.filter((r) => r.status === "PENDING").map((r) => r.id).every((id) => selectedIds.includes(id))
+            }
+            onChange={handleSelectAll}
+          />
+          <label htmlFor="selectAll" className="text-sm text-gray-300 font-medium cursor-pointer select-none">
+            Select All on this page
+          </label>
+        </div>
+      )}
+
       {loading ? (
         <LoadingScreen />
       ) : requests.length === 0 ? (
@@ -101,68 +162,80 @@ export default function AdminRepoRequestsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.03 }}
-              className="bg-gray-800/50 border border-gray-700 rounded-xl p-5"
+              className="bg-gray-800/50 border border-gray-700 rounded-xl p-5 flex gap-4"
             >
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-base font-bold text-white truncate">
-                      {req.owner}/{req.name}
-                    </h3>
-                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase ${statusBadge(req.status)}`}>
-                      {req.status}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-400 line-clamp-2">{req.description}</p>
+              {statusFilter === "PENDING" && (
+                <div className="pt-1.5 select-none shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(req.id)}
+                    onChange={() => toggleSelect(req.id)}
+                    className="w-4 h-4 rounded-sm border-gray-600 bg-gray-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 cursor-pointer"
+                  />
                 </div>
-                <a
-                  href={req.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4 text-gray-300" />
-                </a>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-3 text-xs">
-                <span className="px-2 py-1 rounded-md bg-gray-700 text-gray-300">{req.language}</span>
-                <span className="px-2 py-1 rounded-md bg-gray-700 text-gray-300">{req.domain}</span>
-                <span className="px-2 py-1 rounded-md bg-gray-700 text-gray-300">{req.difficulty}</span>
-                {req.techStack.map((t) => (
-                  <span key={t} className="px-2 py-1 rounded-md bg-purple-900/30 text-purple-400">{t}</span>
-                ))}
-              </div>
-
-              <div className="mb-3 p-3 bg-gray-900/50 rounded-lg border border-gray-700">
-                <p className="text-xs font-medium text-gray-500 mb-1">Why this repo?</p>
-                <p className="text-sm text-gray-300">{req.reason}</p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <User className="w-3.5 h-3.5" />
-                  <span>{req.user?.name || "Unknown"} ({req.user?.email})</span>
-                  <span className="mx-1">-</span>
-                  <span>{new Date(req.createdAt).toLocaleDateString()}</span>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-base font-bold text-white truncate">
+                        {req.owner}/{req.name}
+                      </h3>
+                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase ${statusBadge(req.status)}`}>
+                        {req.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-400 line-clamp-2">{req.description}</p>
+                  </div>
+                  <a
+                    href={req.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors"
+                  >
+                    <ExternalLink className="w-4 h-4 text-gray-300" />
+                  </a>
                 </div>
 
-                {req.status === "PENDING" && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleReject(req.id)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-900/30 text-red-400 text-xs font-medium hover:bg-red-900/50 transition-colors"
-                    >
-                      <X className="w-3.5 h-3.5" /> Reject
-                    </button>
-                    <button
-                      onClick={() => handleApprove(req.id)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-900/30 text-emerald-400 text-xs font-medium hover:bg-emerald-900/50 transition-colors"
-                    >
-                      <Check className="w-3.5 h-3.5" /> Approve
-                    </button>
+                <div className="flex flex-wrap gap-2 mb-3 text-xs">
+                  <span className="px-2 py-1 rounded-md bg-gray-700 text-gray-300">{req.language}</span>
+                  <span className="px-2 py-1 rounded-md bg-gray-700 text-gray-300">{req.domain}</span>
+                  <span className="px-2 py-1 rounded-md bg-gray-700 text-gray-300">{req.difficulty}</span>
+                  {req.techStack.map((t) => (
+                    <span key={t} className="px-2 py-1 rounded-md bg-purple-900/30 text-purple-400">{t}</span>
+                  ))}
+                </div>
+
+                <div className="mb-3 p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+                  <p className="text-xs font-medium text-gray-500 mb-1">Why this repo?</p>
+                  <p className="text-sm text-gray-300">{req.reason}</p>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <User className="w-3.5 h-3.5" />
+                    <span>{req.user?.name || "Unknown"} ({req.user?.email})</span>
+                    <span className="mx-1">-</span>
+                    <span>{new Date(req.createdAt).toLocaleDateString()}</span>
                   </div>
-                )}
+
+                  {req.status === "PENDING" && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleReject(req.id)}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-900/30 text-red-400 text-xs font-medium hover:bg-red-900/50 transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5" /> Reject
+                      </button>
+                      <button
+                        onClick={() => handleApprove(req.id)}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-900/30 text-emerald-400 text-xs font-medium hover:bg-emerald-900/50 transition-colors"
+                      >
+                        <Check className="w-3.5 h-3.5" /> Approve
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           ))}
@@ -174,6 +247,39 @@ export default function AdminRepoRequestsPage() {
               onPageChange={setPage}
             />
           )}
+        </div>
+      )}
+
+      {/* Bulk Action Toolbar */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-700 px-6 py-4 rounded-xl shadow-xl flex items-center gap-4 z-50 animate-in fade-in slide-in-from-bottom-4">
+          <span className="text-sm text-gray-300 font-semibold shrink-0 select-none">
+            {selectedIds.length} {selectedIds.length === 1 ? "request" : "requests"} selected
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              className="flex items-center gap-1 bg-red-900/40 text-red-400 hover:bg-red-900/60 border border-red-800/40 shrink-0"
+              onClick={handleBulkReject}
+            >
+              <X className="w-3.5 h-3.5" /> Reject Selected
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              className="flex items-center gap-1 bg-emerald-900/40 text-emerald-400 hover:bg-emerald-900/60 border border-emerald-800/40 shrink-0"
+              onClick={handleBulkApprove}
+            >
+              <Check className="w-3.5 h-3.5" /> Approve Selected
+            </Button>
+          </div>
+          <button
+            onClick={() => setSelectedIds([])}
+            className="text-xs text-gray-400 hover:text-white font-medium transition-colors cursor-pointer shrink-0 select-none"
+          >
+            Deselect
+          </button>
         </div>
       )}
     </div>

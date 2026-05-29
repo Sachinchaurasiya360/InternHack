@@ -27,3 +27,9 @@ export const submitRepoRequestSchema = z.object({
   tags: z.array(z.string()).default([]),
   reason: z.string().min(10, "Please explain why this repo should be listed").max(1000),
 });
+
+export const bulkRepoRequestSchema = z.object({
+  ids: z.array(z.number().int().positive("Invalid ID in request list")).min(1, "At least one ID must be specified"),
+  action: z.enum(["approve", "reject"], { message: "Action must be either 'approve' or 'reject'" }),
+  adminNote: z.string().max(1000).optional(),
+});

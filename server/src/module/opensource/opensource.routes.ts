@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
-import { opensourceListQuerySchema, repoIdSchema, submitRepoRequestSchema } from "./opensource.validation.js";
+import { opensourceListQuerySchema, repoIdSchema, submitRepoRequestSchema, bulkRepoRequestSchema } from "./opensource.validation.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -253,6 +253,82 @@ opensourceRouter.put("/requests/:id/reject", authMiddleware, requireRole("ADMIN"
     });
 
     res.json({ message: "Request rejected" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Bulk manage pending repo requests (approve or reject)
+opensourceRouter.put("/requests/bulk", authMiddleware, requireRole("ADMIN"), async (req, res, next) => {
+  try {
+    const parsed = bulkRepoRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten().fieldErrors });
+      return;
+    }
+    const { ids, action, adminNote } = parsed.data;
+
+    // Validate all IDs exist and are PENDING
+    const requests = await prisma.repoRequest.findMany({
+      where: { id: { in: ids }, status: "PENDING" },
+      include: { user: { select: { name: true, email: true } } },
+    });
+
+    if (requests.length !== ids.length) {
+      res.status(400).json({ message: "Some repository requests do not exist or are not pending" });
+      return;
+    }
+
+    // Execute bulk updates inside a database transaction
+    const summary = await prisma.$transaction(async (tx) => {
+      if (action === "approve") {
+        for (const request of requests) {
+          // Create the repository in the directory
+          await tx.opensourceRepo.create({
+            data: {
+              name: request.name,
+              owner: request.owner,
+              description: request.description,
+              language: request.language,
+              url: request.url,
+              domain: request.domain,
+              difficulty: request.difficulty,
+              techStack: request.techStack,
+              tags: request.tags,
+            },
+          });
+
+          // Mark request as approved
+          await tx.repoRequest.update({
+            where: { id: request.id },
+            data: { status: "APPROVED", adminNote: adminNote || null },
+          });
+        }
+        return { approved: ids.length, rejected: 0, skipped: 0 };
+      } else {
+        // Mark all requests as rejected
+        await tx.repoRequest.updateMany({
+          where: { id: { in: ids } },
+          data: { status: "REJECTED", adminNote: adminNote || null },
+        });
+        return { approved: 0, rejected: ids.length, skipped: 0 };
+      }
+    });
+
+    // Dispatch approval emails outside the transaction block to prevent holding DB locks
+    if (action === "approve") {
+      for (const request of requests) {
+        try {
+          await sendEmail({
+            to: request.user.email,
+            subject: "Your Repo Has Been Approved, InternHack",
+            html: repoRequestApprovedHtml(request.user.name, request.name, request.owner),
+          });
+        } catch { /* email failure is non-blocking */ }
+      }
+    }
+
+    res.json(summary);
   } catch (err) {
     next(err);
   }
