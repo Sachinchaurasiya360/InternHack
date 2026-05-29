@@ -26,6 +26,7 @@ import {
   recomputePace,
   summarizeProgress,
   updateTopicProgress,
+  deleteEnrollment,
 } from "./roadmap.service.js";
 import {
   buildRoadmapSlug,
@@ -230,7 +231,11 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
         }
       }
     } catch (err) {
-      console.error("[Roadmap] Welcome email/PDF failed:", err);
+      console.error("[Roadmap] Welcome email/PDF failed:", {
+        enrollmentId: enrollment.id,
+        userId: req.user!.id,
+        err,
+      });
     }
 
     res.status(201).json({
@@ -281,6 +286,29 @@ export async function getMyEnrollment(req: Request, res: Response, next: NextFun
   }
 }
 
+export async function deleteMyEnrollment(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = enrollmentIdParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    await deleteEnrollment({
+      userId: req.user!.id,
+      enrollmentId: params.data.id,
+    });
+
+    res.status(204).send();
+  } catch (err: any) {
+    if (err?.status === 404) {
+      res.status(404).json({ message: err.message });
+      return;
+    }
+    next(err);
+  }
+}
+
 export async function patchTopicProgress(req: Request, res: Response, next: NextFunction) {
   try {
     const params = enrollmentTopicParams.safeParse(req.params);
@@ -293,6 +321,7 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
       validationError(res, body.error.flatten().fieldErrors);
       return;
     }
+
 
     const { progress, roadmapCompleted } = await updateTopicProgress({
       userId: req.user!.id,
@@ -644,7 +673,11 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
         });
       }
     } catch (err) {
-      console.error("[Roadmap AI] Welcome email/PDF failed:", err);
+      console.error("[Roadmap AI] Welcome email/PDF failed:", {
+        enrollmentId: enrollment.id,
+        userId,
+        err,
+      });
     }
 
     // FIX: Bust the cache for this slug so the first GET after generation

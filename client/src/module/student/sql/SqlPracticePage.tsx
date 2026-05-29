@@ -67,7 +67,7 @@ export default function SqlPracticePage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const progress: SqlProgress = isAuthenticated ? (serverProgress ?? {}) : getLocalProgress();
+  const progress: SqlProgress = useMemo(() => isAuthenticated ? (serverProgress ?? {}) : getLocalProgress(), [isAuthenticated, serverProgress]);
 
   const sectionStats = useMemo(() => {
     return sections.map((section) => {

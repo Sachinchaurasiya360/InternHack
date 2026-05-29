@@ -4,6 +4,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 101,
     name: "Techstars Accelerator",
+     deadline: "2026-07-20",
     organization: "Techstars",
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
@@ -29,6 +30,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 102,
     name: "500 Global Accelerator",
+     deadline: "2026-07-20",
     organization: "500 Global",
     logo: "https://placehold.co/100x100/EEE/999?text=5",
     description:
@@ -54,6 +56,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 103,
     name: "Antler Residency Program",
+     deadline: "2026-07-20",
     organization: "Antler",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -79,6 +82,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 104,
     name: "Plug and Play Accelerator",
+     deadline: "2026-07-20",
     organization: "Plug and Play",
     logo: "https://placehold.co/100x100/EEE/999?text=P",
     description:
@@ -104,6 +108,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 105,
     name: "MassChallenge",
+     deadline: "2026-07-20",
     organization: "MassChallenge",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -129,6 +134,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 106,
     name: "Seedstars Program",
+     deadline: "2026-07-20",
     organization: "Seedstars",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -154,6 +160,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 107,
     name: "SOSV Accelerator Programs",
+     deadline: "2026-07-20",
     organization: "SOSV",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -179,6 +186,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 108,
     name: "Founders Factory Accelerator",
+     deadline: "2026-07-20",
     organization: "Founders Factory",
     logo: "https://placehold.co/100x100/EEE/999?text=F",
     description:
@@ -204,6 +212,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 109,
     name: "Entrepreneur First (EF)",
+     deadline: "2026-07-20",
     organization: "Entrepreneur First",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -229,6 +238,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 110,
     name: "Chiratae Ventures Sonic Program",
+     deadline: "2026-07-20",
     organization: "Chiratae Ventures",
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
@@ -254,6 +264,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 141,
     name: "Google for Startups Cloud Program",
+     deadline: "2026-07-20",
     organization: "Google",
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
@@ -279,6 +290,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 142,
     name: "AWS Activate",
+     deadline: "2026-07-20",
     organization: "Amazon Web Services",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -304,6 +316,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 143,
     name: "Microsoft for Startups Founders Hub",
+     deadline: "2026-07-20",
     organization: "Microsoft",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -329,6 +342,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 144,
     name: "Cisco Innovation Fund",
+     deadline: "2026-07-20",
     organization: "Cisco",
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
@@ -354,6 +368,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 145,
     name: "IBM Hyper Protect Accelerator",
+     deadline: "2026-07-20",
     organization: "IBM",
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
@@ -379,6 +394,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 146,
     name: "Salesforce Ventures Impact Fund",
+    deadline: "2026-07-20",
     organization: "Salesforce",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -404,6 +420,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 147,
     name: "SAP.iO Foundry Program",
+     deadline: "2026-07-20",
     organization: "SAP",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -429,6 +446,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 148,
     name: "Qualcomm Innovation Fellowship",
+     deadline: "2026-07-20",
     organization: "Qualcomm",
     logo: "https://placehold.co/100x100/EEE/999?text=Q",
     description:
@@ -454,6 +472,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 149,
     name: "Adobe Fund for Design",
+     deadline: "2026-07-20",
     organization: "Adobe",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -479,6 +498,7 @@ export const grantsAccelerator: Grant[] = [
   {
     id: 150,
     name: "Bosch Research and Technology Grants",
+     deadline: "2026-07-20",
     organization: "Robert Bosch Stiftung",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:

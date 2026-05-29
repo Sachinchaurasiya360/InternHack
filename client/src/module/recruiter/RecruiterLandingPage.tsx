@@ -158,8 +158,8 @@ export default function RecruiterLandingPage() {
   return (
     <div className="font-sans bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
-        title="For Recruiters and HR Teams"
-        description="Post jobs, manage employees, run payroll, track performance, and automate HR workflows. A complete HR platform built into InternHack."
+        title="Hire from IITs, NITs & Top Colleges"
+        description="Post internships and jobs to 200,000+ verified students. ATS-scored pipelines, interview scheduling, payroll, and HR workflows in one platform. Free for the first two seats."
         keywords="HR platform, recruiter dashboard, post jobs, hire students, employee management, payroll, attendance, performance reviews, HR analytics, hiring pipeline"
         canonicalUrl={canonicalUrl("/for-recruiters")}
       />

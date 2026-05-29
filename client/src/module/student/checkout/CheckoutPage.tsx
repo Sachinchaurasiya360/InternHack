@@ -67,7 +67,7 @@ const plans: Plan[] = [
     key: "pro",
     name: "Pro",
     price: 249,
-    yearlyPrice: 2999,
+    yearlyPrice: 2499,
     badge: "Most Popular",
     description: "Unlock every tool to stand out and land your dream internship.",
     icon: <Rocket className="w-5 h-5" />,
