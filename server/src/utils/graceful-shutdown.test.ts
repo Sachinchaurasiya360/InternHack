@@ -70,7 +70,10 @@ describe("GracefulShutdownManager", () => {
     const shutdownPromise = shutdownManager.shutdown("SIGTERM");
     
     vi.advanceTimersByTime(30_000); // Default forceTimeoutMs
-    
     expect(exitMock).toHaveBeenCalledWith(1);
+
+    // Let the slow hook finish so the promise resolves cleanly
+    vi.advanceTimersByTime(30_000);
+    await shutdownPromise;
   });
 });
