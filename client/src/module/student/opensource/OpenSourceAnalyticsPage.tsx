@@ -7,7 +7,8 @@ import {
   AlertCircle,
   Filter,
   X,
-  Maximize2
+  Maximize2,
+  Download
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import {
@@ -70,6 +71,11 @@ const tooltipStyle = {
   contentStyle: { background: "#fff", border: "1px solid #e5e7eb", borderRadius: "0.75rem", color: "#1f2937", fontSize: "0.8rem", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" },
   itemStyle: { color: "#374151" },
 };
+
+function escapeCsvValue(value: string | number) {
+  const text = String(value);
+  return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
 
 // ─── Custom Tooltip ─────────────────────────────────────────────
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number; name?: string }[]; label?: string }) {
@@ -230,6 +236,29 @@ export default function OpenSourceAnalyticsPage() {
   const contributionTrend = contributionTrendData?.trend ?? [];
   const contributionTotal = contributionTrendData?.total ?? 0;
   const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
+  const exportDisabled = trendIsLoading || trendIsError || contributionTrend.length === 0;
+
+  const handleExportCsv = () => {
+    if (exportDisabled) return;
+
+    const rows = [
+      ["Month", "Label", "Contributions"],
+      ...contributionTrend.map((entry) => [entry.month, entry.label, entry.count]),
+    ];
+    const csv = rows
+      .map((row) => row.map(escapeCsvValue).join(","))
+      .join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "my-oss-contributions.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   // ─── Derive filter options ──────────────────────────────────
   const years = useMemo(() => {
@@ -371,16 +400,29 @@ export default function OpenSourceAnalyticsPage() {
     <div className="min-h-screen bg-gray-50 pb-16">
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
-        <div className="flex items-center gap-3 mb-2">
-          <BarChart3 className="w-7 h-7 text-indigo-600" />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Open Source Analytics</h1>
-            <p className="text-sm text-gray-500">
-              {orgs.length} of {allOrgs.length} organizations
-              {hasActiveFilter && " (filtered)"}
-              {stats && ` \u00b7 ${stats.years.length} years \u00b7 ${stats.technologies.length} technologies`}
-            </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+          <div className="flex items-center gap-3">
+            <BarChart3 className="w-7 h-7 text-indigo-600" />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Open Source Analytics</h1>
+              <p className="text-sm text-gray-500">
+                {orgs.length} of {allOrgs.length} organizations
+                {hasActiveFilter && " (filtered)"}
+                {stats && ` \u00b7 ${stats.years.length} years \u00b7 ${stats.technologies.length} technologies`}
+              </p>
+            </div>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCsv}
+            disabled={exportDisabled}
+            title="Export contribution trend as CSV"
+            className="bg-white"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Export CSV
+          </Button>
         </div>
       </div>
 
