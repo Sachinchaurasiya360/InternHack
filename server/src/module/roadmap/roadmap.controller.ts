@@ -206,7 +206,7 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
         });
 
         if (userRecord) {
-          const weekOne = weeklyPlan[0]?.topicSlugs ?? [];
+          const weekOne = weeklyPlan?.[0]?.topicSlugs ?? [];
           await sendEmail({
             to: userRecord.email,
             subject: `Your ${full.roadmap.title} is ready`,
