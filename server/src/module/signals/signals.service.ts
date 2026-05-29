@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 import { BaseSignalSource } from "./sources/base.source.js";
 import type { FundingSignalData } from "./sources/base.source.js";
 import { YcLaunchesSource } from "./sources/yc-launches.source.js";
@@ -78,7 +79,9 @@ export class SignalsService {
   startCron(schedule = "0 */6 * * *") {
     if (this.cronJob) this.cronJob.stop();
     this.cronJob = cron.schedule(schedule, () => {
-      void this.ingestAll();
+      void withAdvisoryLock("signals-ingestion", async () => {
+        await this.ingestAll();
+      });
     });
     console.log(`[Signals] Cron scheduled: ${schedule}`);
   }
