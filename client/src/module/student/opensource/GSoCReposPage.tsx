@@ -104,7 +104,7 @@ function TopOrgsStrip({
   orgs,
   onSelect,
 }: {
-  orgs: { id: number; name: string; slug: string; imageUrl?: string; yearsParticipated: number[] }[];
+  orgs: { id: number; name: string; slug: string; imageUrl?: string; imageBgColor?: string; category: string; yearsParticipated: number[] }[];
   onSelect: (slug: string) => void;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -666,7 +666,7 @@ export default function GSoCReposPage() {
   const yearOptions = ["All", ...(stats?.years.map((year) => String(year.year)) ?? [])];
   const techOptions = ["All", ...(stats?.technologies.slice(0, 30).map((tech) => tech.name) ?? [])];
 
-  const { data: topOrgsData } = useQuery<{ organizations: { id: number; name: string; slug: string; imageUrl?: string; yearsParticipated: number[] }[] }>({
+  const { data: topOrgsData } = useQuery<{ organizations: { id: number; name: string; slug: string; imageUrl?: string; imageBgColor?: string; category: string; yearsParticipated: number[] }[] }>({
     queryKey: queryKeys.gsoc.topOrgs(),
     queryFn: () => api.get("/gsoc/top-orgs").then((res) => res.data),
     staleTime: Infinity,
@@ -784,7 +784,22 @@ export default function GSoCReposPage() {
             orgs={topOrgs}
             onSelect={(slug) => {
               const found = topOrgs.find((o) => o.slug === slug);
-              if (found) setSelectedOrg(found as unknown as GSoCOrganization);
+              if (found)
+                setSelectedOrg({
+                  ...found,
+                  url: "",
+                  description: "",
+                  category: found.category ?? "",
+                  topics: [],
+                  technologies: [],
+                  totalProjects: 0,
+                  contactEmail: null,
+                  mailingList: null,
+                  ideasUrl: null,
+                  guideUrl: null,
+                  projectsData: null,
+                  imageBgColor: found.imageBgColor ?? null,
+                } as GSoCOrganization);
             }}
           />
         )}
