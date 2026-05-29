@@ -467,6 +467,23 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     const userId = req.user!.id;
     const input = parsed.data;
 
+    // Guard: Limit of 5 active AI roadmaps
+    const MAX_AI_ROADMAPS = 5;
+    const existingCount = await prisma.roadmapEnrollment.count({
+      where: {
+        userId,
+        roadmap: { ownerUserId: userId },
+      },
+    });
+
+    if (existingCount >= MAX_AI_ROADMAPS) {
+      res.status(409).json({
+        message: "MAX_AI_ROADMAPS_REACHED",
+        error: "You have reached the limit of 5 active AI roadmaps. Please complete or delete existing ones before generating new ones.",
+      });
+      return;
+    }
+
     const duplicate = await findDuplicateRoadmap(
   input.goalDescription,
   userId

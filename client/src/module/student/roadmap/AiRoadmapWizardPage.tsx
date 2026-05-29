@@ -107,6 +107,19 @@ export default function AiRoadmapWizardPage() {
 
   const enrollments = enrollmentsData?.enrollments || [];
 
+  // Similar roadmap detection
+  const similarRoadmap = enrollments.find(e => {
+    const title = e.roadmap.title.toLowerCase();
+    const desc = goalDescription.toLowerCase().trim();
+    if (!desc) return false;
+    
+    // Check if goal contains any words from title
+    const titleWords = title.split(/\s+/).filter(w => w.length > 3);
+    return titleWords.some(w => desc.includes(w));
+  });
+
+  const [forceCreate, setForceCreate] = useState(false);
+
   // Rotating loading copy
   useEffect(() => {
     if (!submitting) return;
@@ -139,14 +152,23 @@ export default function AiRoadmapWizardPage() {
           knownSkills,
           mustInclude,
           avoid,
+          forceCreate,
         },
       );
       toast.success("Your roadmap is ready");
       navigate(`/learn/roadmaps/${res.data.slug}`);
     } catch (err) {
-      const msg = (err as { response?: { data?: { message?: string } } }).response?.data?.message
-        ?? "Could not generate roadmap. Please try again.";
-      toast.error(msg);
+      const resp = (err as any).response;
+      if (resp?.status === 409) {
+        if (resp.data.message === "MAX_AI_ROADMAPS_REACHED") {
+           toast.error(resp.data.error || "You have reached the limit of 5 AI roadmaps.");
+        } else {
+           toast.error("A similar roadmap already exists. You can view it or force create a new one.")
+        }
+      } else {
+        const msg = resp?.data?.message ?? "Could not generate roadmap. Please try again.";
+        toast.error(msg);
+      }
       setSubmitting(false);
     }
   };
@@ -248,6 +270,37 @@ export default function AiRoadmapWizardPage() {
             Build a roadmap that fits you.
           </h1>
         </motion.div>
+
+        {step === 4 && similarRoadmap && !forceCreate && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 flex gap-4"
+          >
+            <div className="h-10 w-10 shrink-0 rounded-xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center text-amber-600">
+              <MapIcon className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-bold text-amber-900 dark:text-amber-200 mb-1">
+                Wait, is this familiar?
+              </h3>
+              <p className="text-xs text-amber-700/80 dark:text-amber-400/80 leading-relaxed mb-3">
+                You already have an active roadmap called <strong>"{similarRoadmap.roadmap.title}"</strong>. 
+                Want to continue where you left off?
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild size="sm" variant="secondary" className="bg-white dark:bg-amber-900 dark:hover:bg-amber-800">
+                  <Link to={`/learn/roadmaps/${similarRoadmap.roadmap.slug}`}>
+                    Open Existing
+                  </Link>
+                </Button>
+                <Button size="sm" variant="ghost" className="text-amber-700 dark:text-amber-400" onClick={() => setForceCreate(true)}>
+                  Create anyway
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Step bar */}
         <motion.div

@@ -23,6 +23,7 @@ export interface OpenSourceRepo {
   lastUpdated: string;
   createdAt: string;
   updatedAt: string;
+  matchedSkills?: string[];
 }
 
 // Repo Requests
