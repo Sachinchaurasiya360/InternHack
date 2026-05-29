@@ -649,16 +649,23 @@ function ProgramCard({ program }: { program: Program }) {
 export default function ProgramTrackerPage() {
   // Load saved filters from localStorage on mount, fall back to defaults
   const getSavedFilters = () => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === "object") {
+        return {
+          status: STATUS_OPTIONS.includes(parsed.status) ? parsed.status : "All",
+          eligibility: ELIGIBILITY_OPTIONS.includes(parsed.eligibility) ? parsed.eligibility : "All",
+          stipend: STIPEND_OPTIONS.includes(parsed.stipend) ? parsed.stipend : "All",
+        };
       }
-    } catch {
-      // ignore parse errors
     }
-    return { status: "All", eligibility: "All", stipend: "All" };
-  };
+  } catch {
+    // ignore errors
+  }
+  return { status: "All", eligibility: "All", stipend: "All" };
+};
 
   const savedFilters = getSavedFilters();
 
