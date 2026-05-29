@@ -175,14 +175,36 @@ function TrendSkeleton() {
   );
 }
 
-function TrendEmptyState({ message }: { message: string }) {
+function TrendEmptyState({
+  message,
+  showButton = false,
+}: {
+  message: string;
+  showButton?: boolean;
+}) {
   return (
     <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 text-center">
-      <p className="text-sm font-semibold text-gray-900">No contribution activity yet</p>
-      <p className="mt-2 max-w-sm text-sm text-gray-500">{message}</p>
+      <BarChart3 className="w-10 h-10 text-indigo-500 mb-3" />
+
+      <p className="text-base font-semibold text-gray-900">
+        No contributions tracked yet
+      </p>
+
+      <p className="mt-2 max-w-sm text-sm text-gray-500">
+        {message}
+      </p>
+
+      {showButton && (
+        <Link to="/student/opensource">
+          <Button className="mt-4">
+            Discover Repositories
+          </Button>
+        </Link>
+      )}
     </div>
   );
 }
+  
 
 const selectClass = "text-sm bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 min-w-[130px]";
 
@@ -230,6 +252,10 @@ export default function OpenSourceAnalyticsPage() {
   const contributionTrend = contributionTrendData?.trend ?? [];
   const contributionTotal = contributionTrendData?.total ?? 0;
   const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
+  const showContributionEmptyState =
+  contributionTotal === 0 &&
+  contributionTrend.length > 0 &&
+  contributionTrend.every((entry) => entry.count === 0);
 
   // ─── Derive filter options ──────────────────────────────────
   const years = useMemo(() => {
@@ -447,6 +473,11 @@ export default function OpenSourceAnalyticsPage() {
                 <TrendSkeleton />
               ) : trendIsError ? (
                 <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
+              ) : showContributionEmptyState ? (
+                <TrendEmptyState
+                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+                  showButton
+                />
               ) : hasContributionActivity ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
@@ -458,7 +489,10 @@ export default function OpenSourceAnalyticsPage() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <TrendEmptyState message="Approve a repository suggestion to start tracking your monthly open source activity here." />
+                <TrendEmptyState
+                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+                  showButton
+                />
               )
             }
           >
@@ -475,10 +509,20 @@ export default function OpenSourceAnalyticsPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : trendIsError ? (
-              <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
-            ) : (
-              <TrendEmptyState message="Approve a repository suggestion to start tracking your monthly open source activity here." />
-            )}
+            <TrendEmptyState
+              message="We could not load your contribution trend right now. Try again in a moment."
+            />
+          ) : showContributionEmptyState ? (
+            <TrendEmptyState
+              message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+              showButton
+            />
+          ) : (
+            <TrendEmptyState
+              message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+              showButton
+            />
+          )}
           </ChartCard>
 
           {/* 2 - Category Distribution (Pie) */}
