@@ -10,17 +10,20 @@ interface WeeklyPlanWeek {
   totalHours: number;
 }
 export async function findDuplicateRoadmap(
-  title: string,
+  goalDescription: string,
   userId: number
 ) {
   return prisma.roadmap.findFirst({
     where: {
       ownerUserId: userId,
       isAiGenerated: true,
-      title: {
-        contains: title.trim(),
-        mode: "insensitive",
+      slug: {
+        startsWith: 'ai-',
       },
+      title: {
+        contains: goalDescription.slice(0, 30).trim(),
+        mode: 'insensitive',
+      }
     },
   });
 }
