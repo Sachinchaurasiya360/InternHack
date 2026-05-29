@@ -32,6 +32,7 @@ const NAV_ITEMS = [
   { label: "Companies", href: "/companies" },
   { label: "Recruiters", href: "/for-recruiters" },
   { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
 ];
 
 export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
@@ -120,9 +121,9 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 dark:text-stone-400 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors"
             >
               {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
                 <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
               )}
             </button>
 
@@ -219,9 +220,9 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               className="p-2 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50 rounded-md transition-colors"
             >
               {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
                 <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
               )}
             </button>
             {isAuthenticated && (

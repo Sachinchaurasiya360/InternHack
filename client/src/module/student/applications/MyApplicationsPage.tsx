@@ -278,8 +278,8 @@ export default function MyApplicationsPage() {
       ),
   });
 
-  const applications = data?.applications ?? [];
-  const externalApplications = data?.externalApplications ?? [];
+  const applications = useMemo(() => data?.applications ?? [], [data]);
+  const externalApplications = useMemo(() => data?.externalApplications ?? [], [data]);
 
   const filtered = useMemo(() => {
     const base = !debouncedSearch.trim()

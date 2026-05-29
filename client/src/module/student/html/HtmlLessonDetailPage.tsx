@@ -113,11 +113,11 @@ function ExerciseSection({ exercises, lessonId }: { exercises: PracticeExercise[
     if (!exercise) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCode(exercise.starterCode);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setShowHints(0);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setShowSolution(false);
-  }, [activeIdx, exercise?.id]);
+  }, [activeIdx, exercise]);
 
   const handleReset = useCallback(() => {
     if (!exercise) return;

@@ -43,6 +43,7 @@ import type {
 import { defaultResumeData } from "./resume-builder/types";
 import { TEMPLATES, getTemplate } from "./resume-builder/templates";
 import AtsToolsNav from "./AtsToolsNav";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 const STORAGE_KEY = "internhack-resume-data";
 const TEMPLATE_KEY = "internhack-resume-template";
@@ -441,6 +442,8 @@ export default function ResumeBuilderPage() {
   };
   const [mobileView, setMobileView] = useState<"form" | "preview">("form");
   const [skillInput, setSkillInput] = useState("");
+  const debouncedData = useDebounce(data, 300);
+  const debouncedSectionOrder = useDebounce(sectionOrder, 300);
   const printRef = useRef<HTMLDivElement>(null);
   const user = useAuthStore((s) => s.user);
 
@@ -621,7 +624,7 @@ export default function ResumeBuilderPage() {
     const win = window.open("", "_blank");
     if (!win) return;
     win.document.write(`<!DOCTYPE html>
-<html><head><title>${data.personalInfo.fullName || "Resume"}</title>
+<html><head><title>${debouncedData.personalInfo.fullName || "Resume"}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -1036,7 +1039,7 @@ export default function ResumeBuilderPage() {
                   style={{ maxHeight: "calc(100vh - 180px)" }}
                 >
                   <div ref={printRef}>
-                    <TemplateComponent data={data} sectionOrder={sectionOrder} />
+                    <TemplateComponent data={debouncedData} sectionOrder={debouncedSectionOrder} />
                   </div>
                 </div>
               </div>

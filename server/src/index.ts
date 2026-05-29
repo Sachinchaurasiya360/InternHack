@@ -1,8 +1,6 @@
 import "dotenv/config";
-import crypto from "crypto";
-import express from "express";
 import compression from "compression";
-
+import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -54,12 +52,14 @@ import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
 import { contactRouter } from "./module/contact/contact.routes.js";
+// import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
 import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
+import { recommendationRouter } from "./module/recommendation/recommendation.routes.js";
 import { learnRouter } from "./module/learn/learn.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
@@ -70,6 +70,7 @@ import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
 import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 import { startScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
+
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -205,6 +206,7 @@ app.use("/api/latex/compile", latexLimiter);
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobRouter);
 app.use("/api/recruiter", recruiterRouter);
+app.use("/api/student/recommendations", recommendationRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/scraped-jobs", scraperRouter);
@@ -256,7 +258,7 @@ app.use("/api/learn", learnRouter);
 
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
-
+// app.use("/api/hackathons", hackathonRouter);
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
 // Public ingest endpoint, external websites POST jobs here with API key
@@ -335,3 +337,11 @@ app.listen(PORT, async () => {
     console.log("[RoadmapDigest] Weekly digest cron disabled on this process");
   }
 });
+
+
+
+app.get("/", (req, res) => {
+  res.send("Server Running Successfully");
+});
+
+

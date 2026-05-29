@@ -4,6 +4,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 51,
     name: "BIRAC BIG Grant",
+     deadline: "2026-06-20",
     organization: "Biotechnology Industry Research Assistance Council",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
@@ -29,6 +30,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 52,
     name: "Startup India Seed Fund Scheme",
+     deadline: "2026-06-20",
     organization: "DPIIT",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -54,6 +56,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 53,
     name: "NIDHI-PRAYAS",
+     deadline: "2026-06-20",
     organization: "Department of Science & Technology",
     logo: "https://placehold.co/100x100/EEE/999?text=D",
     description:
@@ -79,6 +82,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 54,
     name: "Atal New India Challenge",
+    deadline: "2026-06-20",
     organization: "AIM, NITI Aayog",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -104,6 +108,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 55,
     name: "TIDE 2.0",
+    deadline: "2026-06-20",
     organization: "MeitY",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -129,6 +134,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 56,
     name: "SERB Core Research Grant",
+    deadline: "2026-06-20",
     organization: "Science & Engineering Research Board",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -154,6 +160,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 57,
     name: "CSIR Innovation Award for School Children",
+    deadline: "2026-06-20",
     organization: "Council of Scientific & Industrial Research",
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
@@ -179,6 +186,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 58,
     name: "iDEX (Innovations for Defence Excellence)",
+    deadline: "2026-06-20",
     organization: "Ministry of Defence",
     logo: "https://placehold.co/100x100/EEE/999?text=i",
     description:
@@ -204,6 +212,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 59,
     name: "AGNIi Mission",
+    deadline: "2026-06-20",
     organization: "Office of the Principal Scientific Adviser",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -229,6 +238,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 60,
     name: "MeitY Startup Hub (MSH)",
+    deadline: "2026-06-20",
     organization: "MeitY",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -254,6 +264,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 61,
     name: "Karnataka IT Startup Policy (KITS)",
+    deadline: "2026-06-20",
     organization: "Karnataka IT Dept",
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
@@ -279,6 +290,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 62,
     name: "Kerala Startup Mission (KSUM)",
+    deadline: "2026-06-20",
     organization: "Kerala Startup Mission",
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
@@ -304,6 +316,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 63,
     name: "West Bengal SKIPP",
+    deadline: "2026-06-20",
     organization: "WB MSME Department",
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
@@ -329,6 +342,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 64,
     name: "T-Hub Incubation Program",
+    deadline: "2026-06-20",
     organization: "T-Hub Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
@@ -354,6 +368,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 65,
     name: "Maharashtra Startup Yatra",
+    deadline: "2026-06-20",
     organization: "MSINS",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -379,6 +394,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 66,
     name: "Gujarat iCreate Program",
+    deadline: "2026-06-20",
     organization: "iCreate",
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
@@ -404,6 +420,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 67,
     name: "Tamil Nadu Startup Seed Grant",
+    deadline: "2026-06-20",
     organization: "StartupTN",
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
@@ -429,6 +446,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 68,
     name: "Rajasthan iStart Program",
+    deadline: "2026-06-20",
     organization: "iStart Rajasthan",
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
@@ -454,6 +472,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 69,
     name: "AP Innovation Society (APIS) Grant",
+    deadline: "2026-06-20",
     organization: "AP Innovation Society",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -479,6 +498,7 @@ export const grantsGovernment: Grant[] = [
   {
     id: 70,
     name: "Punjab Startup Scheme",
+    deadline: "2026-06-20",
     organization: "Punjab Infotech",
     logo: "https://placehold.co/100x100/EEE/999?text=P",
     description:

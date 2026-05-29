@@ -4,6 +4,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 81,
     name: "Thiel Fellowship",
+     deadline: "2026-07-20",
     organization: "Thiel Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
@@ -29,6 +30,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 82,
     name: "YALI (Young African Leaders Initiative)",
+     deadline: "2026-07-20",
     organization: "US State Department",
     logo: "https://placehold.co/100x100/EEE/999?text=Y",
     description:
@@ -54,6 +56,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 83,
     name: "Global Student Entrepreneur Awards",
+     deadline: "2026-07-20",
     organization: "Entrepreneurs' Organization",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -79,6 +82,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 84,
     name: "Echoing Green Fellowship",
+     deadline: "2026-07-20",
     organization: "Echoing Green",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -104,6 +108,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 85,
     name: "Resolution Fellowship",
+     deadline: "2026-07-20",
     organization: "Resolution",
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
@@ -129,6 +134,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 86,
     name: "Watson Fellowship",
+     deadline: "2026-07-20",
     organization: "Thomas J. Watson Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
@@ -154,6 +160,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 87,
     name: "Ashoka Youth Venture",
+     deadline: "2026-07-20",
     organization: "Ashoka",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -179,6 +186,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 88,
     name: "Global Good Fund Fellowship",
+     deadline: "2026-07-20",
     organization: "Global Good Fund",
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
@@ -204,6 +212,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 89,
     name: "Millennium Fellowship",
+     deadline: "2026-07-20",
     organization: "United Nations Academic Impact",
     logo: "https://placehold.co/100x100/EEE/999?text=U",
     description:
@@ -229,6 +238,7 @@ export const grantsGlobalYouth: Grant[] = [
   {
     id: 90,
     name: "Hult Prize",
+     deadline: "2026-07-20",
     organization: "Hult Prize Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:

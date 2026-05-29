@@ -7,6 +7,7 @@ import {
   downloadPdf,
   enroll,
   getMyEnrollment,
+  deleteMyEnrollment,
   getMyEnrollments,
   getRoadmap,
   getRoadmaps,
@@ -22,6 +23,7 @@ export const roadmapRouter = Router();
 roadmapRouter.post("/ai/generate", authMiddleware, aiRoadmapLimiter, postAiGenerate);
 roadmapRouter.get("/me/enrollments", authMiddleware, getMyEnrollments);
 roadmapRouter.get("/me/enrollments/:id", authMiddleware, getMyEnrollment);
+roadmapRouter.delete("/me/enrollments/:id", authMiddleware, deleteMyEnrollment);
 roadmapRouter.get("/me/enrollments/:id/pdf", authMiddleware, downloadPdf);
 roadmapRouter.get("/me/enrollments/:id/certificate", authMiddleware, downloadCertificate);
 roadmapRouter.patch(

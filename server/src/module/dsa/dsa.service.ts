@@ -330,6 +330,17 @@ export class DsaService {
     }));
   }
 
+  async reportProblem({userId, problemId, reason, message,}: { userId: number; problemId: number; reason: string; message?: string;}) { prisma
+    return prisma.dsaProblemReport.create({
+      data: {
+        userId,
+        problemId,
+        reason,
+        message,
+      },
+    });
+  }
+
   async getCompanies() {
     if (companiesCache && companiesCache.expiresAt > Date.now()) {
       return companiesCache.data;
@@ -880,5 +891,39 @@ Return ONLY a JSON array, no markdown fences:
       solvedToday: daily.solvedToday,
       lastSolvedDate: daily.solvedToday ? today : null,
     };
+  }
+
+  async getSimilarProblems(id: number, limit = 3) {
+    const current = await prisma.dsaProblem.findUnique({
+      where: { id },
+      select: { tags: true },
+    });
+    if (!current) throw new Error("Problem not found");
+    if (current.tags.length === 0) return [];
+
+    const similar = await prisma.dsaProblem.findMany({
+      where: {
+        tags: { hasSome: current.tags },
+        id: { not: id },
+      },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        difficulty: true,
+        tags: true,
+      },
+    });
+
+    // Sort by difficulty: Easy → Medium → Hard, then by title
+    const difficultyOrder: Record<string, number> = { Easy: 1, Medium: 2, Hard: 3 };
+    similar.sort((a, b) => {
+      const da = difficultyOrder[a.difficulty] ?? 4;
+      const db = difficultyOrder[b.difficulty] ?? 4;
+      if (da !== db) return da - db;
+      return a.title.localeCompare(b.title);
+    });
+
+    return similar.slice(0, limit);
   }
 }

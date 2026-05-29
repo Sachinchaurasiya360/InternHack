@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import { motion, AnimatePresence, useAnimation, useMotionValue } from "framer-motion";
 import { Link } from "react-router";
 import { useEffect, useState, useRef } from "react";
 import NumberFlow from "@number-flow/react";
@@ -243,12 +243,17 @@ function StatCell({
 
 function WinsMarquee() {
   const controls = useAnimation();
+  const x = useMotionValue(0)
   const isPausedByClick = useRef(false);
   
   const startAnimation = () => {
     controls.start({
-      x: ["0%", "-50%"],
-      transition: { duration: 90, repeat: Infinity, ease: "linear" },
+      x: "-50%",
+      transition: {
+        duration: 90,
+        repeat: Infinity,
+        ease: "linear",
+      },
     });
   };
 
@@ -300,6 +305,7 @@ function WinsMarquee() {
       <motion.div
         className="flex gap-3 whitespace-nowrap w-max"
         animate={ controls }
+        style={{ x }}
       >
         {row.map((w, i) => (
           <div

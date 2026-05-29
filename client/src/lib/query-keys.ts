@@ -7,6 +7,12 @@ export const queryKeys = {
     detail: (id: string | number) => ["jobs", "detail", id] as const,
     related: (id: string | number) => ["jobs", "related", id] as const,
   },
+  // Hackathons
+  hackathons: {
+    all: ["hackathons"] as const,
+    list: () => ["hackathons", "list"] as const,
+    myParticipations: () => ["hackathons", "my-participations"] as const,
+  },
 
   // Applications
   applications: {
@@ -219,6 +225,7 @@ export const queryKeys = {
     submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
     importStatus: () => ["dsa", "import-status"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
+    similar: (id: number) => ["dsa", "similar", id] as const,
   },
 
   // Roadmaps

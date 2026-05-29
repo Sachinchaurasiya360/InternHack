@@ -4,6 +4,7 @@ export const grantsEducation: Grant[] = [
   {
     id: 10,
     name: "Foundation Grants",
+     deadline: "2026-07-20",
     organization: "NEAR Protocol",
     logo: "https://cryptologos.cc/logos/near-protocol-near-logo.svg",
     description:
@@ -29,6 +30,7 @@ export const grantsEducation: Grant[] = [
   {
     id: 18,
     name: "zkSync Grants & Fellowship",
+     deadline: "2026-07-20",
     organization: "Matter Labs / ZKsync Foundation",
     logo: "https://cryptologos.cc/logos/zksync-zk-logo.svg",
     description:
@@ -54,6 +56,7 @@ export const grantsEducation: Grant[] = [
   {
     id: 48,
     name: "Research Grants",
+     deadline: "2026-07-20",
     organization: "Protocol Labs",
     logo: "https://protocol.ai/assets/img/pl-logo.svg",
     description:

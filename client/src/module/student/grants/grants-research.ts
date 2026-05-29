@@ -4,6 +4,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 71,
     name: "Fulbright-Nehru Fellowship",
+     deadline: "2026-07-20",
     organization: "USIEF",
     logo: "https://placehold.co/100x100/EEE/999?text=F",
     description:
@@ -29,6 +30,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 72,
     name: "Wellcome Trust Research Grants",
+     deadline: "2026-07-20",
     organization: "Wellcome Trust",
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
@@ -54,6 +56,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 73,
     name: "Grand Challenges Explorations",
+     deadline: "2026-07-20",
     organization: "Bill & Melinda Gates Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
@@ -79,6 +82,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 74,
     name: "CERN Openlab Summer Students",
+     deadline: "2026-07-20",
     organization: "CERN",
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
@@ -104,6 +108,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 75,
     name: "DAAD Research Grants",
+    deadline: "2026-07-20",
     organization: "DAAD (German Academic Exchange Service)",
     logo: "https://placehold.co/100x100/EEE/999?text=D",
     description:
@@ -129,6 +134,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 76,
     name: "Marie Sklodowska-Curie Fellowship",
+     deadline: "2026-07-20",
     organization: "European Commission",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -154,6 +160,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 77,
     name: "Swiss Government Excellence Scholarships",
+     deadline: "2026-07-20",
     organization: "Swiss Confederation",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -179,6 +186,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 78,
     name: "Humboldt Research Fellowship",
+     deadline: "2026-07-20",
     organization: "Alexander von Humboldt Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
@@ -204,6 +212,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 79,
     name: "JSPS Fellowship",
+     deadline: "2026-07-20",
     organization: "Japan Society for the Promotion of Science",
     logo: "https://placehold.co/100x100/EEE/999?text=J",
     description:
@@ -229,6 +238,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 80,
     name: "Newton International Fellowship",
+     deadline: "2026-07-20",
     organization: "Royal Society",
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
@@ -254,6 +264,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 131,
     name: "Schmidt Science Fellows",
+     deadline: "2026-07-20",
     organization: "Schmidt Futures",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -279,6 +290,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 132,
     name: "Simons Foundation Grants",
+     deadline: "2026-07-20",
     organization: "Simons Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -304,6 +316,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 133,
     name: "HHMI Investigator Program",
+     deadline: "2026-07-20",
     organization: "Howard Hughes Medical Institute",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
@@ -329,6 +342,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 134,
     name: "Moore Foundation Science Grants",
+     deadline: "2026-07-20",
     organization: "Gordon & Betty Moore Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -354,6 +368,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 135,
     name: "Chan Zuckerberg Initiative Science",
+     deadline: "2026-07-20",
     organization: "Chan Zuckerberg Initiative",
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
@@ -379,6 +394,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 136,
     name: "Kavli Foundation Grants",
+     deadline: "2026-07-20",
     organization: "Kavli Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
@@ -404,6 +420,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 137,
     name: "Sloan Research Fellowship",
+     deadline: "2026-07-20",
     organization: "Alfred P. Sloan Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -429,6 +446,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 138,
     name: "Packard Fellowship for Science and Engineering",
+     deadline: "2026-07-20",
     organization: "David and Lucile Packard Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=P",
     description:
@@ -454,6 +472,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 139,
     name: "Burroughs Wellcome Fund Career Awards",
+     deadline: "2026-07-20",
     organization: "Burroughs Wellcome Fund",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
@@ -479,6 +498,7 @@ export const grantsResearch: Grant[] = [
   {
     id: 140,
     name: "W.M. Keck Foundation Research Grants",
+     deadline: "2026-07-20",
     organization: "W.M. Keck Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:

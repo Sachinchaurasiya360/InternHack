@@ -129,8 +129,8 @@ export default function ApplicationProgressPage() {
                   )}
                   <h3 className="font-semibold text-gray-900 dark:text-white">Round {i + 1}: {round.name}</h3>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${isCompleted ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
-                    isActive ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
-                      "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500"
+                      isActive ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                        "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500"
                     }`}>
                     {isCompleted ? "Completed" : isActive ? "In Progress" : "Pending"}
                   </span>

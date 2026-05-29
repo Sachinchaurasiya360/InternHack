@@ -6,7 +6,23 @@ interface UploadProfileParams {
   endpoint?: '/profile-resume' | '/profile-pic' | '/cover-image';
 }
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_TYPES: Record<UploadProfileParams['folder'], string[]> = {
+  'resumes': ['application/pdf'],
+  'profile-pics': ['image/jpeg', 'image/png', 'image/webp'],
+  'cover-images': ['image/jpeg', 'image/png', 'image/webp'],
+  'company-logos': ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
+};
+
 export const uploadDirectToS3 = async ({ file, folder, endpoint }: UploadProfileParams) => {
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error(`File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB limit`);
+  }
+  const allowedTypes = ALLOWED_TYPES[folder];
+  if (allowedTypes && !allowedTypes.includes(file.type)) {
+    throw new Error(`Invalid file type. Allowed: ${allowedTypes.join(', ')}`);
+  }
+
   try {
     // Get pre-signed URL from backend (uses Bearer token via api instance)
     const { data: presignData } = await api.post('/upload/presigned-url', {
@@ -15,13 +31,18 @@ export const uploadDirectToS3 = async ({ file, folder, endpoint }: UploadProfile
       folder,
     });
 
-    const { uploadUrl, fileUrl } = presignData as { uploadUrl: string; fileUrl: string };
+    const { uploadUrl, uploadFields, fileUrl } = presignData as { uploadUrl: string; uploadFields: Record<string, string>; fileUrl: string };
 
-    // Upload directly to S3 — no auth headers on pre-signed requests
+    const formData = new FormData();
+    Object.entries(uploadFields).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    formData.append("file", file); // file MUST be the last field appended
+
+    // Upload directly to S3 via POST — no auth headers on pre-signed requests
     const s3UploadRes = await fetch(uploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type },
-      body: file,
+      method: 'POST',
+      body: formData,
     });
 
     if (!s3UploadRes.ok) {
