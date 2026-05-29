@@ -110,7 +110,7 @@ function ChartModal({ open, onClose, title, subtitle, children }: { open: boolea
                 <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
                 <p className="text-xs text-gray-500">{subtitle}</p>
               </div>
-              <Button variant="ghost" mode="icon" onClick={onClose} className="bg-gray-100 hover:bg-gray-200 rounded-xl">
+              <Button variant="ghost" mode="icon" onClick={onClose} className="bg-gray-100 hover:bg-gray-200 rounded-xl" aria-label="Close modal">
                 <X className="w-4 h-4 text-gray-600" />
               </Button>
             </div>
@@ -144,6 +144,7 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
             size="sm"
             onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
             className="bg-gray-50 hover:bg-indigo-50 shrink-0"
+            aria-label={`Expand ${title} chart`}
             title="Expand chart"
           >
             <Maximize2 className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" />
@@ -161,7 +162,7 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
 
 function TrendSkeleton() {
   return (
-    <div className="animate-pulse space-y-4">
+    <div className="animate-pulse space-y-4" aria-live="polite">
       <div className="flex items-end gap-3 h-64">
         {[42, 68, 58, 88, 54, 76].map((height, index) => (
           <div key={index} className="flex-1 flex flex-col items-center gap-2">
@@ -177,7 +178,7 @@ function TrendSkeleton() {
 
 function TrendEmptyState({ message }: { message: string }) {
   return (
-    <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 text-center">
+    <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 text-center" aria-live="polite">
       <p className="text-sm font-semibold text-gray-900">No contribution activity yet</p>
       <p className="mt-2 max-w-sm text-sm text-gray-500">{message}</p>
     </div>
@@ -351,7 +352,7 @@ export default function OpenSourceAnalyticsPage() {
   // ─── Loading / Error ────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50" aria-live="polite">
         <LoadingScreen />
       </div>
     );
@@ -359,7 +360,7 @@ export default function OpenSourceAnalyticsPage() {
 
   if (isError || allOrgs.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-3 text-gray-500">
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-3 text-gray-500" aria-live="polite">
         <AlertCircle className="w-10 h-10" />
         <p>No data available for analytics.</p>
         <Link to="/student/opensource" className="text-indigo-600 hover:underline text-sm">Back to repos</Link>
@@ -376,9 +377,14 @@ export default function OpenSourceAnalyticsPage() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Open Source Analytics</h1>
             <p className="text-sm text-gray-500">
-              {orgs.length} of {allOrgs.length} organizations
+              <span aria-label={`Total repositories: ${allOrgs.length}`}>{orgs.length} of {allOrgs.length} organizations</span>
               {hasActiveFilter && " (filtered)"}
-              {stats && ` \u00b7 ${stats.years.length} years \u00b7 ${stats.technologies.length} technologies`}
+              {stats && (
+                <>
+                  <span aria-label={`Total years: ${stats.years.length}`}> {` \u00b7 ${stats.years.length} years`}</span>
+                  <span aria-label={`Total technologies: ${stats.technologies.length}`}> {` \u00b7 ${stats.technologies.length} technologies`}</span>
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -393,23 +399,23 @@ export default function OpenSourceAnalyticsPage() {
               <span className="text-sm font-semibold">Filters</span>
             </div>
 
-            <select className={selectClass} value={filterYear} onChange={(e) => setFilterYear(e.target.value)}>
+            <select className={selectClass} value={filterYear} onChange={(e) => setFilterYear(e.target.value)} aria-label="Filter by year">
               <option value="ALL">All Years</option>
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
 
-            <select className={selectClass} value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+            <select className={selectClass} value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} aria-label="Filter by category">
               <option value="ALL">All Categories</option>
               {categories.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
 
-            <select className={selectClass} value={filterTech} onChange={(e) => setFilterTech(e.target.value)}>
+            <select className={selectClass} value={filterTech} onChange={(e) => setFilterTech(e.target.value)} aria-label="Filter by technology">
               <option value="ALL">All Technologies</option>
               {technologies.slice(0, 50).map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
 
             {hasActiveFilter && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-indigo-600 hover:text-indigo-800 ml-auto">
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-indigo-600 hover:text-indigo-800 ml-auto" aria-label="Clear all filters">
                 <X className="w-3.5 h-3.5" /> Clear
               </Button>
             )}
@@ -448,15 +454,49 @@ export default function OpenSourceAnalyticsPage() {
               ) : trendIsError ? (
                 <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
               ) : hasContributionActivity ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
-                    <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
-                    <Tooltip {...tooltipStyle} />
-                    <Bar dataKey="count" fill="#0ea5e9" radius={[8, 8, 0, 0]} name="Approved contributions" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <>
+                  <figure
+                    role="img"
+                    aria-label={`Monthly contribution trend: ${contributionTrend.map(m => `${m.label}: ${m.count}`).join(", ")}`}
+                    tabIndex={0}
+                    className="h-full w-full"
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
+                        <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
+                        <Tooltip {...tooltipStyle} />
+                        <Bar
+                          dataKey="count"
+                          fill="#0ea5e9"
+                          radius={[8, 8, 0, 0]}
+                          name="Approved contributions"
+                          shape={(props: any) => (
+                            <g>
+                              <title>{`${props.payload.label}: ${props.payload.count} contributions`}</title>
+                              <rect {...props} />
+                            </g>
+                          )}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </figure>
+                  <table className="sr-only">
+                    <caption>Monthly contribution history</caption>
+                    <thead>
+                      <tr><th>Month</th><th>Contributions</th></tr>
+                    </thead>
+                    <tbody>
+                      {contributionTrend.map(m => (
+                        <tr key={m.label}>
+                          <td>{m.label}</td>
+                          <td>{m.count}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
               ) : (
                 <TrendEmptyState message="Approve a repository suggestion to start tracking your monthly open source activity here." />
               )
@@ -465,15 +505,48 @@ export default function OpenSourceAnalyticsPage() {
             {trendIsLoading ? (
               <TrendSkeleton />
             ) : hasContributionActivity ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
-                  <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
-                  <Tooltip {...tooltipStyle} />
-                  <Bar dataKey="count" fill="#0ea5e9" radius={[8, 8, 0, 0]} name="Approved contributions" />
-                </BarChart>
-              </ResponsiveContainer>
+              <>
+                <figure
+                  role="img"
+                  aria-label={`Monthly contribution trend: ${contributionTrend.map(m => `${m.label}: ${m.count}`).join(", ")}`}
+                  tabIndex={0}
+                >
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
+                      <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
+                      <Tooltip {...tooltipStyle} />
+                      <Bar
+                        dataKey="count"
+                        fill="#0ea5e9"
+                        radius={[8, 8, 0, 0]}
+                        name="Approved contributions"
+                        shape={(props: any) => (
+                          <g>
+                            <title>{`${props.payload.label}: ${props.payload.count} contributions`}</title>
+                            <rect {...props} />
+                          </g>
+                        )}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </figure>
+                <table className="sr-only">
+                  <caption>Monthly contribution history</caption>
+                  <thead>
+                    <tr><th>Month</th><th>Contributions</th></tr>
+                  </thead>
+                  <tbody>
+                    {contributionTrend.map(m => (
+                      <tr key={m.label}>
+                        <td>{m.label}</td>
+                        <td>{m.count}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
             ) : trendIsError ? (
               <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
             ) : (
@@ -484,163 +557,281 @@ export default function OpenSourceAnalyticsPage() {
           {/* 2 - Category Distribution (Pie) */}
           <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={1}
             expandedChildren={
-              <ResponsiveContainer width="100%" height="100%">
+              <figure
+                role="img"
+                aria-label={`Category distribution: ${categoryData.map(d => `${d.name}: ${d.value}`).join(", ")}`}
+                tabIndex={0}
+                className="h-full w-full"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={categoryData} cx="50%" cy="50%" innerRadius="25%" outerRadius="45%" dataKey="value" paddingAngle={2} stroke="#fff" strokeWidth={2}>
+                      {categoryData.map((d, i) => <Cell key={i} fill={d.fill} />)}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend formatter={(v) => <span className="text-sm text-gray-600">{v}</span>} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </figure>
+            }
+          >
+            <figure
+              role="img"
+              aria-label={`Category distribution: ${categoryData.map(d => `${d.name}: ${d.value}`).join(", ")}`}
+              tabIndex={0}
+            >
+              <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
-                  <Pie data={categoryData} cx="50%" cy="50%" innerRadius="25%" outerRadius="45%" dataKey="value" paddingAngle={2} stroke="#fff" strokeWidth={2}>
+                  <Pie data={categoryData} cx="50%" cy="50%" innerRadius={60} outerRadius={105} dataKey="value" paddingAngle={2} stroke="#fff" strokeWidth={2}>
                     {categoryData.map((d, i) => <Cell key={i} fill={d.fill} />)}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend formatter={(v) => <span className="text-sm text-gray-600">{v}</span>} />
+                  <Legend formatter={(v) => <span className="text-xs text-gray-600">{v}</span>} wrapperStyle={{ fontSize: 11 }} />
                 </PieChart>
               </ResponsiveContainer>
-            }
-          >
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie data={categoryData} cx="50%" cy="50%" innerRadius={60} outerRadius={105} dataKey="value" paddingAngle={2} stroke="#fff" strokeWidth={2}>
-                  {categoryData.map((d, i) => <Cell key={i} fill={d.fill} />)}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend formatter={(v) => <span className="text-xs text-gray-600">{v}</span>} wrapperStyle={{ fontSize: 11 }} />
-              </PieChart>
-            </ResponsiveContainer>
+            </figure>
           </ChartCard>
 
           {/* 3 - Year-wise Participation Trend (Line) */}
           <ChartCard title="Year-wise Participation" subtitle="Number of organizations participating each year" index={2}
             expandedChildren={
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={yearTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="year" tick={{ fill: "#374151", fontSize: 13 }} />
-                  <YAxis tick={{ fill: "#6b7280", fontSize: 13 }} />
-                  <Tooltip {...tooltipStyle} />
-                  <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={3} dot={{ r: 5, fill: "#6366f1" }} activeDot={{ r: 7 }} name="Organizations" />
-                </LineChart>
-              </ResponsiveContainer>
+              <figure
+                role="img"
+                aria-label={`Year-wise participation trend: ${yearTrendData.map(d => `${d.year}: ${d.count}`).join(", ")}`}
+                tabIndex={0}
+                className="h-full w-full"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={yearTrendData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="year" tick={{ fill: "#374151", fontSize: 13 }} />
+                    <YAxis tick={{ fill: "#6b7280", fontSize: 13 }} />
+                    <Tooltip {...tooltipStyle} />
+                    <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={3} dot={{ r: 5, fill: "#6366f1" }} activeDot={{ r: 7 }} name="Organizations" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </figure>
             }
           >
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={yearTrendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="year" tick={{ fill: "#374151", fontSize: 12 }} />
-                <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
-                <Tooltip {...tooltipStyle} />
-                <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 4, fill: "#6366f1" }} activeDot={{ r: 6 }} name="Organizations" />
-              </LineChart>
-            </ResponsiveContainer>
+            <figure
+              role="img"
+              aria-label={`Year-wise participation trend: ${yearTrendData.map(d => `${d.year}: ${d.count}`).join(", ")}`}
+              tabIndex={0}
+            >
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={yearTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="year" tick={{ fill: "#374151", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <Tooltip {...tooltipStyle} />
+                  <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 4, fill: "#6366f1" }} activeDot={{ r: 6 }} name="Organizations" />
+                </LineChart>
+              </ResponsiveContainer>
+            </figure>
           </ChartCard>
 
           {/* 4 - Top Technologies (Horizontal Bar) */}
           <ChartCard title="Top Technologies" subtitle="Most popular technologies across organizations" index={3}
             expandedChildren={
-              <ResponsiveContainer width="100%" height="100%">
+              <figure
+                role="img"
+                aria-label={`Top technologies: ${techData.map(d => `${d.name}: ${d.count}`).join(", ")}`}
+                tabIndex={0}
+                className="h-full w-full"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 13 }} />
+                    <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 13 }} width={100} />
+                    <Tooltip {...tooltipStyle} />
+                    <Bar dataKey="count" radius={[0, 6, 6, 0]} shape={(props: any) => (
+                      <g>
+                        <title>{`${props.payload.name}: ${props.payload.count} organizations`}</title>
+                        <rect {...props} />
+                      </g>
+                    )}>
+                      {techData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </figure>
+            }
+          >
+            <figure
+              role="img"
+              aria-label={`Top technologies: ${techData.map(d => `${d.name}: ${d.count}`).join(", ")}`}
+              tabIndex={0}
+            >
+              <ResponsiveContainer width="100%" height={340}>
                 <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 13 }} />
-                  <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 13 }} width={100} />
+                  <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 11 }} width={90} />
                   <Tooltip {...tooltipStyle} />
-                  <Bar dataKey="count" radius={[0, 6, 6, 0]}>
+                  <Bar dataKey="count" radius={[0, 6, 6, 0]} shape={(props: any) => (
+                    <g>
+                      <title>{`${props.payload.name}: ${props.payload.count} organizations`}</title>
+                      <rect {...props} />
+                    </g>
+                  )}>
                     {techData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            }
-          >
-            <ResponsiveContainer width="100%" height={340}>
-              <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 12 }} />
-                <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 11 }} width={90} />
-                <Tooltip {...tooltipStyle} />
-                <Bar dataKey="count" radius={[0, 6, 6, 0]}>
-                  {techData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            </figure>
           </ChartCard>
 
           {/* 5 - Top Topics */}
           <ChartCard title="Top Topics" subtitle="Most common topics across organizations" index={4}
             expandedChildren={
-              <ResponsiveContainer width="100%" height="100%">
+              <figure
+                role="img"
+                aria-label={`Top topics: ${topicData.map(d => `${d.name}: ${d.count}`).join(", ")}`}
+                tabIndex={0}
+                className="h-full w-full"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 13 }} />
+                    <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 13 }} width={120} />
+                    <Tooltip {...tooltipStyle} />
+                    <Bar dataKey="count" radius={[0, 6, 6, 0]} shape={(props: any) => (
+                      <g>
+                        <title>{`${props.payload.name}: ${props.payload.count} organizations`}</title>
+                        <rect {...props} />
+                      </g>
+                    )}>
+                      {topicData.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 4) % CHART_COLORS.length]} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </figure>
+            }
+          >
+            <figure
+              role="img"
+              aria-label={`Top topics: ${topicData.map(d => `${d.name}: ${d.count}`).join(", ")}`}
+              tabIndex={0}
+            >
+              <ResponsiveContainer width="100%" height={340}>
                 <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 13 }} />
-                  <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 13 }} width={120} />
+                  <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 11 }} width={110} />
                   <Tooltip {...tooltipStyle} />
-                  <Bar dataKey="count" radius={[0, 6, 6, 0]}>
+                  <Bar dataKey="count" radius={[0, 6, 6, 0]} shape={(props: any) => (
+                    <g>
+                      <title>{`${props.payload.name}: ${props.payload.count} organizations`}</title>
+                      <rect {...props} />
+                    </g>
+                  )}>
                     {topicData.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 4) % CHART_COLORS.length]} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            }
-          >
-            <ResponsiveContainer width="100%" height={340}>
-              <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 12 }} />
-                <YAxis dataKey="name" type="category" tick={{ fill: "#374151", fontSize: 11 }} width={110} />
-                <Tooltip {...tooltipStyle} />
-                <Bar dataKey="count" radius={[0, 6, 6, 0]}>
-                  {topicData.map((_, i) => <Cell key={i} fill={CHART_COLORS[(i + 4) % CHART_COLORS.length]} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            </figure>
           </ChartCard>
 
           {/* 6 - Top Orgs by Projects */}
           <ChartCard title="Top Organizations by Projects" subtitle="Organizations with the most GSoC projects" index={5}
             expandedChildren={
-              <ResponsiveContainer width="100%" height="100%">
+              <figure
+                role="img"
+                aria-label={`Top organizations by projects: ${topProjectsData.map(d => `${d.name}: ${d.projects}`).join(", ")}`}
+                tabIndex={0}
+                className="h-full w-full"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topProjectsData} margin={{ left: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="name" tick={{ fill: "#6b7280", fontSize: 11 }} angle={-35} textAnchor="end" height={80} />
+                    <YAxis tick={{ fill: "#6b7280", fontSize: 13 }} />
+                    <Tooltip {...tooltipStyle} />
+                    <Bar dataKey="projects" radius={[6, 6, 0, 0]} shape={(props: any) => (
+                      <g>
+                        <title>{`${props.payload.name}: ${props.payload.projects} projects`}</title>
+                        <rect {...props} />
+                      </g>
+                    )}>
+                      {topProjectsData.map((d, i) => <Cell key={i} fill={d.fill} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </figure>
+            }
+          >
+            <figure
+              role="img"
+              aria-label={`Top organizations by projects: ${topProjectsData.map(d => `${d.name}: ${d.projects}`).join(", ")}`}
+              tabIndex={0}
+            >
+              <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={topProjectsData} margin={{ left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="name" tick={{ fill: "#6b7280", fontSize: 11 }} angle={-35} textAnchor="end" height={80} />
-                  <YAxis tick={{ fill: "#6b7280", fontSize: 13 }} />
+                  <XAxis dataKey="name" tick={{ fill: "#6b7280", fontSize: 9 }} angle={-35} textAnchor="end" height={70} />
+                  <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
                   <Tooltip {...tooltipStyle} />
-                  <Bar dataKey="projects" radius={[6, 6, 0, 0]}>
+                  <Bar dataKey="projects" radius={[6, 6, 0, 0]} shape={(props: any) => (
+                    <g>
+                      <title>{`${props.payload.name}: ${props.payload.projects} projects`}</title>
+                      <rect {...props} />
+                    </g>
+                  )}>
                     {topProjectsData.map((d, i) => <Cell key={i} fill={d.fill} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            }
-          >
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={topProjectsData} margin={{ left: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="name" tick={{ fill: "#6b7280", fontSize: 9 }} angle={-35} textAnchor="end" height={70} />
-                <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
-                <Tooltip {...tooltipStyle} />
-                <Bar dataKey="projects" radius={[6, 6, 0, 0]}>
-                  {topProjectsData.map((d, i) => <Cell key={i} fill={d.fill} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            </figure>
           </ChartCard>
 
           {/* 7 - Years Active Distribution */}
           <ChartCard title="Longevity Distribution" subtitle="How many years organizations have been in GSoC" index={6}
             expandedChildren={
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={yearCountData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="yearsActive" tick={{ fill: "#374151", fontSize: 13 }} />
-                  <YAxis tick={{ fill: "#6b7280", fontSize: 13 }} />
-                  <Tooltip {...tooltipStyle} />
-                  <Bar dataKey="count" fill="#10b981" radius={[6, 6, 0, 0]} name="Organizations" />
-                </BarChart>
-              </ResponsiveContainer>
+              <figure
+                role="img"
+                aria-label={`Longevity distribution: ${yearCountData.map(d => `${d.yearsActive}: ${d.count}`).join(", ")}`}
+                tabIndex={0}
+                className="h-full w-full"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={yearCountData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="yearsActive" tick={{ fill: "#374151", fontSize: 13 }} />
+                    <YAxis tick={{ fill: "#6b7280", fontSize: 13 }} />
+                    <Tooltip {...tooltipStyle} />
+                    <Bar dataKey="count" fill="#10b981" radius={[6, 6, 0, 0]} name="Organizations" shape={(props: any) => (
+                      <g>
+                        <title>{`${props.payload.yearsActive}: ${props.payload.count} organizations`}</title>
+                        <rect {...props} />
+                      </g>
+                    )} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </figure>
             }
           >
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={yearCountData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="yearsActive" tick={{ fill: "#374151", fontSize: 12 }} />
-                <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
-                <Tooltip {...tooltipStyle} />
-                <Bar dataKey="count" fill="#10b981" radius={[6, 6, 0, 0]} name="Organizations" />
-              </BarChart>
-            </ResponsiveContainer>
+            <figure
+              role="img"
+              aria-label={`Longevity distribution: ${yearCountData.map(d => `${d.yearsActive}: ${d.count}`).join(", ")}`}
+              tabIndex={0}
+            >
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={yearCountData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="yearsActive" tick={{ fill: "#374151", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <Tooltip {...tooltipStyle} />
+                  <Bar dataKey="count" fill="#10b981" radius={[6, 6, 0, 0]} name="Organizations" shape={(props: any) => (
+                    <g>
+                      <title>{`${props.payload.yearsActive}: ${props.payload.count} organizations`}</title>
+                      <rect {...props} />
+                    </g>
+                  )} />
+                </BarChart>
+              </ResponsiveContainer>
+            </figure>
           </ChartCard>
 
           {/* 8 - Org Comparison Radar */}
@@ -667,18 +858,24 @@ export default function OpenSourceAnalyticsPage() {
 
             {selectedOrgs.length >= 2 ? (
               <div className="max-w-xl mx-auto">
-                <ResponsiveContainer width="100%" height={320}>
-                  <RadarChart data={radarData}>
-                    <PolarGrid stroke="#d1d5db" />
-                    <PolarAngleAxis dataKey="axis" tick={{ fill: "#374151", fontSize: 12 }} />
-                    <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: "#9ca3af", fontSize: 10 }} />
-                    {orgs.filter((o) => selectedOrgs.includes(o.id)).map((o, i) => (
-                      <Radar key={o.id} name={o.name} dataKey={o.name} stroke={CHART_COLORS[i]} fill={CHART_COLORS[i]} fillOpacity={0.15} />
-                    ))}
-                    <Legend formatter={(v) => <span className="text-xs text-gray-600">{v}</span>} />
-                    <Tooltip {...tooltipStyle} />
-                  </RadarChart>
-                </ResponsiveContainer>
+                <figure
+                  role="img"
+                  aria-label={`Organization comparison: ${radarData.map(d => `${d.axis}: ${Object.entries(d).filter(([k]) => k !== 'axis').map(([k, v]) => `${k} is ${v}`).join(", ")}`).join("; ")}`}
+                  tabIndex={0}
+                >
+                  <ResponsiveContainer width="100%" height={320}>
+                    <RadarChart data={radarData}>
+                      <PolarGrid stroke="#d1d5db" />
+                      <PolarAngleAxis dataKey="axis" tick={{ fill: "#374151", fontSize: 12 }} />
+                      <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: "#9ca3af", fontSize: 10 }} />
+                      {orgs.filter((o) => selectedOrgs.includes(o.id)).map((o, i) => (
+                        <Radar key={o.id} name={o.name} dataKey={o.name} stroke={CHART_COLORS[i]} fill={CHART_COLORS[i]} fillOpacity={0.15} />
+                      ))}
+                      <Legend formatter={(v) => <span className="text-xs text-gray-600">{v}</span>} />
+                      <Tooltip {...tooltipStyle} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </figure>
               </div>
             ) : (
               <div className="flex items-center justify-center h-40 text-gray-400 text-sm">
