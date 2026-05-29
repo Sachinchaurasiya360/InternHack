@@ -104,7 +104,8 @@ function SortableProjectItem({
           onClick={onEdit}
           aria-label="Edit project"
           variant="ghost"
-          size="icon"
+          mode="icon"
+          size="sm"
           className="text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
         >
           <Pencil className="w-3.5 h-3.5" />
@@ -113,8 +114,10 @@ function SortableProjectItem({
           type="button"
           onClick={onRemove}
           aria-label="Delete project"
-          variant="ghost"
-          size="icon"
+          variant="destructive"
+          appearance="ghost"
+          mode="icon"
+          size="sm"
           className="text-stone-400 hover:text-red-500"
         >
           <Trash2 className="w-3.5 h-3.5" />
@@ -262,7 +265,8 @@ export function ProjectsSection({
                     onClick={() => setDraft((d) => ({ ...d, techStack: d.techStack.filter((_, j) => j !== i) }))}
                     aria-label={`Remove ${t}`}
                     variant="ghost"
-                    size="icon"
+                    mode="icon"
+                    size="sm"
                     className="opacity-60 hover:opacity-100 h-auto p-0 w-auto"
                   >
                     <X className="w-3 h-3" />
@@ -288,9 +292,10 @@ export function ProjectsSection({
                 type="button"
                 onClick={addTech}
                 aria-label="Add technology"
-                variant="outline"
-                size="icon"
-                className="shrink-0 w-10 h-10 border-stone-300 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-900 dark:hover:border-stone-50"
+                variant="secondary"
+                mode="icon"
+                size="sm"
+                className="shrink-0 w-10 h-10 border border-stone-300 dark:border-white/10 bg-transparent text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-900 dark:hover:border-stone-50"
               >
                 <Plus className="w-3.5 h-3.5" />
               </Button>
@@ -326,12 +331,10 @@ export function ProjectsSection({
                 <Calendar className="w-3 h-3" /> Built At
               </label>
               <input
-                type="text"
+                type="month"
                 value={draft.builtAt ?? ""}
                 onChange={(e) => setDraft((d) => ({ ...d, builtAt: e.target.value }))}
                 className={inputClass}
-                placeholder="e.g. Summer 2023"
-                maxLength={30}
               />
             </div>
           </div>
@@ -361,8 +364,8 @@ export function ProjectsSection({
         <Button
           type="button"
           onClick={startAdd}
-          variant="dashed"
-          className="w-full h-auto py-3 text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 mt-3"
+          variant="secondary"
+          className="w-full h-auto py-3 text-sm text-stone-600 dark:text-stone-400 border border-dashed border-stone-300 dark:border-white/10 bg-transparent hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 mt-3"
         >
           <Plus className="w-4 h-4" /> Add project
         </Button>

@@ -446,7 +446,30 @@ export class AuthService {
       updateData.jobStatus = data.jobStatus || null;
     }
     if ("projects" in data) {
-      updateData.projects = Array.isArray(data.projects) ? data.projects : [];
+      if (Array.isArray(data.projects)) {
+        const dateRegex = /^\d{4}-(?:0[1-9]|1[0-2])$/;
+        updateData.projects = data.projects.map((p: any) => {
+          if (!p || typeof p !== "object") return p;
+          const proj = { ...p };
+          if (typeof proj.builtAt === "string") {
+            const trimmed = proj.builtAt.trim();
+            if (trimmed) {
+              if (dateRegex.test(trimmed)) {
+                proj.builtAt = trimmed;
+              } else if (!isNaN(Date.parse(trimmed))) {
+                proj.builtAt = new Date(trimmed).toISOString();
+              } else {
+                throw Object.assign(new Error(`Invalid date format for builtAt. Use YYYY-MM or ISO-8601.`), { statusCode: 400 });
+              }
+            } else {
+              delete proj.builtAt;
+            }
+          }
+          return proj;
+        });
+      } else {
+        updateData.projects = [];
+      }
     }
     if ("achievements" in data) {
       updateData.achievements = Array.isArray(data.achievements) ? data.achievements : [];
