@@ -115,6 +115,7 @@ export async function generateRoadmapPdf(input: RoadmapPdfInput): Promise<Buffer
       },
     });
 
+    // Instrument addPage for debugging unexpected page creation when PDF_DEBUG is set.
     // Paint full-page background for dark mode on every page (incl. first).
     if (input.theme === "dark") {
       const paintBg = () => {
@@ -291,23 +292,34 @@ function drawTableOfContents(doc: PDFKit.PDFDocument, input: RoadmapPdfInput) {
   });
   items.push({ label: "After you finish", sub: "Next steps and InternHack tools" });
 
-  doc.fillColor(COLORS.ink).fontSize(11).font("Helvetica");
+  doc.fillColor(COLORS.ink).fontSize(11).font("Helvetica-Bold");
   for (const item of items) {
     pageBreakIfNeeded(doc, 28);
-    const isSection = item.label.startsWith("0") || item.label.startsWith("1");
-    doc.font(isSection ? "Helvetica" : "Helvetica-Bold").fillColor(COLORS.ink).fontSize(11);
-    doc.text(item.label, margin + (isSection ? 16 : 0), doc.y, {
-      width: contentW - 200,
-      ellipsis: true,
-      continued: false,
-    });
+    // Section entries are prefixed with a two-digit index like "01", "02" etc.
+    const isSection = /^\d{2}\b/.test(item.label);
+
+    // Section headings get stronger weight and a small indent.
+    doc.fillColor(COLORS.ink).font(isSection ? "Helvetica-Bold" : "Helvetica").fontSize(11);
+
+    // Draw label and capture the baseline Y to place the subtext below it.
+    const labelX = margin + (isSection ? 16 : 0);
+    const labelWidth = contentW - 200;
+    const beforeY = doc.y;
+    doc.text(item.label, labelX, doc.y, { width: labelWidth, ellipsis: true });
+    const afterY = doc.y;
+
     if (item.sub) {
+      // Place subtext a fixed distance below the label baseline to avoid overlap
+      // regardless of font metrics. This prevents tight wrapping from overlaying.
+      const subY = Math.max(afterY + 2, beforeY + 14);
       doc.fillColor(COLORS.faint).fontSize(9).font("Helvetica");
-      doc.text(item.sub, margin + (isSection ? 16 : 0), doc.y, {
-        width: contentW - 200,
-      });
+      doc.text(item.sub, labelX, subY, { width: labelWidth });
+      // Move cursor to below the subtext for the next item
+      doc.y = subY + doc.heightOfString(item.sub, { width: labelWidth }) / 1.1;
+    } else {
+      // No subtext — add a modest gap
+      doc.moveDown(0.6);
     }
-    doc.moveDown(0.4);
   }
 }
 
@@ -834,11 +846,6 @@ function bulletLine(doc: PDFKit.PDFDocument, text: string) {
   doc.moveDown(0.15);
 }
 
-/**
- * Lightweight markdown handling: paragraphs split on blank lines, bullet
- * lines starting with "- " become bulleted text. Headings and code blocks
- * are not rendered (the seed content uses neither in the body).
- */
 function drawMarkdownLite(doc: PDFKit.PDFDocument, md: string) {
   const blocks = md.split(/\n\s*\n/);
 
@@ -872,8 +879,7 @@ function drawMarkdownLite(doc: PDFKit.PDFDocument, md: string) {
 }
 
 function pageBreakIfNeeded(doc: PDFKit.PDFDocument, neededSpace: number) {
-  // Footer reserves 36pt at the bottom; use that as the floor for content.
-  const bottomFloor = A4_HEIGHT - MARGIN - 24;
+  const bottomFloor = A4_HEIGHT - MARGIN - 48;
   if (doc.y + neededSpace > bottomFloor) {
     doc.addPage();
   }
@@ -881,26 +887,44 @@ function pageBreakIfNeeded(doc: PDFKit.PDFDocument, neededSpace: number) {
 
 function stampFooters(doc: PDFKit.PDFDocument) {
   const range = doc.bufferedPageRange();
-  const total = range.start + range.count;
+  const total = range.count;
 
-  for (let i = range.start; i < total; i++) {
+  for (let i = range.start; i < range.start + range.count; i++) {
     doc.switchToPage(i);
 
-    // Footer line
-    const y = A4_HEIGHT - MARGIN + 4;
-    doc.rect(MARGIN, y, A4_WIDTH - MARGIN * 2, 0.5).fill(COLORS.faintest);
+  const y = A4_HEIGHT - MARGIN - 36;
 
-    doc.fillColor(COLORS.faint).fontSize(8).font("Helvetica");
-    doc.text("INTERNHACK · ROADMAP", MARGIN, y + 8, {
-      characterSpacing: 1.5,
-      width: A4_WIDTH - MARGIN * 2,
-    });
-    doc.text(
-      `Page ${i + 1} of ${total}`,
-      MARGIN,
-      y + 8,
-      { width: A4_WIDTH - MARGIN * 2, align: "right" },
-    );
+    doc.y = y - 2;
+
+    // Footer rule
+    doc
+      .moveTo(MARGIN, y)
+      .lineTo(A4_WIDTH - MARGIN, y)
+      .lineWidth(0.5)
+      .strokeColor(COLORS.faintest)
+      .stroke();
+
+    // Left branding
+    doc
+      .fillColor(COLORS.faint)
+      .fontSize(8)
+      .font("Helvetica")
+      .text("INTERNHACK · ROADMAP", MARGIN, y + 8, {
+        characterSpacing: 1.5,
+        width: (A4_WIDTH - MARGIN * 2) / 2,
+        lineBreak: false,
+      });
+
+    // Right page number
+    doc
+      .fillColor(COLORS.faint)
+      .fontSize(8)
+      .font("Helvetica")
+      .text(`Page ${i - range.start + 1} of ${total}`, MARGIN, y + 8, {
+        width: A4_WIDTH - MARGIN * 2,
+        align: "right",
+        lineBreak: false,
+      });
   }
 }
 
