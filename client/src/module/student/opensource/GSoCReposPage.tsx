@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -204,6 +205,7 @@ interface GSoCOrgModalProps {
   gsocPageUrl: string | null;
   reposLoading: boolean;
 }
+
 function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: GSoCOrgModalProps) {
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
@@ -448,25 +450,53 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
 }
 
 export default function GSoCReposPage() {
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedTech, setSelectedTech] = useState("All");
-  const [selectedYear, setSelectedYear] = useState("All");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // 1. Initialize state strictly from URL params
+  const initialQ = searchParams.get("q") || "";
+  const selectedCategory = searchParams.get("category") || "All";
+  const selectedTech = searchParams.get("tech") || "All";
+  const selectedYear = searchParams.get("year") || "All";
+
+  const [search, setSearch] = useState(initialQ);
+  
+  useEffect(() => {
+    setSearch(searchParams.get("q") || "");
+  }, [searchParams]);
+
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const limit = 18;
+
+  // 2. Safely clone current params to avoid TypeScript callback errors
+  const updateFilter = (key: string, value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    
+    if (value && value !== "All") {
+      newParams.set(key, value);
+    } else {
+      newParams.delete(key);
+    }
+    
+    setSearchParams(newParams, { replace: true });
+    setPage(1); 
+  };
 
   const handleSearch = (value: string) => {
     setSearch(value);
     if (timer) clearTimeout(timer);
     setTimer(
       setTimeout(() => {
-        setDebouncedSearch(value);
-        setPage(1);
+        updateFilter("q", value);
       }, 400)
     );
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setSearchParams({}, { replace: true });
+    setPage(1);
   };
 
   const { data: stats } = useQuery<GSoCStats>({
@@ -475,8 +505,9 @@ export default function GSoCReposPage() {
     staleTime: Infinity,
   });
 
+  // 3. Pass current URL state directly to the API query
   const params: Record<string, string | number> = { page, limit };
-  if (debouncedSearch) params.search = debouncedSearch;
+  if (initialQ) params.search = initialQ;
   if (selectedCategory !== "All") params.category = selectedCategory;
   if (selectedTech !== "All") params.technology = selectedTech;
   if (selectedYear !== "All") params.year = parseInt(selectedYear, 10);
@@ -503,6 +534,7 @@ export default function GSoCReposPage() {
     enabled: !!selectedOrg,
     staleTime: 1000 * 60 * 60,
   });
+  
   const githubRepos: { title: string; url: string }[] = reposData?.githubRepos ?? [];
   const gsocPageUrl: string | null = reposData?.gsocPageUrl ?? null;
   const categoryOptions = ["All", ...(stats?.categories.map((category) => category.name) ?? [])];
@@ -510,16 +542,7 @@ export default function GSoCReposPage() {
   const techOptions = ["All", ...(stats?.technologies.slice(0, 30).map((tech) => tech.name) ?? [])];
 
   const hasFilters =
-    Boolean(debouncedSearch) || selectedCategory !== "All" || selectedTech !== "All" || selectedYear !== "All";
-
-  const clearFilters = () => {
-    setSearch("");
-    setDebouncedSearch("");
-    setSelectedCategory("All");
-    setSelectedTech("All");
-    setSelectedYear("All");
-    setPage(1);
-  };
+    Boolean(initialQ) || selectedCategory !== "All" || selectedTech !== "All" || selectedYear !== "All";
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -584,30 +607,21 @@ export default function GSoCReposPage() {
             label="category"
             value={selectedCategory}
             options={categoryOptions}
-            onChange={(value) => {
-              setSelectedCategory(value);
-              setPage(1);
-            }}
+            onChange={(value) => updateFilter("category", value)}
           />
           <FilterDropdown
             icon={<Calendar className="h-3.5 w-3.5" />}
             label="year"
             value={selectedYear}
             options={yearOptions}
-            onChange={(value) => {
-              setSelectedYear(value);
-              setPage(1);
-            }}
+            onChange={(value) => updateFilter("year", value)}
           />
           <FilterDropdown
             icon={<Code2 className="h-3.5 w-3.5" />}
             label="tech"
             value={selectedTech}
             options={techOptions}
-            onChange={(value) => {
-              setSelectedTech(value);
-              setPage(1);
-            }}
+            onChange={(value) => updateFilter("tech", value)}
           />
           {hasFilters && (
             <button
