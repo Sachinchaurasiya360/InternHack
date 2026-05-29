@@ -44,7 +44,7 @@ export default function RepoDiscoveryPage() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
-      if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
+      if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA" && tag!== "SELECT") {
         e.preventDefault();
         searchRef.current?.focus();
       }
