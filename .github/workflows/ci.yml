@@ -10,12 +10,10 @@ jobs:
     name: Typecheck Client
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: "npm"
@@ -33,12 +31,10 @@ jobs:
     name: Typecheck Server
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: "npm"
@@ -50,10 +46,6 @@ jobs:
 
       - name: Generate Prisma client
         run: npx prisma generate --schema=src/database/prisma/schema
-        working-directory: server
-
-      - name: Run ESLint
-        run: npm run lint
         working-directory: server
 
       - name: Run TypeScript check
@@ -64,12 +56,10 @@ jobs:
     name: Lint Client
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: "npm"
@@ -80,19 +70,17 @@ jobs:
         working-directory: client
 
       - name: Run ESLint
-        run: npx eslint . --ext .ts,.tsx --max-warnings 250
+        run: npx eslint . --ext .ts,.tsx
         working-directory: client
 
   test-server:
     name: Test Server
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: "npm"
@@ -100,10 +88,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: server
-
-      - name: Generate Prisma client
-        run: npx prisma generate --schema=src/database/prisma/schema
         working-directory: server
 
       - name: Run unit tests

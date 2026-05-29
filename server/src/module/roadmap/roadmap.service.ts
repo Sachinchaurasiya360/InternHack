@@ -10,7 +10,27 @@ interface WeeklyPlanWeek {
   topicSlugs: string[];
   totalHours: number;
 }
+export async function findDuplicateRoadmap(
+  goalDescription: string,
+  userId: number
+) {
+  const normalizedGoal = goalDescription.trim();
+  if (!normalizedGoal) return null;
 
+  return prisma.roadmap.findFirst({
+    where: {
+      ownerUserId: userId,
+      isAiGenerated: true,
+      slug: {
+        startsWith: 'ai-',
+      },
+      title: {
+        contains: normalizedGoal.slice(0, 30),
+        mode: 'insensitive',
+      },
+    },
+  });
+}
 export interface EnrolledRoadmap {
   enrollment: Prisma.roadmapEnrollmentGetPayload<{
     include: {

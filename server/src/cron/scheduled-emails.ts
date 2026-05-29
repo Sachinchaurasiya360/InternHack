@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
 import { followUpEmailHtml } from "../utils/email-templates.js";
+import { withAdvisoryLock } from "../utils/cron-lock.js";
 
 let cronJob: cron.ScheduledTask | null = null;
 
@@ -43,7 +44,9 @@ async function sendFollowUpEmails(): Promise<void> {
 export function startFollowUpCron(schedule = "0 9 * * *"): void {
   if (cronJob) return;
   cronJob = cron.schedule(schedule, () => {
-    void sendFollowUpEmails();
+    void withAdvisoryLock("scheduled-emails-followup", async () => {
+      await sendFollowUpEmails();
+    });
   });
   console.log(`[FollowUpCron] Scheduled daily at "${schedule}"`);
 }

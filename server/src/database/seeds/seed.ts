@@ -111,6 +111,20 @@ async function seedUsers() {
       bio: "Competitive programmer and algorithm enthusiast",
       location: "Pune",
     },
+    {
+      name: "Neha Kapoor",
+      email: "premium@example.com",
+      password,
+      role: "STUDENT" as const,
+      isVerified: true,
+      college: "IIT Bombay",
+      graduationYear: 2025,
+      skills: ["React", "TypeScript", "System Design", "Node.js"],
+      bio: "Full-stack developer. Premium account for testing subscription-gated features.",
+      location: "Mumbai",
+      subscriptionPlan: "MONTHLY" as const,
+      subscriptionStatus: "ACTIVE" as const,
+    },
   ];
 
   let created = 0;
