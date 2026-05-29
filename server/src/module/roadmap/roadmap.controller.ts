@@ -18,6 +18,7 @@ import {
 import {
   buildWeeklyPlan,
   enrollUser,
+  findDuplicateRoadmap,
   getEnrollmentForUser,
   getRoadmapBySlug,
   getTopicBySlug,
@@ -465,6 +466,20 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     }
     const userId = req.user!.id;
     const input = parsed.data;
+
+    const duplicate = await findDuplicateRoadmap(
+  input.goalDescription,
+  userId
+);
+
+if (duplicate && !input.forceCreate) {
+  res.status(409).json({
+    message: "Similar roadmap already exists",
+    roadmap: duplicate,
+  });
+
+  return;
+}
 
     // 1. Generate via Gemini, validate shape
     let generated;
