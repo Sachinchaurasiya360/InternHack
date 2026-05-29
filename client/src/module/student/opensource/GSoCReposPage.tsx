@@ -131,11 +131,10 @@ function FilterDropdown({
               key={opt}
               type="button"
               onClick={() => onChange(opt)}
-              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${
-                active
-                  ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
-                  : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
-              }`}
+              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${active
+                ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
+                : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
+                }`}
             >
               <span className="truncate">{opt}</span>
               {active && <span className="h-1 w-1 bg-lime-400" />}
@@ -312,11 +311,10 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
                       key={year}
                       type="button"
                       onClick={() => setSelectedYear(String(year))}
-                      className={`rounded-md border px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
-                        active
-                          ? "border-lime-400 bg-lime-400 text-stone-950"
-                          : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
-                      }`}
+                      className={`rounded-md border px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${active
+                        ? "border-lime-400 bg-lime-400 text-stone-950"
+                        : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
+                        }`}
                     >
                       {year} ({org.projectsData?.[String(year)]?.num_projects || 0})
                     </button>
@@ -459,30 +457,35 @@ export default function GSoCReposPage() {
   const selectedYear = searchParams.get("year") || "All";
 
   const [search, setSearch] = useState(initialQ);
-  
+
+  // FIX 1: Depend ONLY on initialQ, not searchParams. 
+  // This prevents wiping out half-typed text when other filters change.
   useEffect(() => {
-    setSearch(searchParams.get("q") || "");
-  }, [searchParams]);
+    setSearch(initialQ);
+  }, [initialQ]);
 
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const limit = 18;
 
-  // 2. Safely clone current params to avoid TypeScript callback errors
+  // FIX 2: Functional updater.
+  // This ensures that delayed debounced calls always use the freshest URL state.
   const updateFilter = (key: string, value: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    
-    if (value && value !== "All") {
-      newParams.set(key, value);
-    } else {
-      newParams.delete(key);
-    }
-    
-    setSearchParams(newParams, { replace: true });
-    setPage(1); 
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        if (value && value !== "All") {
+          newParams.set(key, value);
+        } else {
+          newParams.delete(key);
+        }
+        return newParams;
+      },
+      { replace: true }
+    );
+    setPage(1);
   };
-
   const handleSearch = (value: string) => {
     setSearch(value);
     if (timer) clearTimeout(timer);
@@ -534,7 +537,7 @@ export default function GSoCReposPage() {
     enabled: !!selectedOrg,
     staleTime: 1000 * 60 * 60,
   });
-  
+
   const githubRepos: { title: string; url: string }[] = reposData?.githubRepos ?? [];
   const gsocPageUrl: string | null = reposData?.gsocPageUrl ?? null;
   const categoryOptions = ["All", ...(stats?.categories.map((category) => category.name) ?? [])];
@@ -681,14 +684,14 @@ export default function GSoCReposPage() {
 
       <AnimatePresence>
         {detailOrg && selectedOrg && (
-        <GSoCOrgModal
-          org={detailOrg}
-          onClose={() => setSelectedOrg(null)}
-          githubRepos={githubRepos}
-          gsocPageUrl={gsocPageUrl}
-          reposLoading={reposLoading}
-        />
-      )}
+          <GSoCOrgModal
+            org={detailOrg}
+            onClose={() => setSelectedOrg(null)}
+            githubRepos={githubRepos}
+            gsocPageUrl={gsocPageUrl}
+            reposLoading={reposLoading}
+          />
+        )}
       </AnimatePresence>
     </div>
   );
