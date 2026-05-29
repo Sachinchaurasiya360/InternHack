@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,6 +47,24 @@ export default function RepoDiscoveryPage() {
   const [page, setPage] = useState(1);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const { user } = useAuthStore();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Keyboard shortcut: "/" to focus search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only trigger "/" if not already in an input/textarea/select
+      const target = e.target as HTMLElement;
+      const isFormElement = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT";
+      
+      if (e.key === "/" && !isFormElement) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const queryParams = useMemo(() => {
     const params: Record<string, string | number> = { page, limit: 12, sortBy: sortKey, sortOrder: "desc" };
@@ -150,12 +168,16 @@ export default function RepoDiscoveryPage() {
         <div className="mb-6 relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-500" />
           <input
+            ref={searchInputRef}
             type="text"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search repos, languages, tags..."
-            className="w-full pl-10 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
+            className="w-full pl-10 pr-12 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
           />
+          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 hidden sm:flex pointer-events-none">
+            [ / ]
+          </span>
         </div>
 
         {/* Analytics + Suggest strip */}
