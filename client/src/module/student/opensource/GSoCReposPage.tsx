@@ -19,6 +19,9 @@ import {
   Lightbulb,
   BookOpen,
   ArrowUpRight,
+  Award,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -94,6 +97,90 @@ function EmptyState() {
         </p>
       </div>
     </div>
+  );
+}
+
+function TopOrgsStrip({
+  orgs,
+  onSelect,
+}: {
+  orgs: { id: number; name: string; slug: string; imageUrl?: string; yearsParticipated: number[] }[];
+  onSelect: (slug: string) => void;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (dir: "left" | "right") => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({ left: dir === "left" ? -220 : 220, behavior: "smooth" });
+  };
+
+  if (orgs.length === 0) return null;
+
+  return (
+    <section className="mb-6">
+      <div className="mb-3 flex items-center justify-between">
+        <EditorialLabel>
+          <Award className="h-3 w-3" />
+          long-standing participants
+        </EditorialLabel>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => scroll("left")}
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-stone-200 bg-white text-stone-400 transition-colors hover:border-stone-400 hover:text-stone-600 dark:border-white/10 dark:bg-stone-900 dark:text-stone-500 dark:hover:border-white/30 dark:hover:text-stone-300"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scroll("right")}
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-stone-200 bg-white text-stone-400 transition-colors hover:border-stone-400 hover:text-stone-600 dark:border-white/10 dark:bg-stone-900 dark:text-stone-500 dark:hover:border-white/30 dark:hover:text-stone-300"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+      <div
+        ref={scrollRef}
+        className="flex gap-3 overflow-x-auto pb-2 scrollbar-none"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {orgs.map((org, i) => (
+          <motion.button
+            key={org.id}
+            type="button"
+            onClick={() => onSelect(org.slug)}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.05, duration: 0.3 }}
+            className="group flex min-w-[200px] shrink-0 items-center gap-3 rounded-md border border-stone-200 bg-white px-4 py-3 text-left transition-all hover:border-stone-400 hover:shadow-sm dark:border-white/10 dark:bg-stone-900 dark:hover:border-white/30"
+          >
+            {org.imageUrl ? (
+              <img
+                src={org.imageUrl}
+                alt={org.name}
+                className="h-8 w-8 shrink-0 rounded-md border border-stone-200 bg-stone-50 object-contain p-0.5 dark:border-white/10 dark:bg-stone-800"
+              />
+            ) : (
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-stone-200 bg-stone-100 text-xs font-bold text-stone-900 dark:border-white/10 dark:bg-stone-800 dark:text-stone-50">
+                {org.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold leading-tight text-stone-900 dark:text-stone-50">
+                {org.name}
+              </p>
+              <span className="mt-0.5 inline-block rounded-md bg-lime-400/15 px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider text-lime-700 dark:text-lime-400">
+                {org.yearsParticipated.length} years
+              </span>
+            </div>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-stone-300 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-lime-500 dark:text-stone-600" />
+          </motion.button>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -579,6 +666,13 @@ export default function GSoCReposPage() {
   const yearOptions = ["All", ...(stats?.years.map((year) => String(year.year)) ?? [])];
   const techOptions = ["All", ...(stats?.technologies.slice(0, 30).map((tech) => tech.name) ?? [])];
 
+  const { data: topOrgsData } = useQuery<{ organizations: { id: number; name: string; slug: string; imageUrl?: string; yearsParticipated: number[] }[] }>({
+    queryKey: queryKeys.gsoc.topOrgs(),
+    queryFn: () => api.get("/gsoc/top-orgs").then((res) => res.data),
+    staleTime: Infinity,
+  });
+  const topOrgs = topOrgsData?.organizations ?? [];
+
   const hasFilters =
     Boolean(initialQ) || selectedCategory !== "All" || selectedTech !== "All" || selectedYear !== "All";
 
@@ -684,6 +778,16 @@ export default function GSoCReposPage() {
             {pagination.totalPages > 1 && <> / page {pagination.page} of {pagination.totalPages}</>}
           </p>
         </div>
+
+        {!hasFilters && topOrgs.length > 0 && (
+          <TopOrgsStrip
+            orgs={topOrgs}
+            onSelect={(slug) => {
+              const found = topOrgs.find((o) => o.slug === slug);
+              if (found) setSelectedOrg(found as unknown as GSoCOrganization);
+            }}
+          />
+        )}
 
         {isLoading ? (
           <LoadingScreen compact />

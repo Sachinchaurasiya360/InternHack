@@ -107,6 +107,31 @@ gsocRouter.get("/organizations/:slug/repos", async (req, res, next) => {
   }
 });
 
+// Public: top orgs by years participated (for "Long-standing participants" strip)
+gsocRouter.get("/top-orgs", async (_req, res, next) => {
+  try {
+    const orgs = await prisma.gsocOrganization.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        imageUrl: true,
+        imageBgColor: true,
+        category: true,
+        yearsParticipated: true,
+      },
+    });
+
+    const topOrgs = orgs
+      .sort((a, b) => b.yearsParticipated.length - a.yearsParticipated.length)
+      .slice(0, 6);
+
+    res.json({ organizations: topOrgs });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Public: stats for filters
 gsocRouter.get("/stats", async (_req, res, next) => {
   try {

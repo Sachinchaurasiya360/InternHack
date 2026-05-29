@@ -81,6 +81,7 @@ export const queryKeys = {
     detail: (slug: string) => ["gsoc", "detail", slug] as const,
     stats: () => ["gsoc", "stats"] as const,
     repos: (slug: string) => ["gsoc", "repos", slug] as const,
+    topOrgs: () => ["gsoc", "top-orgs"] as const,
   },
 
   // YC Companies
