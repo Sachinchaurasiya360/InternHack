@@ -38,6 +38,7 @@ const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function RepoDiscoveryPage() {
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -61,6 +62,23 @@ export default function RepoDiscoveryPage() {
   const [page, setPage] = useState(1);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const { user } = useAuthStore();
+
+  useEffect(() => {
+    const nextSearch = searchInput.trim();
+    if (nextSearch === search) return;
+
+    const timer = window.setTimeout(() => {
+      setSearch(nextSearch);
+      setPage(1);
+    }, 300);
+
+    return () => window.clearTimeout(timer);
+  }, [searchInput, search]);
+
+  const commitSearch = (value = searchInput) => {
+    setSearch(value.trim());
+    setPage(1);
+  };
 
   const queryParams = useMemo(() => {
     const params: Record<string, string | number> = { page, limit: 12, sortBy: sortKey, sortOrder: "desc" };
@@ -166,8 +184,15 @@ export default function RepoDiscoveryPage() {
           <input
             ref={searchRef}
             type="text"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            value={searchInput}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchInput(value);
+              if (!value.trim()) commitSearch("");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitSearch();
+            }}
             placeholder="Search repos, languages, tags..."
             className="w-full pl-10 pr-10 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
           />
@@ -327,6 +352,7 @@ export default function RepoDiscoveryPage() {
                       onClick={() => {
                         setSelectedDomain("ALL");
                         setSelectedDifficulty("ALL");
+                        setSearchInput("");
                         setSearch("");
                         setPage(1);
                       }}
