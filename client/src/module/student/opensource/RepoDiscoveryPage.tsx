@@ -33,9 +33,7 @@ import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
 import { SuggestRepoModal } from "./SuggestRepoModal";
-
-const ghostBtnCls =
-  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+import { Button } from "../../../components/ui/button";
 
 export default function RepoDiscoveryPage() {
   const [search, setSearch] = useState("");
@@ -287,9 +285,10 @@ export default function RepoDiscoveryPage() {
 
           {/* Sort dropdown */}
           <div className="relative" ref={sortDropdownRef}>
-            <button 
+            <Button 
               type="button" 
-              className={ghostBtnCls}
+              variant="ghost"
+              size="sm"
               onClick={() => setSortOpen(!sortOpen)}
               aria-haspopup="listbox"
               aria-expanded={sortOpen}
@@ -297,7 +296,7 @@ export default function RepoDiscoveryPage() {
               <TrendingUp className="w-3 h-3" />
               {SORT_OPTIONS.find((s) => s.key === sortKey)?.label ?? "Sort"}
               <ChevronDown className={`w-3 h-3 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
-            </button>
+            </Button>
             <AnimatePresence>
               {sortOpen && (
                 <motion.div
@@ -309,23 +308,25 @@ export default function RepoDiscoveryPage() {
                   role="listbox"
                 >
                   {SORT_OPTIONS.map((opt) => (
-                    <button
+                    <Button
                       key={opt.key}
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       role="option"
                       aria-selected={sortKey === opt.key}
                       onClick={() => {
                         updateFilter(setSortKey, opt.key);
                         setSortOpen(false);
                       }}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
+                      className={`w-full justify-start text-left px-2.5 py-1.5 rounded-md text-xs font-normal transition-colors cursor-pointer ${
                         sortKey === opt.key
-                          ? "bg-stone-900 dark:bg-stone-50 text-lime-400"
+                          ? "bg-stone-900 dark:bg-stone-50 text-lime-400 hover:bg-stone-900 dark:hover:bg-stone-50 hover:text-lime-400"
                           : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
                       }`}
                     >
                       {opt.label}
-                    </button>
+                    </Button>
                   ))}
                 </motion.div>
               )}
