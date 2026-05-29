@@ -76,7 +76,7 @@ function SortableProjectItem({
             {project.techStack.map((t, i) => (
               <span
                 key={i}
-                className="px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-full border border-stone-200 dark:border-white/10"
+                className="px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-md border border-stone-200 dark:border-white/10"
               >
                 {t}
               </span>
@@ -331,10 +331,12 @@ export function ProjectsSection({
                 <Calendar className="w-3 h-3" /> Built At
               </label>
               <input
-                type="month"
+                type="text"
                 value={draft.builtAt ?? ""}
                 onChange={(e) => setDraft((d) => ({ ...d, builtAt: e.target.value }))}
                 className={inputClass}
+                placeholder="e.g. Summer 2023"
+                maxLength={30}
               />
             </div>
           </div>
@@ -364,8 +366,8 @@ export function ProjectsSection({
         <Button
           type="button"
           onClick={startAdd}
-          variant="secondary"
-          className="w-full h-auto py-3 text-sm text-stone-600 dark:text-stone-400 border border-dashed border-stone-300 dark:border-white/10 bg-transparent hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 mt-3"
+          variant="dashed"
+          className="w-full h-auto py-3 text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 mt-3"
         >
           <Plus className="w-4 h-4" /> Add project
         </Button>
