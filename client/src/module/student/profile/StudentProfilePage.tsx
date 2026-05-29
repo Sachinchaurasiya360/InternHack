@@ -603,8 +603,8 @@ export default function StudentProfilePage() {
           <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
               kicker="section / 05"
-              title="Projects"
-              meta={`${form.projects.length}/10`}
+              title="Featured Projects"
+              meta={`${form.projects.length}/4`}
               open={openSections.projects}
               onToggle={() => toggleSection("projects")}
               right={
