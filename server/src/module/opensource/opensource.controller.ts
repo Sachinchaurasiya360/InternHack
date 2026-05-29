@@ -31,14 +31,4 @@ export class OpensourceController {
       next(err);
     }
   }
-
-  async getAnalytics(req: Request, res: Response, next: NextFunction) {
-    try {
-      const userId = req.user!.id;
-      const result = await service.getStudentAnalytics(userId);
-      res.json(result);
-    } catch (err) {
-      next(err);
-    }
-  }
 }
