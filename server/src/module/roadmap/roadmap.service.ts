@@ -120,7 +120,7 @@ export async function listPublishedRoadmaps(opts: {
   tag?: string | undefined;
   category?: string | undefined;
 }) {
-  const where: Prisma.roadmapWhereInput = { isPublished: true };
+  const where: Prisma.roadmapWhereInput = { isPublished: true, isAiGenerated: false };
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
