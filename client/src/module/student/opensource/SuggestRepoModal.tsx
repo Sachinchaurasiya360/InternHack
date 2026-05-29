@@ -5,7 +5,7 @@ import { X, Loader2, CheckCircle2 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { RepoDomain, RepoDifficulty } from "../../../lib/types";
-import { REPO_DOMAINS, DIFFICULTY_OPTIONS } from "./reposData";
+import { REPO_DOMAINS, DIFFICULTY_OPTIONS, COMMON_TECH_STACK } from "./reposData";
 import { parseGithubRepoUrl } from "./_shared/repo-utils";
 import { getInputCls } from "../../../components/ui/form";
 import { Button } from "../../../components/ui/button";
@@ -48,12 +48,14 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
   const [success, setSuccess] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const [techInput, setTechInput] = useState("");
+  const [techList, setTechList] = useState<string[]>([]);
 
   const mutation = useMutation({
     mutationFn: async (data: SuggestRepoForm) => {
       const payload = {
         ...data,
-        techStack: data.techStack.split(",").map((s) => s.trim()).filter(Boolean),
+        techStack: techList.filter(Boolean),
         tags: data.tags.split(",").map((s) => s.trim()).filter(Boolean),
       };
       return api.post("/opensource/requests", payload);
@@ -64,6 +66,8 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
       setTimeout(() => {
         setSuccess(false);
         setForm(INITIAL_FORM);
+        setTechList([]);
+        setTechInput("");
         onClose();
       }, 2000);
     },
@@ -71,8 +75,8 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
 
   const set =
     (key: keyof SuggestRepoForm) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-      setForm((f) => ({ ...f, [key]: e.target.value }));
+      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+        setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -106,7 +110,22 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
   };
 
   if (!open) return null;
+  const filteredTech = COMMON_TECH_STACK.filter((tech) =>
+    tech.toLowerCase().includes(techInput.toLowerCase())
+  );
+  const addTech = (value: string) => {
+    if (!value.trim()) return;
+    if (techList.includes(value)) return;
 
+    setTechList((prev) => [...prev, value]);
+    setTechInput("");
+  };
+  const handleTechKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTech(techInput);
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -205,11 +224,55 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               </div>
             </div>
 
+
             <div>
               <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
-                Tech Stack <span className="text-gray-400">(comma-separated)</span>
+                Tech Stack
               </label>
-              <input className={inputCls} placeholder="React, Node.js, PostgreSQL" value={form.techStack} onChange={set("techStack")} />
+
+              {/* input */}
+              <input
+                className={inputCls}
+                placeholder="Type and press Enter (React, Node.js...)"
+                value={techInput}
+                onChange={(e) => setTechInput(e.target.value)}
+                onKeyDown={handleTechKeyDown}
+              />
+
+              {/* dropdown suggestions */}
+              {techInput && filteredTech.length > 0 && (
+                <div className="mt-2 border rounded-lg bg-white dark:bg-gray-800 max-h-40 overflow-auto">
+                  {filteredTech.slice(0, 6).map((tech) => (
+                    <div
+                      key={tech}
+                      onClick={() => addTech(tech)}
+                      className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      {tech}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* chips */}
+              <div className="flex flex-wrap gap-2 mt-2">
+                {techList.map((tech) => (
+                  <span
+                    key={tech}
+                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-purple-100 dark:bg-purple-900 text-sm"
+                  >
+                    {tech}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setTechList((prev) => prev.filter((t) => t !== tech))
+                      }
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div>
