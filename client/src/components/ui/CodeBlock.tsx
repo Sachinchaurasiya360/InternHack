@@ -3,6 +3,7 @@ import { Copy, Check } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus, prism } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useThemeStore } from "../../lib/theme.store";
+import { Button } from "./button";
 
 export interface CodeExample {
   title: string;
@@ -56,15 +57,17 @@ export function CodeBlock({ code, label, example, language = "javascript" }: Cod
             {activeTitle}
           </span>
         </div>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={handleCopy}
           aria-label={copied ? "Code copied" : "Copy code to clipboard"}
-          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
+          className="font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 shrink-0"
         >
           {copied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
           {copied ? "copied" : "copy"}
-        </button>
+        </Button>
       </div>
 
       {/* Syntax Highlighting Container */}
