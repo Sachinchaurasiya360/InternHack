@@ -1,0 +1,104 @@
+import { useState, useCallback } from "react";
+import { Copy, Check } from "lucide-react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus, prism } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useThemeStore } from "../../lib/theme.store";
+
+export interface CodeExample {
+  title: string;
+  code: string;
+  output?: string;
+  explanation?: string;
+}
+
+interface CodeBlockProps {
+  code?: string;
+  label?: string;
+  example?: CodeExample;
+  language?: string;
+}
+
+export function CodeBlock({ code, label, example, language = "javascript" }: CodeBlockProps) {
+  const [copied, setCopied] = useState(false);
+  const theme = useThemeStore((s) => s.theme);
+
+  // Extract code and title/label from either prop format
+  const activeCode = example ? example.code : (code || "");
+  const activeTitle = example ? example.title : (label || "");
+  const activeOutput = example?.output;
+  const activeExplanation = example?.explanation;
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(activeCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [activeCode]);
+
+  // Choose the syntax highlighting theme
+  const syntaxTheme = theme === "dark" ? vscDarkPlus : prism;
+
+  return (
+    <div className="rounded-md border border-stone-200 dark:border-white/10 overflow-hidden bg-white dark:bg-stone-900">
+      {/* Code block header */}
+      <div className="flex items-center justify-between px-4 py-2.5 bg-stone-50 dark:bg-stone-950/40 border-b border-stone-200 dark:border-white/10">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="h-1 w-1 bg-lime-400 shrink-0"></div>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
+            {activeTitle}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
+        >
+          {copied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
+          {copied ? "copied" : "copy"}
+        </button>
+      </div>
+
+      {/* Syntax Highlighting Container */}
+      <div className={`p-4 overflow-x-auto text-sm leading-relaxed border-0 ${
+        theme === "dark" 
+          ? "bg-stone-950 text-stone-100" 
+          : "bg-stone-50 text-stone-900"
+      }`}>
+        <SyntaxHighlighter
+          language={language}
+          style={syntaxTheme}
+          customStyle={{
+            background: "transparent",
+            padding: 0,
+            margin: 0,
+            fontSize: "inherit",
+            fontFamily: "inherit",
+            lineHeight: "inherit",
+          }}
+          codeTagProps={{
+            style: {
+              background: "transparent",
+              fontFamily: "inherit",
+            }
+          }}
+        >
+          {activeCode}
+        </SyntaxHighlighter>
+      </div>
+
+      {/* Optional Output */}
+      {activeOutput && (
+        <div className="px-4 py-2.5 bg-stone-900 border-t border-stone-800">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1">output</span>
+          <pre className="text-sm text-lime-400 whitespace-pre-wrap font-mono">{activeOutput}</pre>
+        </div>
+      )}
+
+      {/* Optional Explanation */}
+      {activeExplanation && (
+        <div className="px-4 py-3 bg-stone-50 dark:bg-stone-950/40 border-t border-stone-200 dark:border-white/10">
+          <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">{activeExplanation}</p>
+        </div>
+      )}
+    </div>
+  );
+}

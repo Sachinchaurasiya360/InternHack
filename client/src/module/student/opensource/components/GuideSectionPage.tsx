@@ -3,10 +3,11 @@ import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
   ArrowRight, ChevronLeft, ChevronRight,
-  CheckCircle2, Copy, Check, ExternalLink, Lightbulb, Info,
+  CheckCircle2, ExternalLink, Lightbulb, Info,
 } from "lucide-react";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
+import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 
 interface Resource { title: string; url: string; type: string }
@@ -30,33 +31,6 @@ interface Props {
   seoSuffix: string;       // e.g. "Codebase Guide"
 }
 
-function CodeBlock({ code, label }: { code: string; label?: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{label ?? "Command"}</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={copy}
-          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-        >
-          {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? "Copied" : "Copy"}
-        </Button>
-      </div>
-      <pre className="p-4 overflow-x-auto bg-gray-950 text-gray-100 text-sm leading-relaxed">
-        <code>{code}</code>
-      </pre>
-    </div>
-  );
-}
 
 export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffix }: Props) {
   const { sectionSlug } = useParams<{ sectionSlug: string }>();
@@ -179,7 +153,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white">Code Examples</h2>
             {step.commands.map((cmd, i) => (
-              <CodeBlock key={i} code={cmd.code} label={cmd.label} />
+              <CodeBlock key={i} code={cmd.code} label={cmd.label} language="bash" />
             ))}
           </motion.div>
         )}
