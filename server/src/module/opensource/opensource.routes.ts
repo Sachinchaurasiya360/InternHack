@@ -96,16 +96,23 @@ opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), async
       res.status(409).json({ message: "This repository has already been submitted" });
       return;
     }
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    const existingRepo = await prisma.opensourceRepo.findFirst({
-      where: { url: parsed.data.url },
+    const requestCount = await prisma.repoRequest.count({
+      where: {
+        userId: req.user!.id,
+        createdAt: {
+          gte: twentyFourHoursAgo,
+        },
+      },
     });
-    if (existingRepo) {
-      res.status(409).json({ message: "This repository is already listed on the platform" });
+
+    if (requestCount >= 5) {
+      res.status(429).json({
+        message: "You can submit at most 5 repo suggestions in the last 24 hours.",
+      });
       return;
     }
-
-
     const request = await prisma.repoRequest.create({
       data: { ...parsed.data, userId: req.user!.id },
       include: { user: { select: { name: true, email: true } } },
