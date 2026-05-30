@@ -19,6 +19,7 @@ export const grantsResearch: Grant[] = [
       "Application deadline typically in February/June each year",
     ],
     status: "Active",
+    deadline: "2026-06-05",
     ecosystem: "USA",
     highlights: [
       "Most prestigious Indo-US academic exchange program",
@@ -44,6 +45,7 @@ export const grantsResearch: Grant[] = [
       "Multiple grant types: Discovery, Career Development, Collaborative",
     ],
     status: "Active",
+    deadline: "2027-06-10",
     ecosystem: "UK",
     highlights: [
       "One of the world's largest research funders (£16B+ endowment)",
@@ -69,6 +71,7 @@ export const grantsResearch: Grant[] = [
       "Successful Phase 1 projects can receive up to $1M in follow-on funding",
     ],
     status: "Active",
+    deadline: "2027-06-15",
     ecosystem: "Global",
     highlights: [
       "Simple 2-page application process",
@@ -94,6 +97,7 @@ export const grantsResearch: Grant[] = [
       "Applications open October-January each year",
     ],
     status: "Active",
+    deadline: "2027-06-20",
     ecosystem: "Switzerland",
     highlights: [
       "Work alongside world-class scientists at CERN",
@@ -119,6 +123,7 @@ export const grantsResearch: Grant[] = [
       "Application deadlines vary by country and program",
     ],
     status: "Active",
+    deadline: "2027-06-25",
     ecosystem: "Germany",
     highlights: [
       "World's largest academic exchange organization",
@@ -144,6 +149,7 @@ export const grantsResearch: Grant[] = [
       "Annual call with September deadline",
     ],
     status: "Active",
+    deadline: "2027-06-30",
     ecosystem: "EU",
     highlights: [
       "One of Europe's most prestigious research fellowships",
@@ -169,6 +175,7 @@ export const grantsResearch: Grant[] = [
       "Application through Swiss embassy in home country",
     ],
     status: "Active",
+    deadline: "2027-07-05",
     ecosystem: "Switzerland",
     highlights: [
       "Full tuition waiver at top Swiss universities (ETH, EPFL)",
@@ -194,6 +201,7 @@ export const grantsResearch: Grant[] = [
       "Applications accepted year-round; review takes 4-7 months",
     ],
     status: "Active",
+    deadline: "2027-07-10",
     ecosystem: "Germany",
     highlights: [
       "Lifetime membership in Humboldt network of 30,000+ researchers",
@@ -219,6 +227,7 @@ export const grantsResearch: Grant[] = [
       "Must have a host researcher at a Japanese institution",
     ],
     status: "Active",
+    deadline: "2027-07-15",
     ecosystem: "Japan",
     highlights: [
       "Research allowance of ¥150,000/year",
@@ -244,6 +253,7 @@ export const grantsResearch: Grant[] = [
       "Annual deadline in March",
     ],
     status: "Active",
+    deadline: "2027-07-20",
     ecosystem: "UK",
     highlights: [
       "2-year fully funded research position in UK",
@@ -269,6 +279,7 @@ export const grantsResearch: Grant[] = [
       "Annual cohort of ~30 fellows",
     ],
     status: "Active",
+    deadline: "2027-07-25",
     ecosystem: "Global",
     highlights: [
       "Encourages disciplinary pivoting - unique among fellowships",
@@ -294,6 +305,7 @@ export const grantsResearch: Grant[] = [
       "Nominations and direct applications depending on program",
     ],
     status: "Active",
+    deadline: "2027-07-30",
     ecosystem: "USA",
     highlights: [
       "One of the largest private funders of basic science",
@@ -319,6 +331,7 @@ export const grantsResearch: Grant[] = [
       "Competition held every 3-5 years; ~25 new investigators per cycle",
     ],
     status: "Active",
+    deadline: "2027-08-04",
     ecosystem: "USA",
     highlights: [
       "7-year renewable appointments with full salary support",
@@ -344,6 +357,7 @@ export const grantsResearch: Grant[] = [
       "Both invited proposals and open calls",
     ],
     status: "Active",
+    deadline: "2027-08-09",
     ecosystem: "USA",
     highlights: [
       "$1.5B+ in science grants since founding",
@@ -369,6 +383,7 @@ export const grantsResearch: Grant[] = [
       "Annual calls for specific programs",
     ],
     status: "Active",
+    deadline: "2027-08-14",
     ecosystem: "USA",
     highlights: [
       "$5.3B+ committed to science",
@@ -394,6 +409,7 @@ export const grantsResearch: Grant[] = [
       "Kavli Prize nominations from the scientific community",
     ],
     status: "Active",
+    deadline: "2027-08-19",
     ecosystem: "USA",
     highlights: [
       "20 Kavli Institutes at top universities worldwide",
@@ -419,6 +435,7 @@ export const grantsResearch: Grant[] = [
       "Nomination by department head or senior colleague",
     ],
     status: "Active",
+    deadline: "2027-08-24",
     ecosystem: "USA",
     highlights: [
       "55 Sloan Fellows have gone on to win Nobel Prizes",
@@ -444,6 +461,7 @@ export const grantsResearch: Grant[] = [
       "Nominated by university - 2 nominees per institution",
     ],
     status: "Active",
+    deadline: "2027-08-29",
     ecosystem: "USA",
     highlights: [
       "$875K over 5 years - among the most generous",
@@ -469,6 +487,7 @@ export const grantsResearch: Grant[] = [
       "Annual deadlines varying by program",
     ],
     status: "Active",
+    deadline: "2027-09-03",
     ecosystem: "USA",
     highlights: [
       "5-year awards with flexible spending",
@@ -494,6 +513,7 @@ export const grantsResearch: Grant[] = [
       "Two-stage application process (Phase I concept, Phase II full proposal)",
     ],
     status: "Active",
+    deadline: "2027-09-08",
     ecosystem: "USA",
     highlights: [
       "Funds projects that are too risky for NIH/NSF",

@@ -19,6 +19,7 @@ export const grantsUniversity: Grant[] = [
       "Early-stage ventures with proven concept preferred",
     ],
     status: "Active",
+    deadline: "2027-09-13",
     ecosystem: "USA",
     highlights: [
       "Access to MIT's global network and expertise",
@@ -44,6 +45,7 @@ export const grantsUniversity: Grant[] = [
       "Various programs with different eligibility criteria",
     ],
     status: "Active",
+    deadline: "2027-09-18",
     ecosystem: "USA",
     highlights: [
       "Access to Stanford's entrepreneurial ecosystem",
@@ -69,6 +71,7 @@ export const grantsUniversity: Grant[] = [
       "All sectors and industries eligible",
     ],
     status: "Active",
+    deadline: "2027-09-23",
     ecosystem: "USA",
     highlights: [
       "Summer Venture Program with dedicated workspace",
@@ -94,6 +97,7 @@ export const grantsUniversity: Grant[] = [
       "Two batches per year (January and June)",
     ],
     status: "Active",
+    deadline: "2027-09-28",
     ecosystem: "USA",
     highlights: [
       "$500K standard deal ($125K for 7% + $375K on MFN SAFE)",
@@ -119,6 +123,7 @@ export const grantsUniversity: Grant[] = [
       "All sectors eligible",
     ],
     status: "Active",
+    deadline: "2027-10-03",
     ecosystem: "UK",
     highlights: [
       "SPRINT and L.E.V8 accelerator programs",
@@ -144,6 +149,7 @@ export const grantsUniversity: Grant[] = [
       "Must be willing to be based at IIT Bombay campus",
     ],
     status: "Active",
+    deadline: "2027-10-08",
     ecosystem: "India",
     highlights: [
       "200+ startups incubated since 2004",
@@ -169,6 +175,7 @@ export const grantsUniversity: Grant[] = [
       "IP licensing support available for faculty innovations",
     ],
     status: "Active",
+    deadline: "2027-10-13",
     ecosystem: "India",
     highlights: [
       "150+ startups incubated",
@@ -194,6 +201,7 @@ export const grantsUniversity: Grant[] = [
       "Both software and hardware startups eligible",
     ],
     status: "Active",
+    deadline: "2027-10-18",
     ecosystem: "India",
     highlights: [
       "Access to IISc's cutting-edge research facilities",
@@ -219,6 +227,7 @@ export const grantsUniversity: Grant[] = [
       "All sectors eligible, deep tech focus for some programs",
     ],
     status: "Active",
+    deadline: "2027-10-23",
     ecosystem: "Singapore",
     highlights: [
       "NUS ranked #1 in Asia for startups",
@@ -244,6 +253,7 @@ export const grantsUniversity: Grant[] = [
       "Two application rounds per year",
     ],
     status: "Active",
+    deadline: "2027-10-28",
     ecosystem: "Switzerland",
     highlights: [
       "Equity-free - no dilution",

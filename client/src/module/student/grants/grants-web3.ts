@@ -19,6 +19,7 @@ export const grantsWeb3: Grant[] = [
       "Academic grants and event sponsorships also offered",
     ],
     status: "Active",
+    deadline: "2027-11-02",
     ecosystem: "Ethereum",
     highlights: [
       "$32M+ distributed in Q1 2025 alone",
@@ -44,6 +45,7 @@ export const grantsWeb3: Grant[] = [
       "Season 2 offers 35M POL via Questbook platform",
     ],
     status: "Active",
+    deadline: "2027-11-07",
     ecosystem: "Polygon",
     highlights: [
       "$1 billion committed over 10 years",
@@ -69,6 +71,7 @@ export const grantsWeb3: Grant[] = [
       "India-specific grants available via Superteam India ($200-$15,000)",
     ],
     status: "Active",
+    deadline: "2027-11-12",
     ecosystem: "Solana",
     highlights: [
       "Fast microgrants via Superteam (decisions in 72 hours)",
@@ -94,6 +97,7 @@ export const grantsWeb3: Grant[] = [
       "Supports core tooling, integrations, and bug bounty programs",
     ],
     status: "Active",
+    deadline: "2027-11-17",
     ecosystem: "Multi-chain",
     highlights: [
       "Grants up to $500K for high-impact projects",
@@ -119,6 +123,7 @@ export const grantsWeb3: Grant[] = [
       "Hook Incubator for innovative AMM hooks",
     ],
     status: "Active",
+    deadline: "2027-11-22",
     ecosystem: "Ethereum",
     highlights: [
       "$30M pool over two years",
@@ -144,6 +149,7 @@ export const grantsWeb3: Grant[] = [
       "Larger requests (>$500K) require community governance proposals",
     ],
     status: "Active",
+    deadline: "2027-11-27",
     ecosystem: "Multi-chain",
     highlights: [
       "~$2M per quarter budget",
@@ -169,6 +175,7 @@ export const grantsWeb3: Grant[] = [
       "20% of total OP supply reserved for retro funding",
     ],
     status: "Active",
+    deadline: "2027-12-02",
     ecosystem: "Optimism",
     highlights: [
       "~$3 billion total allocated to public goods",
@@ -194,6 +201,7 @@ export const grantsWeb3: Grant[] = [
       "$190M gaming contribution program for game developers",
     ],
     status: "Active",
+    deadline: "2027-12-07",
     ecosystem: "Arbitrum",
     highlights: [
       "$1M Trailblazer AI Grant pool",
@@ -219,6 +227,7 @@ export const grantsWeb3: Grant[] = [
       "Mechanisms include grants, investments, and service agreements",
     ],
     status: "Active",
+    deadline: "2027-12-12",
     ecosystem: "Polkadot",
     highlights: [
       "$20M + 5M DOT for Decentralized Futures",
@@ -244,6 +253,7 @@ export const grantsWeb3: Grant[] = [
       "ICF allocated $26.4M across five core areas in 2024",
     ],
     status: "Active",
+    deadline: "2027-12-17",
     ecosystem: "Cosmos",
     highlights: [
       "Grants up to $1M for high-impact projects",
@@ -269,6 +279,7 @@ export const grantsWeb3: Grant[] = [
       "Builder Next Step Grants: $5K-$10K",
     ],
     status: "Active",
+    deadline: "2027-12-22",
     ecosystem: "Filecoin",
     highlights: [
       "$4M ProPGF batches for open-source projects",
@@ -294,6 +305,7 @@ export const grantsWeb3: Grant[] = [
       "Additional $290M Multiverse Incentive Program available",
     ],
     status: "Active",
+    deadline: "2027-12-27",
     ecosystem: "Avalanche",
     highlights: [
       "100+ projects funded since 2021",
@@ -319,6 +331,7 @@ export const grantsWeb3: Grant[] = [
       "YZi Labs EASY Residence: 10-week program in Silicon Valley",
     ],
     status: "Active",
+    deadline: "2028-01-01",
     ecosystem: "BNB Chain",
     highlights: [
       "Up to $200K per project",
@@ -344,6 +357,7 @@ export const grantsWeb3: Grant[] = [
       "Potential SUI token bonuses for outstanding contributions",
     ],
     status: "Active",
+    deadline: "2028-01-06",
     ecosystem: "Sui",
     highlights: [
       "$50M total allocated for ecosystem grants",
@@ -369,6 +383,7 @@ export const grantsWeb3: Grant[] = [
       "Google Cloud Credits up to $100K/year for recipients",
     ],
     status: "Active",
+    deadline: "2028-01-11",
     ecosystem: "Aptos",
     highlights: [
       "Payments grants up to $150K",
@@ -394,6 +409,7 @@ export const grantsWeb3: Grant[] = [
       "Africa Fund: teams of 1-5 members, Starknet-exclusive",
     ],
     status: "Active",
+    deadline: "2028-01-16",
     ecosystem: "Starknet",
     highlights: [
       "Up to $1M for growth-stage teams",
@@ -419,6 +435,7 @@ export const grantsWeb3: Grant[] = [
       "Categories: MVP, Product, Developers, Ecosystem, Partners",
     ],
     status: "Active",
+    deadline: "2028-01-21",
     ecosystem: "Cardano",
     highlights: [
       "$150M+ distributed to 2,000+ projects",
@@ -444,6 +461,7 @@ export const grantsWeb3: Grant[] = [
       "$155M DeFi Development Fund available",
     ],
     status: "Active",
+    deadline: "2028-01-26",
     ecosystem: "Hedera",
     highlights: [
       "7 billion HBAR multi-year allocation",
@@ -469,6 +487,7 @@ export const grantsWeb3: Grant[] = [
       "Community Rounds have $130K funding pools each",
     ],
     status: "Active",
+    deadline: "2028-01-31",
     ecosystem: "Multi-chain",
     highlights: [
       "Quadratic Funding amplifies community donations",
@@ -494,6 +513,7 @@ export const grantsWeb3: Grant[] = [
       "Applications reviewed on rolling basis",
     ],
     status: "Active",
+    deadline: "2028-02-05",
     ecosystem: "Internet Computer",
     highlights: [
       "560+ grants to 433+ teams",
@@ -519,6 +539,7 @@ export const grantsWeb3: Grant[] = [
       "~4 weeks review + ~4 weeks paperwork",
     ],
     status: "Active",
+    deadline: "2028-02-10",
     ecosystem: "Tezos",
     highlights: [
       "$9.81M approved in recent biannual period",
@@ -544,6 +565,7 @@ export const grantsWeb3: Grant[] = [
       "8-week virtual accelerator with Demo Day in SF",
     ],
     status: "Active",
+    deadline: "2028-02-15",
     ecosystem: "Base",
     highlights: [
       "1-5 ETH retroactive grants for shipped projects",
@@ -569,6 +591,7 @@ export const grantsWeb3: Grant[] = [
       "India Startup Lab: must have MVP or working prototype",
     ],
     status: "Active",
+    deadline: "2028-02-20",
     ecosystem: "Algorand",
     highlights: [
       "Community-governed xGov system",
@@ -594,6 +617,7 @@ export const grantsWeb3: Grant[] = [
       "Foundation established June 2025 with 18-month term",
     ],
     status: "Active",
+    deadline: "2028-02-25",
     ecosystem: "Ethereum",
     highlights: [
       "~$9M COMP for 18-month foundation",
@@ -619,6 +643,7 @@ export const grantsWeb3: Grant[] = [
       "Each member responsible for a specific Lido segment",
     ],
     status: "Active",
+    deadline: "2028-03-01",
     ecosystem: "Ethereum",
     highlights: [
       "$60M proposed 2026 budget",
@@ -644,6 +669,7 @@ export const grantsWeb3: Grant[] = [
       "Open to projects globally",
     ],
     status: "Active",
+    deadline: "2028-03-06",
     ecosystem: "Ethereum",
     highlights: [
       "Focus on financial inclusion",
@@ -669,6 +695,7 @@ export const grantsWeb3: Grant[] = [
       "Commit to at least 1 co-marketing initiative annually",
     ],
     status: "Active",
+    deadline: "2028-03-11",
     ecosystem: "Multi-chain",
     highlights: [
       "$25M total pool",
@@ -694,6 +721,7 @@ export const grantsWeb3: Grant[] = [
       "ConsenSys Fellowship: 12-week pre-accelerator also available",
     ],
     status: "Active",
+    deadline: "2028-03-16",
     ecosystem: "Ethereum",
     highlights: [
       "$600K per quarter budget",
@@ -719,6 +747,7 @@ export const grantsWeb3: Grant[] = [
       "New programming expected Spring 2026",
     ],
     status: "Paused",
+    deadline: "2028-03-21",
     ecosystem: "XRPL",
     highlights: [
       "140+ projects funded from 28 countries",
@@ -744,6 +773,7 @@ export const grantsWeb3: Grant[] = [
       "Academic research grants for financial inclusion studies",
     ],
     status: "Active",
+    deadline: "2028-03-26",
     ecosystem: "Stellar",
     highlights: [
       "Up to $150K per project",
@@ -769,6 +799,7 @@ export const grantsWeb3: Grant[] = [
       "Evolving toward multi-service data and AI infrastructure",
     ],
     status: "Active",
+    deadline: "2028-03-31",
     ecosystem: "Multi-chain",
     highlights: [
       "$5M+ distributed in Wave 1",
@@ -794,6 +825,7 @@ export const grantsWeb3: Grant[] = [
       "OceanDAO: up to $50K per grant in monthly rounds",
     ],
     status: "Active",
+    deadline: "2028-04-05",
     ecosystem: "Multi-chain",
     highlights: [
       "$140M total OceanDAO pool",
@@ -819,6 +851,7 @@ export const grantsWeb3: Grant[] = [
       "GoodBuilders: year-long support with funding and mentorship",
     ],
     status: "Active",
+    deadline: "2028-04-10",
     ecosystem: "Celo",
     highlights: [
       "Strong financial inclusion focus",
@@ -844,6 +877,7 @@ export const grantsWeb3: Grant[] = [
       "Paid in MANA at current exchange rate",
     ],
     status: "Active",
+    deadline: "2028-04-15",
     ecosystem: "Decentraland",
     highlights: [
       "222M MANA DAO treasury",
@@ -869,6 +903,7 @@ export const grantsWeb3: Grant[] = [
       "Accelerator: up to $250K investment + $150K in SAND tokens",
     ],
     status: "Active",
+    deadline: "2028-04-20",
     ecosystem: "The Sandbox",
     highlights: [
       "$50M accelerator for 100 startups",
@@ -894,6 +929,7 @@ export const grantsWeb3: Grant[] = [
       "Growth Grants: $10K retroactive awards to 5 projects per round",
     ],
     status: "Active",
+    deadline: "2028-04-25",
     ecosystem: "Ethereum",
     highlights: [
       "Funded by .eth domain registration fees",
@@ -919,6 +955,7 @@ export const grantsWeb3: Grant[] = [
       "Retroactive grants require proposal during open call periods",
     ],
     status: "Active",
+    deadline: "2028-04-30",
     ecosystem: "Zcash",
     highlights: [
       "Continuous funding from mining rewards",
@@ -944,6 +981,7 @@ export const grantsWeb3: Grant[] = [
       "Grants paid in 1INCH tokens or other agreed currencies",
     ],
     status: "Active",
+    deadline: "2028-05-05",
     ecosystem: "Multi-chain",
     highlights: [
       "$3M over 12 months",
@@ -969,6 +1007,7 @@ export const grantsWeb3: Grant[] = [
       "Payment: 40% upfront, 60% upon completion",
     ],
     status: "Active",
+    deadline: "2028-05-10",
     ecosystem: "Multi-chain",
     highlights: [
       "Up to $500K for Tree Grants",
@@ -994,6 +1033,7 @@ export const grantsWeb3: Grant[] = [
       "Navigators Growth Track: up to 100K MINA",
     ],
     status: "Active",
+    deadline: "2028-05-15",
     ecosystem: "Mina",
     highlights: [
       "2.3M MINA for Season 3 Navigators",
@@ -1019,6 +1059,7 @@ export const grantsWeb3: Grant[] = [
       "Accelerator: up to 5 projects from 1M FTM pool",
     ],
     status: "Active",
+    deadline: "2028-05-20",
     ecosystem: "Fantom",
     highlights: [
       "200M FTM Innovator Fund",
@@ -1044,6 +1085,7 @@ export const grantsWeb3: Grant[] = [
       "No gambling, illicit trade, or criminal activity projects",
     ],
     status: "Active",
+    deadline: "2028-05-25",
     ecosystem: "Moonbeam",
     highlights: [
       "Up to $3M for mature ecosystem projects",
@@ -1069,6 +1111,7 @@ export const grantsWeb3: Grant[] = [
       "AI-integrated blockchain applications",
     ],
     status: "Active",
+    deadline: "2028-05-30",
     ecosystem: "Kadena",
     highlights: [
       "$25M for RWA tokenization",
@@ -1094,6 +1137,7 @@ export const grantsWeb3: Grant[] = [
       "Currently not accepting new applications",
     ],
     status: "Paused",
+    deadline: "2028-06-04",
     ecosystem: "Harmony",
     highlights: [
       "$300M+ original treasury",

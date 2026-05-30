@@ -18,6 +18,7 @@ import {
   Bookmark,
   BookmarkCheck,
   ClipboardList,
+  Clock,
 } from "lucide-react";
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { SEO } from "../../../components/SEO";
@@ -41,6 +42,23 @@ const STATUS_CONFIG = {
 };
 
 const ECOSYSTEMS = Array.from(new Set(grants.map((g) => g.ecosystem))).sort();
+
+function getDeadlineCountdown(deadline?: string | null) {
+  if (!deadline) return null;
+
+  const deadlineDate = new Date(deadline);
+  if (Number.isNaN(deadlineDate.getTime())) return null;
+
+  const now = new Date();
+  const utcToday = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const utcDeadline = Date.UTC(deadlineDate.getFullYear(), deadlineDate.getMonth(), deadlineDate.getDate());
+  const daysRemaining = Math.floor((utcDeadline - utcToday) / 86400000);
+
+  if (daysRemaining < 0) return "Expired";
+  if (daysRemaining === 0) return "Ends today";
+  if (daysRemaining === 1) return "1 day left";
+  return `${daysRemaining} days left`;
+}
 
 function MetaChip({ icon, children, className = "" }: { icon?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
@@ -427,6 +445,7 @@ function GrantCard({
   const statusCfg = STATUS_CONFIG[grant.status];
   const StatusIcon = statusCfg.icon;
   const logoSrc = resolveGrantLogo(grant.logo, grant.website);
+  const countdown = getDeadlineCountdown(grant.deadline);
 
   return (
     <motion.div
@@ -490,6 +509,14 @@ function GrantCard({
           >
             {grant.status}
           </MetaChip>
+          {countdown && (
+            <MetaChip
+              icon={<Clock className="w-3 h-3" />}
+              className="text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-stone-800"
+            >
+              {countdown}
+            </MetaChip>
+          )}
           <MetaChip icon={<DollarSign className="w-3 h-3" />}>{grant.fundingAmount}</MetaChip>
           <MetaChip icon={<Globe className="w-3 h-3" />}>{grant.ecosystem}</MetaChip>
           <MetaChip icon={<Tag className="w-3 h-3" />}>{grant.category}</MetaChip>

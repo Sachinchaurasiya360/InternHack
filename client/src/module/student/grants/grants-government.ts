@@ -19,6 +19,7 @@ export const grantsGovernment: Grant[] = [
       "Applications reviewed quarterly by expert committee",
     ],
     status: "Active",
+    deadline: "2027-03-02",
     ecosystem: "India",
     highlights: [
       "Equity-free grant - no dilution",
@@ -44,6 +45,7 @@ export const grantsGovernment: Grant[] = [
       "Must not have received more than ₹10 Lakhs from any other central/state scheme",
     ],
     status: "Active",
+    deadline: "2027-03-07",
     ecosystem: "India",
     highlights: [
       "₹945 Crore corpus supporting 3,600+ startups",
@@ -69,6 +71,7 @@ export const grantsGovernment: Grant[] = [
       "Ideas must have commercialization potential",
     ],
     status: "Active",
+    deadline: "2027-03-12",
     ecosystem: "India",
     highlights: [
       "9-month support program with mentoring",
@@ -94,6 +97,7 @@ export const grantsGovernment: Grant[] = [
       "12-18 month project timeline",
     ],
     status: "Active",
+    deadline: "2027-03-17",
     ecosystem: "India",
     highlights: [
       "Grant-based - no equity or repayment required",
@@ -119,6 +123,7 @@ export const grantsGovernment: Grant[] = [
       "Grants disbursed in milestones over 2-3 years",
     ],
     status: "Active",
+    deadline: "2027-03-22",
     ecosystem: "India",
     highlights: [
       "Supports 51 incubation centers across India",
@@ -144,6 +149,7 @@ export const grantsGovernment: Grant[] = [
       "3-year project duration with annual reviews",
     ],
     status: "Active",
+    deadline: "2027-03-27",
     ecosystem: "India",
     highlights: [
       "Open to all science and engineering disciplines",
@@ -169,6 +175,7 @@ export const grantsGovernment: Grant[] = [
       "Support for patent filing included",
     ],
     status: "Active",
+    deadline: "2027-04-01",
     ecosystem: "India",
     highlights: [
       "Patent filing and IP support provided",
@@ -194,6 +201,7 @@ export const grantsGovernment: Grant[] = [
       "IP remains with the innovator",
     ],
     status: "Active",
+    deadline: "2027-04-06",
     ecosystem: "India",
     highlights: [
       "400+ startups engaged across 100+ challenges",
@@ -219,6 +227,7 @@ export const grantsGovernment: Grant[] = [
       "Open to startups, research institutions, and individuals",
     ],
     status: "Active",
+    deadline: "2027-04-11",
     ecosystem: "India",
     highlights: [
       "Direct connections to government procurement",
@@ -244,6 +253,7 @@ export const grantsGovernment: Grant[] = [
       "DPIIT recognition preferred",
     ],
     status: "Active",
+    deadline: "2027-04-16",
     ecosystem: "India",
     highlights: [
       "Part of Digital India initiative",
@@ -269,6 +279,7 @@ export const grantsGovernment: Grant[] = [
       "Annual turnover below ₹10 Crore",
     ],
     status: "Active",
+    deadline: "2027-04-21",
     ecosystem: "India",
     highlights: [
       "Reimbursement of rent, patents, and marketing costs",
@@ -294,6 +305,7 @@ export const grantsGovernment: Grant[] = [
       "Open to student entrepreneurs through campus programs",
     ],
     status: "Active",
+    deadline: "2027-04-26",
     ecosystem: "India",
     highlights: [
       "4,000+ startups supported",
@@ -319,6 +331,7 @@ export const grantsGovernment: Grant[] = [
       "Open to undergraduate and postgraduate students",
     ],
     status: "Active",
+    deadline: "2027-05-01",
     ecosystem: "India",
     highlights: [
       "Targeted at student entrepreneurs",
@@ -344,6 +357,7 @@ export const grantsGovernment: Grant[] = [
       "Startups relocating to Hyderabad preferred",
     ],
     status: "Active",
+    deadline: "2027-05-06",
     ecosystem: "India",
     highlights: [
       "India's largest technology incubator",
@@ -369,6 +383,7 @@ export const grantsGovernment: Grant[] = [
       "Social impact startups receive additional preference",
     ],
     status: "Active",
+    deadline: "2027-05-11",
     ecosystem: "India",
     highlights: [
       "Covers all 36 districts of Maharashtra",
@@ -394,6 +409,7 @@ export const grantsGovernment: Grant[] = [
       "Must have a working prototype or strong technical concept",
     ],
     status: "Active",
+    deadline: "2027-05-16",
     ecosystem: "India",
     highlights: [
       "Residential incubation with prototyping labs",
@@ -419,6 +435,7 @@ export const grantsGovernment: Grant[] = [
       "Revenue below ₹25 Crore annually",
     ],
     status: "Active",
+    deadline: "2027-05-21",
     ecosystem: "India",
     highlights: [
       "Patent cost reimbursement up to ₹10 Lakhs",
@@ -444,6 +461,7 @@ export const grantsGovernment: Grant[] = [
       "Open to both product and service startups",
     ],
     status: "Active",
+    deadline: "2027-05-26",
     ecosystem: "India",
     highlights: [
       "Monthly sustenance allowance of ₹20,000 per co-founder",
@@ -469,6 +487,7 @@ export const grantsGovernment: Grant[] = [
       "Must participate in APIS innovation challenges",
     ],
     status: "Active",
+    deadline: "2027-05-31",
     ecosystem: "India",
     highlights: [
       "Sector-specific innovation challenges",
@@ -494,6 +513,7 @@ export const grantsGovernment: Grant[] = [
       "Less than 5 years old at time of application",
     ],
     status: "Active",
+    deadline: "2027-06-05",
     ecosystem: "India",
     highlights: [
       "Rent and infrastructure subsidy up to ₹5 Lakhs",

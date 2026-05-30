@@ -19,6 +19,7 @@ export const grantsClimate: Grant[] = [
       "Nominations from partner universities and labs",
     ],
     status: "Active",
+    deadline: "2026-10-23",
     ecosystem: "USA",
     highlights: [
       "Founded by Bill Gates",
@@ -44,6 +45,7 @@ export const grantsClimate: Grant[] = [
       "Open to pre-seed and seed-stage ventures",
     ],
     status: "Active",
+    deadline: "2026-10-28",
     ecosystem: "EU",
     highlights: [
       "Europe's largest climate innovation network",
@@ -69,6 +71,7 @@ export const grantsClimate: Grant[] = [
       "Readiness grants available for project preparation",
     ],
     status: "Active",
+    deadline: "2026-11-02",
     ecosystem: "Global",
     highlights: [
       "$12.8B pledged from 49 countries",
@@ -94,6 +97,7 @@ export const grantsClimate: Grant[] = [
       "International teams eligible if partnered with US entity",
     ],
     status: "Active",
+    deadline: "2026-11-07",
     ecosystem: "USA",
     highlights: [
       "Funded 1,600+ projects across 40+ programs",
@@ -119,6 +123,7 @@ export const grantsClimate: Grant[] = [
       "Global applicants welcome",
     ],
     status: "Active",
+    deadline: "2026-11-12",
     ecosystem: "Global",
     highlights: [
       "Access to Shell's R&D labs and engineers",
@@ -144,6 +149,7 @@ export const grantsClimate: Grant[] = [
       "Invitation-based for large grants; open RFPs for smaller ones",
     ],
     status: "Invite Only",
+    deadline: "2026-11-17",
     ecosystem: "USA",
     highlights: [
       "$500M+ committed to environmental causes",
@@ -169,6 +175,7 @@ export const grantsClimate: Grant[] = [
       "Strong technical founding team preferred",
     ],
     status: "Active",
+    deadline: "2026-11-22",
     ecosystem: "Global",
     highlights: [
       "Focus on the 50 most impactful climate solutions",
@@ -194,6 +201,7 @@ export const grantsClimate: Grant[] = [
       "Nominations from global network of nominators",
     ],
     status: "Active",
+    deadline: "2026-11-27",
     ecosystem: "UK",
     highlights: [
       "5 winners each receive £1M annually until 2030",
@@ -219,6 +227,7 @@ export const grantsClimate: Grant[] = [
       "Sectors: energy, water, agriculture, mobility, circular economy",
     ],
     status: "Active",
+    deadline: "2026-12-02",
     ecosystem: "USA",
     highlights: [
       "$1M grants for real-world deployment projects",
@@ -244,6 +253,7 @@ export const grantsClimate: Grant[] = [
       "Applications accepted twice yearly (April and August)",
     ],
     status: "Active",
+    deadline: "2026-12-07",
     ecosystem: "Global",
     highlights: [
       "Patagonia gives 1% of sales to environmental causes",

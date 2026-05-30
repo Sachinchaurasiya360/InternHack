@@ -19,6 +19,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Annual call with October deadline",
     ],
     status: "Active",
+    deadline: "2026-05-30",
     ecosystem: "USA",
     highlights: [
       "Unrestricted gift funding - use it for anything research-related",
@@ -44,6 +45,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Proposals reviewed by Microsoft Research scientists",
     ],
     status: "Active",
+    deadline: "2026-05-29",
     ecosystem: "USA",
     highlights: [
       "Access to Azure compute credits for research",
@@ -69,6 +71,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Applications accepted on a rolling basis",
     ],
     status: "Active",
+    deadline: "2026-09-13",
     ecosystem: "USA",
     highlights: [
       "Free GPU hardware for academic research",
@@ -94,6 +97,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Multiple RFPs released throughout the year",
     ],
     status: "Active",
+    deadline: "2026-09-18",
     ecosystem: "USA",
     highlights: [
       "Unrestricted gift funding",
@@ -119,6 +123,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Annual open call with multiple topic areas",
     ],
     status: "Active",
+    deadline: "2026-09-23",
     ecosystem: "USA",
     highlights: [
       "Cash award plus significant AWS credits",
@@ -144,6 +149,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Rolling applications",
     ],
     status: "Active",
+    deadline: "2026-09-28",
     ecosystem: "USA",
     highlights: [
       "Free API access for approved research",
@@ -169,6 +175,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Collaborative projects with AI2 researchers preferred",
     ],
     status: "Active",
+    deadline: "2026-10-03",
     ecosystem: "USA",
     highlights: [
       "Founded by Paul Allen with $125M+ investment",
@@ -194,6 +201,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Annual call with specific topic announcements",
     ],
     status: "Active",
+    deadline: "2026-10-08",
     ecosystem: "Global",
     highlights: [
       "Collaboration with Samsung Research labs globally",
@@ -219,6 +227,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Multiple programs for different career stages",
     ],
     status: "Active",
+    deadline: "2026-10-13",
     ecosystem: "Global",
     highlights: [
       "Joint research with Huawei's 15 R&D centers",
@@ -244,6 +253,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Hardware donation programs also available",
     ],
     status: "Active",
+    deadline: "2026-10-18",
     ecosystem: "USA",
     highlights: [
       "Access to Intel DevCloud for testing and development",
