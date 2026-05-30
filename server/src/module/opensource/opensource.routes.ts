@@ -36,12 +36,13 @@ opensourceRouter.get("/", async (req, res, next) => {
       res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
       return;
     }
-    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = parsed.data;
+    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder, trending } = parsed.data;
 
     const where: Record<string, unknown> = {};
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
+    if (trending === "true") where["trending"] = true;
     if (search) {
       where["OR"] = [
         { name: { contains: search, mode: "insensitive" } },
@@ -90,6 +91,15 @@ opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), async
       res.status(409).json({ message: "This repository has already been submitted" });
       return;
     }
+
+    const existingRepo = await prisma.opensourceRepo.findFirst({
+      where: { url: parsed.data.url },
+    });
+    if (existingRepo) {
+      res.status(409).json({ message: "This repository is already listed on the platform" });
+      return;
+    }
+
 
     const request = await prisma.repoRequest.create({
       data: { ...parsed.data, userId: req.user!.id },

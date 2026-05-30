@@ -38,6 +38,7 @@ import {
   ChevronUp,
   RefreshCw,
   Sparkles,
+  AlertTriangle,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -587,6 +588,30 @@ export default function RoadmapCanvasPage() {
     },
     [],
   );
+
+  const regenProgressImpact = useMemo(() => {
+    if (!regenModal || !data) {
+      return { completed: 0, inProgress: 0, totalAffected: 0 };
+    }
+    const section = data.enrollment.roadmap.sections.find(
+      (s) => s.id === regenModal.sectionId,
+    );
+    if (!section) {
+      return { completed: 0, inProgress: 0, totalAffected: 0 };
+    }
+    let completed = 0;
+    let inProgress = 0;
+    for (const topic of section.topics) {
+      const status = progressByTopicId.get(topic.id)?.status;
+      if (status === "COMPLETED") completed += 1;
+      else if (status === "IN_PROGRESS") inProgress += 1;
+    }
+    return {
+      completed,
+      inProgress,
+      totalAffected: completed + inProgress,
+    };
+  }, [regenModal, data, progressByTopicId]);
 
   useEffect(() => {
     if (!data) return;
@@ -1440,10 +1465,55 @@ export default function RoadmapCanvasPage() {
 
                   {/* Body */}
                   <div className="px-5 py-4 space-y-4">
+                    <div
+                      role="alert"
+                      className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3"
+                    >
+                      <AlertTriangle
+                        className="mt-0.5 h-4 w-4 shrink-0 text-amber-400"
+                        aria-hidden
+                      />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-amber-100">
+                          Progress in this section will be reset
+                        </p>
+                        <p className="text-xs text-amber-100/80 leading-relaxed">
+                          Regenerating this section will reset your progress for
+                          all topics in it. This cannot be undone.
+                        </p>
+                        {regenProgressImpact.totalAffected > 0 ? (
+                          <p className="text-[11px] font-mono text-amber-200/90">
+                            {regenProgressImpact.completed > 0 && (
+                              <span>
+                                {regenProgressImpact.completed} completed
+                              </span>
+                            )}
+                            {regenProgressImpact.completed > 0 &&
+                              regenProgressImpact.inProgress > 0 &&
+                              " · "}
+                            {regenProgressImpact.inProgress > 0 && (
+                              <span>
+                                {regenProgressImpact.inProgress} in progress
+                              </span>
+                            )}{" "}
+                            topic
+                            {regenProgressImpact.totalAffected === 1
+                              ? ""
+                              : "s"}{" "}
+                            will be affected.
+                          </p>
+                        ) : (
+                          <p className="text-[11px] font-mono text-amber-200/70">
+                            No completed or in-progress topics in this section
+                            yet.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
                     <p className="text-xs text-stone-400 leading-relaxed">
-                      AI will rewrite this section's topics and resources while
-                      keeping the rest of your roadmap intact. Your progress on
-                      existing topics will be cleared for this section.
+                      AI will rewrite this section&apos;s topics and resources
+                      while keeping the rest of your roadmap intact.
                     </p>
 
                     <div>
