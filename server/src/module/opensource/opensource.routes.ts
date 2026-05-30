@@ -1,13 +1,21 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
-import { opensourceListQuerySchema, repoIdSchema, submitRepoRequestSchema } from "./opensource.validation.js";
+import {
+  approveRequestOverrideSchema,
+  opensourceListQuerySchema,
+  repoIdSchema,
+  submitRepoRequestSchema,
+} from "./opensource.validation.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/email-templates.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
+import { OpensourceController } from "./opensource.controller.js";
+
 export const opensourceRouter = Router();
+const controller = new OpensourceController();
 
 function addMonthsUTC(date: Date, months: number): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1));
@@ -23,6 +31,9 @@ function getMonthLabelUTC(date: Date): string {
   return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
 }
 
+// Public: list available languages
+opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
+
 // Public: list repos with optional filters
 opensourceRouter.get("/", async (req, res, next) => {
   try {
@@ -31,12 +42,13 @@ opensourceRouter.get("/", async (req, res, next) => {
       res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
       return;
     }
-    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = parsed.data;
+    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder, trending } = parsed.data;
 
     const where: Record<string, unknown> = {};
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
+    if (trending === "true") where["trending"] = true;
     if (search) {
       where["OR"] = [
         { name: { contains: search, mode: "insensitive" } },
@@ -65,7 +77,6 @@ opensourceRouter.get("/", async (req, res, next) => {
     next(err);
   }
 });
-
 // ─── Repo Requests (Student-authenticated) ───────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
@@ -210,6 +221,13 @@ opensourceRouter.put("/requests/:id/approve", authMiddleware, requireRole("ADMIN
     const id = Number(req.params.id);
     if (isNaN(id)) { res.status(400).json({ message: "Invalid request ID" }); return; }
 
+    const overridesParsed = approveRequestOverrideSchema.safeParse(req.body);
+    if (!overridesParsed.success) {
+      res.status(400).json({ message: "Validation failed", errors: overridesParsed.error.flatten().fieldErrors });
+      return;
+    }
+    const overrides = overridesParsed.data;
+
     const request = await prisma.repoRequest.findUnique({
       where: { id },
       include: { user: { select: { name: true, email: true } } },
@@ -220,22 +238,22 @@ opensourceRouter.put("/requests/:id/approve", authMiddleware, requireRole("ADMIN
     // Create the actual repo from the request
     const repo = await prisma.opensourceRepo.create({
       data: {
-        name: request.name,
+        name: overrides.name ?? request.name,
         owner: request.owner,
-        description: request.description,
+        description: overrides.description ?? request.description,
         language: request.language,
         url: request.url,
-        domain: request.domain,
-        difficulty: request.difficulty,
+        domain: overrides.domain ?? request.domain,
+        difficulty: overrides.difficulty ?? request.difficulty,
         techStack: request.techStack,
-        tags: request.tags,
+        tags: overrides.tags ?? request.tags,
       },
     });
 
     // Update request status
     await prisma.repoRequest.update({
       where: { id },
-      data: { status: "APPROVED", adminNote: req.body.adminNote || null },
+      data: { status: "APPROVED", adminNote: overrides.adminNote ?? null },
     });
 
     // Send approval email
@@ -243,7 +261,7 @@ opensourceRouter.put("/requests/:id/approve", authMiddleware, requireRole("ADMIN
       await sendEmail({
         to: request.user.email,
         subject: "Your Repo Has Been Approved, InternHack",
-        html: repoRequestApprovedHtml(request.user.name, request.name, request.owner),
+        html: repoRequestApprovedHtml(request.user.name, overrides.name ?? request.name, request.owner),
       });
     } catch { /* email failure is non-blocking */ }
 

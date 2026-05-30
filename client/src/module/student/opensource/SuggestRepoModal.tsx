@@ -107,6 +107,8 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
 
   if (!open) return null;
 
+  const parsedRepo = parseGithubRepoUrl(form.url);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -235,11 +237,12 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               </p>
             )}
 
+
             <Button
               type="submit"
               variant="mono"
               size="lg"
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || !parsedRepo}
               className="w-full rounded-xl"
             >
               {mutation.isPending ? (

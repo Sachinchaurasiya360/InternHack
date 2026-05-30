@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Link, useParams } from "react-router";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -42,6 +42,8 @@ export default function RoadmapTopicPage() {
   const { slug = "", topicSlug = "" } = useParams();
   const { isAuthenticated } = useAuthStore();
   const [savingNotes, setSavingNotes] = useState(false);
+  const [saved, setSaved] = useState(false); // State to show "Saved" message after auto-saving
+  const autoSaveTimeout = useRef<NodeJS.Timeout | null>(null); // Ref to track auto-save timeout
   const queryClient = useQueryClient();
 
   const { data: topicData, isLoading: topicLoading } = useQuery({
@@ -149,6 +151,31 @@ export default function RoadmapTopicPage() {
     toast.success("Notes saved");
   };
 
+  // Auto-save notes 500ms after textarea loses focus
+  const handleAutoSave = () => {
+    if (!progress) return;
+
+    if (autoSaveTimeout.current) {
+      clearTimeout(autoSaveTimeout.current);
+    }
+
+    autoSaveTimeout.current = setTimeout(async () => {
+      setSavingNotes(true);
+
+      await updateProgress({
+        notes: progress.notes,
+      });
+
+      setSavingNotes(false);
+
+      setSaved(true);
+
+      setTimeout(() => {
+        setSaved(false);
+      }, 2000);
+    }, 500);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center">
@@ -156,6 +183,7 @@ export default function RoadmapTopicPage() {
       </div>
     );
   }
+
   if (!topic) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center text-sm">
@@ -182,7 +210,10 @@ export default function RoadmapTopicPage() {
           transition={{ duration: 0.5 }}
         >
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-mono text-gray-400 mt-8 mb-6">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-1.5 text-xs font-mono text-gray-400 mt-8 mb-6"
+          >
             <Link
               to="/roadmaps"
               className="hover:text-gray-600 dark:hover:text-gray-300 no-underline"
@@ -197,7 +228,10 @@ export default function RoadmapTopicPage() {
               {topic.section.roadmap.title.toLowerCase()}
             </Link>
             <ChevronRight className="w-3 h-3" aria-hidden="true" />
-            <span className="text-gray-600 dark:text-gray-300" aria-current="page">
+            <span
+              className="text-gray-600 dark:text-gray-300"
+              aria-current="page"
+            >
               {topic.title.toLowerCase()}
             </span>
           </nav>
@@ -296,7 +330,10 @@ export default function RoadmapTopicPage() {
                           </p>
                         )}
                       </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400 mt-1 shrink-0 group-hover:text-indigo-500 transition-colors" aria-hidden="true" />
+                      <ExternalLink
+                        className="w-4 h-4 text-gray-400 mt-1 shrink-0 group-hover:text-indigo-500 transition-colors"
+                        aria-hidden="true"
+                      />
                     </a>
                   </li>
                 ))}
@@ -338,17 +375,26 @@ export default function RoadmapTopicPage() {
               <textarea
                 id="topic-notes"
                 value={progress.notes}
+                maxLength={1000} // maxLength added to limit input
+                onBlur={handleAutoSave} // auto-save on blur
                 onChange={(e) =>
-                  setProgress({ ...progress, notes: e.target.value })
+                  setProgress((p) => (p ? { ...p, notes: e.target.value } : p))
                 }
                 rows={6}
                 placeholder="Anything you want to remember about this topic..."
                 className="w-full p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
               />
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                {progress.notes.length} / 1000
+              </p>
+              {saved && <p className="mt-1 text-xs text-green-500">Saved</p>}
               <div className="mt-2 flex justify-end">
                 <Button size="sm" onClick={saveNotes} disabled={savingNotes}>
                   {savingNotes ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                    <Loader2
+                      className="w-3.5 h-3.5 animate-spin"
+                      aria-hidden="true"
+                    />
                   ) : (
                     <Save className="w-3.5 h-3.5" aria-hidden="true" />
                   )}

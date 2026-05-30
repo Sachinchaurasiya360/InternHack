@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import { createRateLimitStore } from "./utils/rate-limit-store.js";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
 import { recruiterRouter } from "./module/recruiter/recruiter.routes.js";
@@ -88,6 +89,8 @@ process.on("unhandledRejection", (reason) => {
 });
 process.on("uncaughtException", (err) => {
   console.error("[process] uncaughtException:", err);
+
+  process.exit(1);
 });
 
 const app = express();
@@ -156,6 +159,8 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
 // Raw body for Dodo Payments webhook (must be BEFORE express.json())
 app.use(PAYMENT_WEBHOOK_PATH, express.raw({ type: "application/json" }));
+// Larger body parser for DSA CSV import (must be BEFORE the global parser)
+app.use("/api/dsa/import/csv", express.json({ limit: "6mb" }));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -178,6 +183,7 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  store: createRateLimitStore("global"),
   skip: (req) => {
     const path = req.originalUrl.split("?")[0];
     return path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook";
@@ -189,6 +195,7 @@ app.use("/api/", globalLimiter);
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
+  store: createRateLimitStore("auth"),
   message: { message: "Too many login attempts, please try again later" },
 });
 app.use("/api/auth/login", authLimiter);
@@ -198,6 +205,7 @@ app.use("/api/admin/login", authLimiter);
 const latexLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
+  store: createRateLimitStore("latex"),
   message: { message: "LaTeX compilation limit reached. Try again later." },
 });
 app.use("/api/latex/compile", latexLimiter);
@@ -343,5 +351,4 @@ app.listen(PORT, async () => {
 app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
-
 
