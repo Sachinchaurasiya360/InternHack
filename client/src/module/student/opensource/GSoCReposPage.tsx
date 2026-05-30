@@ -19,6 +19,8 @@ import {
   Lightbulb,
   BookOpen,
   ArrowUpRight,
+  Copy,
+  Check,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -223,9 +225,22 @@ interface GSoCOrgModalProps {
 
 function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: GSoCOrgModalProps) {
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
   const activeYear = selectedYear || (years[0] ? String(years[0]) : null);
   const yearData = activeYear && org.projectsData ? org.projectsData[activeYear] : null;
+
+  const handleCopy = (url: string, field: string) => {
+    navigator.clipboard.writeText(url);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 1500);
+  };
+
+  const handleClose = () => {
+    setCopiedField(null);
+    onClose();
+  };
 
   return (
     <motion.div
@@ -233,7 +248,7 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/50 p-4 backdrop-blur-sm"
-      onClick={onClose}
+      onClick={handleClose}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -258,7 +273,7 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Close"
             className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-stone-500 transition-colors hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5"
           >
@@ -390,16 +405,56 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
               </a>
             )}
             {org.ideasUrl && (
-              <a href={org.ideasUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
-                <Lightbulb className="h-3 w-3" />
-                Project Ideas
-              </a>
+              <div className="flex items-center gap-1">
+                <a href={org.ideasUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                  <Lightbulb className="h-3 w-3" />
+                  Project Ideas
+                </a>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(org.ideasUrl!, "ideas")}
+                  className={`px-2 py-1.5 text-[10px] font-mono uppercase tracking-widest border rounded-md inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    copiedField === "ideas"
+                      ? "border-lime-400 text-lime-600 dark:text-lime-400 bg-lime-50/50 dark:bg-lime-400/5 font-bold"
+                      : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 bg-white dark:bg-stone-900"
+                  }`}
+                >
+                  {copiedField === "ideas" ? (
+                    <>
+                      <Check className="h-3 w-3" />
+                      Copied!
+                    </>
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                </button>
+              </div>
             )}
             {org.guideUrl && (
-              <a href={org.guideUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
-                <BookOpen className="h-3 w-3" />
-                Contributor Guide
-              </a>
+              <div className="flex items-center gap-1">
+                <a href={org.guideUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                  <BookOpen className="h-3 w-3" />
+                  Contributor Guide
+                </a>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(org.guideUrl!, "guide")}
+                  className={`px-2 py-1.5 text-[10px] font-mono uppercase tracking-widest border rounded-md inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    copiedField === "guide"
+                      ? "border-lime-400 text-lime-600 dark:text-lime-400 bg-lime-50/50 dark:bg-lime-400/5 font-bold"
+                      : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 bg-white dark:bg-stone-900"
+                  }`}
+                >
+                  {copiedField === "guide" ? (
+                    <>
+                      <Check className="h-3 w-3" />
+                      Copied!
+                    </>
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                </button>
+              </div>
             )}
           </div>
 
