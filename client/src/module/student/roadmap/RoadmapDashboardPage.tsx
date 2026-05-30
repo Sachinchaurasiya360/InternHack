@@ -18,6 +18,7 @@ import toast from "../../../components/ui/toast";
 import type { RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { useAuthStore } from "../../../lib/auth.store";
 import {
   RecommendationCard,
   type WeakArea,
@@ -31,14 +32,21 @@ export default function RoadmapDashboardPage() {
     null,
   );
   const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const userRole = useAuthStore((s) => s.user?.role);
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (!isAuthenticated || userRole !== "STUDENT") {
+      setWeakAreas([]);
+      return;
+    }
+
     api
       .get<{ weakAreas: WeakArea[] }>("/student/recommendations")
       .then((res) => setWeakAreas(res.data.weakAreas ?? []))
       .catch(() => {});
-  }, []);
+  }, [isAuthenticated, userRole]);
   const {
     data,
     isLoading: loading,

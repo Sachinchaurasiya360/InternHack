@@ -56,6 +56,7 @@ import type {
 } from "../../../lib/types";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { useAuthStore } from "../../../lib/auth.store";
 
 interface EnrollmentResponse {
   enrollment: RoadmapEnrollment;
@@ -430,8 +431,15 @@ export default function RoadmapCanvasPage() {
   const [weakTopicTitles, setWeakTopicTitles] = useState<Set<string>>(
     new Set(),
   );
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const userRole = useAuthStore((s) => s.user?.role);
 
   useEffect(() => {
+    if (!isAuthenticated || userRole !== "STUDENT") {
+      setWeakTopicTitles(new Set());
+      return;
+    }
+
     api
       .get<{
         weakAreas: { type: string; topic: string; topicSlug?: string }[];
@@ -445,7 +453,7 @@ export default function RoadmapCanvasPage() {
         setWeakTopicTitles(slugs);
       })
       .catch(() => {});
-  }, []);
+  }, [isAuthenticated, userRole]);
 
   const toggleSection = useCallback((id: number) => {
     setCollapsedSections((prev) => {

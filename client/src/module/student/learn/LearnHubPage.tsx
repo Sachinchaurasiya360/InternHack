@@ -16,19 +16,28 @@ import {
   type WeakArea,
 } from "./components/RecommendationCard";
 import api from "../../../lib/axios";
+import { useAuthStore } from "../../../lib/auth.store";
 
 export default function LearnHubPage() {
   const [search, setSearch] = useState("");
   const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
   const [loadingRecs, setLoadingRecs] = useState(true);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const userRole = useAuthStore((s) => s.user?.role);
 
   useEffect(() => {
+    if (!isAuthenticated || userRole !== "STUDENT") {
+      setWeakAreas([]);
+      setLoadingRecs(false);
+      return;
+    }
+
     api
       .get<{ weakAreas: WeakArea[] }>("/student/recommendations")
       .then((res) => setWeakAreas(res.data.weakAreas ?? []))
       .catch(() => setWeakAreas([]))
       .finally(() => setLoadingRecs(false));
-  }, []);
+  }, [isAuthenticated, userRole]);
 
   const grouped = useMemo(() => {
     const needle = search.trim().toLowerCase();
