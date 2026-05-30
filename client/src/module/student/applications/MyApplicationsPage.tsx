@@ -226,6 +226,27 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
 });
 
 const PAGE_SIZE = 10;
+const STATUS_ORDER: Record<string, number> = {
+  APPLIED: 0,
+  IN_PROGRESS: 1,
+  SHORTLISTED: 2,
+  HIRED: 3,
+  REJECTED: 4,
+  WITHDRAWN: 5,
+};
+
+function sortApplications(
+  apps: Application[],
+  option: "newest" | "oldest" | "company" | "status"
+): Application[] {
+  return [...apps].sort((a, b) => {
+    if (option === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (option === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (option === "company") return (a.job?.company ?? "").localeCompare(b.job?.company ?? "");
+    if (option === "status") return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
+    return 0;
+  });
+}
 
 type PendingDelete =
   | { kind: "internal"; id: number }
@@ -237,6 +258,7 @@ export default function MyApplicationsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 200);
@@ -256,26 +278,33 @@ export default function MyApplicationsPage() {
       ),
   });
 
-  const applications = data?.applications ?? [];
-  const externalApplications = data?.externalApplications ?? [];
+  const applications = useMemo(() => data?.applications ?? [], [data]);
+  const externalApplications = useMemo(() => data?.externalApplications ?? [], [data]);
 
   const filtered = useMemo(() => {
-    if (!debouncedSearch.trim()) return applications;
-    const q = debouncedSearch.toLowerCase();
-    return applications.filter(
-      (a) => a.job?.title?.toLowerCase().includes(q) || a.job?.company?.toLowerCase().includes(q)
-    );
-  }, [applications, debouncedSearch]);
+    const base = !debouncedSearch.trim()
+      ? applications
+      : applications.filter(
+        (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+      );
+    return sortApplications(base, sortOption);
+  }, [applications, debouncedSearch, sortOption]);
 
-  const filteredExternal = useMemo(() => {
-    if (!debouncedSearch.trim()) return externalApplications;
-    const q = debouncedSearch.toLowerCase();
-    return externalApplications.filter(
-      (a) =>
-        a.adminJob.role?.toLowerCase().includes(q) ||
-        a.adminJob.company?.toLowerCase().includes(q)
-    );
-  }, [externalApplications, debouncedSearch]);
+ const filteredExternal = useMemo(() => {
+  const base = !debouncedSearch.trim()
+    ? externalApplications
+    : externalApplications.filter(
+        (a) =>
+          a.adminJob.role?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+      );
+  return [...base].sort((a, b) => {
+    if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
+    return 0;
+  });
+}, [externalApplications, debouncedSearch, sortOption]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;
@@ -356,7 +385,7 @@ export default function MyApplicationsPage() {
 
   if (isLoading) return <LoadingScreen />;
 
- 
+
 
   const hasSearch = search.trim().length > 0;
 
@@ -399,18 +428,35 @@ export default function MyApplicationsPage() {
           </p>
         </div>
         {totalAll > 0 && (
-           <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-           {hasSearch ? "showing" : "total"}{" "}
-           <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-           {hasSearch ? totalFiltered : totalAll}
-          </span>
-          {hasSearch && (
-          <span className="ml-1">of {totalAll}</span>
-           )}
-        </div>
-       )}
+          <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            {hasSearch ? "showing" : "total"}{" "}
+            <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+              {hasSearch ? totalFiltered : totalAll}
+            </span>
+            {hasSearch && (
+              <span className="ml-1">of {totalAll}</span>
+            )}
+          </div>
+        )}
       </motion.div>
 
+      {/* Sort */}
+      <div className="mb-4 flex items-center gap-2">
+        <label htmlFor="sort" className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          Sort by
+        </label>
+        <select
+          id="sort"
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value as typeof sortOption)}
+          className="text-xs font-mono bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-2 py-1.5 text-stone-900 dark:text-stone-50 focus:outline-none focus:border-lime-400 transition-colors cursor-pointer"
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="company">Company A–Z</option>
+          <option value="status">Status</option>
+        </select>
+      </div>
       {/* Search */}
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
@@ -470,9 +516,9 @@ export default function MyApplicationsPage() {
             | { kind: "internal"; app: Application }
             | { kind: "external"; app: ExternalApplication }
           > = [
-            ...filtered.map((app) => ({ kind: "internal" as const, app })),
-            ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
-          ];
+              ...filtered.map((app) => ({ kind: "internal" as const, app })),
+              ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
+            ];
           const totalResults = combined.length;
           const totalPages = Math.max(1, Math.ceil(totalResults / PAGE_SIZE));
           const safePage = Math.min(page, totalPages);

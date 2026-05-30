@@ -161,9 +161,9 @@ function ThreeStrategies() {
       expo: precompute("expo"),
       jitter: precompute("jitter"),
     });
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setTNow(0);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setRunning(false);
     // seed used to force re-precompute even if other deps are equal
     void seed;

@@ -3,10 +3,11 @@ import { useParams, Link, useNavigate, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, Star, AlertTriangle,
-  Info, Copy, Check, ArrowUpRight, RotateCcw, Lightbulb, Eye, Code2,
+  Info, ArrowUpRight, RotateCcw, Lightbulb, Eye, Code2,
 } from "lucide-react";
+import { CodeBlock } from "../../../components/ui/CodeBlock";
 import { sections, lessons } from "./data";
-import type { HtmlProgress, CodeExample, PracticeExercise } from "./data/types";
+import type { HtmlProgress, PracticeExercise } from "./data/types";
 import HtmlEditor from "./components/HtmlEditor";
 import { LivePreview } from "../shared/LivePreview";
 import { SEO } from "../../../components/SEO";
@@ -58,44 +59,6 @@ function SectionLabel({ dot, children }: { dot: string; children: React.ReactNod
   );
 }
 
-function CodeBlock({ example }: { example: CodeExample }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(example.code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [example.code]);
-
-  return (
-    <div className="rounded-md border border-stone-200 dark:border-white/10 overflow-hidden bg-white dark:bg-stone-900">
-      <div className="flex items-center justify-between gap-2 px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border-b border-stone-200 dark:border-white/10">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 truncate min-w-0">{example.title}</span>
-        <button
-          onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 shrink-0 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
-        >
-          {copied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
-          {copied ? "copied" : "copy"}
-        </button>
-      </div>
-      <pre className="p-4 overflow-x-auto bg-stone-950 text-stone-100 text-sm leading-relaxed">
-        <code>{example.code}</code>
-      </pre>
-      {example.output && (
-        <div className="px-4 py-3 bg-stone-900 border-t border-stone-800">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1.5">output</span>
-          <pre className="text-sm text-lime-400 whitespace-pre-wrap">{example.output}</pre>
-        </div>
-      )}
-      {example.explanation && (
-        <div className="px-4 py-3 bg-stone-50 dark:bg-stone-900/50 border-t border-stone-200 dark:border-white/10">
-          <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">{example.explanation}</p>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function ExerciseSection({ exercises, lessonId }: { exercises: PracticeExercise[]; lessonId: string }) {
   const [activeIdx, setActiveIdx] = useState(0);
@@ -113,11 +76,11 @@ function ExerciseSection({ exercises, lessonId }: { exercises: PracticeExercise[
     if (!exercise) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCode(exercise.starterCode);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setShowHints(0);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setShowSolution(false);
-  }, [activeIdx, exercise?.id]);
+  }, [activeIdx, exercise]);
 
   const handleReset = useCallback(() => {
     if (!exercise) return;
@@ -415,7 +378,7 @@ export default function HtmlLessonDetailPage() {
             </div>
             <div className="space-y-4">
               {content.codeExamples.map((example, i) => (
-                <CodeBlock key={i} example={example} />
+                <CodeBlock key={i} example={example} language="html" />
               ))}
             </div>
           </motion.div>

@@ -325,7 +325,7 @@ export default function RegisterPage() {
       <SEO
         title="Create Account"
         description="Join InternHack for free. Create a student or recruiter account to access AI-powered career tools, job listings, and career roadmaps."
-        keywords="register, sign up, create account, InternHack, student registration, recruiter registration"
+        noIndex
       />
 
       <AuthPromoPanel

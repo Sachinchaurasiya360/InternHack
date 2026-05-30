@@ -9,6 +9,7 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "start": "node dist/index.js",
+    "pretest": "prisma generate --schema=src/database/prisma/schema",
     "test": "vitest run",
     "seed": "tsx src/database/seeds/seed.ts",
     "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
@@ -42,6 +43,7 @@
     "google-auth-library": "^10.6.2",
     "groq-sdk": "^1.2.0",
     "helmet": "^8.2.0",
+    "ioredis": "^5.11.0",
     "isomorphic-dompurify": "^3.14.0",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
@@ -54,6 +56,7 @@
     "pdfkit": "^0.18.0",
     "pg": "^8.21.0",
     "prisma": "^7.8.0",
+    "rate-limit-redis": "^5.0.0",
     "resend": "^6.12.3",
     "xlsx": "^0.18.5",
     "zod": "^4.4.3"

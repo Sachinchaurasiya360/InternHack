@@ -1,5 +1,4 @@
 import { Router } from "express";
-import express from "express";
 import { DsaController } from "./dsa.controller.js";
 import { DsaService } from "./dsa.service.js";
 import { DsaImportController } from "./dsa-import.controller.js";
@@ -18,13 +17,14 @@ export const dsaRouter = Router();
 
 // ── LeetCode / CSV import routes (must be before /:id catch-alls) ──
 dsaRouter.post("/import/leetcode", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.previewLeetcode(req, res, next));
-dsaRouter.post("/import/csv", authMiddleware, requireRole("STUDENT"), express.json({ limit: "6mb" }), (req, res, next) => dsaImportController.previewCsv(req, res, next));
+dsaRouter.post("/import/csv", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.previewCsv(req, res, next));
 dsaRouter.post("/import/confirm", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.confirm(req, res, next));
 dsaRouter.get("/import/status", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.status(req, res, next));
 
 dsaRouter.post("/problems/:problemId/toggle", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.toggleProblem(req, res, next));
 dsaRouter.put("/problems/:problemId/notes", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.updateNotes(req, res, next));
 dsaRouter.post("/problems/:problemId/bookmark", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.toggleBookmark(req, res, next));
+dsaRouter.post("/problems/:problemId/report", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.reportProblem(req, res, next));
 dsaRouter.get("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getBookmarks(req, res, next));
 dsaRouter.get("/my-progress", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getMyProgress(req, res, next));
 dsaRouter.get("/activity", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getActivity(req, res, next));
@@ -42,5 +42,6 @@ dsaRouter.get("/companies", optionalAuthMiddleware, (req, res, next) => dsaContr
 dsaRouter.get("/companies/:company", optionalAuthMiddleware, (req, res, next) => dsaController.getCompanyProblems(req, res, next));
 dsaRouter.get("/patterns", optionalAuthMiddleware, (req, res, next) => dsaController.getPatterns(req, res, next));
 dsaRouter.get("/patterns/:pattern", optionalAuthMiddleware, (req, res, next) => dsaController.getPatternProblems(req, res, next));
+dsaRouter.get("/problems/:id/similar", optionalAuthMiddleware, (req, res, next) => dsaController.getSimilarProblems(req, res, next));
 dsaRouter.get("/problems/:slug", optionalAuthMiddleware, (req, res, next) => dsaController.getProblemBySlug(req, res, next));
 dsaRouter.get("/topics/:slug", optionalAuthMiddleware, (req, res, next) => dsaController.getTopicBySlug(req, res, next));

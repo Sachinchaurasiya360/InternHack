@@ -111,6 +111,20 @@ async function seedUsers() {
       bio: "Competitive programmer and algorithm enthusiast",
       location: "Pune",
     },
+    {
+      name: "Neha Kapoor",
+      email: "premium@example.com",
+      password,
+      role: "STUDENT" as const,
+      isVerified: true,
+      college: "IIT Bombay",
+      graduationYear: 2025,
+      skills: ["React", "TypeScript", "System Design", "Node.js"],
+      bio: "Full-stack developer. Premium account for testing subscription-gated features.",
+      location: "Mumbai",
+      subscriptionPlan: "MONTHLY" as const,
+      subscriptionStatus: "ACTIVE" as const,
+    },
   ];
 
   let created = 0;
@@ -455,6 +469,7 @@ async function seedOpensourceRepos() {
     { name: "flutter", owner: "flutter", description: "Google's UI toolkit for building natively compiled applications.", language: "Dart", techStack: ["Dart", "Skia", "C++"], difficulty: "INTERMEDIATE" as const, domain: "MOBILE" as const, stars: 163000, forks: 27000, openIssues: 12000, url: "https://github.com/flutter/flutter", tags: ["mobile", "cross-platform", "ui"] },
     { name: "prisma", owner: "prisma", description: "Next-generation ORM for Node.js and TypeScript.", language: "TypeScript", techStack: ["TypeScript", "Rust", "PostgreSQL"], difficulty: "BEGINNER" as const, domain: "WEB" as const, stars: 39000, forks: 1500, openIssues: 3000, url: "https://github.com/prisma/prisma", tags: ["orm", "database", "typescript"] },
     { name: "scikit-learn", owner: "scikit-learn", description: "Machine learning in Python.", language: "Python", techStack: ["Python", "NumPy", "Cython"], difficulty: "INTERMEDIATE" as const, domain: "AI" as const, stars: 59000, forks: 25000, openIssues: 2300, url: "https://github.com/scikit-learn/scikit-learn", tags: ["ml", "data-science", "python"] },
+    { name: "pandas", owner: "pandas-dev", description: "Flexible and powerful data analysis / manipulation library for Python.", language: "Python", techStack: ["Python", "Cython", "NumPy"], difficulty: "INTERMEDIATE" as const, domain: "DATA" as const, stars: 40000, forks: 16000, openIssues: 3000, url: "https://github.com/pandas-dev/pandas", tags: ["data-analysis", "pandas", "python"] },
   ];
 
   let count = 0;
@@ -1367,6 +1382,112 @@ async function seedBlogPosts() {
   log("Blog Posts", count);
 }
 
+async function seedGsocOrgs() {
+  const orgs = [
+    {
+      name: "Apache Software Foundation",
+      slug: "apache",
+      url: "https://apache.org",
+      description: "The Apache Software Foundation provides support for the Apache community of open-source software projects.",
+      category: "Software Foundation",
+      technologies: ["Java", "Python", "C++", "Scala"],
+      yearsParticipated: [2021, 2022, 2023, 2024],
+      totalProjects: 100,
+      projectsData: [
+        { year: 2024, title: "Apache Kafka Stream Processing", studentName: "Rahul Sharma" },
+        { year: 2024, title: "Apache Flink Optimization", studentName: "Priya Patel" },
+        { year: 2023, title: "Apache Spark ML Pipeline", studentName: "Arjun Singh" },
+        { year: 2023, title: "Apache Cassandra Driver", studentName: "Sneha Kumar" },
+        { year: 2022, title: "Apache Hadoop YARN", studentName: "Vikram Nair" },
+        { year: 2021, title: "Apache Beam Runner", studentName: "Ananya Roy" },
+      ],
+      ideasUrl: "https://community.apache.org/gsoc.html",
+      guideUrl: "https://community.apache.org/gsoc/guide.html",
+    },
+    {
+      name: "Python Software Foundation",
+      slug: "python",
+      url: "https://python.org",
+      description: "The Python Software Foundation (PSF) is a non-profit organization devoted to the Python programming language.",
+      category: "Programming Languages",
+      technologies: ["Python", "C", "Rust"],
+      yearsParticipated: [2021, 2022, 2023, 2024],
+      totalProjects: 80,
+      projectsData: [
+        { year: 2024, title: "CPython Memory Profiler", studentName: "Amit Kumar" },
+        { year: 2024, title: "PyPI Security Enhancements", studentName: "Sanya Gupta" },
+        { year: 2023, title: "Django Async Support", studentName: "Rohan Joshi" },
+        { year: 2023, title: "Numpy BLAS Integration", studentName: "Ishita Rao" },
+        { year: 2022, title: "Pandas Performance Tuning", studentName: "Karan Singh" },
+      ],
+      ideasUrl: "https://wiki.python.org/moin/SummerOfCode/2024",
+      guideUrl: "https://wiki.python.org/moin/SummerOfCode/ContributorGuide",
+    },
+  ];
+
+  let count = 0;
+  for (const org of orgs) {
+    const existing = await prisma.gsocOrganization.findUnique({ where: { slug: org.slug } });
+    if (!existing) {
+      await prisma.gsocOrganization.create({ data: org });
+      count++;
+    } else {
+      await prisma.gsocOrganization.update({
+        where: { slug: org.slug },
+        data: org,
+      });
+    }
+  }
+  log("GSoC Organizations", count);
+}
+
+async function seedRepoRequests() {
+  const student = await prisma.user.findFirst({ where: { email: "aarav@example.com" } });
+  if (!student) {
+    console.log("  ⚠ Skipping repo requests, student user not found");
+    return;
+  }
+
+  const domains: ("AI" | "WEB" | "DEVOPS" | "MOBILE" | "BLOCKCHAIN" | "DATA" | "SECURITY" | "CLOUD" | "GAMING" | "OTHER")[] = 
+    ["AI", "WEB", "DEVOPS", "MOBILE", "DATA"];
+    
+  const repos = await prisma.opensourceRepo.findMany({ take: 6 });
+  
+  if (repos.length === 0) {
+    console.log("  ⚠ Skipping repo requests, no opensource repos found");
+    return;
+  }
+
+  let count = 0;
+  for (let i = 0; i < 8; i++) {
+    const repo = repos[i % repos.length];
+    const existing = await prisma.repoRequest.findFirst({
+      where: { userId: student.id, url: repo.url },
+    });
+    
+    if (!existing) {
+      await prisma.repoRequest.create({
+        data: {
+          name: repo.name,
+          owner: repo.owner,
+          description: repo.description,
+          language: repo.language,
+          url: repo.url,
+          domain: domains[i % domains.length],
+          difficulty: repo.difficulty,
+          status: "APPROVED",
+          userId: student.id,
+          reason: "Test request for analytics",
+          techStack: repo.techStack,
+          tags: repo.tags,
+        },
+      });
+      count++;
+    }
+  }
+  log("Repo Requests (Approved)", count);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────
 async function main() {
   console.log("\n🌱 Seeding InternHack database...\n");
@@ -1379,6 +1500,7 @@ async function main() {
   await seedSkillTests();
   await seedHackathons();
   await seedOpensourceRepos();
+  await seedRepoRequests();
   await seedGovInternships();
   await seedJobs();
   await seedFundingSignals();
@@ -1386,6 +1508,7 @@ async function main() {
   await seedYCCompanies();
   await seedProfessors();
   await seedBlogPosts();
+  await seedGsocOrgs();
 
   console.log("\n✅ Seed complete!\n");
 }
