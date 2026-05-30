@@ -91,6 +91,15 @@ opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), async
       return;
     }
 
+    const existingRepo = await prisma.opensourceRepo.findFirst({
+      where: { url: parsed.data.url },
+    });
+    if (existingRepo) {
+      res.status(409).json({ message: "This repository is already listed on the platform" });
+      return;
+    }
+
+
     const request = await prisma.repoRequest.create({
       data: { ...parsed.data, userId: req.user!.id },
       include: { user: { select: { name: true, email: true } } },
