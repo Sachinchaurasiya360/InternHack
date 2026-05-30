@@ -481,6 +481,70 @@ export default function OpenSourceAnalyticsPage() {
             )}
           </ChartCard>
 
+          {/* Contributions by Domain */}
+          {(trendIsLoading || (contributionTrendData?.domains && contributionTrendData.domains.length > 0) || (contributionTrendData && contributionTrendData.total === 0)) && (
+            <motion.div
+              custom={0.5}
+              variants={cardVariant}
+              initial="hidden"
+              animate="visible"
+              className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <div className="h-1.5 w-1.5 rounded-full bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.5)]" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  contributions / by domain
+                </span>
+              </div>
+
+              {trendIsLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3 animate-pulse">
+                      <div className="w-24 h-3 bg-gray-100 rounded" />
+                      <div className="flex-1 h-2 bg-gray-100 rounded-sm" />
+                      <div className="w-6 h-3 bg-gray-100 rounded" />
+                    </div>
+                  ))}
+                </div>
+              ) : contributionTrendData?.domains && contributionTrendData.domains.length > 0 ? (
+                <div className="space-y-3.5">
+                  {(() => {
+                    const domains = contributionTrendData.domains;
+                    const maxCount = Math.max(...domains.map(d => d.count), 1);
+                    return domains.map(({ domain, count }) => {
+                      const pct = Math.round((count / maxCount) * 100);
+                      return (
+                        <div key={domain} className="flex items-center gap-3 group">
+                          <span className="text-xs font-medium text-stone-600 w-24 shrink-0 truncate group-hover:text-stone-900 transition-colors">
+                            {domain}
+                          </span>
+                          <div className="flex-1 bg-stone-100 dark:bg-stone-800 rounded-sm h-2 relative overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct}%` }}
+                              transition={{ duration: 1, ease: "easeOut" }}
+                              className="absolute inset-y-0 left-0 bg-lime-400 rounded-sm"
+                            />
+                          </div>
+                          <span className="text-xs font-mono text-stone-500 w-6 text-right shrink-0">
+                            {count}
+                          </span>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <p className="text-xs text-stone-400 italic">
+                    No domain data yet — get your first contribution approved to see your breakdown.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          )}
+
           {/* 2 - Category Distribution (Pie) */}
           <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={1}
             expandedChildren={
