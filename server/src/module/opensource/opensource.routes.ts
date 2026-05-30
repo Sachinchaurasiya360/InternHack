@@ -12,7 +12,10 @@ import { sendEmail } from "../../utils/email.utils.js";
 import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/email-templates.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
+import { OpensourceController } from "./opensource.controller.js";
+
 export const opensourceRouter = Router();
+const controller = new OpensourceController();
 
 function addMonthsUTC(date: Date, months: number): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1));
@@ -28,48 +31,11 @@ function getMonthLabelUTC(date: Date): string {
   return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
 }
 
+// Public: list available languages
+opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
+
 // Public: list repos with optional filters
-opensourceRouter.get("/", async (req, res, next) => {
-  try {
-    const parsed = opensourceListQuerySchema.safeParse(req.query);
-    if (!parsed.success) {
-      res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
-      return;
-    }
-    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = parsed.data;
-
-    const where: Record<string, unknown> = {};
-    if (language) where["language"] = { equals: language, mode: "insensitive" };
-    if (difficulty) where["difficulty"] = difficulty;
-    if (domain) where["domain"] = domain;
-    if (search) {
-      where["OR"] = [
-        { name: { contains: search, mode: "insensitive" } },
-        { owner: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { tags: { hasSome: [search] } },
-      ];
-    }
-
-    const skip = (page - 1) * limit;
-    const [repos, total] = await Promise.all([
-      prisma.opensourceRepo.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { [sortBy]: sortOrder },
-      }),
-      prisma.opensourceRepo.count({ where }),
-    ]);
-
-    res.json({
-      repos,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+opensourceRouter.get("/", (req, res, next) => controller.listRepos(req, res, next));
 
 // ─── Repo Requests (Student-authenticated) ───────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts

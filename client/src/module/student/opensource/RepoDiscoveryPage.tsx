@@ -55,6 +55,7 @@ export default function RepoDiscoveryPage() {
 
   const [selectedDomain, setSelectedDomain] = useState("ALL");
   const [selectedDifficulty, setSelectedDifficulty] = useState("ALL");
+  const [selectedLanguage, setSelectedLanguage] = useState("ALL");
   const [sortKey, setSortKey] = useState("stars");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
@@ -67,10 +68,11 @@ export default function RepoDiscoveryPage() {
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
+    if (selectedLanguage !== "ALL") params.language = selectedLanguage;
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
     return params;
-  }, [search, selectedDomain, selectedDifficulty, sortKey, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -80,6 +82,16 @@ export default function RepoDiscoveryPage() {
     },
     placeholderData: (prev) => prev,
   });
+
+  const { data: languagesData } = useQuery({
+    queryKey: ["opensource-languages"],
+    queryFn: () => api.get("/opensource/languages").then((r) => r.data.languages as string[]),
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const languages = useMemo(() => {
+    return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
+  }, [languagesData]);
 
   const repos = useMemo(() => data?.repos ?? [], [data]);
   const pagination = data?.pagination;
@@ -103,7 +115,8 @@ export default function RepoDiscoveryPage() {
 
   const activeFilters =
     (selectedDomain !== "ALL" ? 1 : 0) +
-    (selectedDifficulty !== "ALL" ? 1 : 0);
+    (selectedDifficulty !== "ALL" ? 1 : 0) +
+    (selectedLanguage !== "ALL" ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -320,6 +333,24 @@ export default function RepoDiscoveryPage() {
                   </select>
                 </div>
 
+                <div>
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
+                    language
+                  </label>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => updateFilter(setSelectedLanguage, e.target.value)}
+                    className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
+                  >
+                    <option value="ALL">All Languages</option>
+                    {languages.map((lang) => (
+                      <option key={lang} value={lang}>
+                        {lang}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 {activeFilters > 0 && (
                   <div className="flex items-end">
                     <button
@@ -327,6 +358,7 @@ export default function RepoDiscoveryPage() {
                       onClick={() => {
                         setSelectedDomain("ALL");
                         setSelectedDifficulty("ALL");
+                        setSelectedLanguage("ALL");
                         setSearch("");
                         setPage(1);
                       }}
@@ -349,6 +381,7 @@ export default function RepoDiscoveryPage() {
                 <span className="text-stone-900 dark:text-stone-50">{pagination.total}</span>
                 {" "}repositor{pagination.total !== 1 ? "ies" : "y"}
                 {selectedDomain !== "ALL" && <> / <span className="text-stone-900 dark:text-stone-50">{REPO_DOMAINS.find((d) => d.key === selectedDomain)?.label}</span></>}
+                {selectedLanguage !== "ALL" && <> / <span className="text-stone-900 dark:text-stone-50">{selectedLanguage}</span></>}
                 {search && <> / matching "<span className="text-stone-900 dark:text-stone-50">{search}</span>"</>}
               </>
             ) : (
