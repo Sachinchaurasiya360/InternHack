@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -103,17 +103,25 @@ function FilterDropdown({
   value,
   options,
   onChange,
+  isOpen,
+  setIsOpen,
+  dropdownRef,
 }: {
   label: string;
   icon: ReactNode;
   value: string;
   options: string[];
   onChange: (v: string) => void;
+  isOpen: boolean;
+  setIsOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
+  dropdownRef: React.RefObject<HTMLDivElement | null>;
 }) {
   return (
-    <div className="relative group">
+    <div className="relative" ref={dropdownRef}>
       <button
         type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-expanded={isOpen}
         className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-stone-300 bg-white px-3 text-xs font-mono uppercase tracking-widest text-stone-600 transition-colors hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
       >
         <span className="text-stone-400">{icon}</span>
@@ -121,20 +129,28 @@ function FilterDropdown({
         <span className="max-w-28 truncate font-bold normal-case tracking-normal text-stone-900 dark:text-stone-50">
           {value}
         </span>
-        <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+        <ChevronDown className={`h-3.5 w-3.5 opacity-60 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
-      <div className="absolute left-0 top-full z-20 mt-1 hidden max-h-80 min-w-56 overflow-y-auto rounded-md border border-stone-200 bg-white p-1 shadow-xl group-hover:block dark:border-white/10 dark:bg-stone-900">
+      <div
+        className={`${
+          isOpen ? "block active" : "hidden"
+        } absolute left-0 top-full z-20 mt-1 max-h-80 min-w-56 overflow-y-auto rounded-md border border-stone-200 bg-white p-1 shadow-xl dark:border-white/10 dark:bg-stone-900`}
+      >
         {options.map((opt) => {
           const active = opt === value;
           return (
             <button
               key={opt}
               type="button"
-              onClick={() => onChange(opt)}
-              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${active
-                ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
-                : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
-                }`}
+onClick={() => {
+                onChange(opt);
+                setIsOpen(false);
+              }}
+              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${
+                active
+                  ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
+                  : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
+              }`}
             >
               <span className="truncate">{opt}</span>
               {active && <span className="h-1 w-1 bg-lime-400" />}
@@ -466,6 +482,47 @@ export default function GSoCReposPage() {
 
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
+
+  // Dropdown states
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [techOpen, setTechOpen] = useState(false);
+  const [yearOpen, setYearOpen] = useState(false);
+
+  // Refs for outside click detection
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const techRef = useRef<HTMLDivElement>(null);
+  const yearRef = useRef<HTMLDivElement>(null);
+
+  // Outside click handler
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (categoryRef.current && !categoryRef.current.contains(e.target as Node)) {
+        setCategoryOpen(false);
+      }
+      if (techRef.current && !techRef.current.contains(e.target as Node)) {
+        setTechOpen(false);
+      }
+      if (yearRef.current && !yearRef.current.contains(e.target as Node)) {
+        setYearOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Escape key handler
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setCategoryOpen(false);
+        setTechOpen(false);
+        setYearOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, []);
+
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const limit = 18;
 
@@ -610,6 +667,9 @@ export default function GSoCReposPage() {
             label="category"
             value={selectedCategory}
             options={categoryOptions}
+isOpen={categoryOpen}
+            setIsOpen={setCategoryOpen}
+            dropdownRef={categoryRef}
             onChange={(value) => updateFilter("category", value)}
           />
           <FilterDropdown
@@ -617,6 +677,9 @@ export default function GSoCReposPage() {
             label="year"
             value={selectedYear}
             options={yearOptions}
+isOpen={yearOpen}
+            setIsOpen={setYearOpen}
+            dropdownRef={yearRef}
             onChange={(value) => updateFilter("year", value)}
           />
           <FilterDropdown
@@ -624,6 +687,9 @@ export default function GSoCReposPage() {
             label="tech"
             value={selectedTech}
             options={techOptions}
+isOpen={techOpen}
+            setIsOpen={setTechOpen}
+            dropdownRef={techRef}
             onChange={(value) => updateFilter("tech", value)}
           />
           {hasFilters && (
