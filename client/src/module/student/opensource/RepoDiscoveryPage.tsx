@@ -28,7 +28,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
-import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
+import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS, LANGUAGE_OPTIONS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
@@ -36,6 +36,7 @@ import { SuggestRepoModal } from "./SuggestRepoModal";
 
 const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+
 
 export default function RepoDiscoveryPage() {
   const [search, setSearch] = useState("");
@@ -55,6 +56,7 @@ export default function RepoDiscoveryPage() {
 
   const [selectedDomain, setSelectedDomain] = useState("ALL");
   const [selectedDifficulty, setSelectedDifficulty] = useState("ALL");
+  const [selectedLanguage, setSelectedLanguage] = useState("ALL"); // <-- NEW STATE
   const [sortKey, setSortKey] = useState("stars");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
@@ -67,10 +69,11 @@ export default function RepoDiscoveryPage() {
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
+    if (selectedLanguage !== "ALL") params.language = selectedLanguage; // <-- ADDED TO API
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
     return params;
-  }, [search, selectedDomain, selectedDifficulty, sortKey, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -101,9 +104,11 @@ export default function RepoDiscoveryPage() {
     setPage(1);
   };
 
+  // <-- UPDATED FILTER COUNT
   const activeFilters =
     (selectedDomain !== "ALL" ? 1 : 0) +
-    (selectedDifficulty !== "ALL" ? 1 : 0);
+    (selectedDifficulty !== "ALL" ? 1 : 0) +
+    (selectedLanguage !== "ALL" ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -320,6 +325,22 @@ export default function RepoDiscoveryPage() {
                   </select>
                 </div>
 
+                {/* <-- NEW LANGUAGE SELECTOR --> */}
+                <div>
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
+                    language
+                  </label>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => updateFilter(setSelectedLanguage, e.target.value)}
+                    className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
+                  >
+                    {LANGUAGE_OPTIONS.map((lang) => (
+                      <option key={lang} value={lang}>{lang === "ALL" ? "All Languages" : lang}</option>
+                    ))}
+                  </select>
+                </div>
+
                 {activeFilters > 0 && (
                   <div className="flex items-end">
                     <button
@@ -327,6 +348,7 @@ export default function RepoDiscoveryPage() {
                       onClick={() => {
                         setSelectedDomain("ALL");
                         setSelectedDifficulty("ALL");
+                        setSelectedLanguage("ALL"); // <-- ADDED TO RESET
                         setSearch("");
                         setPage(1);
                       }}
