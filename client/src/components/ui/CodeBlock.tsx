@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Copy, Check } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus, prism } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -28,10 +28,19 @@ export function CodeBlock({ code, label, example, language = "javascript" }: Cod
   const activeOutput = example?.output;
   const activeExplanation = example?.explanation;
 
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(activeCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  useEffect(() => {
+    if (!copied) return;
+    const timeout = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(timeout);
+  }, [copied]);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(activeCode);
+      setCopied(true);
+    } catch (err) {
+      console.error("Failed to copy code: ", err);
+    }
   }, [activeCode]);
 
   // Choose the syntax highlighting theme
@@ -43,14 +52,15 @@ export function CodeBlock({ code, label, example, language = "javascript" }: Cod
       <div className="flex items-center justify-between px-4 py-2.5 bg-stone-50 dark:bg-stone-950/40 border-b border-stone-200 dark:border-white/10">
         <div className="flex items-center gap-2 min-w-0">
           <div className="h-1 w-1 bg-lime-400 shrink-0"></div>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
             {activeTitle}
           </span>
         </div>
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
+          aria-label={copied ? "Code copied" : "Copy code to clipboard"}
+          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
         >
           {copied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
           {copied ? "copied" : "copy"}
@@ -88,7 +98,7 @@ export function CodeBlock({ code, label, example, language = "javascript" }: Cod
       {/* Optional Output */}
       {activeOutput && (
         <div className="px-4 py-2.5 bg-stone-900 border-t border-stone-800">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1">output</span>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 block mb-1">output</span>
           <pre className="text-sm text-lime-400 whitespace-pre-wrap font-mono">{activeOutput}</pre>
         </div>
       )}
