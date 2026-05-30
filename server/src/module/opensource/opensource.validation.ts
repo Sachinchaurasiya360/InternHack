@@ -37,3 +37,12 @@ export const approveRequestOverrideSchema = z.object({
   difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
   tags: z.array(z.string()).optional(),
 });
+
+export const gsocOrgsQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(48).default(24),
+  search: z.string().optional(),
+  category: z.string().optional(),
+  tech: z.string().optional(),
+  year: z.coerce.number().optional(),
+});
