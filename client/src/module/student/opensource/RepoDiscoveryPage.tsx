@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -20,6 +20,8 @@ import {
   AlertCircle,
   BarChart3,
   Plus,
+  Share2,
+  Check,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -60,7 +62,47 @@ export default function RepoDiscoveryPage() {
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
   const [page, setPage] = useState(1);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
+  const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const { user } = useAuthStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const handleOpenRepo = (repo: OpenSourceRepo) => {
+    setSelectedRepo(repo);
+    setSearchParams({ repo: String(repo.id) }, { replace: true });
+  };
+
+  const handleCloseRepo = () => {
+    setSelectedRepo(null);
+    setSearchParams({}, { replace: true });
+    setCopiedShareUrl(false);
+  };
+
+  const initialRepoId = searchParams.get("repo");
+  const { data: deepLinkData, isError: deepLinkError } = useQuery({
+    queryKey: ["repo-deep-link", initialRepoId],
+    queryFn: () => api.get(`/opensource/${initialRepoId}`).then((res) => res.data.repo),
+    enabled: !!initialRepoId && !selectedRepo,
+    staleTime: 10 * 60 * 1000,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (deepLinkData) {
+      setSelectedRepo(deepLinkData);
+    }
+  }, [deepLinkData]);
+
+  useEffect(() => {
+    if (deepLinkError) {
+      setSearchParams({}, { replace: true });
+    }
+  }, [deepLinkError, setSearchParams]);
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedShareUrl(true);
+    setTimeout(() => setCopiedShareUrl(false), 1500);
+  };
 
   const queryParams = useMemo(() => {
     const params: Record<string, string | number> = { page, limit: 12, sortBy: sortKey, sortOrder: "desc" };
@@ -393,7 +435,7 @@ export default function RepoDiscoveryPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {repos.map((repo, i) => (
-                <RepoCard key={repo.id} repo={repo} index={i} onSelect={setSelectedRepo} />
+                <RepoCard key={repo.id} repo={repo} index={i} onSelect={handleOpenRepo} />
               ))}
             </AnimatePresence>
           </div>
@@ -422,7 +464,7 @@ export default function RepoDiscoveryPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/50 backdrop-blur-sm"
-            onClick={() => setSelectedRepo(null)}
+            onClick={handleCloseRepo}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -450,14 +492,37 @@ export default function RepoDiscoveryPage() {
                     </h2>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedRepo(null)}
-                  className="w-8 h-8 rounded-md flex items-center justify-center text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-white/5 cursor-pointer"
-                  aria-label="Close"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleShare}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border ${
+                      copiedShareUrl
+                        ? "bg-lime-400 text-stone-950 border-lime-400"
+                        : "bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    {copiedShareUrl ? (
+                      <>
+                        <Check className="w-3.5 h-3.5" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-3.5 h-3.5" />
+                        Share
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCloseRepo}
+                    className="w-8 h-8 rounded-md flex items-center justify-center text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-white/5 cursor-pointer"
+                    aria-label="Close"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
               <div className="px-5 py-5 space-y-5">
