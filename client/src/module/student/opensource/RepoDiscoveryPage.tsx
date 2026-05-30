@@ -8,6 +8,8 @@ import {
   GitFork,
   CircleDot,
   ExternalLink,
+  Copy,
+  Check,
   X,
   ChevronDown,
   TrendingUp,
@@ -58,6 +60,7 @@ export default function RepoDiscoveryPage() {
   const [sortKey, setSortKey] = useState("stars");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
+  const [repoUrlCopied, setRepoUrlCopied] = useState(false);
   const [page, setPage] = useState(1);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const { user } = useAuthStore();
@@ -100,6 +103,17 @@ export default function RepoDiscoveryPage() {
     setter(value);
     setPage(1);
   };
+
+  const copySelectedRepoUrl = () => {
+    if (!selectedRepo) return;
+    navigator.clipboard.writeText(selectedRepo.url);
+    setRepoUrlCopied(true);
+    setTimeout(() => setRepoUrlCopied(false), 1500);
+  };
+
+  useEffect(() => {
+    setRepoUrlCopied(false);
+  }, [selectedRepo]);
 
   const activeFilters =
     (selectedDomain !== "ALL" ? 1 : 0) +
@@ -591,16 +605,36 @@ export default function RepoDiscoveryPage() {
                   </div>
                 </div>
 
-                {/* View on GitHub */}
-                <a
-                  href={selectedRepo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center justify-center gap-2 w-full py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 text-sm font-bold transition-colors no-underline"
-                >
-                  View on GitHub
-                  <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </a>
+                {/* Repository actions */}
+                <div className="flex items-center gap-2">
+                  <a
+                    href={selectedRepo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex flex-1 items-center justify-center gap-2 py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 text-sm font-bold transition-colors no-underline"
+                  >
+                    View on GitHub
+                    <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={copySelectedRepoUrl}
+                    className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 transition-colors hover:bg-stone-100 dark:hover:bg-white/5 cursor-pointer"
+                    aria-label={repoUrlCopied ? "Copied repository URL" : "Copy repository URL"}
+                    title={repoUrlCopied ? "Copied!" : "Copy repository URL"}
+                  >
+                    {repoUrlCopied ? (
+                      <Check className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                    {repoUrlCopied && (
+                      <span className="absolute -top-8 right-0 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-1 text-[10px] font-bold text-white dark:text-stone-950 shadow-lg">
+                        Copied!
+                      </span>
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
