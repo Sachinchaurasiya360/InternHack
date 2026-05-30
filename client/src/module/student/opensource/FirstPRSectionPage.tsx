@@ -1,4 +1,4 @@
-import { useState, useCallback} from "react";
+import { useState, useCallback } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -67,9 +67,7 @@ export default function FirstPRSectionPage() {
     });
   }, [step]);
 
-  if (!step) return <Navigate to="/student/opensource/first-pr" replace />;
-
-  const isDone = completed.has(step.id);
+  // ---> FIX: Define variables and call hook BEFORE the early return <---
   const prev = stepIndex > 0 ? STEPS[stepIndex - 1] : null;
   const next = stepIndex < STEPS.length - 1 ? STEPS[stepIndex + 1] : null;
 
@@ -77,6 +75,11 @@ export default function FirstPRSectionPage() {
     prevPath: prev ? `/student/opensource/first-pr/${prev.id}` : null,
     nextPath: next ? `/student/opensource/first-pr/${next.id}` : null,
   });
+
+  // ---> The guard is now safely below all hook calls <---
+  if (!step) return <Navigate to="/student/opensource/first-pr" replace />;
+
+  const isDone = completed.has(step.id);
 
   return (
     <div className="relative pb-12">
