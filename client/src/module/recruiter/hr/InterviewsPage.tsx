@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import NumberFlow from "@number-flow/react";
+import { useInterviewCountdown } from "../../../hooks/useInterviewCountdown";
 import {
   Video,
   Plus,
@@ -138,7 +139,7 @@ export default function InterviewsPage() {
         interviewerIds: "",
       });
     },
-    onError: (error: any) => {
+    onError: (error: { response?: { status?: number } }) => {
       if (error.response?.status === 409) {
         toast.error("Scheduling conflict: One or more interviewers are already booked at this time.");
       } else {
@@ -159,7 +160,7 @@ export default function InterviewsPage() {
     },
   });
 
-  const now = new Date();
+  const now = useMemo(() => new Date(), []);
 
   const filteredInterviews = useMemo(() => {
     let list = interviews ?? [];
@@ -838,6 +839,7 @@ function InterviewRow({
     interview.application?.user?.name ||
     `Application #${interview.applicationId}`;
   const endTime = new Date(d.getTime() + interview.durationMinutes * 60000);
+  const countdown = useInterviewCountdown(interview.scheduledAt);
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -891,6 +893,32 @@ function InterviewRow({
           <span className="text-stone-300 dark:text-stone-700">/</span>
           <span>{interview.durationMinutes}m</span>
         </div>
+            {interview.status === "CANCELLED" ? (
+  <div className="mt-2">
+    <p className="text-xs font-semibold text-red-500">
+      Interview Cancelled
+    </p>
+  </div>
+) : interview.status === "COMPLETED" ? (
+  <div className="mt-2">
+    <p className="text-xs font-semibold text-stone-500">
+      Interview Completed
+    </p>
+  </div>
+) : countdown ? (
+  <div className="mt-2">
+    <p className="text-xs font-semibold text-lime-600 dark:text-lime-400">
+      Interview starts in {countdown.days}d{" "}
+      {countdown.hours}h {countdown.minutes}m
+    </p>
+  </div>
+) : (
+  <div className="mt-2">
+    <p className="text-xs font-semibold text-orange-500">
+      Interview In Progress
+    </p>
+  </div>
+)}
       </div>
 
       <div className="flex items-center gap-2 shrink-0">

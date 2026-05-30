@@ -25,6 +25,7 @@ const KIND_TABS: { id: SignalKind; label: string }[] = [
   { id: "all", label: "All" },
   { id: "funding", label: "Funding" },
   { id: "hiring", label: "Hiring" },
+  { id: "product_launch", label: "Product Launch" },
 ];
 
 const PAGE_COPY: Record<
@@ -48,6 +49,12 @@ const PAGE_COPY: Record<
     kicker: "discover / hiring signals",
     description:
       "Founders and teams posting open roles directly, especially from Hacker News Who is Hiring and YC launches.",
+  },
+  product_launch: {
+    seoTitle: "Product Launch Signals",
+    kicker: "discover / product launches",
+    description:
+      "New products and YC launches hitting the market — companies building in public before they make the news.",
   },
 };
 
@@ -84,7 +91,7 @@ export default function SignalsPage() {
   const [page, setPage] = useState(1);
 
   const copy = PAGE_COPY[kind];
-  const showAmountSort = kind !== "hiring";
+  const showAmountSort = kind !== "hiring" && kind !== "product_launch";
 
   const queryParams = useMemo(() => {
     const params: Record<string, string | number | boolean> = {
@@ -131,7 +138,7 @@ export default function SignalsPage() {
   const changeKind = (next: SignalKind) => {
     setKind(next);
     setPage(1);
-    if (next === "hiring" && sort === "amount") {
+    if ((next === "hiring" || next === "product_launch") && sort === "amount") {
       setSort("recent");
     }
   };
@@ -152,6 +159,20 @@ export default function SignalsPage() {
               Find roles{" "}
               <span className="relative inline-block">
                 <span className="relative z-10">before the crowd.</span>
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+                  aria-hidden
+                  className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                />
+              </span>
+            </>
+          ) : kind === "product_launch" ? (
+            <>
+              Built by founders,{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10">shipped today.</span>
                 <motion.span
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}

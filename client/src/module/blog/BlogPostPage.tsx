@@ -245,7 +245,7 @@ export default function BlogPostPage() {
   // HTML content
   const renderedContent = useMemo(() => {
     if (!post?.content) return "";
-    return markdownToHtml(post.content);
+    return markdownToHtml(post?.content ?? "");
   }, [post?.content]);
 
   // Reading time fallback

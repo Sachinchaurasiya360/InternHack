@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 import { BaseSignalSource } from "./sources/base.source.js";
 import type { FundingSignalData } from "./sources/base.source.js";
 import { YcLaunchesSource } from "./sources/yc-launches.source.js";
@@ -15,7 +16,7 @@ interface SignalsQuery {
   source?: string | undefined;
   round?: string | undefined;
   industry?: string | undefined;
-  kind?: "funding" | "hiring" | "all" | undefined;
+  kind?: "funding" | "hiring" | "product_launch" | "all" | undefined;
   status?: "ACTIVE" | "STALE" | "ARCHIVED" | "ALL" | undefined;
   hiringOnly?: boolean | undefined;
   minAmountUsd?: bigint | undefined;
@@ -78,7 +79,9 @@ export class SignalsService {
   startCron(schedule = "0 */6 * * *") {
     if (this.cronJob) this.cronJob.stop();
     this.cronJob = cron.schedule(schedule, () => {
-      void this.ingestAll();
+      void withAdvisoryLock("signals-ingestion", async () => {
+        await this.ingestAll();
+      });
     });
     console.log(`[Signals] Cron scheduled: ${schedule}`);
   }
@@ -302,6 +305,13 @@ export class SignalsService {
       where.hiringSignal = true;
       where.fundingAmount = null;
       where.amountUsd = null;
+    } else if (query.kind === "product_launch") {
+      // Product launch: YC launches that are not pure funding rounds and not hiring-only
+      where.source = "yc-launches";
+      where.hiringSignal = false;
+      where.fundingAmount = null;
+      where.amountUsd = null;
+      where.fundingRound = null;
     }
 
     const orderBy: Prisma.fundingSignalOrderByWithRelationInput =

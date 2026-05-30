@@ -153,6 +153,7 @@ export default function AdminBlogEditor() {
   useEffect(() => {
     if (existingPost?.post) {
       const p = existingPost.post;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         title: p.title,
         content: p.content,

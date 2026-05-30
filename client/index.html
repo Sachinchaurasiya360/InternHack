@@ -110,12 +110,20 @@
       {
         "@context": "https://schema.org",
         "@type": ["Organization", "EducationalOrganization"],
+        "@id": "https://www.internhack.xyz/#organization",
         "name": "InternHack",
         "url": "https://www.internhack.xyz",
-        "logo": "https://www.internhack.xyz/favicon.png",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.internhack.xyz/og-image.png",
+          "width": 1200,
+          "height": 630
+        },
         "description": "AI-powered career platform connecting students with internships, coding tutorials, and career tools.",
         "sameAs": [
-          "https://github.com/SachinChaurasiya/InternHack"
+          "https://github.com/SachinChaurasiya/InternHack",
+          "https://twitter.com/internhack",
+          "https://www.linkedin.com/company/internhack"
         ]
       }
     </script>
@@ -123,7 +131,11 @@
     <!-- Preconnect to critical origins (preconnect supersedes dns-prefetch) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://api.internhack.xyz" />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
+    <!-- Preload primary font weight to reduce LCP FOUT -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- Fonts (non-blocking) -->
     <link
@@ -158,9 +170,9 @@
         <h2>What you can do on InternHack</h2>
         <ul>
           <li><a href="/jobs">Internship and job board</a>, curated listings from top companies.</li>
-          <li><a href="/ats">AI ATS resume scorer</a>, get an instant score and actionable fixes.</li>
+          <li><a href="/ats-score">AI ATS resume scorer</a>, get an instant score and actionable fixes.</li>
           <li><a href="/companies">Company explorer</a>, research employers before you apply.</li>
-          <li><a href="/roadmap">Career roadmaps</a>, step-by-step guidance for frontend, backend, data, and more.</li>
+          <li><a href="/roadmaps">Career roadmaps</a>, step-by-step guidance for frontend, backend, data, and more.</li>
           <li><a href="/dsa">DSA practice tracker</a>, organized problems with progress tracking.</li>
           <li><a href="/blog">Blog and guides</a>, interview prep, career advice, and tutorials.</li>
           <li><a href="/opensource">Open-source projects</a>, contribute to real codebases.</li>
@@ -168,7 +180,7 @@
         <h2>For recruiters</h2>
         <p>
           Post roles, review AI-ranked candidates, and reach motivated student talent.
-          <a href="/recruiters">Learn more about recruiter tools</a>.
+          <a href="/for-recruiters">Learn more about recruiter tools</a>.
         </p>
         <p>
           InternHack is a free, AI-powered career platform.

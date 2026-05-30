@@ -14,6 +14,12 @@ const DIFF_STYLE: Record<string, string> = {
   Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
 
+const FILTER_STYLE: Record<string, string> = {
+  Beginner: "text-green-700 dark:text-green-400 border-green-200 dark:border-green-900/60 bg-green-50 dark:bg-green-900/20",
+  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-900/20",
+  Advanced: "text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-900/20",
+};
+
 const TYPE_STYLE: Record<string, string> = {
   Theory:      "text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-900/60",
   Coding:      "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
@@ -37,6 +43,9 @@ export default function InterviewSectionPage() {
 
   const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [diffFilter, setDiffFilter] = useState<
+    "all" | "Beginner" | "Intermediate" | "Advanced"
+  >("all");
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -62,6 +71,11 @@ export default function InterviewSectionPage() {
     () => questions.filter((q) => q.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
     [sectionSlug],
   );
+
+  const filteredQuestions = useMemo(() => {
+    if (diffFilter === "all") return sectionQuestions;
+    return sectionQuestions.filter((q) => q.difficulty === diffFilter);
+  }, [sectionQuestions, diffFilter]);
 
   if (section && !section.freeTier && !isAuthenticated) {
     return <Navigate to={basePath} replace />;
@@ -183,14 +197,44 @@ export default function InterviewSectionPage() {
           </span>
         </div>
 
+        <div className="flex items-center gap-2 mb-6 flex-wrap">
+          {(["all", "Beginner", "Intermediate", "Advanced"] as const).map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => setDiffFilter(d)}
+              className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest
+                rounded-md border transition-all duration-200 cursor-pointer
+                ${diffFilter === d
+                  ? d === "all"
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 shadow-md scale-105"
+                    : `${FILTER_STYLE[d]} shadow-md scale-105`
+                  : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                }`}
+            >
+              {d === "all" ? "all levels" : d}
+            </button>
+          ))}
+        </div>
+
         {/* Question list */}
-        {sectionQuestions.length === 0 ? (
+        {filteredQuestions.length === 0 ? (
           <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-            <p className="text-sm text-stone-600 dark:text-stone-400">No questions in this section yet.</p>
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+              {diffFilter === "all" ? "No questions in this section yet." : "No questions match this level."}
+            </p>
+            {diffFilter !== "all" && (
+              <button 
+                onClick={() => setDiffFilter("all")}
+                className="mt-2 text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline"
+              >
+                Clear filter
+              </button>
+            )}
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            {sectionQuestions.map((question, i) => {
+            {filteredQuestions.map((question, i) => {
               const isCompleted = completedIds.includes(question.id);
               return (
                 <motion.div

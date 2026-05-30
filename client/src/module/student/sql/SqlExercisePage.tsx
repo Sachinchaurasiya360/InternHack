@@ -131,15 +131,22 @@ export default function SqlExercisePage() {
       setDbReady(true);
     };
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDbReady(false);
+     
     setResult(null);
+     
     setValidation(null);
+     
     setShowHints(0);
+     
     setShowExpected(false);
 
     // Restore saved code or use starter
     const savedEntry = progress[exercise.id];
+     
     setCode(savedEntry?.code || exercise.starterCode);
+     
     setSolved(!!savedEntry?.solved);
 
     load();

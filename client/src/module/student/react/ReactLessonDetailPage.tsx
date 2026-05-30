@@ -113,12 +113,17 @@ function ExerciseSection({
 
   useEffect(() => {
     if (!exercise) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCode(exercise.starterCode);
+     
     setResult(null);
+     
     setIsCorrect(null);
+     
     setShowHints(0);
+     
     setShowSolution(false);
-  }, [activeIdx, exercise?.id]);
+  }, [activeIdx, exercise]);
 
   const handleRun = useCallback(async () => {
     if (!exercise) return;

@@ -27,7 +27,6 @@ import {
 import CodeMirror from "@uiw/react-codemirror";
 import AtsToolsNav from "./AtsToolsNav";
 import LatexChatPanel from "./LatexChatPanel";
-import { javascript } from "@codemirror/lang-javascript";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -36,60 +35,34 @@ import { getLatexTemplate } from "./latex-templates.data";
 
 const DEFAULT_TEMPLATE = `\\documentclass[11pt,a4paper]{article}
 \\usepackage[margin=0.75in]{geometry}
-\\usepackage{enumitem}
-\\usepackage{hyperref}
-\\usepackage{titlesec}
 
-\\titleformat{\\section}{\\large\\bfseries}{}{0em}{}[\\titlerule]
-\\titlespacing*{\\section}{0pt}{8pt}{4pt}
-
-\\setlength{\\parindent}{0pt}
 \\pagestyle{empty}
 
 \\begin{document}
 
 \\begin{center}
-  {\\LARGE \\textbf{John Doe}} \\\\[4pt]
-  john.doe@email.com \\enspace $\\cdot$ \\enspace +1 (555) 123-4567 \\enspace $\\cdot$ \\enspace San Francisco, CA \\\\
-  \\href{https://linkedin.com/in/johndoe}{linkedin.com/in/johndoe} \\enspace $\\cdot$ \\enspace \\href{https://github.com/johndoe}{github.com/johndoe}
+    {\\LARGE \\textbf{John Doe}} \\\\
+    john.doe@email.com $\\cdot$ +1 (555) 123-4567 $\\cdot$ San Francisco, CA
 \\end{center}
 
 \\section*{Summary}
-Experienced software engineer with 5+ years building scalable web applications. Proficient in React, Node.js, and cloud infrastructure. Passionate about clean code and user-centric design.
+Experienced software engineer with 5+ years building scalable web applications. Proficient in React, Node.js, and cloud infrastructure.
 
 \\section*{Experience}
-
-\\textbf{Senior Software Engineer} \\hfill TechCorp Inc., San Francisco, CA \\\\
+\\textbf{Senior Software Engineer} \\hfill TechCorp Inc. \\\\
 \\textit{Jan 2022 -- Present}
-\\begin{itemize}[leftmargin=*, nosep]
-  \\item Led development of a real-time analytics dashboard serving 50K+ daily users
-  \\item Reduced API response times by 40\\% through query optimization and caching
-  \\item Mentored 3 junior developers and conducted code reviews
-\\end{itemize}
-
-\\vspace{4pt}
-\\textbf{Software Engineer} \\hfill StartupXYZ, Remote \\\\
-\\textit{Jun 2019 -- Dec 2021}
-\\begin{itemize}[leftmargin=*, nosep]
-  \\item Built React component library used across 4 product teams
-  \\item Implemented CI/CD pipeline reducing deployment time from 2 hours to 15 minutes
-  \\item Designed RESTful APIs handling 10M+ requests per day
+\\begin{itemize}
+    \\item Led development of a real-time analytics dashboard serving 50K+ daily users
+    \\item Reduced API response times by 40\\% through query optimization
 \\end{itemize}
 
 \\section*{Education}
-
-\\textbf{B.S. Computer Science} \\hfill University of California, Berkeley \\\\
-\\textit{2015 -- 2019} \\hfill GPA: 3.8/4.0
+\\textbf{B.S. Computer Science} \\hfill UC Berkeley \\\\
+\\textit{2015 -- 2019}
 
 \\section*{Skills}
-
 \\textbf{Languages:} JavaScript, TypeScript, Python, SQL \\\\
-\\textbf{Frameworks:} React, Node.js, Express, Next.js \\\\
-\\textbf{Tools:} Git, Docker, AWS, PostgreSQL, Redis
-
-\\section*{Projects}
-
-\\textbf{Open Source CLI Tool} -- A command-line tool for automating code reviews. 500+ GitHub stars. Built with Node.js and TypeScript.
+\\textbf{Tools:} Git, Docker, AWS, PostgreSQL
 
 \\end{document}`;
 
@@ -135,6 +108,16 @@ export default function LatexResumeEditor() {
   const [searchParams, setSearchParams] = useSearchParams();
   const templateId = searchParams.get("template");
 
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   const templateOverride = useMemo(() => {
     if (location.state?.initialLatex) {
       return { code: location.state.initialLatex, files: [] };
@@ -175,6 +158,7 @@ export default function LatexResumeEditor() {
   const historyRef = useRef<string[]>([code]);
   const historyPosRef = useRef(0);
   const skipHistoryRef = useRef(false);
+  const [historyState, setHistoryState] = useState({ pos: 0, length: 1 });
 
   const pushHistory = useCallback((val: string) => {
     if (skipHistoryRef.current) return;
@@ -184,6 +168,7 @@ export default function LatexResumeEditor() {
     historyRef.current.push(val);
     if (historyRef.current.length > 50) historyRef.current.shift();
     historyPosRef.current = historyRef.current.length - 1;
+    setHistoryState({ pos: historyPosRef.current, length: historyRef.current.length });
   }, []);
 
   const handleCodeChange = useCallback((val: string) => {
@@ -197,6 +182,7 @@ export default function LatexResumeEditor() {
     skipHistoryRef.current = true;
     setCode(historyRef.current[historyPosRef.current]);
     skipHistoryRef.current = false;
+    setHistoryState({ pos: historyPosRef.current, length: historyRef.current.length });
   }, [setCode]);
 
   const handleRedo = useCallback(() => {
@@ -205,6 +191,7 @@ export default function LatexResumeEditor() {
     skipHistoryRef.current = true;
     setCode(historyRef.current[historyPosRef.current]);
     skipHistoryRef.current = false;
+    setHistoryState({ pos: historyPosRef.current, length: historyRef.current.length });
   }, [setCode]);
 
   const handleApplyCode = useCallback((newCode: string) => {
@@ -239,8 +226,8 @@ export default function LatexResumeEditor() {
         prevBlobUrl.current = url;
         setPdfUrl(url);
       })
-      .catch(() => {
-        // Silent fail on auto-compile, user can manually retry
+      .catch((err) => {
+        console.error("Auto-compile error:", err);
       })
       .finally(() => setCompiling(false));
   }, [code, supportingFiles]);
@@ -421,7 +408,7 @@ export default function LatexResumeEditor() {
           <button
             type="button"
             onClick={handleUndo}
-            disabled={historyPosRef.current <= 0}
+            disabled={historyState.pos <= 0}
             className={ghostBtnCls}
             title="Undo"
           >
@@ -431,7 +418,7 @@ export default function LatexResumeEditor() {
           <button
             type="button"
             onClick={handleRedo}
-            disabled={historyPosRef.current >= historyRef.current.length - 1}
+            disabled={historyState.pos >= historyState.length - 1}
             className={ghostBtnCls}
             title="Redo"
           >
@@ -672,8 +659,8 @@ export default function LatexResumeEditor() {
               <CodeMirror
                 value={code}
                 onChange={handleCodeChange}
-                extensions={[javascript()]}
-                theme="light"
+                extensions={[]}
+                theme={isDark ? "dark" : "light"}
                 basicSetup={{
                   lineNumbers: true,
                   foldGutter: true,

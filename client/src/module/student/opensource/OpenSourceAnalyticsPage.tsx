@@ -33,7 +33,11 @@ import {
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { Button } from "../../../components/ui/button";
-import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
+import type {
+  GSoCOrganization,
+  GSoCStats,
+  OpenSourceContributionTrendResponse,
+} from "../../../lib/types";
 
 // ─── Theme ──────────────────────────────────────────────────────
 const CHART_COLORS = [
@@ -155,6 +159,31 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
   );
 }
 
+function TrendSkeleton() {
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="flex items-end gap-3 h-64">
+        {[42, 68, 58, 88, 54, 76].map((height, index) => (
+          <div key={index} className="flex-1 flex flex-col items-center gap-2">
+            <div className="w-full rounded-t-xl bg-gray-100" style={{ height: `${height}%` }} />
+            <div className="h-3 w-14 rounded-full bg-gray-100" />
+          </div>
+        ))}
+      </div>
+      <div className="h-4 w-48 rounded-full bg-gray-100" />
+    </div>
+  );
+}
+
+function TrendEmptyState({ message }: { message: string }) {
+  return (
+    <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 text-center">
+      <p className="text-sm font-semibold text-gray-900">No contribution activity yet</p>
+      <p className="mt-2 max-w-sm text-sm text-gray-500">{message}</p>
+    </div>
+  );
+}
+
 const selectClass = "text-sm bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 min-w-[130px]";
 
 // ─── Page ───────────────────────────────────────────────────────
@@ -191,7 +220,16 @@ export default function OpenSourceAnalyticsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const allOrgs = orgsData ?? [];
+  const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
+    queryKey: queryKeys.opensource.trend(),
+    queryFn: () => api.get("/opensource/analytics/trend").then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const allOrgs = useMemo(() => orgsData ?? [], [orgsData]);
+  const contributionTrend = contributionTrendData?.trend ?? [];
+  const contributionTotal = contributionTrendData?.total ?? 0;
+  const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
 
   // ─── Derive filter options ──────────────────────────────────
   const years = useMemo(() => {
@@ -394,8 +432,57 @@ export default function OpenSourceAnalyticsPage() {
       {orgs.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          {/* 1 - Category Distribution (Pie) */}
-          <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={0}
+          {/* 1 - Monthly Contribution Activity */}
+          <ChartCard
+            title="Monthly Contribution Activity"
+            subtitle={
+              trendIsLoading
+                ? "Loading your approved open source contribution history"
+                : `Approved repo requests in the last 6 months${contributionTotal ? ` · ${contributionTotal} total` : ""}`
+            }
+            index={0}
+            className="lg:col-span-2"
+            expandedChildren={
+              trendIsLoading ? (
+                <TrendSkeleton />
+              ) : trendIsError ? (
+                <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
+              ) : hasContributionActivity ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
+                    <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
+                    <Tooltip {...tooltipStyle} />
+                    <Bar dataKey="count" fill="#0ea5e9" radius={[8, 8, 0, 0]} name="Approved contributions" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <TrendEmptyState message="Approve a repository suggestion to start tracking your monthly open source activity here." />
+              )
+            }
+          >
+            {trendIsLoading ? (
+              <TrendSkeleton />
+            ) : hasContributionActivity ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
+                  <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <Tooltip {...tooltipStyle} />
+                  <Bar dataKey="count" fill="#0ea5e9" radius={[8, 8, 0, 0]} name="Approved contributions" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : trendIsError ? (
+              <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
+            ) : (
+              <TrendEmptyState message="Approve a repository suggestion to start tracking your monthly open source activity here." />
+            )}
+          </ChartCard>
+
+          {/* 2 - Category Distribution (Pie) */}
+          <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={1}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -419,8 +506,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 2 - Year-wise Participation Trend (Line) */}
-          <ChartCard title="Year-wise Participation" subtitle="Number of organizations participating each year" index={1}
+          {/* 3 - Year-wise Participation Trend (Line) */}
+          <ChartCard title="Year-wise Participation" subtitle="Number of organizations participating each year" index={2}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={yearTrendData}>
@@ -444,8 +531,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 3 - Top Technologies (Horizontal Bar) */}
-          <ChartCard title="Top Technologies" subtitle="Most popular technologies across organizations" index={2}
+          {/* 4 - Top Technologies (Horizontal Bar) */}
+          <ChartCard title="Top Technologies" subtitle="Most popular technologies across organizations" index={3}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
@@ -473,8 +560,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 4 - Top Topics */}
-          <ChartCard title="Top Topics" subtitle="Most common topics across organizations" index={3}
+          {/* 5 - Top Topics */}
+          <ChartCard title="Top Topics" subtitle="Most common topics across organizations" index={4}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
@@ -502,8 +589,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 5 - Top Orgs by Projects */}
-          <ChartCard title="Top Organizations by Projects" subtitle="Organizations with the most GSoC projects" index={4}
+          {/* 6 - Top Orgs by Projects */}
+          <ChartCard title="Top Organizations by Projects" subtitle="Organizations with the most GSoC projects" index={5}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topProjectsData} margin={{ left: 10 }}>
@@ -531,8 +618,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 6 - Years Active Distribution */}
-          <ChartCard title="Longevity Distribution" subtitle="How many years organizations have been in GSoC" index={5}
+          {/* 7 - Years Active Distribution */}
+          <ChartCard title="Longevity Distribution" subtitle="How many years organizations have been in GSoC" index={6}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={yearCountData}>
@@ -556,8 +643,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 7 - Org Comparison Radar */}
-          <ChartCard title="Organization Comparison" subtitle="Select 2-4 organizations to compare" index={6} className="lg:col-span-2">
+          {/* 8 - Org Comparison Radar */}
+          <ChartCard title="Organization Comparison" subtitle="Select 2-4 organizations to compare" index={7} className="lg:col-span-2">
             <div className="flex flex-wrap gap-1.5 mb-4 max-h-24 overflow-y-auto">
               {orgs.slice(0, 60).map((o) => (
                 <Button

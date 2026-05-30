@@ -26,8 +26,9 @@ export const LeetCodeSync = ({ onSyncSuccess }: { onSyncSuccess: () => void }) =
             } else {
                 toast("Synced! No new matching problems found.", { icon: "ℹ️" });
             }
-        } catch (err: any) {
-            toast.error(err.response?.data?.message || "Sync failed");
+        } catch (err: unknown) {
+            const e = err as { response?: { data?: { message?: string } } };
+            toast.error(e.response?.data?.message || "Sync failed");
         } finally {
             setIsSyncing(false);
         }

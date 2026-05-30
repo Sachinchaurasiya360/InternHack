@@ -75,4 +75,6 @@ export const jobQuerySchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]).optional(),
   tags: z.string().optional(),
   includeExpired: coerceBoolean.default(false),
+  salaryMin: z.coerce.number().int().nonnegative().optional(),
+  salaryMax: z.coerce.number().int().nonnegative().optional(),
 });

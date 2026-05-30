@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Building2, Check, Trash2, Eye, EyeOff } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
@@ -14,7 +14,7 @@ export default function AdminCompaniesPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
-  const fetchCompanies = async () => {
+  const fetchCompanies = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get("/admin/companies", { params: { page, limit: 20 } });
@@ -25,9 +25,9 @@ export default function AdminCompaniesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
 
-  useEffect(() => { fetchCompanies(); }, [page]);
+  useEffect(() => { fetchCompanies(); }, [fetchCompanies]);
 
   const handleApprove = async (id: number) => {
     try {

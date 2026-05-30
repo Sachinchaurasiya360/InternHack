@@ -62,7 +62,7 @@ export function PricingSection() {
       title: "Pro",
       desc: "Full access to all premium features",
       monthlyPrice: 249,
-      annuallyPrice: 2999,
+      annuallyPrice: 2499,
       priceSuffix: "",
       features: [
         { text: "Everything in Free plan", included: true },
