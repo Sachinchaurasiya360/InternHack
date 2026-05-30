@@ -9,6 +9,7 @@ export const opensourceListQuerySchema = z.object({
   domain: z.string().optional(),
   sortBy: z.enum(["stars", "forks", "name", "createdAt", "openIssues", "lastUpdated"]).default("stars"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
+  trending: z.enum(["true", "false"]).optional(),
 });
 
 export const repoIdSchema = z.object({
