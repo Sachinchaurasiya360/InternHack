@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -12,6 +12,8 @@ import { canonicalUrl } from "../../../../lib/seo.utils";
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
+import { useKeyboardNavigation } from "../../../../hooks/useKeyboardNavigation";
+import { KeyboardNavigationHint } from "../../../../components/KeyboardNavigationHint";
 interface Step {
   step: number;
   id: string;
@@ -28,8 +30,8 @@ interface Step {
 interface Props {
   steps: Step[];
   storageKey: string;
-  basePath: string;        
-  seoSuffix: string;       
+  basePath: string;
+  seoSuffix: string;
 }
 
 
@@ -59,27 +61,10 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
   const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable
-      ) {
-        return;
-      }
-
-      if (e.key === "ArrowRight" || e.key === "l") {
-        if (next) navigate(`${basePath}/${next.id}`);
-      } else if (e.key === "ArrowLeft" || e.key === "h") {
-        if (prev) navigate(`${basePath}/${prev.id}`);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigate, basePath, next, prev]);
+  useKeyboardNavigation({
+    prevPath: prev ? `${basePath}/${prev.id}` : null,
+    nextPath: next ? `${basePath}/${next.id}` : null,
+  });
 
   if (!step) return <Navigate to={basePath} replace />;
   const isDone = completed.has(step.id);
@@ -296,14 +281,8 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
               </Button>
             )}
           </div>
-          
-          <div className="flex justify-end mt-4">
-            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
-              <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm mr-1">←</kbd>
-              <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm mr-2">→</kbd>
-              navigate steps
-            </span>
-          </div>
+
+          <KeyboardNavigationHint />
         </motion.div>
       </div>
     </div>
