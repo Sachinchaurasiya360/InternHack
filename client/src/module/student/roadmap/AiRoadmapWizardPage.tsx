@@ -15,6 +15,7 @@ import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { Navbar } from "../../../components/Navbar";
 import { useStudentSidebar } from "../../../components/StudentSidebar";
+import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import type { DayOfWeek, RoadmapEnrollmentListItem } from "../../../lib/types";
@@ -81,6 +82,7 @@ function Chrome({ children, sidebarWidth, collapsed, sidebar }: {
 
 export default function AiRoadmapWizardPage() {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const { collapsed, sidebarWidth, sidebar } = useStudentSidebar();
   const [step, setStep] = useState(0);
 
@@ -98,26 +100,31 @@ export default function AiRoadmapWizardPage() {
   // Submission
   const [submitting, setSubmitting] = useState(false);
   const [submitMsgIdx, setSubmitMsgIdx] = useState(0);
+  const [dismissedWarning, setDismissedWarning] = useState(false);
 
   // Existing enrollments link
   const { data: enrollmentsData } = useQuery({
     queryKey: queryKeys.roadmaps.enrollments(),
     queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+    enabled: !!user,
+    staleTime: 2 * 60 * 1000,
   });
 
   const enrollments = enrollmentsData?.enrollments || [];
 
-  // Similar roadmap detection
-  const similarRoadmap = enrollments.find(e => {
-    const title = e.roadmap.title.toLowerCase();
-    const desc = goalDescription.toLowerCase().trim();
-    if (!desc) return false;
+  const similarEnrollment = (() => {
+    if (!user) return null;
+    const userAiRoadmaps = enrollments.filter(e => e.roadmap.ownerUserId === user.id);
+    const normalize = (str: string) => str.toLowerCase().replace(/[^\w\s]/g, "");
+    const goalNorm = normalize(goalDescription);
+    if (!goalNorm) return null;
     
-    // Check if goal contains any words from title
-    const titleWords = title.split(/\s+/).filter(w => w.length > 3);
-    return titleWords.some(w => desc.includes(w));
-  });
-
+    return userAiRoadmaps.find(e => {
+      const titleNorm = normalize(e.roadmap.title);
+      return titleNorm.includes(goalNorm) || goalNorm.includes(titleNorm);
+    });
+  })();
+  
   const [forceCreate, setForceCreate] = useState(false);
 
   // Rotating loading copy
@@ -137,7 +144,7 @@ export default function AiRoadmapWizardPage() {
     return true;
   })();
 
-  const submit = async () => {
+  const submit = async (force = false) => {
     setSubmitting(true);
     try {
       const res = await api.post<{ slug: string; enrollmentId: number }>(
@@ -152,21 +159,49 @@ export default function AiRoadmapWizardPage() {
           knownSkills,
           mustInclude,
           avoid,
-          forceCreate,
+          forceCreate: force,
         },
       );
       toast.success("Your roadmap is ready");
       navigate(`/learn/roadmaps/${res.data.slug}`);
-    } catch (err) {
-      const resp = (err as any).response;
-      if (resp?.status === 409) {
-        if (resp.data.message === "MAX_AI_ROADMAPS_REACHED") {
-           toast.error(resp.data.error || "You have reached the limit of 5 AI roadmaps.");
-        } else {
-           toast.error("A similar roadmap already exists. You can view it or force create a new one.")
+    } catch (err: any) {
+      if (err.response?.status === 409) {
+        if (err.response.data.message.includes("limit")) {
+          toast.error(
+            <div className="flex flex-col gap-2 p-1 text-left">
+              <p>You have reached the limit of 5 active AI roadmaps. Please complete or delete existing ones first.</p>
+              <Link to="/student/roadmaps" className="text-sm font-bold text-stone-950 dark:text-stone-50 hover:underline">
+                Manage roadmaps →
+              </Link>
+            </div>,
+            { duration: 8000 }
+          );
+        } else if (err.response.data.roadmap) {
+          const duplicate = err.response.data.roadmap;
+          toast.warning(
+            <div className="flex flex-col gap-2 p-1 text-left">
+              <p className="font-bold">Similar roadmap exists</p>
+              <p className="text-[10px] opacity-70">We found &quot;{duplicate.title}&quot; which seems similar to your goal.</p>
+              <div className="flex items-center gap-3 mt-1">
+                <Link to={`/learn/roadmaps/${duplicate.slug}`} className="text-xs font-bold text-stone-950 dark:text-stone-50 hover:underline">
+                  View existing
+                </Link>
+                <button 
+                  onClick={() => {
+                    toast.dismiss();
+                    submit(true);
+                  }}
+                  className="text-xs font-bold text-lime-600 dark:text-lime-400 hover:underline bg-transparent border-0 p-0 cursor-pointer"
+                >
+                  Create anyway
+                </button>
+              </div>
+            </div>,
+            { duration: 10000 }
+          );
         }
       } else {
-        const msg = resp?.data?.message ?? "Could not generate roadmap. Please try again.";
+        const msg = err.response?.data?.message ?? "Could not generate roadmap. Please try again.";
         toast.error(msg);
       }
       setSubmitting(false);
@@ -542,23 +577,53 @@ export default function AiRoadmapWizardPage() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex items-center justify-between mt-8">
-          <Button variant="ghost" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </Button>
-          {step < STEPS.length - 1 ? (
-            <Button variant="mono" onClick={() => setStep((s) => s + 1)} disabled={!canProceed}>
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          ) : (
-            <Button variant="mono" onClick={submit} disabled={!canProceed}>
-              <Wand2 className="w-4 h-4" />
-              Generate my roadmap
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+        <div className="flex flex-col gap-4 mt-8">
+          {step === STEPS.length - 1 && similarEnrollment && !dismissedWarning && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex gap-3 text-amber-900 dark:text-amber-200 relative"
+            >
+              <div className="flex-1 text-sm">
+                <p className="font-medium mb-1">
+                  You already have a roadmap for &quot;{similarEnrollment.roadmap.title}&quot;.
+                </p>
+                <p className="opacity-80">Generating again will create a separate copy.</p>
+                <Link
+                  to={`/learn/roadmaps/${similarEnrollment.roadmap.slug}`}
+                  className="inline-block mt-2 text-amber-700 dark:text-amber-400 font-bold hover:underline"
+                >
+                  View existing →
+                </Link>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDismissedWarning(true)}
+                className="text-amber-500 hover:text-amber-700 dark:hover:text-amber-300 self-start"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </motion.div>
           )}
+
+          <div className="flex items-center justify-between">
+            <Button variant="ghost" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
+              <ChevronLeft className="w-4 h-4" />
+              Back
+            </Button>
+            {step < STEPS.length - 1 ? (
+              <Button variant="mono" onClick={() => setStep((s) => s + 1)} disabled={!canProceed}>
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button variant="mono" onClick={() => submit(false)} disabled={!canProceed}>
+                <Wand2 className="w-4 h-4" />
+                Generate my roadmap
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </Chrome>
