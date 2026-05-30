@@ -510,11 +510,6 @@ export function summarizeProgress(
   enrollment: NonNullable<Awaited<ReturnType<typeof getEnrollmentForUser>>>,
 ): ProgressSummary {
   const allTopics = enrollment.roadmap.sections.flatMap((s) => s.topics);
-  
-  const progressByTopicId = new Map(enrollment.topicProgress.map((p) => [p.topicId, p]));
-  const totalTopics = allTopics.length;
-  const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0);
-
   const progressByTopicId = new Map(
     enrollment.topicProgress.map((p) => [p.topicId, p]),
   );
