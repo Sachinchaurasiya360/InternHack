@@ -16,9 +16,15 @@ export function useInterviewCountdown(targetDate: string) {
     }
 
     return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / (1000 * 60)) % 60),
+      days: Math.floor(
+        difference / (1000 * 60 * 60 * 24)
+      ),
+      hours: Math.floor(
+        (difference / (1000 * 60 * 60)) % 24
+      ),
+      minutes: Math.floor(
+        (difference / (1000 * 60)) % 60
+      ),
     };
   }, [targetDate]);
 
@@ -27,6 +33,7 @@ export function useInterviewCountdown(targetDate: string) {
 
     const interval = setInterval(() => {
       const updated = calculate();
+
       setTimeLeft(updated);
 
       if (!updated) {

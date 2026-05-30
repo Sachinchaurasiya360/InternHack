@@ -104,6 +104,7 @@ function SortableProjectItem({
           onClick={onEdit}
           aria-label="Edit project"
           variant="ghost"
+          mode="icon"
           size="icon"
           className="text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
         >
@@ -114,6 +115,7 @@ function SortableProjectItem({
           onClick={onRemove}
           aria-label="Delete project"
           variant="ghost"
+          mode="icon"
           size="icon"
           className="text-stone-400 hover:text-red-500"
         >
@@ -262,6 +264,7 @@ export function ProjectsSection({
                     onClick={() => setDraft((d) => ({ ...d, techStack: d.techStack.filter((_, j) => j !== i) }))}
                     aria-label={`Remove ${t}`}
                     variant="ghost"
+                    mode="icon"
                     size="icon"
                     className="opacity-60 hover:opacity-100 h-auto p-0 w-auto"
                   >
@@ -289,6 +292,7 @@ export function ProjectsSection({
                 onClick={addTech}
                 aria-label="Add technology"
                 variant="outline"
+                mode="icon"
                 size="icon"
                 className="shrink-0 w-10 h-10 border-stone-300 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-900 dark:hover:border-stone-50"
               >
