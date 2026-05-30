@@ -33,7 +33,7 @@ export type EnrollInput = z.infer<typeof enrollSchema>;
 export const updateProgressSchema = z.object({
   status: z.enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "SKIPPED"]).optional(),
   bookmarked: z.boolean().optional(),
-  notes: z.string().max(5000).optional(),
+  notes: z.string().max(1000).optional(),
 }).refine(
   (v) => v.status !== undefined || v.bookmarked !== undefined || v.notes !== undefined,
   { message: "Provide at least one field" },
