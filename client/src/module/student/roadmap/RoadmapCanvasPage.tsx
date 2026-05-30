@@ -247,12 +247,15 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
   const { status, topic, isNext, bookmarked, index, isWeak } = data;
   const isCompleted = status === "COMPLETED";
   const isInProgress = status === "IN_PROGRESS";
+  const isSkipped = status === "SKIPPED";
 
   const railColor = isCompleted
     ? "bg-lime-500"
     : isInProgress
       ? "bg-amber-400"
-      : "bg-stone-200 dark:bg-stone-800";
+      : isSkipped
+        ? "bg-stone-400 dark:bg-stone-600"
+        : "bg-stone-200 dark:bg-stone-800";
 
   const weakRing =
     isWeak && !isCompleted ? "ring-2 ring-amber-400 ring-offset-1" : "";
@@ -326,6 +329,10 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
             >
               <Check className="w-2.5 h-2.5 text-stone-950" strokeWidth={3.5} />
             </motion.div>
+          ) : isSkipped ? (
+            <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              skipped
+            </span>
           ) : isInProgress ? (
             <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
               <motion.span
@@ -358,7 +365,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
         {/* Title */}
         <p
           className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${
-            isCompleted
+            isCompleted || isSkipped
               ? "text-stone-400 dark:text-stone-600 line-through decoration-1 decoration-stone-300 dark:decoration-stone-700"
               : "text-stone-950 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-stone-50"
           }`}
@@ -1253,6 +1260,14 @@ export default function RoadmapCanvasPage() {
                       }
                     >
                       <Check className="w-3 h-3" /> Completed
+                    </StatusChip>
+                    <StatusChip
+                      active={drawerProgress?.status === "SKIPPED"}
+                      onClick={() =>
+                        updateProgress(drawerTopic.id, { status: "SKIPPED" })
+                      }
+                    >
+                      Skipped
                     </StatusChip>
                     <button
                       type="button"
