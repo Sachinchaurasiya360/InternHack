@@ -5,7 +5,8 @@ User-agent: *
 Allow: /
 Disallow: /student/
 Disallow: /admin/
-Disallow: /recruiters/dashboard
+Disallow: /recruiters/
+Disallow: /test-cover-letter
 Disallow: /api/
 Disallow: /*?*token=
 Disallow: /*?*auth=

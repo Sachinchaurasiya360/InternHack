@@ -330,7 +330,7 @@ export class DsaService {
     }));
   }
 
-  async reportProblem({userId, problemId, reason, message,}: { userId: number; problemId: number; reason: string; message?: string;}) { prisma
+  async reportProblem({userId, problemId, reason, message,}: { userId: number; problemId: number; reason: string; message?: string;}) {
     return prisma.dsaProblemReport.create({
       data: {
         userId,

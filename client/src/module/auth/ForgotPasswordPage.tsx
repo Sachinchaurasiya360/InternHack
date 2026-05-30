@@ -113,7 +113,7 @@ export default function ForgotPasswordPage() {
       <SEO
         title="Forgot Password"
         description="Reset your InternHack password. Enter your email to receive a reset code."
-        keywords="forgot password, reset password, InternHack"
+        noIndex
       />
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4 pt-24 pb-12">
