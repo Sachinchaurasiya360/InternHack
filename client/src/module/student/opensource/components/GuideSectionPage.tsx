@@ -153,7 +153,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white">Code Examples</h2>
             {step.commands.map((cmd, i) => (
-              <CodeBlock key={i} code={cmd.code} label={cmd.label} language="bash" />
+              <CodeBlock key={`${step.id}-${cmd.label || i}`} code={cmd.code} label={cmd.label} language="bash" />
             ))}
           </motion.div>
         )}

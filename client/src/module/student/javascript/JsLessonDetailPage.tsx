@@ -448,7 +448,7 @@ export default function JsLessonDetailPage() {
             </div>
             <div className="space-y-3">
               {content.codeExamples.map((example, i) => (
-                <CodeBlock key={i} example={example} language="javascript" />
+                <CodeBlock key={example.title || example.code || i} example={example} language="javascript" />
               ))}
             </div>
           </motion.div>

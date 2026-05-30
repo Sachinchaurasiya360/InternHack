@@ -100,9 +100,9 @@ export function CodeBlock({ code, label, example, language = "javascript" }: Cod
 
       {/* Optional Output */}
       {activeOutput && (
-        <div className="px-4 py-2.5 bg-stone-900 border-t border-stone-800">
+        <div className="px-4 py-2.5 bg-stone-50 dark:bg-stone-950/40 border-t border-stone-200 dark:border-white/10">
           <span className="text-xs font-mono uppercase tracking-widest text-stone-500 block mb-1">output</span>
-          <pre className="text-sm text-lime-400 whitespace-pre-wrap font-mono">{activeOutput}</pre>
+          <pre className="text-sm text-lime-600 dark:text-lime-400 whitespace-pre-wrap font-mono">{activeOutput}</pre>
         </div>
       )}
 
