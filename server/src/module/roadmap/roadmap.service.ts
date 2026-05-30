@@ -14,21 +14,28 @@ export async function findDuplicateRoadmap(
   goalDescription: string,
   userId: number
 ) {
-  const normalizedGoal = goalDescription.trim();
+  const normalizedGoal = goalDescription.toLowerCase().trim();
   if (!normalizedGoal) return null;
 
+  // Simple keyword-based similarity: extract significant words
+  const keywords = normalizedGoal
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !["want", "learn", "how", "for", "the", "and"].includes(w));
+
+  if (keywords.length === 0) return null;
+
+  // We'll search for roadmaps where the title contains at least one of the major keywords
+  // and then we can do a secondary check if needed, or just let the user Decide.
+  // For now, let's find the most recent one that matches.
   return prisma.roadmap.findFirst({
     where: {
       ownerUserId: userId,
       isAiGenerated: true,
-      slug: {
-        startsWith: 'ai-',
-      },
-      title: {
-        contains: normalizedGoal.slice(0, 30),
-        mode: 'insensitive',
-      },
+      OR: keywords.map(kw => ({
+        title: { contains: kw, mode: 'insensitive' }
+      }))
     },
+    orderBy: { updatedAt: 'desc' }
   });
 }
 export interface EnrolledRoadmap {
@@ -362,6 +369,7 @@ export async function listEnrollmentsForUser(userId: number) {
           coverImage: true,
           topicCount: true,
           estimatedHours: true,
+          ownerUserId: true,
         },
       },
       topicProgress: true,

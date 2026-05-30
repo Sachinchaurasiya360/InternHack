@@ -35,8 +35,48 @@ function getMonthLabelUTC(date: Date): string {
 opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
 
 // Public: list repos with optional filters
-opensourceRouter.get("/", (req, res, next) => controller.listRepos(req, res, next));
+opensourceRouter.get("/", async (req, res, next) => {
+  try {
+    const parsed = opensourceListQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
+      return;
+    }
+    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder, trending } = parsed.data;
 
+    const where: Record<string, unknown> = {};
+    if (language) where["language"] = { equals: language, mode: "insensitive" };
+    if (difficulty) where["difficulty"] = difficulty;
+    if (domain) where["domain"] = domain;
+    if (trending === "true") where["trending"] = true;
+    if (search) {
+      where["OR"] = [
+        { name: { contains: search, mode: "insensitive" } },
+        { owner: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { tags: { hasSome: [search] } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+    const [repos, total] = await Promise.all([
+      prisma.opensourceRepo.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { [sortBy]: sortOrder },
+      }),
+      prisma.opensourceRepo.count({ where }),
+    ]);
+
+    res.json({
+      repos,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 // ─── Repo Requests (Student-authenticated) ───────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
@@ -56,6 +96,15 @@ opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), async
       res.status(409).json({ message: "This repository has already been submitted" });
       return;
     }
+
+    const existingRepo = await prisma.opensourceRepo.findFirst({
+      where: { url: parsed.data.url },
+    });
+    if (existingRepo) {
+      res.status(409).json({ message: "This repository is already listed on the platform" });
+      return;
+    }
+
 
     const request = await prisma.repoRequest.create({
       data: { ...parsed.data, userId: req.user!.id },

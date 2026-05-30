@@ -7,7 +7,8 @@ import {
   AlertCircle,
   Filter,
   X,
-  Maximize2
+  Maximize2,
+  Download
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import {
@@ -231,6 +232,24 @@ export default function OpenSourceAnalyticsPage() {
   const contributionTotal = contributionTrendData?.total ?? 0;
   const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
 
+  const handleExportCSV = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+
+    const header = "Month,Label,Contributions";
+    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
+    const csv = [header, ...rows].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "my-oss-contributions.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   // ─── Derive filter options ──────────────────────────────────
   const years = useMemo(() => {
     const set = new Set<number>();
@@ -380,6 +399,16 @@ export default function OpenSourceAnalyticsPage() {
               {hasActiveFilter && " (filtered)"}
               {stats && ` \u00b7 ${stats.years.length} years \u00b7 ${stats.technologies.length} technologies`}
             </p>
+          </div>
+          <div className="ml-auto flex items-center gap-3">
+            <button
+              onClick={handleExportCSV}
+              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
+              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export CSV
+            </button>
           </div>
         </div>
       </div>

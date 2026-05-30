@@ -3,6 +3,9 @@ import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
+
+
 import {
   Cpu,
   FileText,
@@ -36,7 +39,7 @@ const features: FeatureItem[] = [
   { icon: Users, title: "For Everyone", description: "Whether you are a student, recruiter, or admin — InternHack has a space built just for you." },
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -46,10 +49,11 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
+
 
 export default function AboutPage() {
   return (

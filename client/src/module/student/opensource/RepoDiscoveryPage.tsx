@@ -57,6 +57,7 @@ export default function RepoDiscoveryPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState("ALL");
   const [selectedLanguage, setSelectedLanguage] = useState("ALL");
   const [sortKey, setSortKey] = useState("stars");
+  const [trendingOnly, setTrendingOnly] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
   const [page, setPage] = useState(1);
@@ -65,14 +66,19 @@ export default function RepoDiscoveryPage() {
 
   const queryParams = useMemo(() => {
     const params: Record<string, string | number> = { page, limit: 12, sortBy: sortKey, sortOrder: "desc" };
+    
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
+
     if (selectedLanguage !== "ALL") params.language = selectedLanguage;
+    if (trendingOnly) params.trending = "true";
+    
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
+    
     return params;
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, trendingOnly, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -261,6 +267,23 @@ export default function RepoDiscoveryPage() {
               </button>
             );
           })}
+
+          {/* Trending toggle */}
+          <button
+            type="button"
+            onClick={() => {
+              setTrendingOnly((v) => !v);
+              setPage(1);
+            }}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              trendingOnly
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+            }`}
+          >
+            <Flame className="w-3 h-3" />
+            Trending
+          </button>
 
           {/* More filters toggle */}
           <button
