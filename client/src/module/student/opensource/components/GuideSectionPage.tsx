@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -28,8 +28,8 @@ interface Step {
 interface Props {
   steps: Step[];
   storageKey: string;
-  basePath: string;        // e.g. "/student/opensource/read-codebase"
-  seoSuffix: string;       // e.g. "Codebase Guide"
+  basePath: string;        
+  seoSuffix: string;       
 }
 
 
@@ -56,11 +56,33 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
     });
   }, [step, storageKey]);
 
-  if (!step) return <Navigate to={basePath} replace />;
-
-  const isDone = completed.has(step.id);
   const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
   const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if (e.key === "ArrowRight" || e.key === "l") {
+        if (next) navigate(`${basePath}/${next.id}`);
+      } else if (e.key === "ArrowLeft" || e.key === "h") {
+        if (prev) navigate(`${basePath}/${prev.id}`);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [navigate, basePath, next, prev]);
+
+  if (!step) return <Navigate to={basePath} replace />;
+  const isDone = completed.has(step.id);
 
   return (
     <div className="relative pb-12">
@@ -75,7 +97,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
         <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
       </div>
 
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -129,7 +150,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       </motion.div>
 
       <div className="space-y-5">
-        {/* Mentor's Guidance */}
         {step.mentor_guidance && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -144,7 +164,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           </motion.div>
         )}
 
-        {/* Code Examples */}
         {step.commands.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -159,7 +178,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           </motion.div>
         )}
 
-        {/* Important Notes */}
         {step.details.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -184,7 +202,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           </motion.div>
         )}
 
-        {/* Pro Tips */}
         {step.tips.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -209,7 +226,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           </motion.div>
         )}
 
-        {/* Resources */}
         {step.resources.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -242,43 +258,52 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           </motion.div>
         )}
 
-        {/* Mark as Complete + Next */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.35 }}
-          className="flex items-center justify-between pt-2"
+          className="pt-2"
         >
-          <Button
-            variant={isDone ? "ghost" : "mono"}
-            onClick={toggleComplete}
-            className={
-              isDone
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-xl"
-                : "rounded-xl"
-            }
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            {isDone ? "Completed" : "Mark as Complete"}
-          </Button>
-
-          {next ? (
+          <div className="flex items-center justify-between">
             <Button
-              variant="outline"
-              onClick={() => navigate(`${basePath}/${next.id}`)}
-              className="group text-gray-600 dark:text-gray-400 rounded-xl"
+              variant={isDone ? "ghost" : "mono"}
+              onClick={toggleComplete}
+              className={
+                isDone
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-xl"
+                  : "rounded-xl"
+              }
             >
-              Next Section
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <CheckCircle2 className="w-4 h-4" />
+              {isDone ? "Completed" : "Mark as Complete"}
             </Button>
-          ) : (
-            <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
-              <Link to={basePath} className="no-underline">
-                Back to Overview
+
+            {next ? (
+              <Button
+                variant="outline"
+                onClick={() => navigate(`${basePath}/${next.id}`)}
+                className="group text-gray-600 dark:text-gray-400 rounded-xl"
+              >
+                Next Section
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </Button>
-          )}
+              </Button>
+            ) : (
+              <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
+                <Link to={basePath} className="no-underline">
+                  Back to Overview
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </Button>
+            )}
+          </div>
+          
+          <div className="flex justify-end mt-4">
+            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+              <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm mr-1">←</kbd>
+              <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm mr-2">→</kbd>
+              navigate steps
+            </span>
+          </div>
         </motion.div>
       </div>
     </div>

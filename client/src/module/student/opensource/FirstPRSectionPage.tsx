@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -70,6 +70,29 @@ export default function FirstPRSectionPage() {
   const isDone = completed.has(step.id);
   const prev = stepIndex > 0 ? STEPS[stepIndex - 1] : null;
   const next = stepIndex < STEPS.length - 1 ? STEPS[stepIndex + 1] : null;
+
+  // ---> ADDED: KEYBOARD NAVIGATION HOOK <---
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if (e.key === "ArrowRight" || e.key === "l") {
+        if (next) navigate(`/student/opensource/first-pr/${next.id}`);
+      } else if (e.key === "ArrowLeft" || e.key === "h") {
+        if (prev) navigate(`/student/opensource/first-pr/${prev.id}`);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [navigate, next, prev]);
 
   return (
     <div className="relative pb-12">
@@ -260,41 +283,53 @@ export default function FirstPRSectionPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.35 }}
-          className="flex items-center justify-between pt-2"
+          className="pt-2"
         >
-          <Button
-            variant={isDone ? "ghost" : "mono"}
-            onClick={toggleComplete}
-            className={
-              isDone
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-xl"
-                : "rounded-xl"
-            }
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            {isDone ? "Completed" : "Mark as Complete"}
-          </Button>
-
-          {next ? (
+          <div className="flex items-center justify-between">
             <Button
-              variant="outline"
-              onClick={() => navigate(`/student/opensource/first-pr/${next.id}`)}
-              className="group text-gray-600 dark:text-gray-400 rounded-xl"
+              variant={isDone ? "ghost" : "mono"}
+              onClick={toggleComplete}
+              className={
+                isDone
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-xl"
+                  : "rounded-xl"
+              }
             >
-              Next Section
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <CheckCircle2 className="w-4 h-4" />
+              {isDone ? "Completed" : "Mark as Complete"}
             </Button>
-          ) : (
-            <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
-              <Link
-                to="/student/opensource/first-pr"
-                className="no-underline"
+
+            {next ? (
+              <Button
+                variant="outline"
+                onClick={() => navigate(`/student/opensource/first-pr/${next.id}`)}
+                className="group text-gray-600 dark:text-gray-400 rounded-xl"
               >
-                Back to Overview
+                Next Section
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </Button>
-          )}
+              </Button>
+            ) : (
+              <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
+                <Link
+                  to="/student/opensource/first-pr"
+                  className="no-underline"
+                >
+                  Back to Overview
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </Button>
+            )}
+          </div>
+          
+          {/* ---> ADDED: KEYBOARD HINT UI <--- */}
+          <div className="flex justify-end mt-4">
+            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+              <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm mr-1">←</kbd>
+              <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm mr-2">→</kbd>
+              navigate steps
+            </span>
+          </div>
+
         </motion.div>
       </div>
     </div>
