@@ -16,6 +16,7 @@ interface Step {
   id: string;
   title: string;
   description: string;
+  estimatedMinutes?: number;
   mentor_guidance: string;
   details: string[];
   commands: Command[];

@@ -16,6 +16,7 @@ interface Step {
   id: string;
   title: string;
   description: string;
+  estimatedMinutes?: number;
 }
 
 // ─── Data ──────────────────────────────────────────────────────
@@ -45,6 +46,7 @@ export default function FirstPRRoadmapPage() {
   const totalSteps = STEPS.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
+  const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
 
   return (
     <div className="relative pb-12">
@@ -94,6 +96,7 @@ export default function FirstPRRoadmapPage() {
           { icon: GitPullRequest, value: totalSteps, label: "Steps", iconColor: "text-indigo-500" },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
+          { icon: ArrowRight, value: `${totalEstimatedMinutes} min`, label: "Est. Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -172,6 +175,9 @@ export default function FirstPRRoadmapPage() {
                   }`}>
                     {step.title}
                   </h3>
+                  {step.estimatedMinutes && (
+                    <p className="text-[10px] font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</p>
+                  )}
                   <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
                     {step.description}
                   </p>

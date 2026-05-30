@@ -1,15 +1,13 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  CheckCircle2, ArrowRight, Trophy,
-} from "lucide-react";
+import {CheckCircle2, ArrowRight, Trophy,} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 
-interface Step { step: number; id: string; title: string; description: string }
+interface Step { step: number; id: string; title: string; description: string ; estimatedMinutes?: number; }
 
 interface Props {
   steps: Step[];
@@ -29,6 +27,7 @@ export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
 }: Props) {
+  console.log("STEPS DATA", steps);
   const [completed, setCompleted] = useState<Set<string>>(() => {
     try {
       const stored = localStorage.getItem(storageKey);
@@ -48,6 +47,7 @@ export default function GuideListPage({
   const totalSteps = steps.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
+  const totalEstimatedTime = steps.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
@@ -100,6 +100,7 @@ export default function GuideListPage({
           { icon: Icon, value: totalSteps, label: "Sections", iconColor },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
+          { icon: ArrowRight, value: `${totalEstimatedTime} min`, label: "Estimated Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -169,11 +170,16 @@ export default function GuideListPage({
                 </Button>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className={`text-sm font-bold mb-0.5 ${
-                    done ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-950 dark:text-white"
-                  }`}>
-                    {step.title}
-                  </h3>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className={`text-sm font-bold ${
+                      done? "text-gray-400 dark:text-gray-500 line through" : "text-gray-950 dark:text-white"
+                    }`}>
+                      {step.title}
+                    </h3>
+                    {step.estimatedMinutes && (
+                      <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">{step.estimatedMinutes} min</span>
+                    )}
+                  </div>
                   <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
                     {step.description}
                   </p>
