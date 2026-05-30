@@ -130,7 +130,7 @@ export default function FirstPRSectionPage() {
               <h1 className="font-display text-xl font-bold text-gray-950 dark:text-white truncate">
                 {step.title}
               </h1>
-              {step.estimatedMinutes && (<span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>)
+              {step.estimatedMinutes && (<span className="text-xs font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>)
               }
               {isDone && (
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 mt-1">

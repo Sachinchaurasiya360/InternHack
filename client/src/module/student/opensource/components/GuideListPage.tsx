@@ -27,7 +27,6 @@ export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
 }: Props) {
-  console.log("STEPS DATA", steps);
   const [completed, setCompleted] = useState<Set<string>>(() => {
     try {
       const stored = localStorage.getItem(storageKey);
@@ -164,7 +163,7 @@ export default function GuideListPage({
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   ) : (
                     <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
+                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
                     </div>
                   )}
                 </Button>
@@ -172,12 +171,12 @@ export default function GuideListPage({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <h3 className={`text-sm font-bold ${
-                      done? "text-gray-400 dark:text-gray-500 line through" : "text-gray-950 dark:text-white"
+                      done ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-950 dark:text-white"
                     }`}>
                       {step.title}
                     </h3>
                     {step.estimatedMinutes && (
-                      <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">{step.estimatedMinutes} min</span>
+                      <span className="text-xs font-mono text-gray-400 dark:text-gray-500">{step.estimatedMinutes} min</span>
                     )}
                   </div>
                   <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">

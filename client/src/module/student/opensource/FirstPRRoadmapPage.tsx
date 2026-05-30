@@ -161,7 +161,7 @@ export default function FirstPRRoadmapPage() {
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   ) : (
                     <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
+                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
                     </div>
                   )}
                 </Button>
@@ -176,7 +176,7 @@ export default function FirstPRRoadmapPage() {
                     {step.title}
                   </h3>
                   {step.estimatedMinutes && (
-                    <p className="text-[10px] font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</p>
+                    <p className="text-xs font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</p>
                   )}
                   <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
                     {step.description}
