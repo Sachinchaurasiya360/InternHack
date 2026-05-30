@@ -333,69 +333,87 @@ useEffect(() => {
     if (!coverLetter) return;
     setShowDownloadMenu(false);
 
-    // Build a slug-safe company name for the filename
+    const { jsPDF } = await import("jspdf");
+
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
     const safeCompany = (companyName || "company")
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-    const dateStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+
     const filename = `cover-letter-${safeCompany}-${dateStr}.pdf`;
 
-    const html2pdf = (await import("html2pdf.js")).default;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Build a nicely formatted HTML container
-    const container = document.createElement("div");
-    container.style.cssText =
-      "font-family:Georgia,serif;max-width:680px;padding:48px 52px;color:#1a1a1a;font-size:13.5px;line-height:1.75;";
+    const marginX = 20;
+    const maxWidth = pageWidth - marginX * 2;
 
-    // Header block
-    const header = document.createElement("div");
-    header.style.cssText = "margin-bottom:24px;";
+    let cursorY = 24;
+
+    // HEADER
 
     if (user?.name) {
-      const nameEl = document.createElement("p");
-      nameEl.style.cssText =
-        "font-size:22px;font-weight:700;margin:0 0 4px 0;letter-spacing:-0.3px;";
-      nameEl.textContent = user.name;
-      header.appendChild(nameEl);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+
+      doc.text(user.name, marginX, cursorY);
+
+      cursorY += 8;
     }
 
-    if (companyName || jobTitle) {
-      const subEl = document.createElement("p");
-      subEl.style.cssText =
-        "font-size:12px;color:#666;margin:0 0 16px 0;letter-spacing:0.5px;text-transform:uppercase;";
-      const parts = [jobTitle, companyName].filter(Boolean);
-      subEl.textContent = parts.join(" · ");
-      header.appendChild(subEl);
+    if (jobTitle || companyName) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+
+      const subtitle = [jobTitle, companyName]
+        .filter(Boolean)
+        .join(" - ")
+        .toUpperCase();
+
+      doc.setTextColor(100);
+
+      doc.text(subtitle, marginX, cursorY);
+
+      doc.setTextColor(0);
+
+      cursorY += 8;
     }
+    // Divider line
+    doc.setDrawColor(30);
+    doc.setLineWidth(0.5);
+    doc.line(marginX, cursorY, pageWidth - marginX, cursorY);
+    cursorY += 10;
 
-    const divider = document.createElement("hr");
-    divider.style.cssText =
-      "border:none;border-top:2px solid #1a1a1a;margin:0 0 24px 0;";
-    header.appendChild(divider);
+    // BODY
 
-    container.appendChild(header);
+    doc.setFont("times", "normal");
+    doc.setFontSize(12);
 
-    // Body — preserve line breaks
-    const body = document.createElement("div");
-    body.style.cssText = "white-space:pre-wrap;";
-    body.textContent = coverLetter;
-    container.appendChild(body);
+    const paragraphs = coverLetter.split("\n");
 
-    document.body.appendChild(container);
+    paragraphs.forEach((paragraph) => {
+      const lines = doc.splitTextToSize(paragraph, maxWidth);
 
-    await html2pdf()
-      .set({
-        margin: [14, 14, 14, 14],
-        filename,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      })
-      .from(container)
-      .save();
+      // Page break check
+      if (cursorY + lines.length * 7 > pageHeight - 20) {
+        doc.addPage();
+        cursorY = 24;
+      }
 
-    document.body.removeChild(container);
+      doc.text(lines, marginX, cursorY);
+
+      cursorY += lines.length * 7 + 4;
+    });
+
+    doc.save(filename);
   };
 
   const handleDownloadDocx = async () => {

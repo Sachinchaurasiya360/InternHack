@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
+import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,6 +19,8 @@ import {
   Lightbulb,
   BookOpen,
   ArrowUpRight,
+  Copy,
+  Check,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -102,17 +105,25 @@ function FilterDropdown({
   value,
   options,
   onChange,
+  isOpen,
+  setIsOpen,
+  dropdownRef,
 }: {
   label: string;
   icon: ReactNode;
   value: string;
   options: string[];
   onChange: (v: string) => void;
+  isOpen: boolean;
+  setIsOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
+  dropdownRef: React.RefObject<HTMLDivElement | null>;
 }) {
   return (
-    <div className="relative group">
+    <div className="relative" ref={dropdownRef}>
       <button
         type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-expanded={isOpen}
         className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-stone-300 bg-white px-3 text-xs font-mono uppercase tracking-widest text-stone-600 transition-colors hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
       >
         <span className="text-stone-400">{icon}</span>
@@ -120,16 +131,23 @@ function FilterDropdown({
         <span className="max-w-28 truncate font-bold normal-case tracking-normal text-stone-900 dark:text-stone-50">
           {value}
         </span>
-        <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+        <ChevronDown className={`h-3.5 w-3.5 opacity-60 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
-      <div className="absolute left-0 top-full z-20 mt-1 hidden max-h-80 min-w-56 overflow-y-auto rounded-md border border-stone-200 bg-white p-1 shadow-xl group-hover:block dark:border-white/10 dark:bg-stone-900">
+      <div
+        className={`${
+          isOpen ? "block active" : "hidden"
+        } absolute left-0 top-full z-20 mt-1 max-h-80 min-w-56 overflow-y-auto rounded-md border border-stone-200 bg-white p-1 shadow-xl dark:border-white/10 dark:bg-stone-900`}
+      >
         {options.map((opt) => {
           const active = opt === value;
           return (
             <button
               key={opt}
               type="button"
-              onClick={() => onChange(opt)}
+onClick={() => {
+                onChange(opt);
+                setIsOpen(false);
+              }}
               className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${
                 active
                   ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
@@ -204,11 +222,25 @@ interface GSoCOrgModalProps {
   gsocPageUrl: string | null;
   reposLoading: boolean;
 }
+
 function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: GSoCOrgModalProps) {
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
   const activeYear = selectedYear || (years[0] ? String(years[0]) : null);
   const yearData = activeYear && org.projectsData ? org.projectsData[activeYear] : null;
+
+  const handleCopy = (url: string, field: string) => {
+    navigator.clipboard.writeText(url);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 1500);
+  };
+
+  const handleClose = () => {
+    setCopiedField(null);
+    onClose();
+  };
 
   return (
     <motion.div
@@ -216,7 +248,7 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/50 p-4 backdrop-blur-sm"
-      onClick={onClose}
+      onClick={handleClose}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -241,7 +273,7 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Close"
             className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-stone-500 transition-colors hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5"
           >
@@ -310,11 +342,10 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
                       key={year}
                       type="button"
                       onClick={() => setSelectedYear(String(year))}
-                      className={`rounded-md border px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
-                        active
-                          ? "border-lime-400 bg-lime-400 text-stone-950"
-                          : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
-                      }`}
+                      className={`rounded-md border px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${active
+                        ? "border-lime-400 bg-lime-400 text-stone-950"
+                        : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
+                        }`}
                     >
                       {year} ({org.projectsData?.[String(year)]?.num_projects || 0})
                     </button>
@@ -374,16 +405,56 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
               </a>
             )}
             {org.ideasUrl && (
-              <a href={org.ideasUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
-                <Lightbulb className="h-3 w-3" />
-                Project Ideas
-              </a>
+              <div className="flex items-center gap-1">
+                <a href={org.ideasUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                  <Lightbulb className="h-3 w-3" />
+                  Project Ideas
+                </a>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(org.ideasUrl!, "ideas")}
+                  className={`px-2 py-1.5 text-[10px] font-mono uppercase tracking-widest border rounded-md inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    copiedField === "ideas"
+                      ? "border-lime-400 text-lime-600 dark:text-lime-400 bg-lime-50/50 dark:bg-lime-400/5 font-bold"
+                      : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 bg-white dark:bg-stone-900"
+                  }`}
+                >
+                  {copiedField === "ideas" ? (
+                    <>
+                      <Check className="h-3 w-3" />
+                      Copied!
+                    </>
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                </button>
+              </div>
             )}
             {org.guideUrl && (
-              <a href={org.guideUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
-                <BookOpen className="h-3 w-3" />
-                Contributor Guide
-              </a>
+              <div className="flex items-center gap-1">
+                <a href={org.guideUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                  <BookOpen className="h-3 w-3" />
+                  Contributor Guide
+                </a>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(org.guideUrl!, "guide")}
+                  className={`px-2 py-1.5 text-[10px] font-mono uppercase tracking-widest border rounded-md inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    copiedField === "guide"
+                      ? "border-lime-400 text-lime-600 dark:text-lime-400 bg-lime-50/50 dark:bg-lime-400/5 font-bold"
+                      : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 bg-white dark:bg-stone-900"
+                  }`}
+                >
+                  {copiedField === "guide" ? (
+                    <>
+                      <Check className="h-3 w-3" />
+                      Copied!
+                    </>
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                </button>
+              </div>
             )}
           </div>
 
@@ -448,25 +519,99 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
 }
 
 export default function GSoCReposPage() {
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedTech, setSelectedTech] = useState("All");
-  const [selectedYear, setSelectedYear] = useState("All");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // 1. Initialize state strictly from URL params
+  const initialQ = searchParams.get("q") || "";
+  const selectedCategory = searchParams.get("category") || "All";
+  const selectedTech = searchParams.get("tech") || "All";
+  const selectedYear = searchParams.get("year") || "All";
+
+  const [search, setSearch] = useState(initialQ);
+
+  // FIX 1: Depend ONLY on initialQ, not searchParams. 
+  // This prevents wiping out half-typed text when other filters change.
+  useEffect(() => {
+    setSearch(initialQ);
+  }, [initialQ]);
+
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
+
+  // Dropdown states
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [techOpen, setTechOpen] = useState(false);
+  const [yearOpen, setYearOpen] = useState(false);
+
+  // Refs for outside click detection
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const techRef = useRef<HTMLDivElement>(null);
+  const yearRef = useRef<HTMLDivElement>(null);
+
+  // Outside click handler
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (categoryRef.current && !categoryRef.current.contains(e.target as Node)) {
+        setCategoryOpen(false);
+      }
+      if (techRef.current && !techRef.current.contains(e.target as Node)) {
+        setTechOpen(false);
+      }
+      if (yearRef.current && !yearRef.current.contains(e.target as Node)) {
+        setYearOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Escape key handler
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setCategoryOpen(false);
+        setTechOpen(false);
+        setYearOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, []);
+
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const limit = 18;
 
+  // FIX 2: Functional updater.
+  // This ensures that delayed debounced calls always use the freshest URL state.
+  const updateFilter = (key: string, value: string) => {
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        if (value && value !== "All") {
+          newParams.set(key, value);
+        } else {
+          newParams.delete(key);
+        }
+        return newParams;
+      },
+      { replace: true }
+    );
+    setPage(1);
+  };
   const handleSearch = (value: string) => {
     setSearch(value);
     if (timer) clearTimeout(timer);
     setTimer(
       setTimeout(() => {
-        setDebouncedSearch(value);
-        setPage(1);
+        updateFilter("q", value);
       }, 400)
     );
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setSearchParams({}, { replace: true });
+    setPage(1);
   };
 
   const { data: stats } = useQuery<GSoCStats>({
@@ -475,8 +620,9 @@ export default function GSoCReposPage() {
     staleTime: Infinity,
   });
 
+  // 3. Pass current URL state directly to the API query
   const params: Record<string, string | number> = { page, limit };
-  if (debouncedSearch) params.search = debouncedSearch;
+  if (initialQ) params.search = initialQ;
   if (selectedCategory !== "All") params.category = selectedCategory;
   if (selectedTech !== "All") params.technology = selectedTech;
   if (selectedYear !== "All") params.year = parseInt(selectedYear, 10);
@@ -503,6 +649,7 @@ export default function GSoCReposPage() {
     enabled: !!selectedOrg,
     staleTime: 1000 * 60 * 60,
   });
+
   const githubRepos: { title: string; url: string }[] = reposData?.githubRepos ?? [];
   const gsocPageUrl: string | null = reposData?.gsocPageUrl ?? null;
   const categoryOptions = ["All", ...(stats?.categories.map((category) => category.name) ?? [])];
@@ -510,16 +657,7 @@ export default function GSoCReposPage() {
   const techOptions = ["All", ...(stats?.technologies.slice(0, 30).map((tech) => tech.name) ?? [])];
 
   const hasFilters =
-    Boolean(debouncedSearch) || selectedCategory !== "All" || selectedTech !== "All" || selectedYear !== "All";
-
-  const clearFilters = () => {
-    setSearch("");
-    setDebouncedSearch("");
-    setSelectedCategory("All");
-    setSelectedTech("All");
-    setSelectedYear("All");
-    setPage(1);
-  };
+    Boolean(initialQ) || selectedCategory !== "All" || selectedTech !== "All" || selectedYear !== "All";
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -584,30 +722,30 @@ export default function GSoCReposPage() {
             label="category"
             value={selectedCategory}
             options={categoryOptions}
-            onChange={(value) => {
-              setSelectedCategory(value);
-              setPage(1);
-            }}
+isOpen={categoryOpen}
+            setIsOpen={setCategoryOpen}
+            dropdownRef={categoryRef}
+            onChange={(value) => updateFilter("category", value)}
           />
           <FilterDropdown
             icon={<Calendar className="h-3.5 w-3.5" />}
             label="year"
             value={selectedYear}
             options={yearOptions}
-            onChange={(value) => {
-              setSelectedYear(value);
-              setPage(1);
-            }}
+isOpen={yearOpen}
+            setIsOpen={setYearOpen}
+            dropdownRef={yearRef}
+            onChange={(value) => updateFilter("year", value)}
           />
           <FilterDropdown
             icon={<Code2 className="h-3.5 w-3.5" />}
             label="tech"
             value={selectedTech}
             options={techOptions}
-            onChange={(value) => {
-              setSelectedTech(value);
-              setPage(1);
-            }}
+isOpen={techOpen}
+            setIsOpen={setTechOpen}
+            dropdownRef={techRef}
+            onChange={(value) => updateFilter("tech", value)}
           />
           {hasFilters && (
             <button
@@ -667,14 +805,14 @@ export default function GSoCReposPage() {
 
       <AnimatePresence>
         {detailOrg && selectedOrg && (
-        <GSoCOrgModal
-          org={detailOrg}
-          onClose={() => setSelectedOrg(null)}
-          githubRepos={githubRepos}
-          gsocPageUrl={gsocPageUrl}
-          reposLoading={reposLoading}
-        />
-      )}
+          <GSoCOrgModal
+            org={detailOrg}
+            onClose={() => setSelectedOrg(null)}
+            githubRepos={githubRepos}
+            gsocPageUrl={gsocPageUrl}
+            reposLoading={reposLoading}
+          />
+        )}
       </AnimatePresence>
     </div>
   );

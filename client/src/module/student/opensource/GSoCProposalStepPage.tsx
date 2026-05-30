@@ -29,6 +29,7 @@ interface Step {
   id: string;
   title: string;
   description: string;
+  estimatedMinutes?: number;
   level: string;
   mentor_guidance: string;
   details: string[];
@@ -127,6 +128,9 @@ export default function GSoCProposalStepPage() {
                 <span className="text-xs font-bold text-gray-600 dark:text-gray-400">{step.step}</span>
               </div>
               <h1 className="text-xl font-bold text-gray-950 dark:text-white">{step.title}</h1>
+              {step.estimatedMinutes && (
+                <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>
+              )}
             </div>
             <Button
               variant="outline"

@@ -1,13 +1,8 @@
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
-<<<<<<< HEAD
-import { Button } from "../../components/ui/button";
 import { Link } from "react-router";
-=======
-import { Link } from "react-router";
-import { motion } from "framer-motion";
->>>>>>> 6446d6908800db7821ba68d1bdcb67692640949d
+import { motion, type Variants } from "framer-motion";
 import {
   Cpu,
   FileText,
@@ -41,7 +36,7 @@ const features: FeatureItem[] = [
   { icon: Users, title: "For Everyone", description: "Whether you are a student, recruiter, or admin — InternHack has a space built just for you." },
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -51,9 +46,9 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
 };
 
 export default function AboutPage() {
@@ -69,10 +64,6 @@ export default function AboutPage() {
         <div className="max-w-6xl mx-auto">
 
           {/* Hero */}
-<<<<<<< HEAD
-          <div className="text-center mt-6 mb-14">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 mb-5">
-=======
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -80,7 +71,6 @@ export default function AboutPage() {
             className="text-center mt-6 mb-14"
           >
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 mb-5">
->>>>>>> 6446d6908800db7821ba68d1bdcb67692640949d
               <Globe size={30} />
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold text-stone-900 dark:text-white mb-4 tracking-tight">
@@ -94,10 +84,6 @@ export default function AboutPage() {
           </motion.div>
 
           {/* Mission & Vision */}
-<<<<<<< HEAD
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
-            <div className="rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900/60 backdrop-blur-lg shadow-sm p-6 md:p-8">
-=======
           <motion.div 
             variants={containerVariants}
             initial="hidden"
@@ -106,7 +92,6 @@ export default function AboutPage() {
             className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14"
           >
             <motion.div variants={itemVariants} className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg shadow-sm p-6 md:p-8 hover:shadow-md transition-shadow">
->>>>>>> 6446d6908800db7821ba68d1bdcb67692640949d
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-3 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400">
                   <Target size={22} />
@@ -120,11 +105,7 @@ export default function AboutPage() {
               </p>
             </motion.div>
 
-<<<<<<< HEAD
-            <div className="rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900/60 backdrop-blur-lg shadow-sm p-6 md:p-8">
-=======
             <motion.div variants={itemVariants} className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg shadow-sm p-6 md:p-8 hover:shadow-md transition-shadow">
->>>>>>> 6446d6908800db7821ba68d1bdcb67692640949d
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-3 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400">
                   <Globe size={22} />
@@ -140,14 +121,6 @@ export default function AboutPage() {
           </motion.div>
 
           {/* What We Offer */}
-<<<<<<< HEAD
-          <div className="mb-14">
-            <h2 className="text-2xl md:text-3xl font-bold text-stone-900 dark:text-white mb-2 tracking-tight">What We Offer</h2>
-            <p className="text-stone-500 dark:text-stone-400 mb-8 text-sm md:text-base">
-              Everything you need to prepare, practice, and get placed — in one platform.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-=======
           <motion.div 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -168,52 +141,26 @@ export default function AboutPage() {
               viewport={{ once: true, margin: "-50px" }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left"
             >
->>>>>>> 6446d6908800db7821ba68d1bdcb67692640949d
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
                   <motion.div
                     key={index}
-<<<<<<< HEAD
-                    className="rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900/60 backdrop-blur-lg shadow-sm hover:shadow-xl transition-all duration-300 p-6"
-=======
                     variants={itemVariants}
                     className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-300 p-6"
->>>>>>> 6446d6908800db7821ba68d1bdcb67692640949d
                   >
                     <div className="p-3 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 w-fit mb-4">
                       <Icon size={22} />
                     </div>
-<<<<<<< HEAD
-                    <h3 className="text-base font-semibold text-stone-900 dark:text-white mb-2">{feature.title}</h3>
-                    <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed">{feature.description}</p>
-                  </div>
-=======
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{feature.description}</p>
                   </motion.div>
->>>>>>> 6446d6908800db7821ba68d1bdcb67692640949d
                 );
               })}
             </motion.div>
           </motion.div>
 
           {/* CTA Banner */}
-<<<<<<< HEAD
-          <div className="relative rounded-2xl border border-stone-900 dark:border-white/10 bg-stone-900 dark:bg-stone-900 overflow-hidden shadow-2xl">
-            <div
-              aria-hidden
-              className="absolute inset-0 pointer-events-none opacity-[0.06]"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-                backgroundSize: "28px 28px",
-              }}
-            />
-            <div className="relative p-8 md:p-10 text-center">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 border border-white/20 mb-5">
-                <Mail className="text-lime-400" size={26} />
-=======
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -224,20 +171,11 @@ export default function AboutPage() {
             <div className="p-8 md:p-10 text-center">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 mb-5">
                 <Mail className="text-white" size={26} />
->>>>>>> 6446d6908800db7821ba68d1bdcb67692640949d
               </div>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">Want to get in touch?</h2>
               <p className="text-stone-400 max-w-2xl mx-auto mb-8 leading-relaxed">
                 Have questions, feedback, or partnership ideas? We would love to hear from you.
               </p>
-<<<<<<< HEAD
-              <Button asChild className="bg-lime-400 font-bold hover:bg-lime-300 text-stone-950 px-8 py-5 h-auto text-base rounded-xl transition-colors shadow-lg border-0">
-                <Link to="/contact">
-                  <Mail size={18} className="mr-2" />
-                  Contact Us
-                </Link>
-              </Button>
-=======
               <Link
                 to="/contact"
                 className="inline-flex items-center gap-2 bg-white text-indigo-700 hover:bg-gray-100 transition px-6 py-3 rounded-xl font-semibold shadow-lg no-underline"
@@ -245,7 +183,6 @@ export default function AboutPage() {
                 <Mail size={18} />
                 Contact Us
               </Link>
->>>>>>> 6446d6908800db7821ba68d1bdcb67692640949d
             </div>
           </motion.div>
 
