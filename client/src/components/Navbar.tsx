@@ -27,6 +27,9 @@ import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
+  { label: "About", href: "/#about" },
+  { label: "Features", href: "/#features" },
+  { label: "Contact", href: "/contact" },
   { label: "Jobs", href: "/jobs" },
   { label: "Learn", href: "/learn" },
   { label: "Companies", href: "/companies" },
@@ -42,6 +45,16 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
   const location = useLocation();
   const mobileMenuId = "main-navigation-mobile";
 
+  const scrollToSection = (id: string) => {
+  const element = document.getElementById(id);
+
+  if (element) {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+};
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -88,6 +101,20 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                 item.href === "/"
                   ? location.pathname === "/"
                   : location.pathname.startsWith(item.href + "/") || location.pathname === item.href;
+                  if (item.href === "/#about" || item.href === "/#features") {
+                   return (
+                     <button
+                    key={item.href}
+                    onClick={() =>
+                    scrollToSection(item.href === "/#about" ? "about" : "features")
+                    }
+                    className="group relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-300 bg-transparent border-0 cursor-pointer text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
+                    >
+                   {item.label}
+                   </button>
+                   );
+                  }
+
               return (
                 <Link key={item.href} to={item.href} aria-current={active ? "page" : undefined} className="no-underline">
                   <button

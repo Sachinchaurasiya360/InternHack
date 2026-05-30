@@ -33,7 +33,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-[#070707]">
+    <div id="Contact" className="min-h-screen flex flex-col bg-white dark:bg-[#070707]">
       <SEO
         title="Contact Us"
         description="Get in touch with the InternHack team for support, feedback, or business enquiries."

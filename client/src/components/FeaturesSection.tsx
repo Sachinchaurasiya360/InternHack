@@ -86,7 +86,7 @@ const cardVariants = {
 
 export function FeaturesSection() {
   return (
-    <section className="relative py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
+    <section id="features"className="relative py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
       <div className="relative z-10 max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
