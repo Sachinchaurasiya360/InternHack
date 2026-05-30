@@ -154,7 +154,7 @@ function ABRPlayer() {
        
       setCurrentTier(ideal.i);
     }
-  }, [bandwidth, t]);
+  }, [bandwidth, t, currentTier]);
 
   const reset = () => { setEvents([]); setCurrentTier(2); setT(0); setPlaying(false); };
 

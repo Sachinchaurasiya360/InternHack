@@ -114,11 +114,11 @@ const [searchParams, setSearchParams] = useSearchParams();
     retry: false,
   });
 
-  useEffect(() => {
-    if (deepLinkData) {
-      setSelectedRepo(deepLinkData);
-    }
-  }, [deepLinkData]);
+  const [prevDeepLinkDataId, setPrevDeepLinkDataId] = useState<string | number | undefined>(deepLinkData?.id);
+  if (deepLinkData && deepLinkData.id !== prevDeepLinkDataId) {
+    setPrevDeepLinkDataId(deepLinkData.id);
+    setSelectedRepo(deepLinkData);
+  }
 
   useEffect(() => {
     if (deepLinkError) {

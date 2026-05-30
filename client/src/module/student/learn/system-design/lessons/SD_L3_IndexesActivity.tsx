@@ -127,8 +127,6 @@ function BTreeDrilldown() {
   useEffect(() => {
     if (!racing) return;
     let cancelled = false;
-    setScanT(-1);
-    setSeekStep(-1);
 
     // Scan: 100ms per row
     let s = 0;
@@ -162,9 +160,11 @@ function BTreeDrilldown() {
       clearInterval(seekHandle);
       clearTimeout(stopHandle);
     };
-  }, [racing, target]);
+  }, [racing, target, seekPath.length]);
 
   const startRace = () => {
+    setScanT(-1);
+    setSeekStep(-1);
     setRacing(true);
   };
 

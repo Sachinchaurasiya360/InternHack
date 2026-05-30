@@ -569,12 +569,14 @@ export default function GSoCReposPage() {
   const selectedYear = searchParams.get("year") || "All";
 
   const [search, setSearch] = useState(initialQ);
+  const [prevInitialQ, setPrevInitialQ] = useState(initialQ);
 
   // FIX 1: Depend ONLY on initialQ, not searchParams. 
   // This prevents wiping out half-typed text when other filters change.
-  useEffect(() => {
+  if (initialQ !== prevInitialQ) {
+    setPrevInitialQ(initialQ);
     setSearch(initialQ);
-  }, [initialQ]);
+  }
 
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);

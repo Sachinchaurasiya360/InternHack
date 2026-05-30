@@ -1,48 +1,35 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
+function calculateDifference(targetDate: string) {
+  const difference = new Date(targetDate).getTime() - Date.now();
+
+  if (difference <= 0) {
+    return null;
+  }
+
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / (1000 * 60)) % 60),
+  };
+}
 
 export function useInterviewCountdown(targetDate: string) {
-  const [timeLeft, setTimeLeft] = useState<{
-    days: number;
-    hours: number;
-    minutes: number;
-  } | null>(null);
-
-  const calculate = useCallback(() => {
-    const difference =
-      new Date(targetDate).getTime() - Date.now();
-
-    if (difference <= 0) {
-      return null;
-    }
-
-    return {
-      days: Math.floor(
-        difference / (1000 * 60 * 60 * 24)
-      ),
-      hours: Math.floor(
-        (difference / (1000 * 60 * 60)) % 24
-      ),
-      minutes: Math.floor(
-        (difference / (1000 * 60)) % 60
-      ),
-    };
-  }, [targetDate]);
+  const [timeLeft, setTimeLeft] = useState(() => calculateDifference(targetDate));
 
   useEffect(() => {
-    setTimeLeft(calculate());
+    setTimeLeft(calculateDifference(targetDate));
 
     const interval = setInterval(() => {
-      const updated = calculate();
-
+      const updated = calculateDifference(targetDate);
       setTimeLeft(updated);
-
       if (!updated) {
         clearInterval(interval);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [calculate]);
+  }, [targetDate]);
 
   return timeLeft;
 }
