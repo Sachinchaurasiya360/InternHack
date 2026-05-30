@@ -7,7 +7,7 @@ export const opensourceListQuerySchema = z.object({
   language: z.string().optional(),
   difficulty: z.string().optional(),
   domain: z.string().optional(),
-  sortBy: z.enum(["stars", "forks", "name", "createdAt", "openIssues"]).default("stars"),
+  sortBy: z.enum(["stars", "forks", "name", "createdAt", "openIssues", "lastUpdated"]).default("stars"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
