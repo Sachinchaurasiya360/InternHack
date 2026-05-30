@@ -12,7 +12,10 @@ import { sendEmail } from "../../utils/email.utils.js";
 import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/email-templates.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
+import { OpensourceController } from "./opensource.controller.js";
+
 export const opensourceRouter = Router();
+const controller = new OpensourceController();
 
 function addMonthsUTC(date: Date, months: number): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1));
@@ -27,6 +30,9 @@ function getMonthKeyUTC(date: Date): string {
 function getMonthLabelUTC(date: Date): string {
   return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
 }
+
+// Public: list available languages
+opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
 
 // Public: list repos with optional filters
 opensourceRouter.get("/", async (req, res, next) => {
@@ -71,7 +77,6 @@ opensourceRouter.get("/", async (req, res, next) => {
     next(err);
   }
 });
-
 // ─── Repo Requests (Student-authenticated) ───────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
