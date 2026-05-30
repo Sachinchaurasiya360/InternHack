@@ -156,6 +156,8 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
 // Raw body for Dodo Payments webhook (must be BEFORE express.json())
 app.use(PAYMENT_WEBHOOK_PATH, express.raw({ type: "application/json" }));
+// Larger body parser for DSA CSV import (must be BEFORE the global parser)
+app.use("/api/dsa/import/csv", express.json({ limit: "6mb" }));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -343,5 +345,4 @@ app.listen(PORT, async () => {
 app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
-
 
