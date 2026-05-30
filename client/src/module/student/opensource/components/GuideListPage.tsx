@@ -175,9 +175,9 @@ export default function GuideListPage({
                     }`}>
                       {step.title}
                     </h3>
-                    {step.estimatedMinutes && (
-                      <span className="text-xs font-mono text-gray-400 dark:text-gray-500">{step.estimatedMinutes} min</span>
-                    )}
+                    {step.estimatedMinutes != null && (
+                      <span className="text-xs font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>
+                      )}
                   </div>
                   <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
                     {step.description}
