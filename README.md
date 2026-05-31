@@ -17,6 +17,12 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 
 ---
 
+## AI Assistant Context Files
+
+This repository includes AI assistant context files (`CLAUDE.md` and `.claude/`) for Claude Code users. These files provide project-specific context and code generation instructions for AI-assisted development and are **optional for contributors not using Claude Code**.
+
+---
+
 ## Tech Stack
 
 | Category | Technologies |

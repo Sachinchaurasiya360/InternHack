@@ -199,6 +199,10 @@ client/src/module/<area>/
 
 Shared components live in `client/src/components/`. State management uses Zustand (`lib/*.store.ts`) and data fetching uses React Query.
 
+### AI Assistant Context Files
+
+This repository includes optional AI assistant context files (`CLAUDE.md` and `.claude/`) designed for Claude Code users. These files provide project-specific development context and are not required for contributors using other tools or workflows.
+
 ### Key files to read first
 
 | File | What it tells you |
