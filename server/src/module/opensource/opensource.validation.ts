@@ -38,11 +38,8 @@ export const approveRequestOverrideSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 
-export const gsocOrgsQuerySchema = z.object({
-  page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(48).default(24),
-  search: z.string().optional(),
-  category: z.string().optional(),
-  tech: z.string().optional(),
-  year: z.coerce.number().optional(),
+export const bulkRepoRequestSchema = z.object({
+  ids: z.array(z.number().int().positive("Invalid ID in request list")).min(1, "At least one ID must be specified"),
+  action: z.enum(["approve", "reject"], { message: "Action must be either 'approve' or 'reject'" }),
+  adminNote: z.string().max(1000).optional(),
 });

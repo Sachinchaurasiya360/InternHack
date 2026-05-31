@@ -227,29 +227,14 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
             </div>
 
             {mutation.isError && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-sm text-red-600 dark:text-red-400 space-y-1">
-                <p className="font-semibold text-xs font-mono uppercase tracking-wider">
-                  {(mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-                    "Failed to submit. Please try again."}
-                </p>
-                {(() => {
-                  const errs = (mutation.error as { response?: { data?: { errors?: Record<string, string[]> } } })?.response?.data?.errors;
-                  if (errs && typeof errs === "object") {
-                    return (
-                      <ul className="list-disc pl-4 text-xs space-y-0.5 mt-1 font-mono">
-                        {Object.entries(errs).map(([field, messages]) =>
-                          messages.map((msg, i) => (
-                            <li key={`${field}-${i}`}>
-                              <span className="font-bold text-stone-500 uppercase tracking-widest text-[10px]">{field}</span>: {msg}
-                            </li>
-                          ))
-                        )}
-                      </ul>
-                    );
-                  }
-                  return null;
-                })()}
-              </div>
+              <p className="text-sm text-red-500">
+                {
+                  (mutation.error as any)?.response?.status === 429
+                    ? (mutation.error as any)?.response?.data?.message
+                    : (mutation.error as any)?.response?.data?.message ||
+                    "Failed to submit. Please try again."
+                }
+              </p>
             )}
 
 
