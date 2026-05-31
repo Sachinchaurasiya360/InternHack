@@ -227,9 +227,9 @@ function StatCell({
   suffix?: string;
 }) {
   return (
-    <div className="bg-stone-50 dark:bg-stone-950 p-3 sm:p-5 text-left min-w-0">
-      <div className="text-lg sm:text-2xl md:text-4xl font-bold tracking-tight tabular-nums text-stone-900 dark:text-stone-50 wrap-break-word">
-        <NumberFlow value={value} />
+    <div className="bg-stone-50 dark:bg-stone-950 p-3 sm:p-5 min-w-0 flex flex-col items-center">
+      <div className="text-lg sm:text-2xl md:text-4xl font-bold tracking-tight tabular-nums text-stone-900 dark:text-stone-50 w-[6ch] text-right">
+        <NumberFlow value={value} className="tabular-nums"/>
         {suffix && (
           <span className="text-lime-500 dark:text-lime-400">{suffix}</span>
         )}
