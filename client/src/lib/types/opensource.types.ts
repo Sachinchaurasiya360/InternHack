@@ -58,6 +58,7 @@ export interface OpenSourceContributionTrendPoint {
 export interface OpenSourceContributionTrendResponse {
   trend: OpenSourceContributionTrendPoint[];
   total: number;
+  domains: { domain: string; count: number }[];
 }
 
 // GSoC Organizations

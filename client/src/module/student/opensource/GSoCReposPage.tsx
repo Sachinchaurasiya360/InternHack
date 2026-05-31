@@ -13,7 +13,7 @@ import {
   Calendar,
   Layers,
   Tag,
-  Users,
+
   Mail,
   MessageSquare,
   Lightbulb,
@@ -224,12 +224,13 @@ interface GSoCOrgModalProps {
 }
 
 function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: GSoCOrgModalProps) {
+<<<<<<< HEAD
+=======
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
+>>>>>>> origin/main
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
-  const activeYear = selectedYear || (years[0] ? String(years[0]) : null);
-  const yearData = activeYear && org.projectsData ? org.projectsData[activeYear] : null;
 
   const handleCopy = (url: string, field: string) => {
     navigator.clipboard.writeText(url);
@@ -325,71 +326,88 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
             </section>
           )}
 
-          {org.projectsData && years.length > 0 && (
-            <section>
-              <div className="mb-2 flex items-center gap-1.5">
-                <span className="h-1 w-1 bg-lime-400" />
-                <p className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                  <Calendar className="h-3 w-3" />
-                  projects by year
-                </p>
-              </div>
-              <div className="mb-3 flex flex-wrap gap-1.5">
-                {years.map((year) => {
-                  const active = String(year) === activeYear;
-                  return (
-                    <button
+          {org.projectsData && years.length > 0 && (() => {
+            const projectsByYear: Record<number, { title: string; short_description: string; student_name: string; code_url: string }[]> = {};
+            for (const year of years) {
+              const yd = org.projectsData?.[String(year)];
+              if (yd?.projects?.length) projectsByYear[year] = yd.projects;
+            }
+            const sortedYears = Object.keys(projectsByYear).map(Number).sort((a, b) => b - a);
+            if (sortedYears.length === 0) return null;
+            return (
+              <section>
+                <div className="mb-3 flex items-center gap-1.5">
+                  <span className="h-1 w-1 bg-lime-400" />
+                  <p className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                    <Calendar className="h-3 w-3" />
+                    past projects
+                  </p>
+                </div>
+                <div className="space-y-1.5">
+                  {sortedYears.map((year, idx) => (
+                    <details
                       key={year}
+<<<<<<< HEAD
+                      open={idx < 3}
+                      className="group rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950 overflow-hidden"
+=======
                       type="button"
                       onClick={() => setSelectedYear(String(year))}
                       className={`rounded-md border px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${active
                         ? "border-lime-400 bg-lime-400 text-stone-950"
                         : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
                         }`}
+>>>>>>> origin/main
                     >
-                      {year} ({org.projectsData?.[String(year)]?.num_projects || 0})
-                    </button>
-                  );
-                })}
-              </div>
-
-              {yearData?.projects && yearData.projects.length > 0 && (
-                <div className="max-h-52 space-y-2 overflow-y-auto">
-                  {yearData.projects.map((project, index) => (
-                    <div key={`${project.title}-${index}`} className="rounded-md border border-stone-200 bg-stone-50 p-3 dark:border-white/10 dark:bg-stone-950">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <h5 className="text-sm font-bold text-stone-900 dark:text-stone-50">
-                            {project.title}
-                          </h5>
-                          <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-mono uppercase tracking-wider text-stone-500">
-                            <Users className="h-3 w-3" />
-                            {project.student_name}
-                          </p>
-                        </div>
-                        {project.code_url && (
-                          <a
-                            href={project.code_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="shrink-0 text-stone-400 transition-colors hover:text-lime-500"
-                            aria-label="View project code"
+                      <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-lime-500 dark:hover:text-lime-400 transition-colors select-none [&::-webkit-details-marker]:hidden">
+                        <span>{year} — {projectsByYear[year].length} project{projectsByYear[year].length !== 1 ? "s" : ""}</span>
+                        <ChevronDown className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                      </summary>
+                      <ul className="px-3 pb-2">
+                        {projectsByYear[year].map((project: any, pIdx: number) => (
+                          <li
+                            key={`${project.title}-${pIdx}`}
+                            className={`flex items-center justify-between gap-2 py-1.5 ${
+                              pIdx < projectsByYear[year].length - 1 ? "border-b border-stone-100 dark:border-white/5" : ""
+                            }`}
                           >
-                            <Code2 className="h-4 w-4" />
-                          </a>
-                        )}
-                      </div>
-                      {project.short_description && (
-                        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-stone-600 dark:text-stone-400">
-                          {project.short_description}
-                        </p>
-                      )}
-                    </div>
+                            <span className="text-sm text-stone-700 dark:text-stone-300 min-w-0">
+                              {project.title}
+                              <span className="text-stone-400 dark:text-stone-500">
+                                {" — "}{project.student_name || project.studentName}
+                              </span>
+                            </span>
+                            {project.code_url && (
+                              <a
+                                href={project.code_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="shrink-0 text-stone-400 hover:text-lime-500 transition-colors"
+                                aria-label="View code"
+                              >
+                                <Code2 className="h-3.5 w-3.5" />
+                              </a>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
                   ))}
                 </div>
-              )}
-            </section>
-          )}
+                {org.url && (
+                  <a
+                    href={org.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 no-underline hover:text-lime-400 transition-colors"
+                  >
+                    View all on GSoC website →
+                  </a>
+                )}
+              </section>
+            );
+          })()}
 
           <div className="flex flex-wrap gap-2">
             {org.contactEmail && (
