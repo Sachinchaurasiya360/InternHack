@@ -15,6 +15,18 @@ import { parsePagination } from "../../utils/pagination.utils.js";
 
 import { OpensourceController } from "./opensource.controller.js";
 
+function addMonthsUTC(date: Date, months: number): Date {
+  const d = new Date(date);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  return d;
+}
+function getMonthKeyUTC(date: Date): string {
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+function getMonthLabelUTC(date: Date): string {
+  return date.toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+}
+
 export const opensourceRouter = Router();
 const controller = new OpensourceController();
 
@@ -360,7 +372,6 @@ opensourceRouter.put("/requests/bulk", authMiddleware, requireRole("ADMIN"), asy
               difficulty: request.difficulty,
               techStack: request.techStack,
               tags: request.tags,
-              status: "APPROVED",
               userId: request.userId,
             },
           });
