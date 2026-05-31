@@ -10,20 +10,17 @@ export function welcomeEmailHtml(name: string): string {
 </head>
 <body style="margin:0;padding:0;background-color:#ffffff;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    <!-- Header -->
     <tr>
       <td style="background-color:#0a0a0a;padding:28px 24px;text-align:center;">
         <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">InternHack</h1>
       </td>
     </tr>
-    <!-- Body -->
     <tr>
       <td style="padding:28px 24px;">
         <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Hey ${firstName}! You're in.</h2>
         <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
           Your account is verified and ready to roll. InternHack is packed with tools to fast-track your career, here's everything you get access to:
         </p>
-        <!-- Learning Hub highlight -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
           <tr>
             <td style="padding:16px 18px;background-color:#eef2ff;border:1px solid #e0e7ff;border-radius:8px;">
@@ -34,7 +31,6 @@ export function welcomeEmailHtml(name: string): string {
             </td>
           </tr>
         </table>
-        <!-- Features - 2 column grid using tables -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
           <tr>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;width:50%;">
@@ -111,7 +107,6 @@ export function welcomeEmailHtml(name: string): string {
         <p style="margin:0 0 20px;font-size:14px;line-height:1.5;color:#52525b;text-align:center;">
           All built to get you hired faster.
         </p>
-        <!-- CTA -->
         <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
           <tr>
             <td style="background-color:#18181b;border-radius:6px;">
@@ -123,7 +118,6 @@ export function welcomeEmailHtml(name: string): string {
         </table>
       </td>
     </tr>
-    <!-- Footer -->
     <tr>
       <td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
         <p style="margin:0 0 6px;font-size:12px;">

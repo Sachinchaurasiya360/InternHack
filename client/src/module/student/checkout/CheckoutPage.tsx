@@ -30,7 +30,6 @@ import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 
-// ─── Plan Data ────────────────────────────────────────────────
 type PlanKey = "free" | "pro";
 
 interface Plan {
@@ -107,26 +106,27 @@ const faqs = [
   { q: "Can I upgrade or downgrade later?", a: "Absolutely. You can switch plans at any time from your profile settings. Prorated adjustments apply automatically." },
 ];
 
-// ─── How it works steps ───────────────────────────────────────
 const HOW_IT_WORKS = [
-  {
-    step: "1",
-    title: "Choose your plan",
-    desc: "Pick monthly or yearly billing. Yearly saves you 25%.",
-  },
-  {
-    step: "2",
-    title: "Pay securely",
-    desc: "Cards, UPI, net banking, all options supported.",
-  },
-  {
-    step: "3",
-    title: "Unlock everything instantly",
-    desc: "All Pro features activate immediately after payment.",
-  },
+  { step: "01", title: "Choose your plan", desc: "Pick monthly or yearly billing. Yearly saves you 25%." },
+  { step: "02", title: "Pay securely", desc: "Cards, UPI, net banking, all options supported." },
+  { step: "03", title: "Unlock everything instantly", desc: "All Pro features activate immediately after payment." },
 ];
 
-// ─── Component ────────────────────────────────────────────────
+const FEATURE_TILES = [
+  { icon: <ScanSearch className="w-4 h-4" />, label: "Unlimited ATS Scans" },
+  { icon: <Briefcase className="w-4 h-4" />, label: "Unlimited Apply" },
+  { icon: <FileText className="w-4 h-4" />, label: "LaTeX Resume Editor" },
+  { icon: <Wand2 className="w-4 h-4" />, label: "AI Cover Letter" },
+  { icon: <Code2 className="w-4 h-4" />, label: "Full DSA Practice" },
+  { icon: <Database className="w-4 h-4" />, label: "SQL Practice" },
+  { icon: <Brain className="w-4 h-4" />, label: "Aptitude Practice" },
+  { icon: <ShieldCheck className="w-4 h-4" />, label: "Skill Verification" },
+  { icon: <GitPullRequest className="w-4 h-4" />, label: "Open Source Tools" },
+  { icon: <Map className="w-4 h-4" />, label: "Career Roadmaps" },
+  { icon: <Award className="w-4 h-4" />, label: "Grant Alerts" },
+  { icon: <Building2 className="w-4 h-4" />, label: "YC Company Search" },
+];
+
 export default function CheckoutPage() {
   const { user, setUser } = useAuthStore();
   const navigate = useNavigate();
@@ -137,7 +137,6 @@ export default function CheckoutPage() {
   const [paymentStatus, setPaymentStatus] = useState<"success" | "failed" | null>(null);
   const dodoInitialized = useRef(false);
 
-  // Poll for subscription activation after checkout success
   const pollSubscription = useCallback(async () => {
     for (let i = 0; i < 10; i++) {
       await new Promise((r) => setTimeout(r, 2000));
@@ -191,14 +190,12 @@ export default function CheckoutPage() {
     });
   }, [pollSubscription]);
 
-  // Close overlay if user navigates away mid-checkout
   useEffect(() => {
     return () => {
       DodoPayments.Checkout.close();
     };
   }, []);
 
-  // Redirect premium users - they already have an active subscription
   if (user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE") {
     return <Navigate to="/student/profile" replace />;
   }
@@ -210,20 +207,11 @@ export default function CheckoutPage() {
     setPaymentStatus(null);
 
     try {
-      // Create checkout session on backend
-      const { data } = await api.post("/payments/create-checkout", {
-        plan: planKey,
-        billing,
-      });
+      const { data } = await api.post("/payments/create-checkout", { plan: planKey, billing });
 
-      if (!data.checkoutUrl) {
-        throw new Error("No checkout URL returned");
-      }
+      if (!data.checkoutUrl) throw new Error("No checkout URL returned");
 
-      // Open Dodo overlay checkout
-      DodoPayments.Checkout.open({
-        checkoutUrl: data.checkoutUrl,
-      });
+      DodoPayments.Checkout.open({ checkoutUrl: data.checkoutUrl });
     } catch {
       setPaymentStatus("failed");
       setLoading(null);
@@ -231,148 +219,149 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="relative pb-12">
+    <div className="relative pb-16">
       <SEO title="Upgrade to Pro" noIndex />
 
-      {/* Atmospheric background */}
+      {/* Background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
+        <div className="absolute -top-40 -right-40 w-160 h-160 bg-lime-100 dark:bg-lime-900/10 rounded-full blur-3xl opacity-30" />
+        <div className="absolute -bottom-40 -left-40 w-140 h-140 bg-stone-100 dark:bg-stone-900/30 rounded-full blur-3xl opacity-40" />
       </div>
 
-      {/* ── Payment Status Banner ──────────────────── */}
+      {/* Payment status banner */}
       <AnimatePresence>
         {paymentStatus && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`mb-6 p-4 rounded-2xl border text-sm font-medium text-center ${
+            exit={{ opacity: 0, y: -16 }}
+            className={`mb-6 px-4 py-3 rounded-md border text-[11px] font-mono uppercase tracking-widest text-center ${
               paymentStatus === "success"
-                ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
+                ? "bg-lime-50 dark:bg-lime-900/20 border-lime-300 dark:border-lime-700 text-lime-800 dark:text-lime-400"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
             }`}
           >
             {paymentStatus === "success"
-              ? "Payment successful! Your subscription is now active."
+              ? "Payment successful — your subscription is now active"
               : "Payment failed. Please try again or contact support."}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── Hero ───────────────────────────────────── */}
+      {/* Hero */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-10 mt-6"
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center mb-12 mt-6"
       >
-        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-          Upgrade to <span className="text-gradient-accent">Pro</span>
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-3">
+          / pricing
+        </p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-950 dark:text-white mb-3">
+          One plan.{" "}
+          <span className="text-lime-500 dark:text-lime-400">Everything unlocked.</span>
         </h1>
-        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto mb-8">
-          Unlock unlimited ATS scans, DSA practice, skill tests, AI tools, and more.
+        <p className="text-base text-stone-500 dark:text-stone-400 max-w-lg mx-auto mb-8">
+          Unlimited ATS scans, DSA practice, skill tests, AI tools, and more — for less than a coffee a week.
         </p>
 
-        {/* Billing Toggle */}
-        <div className="inline-flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-1.5">
+        {/* Billing toggle */}
+        <div className="inline-flex items-center gap-0.5 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-1">
           <button
             onClick={() => setBilling("monthly")}
-            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`px-5 py-2 rounded text-sm font-medium transition-all ${
               billing === "monthly"
-                ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-sm"
-                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "bg-stone-950 dark:bg-white text-white dark:text-stone-950 shadow-sm"
+                : "text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
             }`}
           >
             Monthly
           </button>
           <button
             onClick={() => setBilling("yearly")}
-            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+            className={`px-5 py-2 rounded text-sm font-medium transition-all flex items-center gap-2 ${
               billing === "yearly"
-                ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-sm"
-                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "bg-stone-950 dark:bg-white text-white dark:text-stone-950 shadow-sm"
+                : "text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
             }`}
           >
             Yearly
-            <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold rounded-full">
-              Save 25%
+            <span className="px-1.5 py-0.5 bg-lime-400 text-stone-950 text-[10px] font-bold rounded-sm tracking-wide">
+              -25%
             </span>
           </button>
         </div>
       </motion.div>
 
-      {/* ── Pricing Cards ─────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-16 max-w-3xl mx-auto">
+      {/* Pricing cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-20 max-w-3xl mx-auto">
         {plans.map((plan, i) => (
           <motion.div
             key={plan.key}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 + i * 0.1 }}
-            className={`relative bg-white dark:bg-gray-900 rounded-2xl border p-6 md:p-7 transition-all ${
+            transition={{ delay: 0.1 + i * 0.1 }}
+            className={`relative rounded-md border p-6 transition-all ${
               plan.highlighted
-                ? "border-indigo-200 dark:border-indigo-800 shadow-lg shadow-indigo-100/50 dark:shadow-indigo-900/20 ring-1 ring-indigo-100 dark:ring-indigo-800"
-                : "border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700"
+                ? "bg-stone-950 dark:bg-stone-950 border-stone-700 dark:border-white/20"
+                : "bg-white dark:bg-stone-900 border-stone-200 dark:border-white/10 hover:border-stone-300 dark:hover:border-white/20"
             }`}
           >
             {/* Badge */}
             {plan.badge && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full shadow-md bg-gray-950 dark:bg-white text-white dark:text-gray-950">
+              <div className="absolute -top-3 left-6">
+                <span className="px-2.5 py-1 text-[10px] font-bold font-mono uppercase tracking-widest rounded-sm bg-lime-400 text-stone-950">
                   {plan.badge}
                 </span>
               </div>
             )}
 
-            {/* Icon + Name */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            {/* Icon + name */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className={`w-9 h-9 rounded-sm flex items-center justify-center ${
                 plan.highlighted
-                  ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+                  ? "bg-lime-400 text-stone-950"
+                  : "bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400"
               }`}>
                 {plan.icon}
               </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{plan.name}</h3>
+              <h3 className={`text-lg font-bold ${plan.highlighted ? "text-white" : "text-stone-900 dark:text-white"}`}>
+                {plan.name}
+              </h3>
             </div>
 
             {/* Price */}
-            <div className="mb-4">
+            <div className="mb-5">
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-gray-950 dark:text-white">
-                  {plan.price === 0 ? "Free" : `₹${billing === "monthly" ? plan.price : plan.yearlyPrice}`}
+                <span className={`text-5xl font-bold tabular-nums ${plan.highlighted ? "text-white" : "text-stone-950 dark:text-white"}`}>
+                  {plan.price === 0 ? "₹0" : `₹${billing === "monthly" ? plan.price : plan.yearlyPrice}`}
                 </span>
                 {plan.price > 0 && (
-                  <span className="text-sm text-gray-400 dark:text-gray-500">
+                  <span className={`text-sm ${plan.highlighted ? "text-stone-400" : "text-stone-400"}`}>
                     /{billing === "monthly" ? "mo" : "yr"}
                   </span>
                 )}
               </div>
               {billing === "yearly" && plan.price > 0 && (
-                <p className="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">
-                  Save ₹{plan.price * 12 - plan.yearlyPrice}/year
+                <p className="text-xs text-lime-400 mt-1 font-medium">
+                  Save ₹{plan.price * 12 - plan.yearlyPrice} vs monthly
                 </p>
               )}
             </div>
 
-            <p className="text-sm text-gray-500 dark:text-gray-500 mb-6 leading-relaxed">{plan.description}</p>
+            <p className={`text-sm mb-6 leading-relaxed ${plan.highlighted ? "text-stone-400" : "text-stone-500 dark:text-stone-400"}`}>
+              {plan.description}
+            </p>
 
             {/* CTA */}
             <button
               onClick={() => handleSelectPlan(plan.key)}
               disabled={loading !== null}
-              className={`w-full py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 mb-6 disabled:opacity-60 disabled:cursor-not-allowed ${
+              className={`w-full py-2.5 rounded-sm text-sm font-bold transition-all flex items-center justify-center gap-2 mb-6 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${
                 plan.highlighted
-                  ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-200 shadow-lg shadow-gray-950/10 dark:shadow-white/10"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  ? "bg-lime-400 text-stone-950 hover:bg-lime-300"
+                  : "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
               }`}
             >
               {loading === plan.key ? (
@@ -390,10 +379,8 @@ export default function CheckoutPage() {
             {/* Feature list */}
             <ul className="space-y-2.5">
               {plan.features.map((f) => (
-                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
-                  <Check className={`w-4 h-4 shrink-0 mt-0.5 ${
-                    plan.highlighted ? "text-indigo-500" : "text-gray-400 dark:text-gray-500"
-                  }`} />
+                <li key={f} className={`flex items-start gap-2.5 text-sm ${plan.highlighted ? "text-stone-300" : "text-stone-600 dark:text-stone-400"}`}>
+                  <Check className={`w-4 h-4 shrink-0 mt-0.5 ${plan.highlighted ? "text-lime-400" : "text-stone-400 dark:text-stone-500"}`} />
                   {f}
                 </li>
               ))}
@@ -402,111 +389,102 @@ export default function CheckoutPage() {
         ))}
       </div>
 
-      {/* ── How It Works (Guidance) ─────────────────── */}
+      {/* How it works */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="mb-16"
+        className="mb-20"
       >
-        <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-6 text-center">
-          How It Works
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-6 text-center">
+          / how it works
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-3xl mx-auto">
           {HOW_IT_WORKS.map((item, i) => (
             <motion.div
               key={item.step}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
+              transition={{ delay: i * 0.08 }}
+              className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5"
             >
-              <div className="w-10 h-10 rounded-full bg-gray-950 dark:bg-white text-white dark:text-gray-950 flex items-center justify-center text-sm font-bold mx-auto mb-3">
+              <p className="text-[10px] font-mono text-lime-500 dark:text-lime-400 mb-3 tracking-widest">
                 {item.step}
-              </div>
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">{item.title}</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
+              </p>
+              <h3 className="text-sm font-bold text-stone-900 dark:text-white mb-1">{item.title}</h3>
+              <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">{item.desc}</p>
             </motion.div>
           ))}
         </div>
       </motion.div>
 
-      {/* ── What's Included Breakdown ──────────────── */}
+      {/* Feature tiles */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="mb-16"
+        className="mb-20"
       >
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">What you unlock with Pro</h2>
-          <p className="text-gray-500 dark:text-gray-500 text-sm">Tools designed to give you an unfair advantage</p>
+          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-2">
+            / what you unlock
+          </p>
+          <h2 className="text-2xl font-bold text-stone-950 dark:text-white">Everything in Pro</h2>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl mx-auto">
-          {[
-            { icon: <ScanSearch className="w-5 h-5" />, label: "Unlimited ATS Scans", color: "text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-900/30" },
-            { icon: <Briefcase className="w-5 h-5" />, label: "Unlimited Apply", color: "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30" },
-            { icon: <FileText className="w-5 h-5" />, label: "LaTeX Resume Editor", color: "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-900/30" },
-            { icon: <Wand2 className="w-5 h-5" />, label: "AI Cover Letter", color: "text-violet-600 bg-violet-50 dark:text-violet-400 dark:bg-violet-900/30" },
-            { icon: <Code2 className="w-5 h-5" />, label: "Full DSA Practice", color: "text-cyan-600 bg-cyan-50 dark:text-cyan-400 dark:bg-cyan-900/30" },
-            { icon: <Database className="w-5 h-5" />, label: "SQL Practice", color: "text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/30" },
-            { icon: <Brain className="w-5 h-5" />, label: "Aptitude Practice", color: "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-900/30" },
-            { icon: <ShieldCheck className="w-5 h-5" />, label: "Skill Verification", color: "text-teal-600 bg-teal-50 dark:text-teal-400 dark:bg-teal-900/30" },
-            { icon: <GitPullRequest className="w-5 h-5" />, label: "Open Source Tools", color: "text-pink-600 bg-pink-50 dark:text-pink-400 dark:bg-pink-900/30" },
-            { icon: <Map className="w-5 h-5" />, label: "Career Roadmaps", color: "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/30" },
-            { icon: <Award className="w-5 h-5" />, label: "Grant Alerts", color: "text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/30" },
-            { icon: <Building2 className="w-5 h-5" />, label: "YC Company Search", color: "text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-800" },
-          ].map((item) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-w-4xl mx-auto">
+          {FEATURE_TILES.map((item) => (
             <div
               key={item.label}
-              className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 text-center hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700 transition-all"
+              className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4 flex items-center gap-3 hover:border-stone-300 dark:hover:border-white/20 transition-colors"
             >
-              <div className={`w-10 h-10 rounded-xl ${item.color} flex items-center justify-center mx-auto mb-2`}>
+              <div className="w-8 h-8 rounded-sm bg-lime-50 dark:bg-lime-400/10 text-lime-600 dark:text-lime-400 flex items-center justify-center shrink-0">
                 {item.icon}
               </div>
-              <p className="text-xs font-medium text-gray-700 dark:text-gray-300">{item.label}</p>
+              <p className="text-xs font-medium text-stone-700 dark:text-stone-300 leading-snug">{item.label}</p>
             </div>
           ))}
         </div>
       </motion.div>
 
-      {/* ── Testimonials ──────────────────────────── */}
+      {/* Testimonials */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="mb-16"
+        className="mb-20"
       >
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">Loved by students</h2>
-          <p className="text-gray-500 dark:text-gray-500 text-sm">See what our users have to say</p>
+          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-2">
+            / students
+          </p>
+          <h2 className="text-2xl font-bold text-stone-950 dark:text-white">Loved by students</h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-3 max-w-4xl mx-auto">
           {testimonials.map((t, i) => (
             <motion.div
               key={t.name}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm"
+              transition={{ delay: i * 0.08 }}
+              className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5"
             >
-              <div className="flex items-center gap-1 mb-3">
+              <div className="flex items-center gap-0.5 mb-3">
                 {Array(5).fill(0).map((_, j) => (
-                  <Star key={j} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                  <Star key={j} className="w-3 h-3 text-amber-400 fill-amber-400" />
                 ))}
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">"{t.text}"</p>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-sm font-bold">
+              <p className="text-sm text-stone-600 dark:text-stone-400 mb-4 leading-relaxed">"{t.text}"</p>
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-sm bg-stone-950 dark:bg-white text-white dark:text-stone-900 flex items-center justify-center text-xs font-bold shrink-0">
                   {t.avatar}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{t.name}</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">{t.role}</p>
+                  <p className="text-sm font-semibold text-stone-900 dark:text-white">{t.name}</p>
+                  <p className="text-xs text-stone-400 dark:text-stone-500">{t.role}</p>
                 </div>
               </div>
             </motion.div>
@@ -514,46 +492,44 @@ export default function CheckoutPage() {
         </div>
       </motion.div>
 
-      {/* ── Trust Badges ──────────────────────────── */}
+      {/* Trust badges */}
       <div className="flex flex-wrap items-center justify-center gap-6 mb-16">
         {[
-          { icon: <Shield className="w-4 h-4" />, text: "SSL Encrypted" },
-          { icon: <Lock className="w-4 h-4" />, text: "Secure Payments" },
-          { icon: <CreditCard className="w-4 h-4" />, text: "Dodo Payments" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: "SSL Encrypted" },
+          { icon: <Lock className="w-3.5 h-3.5" />, text: "Secure Payments" },
+          { icon: <CreditCard className="w-3.5 h-3.5" />, text: "Dodo Payments" },
         ].map((badge) => (
-          <div key={badge.text} className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 font-medium">
+          <div key={badge.text} className="flex items-center gap-1.5 text-xs font-mono text-stone-400 dark:text-stone-500">
             {badge.icon}
             {badge.text}
           </div>
         ))}
       </div>
 
-      {/* ── FAQ ────────────────────────────────────── */}
+      {/* FAQ */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="max-w-2xl mx-auto mb-16"
+        className="max-w-2xl mx-auto mb-20"
       >
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">Frequently Asked Questions</h2>
+          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-2">
+            / faq
+          </p>
+          <h2 className="text-2xl font-bold text-stone-950 dark:text-white">Common questions</h2>
         </div>
 
-        <div className="space-y-2">
+        <div className="divide-y divide-stone-200 dark:divide-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
           {faqs.map((faq, i) => (
-            <div
-              key={i}
-              className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden"
-            >
+            <div key={i} className="bg-white dark:bg-stone-900">
               <button
                 onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                className="w-full flex items-center justify-between px-5 py-4 text-left text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="w-full flex items-center justify-between px-5 py-4 text-left text-sm font-medium text-stone-900 dark:text-white hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors cursor-pointer"
               >
                 {faq.q}
                 <ChevronDown
-                  className={`w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0 transition-transform ${
-                    expandedFaq === i ? "rotate-180" : ""
-                  }`}
+                  className={`w-4 h-4 text-stone-400 shrink-0 transition-transform ${expandedFaq === i ? "rotate-180" : ""}`}
                 />
               </button>
               <AnimatePresence>
@@ -562,10 +538,10 @@ export default function CheckoutPage() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.18 }}
                     className="overflow-hidden"
                   >
-                    <p className="px-5 pb-4 text-sm text-gray-500 dark:text-gray-500 leading-relaxed">{faq.a}</p>
+                    <p className="px-5 pb-4 text-sm text-stone-500 dark:text-stone-400 leading-relaxed">{faq.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -574,28 +550,29 @@ export default function CheckoutPage() {
         </div>
       </motion.div>
 
-      {/* ── Bottom CTA ────────────────────────────── */}
+      {/* Bottom CTA */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="relative rounded-2xl bg-gray-950 dark:bg-gray-900 border border-gray-800 p-8 md:p-12 text-center overflow-hidden"
+        className="relative rounded-md bg-stone-950 dark:bg-stone-950 border border-stone-800 p-8 md:p-12 text-center overflow-hidden"
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-indigo-500/20 blur-3xl" />
-          <div className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full bg-violet-500/20 blur-3xl" />
+          <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-lime-400/10 blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-lime-400/5 blur-3xl" />
         </div>
         <div className="relative z-10">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-3">/ get started</p>
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
             Ready to supercharge your career?
           </h2>
-          <p className="text-gray-400 text-sm max-w-md mx-auto mb-6">
+          <p className="text-stone-400 text-sm max-w-md mx-auto mb-7">
             Join thousands of students using InternHack to land internships, build portfolios, and grow their careers.
           </p>
           <button
             onClick={() => handleSelectPlan("pro")}
             disabled={loading !== null}
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-gray-950 font-semibold rounded-xl hover:bg-gray-100 transition-all shadow-lg text-sm disabled:opacity-60"
+            className="inline-flex items-center gap-2 px-7 py-3 bg-lime-400 text-stone-950 font-bold rounded-sm hover:bg-lime-300 transition-colors text-sm disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
             {loading === "pro" ? (
               <Loader2 className="w-4 h-4 animate-spin" />
