@@ -175,7 +175,7 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
             experienceLevel: full.experienceLevel,
             goal: full.goal,
           },
-          weeklyPlan: weeklyPlan.map((w) => ({
+          weeklyPlan: (weeklyPlan || []).map((w) => ({
             week: w.week,
             topicSlugs: w.topicSlugs,
             totalHours: w.totalHours,
@@ -209,7 +209,7 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
         });
 
         if (userRecord) {
-          const weekOne = weeklyPlan[0]?.topicSlugs ?? [];
+          const weekOne = weeklyPlan?.[0]?.topicSlugs ?? [];
           await sendEmail({
             to: userRecord.email,
             subject: `Your ${full.roadmap.title} is ready`,
