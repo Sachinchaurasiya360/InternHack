@@ -1,7 +1,6 @@
 import { useState, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useReactToPrint } from "react-to-print";
 import toast from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { uploadDirectToS3 } from "../../../utils/upload";
@@ -116,10 +115,104 @@ export default function AtsScorePage() {
   const debouncedHistorySearch = useDebounce(historySearch, 300);
   const navigate = useNavigate();
 
-  const handlePrint = useReactToPrint({
-    contentRef: printRef,
-    documentTitle: `ATS_Report_${new Date().toLocaleDateString("en-IN")}`,
-  });
+  const handleDownloadPdf = async () => {
+    if (!result) return;
+
+    const { jsPDF } = await import("jspdf");
+
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const filename = `ats-report-${dateStr}.pdf`;
+
+    let y = 20;
+
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const checkPageBreak = () => {
+      if (y > pageHeight - 20) {
+        doc.addPage();
+        y = 20;
+      }
+    };
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("ATS Analysis Report", 20, y);
+
+    y += 12;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+
+    doc.text(`Resume: ${getResumeName(result.resumeUrl)}`, 20, y);
+    y += 8;
+
+    doc.text(`Generated: ${dateStr}`, 20, y);
+    y += 12;
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Overall ATS Score: ${result.overallScore}/100`, 20, y);
+
+    y += 12;
+
+    doc.text("Category Scores", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+
+    Object.entries(result.categoryScores).forEach(([key, value]) => {
+      doc.text(`${key}: ${value}`, 25, y);
+      y += 7;
+    });
+
+    y += 5;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Missing Keywords", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+
+    if (result.keywordAnalysis.missing.length === 0) {
+      doc.text("None", 25, y);
+      y += 7;
+    } else {
+      result.keywordAnalysis.missing.forEach((keyword) => {
+        checkPageBreak();
+
+        doc.text(`• ${keyword}`, 25, y);
+        y += 7;
+      });
+    }
+
+    y += 5;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Suggestions", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+
+    result.suggestions.forEach((suggestion) => {
+      const lines = doc.splitTextToSize(`• ${suggestion}`, 160);
+      const blockHeight = lines.length * 6 + 2;
+
+      if (y + blockHeight > pageHeight - 20) {
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.text(lines, 25, y);
+      y += blockHeight;
+    });
+
+    doc.save(filename);
+  };
 
   const { data: usageData } = useQuery<UsageStats>({
     queryKey: queryKeys.ats.usage(),
@@ -1073,12 +1166,13 @@ export default function AtsScorePage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => handlePrint()}
-                      className="shrink-0 mr-1 inline-flex items-center gap-2 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer print:hidden"
+                      onClick={handleDownloadPdf}
+                      disabled={loading}
+                      className="shrink-0 mr-1 inline-flex items-center gap-2 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed print:hidden"
                       title="Download or print this ATS report"
                     >
                       <Download className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Print</span>
+                      <span className="hidden sm:inline">Download Report</span>
                     </button>
                   </div>
 
