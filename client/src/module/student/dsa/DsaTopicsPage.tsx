@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
@@ -52,6 +52,137 @@ function CircularProgress({ progress }: { progress: number }) {
     </div>
   );
 }
+
+const DsaTopicCard = React.memo(function DsaTopicCard({
+  topic,
+  idx,
+  page,
+  user,
+  onShowGate,
+}: {
+  topic: any;
+  idx: number;
+  page: number;
+  user: any;
+  onShowGate: () => void;
+}) {
+  const FREE_LIMIT = 5;
+  const TOPICS_PER_PAGE = 24;
+
+  const pct =
+    topic.problemCount > 0
+      ? Math.min(
+          100,
+          Math.max(
+            0,
+            Math.round((topic.solvedCount / topic.problemCount) * 100)
+          )
+        )
+      : 0;
+  const isComplete = pct === 100;
+  const isLocked = topic.orderIndex >= FREE_LIMIT && !user;
+  const globalIdx = (page - 1) * TOPICS_PER_PAGE + idx + 1;
+  const topicNum = String(globalIdx).padStart(2, "0");
+
+  const inner = (
+    <>
+      <div className="flex flex-col items-center gap-1 shrink-0 w-11">
+        {isLocked ? (
+          <div className="w-11 h-11 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center">
+            <Lock className="w-4 h-4 text-stone-400 dark:text-stone-500" />
+          </div>
+        ) : user ? (
+          <CircularProgress progress={pct} />
+        ) : (
+          <div className="w-11 h-11 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center">
+            <span className="text-[11px] font-mono font-bold tabular-nums text-stone-500 dark:text-stone-400">
+              {topicNum}
+            </span>
+          </div>
+        )}
+        {!isLocked && user && (
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
+            / {topicNum}
+          </span>
+        )}
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate">
+            {topic.name}
+          </h3>
+          {isComplete && user && (
+            <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 shrink-0" />
+          )}
+        </div>
+        {user && !isLocked ? (
+          <>
+            <div className="w-full h-0.5 bg-stone-200 dark:bg-white/10 overflow-hidden mb-2">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.6, delay: Math.min(idx, 10) * 0.03 }}
+                className={`h-full ${
+                  isComplete
+                    ? "bg-lime-400"
+                    : pct > 0
+                    ? "bg-stone-900 dark:bg-stone-50"
+                    : "bg-transparent"
+                }`}
+              />
+            </div>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums">
+              <span className="text-stone-900 dark:text-stone-50">
+                {topic.solvedCount}
+              </span>
+              <span className="text-stone-400 dark:text-stone-600">
+                {" "}
+                / {topic.problemCount} problems
+              </span>
+            </span>
+          </>
+        ) : (
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums">
+            {topic.problemCount} problems
+          </span>
+        )}
+      </div>
+
+      <div className="shrink-0">
+        {isLocked ? (
+          <Lock className="w-4 h-4 text-stone-300 dark:text-stone-600" />
+        ) : (
+          <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all" />
+        )}
+      </div>
+    </>
+  );
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: Math.min(idx, 10) * 0.03 }}
+    >
+      {isLocked ? (
+        <button
+          onClick={onShowGate}
+          className="group w-full flex items-center gap-3 sm:gap-4 bg-white dark:bg-stone-900 px-3 sm:px-5 py-3 sm:py-4 rounded-md border border-stone-200 dark:border-white/10 opacity-70 hover:opacity-100 hover:border-stone-400 dark:hover:border-white/25 transition-all text-left cursor-pointer"
+        >
+          {inner}
+        </button>
+      ) : (
+        <Link
+          to={`/learn/dsa/${topic.slug}`}
+          className="group flex items-center gap-3 sm:gap-4 bg-white dark:bg-stone-900 px-3 sm:px-5 py-3 sm:py-4 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline"
+        >
+          {inner}
+        </Link>
+      )}
+    </motion.div>
+  );
+});
 
 export default function DsaTopicsPage() {
   const { user } = useAuthStore();
@@ -394,104 +525,16 @@ const clearFilters = () => {
 
         {/* Topic list */}
         <div className="space-y-2">
-          {paginatedTopics?.map((topic, idx) => {
-            const pct = topic.problemCount > 0
-              ? Math.min(100, Math.max(0, Math.round((topic.solvedCount / topic.problemCount) * 100)))
-              : 0;
-            const isComplete = pct === 100;
-            const isLocked = topic.orderIndex >= FREE_LIMIT && !user;
-            const globalIdx = (page - 1) * TOPICS_PER_PAGE + idx + 1;
-            const topicNum = String(globalIdx).padStart(2, "0");
-
-            const inner = (
-              <>
-                <div className="flex flex-col items-center gap-1 shrink-0 w-11">
-                  {isLocked ? (
-                    <div className="w-11 h-11 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center">
-                      <Lock className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-                    </div>
-                  ) : user ? (
-                    <CircularProgress progress={pct} />
-                  ) : (
-                    <div className="w-11 h-11 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center">
-                      <span className="text-[11px] font-mono font-bold tabular-nums text-stone-500 dark:text-stone-400">
-                        {topicNum}
-                      </span>
-                    </div>
-                  )}
-                  {!isLocked && user && (
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                      / {topicNum}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate">
-                      {topic.name}
-                    </h3>
-                    {isComplete && user && (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 shrink-0" />
-                    )}
-                  </div>
-                  {user && !isLocked ? (
-                    <>
-                      <div className="w-full h-0.5 bg-stone-200 dark:bg-white/10 overflow-hidden mb-2">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${pct}%` }}
-                          transition={{ duration: 0.6, delay: Math.min(idx, 10) * 0.03 }}
-                          className={`h-full ${isComplete ? "bg-lime-400" : pct > 0 ? "bg-stone-900 dark:bg-stone-50" : "bg-transparent"}`}
-                        />
-                      </div>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums">
-                        <span className="text-stone-900 dark:text-stone-50">{topic.solvedCount}</span>
-                        <span className="text-stone-400 dark:text-stone-600"> / {topic.problemCount} problems</span>
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums">
-                      {topic.problemCount} problems
-                    </span>
-                  )}
-                </div>
-
-                <div className="shrink-0">
-                  {isLocked ? (
-                    <Lock className="w-4 h-4 text-stone-300 dark:text-stone-600" />
-                  ) : (
-                    <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all" />
-                  )}
-                </div>
-              </>
-            );
-
-            return (
-              <motion.div
-                key={topic.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(idx, 10) * 0.03 }}
-              >
-                {isLocked ? (
-                  <button
-                    onClick={() => setShowGate(true)}
-                    className="group w-full flex items-center gap-3 sm:gap-4 bg-white dark:bg-stone-900 px-3 sm:px-5 py-3 sm:py-4 rounded-md border border-stone-200 dark:border-white/10 opacity-70 hover:opacity-100 hover:border-stone-400 dark:hover:border-white/25 transition-all text-left cursor-pointer"
-                  >
-                    {inner}
-                  </button>
-                ) : (
-                  <Link
-                    to={`/learn/dsa/${topic.slug}`}
-                    className="group flex items-center gap-3 sm:gap-4 bg-white dark:bg-stone-900 px-3 sm:px-5 py-3 sm:py-4 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors no-underline"
-                  >
-                    {inner}
-                  </Link>
-                )}
-              </motion.div>
-            );
-          })}
+          {paginatedTopics?.map((topic, idx) => (
+            <DsaTopicCard
+              key={topic.id}
+              topic={topic}
+              idx={idx}
+              page={page}
+              user={user}
+              onShowGate={() => setShowGate(true)}
+            />
+          ))}
 
           {paginatedTopics?.length === 0 && (
             <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
