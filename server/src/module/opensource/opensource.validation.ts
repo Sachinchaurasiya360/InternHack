@@ -7,8 +7,9 @@ export const opensourceListQuerySchema = z.object({
   language: z.string().optional(),
   difficulty: z.string().optional(),
   domain: z.string().optional(),
-  sortBy: z.enum(["stars", "forks", "name", "createdAt", "openIssues"]).default("stars"),
+  sortBy: z.enum(["stars", "forks", "name", "createdAt", "openIssues", "lastUpdated"]).default("stars"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
+  trending: z.enum(["true", "false"]).optional(),
 });
 
 export const repoIdSchema = z.object({
@@ -28,6 +29,12 @@ export const submitRepoRequestSchema = z.object({
   reason: z.string().min(10, "Please explain why this repo should be listed").max(1000),
 });
 
+export const bulkRepoRequestSchema = z.object({
+  ids: z.array(z.number().int().positive("Invalid ID in request list")).min(1, "At least one ID must be specified"),
+  action: z.enum(["approve", "reject"], { message: "Action must be either 'approve' or 'reject'" }),
+  adminNote: z.string().max(1000).optional(),
+});
+
 export const approveRequestOverrideSchema = z.object({
   adminNote: z.string().max(2000).optional(),
   name: z.string().min(1, "Repository name is required").max(300).optional(),
@@ -35,4 +42,10 @@ export const approveRequestOverrideSchema = z.object({
   domain: z.enum(["AI", "WEB", "DEVOPS", "MOBILE", "BLOCKCHAIN", "DATA", "SECURITY", "CLOUD", "GAMING", "OTHER"]).optional(),
   difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
   tags: z.array(z.string()).optional(),
+});
+
+export const bulkRepoRequestSchema = z.object({
+  ids: z.array(z.number().int().positive("Invalid ID in request list")).min(1, "At least one ID must be specified"),
+  action: z.enum(["approve", "reject"], { message: "Action must be either 'approve' or 'reject'" }),
+  adminNote: z.string().max(1000).optional(),
 });

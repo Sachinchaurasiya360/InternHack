@@ -23,6 +23,7 @@ export interface OpenSourceRepo {
   lastUpdated: string;
   createdAt: string;
   updatedAt: string;
+  matchedSkills?: string[];
 }
 
 // Repo Requests
@@ -57,6 +58,7 @@ export interface OpenSourceContributionTrendPoint {
 export interface OpenSourceContributionTrendResponse {
   trend: OpenSourceContributionTrendPoint[];
   total: number;
+  domains: { domain: string; count: number }[];
 }
 
 // GSoC Organizations

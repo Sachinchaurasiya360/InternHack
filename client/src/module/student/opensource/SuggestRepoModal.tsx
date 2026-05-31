@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { X, Loader2, CheckCircle2 } from "lucide-react";
@@ -48,6 +48,66 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
   const [success, setSuccess] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      previousActiveElement.current = document.activeElement as HTMLElement;
+      setTimeout(() => {
+        const firstInput = modalRef.current?.querySelector("input, textarea, select") as HTMLElement;
+        if (firstInput) {
+          firstInput.focus();
+        }
+      }, 50);
+    } else {
+      if (previousActiveElement.current) {
+        previousActiveElement.current.focus();
+      }
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      if (e.key === "Tab") {
+        if (!modalRef.current) return;
+
+        const focusableElements = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, onClose]);
 
   const mutation = useMutation({
     mutationFn: async (data: SuggestRepoForm) => {
@@ -118,6 +178,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
       onClick={onClose}
     >
       <motion.div
+        ref={modalRef}
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -228,10 +289,15 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
 
             {mutation.isError && (
               <p className="text-sm text-red-500">
-                {(mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-                  "Failed to submit. Please try again."}
+                {
+                  (mutation.error as any)?.response?.status === 429
+                    ? (mutation.error as any)?.response?.data?.message
+                    : (mutation.error as any)?.response?.data?.message ||
+                    "Failed to submit. Please try again."
+                }
               </p>
             )}
+
 
             <Button
               type="submit"

@@ -7,7 +7,8 @@ import {
   AlertCircle,
   Filter,
   X,
-  Maximize2
+  Maximize2,
+  Download
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import {
@@ -257,6 +258,24 @@ export default function OpenSourceAnalyticsPage() {
   contributionTrend.length > 0 &&
   contributionTrend.every((entry) => entry.count === 0);
 
+  const handleExportCSV = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+
+    const header = "Month,Label,Contributions";
+    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
+    const csv = [header, ...rows].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "my-oss-contributions.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   // ─── Derive filter options ──────────────────────────────────
   const years = useMemo(() => {
     const set = new Set<number>();
@@ -407,6 +426,16 @@ export default function OpenSourceAnalyticsPage() {
               {stats && ` \u00b7 ${stats.years.length} years \u00b7 ${stats.technologies.length} technologies`}
             </p>
           </div>
+          <div className="ml-auto flex items-center gap-3">
+            <button
+              onClick={handleExportCSV}
+              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
+              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export CSV
+            </button>
+          </div>
         </div>
       </div>
 
@@ -524,6 +553,70 @@ export default function OpenSourceAnalyticsPage() {
             />
           )}
           </ChartCard>
+
+          {/* Contributions by Domain */}
+          {(trendIsLoading || (contributionTrendData?.domains && contributionTrendData.domains.length > 0) || (contributionTrendData && contributionTrendData.total === 0)) && (
+            <motion.div
+              custom={0.5}
+              variants={cardVariant}
+              initial="hidden"
+              animate="visible"
+              className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <div className="h-1.5 w-1.5 rounded-full bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.5)]" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  contributions / by domain
+                </span>
+              </div>
+
+              {trendIsLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3 animate-pulse">
+                      <div className="w-24 h-3 bg-gray-100 rounded" />
+                      <div className="flex-1 h-2 bg-gray-100 rounded-sm" />
+                      <div className="w-6 h-3 bg-gray-100 rounded" />
+                    </div>
+                  ))}
+                </div>
+              ) : contributionTrendData?.domains && contributionTrendData.domains.length > 0 ? (
+                <div className="space-y-3.5">
+                  {(() => {
+                    const domains = contributionTrendData.domains;
+                    const maxCount = Math.max(...domains.map(d => d.count), 1);
+                    return domains.map(({ domain, count }) => {
+                      const pct = Math.round((count / maxCount) * 100);
+                      return (
+                        <div key={domain} className="flex items-center gap-3 group">
+                          <span className="text-xs font-medium text-stone-600 w-24 shrink-0 truncate group-hover:text-stone-900 transition-colors">
+                            {domain}
+                          </span>
+                          <div className="flex-1 bg-stone-100 dark:bg-stone-800 rounded-sm h-2 relative overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct}%` }}
+                              transition={{ duration: 1, ease: "easeOut" }}
+                              className="absolute inset-y-0 left-0 bg-lime-400 rounded-sm"
+                            />
+                          </div>
+                          <span className="text-xs font-mono text-stone-500 w-6 text-right shrink-0">
+                            {count}
+                          </span>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <p className="text-xs text-stone-400 italic">
+                    No domain data yet — get your first contribution approved to see your breakdown.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          )}
 
           {/* 2 - Category Distribution (Pie) */}
           <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={1}

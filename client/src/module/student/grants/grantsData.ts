@@ -24,6 +24,7 @@ export interface Grant {
   status: "Active" | "Paused" | "Invite Only";
   ecosystem: string;
   highlights: string[];
+  deadline?: string | null;
 }
 
 export type GrantCategory =
