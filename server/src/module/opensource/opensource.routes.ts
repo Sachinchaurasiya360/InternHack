@@ -71,7 +71,7 @@ opensourceRouter.get("/", async (req, res, next) => {
   }
 });
 
-// ÔöÇÔöÇÔöÇ Repo Requests (Student-authenticated) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+// ─── Repo Requests (Student-authenticated) ───────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
 // Submit a repo request
@@ -163,7 +163,7 @@ opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"),
   }
 });
 
-// ÔöÇÔöÇÔöÇ Admin: Manage Repo Requests ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+// ─── Admin: Manage Repo Requests ─────────────────────────────────
 
 // List all repo requests
 opensourceRouter.get("/requests/all", authMiddleware, requireRole("ADMIN"), async (req, res, next) => {

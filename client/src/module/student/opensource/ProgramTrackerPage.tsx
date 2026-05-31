@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 
-// ÔöÇÔöÇÔöÇ Data ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+// ─── Data ──────────────────────────────────────────────────────
 interface Program {
   id: number;
   name: string;
@@ -39,14 +39,14 @@ const PROGRAMS: Program[] = [
     id: 1,
     name: "Google Summer of Code",
     short: "GSoC",
-    description: "The world's largest open source mentorship program. Students work 12ÔÇô22 weeks on a coding project for an accepted organization, guided by expert mentors.",
+    description: "The world's largest open source mentorship program. Students work 12–22 weeks on a coding project for an accepted organization, guided by expert mentors.",
     fullDescription: "Google Summer of Code (GSoC) is a global, online mentoring program focused on introducing new contributors to open source software development. GSoC contributors work with an open source organization on a 12+ week programming project under the guidance of mentors. Since 2005, more than 20,000 contributors have participated.",
     eligibility: "18+ years old, enrolled in an accredited institution or recently graduated within 1 year",
     eligibilityType: "Students",
-    stipend: "$1,500 ÔÇô $6,600",
+    stipend: "$1,500 – $6,600",
     stipendPaid: true,
     stipendRange: "High",
-    window: "Jan ÔÇô Mar (applications)",
+    window: "Jan – Mar (applications)",
     status: "Annual",
     region: "Global",
     website: "https://summerofcode.withgoogle.com",
@@ -62,12 +62,12 @@ const PROGRAMS: Program[] = [
       "Pass Google's eligibility check",
     ],
     timeline: [
-      { phase: "Organization Applications", dates: "Oct ÔÇô Nov" },
+      { phase: "Organization Applications", dates: "Oct – Nov" },
       { phase: "Organizations Announced", dates: "Dec" },
-      { phase: "Contributor Applications", dates: "Jan ÔÇô Feb" },
+      { phase: "Contributor Applications", dates: "Jan – Feb" },
       { phase: "Application Review", dates: "Mar" },
-      { phase: "Coding Period (Medium)", dates: "May ÔÇô Aug (12 weeks)" },
-      { phase: "Final Evaluations", dates: "Aug ÔÇô Sep" },
+      { phase: "Coding Period (Medium)", dates: "May – Aug (12 weeks)" },
+      { phase: "Final Evaluations", dates: "Aug – Sep" },
       { phase: "Results Announced", dates: "Sep" },
     ],
     howToApply: [
@@ -88,7 +88,7 @@ const PROGRAMS: Program[] = [
     fullDescription: "LFX Mentorship (formerly Community Bridge) is a platform that connects aspiring open source developers with mentors in 100+ Linux Foundation projects. It runs three cohorts annually (Spring, Summer, Fall) across CNCF, Hyperledger, OpenMainframe, and more.",
     eligibility: "Open to anyone 18+ years old globally",
     eligibilityType: "Students",
-    stipend: "$3,000 ÔÇô $6,600 per term",
+    stipend: "$3,000 – $6,600 per term",
     stipendPaid: true,
     stipendRange: "High",
     window: "3 cohorts/year: Jan, May, Sep",
@@ -107,12 +107,12 @@ const PROGRAMS: Program[] = [
       "Available to commit ~20 hours/week",
     ],
     timeline: [
-      { phase: "Spring Cohort Applications", dates: "Jan ÔÇô Feb" },
-      { phase: "Spring Cohort", dates: "Mar ÔÇô May" },
-      { phase: "Summer Cohort Applications", dates: "May ÔÇô Jun" },
-      { phase: "Summer Cohort", dates: "Jun ÔÇô Aug" },
-      { phase: "Fall Cohort Applications", dates: "Sep ÔÇô Oct" },
-      { phase: "Fall Cohort", dates: "Oct ÔÇô Dec" },
+      { phase: "Spring Cohort Applications", dates: "Jan – Feb" },
+      { phase: "Spring Cohort", dates: "Mar – May" },
+      { phase: "Summer Cohort Applications", dates: "May – Jun" },
+      { phase: "Summer Cohort", dates: "Jun – Aug" },
+      { phase: "Fall Cohort Applications", dates: "Sep – Oct" },
+      { phase: "Fall Cohort", dates: "Oct – Dec" },
     ],
     howToApply: [
       "Visit mentorship.lfx.linuxfoundation.org and create an account",
@@ -132,7 +132,7 @@ const PROGRAMS: Program[] = [
     fullDescription: "The MLH Fellowship is a remote internship alternative for software engineers. Fellows contribute to open source projects that are used by companies around the world, guided by mentors from top tech companies. It runs in Spring, Summer, and Fall batches.",
     eligibility: "University students and recent graduates globally",
     eligibilityType: "Students",
-    stipend: "$5,000 ÔÇô $6,000",
+    stipend: "$5,000 – $6,000",
     stipendPaid: true,
     stipendRange: "High",
     window: "Spring / Summer / Fall batches",
@@ -151,10 +151,10 @@ const PROGRAMS: Program[] = [
       "Willingness to contribute to assigned projects",
     ],
     timeline: [
-      { phase: "Applications Open", dates: "2ÔÇô3 months before batch start" },
+      { phase: "Applications Open", dates: "2–3 months before batch start" },
       { phase: "Technical Interview", dates: "Rolling after submission" },
       { phase: "Fellowship Start", dates: "Jan (Spring) / Jun (Summer) / Sep (Fall)" },
-      { phase: "Open Source Contributions", dates: "Weeks 1ÔÇô12" },
+      { phase: "Open Source Contributions", dates: "Weeks 1–12" },
       { phase: "Graduation & Demo Day", dates: "End of batch" },
     ],
     howToApply: [
@@ -170,13 +170,13 @@ const PROGRAMS: Program[] = [
     name: "Outreachy",
     short: "Outreachy",
     description: "Paid, remote internships in open source and open science for people subject to systemic bias in the tech industry. One of the highest stipends available.",
-    fullDescription: "Outreachy provides internships in open source and open science for people who face under-representation, systemic bias, or discrimination in the technology industry. Two cohorts run per year (MayÔÇôAug and DecÔÇôMar). Participants must be in an eligible country and meet demographic requirements.",
+    fullDescription: "Outreachy provides internships in open source and open science for people who face under-representation, systemic bias, or discrimination in the technology industry. Two cohorts run per year (May–Aug and Dec–Mar). Participants must be in an eligible country and meet demographic requirements.",
     eligibility: "People subject to discrimination in tech - women, non-binary, LGBTQ+, racial/ethnic minorities, and others in eligible countries",
     eligibilityType: "Diversity-focused",
     stipend: "$7,000",
     stipendPaid: true,
     stipendRange: "High",
-    window: "MayÔÇôAug & DecÔÇôMar cohorts",
+    window: "May–Aug & Dec–Mar cohorts",
     status: "Batch",
     region: "Global (eligible countries)",
     website: "https://outreachy.org",
@@ -193,15 +193,15 @@ const PROGRAMS: Program[] = [
     ],
     timeline: [
       { phase: "Initial Application", dates: "Jan (for May cohort) / Aug (for Dec cohort)" },
-      { phase: "Contribution Period", dates: "FebÔÇôMar (for May) / SepÔÇôOct (for Dec)" },
+      { phase: "Contribution Period", dates: "Feb–Mar (for May) / Sep–Oct (for Dec)" },
       { phase: "Intern Selections Announced", dates: "Mar (for May) / Oct (for Dec)" },
-      { phase: "Internship", dates: "MayÔÇôAug or DecÔÇôMar" },
+      { phase: "Internship", dates: "May–Aug or Dec–Mar" },
     ],
     howToApply: [
       "Check your eligibility on outreachy.org/eligibility",
       "Fill in the initial application during the open window",
       "Get accepted for the contribution period",
-      "Make contributions to 1ÔÇô2 projects during the contribution period",
+      "Make contributions to 1–2 projects during the contribution period",
       "Submit a final application with your contribution summary",
     ],
     applicationStart: "2026-02-06T16:00:00Z",
@@ -234,9 +234,9 @@ const PROGRAMS: Program[] = [
     ],
     timeline: [
       { phase: "Registration Opens", dates: "September / early October" },
-      { phase: "Contribution Period", dates: "October 1ÔÇô31" },
+      { phase: "Contribution Period", dates: "October 1–31" },
       { phase: "Review Period", dates: "November (14 days after Oct 31)" },
-      { phase: "Swag Orders", dates: "NovemberÔÇôJanuary" },
+      { phase: "Swag Orders", dates: "November–January" },
     ],
     howToApply: [
       "Create an account on hacktoberfest.com during October",
@@ -250,14 +250,14 @@ const PROGRAMS: Program[] = [
     id: 6,
     name: "GirlScript Summer of Code",
     short: "GSSoC",
-    description: "India's largest open source program, inspired by GSoC. Runs MarchÔÇôMay connecting Indian students with mentors from 100+ open source projects.",
+    description: "India's largest open source program, inspired by GSoC. Runs March–May connecting Indian students with mentors from 100+ open source projects.",
     fullDescription: "GirlScript Summer of Code (GSSoC) is a 3-month open source program conducted by the GirlScript Foundation. It is primarily focused on Indian students and aims to help them get started with contributing to open source. Top contributors receive certificates, swag, and job referrals.",
     eligibility: "Open to all - primarily Indian students but anyone can join",
     eligibilityType: "Open to All",
     stipend: "Certificates + swag + job referrals for top contributors",
     stipendPaid: false,
     stipendRange: "Low/None",
-    window: "March ÔÇô May",
+    window: "March – May",
     status: "Annual",
     region: "India (open globally)",
     website: "https://gssoc.girlscript.tech",
@@ -268,19 +268,19 @@ const PROGRAMS: Program[] = [
     requirements: [
       "No strict eligibility - students and beginners welcome",
       "GitHub account required",
-      "Commit to contributing throughout MarchÔÇôMay",
+      "Commit to contributing throughout March–May",
       "Register on the GSSoC portal before the deadline",
     ],
     timeline: [
       { phase: "Registrations (Contributors)", dates: "February" },
-      { phase: "Project Registrations (Orgs)", dates: "JanuaryÔÇôFebruary" },
+      { phase: "Project Registrations (Orgs)", dates: "January–February" },
       { phase: "Coding Period Begins", dates: "March 1" },
       { phase: "Coding Period Ends", dates: "May 31" },
       { phase: "Results & Certificates", dates: "June" },
     ],
     howToApply: [
       "Register at gssoc.girlscript.tech as a contributor",
-      "Browse listed projects and choose 2ÔÇô3 to contribute to",
+      "Browse listed projects and choose 2–3 to contribute to",
       "Introduce yourself in the project's communication channel",
       "Start picking up issues labeled 'gssoc' or 'good first issue'",
       "Submit PRs and earn points based on issue difficulty",
@@ -294,10 +294,10 @@ const PROGRAMS: Program[] = [
     fullDescription: "Google Season of Docs gives technical writers an opportunity to gain experience in open source, while giving open source projects improved documentation and the resources to improve processes. Organizations apply for grant money to pay technical writers.",
     eligibility: "Experienced technical writers (freelance or otherwise)",
     eligibilityType: "Open to All",
-    stipend: "$5,000 ÔÇô $15,000 (org-dependent)",
+    stipend: "$5,000 – $15,000 (org-dependent)",
     stipendPaid: true,
     stipendRange: "High",
-    window: "Feb ÔÇô Apr (organization applications)",
+    window: "Feb – Apr (organization applications)",
     status: "Annual",
     region: "Global",
     website: "https://developers.google.com/season-of-docs",
@@ -309,13 +309,13 @@ const PROGRAMS: Program[] = [
       "Technical writing experience or portfolio",
       "Familiarity with Markdown, RST, or similar",
       "Ability to understand and explain technical concepts",
-      "Availability to work 3ÔÇô5 months on documentation project",
+      "Availability to work 3–5 months on documentation project",
     ],
     timeline: [
-      { phase: "Organization Applications", dates: "Feb ÔÇô Mar" },
+      { phase: "Organization Applications", dates: "Feb – Mar" },
       { phase: "Accepted Organizations Announced", dates: "Apr" },
-      { phase: "WriterÔÇôOrg Exploration", dates: "Apr ÔÇô May" },
-      { phase: "Technical Writing Period", dates: "May ÔÇô Nov" },
+      { phase: "Writer–Org Exploration", dates: "Apr – May" },
+      { phase: "Technical Writing Period", dates: "May – Nov" },
       { phase: "Project Case Studies Published", dates: "Dec" },
     ],
     howToApply: [
@@ -334,7 +334,7 @@ const PROGRAMS: Program[] = [
     fullDescription: "Hyperledger Mentorship is part of LFX Mentorship focused specifically on Hyperledger projects. Mentees contribute to enterprise blockchain projects like Fabric, Besu, Aries, and Firefly while earning a stipend and gaining deep expertise in distributed ledger technology.",
     eligibility: "Students and developers 18+ with some programming experience",
     eligibilityType: "Students",
-    stipend: "$3,000 ÔÇô $6,600",
+    stipend: "$3,000 – $6,600",
     stipendPaid: true,
     stipendRange: "High",
     window: "3 cohorts/year via LFX Mentorship",
@@ -352,7 +352,7 @@ const PROGRAMS: Program[] = [
     ],
     timeline: [
       { phase: "Applications via LFX", dates: "Jan, May, Sep" },
-      { phase: "Selection", dates: "2ÔÇô4 weeks after deadline" },
+      { phase: "Selection", dates: "2–4 weeks after deadline" },
       { phase: "Mentorship Term", dates: "3 months" },
     ],
     howToApply: [
@@ -395,7 +395,7 @@ const PROGRAMS: Program[] = [
     stipend: "$1,500/month (3 months)",
     stipendPaid: true,
     stipendRange: "Medium",
-    window: "Mar ÔÇô Jul (applications), Jul ÔÇô Sep (program)",
+    window: "Mar – Jul (applications), Jul – Sep (program)",
     status: "Annual",
     region: "Global",
     website: "https://railsgirlssummerofcode.org",
@@ -411,9 +411,9 @@ const PROGRAMS: Program[] = [
     ],
     timeline: [
       { phase: "Project Submissions", dates: "Mar" },
-      { phase: "Team Applications", dates: "Apr ÔÇô May" },
+      { phase: "Team Applications", dates: "Apr – May" },
       { phase: "Selections Announced", dates: "Jun" },
-      { phase: "Program Runs", dates: "Jul ÔÇô Sep" },
+      { phase: "Program Runs", dates: "Jul – Sep" },
     ],
     howToApply: [
       "Find a partner to form a team of two",
@@ -430,7 +430,7 @@ const PROGRAMS: Program[] = [
     fullDescription: "The Open Mainframe Project Mentorship is hosted via LFX Mentorship and focuses on bringing new contributors to mainframe technologies including z/OS, Linux on Z, Zowe, and COBOL modernization projects.",
     eligibility: "Students 18+ interested in enterprise/mainframe computing",
     eligibilityType: "Students",
-    stipend: "$3,000 ÔÇô $6,600",
+    stipend: "$3,000 – $6,600",
     stipendPaid: true,
     stipendRange: "High",
     window: "3 cohorts/year via LFX",
@@ -472,7 +472,7 @@ const PROGRAMS: Program[] = [
     ],
     timeline: [
       { phase: "Shadow Applications", dates: "Before each K8s release cycle" },
-      { phase: "Selection", dates: "Within 2ÔÇô4 weeks" },
+      { phase: "Selection", dates: "Within 2–4 weeks" },
       { phase: "Release Cycle", dates: "~3 months per release" },
     ],
     howToApply: [
@@ -488,7 +488,7 @@ const STORAGE_KEY = "program_tracker_filters";
 
 const ELIGIBILITY_OPTIONS = ["All", "Students", "Open to All", "Diversity-focused"];
 const STATUS_OPTIONS = ["All", "Annual", "Ongoing", "Batch"];
-const STIPEND_OPTIONS = ["All", "Paid", "High ($5k+)", "Medium ($1kÔÇô5k)", "Low/None"];
+const STIPEND_OPTIONS = ["All", "Paid", "High ($5k+)", "Medium ($1k–5k)", "Low/None"];
 
 const STATUS_STYLE: Record<string, string> = {
   Annual: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
@@ -526,7 +526,7 @@ const getGoogleCalendarUrl = (program: Program) => {
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${startDate}/${endDate}&details=${details}`;
 };
 
-// ÔöÇÔöÇÔöÇ Program Card ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+// ─── Program Card ─────────────────────────────────────────────
 function ProgramCard({ program }: { program: Program }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -689,7 +689,7 @@ function ProgramCard({ program }: { program: Program }) {
   );
 }
 
-// ÔöÇÔöÇÔöÇ Page ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+// ─── Page ────────────────────────────────────────────────────────
 export default function ProgramTrackerPage() {
   // Load saved filters from localStorage on mount, fall back to defaults
   const getSavedFilters = () => {
@@ -746,7 +746,7 @@ export default function ProgramTrackerPage() {
     if (selectedEligibility !== "All") list = list.filter((p) => p.eligibilityType === selectedEligibility);
     if (selectedStipend === "Paid") list = list.filter((p) => p.stipendPaid);
     if (selectedStipend === "High ($5k+)") list = list.filter((p) => p.stipendRange === "High");
-    if (selectedStipend === "Medium ($1kÔÇô5k)") list = list.filter((p) => p.stipendRange === "Medium");
+    if (selectedStipend === "Medium ($1k–5k)") list = list.filter((p) => p.stipendRange === "Medium");
     if (selectedStipend === "Low/None") list = list.filter((p) => p.stipendRange === "Low/None");
     return list;
   }, [search, selectedStatus, selectedEligibility, selectedStipend]);
