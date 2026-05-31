@@ -1,4 +1,3 @@
-<<<<<<< main
 import type { Grant } from "./grantsData";
 
 export const grantsClimate: Grant[] = [
@@ -528,4 +527,3 @@ export const grantsClimate: Grant[] = [
     ],
   },
 ];
->>>>>>> main
