@@ -14,9 +14,19 @@ export async function findDuplicateRoadmap(
   goalDescription: string,
   userId: number,
 ) {
-  const normalizedGoal = goalDescription.trim();
+  const normalizedGoal = goalDescription.toLowerCase().trim();
   if (!normalizedGoal) return null;
 
+  // Simple keyword-based similarity: extract significant words
+  const keywords = normalizedGoal
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !["want", "learn", "how", "for", "the", "and"].includes(w));
+
+  if (keywords.length === 0) return null;
+
+  // We'll search for roadmaps where the title contains at least one of the major keywords
+  // and then we can do a secondary check if needed, or just let the user Decide.
+  // For now, let's find the most recent one that matches.
   return prisma.roadmap.findFirst({
     where: {
       ownerUserId: userId,
@@ -28,7 +38,11 @@ export async function findDuplicateRoadmap(
         contains: normalizedGoal.slice(0, 30),
         mode: "insensitive",
       },
+      OR: keywords.map(kw => ({
+        title: { contains: kw, mode: 'insensitive' }
+      }))
     },
+    orderBy: { updatedAt: 'desc' }
   });
 }
 export interface EnrolledRoadmap {
@@ -113,7 +127,7 @@ export async function listPublishedRoadmaps(opts: {
   tag?: string | undefined;
   category?: string | undefined;
 }) {
-  const where: Prisma.roadmapWhereInput = { isPublished: true };
+  const where: Prisma.roadmapWhereInput = { isPublished: true, isAiGenerated: false };
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
@@ -368,6 +382,7 @@ export async function listEnrollmentsForUser(userId: number) {
           coverImage: true,
           topicCount: true,
           estimatedHours: true,
+          ownerUserId: true,
         },
       },
       topicProgress: true,
@@ -413,7 +428,7 @@ export async function updateTopicProgress(args: {
     if (args.status === "COMPLETED") {
       data.completedAt = new Date();
       create.completedAt = new Date();
-    } else if (args.status === "NOT_STARTED" || args.status === "IN_PROGRESS") {
+    } else if (args.status === "NOT_STARTED" || args.status === "IN_PROGRESS" || args.status === "SKIPPED") {
       data.completedAt = null;
     }
   }
@@ -436,7 +451,7 @@ export async function updateTopicProgress(args: {
 
   // Check if all topics are now complete
   let roadmapCompleted = false;
-  if (args.status === "COMPLETED") {
+  if (args.status === "COMPLETED" || args.status === "SKIPPED") {
     const fullEnrollment = await getEnrollmentForUser({
       userId: args.userId,
       enrollmentId: args.enrollmentId,
@@ -894,16 +909,15 @@ export function summarizeProgress(
   enrollment: NonNullable<Awaited<ReturnType<typeof getEnrollmentForUser>>>,
 ): ProgressSummary {
   const allTopics = enrollment.roadmap.sections.flatMap((s) => s.topics);
-  const totalTopics = allTopics.length;
-  const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0);
-
   const progressByTopicId = new Map(
     enrollment.topicProgress.map((p) => [p.topicId, p]),
   );
   let completedTopics = 0;
   let inProgressTopics = 0;
   let bookmarkedTopics = 0;
+  let skippedTopics = 0;
   let hoursDone = 0;
+  let skippedHours = 0;
 
   for (const t of allTopics) {
     const p = progressByTopicId.get(t.id);
@@ -914,8 +928,14 @@ export function summarizeProgress(
       hoursDone += t.estimatedHours;
     } else if (p.status === "IN_PROGRESS") {
       inProgressTopics += 1;
+    } else if (p.status === "SKIPPED") {
+      skippedTopics += 1;
+      skippedHours += t.estimatedHours;
     }
   }
+
+  const totalTopics = allTopics.length - skippedTopics;
+  const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0) - skippedHours;
 
   return {
     totalTopics,

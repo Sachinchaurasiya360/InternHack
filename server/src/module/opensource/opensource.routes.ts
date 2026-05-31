@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import {
   approveRequestOverrideSchema,
+  bulkRepoRequestSchema,
   opensourceListQuerySchema,
   repoIdSchema,
   submitRepoRequestSchema,
@@ -12,65 +13,95 @@ import { sendEmail } from "../../utils/email.utils.js";
 import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/email-templates.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
-export const opensourceRouter = Router();
+import { OpensourceController } from "./opensource.controller.js";
 
 function addMonthsUTC(date: Date, months: number): Date {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1));
+  const d = new Date(date);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  return d;
 }
-
 function getMonthKeyUTC(date: Date): string {
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-  return `${year}-${month}`;
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
 }
-
 function getMonthLabelUTC(date: Date): string {
-  return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
+  return date.toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
 }
 
-// Public: list repos with optional filters
-opensourceRouter.get("/", async (req, res, next) => {
+export const opensourceRouter = Router();
+const controller = new OpensourceController();
+
+// Public: list available languages
+opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
+
+// Personalized repo recommendations for authenticated students
+opensourceRouter.get("/recommended", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
   try {
-    const parsed = opensourceListQuerySchema.safeParse(req.query);
-    if (!parsed.success) {
-      res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
+    const userId = req.user!.id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { skills: true, projects: true },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
       return;
     }
-    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = parsed.data;
 
-    const where: Record<string, unknown> = {};
-    if (language) where["language"] = { equals: language, mode: "insensitive" };
-    if (difficulty) where["difficulty"] = difficulty;
-    if (domain) where["domain"] = domain;
-    if (search) {
-      where["OR"] = [
-        { name: { contains: search, mode: "insensitive" } },
-        { owner: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { tags: { hasSome: [search] } },
-      ];
+    const studentTechStack = user.skills || [];
+    const projects = (user.projects as any[]) || [];
+    const projectTech = projects.flatMap((p) => p.techStack || []);
+    const allStudentTech = [...new Set([...studentTechStack, ...projectTech])];
+
+    if (allStudentTech.length === 0) {
+      const topRepos = await prisma.opensourceRepo.findMany({
+        take: 6,
+        orderBy: { stars: "desc" },
+      });
+      res.json({ repos: topRepos.map((r) => ({ ...r, matchedSkills: [] })) });
+      return;
     }
 
-    const skip = (page - 1) * limit;
-    const [repos, total] = await Promise.all([
-      prisma.opensourceRepo.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { [sortBy]: sortOrder },
-      }),
-      prisma.opensourceRepo.count({ where }),
-    ]);
-
-    res.json({
-      repos,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    const recommendedRepos = await prisma.opensourceRepo.findMany({
+      where: {
+        OR: [
+          { techStack: { hasSome: allStudentTech } },
+          { language: { in: allStudentTech } },
+        ],
+      },
+      take: 6,
+      orderBy: { stars: "desc" },
     });
+
+    let results = recommendedRepos.map((repo) => {
+      const matchedSkills = repo.techStack.filter((skill) =>
+        allStudentTech.some((s) => s.toLowerCase() === skill.toLowerCase())
+      );
+      if (allStudentTech.some((s) => s.toLowerCase() === repo.language.toLowerCase())) {
+        if (!matchedSkills.includes(repo.language)) {
+          matchedSkills.push(repo.language);
+        }
+      }
+      return { ...repo, matchedSkills };
+    });
+
+    if (results.length < 6) {
+      const existingIds = results.map((r) => r.id);
+      const extra = await prisma.opensourceRepo.findMany({
+        where: { id: { notIn: existingIds } },
+        take: 6 - results.length,
+        orderBy: { stars: "desc" },
+      });
+      results = [...results, ...extra.map((r) => ({ ...r, matchedSkills: [] }))];
+    }
+
+    res.json({ repos: results });
   } catch (err) {
     next(err);
   }
 });
 
+// Public: list repos with optional filters
+opensourceRouter.get("/", (req, res, next) => controller.listRepos(req, res, next));
 // ─── Repo Requests (Student-authenticated) ───────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
@@ -90,7 +121,23 @@ opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), async
       res.status(409).json({ message: "This repository has already been submitted" });
       return;
     }
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
+    const requestCount = await prisma.repoRequest.count({
+      where: {
+        userId: req.user!.id,
+        createdAt: {
+          gte: twentyFourHoursAgo,
+        },
+      },
+    });
+
+    if (requestCount >= 5) {
+      res.status(429).json({
+        message: "You can submit at most 5 repo suggestions in the last 24 hours.",
+      });
+      return;
+    }
     const request = await prisma.repoRequest.create({
       data: { ...parsed.data, userId: req.user!.id },
       include: { user: { select: { name: true, email: true } } },
@@ -157,7 +204,20 @@ opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"),
       };
     });
 
-    res.json({ trend, total: approvedRequests.length });
+    const allApproved = await prisma.repoRequest.findMany({
+      where: { userId: req.user!.id, status: "APPROVED" },
+      select: { domain: true },
+    });
+
+    const domainCounts: Record<string, number> = {};
+    allApproved.forEach((r) => {
+      if (r.domain) domainCounts[r.domain] = (domainCounts[r.domain] || 0) + 1;
+    });
+    const domains = Object.entries(domainCounts)
+      .map(([domain, count]) => ({ domain, count }))
+      .sort((a, b) => b.count - a.count);
+
+    res.json({ trend, total: approvedRequests.length, domains });
   } catch (err) {
     next(err);
   }
@@ -270,6 +330,103 @@ opensourceRouter.put("/requests/:id/reject", authMiddleware, requireRole("ADMIN"
   }
 });
 
+// Bulk approve/reject repo requests (admin only)
+opensourceRouter.put("/requests/bulk", authMiddleware, requireRole("ADMIN"), async (req, res, next) => {
+  try {
+    const parsed = bulkRepoRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ message: "Invalid request body", errors: parsed.error.flatten().fieldErrors });
+      return;
+    }
+    const { ids, action, adminNote } = parsed.data;
+
+    const existing = await prisma.repoRequest.findMany({
+      where: { id: { in: ids } },
+    });
+
+    const validIds = existing.filter((r) => r.status === "PENDING").map((r) => r.id);
+    const skippedCount = ids.length - validIds.length;
+
+    if (validIds.length === 0) {
+      res.status(400).json({ message: "No PENDING requests found among the provided IDs" });
+      return;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      if (action === "approve") {
+        for (const id of validIds) {
+          const request = await tx.repoRequest.findUnique({
+            where: { id },
+            include: { user: { select: { id: true } } },
+          });
+          if (!request) continue;
+          await tx.repoRequest.update({ where: { id }, data: { status: "APPROVED", adminNote: adminNote ?? null } });
+          await tx.opensourceRepo.create({
+            data: {
+              name: request.name,
+              owner: request.owner,
+              description: request.description,
+              language: request.language,
+              url: request.url,
+              domain: request.domain,
+              difficulty: request.difficulty,
+              techStack: request.techStack,
+              tags: request.tags,
+              userId: request.userId,
+            },
+          });
+        }
+      } else {
+        await tx.repoRequest.updateMany({
+          where: { id: { in: validIds } },
+          data: { status: "REJECTED", adminNote: adminNote ?? null },
+        });
+      }
+    });
+
+    res.json({
+      message: `Bulk ${action} completed`,
+      approved: action === "approve" ? validIds.length : 0,
+      rejected: action === "reject" ? validIds.length : 0,
+      skipped: skippedCount,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Submit guide step feedback (thumbs up/down)
+opensourceRouter.post("/guide-feedback", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
+  try {
+    const { guideId, stepId, rating } = req.body;
+
+    if (!guideId || !stepId || !rating) {
+      res.status(400).json({ message: "Missing required fields" });
+      return;
+    }
+
+    if (rating !== "up" && rating !== "down") {
+      res.status(400).json({ message: "Invalid rating value" });
+      return;
+    }
+
+    const existing = await prisma.guideFeedback.findFirst({
+      where: { userId: req.user!.id, guideId, stepId },
+    });
+    if (existing) {
+      res.status(409).json({ message: "Already rated" });
+      return;
+    }
+
+    const feedback = await prisma.guideFeedback.create({
+      data: { guideId, stepId, rating, userId: req.user!.id },
+    });
+
+    res.status(201).json(feedback);
+  } catch (err) {
+    next(err);
+  }
+});
 // Public: get single repo (must be AFTER /requests/* routes)
 opensourceRouter.get("/:id", async (req, res, next) => {
   try {

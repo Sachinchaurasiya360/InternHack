@@ -39,6 +39,7 @@ import {
   RefreshCw,
   Sparkles,
   TrendingUp,
+  AlertTriangle,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -253,12 +254,15 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
   const { status, topic, isNext, bookmarked, index, isWeak } = data;
   const isCompleted = status === "COMPLETED";
   const isInProgress = status === "IN_PROGRESS";
+  const isSkipped = status === "SKIPPED";
 
   const railColor = isCompleted
     ? "bg-lime-500"
     : isInProgress
       ? "bg-amber-400"
-      : "bg-stone-200 dark:bg-stone-800";
+      : isSkipped
+        ? "bg-stone-400 dark:bg-stone-600"
+        : "bg-stone-200 dark:bg-stone-800";
 
   const weakRing =
     isWeak && !isCompleted ? "ring-2 ring-amber-400 ring-offset-1" : "";
@@ -332,6 +336,10 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
             >
               <Check className="w-2.5 h-2.5 text-stone-950" strokeWidth={3.5} />
             </motion.div>
+          ) : isSkipped ? (
+            <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              skipped
+            </span>
           ) : isInProgress ? (
             <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
               <motion.span
@@ -364,7 +372,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
         {/* Title */}
         <p
           className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${
-            isCompleted
+            isCompleted || isSkipped
               ? "text-stone-400 dark:text-stone-600 line-through decoration-1 decoration-stone-300 dark:decoration-stone-700"
               : "text-stone-950 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-stone-50"
           }`}
@@ -1287,6 +1295,14 @@ export default function RoadmapCanvasPage() {
                     >
                       <Check className="w-3 h-3" /> Completed
                     </StatusChip>
+                    <StatusChip
+                      active={drawerProgress?.status === "SKIPPED"}
+                      onClick={() =>
+                        updateProgress(drawerTopic.id, { status: "SKIPPED" })
+                      }
+                    >
+                      Skipped
+                    </StatusChip>
                     <button
                       type="button"
                       aria-label={
@@ -1481,6 +1497,52 @@ export default function RoadmapCanvasPage() {
 
                   {/* Body */}
                   <div className="px-5 py-4 space-y-4">
+                    <div
+                      role="alert"
+                      className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3"
+                    >
+                      <AlertTriangle
+                        className="mt-0.5 h-4 w-4 shrink-0 text-amber-400"
+                        aria-hidden
+                      />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-amber-100">
+                          Progress in this section will be reset
+                        </p>
+                        <p className="text-xs text-amber-100/80 leading-relaxed">
+                          Regenerating this section will reset your progress for
+                          all topics in it. This cannot be undone.
+                        </p>
+                        {regenProgressImpact.totalAffected > 0 ? (
+                          <p className="text-[11px] font-mono text-amber-200/90">
+                            {regenProgressImpact.completed > 0 && (
+                              <span>
+                                {regenProgressImpact.completed} completed
+                              </span>
+                            )}
+                            {regenProgressImpact.completed > 0 &&
+                              regenProgressImpact.inProgress > 0 &&
+                              " · "}
+                            {regenProgressImpact.inProgress > 0 && (
+                              <span>
+                                {regenProgressImpact.inProgress} in progress
+                              </span>
+                            )}{" "}
+                            topic
+                            {regenProgressImpact.totalAffected === 1
+                              ? ""
+                              : "s"}{" "}
+                            will be affected.
+                          </p>
+                        ) : (
+                          <p className="text-[11px] font-mono text-amber-200/70">
+                            No completed or in-progress topics in this section
+                            yet.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
                     <p className="text-xs text-stone-400 leading-relaxed">
                       AI will rewrite this section's topics and resources while
                       keeping the rest of your roadmap intact. Your progress on

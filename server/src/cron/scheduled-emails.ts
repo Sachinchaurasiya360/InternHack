@@ -50,3 +50,12 @@ export function startFollowUpCron(schedule = "0 9 * * *"): void {
   });
   console.log(`[FollowUpCron] Scheduled daily at "${schedule}"`);
 }
+
+/** Stop the follow-up email cron (used during graceful shutdown). */
+export function stopFollowUpCron(): void {
+  if (cronJob) {
+    cronJob.stop();
+    cronJob = null;
+    console.log("[FollowUpCron] Cron stopped");
+  }
+}

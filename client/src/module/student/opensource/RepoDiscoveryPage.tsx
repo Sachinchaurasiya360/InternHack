@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -20,6 +20,8 @@ import {
   AlertCircle,
   BarChart3,
   Plus,
+  Share2,
+  Check,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -38,13 +40,44 @@ const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function RepoDiscoveryPage() {
-  const [search, setSearch] = useState("");
+const [searchParams, setSearchParams] = useSearchParams();
+
+  // 1. Initialize filter states directly from the URL (including the new ones from main!)
+  const search = searchParams.get("q") || "";
+  const selectedDomain = searchParams.get("domain") || "ALL";
+  const selectedDifficulty = searchParams.get("difficulty") || "ALL";
+  const selectedLanguage = searchParams.get("language") || "ALL";
+  const sortKey = searchParams.get("sort") || "stars";
+  const page = Number(searchParams.get("page")) || 1;
+  const trendingOnly = searchParams.get("trending") === "true";
+
+  // 2. Debounced search state & ref (from main)
+  const [inputValue, setInputValue] = useState(search);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      if (inputValue !== search) {
+        setSearchParams(
+          (prev) => {
+            const newParams = new URLSearchParams(prev);
+            if (inputValue.trim() === "") newParams.delete("q");
+            else newParams.set("q", inputValue);
+            newParams.set("page", "1"); // Reset to page 1 on new search
+            return newParams;
+          },
+          { replace: true }
+        );
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [inputValue, search, setSearchParams]);
+
+  // 3. Keyboard shortcut to focus search (from main)
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
-      if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA" && tag!== "SELECT") {
+      if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") {
         e.preventDefault();
         searchRef.current?.focus();
       }
@@ -53,24 +86,67 @@ export default function RepoDiscoveryPage() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const [selectedDomain, setSelectedDomain] = useState("ALL");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("ALL");
-  const [sortKey, setSortKey] = useState("stars");
+  // Local UI states (these don't need to be in the URL)
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
-  const [page, setPage] = useState(1);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
+  const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const { user } = useAuthStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const handleOpenRepo = (repo: OpenSourceRepo) => {
+    setSelectedRepo(repo);
+    setSearchParams({ repo: String(repo.id) }, { replace: true });
+  };
+
+  const handleCloseRepo = () => {
+    setSelectedRepo(null);
+    setSearchParams({}, { replace: true });
+    setCopiedShareUrl(false);
+  };
+
+  const initialRepoId = searchParams.get("repo");
+  const { data: deepLinkData, isError: deepLinkError } = useQuery({
+    queryKey: ["repo-deep-link", initialRepoId],
+    queryFn: () => api.get(`/opensource/${initialRepoId}`).then((res) => res.data.repo),
+    enabled: !!initialRepoId && !selectedRepo,
+    staleTime: 10 * 60 * 1000,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (deepLinkData) {
+      setSelectedRepo(deepLinkData);
+    }
+  }, [deepLinkData]);
+
+  useEffect(() => {
+    if (deepLinkError) {
+      setSearchParams({}, { replace: true });
+    }
+  }, [deepLinkError, setSearchParams]);
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedShareUrl(true);
+    setTimeout(() => setCopiedShareUrl(false), 1500);
+  };
 
   const queryParams = useMemo(() => {
     const params: Record<string, string | number> = { page, limit: 12, sortBy: sortKey, sortOrder: "desc" };
+    
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
+
+    if (selectedLanguage !== "ALL") params.language = selectedLanguage;
+    if (trendingOnly) params.trending = "true";
+    
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
+    
     return params;
-  }, [search, selectedDomain, selectedDifficulty, sortKey, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, trendingOnly, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -81,7 +157,18 @@ export default function RepoDiscoveryPage() {
     placeholderData: (prev) => prev,
   });
 
-  const repos = useMemo(() => data?.repos ?? [], [data]);
+const { data: languagesData } = useQuery({
+    queryKey: ["opensource-languages"],
+    queryFn: () => api.get("/opensource/languages").then((r) => r.data.languages as string[]),
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const languages = useMemo(() => {
+    return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
+  }, [languagesData]);
+
+  // Your clean ESLint fix!
+  const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
 
   const stats = useMemo(() => {
@@ -96,14 +183,33 @@ export default function RepoDiscoveryPage() {
     };
   }, [repos, pagination]);
 
-  const updateFilter = (setter: (v: string) => void, value: string) => {
-    setter(value);
-    setPage(1);
+  // 2. Unified function to update URL query params
+  const updateFilter = (key: string, value: string | number) => {
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        
+        if (value === "ALL" || value === "") {
+          newParams.delete(key);
+        } else {
+          newParams.set(key, String(value));
+        }
+
+        // Reset to page 1 if modifying any filter other than page
+        if (key !== "page") {
+          newParams.set("page", "1");
+        }
+
+        return newParams;
+      },
+      { replace: true }
+    );
   };
 
   const activeFilters =
     (selectedDomain !== "ALL" ? 1 : 0) +
-    (selectedDifficulty !== "ALL" ? 1 : 0);
+    (selectedDifficulty !== "ALL" ? 1 : 0) +
+    (selectedLanguage !== "ALL" ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -166,8 +272,8 @@ export default function RepoDiscoveryPage() {
           <input
             ref={searchRef}
             type="text"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder="Search repos, languages, tags..."
             className="w-full pl-10 pr-10 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
           />
@@ -228,6 +334,9 @@ export default function RepoDiscoveryPage() {
         {/* Guidance Cards */}
         <GuidanceCards />
 
+        {/* Recommended for you */}
+        {user?.role === "STUDENT" && <RecommendedSection onSelect={setSelectedRepo} />}
+
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
           {/* Domain chips */}
@@ -237,7 +346,7 @@ export default function RepoDiscoveryPage() {
               <button
                 key={d.key}
                 type="button"
-                onClick={() => updateFilter(setSelectedDomain, d.key === selectedDomain ? "ALL" : d.key)}
+                onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
                 className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
                   active
                     ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
@@ -248,6 +357,23 @@ export default function RepoDiscoveryPage() {
               </button>
             );
           })}
+
+          {/* Trending toggle */}
+          <button
+            type="button"
+            onClick={() => {
+              setTrendingOnly((v) => !v);
+              setPage(1);
+            }}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              trendingOnly
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+            }`}
+          >
+            <Flame className="w-3 h-3" />
+            Trending
+          </button>
 
           {/* More filters toggle */}
           <button
@@ -281,7 +407,7 @@ export default function RepoDiscoveryPage() {
                 <button
                   key={opt.key}
                   type="button"
-                  onClick={() => updateFilter(setSortKey, opt.key)}
+                  onClick={() => updateFilter("sort", opt.key)}
                   className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                     sortKey === opt.key
                       ? "bg-stone-900 dark:bg-stone-50 text-lime-400"
@@ -311,7 +437,7 @@ export default function RepoDiscoveryPage() {
                   </label>
                   <select
                     value={selectedDifficulty}
-                    onChange={(e) => updateFilter(setSelectedDifficulty, e.target.value)}
+                    onChange={(e) => updateFilter("difficulty", e.target.value)}
                     className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
                   >
                     {DIFFICULTY_OPTIONS.map((d) => (
@@ -320,15 +446,33 @@ export default function RepoDiscoveryPage() {
                   </select>
                 </div>
 
+                <div>
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
+                    language
+                  </label>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => updateFilter(setSelectedLanguage, e.target.value)}
+                    className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
+                  >
+                    <option value="ALL">All Languages</option>
+                    {languages.map((lang) => (
+                      <option key={lang} value={lang}>
+                        {lang}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 {activeFilters > 0 && (
                   <div className="flex items-end">
                     <button
                       type="button"
-                      onClick={() => {
-                        setSelectedDomain("ALL");
-                        setSelectedDifficulty("ALL");
-                        setSearch("");
-                        setPage(1);
+onClick={() => {
+                        // 1. Clear the URL parameters
+                        setSearchParams(new URLSearchParams(), { replace: true });
+                        // 2. Clear the local search box so it doesn't trigger again
+                        setInputValue("");
                       }}
                       className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer py-2"
                     >
@@ -349,6 +493,7 @@ export default function RepoDiscoveryPage() {
                 <span className="text-stone-900 dark:text-stone-50">{pagination.total}</span>
                 {" "}repositor{pagination.total !== 1 ? "ies" : "y"}
                 {selectedDomain !== "ALL" && <> / <span className="text-stone-900 dark:text-stone-50">{REPO_DOMAINS.find((d) => d.key === selectedDomain)?.label}</span></>}
+                {selectedLanguage !== "ALL" && <> / <span className="text-stone-900 dark:text-stone-50">{selectedLanguage}</span></>}
                 {search && <> / matching "<span className="text-stone-900 dark:text-stone-50">{search}</span>"</>}
               </>
             ) : (
@@ -393,7 +538,7 @@ export default function RepoDiscoveryPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {repos.map((repo, i) => (
-                <RepoCard key={repo.id} repo={repo} index={i} onSelect={setSelectedRepo} />
+                <RepoCard key={repo.id} repo={repo} index={i} onSelect={handleOpenRepo} />
               ))}
             </AnimatePresence>
           </div>
@@ -404,7 +549,7 @@ export default function RepoDiscoveryPage() {
           <PaginationControls
             currentPage={page}
             totalPages={pagination.totalPages}
-            onPageChange={setPage}
+            onPageChange={(newPage) => updateFilter("page", newPage)}
           />
         )}
       </div>
@@ -422,7 +567,7 @@ export default function RepoDiscoveryPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/50 backdrop-blur-sm"
-            onClick={() => setSelectedRepo(null)}
+            onClick={handleCloseRepo}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -450,14 +595,37 @@ export default function RepoDiscoveryPage() {
                     </h2>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedRepo(null)}
-                  className="w-8 h-8 rounded-md flex items-center justify-center text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-white/5 cursor-pointer"
-                  aria-label="Close"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleShare}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border ${
+                      copiedShareUrl
+                        ? "bg-lime-400 text-stone-950 border-lime-400"
+                        : "bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    {copiedShareUrl ? (
+                      <>
+                        <Check className="w-3.5 h-3.5" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-3.5 h-3.5" />
+                        Share
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCloseRepo}
+                    className="w-8 h-8 rounded-md flex items-center justify-center text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-white/5 cursor-pointer"
+                    aria-label="Close"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
               <div className="px-5 py-5 space-y-5">
@@ -606,6 +774,63 @@ export default function RepoDiscoveryPage() {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.opensource.list({ recommended: true }),
+    queryFn: async () => {
+      const res = await api.get<{ repos: OpenSourceRepo[] }>("/opensource/recommended");
+      return res.data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="mb-10">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-4 w-32 bg-stone-200 dark:bg-white/10 rounded animate-pulse" />
+        </div>
+        <div className="flex gap-4 overflow-x-hidden">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="min-w-[280px] sm:min-w-[320px]">
+              <RepoCardSkeleton />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const repos = data?.repos || [];
+  if (repos.length === 0) return null;
+
+  return (
+    <div className="mb-10 group/rec">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Wand2 className="w-4 h-4 text-lime-600 dark:text-lime-400" />
+          <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 uppercase tracking-tight">
+            Recommended for you
+          </h2>
+          <div className="h-px w-8 bg-stone-200 dark:bg-white/10 group-hover/rec:w-16 transition-all" />
+        </div>
+        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">
+          Based on your stack
+        </span>
+      </div>
+
+      <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-4">
+        <div className="flex gap-4 min-w-full">
+          {repos.map((repo, i) => (
+            <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
+              <RepoCard repo={repo} index={i} onSelect={onSelect} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

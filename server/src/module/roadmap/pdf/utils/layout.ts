@@ -122,25 +122,27 @@ export function drawCallout(
 
 export function stampFooters(doc: PDFKit.PDFDocument, colors: ColorsType) {
   const range = doc.bufferedPageRange();
-  const total = range.start + range.count;
+  const total = range.count;
 
-  for (let i = range.start; i < total; i++) {
+  for (let i = range.start; i < range.start + range.count; i++) {
     doc.switchToPage(i);
 
-    // Footer line
     const y = A4_HEIGHT - MARGIN + 4;
+    doc.y = y - 2;
+
     doc.rect(MARGIN, y, A4_WIDTH - MARGIN * 2, 0.5).fill(colors.faintest);
 
     doc.fillColor(colors.faint).fontSize(8).font("Helvetica");
     doc.text("INTERNHACK · ROADMAP", MARGIN, y + 8, {
       characterSpacing: 1.5,
-      width: A4_WIDTH - MARGIN * 2,
+      width: (A4_WIDTH - MARGIN * 2) / 2,
+      lineBreak: false,
     });
     doc.text(
-      `Page ${i + 1} of ${total}`,
+      `Page ${i - range.start + 1} of ${total}`,
       MARGIN,
       y + 8,
-      { width: A4_WIDTH - MARGIN * 2, align: "right" },
+      { width: A4_WIDTH - MARGIN * 2, align: "right", lineBreak: false },
     );
   }
 }

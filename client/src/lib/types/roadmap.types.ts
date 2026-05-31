@@ -173,6 +173,7 @@ export interface RoadmapEnrollmentListItem {
     coverImage: string | null;
     topicCount: number;
     estimatedHours: number;
+    ownerUserId: number | null;
   };
   createdAt: string;
 }
