@@ -38,6 +38,8 @@ import {
   ChevronUp,
   RefreshCw,
   Sparkles,
+  TrendingUp,
+  AlertTriangle,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -48,6 +50,7 @@ import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import type {
   RoadmapEnrollment,
+  RoadmapEnrollmentAnalytics,
   RoadmapEnrollmentSummary,
   RoadmapSection,
   RoadmapTopic,
@@ -56,10 +59,15 @@ import type {
 } from "../../../lib/types";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 interface EnrollmentResponse {
   enrollment: RoadmapEnrollment;
   summary: RoadmapEnrollmentSummary;
+}
+
+interface AnalyticsResponse {
+  analytics: RoadmapEnrollmentAnalytics;
 }
 
 interface TopicNodeData {
@@ -246,12 +254,15 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
   const { status, topic, isNext, bookmarked, index, isWeak } = data;
   const isCompleted = status === "COMPLETED";
   const isInProgress = status === "IN_PROGRESS";
+  const isSkipped = status === "SKIPPED";
 
   const railColor = isCompleted
     ? "bg-lime-500"
     : isInProgress
       ? "bg-amber-400"
-      : "bg-stone-200 dark:bg-stone-800";
+      : isSkipped
+        ? "bg-stone-400 dark:bg-stone-600"
+        : "bg-stone-200 dark:bg-stone-800";
 
   const weakRing =
     isWeak && !isCompleted ? "ring-2 ring-amber-400 ring-offset-1" : "";
@@ -325,6 +336,10 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
             >
               <Check className="w-2.5 h-2.5 text-stone-950" strokeWidth={3.5} />
             </motion.div>
+          ) : isSkipped ? (
+            <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              skipped
+            </span>
           ) : isInProgress ? (
             <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
               <motion.span
@@ -357,7 +372,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
         {/* Title */}
         <p
           className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${
-            isCompleted
+            isCompleted || isSkipped
               ? "text-stone-400 dark:text-stone-600 line-through decoration-1 decoration-stone-300 dark:decoration-stone-700"
               : "text-stone-950 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-stone-50"
           }`}
@@ -409,20 +424,21 @@ export default function RoadmapCanvasPage() {
   const { slug = "" } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const graphOffsetsRef = useRef(new Map<number, { x: number; y: number }>());
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
   const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">(
     "LINEAR",
   );
-  // Track which sectionId is currently being regenerated
+
   const [regeneratingSectionId, setRegeneratingSectionId] = useState<
     number | null
   >(null);
-  // Modal state for the regenerate instructions dialog
   const [regenModal, setRegenModal] = useState<{
     sectionId: number;
     sectionTitle: string;
   } | null>(null);
+
   const [regenInstructions, setRegenInstructions] = useState("");
   const [collapsedSections, setCollapsedSections] = useState<Set<number>>(
     new Set(),
@@ -505,6 +521,17 @@ export default function RoadmapCanvasPage() {
     enabled: !!enrollmentId,
   });
 
+  const { data: analyticsData } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId!),
+    queryFn: () =>
+      api
+        .get<AnalyticsResponse>(
+          `/roadmaps/me/enrollments/${enrollmentId}/analytics`,
+        )
+        .then((res) => res.data),
+    enabled: !!enrollmentId,
+  });
+
   const loading = enrollmentsLoading || detailLoading;
   const error = enrollmentsError || detailError;
 
@@ -566,6 +593,7 @@ export default function RoadmapCanvasPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState<
     TopicNodeData | SectionLabelData
   >([]);
+
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   const isAiOwned = !!(
@@ -580,6 +608,21 @@ export default function RoadmapCanvasPage() {
     },
     [],
   );
+
+  const getGraphOffset = useCallback((topicId: number) => {
+    const existing = graphOffsetsRef.current.get(topicId);
+    if (existing) return existing;
+
+    const xSeed = (topicId * 37) % 100;
+    const ySeed = (topicId * 53) % 50;
+    const offset = {
+      x: xSeed - 50,
+      y: ySeed - 25,
+    };
+
+    graphOffsetsRef.current.set(topicId, offset);
+    return offset;
+  }, []);
 
   useEffect(() => {
     if (!data) return;
@@ -656,8 +699,8 @@ export default function RoadmapCanvasPage() {
             position:
               viewMode === "GRAPH"
                 ? {
-                    x: TOPIC_X + (Math.random() * 100 - 50),
-                    y: cursorY + (Math.random() * 50 - 25),
+                    x: TOPIC_X + getGraphOffset(topic.id).x,
+                    y: cursorY + getGraphOffset(topic.id).y,
                   }
                 : { x: TOPIC_X, y: cursorY },
             data: {
@@ -724,16 +767,30 @@ export default function RoadmapCanvasPage() {
     setEdges(newEdges);
   }, [
     data,
+
     allTopics,
+
     progressByTopicId,
+
     nextTopicId,
+
     handleNodeClick,
+
     viewMode,
+
     collapsedSections,
+    toggleSection,
+
     isAiOwned,
+
     openRegenModal,
+
     regeneratingSectionId,
+
+    getGraphOffset,
+
     setNodes,
+
     setEdges,
     weakTopicTitles,
   ]);
@@ -762,6 +819,9 @@ export default function RoadmapCanvasPage() {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.roadmaps.enrollments(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId),
       });
     } catch {
       toast.error("Could not save progress");
@@ -818,6 +878,9 @@ export default function RoadmapCanvasPage() {
         });
         queryClient.invalidateQueries({
           queryKey: queryKeys.roadmaps.enrollments(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId),
         });
       }
       setRegenModal(null);
@@ -895,6 +958,7 @@ export default function RoadmapCanvasPage() {
   if (!data) return null;
 
   const { summary } = data;
+  const analytics = analyticsData?.analytics ?? null;
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -1027,7 +1091,7 @@ export default function RoadmapCanvasPage() {
                 label="streak"
                 value={
                   <span className="font-bold tabular-nums">
-                    {computeStreak(data)}d
+                    {analytics?.currentStreak ?? 0}d
                   </span>
                 }
               />
@@ -1047,6 +1111,8 @@ export default function RoadmapCanvasPage() {
               PDF
             </button>
           </div>
+
+          <RoadmapAnalyticsStrip analytics={analytics} />
 
           {/* Animated progress strip */}
           <div className="h-0.5 bg-stone-900 overflow-hidden">
@@ -1229,10 +1295,26 @@ export default function RoadmapCanvasPage() {
                     >
                       <Check className="w-3 h-3" /> Completed
                     </StatusChip>
+                    <StatusChip
+                      active={drawerProgress?.status === "SKIPPED"}
+                      onClick={() =>
+                        updateProgress(drawerTopic.id, { status: "SKIPPED" })
+                      }
+                    >
+                      Skipped
+                    </StatusChip>
                     <button
                       type="button"
-                      aria-label={drawerProgress?.bookmarked ? "Remove bookmark" : "Add bookmark"}
-                      title={drawerProgress?.bookmarked ? "Remove bookmark" : "Add bookmark"}
+                      aria-label={
+                        drawerProgress?.bookmarked
+                          ? "Remove bookmark"
+                          : "Add bookmark"
+                      }
+                      title={
+                        drawerProgress?.bookmarked
+                          ? "Remove bookmark"
+                          : "Add bookmark"
+                      }
                       onClick={() =>
                         updateProgress(drawerTopic.id, {
                           bookmarked: !drawerProgress?.bookmarked,
@@ -1262,39 +1344,29 @@ export default function RoadmapCanvasPage() {
                         resources
                       </p>
                       <ul className="space-y-1">
-                        {drawerTopic.resources.map(
-                          (r: RoadmapResource, i: number) => (
-                            <motion.li
-                              key={r.id}
-                              initial={{ opacity: 0, x: 8 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{
-                                delay: 0.25 + i * 0.04,
-                                duration: 0.3,
-                              }}
+                        {drawerTopic.resources.map((r: RoadmapResource) => (
+                          <li key={r.id}>
+                            <a
+                              href={r.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors group no-underline"
                             >
-                              <a
-                                href={r.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors group no-underline"
-                              >
-                                <span className="text-[9px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-500 shrink-0 w-12">
-                                  {r.kind}
-                                </span>
-                                <span className="flex-1 text-sm text-stone-700 dark:text-stone-300 group-hover:text-stone-950 dark:group-hover:text-stone-50">
-                                  {r.title}
-                                  {r.source && (
-                                    <span className="text-stone-400 ml-1.5">
-                                      ({r.source})
-                                    </span>
-                                  )}
-                                </span>
-                                <ExternalLink className="w-3 h-3 text-stone-300 dark:text-stone-700 shrink-0 group-hover:text-lime-500 transition-colors" />
-                              </a>
-                            </motion.li>
-                          ),
-                        )}
+                              <span className="text-[9px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-500 shrink-0 w-12">
+                                {r.kind}
+                              </span>
+                              <span className="flex-1 text-sm text-stone-700 dark:text-stone-300 group-hover:text-stone-950 dark:group-hover:text-stone-50">
+                                {r.title}
+                                {r.source && (
+                                  <span className="text-stone-400 ml-1.5">
+                                    ({r.source})
+                                  </span>
+                                )}
+                              </span>
+                              <ExternalLink className="w-3 h-3 text-stone-300 dark:text-stone-700 shrink-0 group-hover:text-lime-500 transition-colors" />
+                            </a>
+                          </li>
+                        ))}
                       </ul>
                     </motion.div>
                   )}
@@ -1379,7 +1451,7 @@ export default function RoadmapCanvasPage() {
                 onClick={() =>
                   !regenerateMutation.isPending && setRegenModal(null)
                 }
-                className="fixed inset-0 z-[60] bg-stone-950/60 backdrop-blur-sm"
+                className="fixed inset-0 z-60 bg-stone-950/60 backdrop-blur-sm"
               />
               {/* Dialog */}
               <motion.div
@@ -1391,7 +1463,7 @@ export default function RoadmapCanvasPage() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.94, y: 8 }}
                 transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                className="fixed inset-0 z-[70] flex items-center justify-center px-4 pointer-events-none"
+                className="fixed inset-0 z-70 flex items-center justify-center px-4 pointer-events-none"
               >
                 <div className="w-full max-w-md pointer-events-auto bg-stone-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
                   {/* Header */}
@@ -1425,10 +1497,59 @@ export default function RoadmapCanvasPage() {
 
                   {/* Body */}
                   <div className="px-5 py-4 space-y-4">
+                    <div
+                      role="alert"
+                      className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3"
+                    >
+                      <AlertTriangle
+                        className="mt-0.5 h-4 w-4 shrink-0 text-amber-400"
+                        aria-hidden
+                      />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-amber-100">
+                          Progress in this section will be reset
+                        </p>
+                        <p className="text-xs text-amber-100/80 leading-relaxed">
+                          Regenerating this section will reset your progress for
+                          all topics in it. This cannot be undone.
+                        </p>
+                        {regenProgressImpact.totalAffected > 0 ? (
+                          <p className="text-[11px] font-mono text-amber-200/90">
+                            {regenProgressImpact.completed > 0 && (
+                              <span>
+                                {regenProgressImpact.completed} completed
+                              </span>
+                            )}
+                            {regenProgressImpact.completed > 0 &&
+                              regenProgressImpact.inProgress > 0 &&
+                              " · "}
+                            {regenProgressImpact.inProgress > 0 && (
+                              <span>
+                                {regenProgressImpact.inProgress} in progress
+                              </span>
+                            )}{" "}
+                            topic
+                            {regenProgressImpact.totalAffected === 1
+                              ? ""
+                              : "s"}{" "}
+                            will be affected.
+                          </p>
+                        ) : (
+                          <p className="text-[11px] font-mono text-amber-200/70">
+                            No completed or in-progress topics in this section
+                            yet.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
                     <p className="text-xs text-stone-400 leading-relaxed">
                       AI will rewrite this section's topics and resources while
                       keeping the rest of your roadmap intact. Your progress on
-                      existing topics will be cleared for this section.
+                      existing topics will be cleared for this section. AI will
+                      rewrite this section's topics and resources while keeping
+                      the rest of your roadmap intact. Your progress on existing
+                      topics will be cleared for this section.
                     </p>
 
                     <div>
@@ -1475,9 +1596,6 @@ export default function RoadmapCanvasPage() {
                       ) : (
                         <Sparkles className="w-3.5 h-3.5" />
                       )}
-                      {regenerateMutation.isPending
-                        ? "Regenerating…"
-                        : "Regenerate"}
                     </Button>
                   </div>
                 </div>
@@ -1491,6 +1609,139 @@ export default function RoadmapCanvasPage() {
 }
 
 // ─── Small subcomponents ───────────────────────────────────────────────────
+function RoadmapAnalyticsStrip({
+  analytics,
+}: {
+  analytics: RoadmapEnrollmentAnalytics | null;
+}) {
+  const statusStyles = analytics
+    ? {
+        AHEAD: "text-lime-300",
+        ON_TRACK: "text-sky-300",
+        BEHIND: "text-amber-300",
+      }[analytics.onTrackStatus]
+    : "text-stone-500";
+
+  const statusLabel =
+    analytics?.onTrackStatus.replace("_", " ").toLowerCase() ?? "loading";
+  const estimatedDate = analytics
+    ? new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric",
+      }).format(new Date(analytics.estimatedCompletionDate))
+    : "calculating";
+
+  return (
+    <div className="border-t border-white/10 bg-stone-950/95 px-5 py-3">
+      <div className="grid gap-3 lg:grid-cols-5 lg:items-center">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:col-span-4">
+          <AnalyticsMetric
+            label="current streak"
+            value={analytics ? `${analytics.currentStreak}d` : "--"}
+          />
+          <AnalyticsMetric
+            label="best streak"
+            value={analytics ? `${analytics.longestStreak}d` : "--"}
+          />
+          <AnalyticsMetric
+            label="this week"
+            value={
+              analytics
+                ? `${analytics.topicsCompletedThisWeek}/${analytics.weeklyTarget}`
+                : "--"
+            }
+          />
+          <AnalyticsMetric label="finish est." value={estimatedDate} />
+        </div>
+
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex w-28 shrink-0 items-center gap-2">
+            <TrendingUp
+              className={`w-3.5 h-3.5 ${statusStyles}`}
+              aria-hidden="true"
+            />
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-stone-100 capitalize truncate">
+                {statusLabel}
+              </p>
+              <p className="text-[10px] font-mono text-stone-500 uppercase tracking-wider">
+                pace
+              </p>
+            </div>
+          </div>
+
+          <div className="min-w-0 rounded-md border border-white/10 bg-white/5 px-3 py-2">
+            <p className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+              trend
+            </p>
+
+            <div className="h-8 mt-1">
+              {analytics && analytics.progressTrend.length > 1 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={analytics.progressTrend}>
+                    <defs>
+                      <linearGradient
+                        id="trendFill"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="#a3e635"
+                          stopOpacity={0.35}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="#a3e635"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <Area
+                      type="monotone"
+                      dataKey="cumulative"
+                      stroke="#a3e635"
+                      strokeWidth={2}
+                      fill="url(#trendFill)"
+                      dot={{ r: 2, strokeWidth: 0, fill: "#a3e635" }}
+                      isAnimationActive={false}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-[10px] font-mono text-stone-600">
+                  complete 2 days to see
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="min-w-0 rounded-md border border-white/10 bg-white/5 px-3 py-2">
+      <p className="text-[10px] font-mono uppercase tracking-wider text-stone-500 truncate">
+        {label}
+      </p>
+      <p className="mt-0.5 text-sm font-bold text-stone-50 tabular-nums truncate">
+        {value}
+      </p>
+    </div>
+  );
+}
+
 function Stat({
   icon: Icon,
   label,
@@ -1563,16 +1814,4 @@ function StatusChip({
       {children}
     </button>
   );
-}
-
-function computeStreak(data: EnrollmentResponse): number {
-  // Count distinct days (UTC) on which any topic was completed.
-  // Simple approximation: number of unique YYYY-MM-DD strings across completedAt timestamps.
-  const days = new Set<string>();
-  for (const p of data.enrollment.topicProgress) {
-    if (p.status === "COMPLETED" && p.completedAt) {
-      days.add(new Date(p.completedAt).toISOString().slice(0, 10));
-    }
-  }
-  return days.size;
 }

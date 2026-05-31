@@ -4,6 +4,8 @@ import { JobMatchingService } from "../module/job-index/job-matching.service.js"
 import { prisma } from "../database/db.js";
 import { withAdvisoryLock } from "../utils/cron-lock.js";
 
+const cronJobs: cron.ScheduledTask[] = [];
+
 /**
  * AI Pipeline cron jobs:
  * 1. Every 6h (offset 30min after scraper): Sync → Enrich → Embed
@@ -12,7 +14,7 @@ import { withAdvisoryLock } from "../utils/cron-lock.js";
  */
 export function startAIPipelineCrons() {
   // ── Every 6 hours at :30, Sync + Enrich + Embed ──
-  cron.schedule("30 */6 * * *", () => {
+  cronJobs.push(cron.schedule("30 */6 * * *", () => {
     void withAdvisoryLock("internhack-ai-sync", async () => {
       try {
         console.log("[AI Pipeline] Starting sync...");
@@ -31,10 +33,10 @@ export function startAIPipelineCrons() {
         console.error("[AI Pipeline] Sync cron failed:", err);
       }
     });
-  });
+  }));
 
   // ── Every hour, Generate matches ──
-  cron.schedule("0 * * * *", () => {
+  cronJobs.push(cron.schedule("0 * * * *", () => {
     void withAdvisoryLock("internhack-ai-match", async () => {
       try {
         console.log("[AI Pipeline] Generating matches...");
@@ -45,10 +47,10 @@ export function startAIPipelineCrons() {
         console.error("[AI Pipeline] Match cron failed:", err);
       }
     });
-  });
+  }));
 
   // ── Daily at 3 AM, Maintenance ──
-  cron.schedule("0 3 * * *", () => {
+  cronJobs.push(cron.schedule("0 3 * * *", () => {
     void withAdvisoryLock("internhack-ai-maintenance", async () => {
       try {
         console.log("[AI Pipeline] Daily maintenance...");
@@ -75,7 +77,16 @@ export function startAIPipelineCrons() {
         console.error("[AI Pipeline] Maintenance cron failed:", err);
       }
     });
-  });
+  }));
 
   console.log("[AI Pipeline] Cron jobs scheduled");
+}
+
+/** Stop all AI pipeline cron jobs (used during graceful shutdown). */
+export function stopAIPipelineCrons(): void {
+  for (const job of cronJobs) {
+    job.stop();
+  }
+  cronJobs.length = 0;
+  console.log("[AI Pipeline] Cron jobs stopped");
 }

@@ -41,3 +41,4 @@ export const LANGUAGE_COLORS: Record<string, string> = {
   Dart: "#00B4AB",
 };
 
+export const LANGUAGE_OPTIONS = ["ALL", ...Object.keys(LANGUAGE_COLORS)] as const;
