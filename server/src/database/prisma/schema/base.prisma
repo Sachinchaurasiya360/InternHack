@@ -1429,4 +1429,5 @@ model guideFeedback {
   @@unique([userId, guideId, stepId])
   @@index([guideId])
   @@index([stepId])
-}
+  }
+

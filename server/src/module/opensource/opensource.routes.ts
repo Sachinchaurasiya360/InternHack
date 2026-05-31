@@ -388,15 +388,34 @@ opensourceRouter.put("/requests/bulk", authMiddleware, requireRole("ADMIN"), asy
 opensourceRouter.post("/guide-feedback", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
   try {
     const { guideId, stepId, rating } = req.body;
-    if (!guideId || !stepId || !rating) { res.status(400).json({ message: "Missing required fields" }); return; }
-    if (rating !== "up" && rating !== "down") { res.status(400).json({ message: "Invalid rating value" }); return; }
-    const existing = await prisma.guideFeedback.findFirst({ where: { userId: req.user!.id, guideId, stepId } });
-    if (existing) { res.status(409).json({ message: "Already rated" }); return; }
-    const feedback = await prisma.guideFeedback.create({ data: { guideId, stepId, rating, userId: req.user!.id } });
-    res.status(201).json(feedback);
-  } catch (err) { next(err); }
-});
 
+    if (!guideId || !stepId || !rating) {
+      res.status(400).json({ message: "Missing required fields" });
+      return;
+    }
+
+    if (rating !== "up" && rating !== "down") {
+      res.status(400).json({ message: "Invalid rating value" });
+      return;
+    }
+
+    const existing = await prisma.guideFeedback.findFirst({
+      where: { userId: req.user!.id, guideId, stepId },
+    });
+    if (existing) {
+      res.status(409).json({ message: "Already rated" });
+      return;
+    }
+
+    const feedback = await prisma.guideFeedback.create({
+      data: { guideId, stepId, rating, userId: req.user!.id },
+    });
+
+    res.status(201).json(feedback);
+  } catch (err) {
+    next(err);
+  }
+});
 // Public: get single repo (must be AFTER /requests/* routes)
 opensourceRouter.get("/:id", async (req, res, next) => {
   try {
