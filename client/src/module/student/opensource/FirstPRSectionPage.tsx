@@ -16,7 +16,6 @@ import { CodeBlock } from "../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/open-source-guide.json";
 import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
-import { KeyboardNavigationHint } from "../../../components/KeyboardNavigationHint";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource { title: string; url: string; type: string }
@@ -307,9 +306,6 @@ export default function FirstPRSectionPage() {
               </Button>
             )}
           </div>
-
-          <KeyboardNavigationHint />
-
         </motion.div>
       </div>
     </div>

@@ -13,7 +13,6 @@ import { canonicalUrl } from "../../../../lib/seo.utils";
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
 import { useKeyboardNavigation } from "../../../../hooks/useKeyboardNavigation";
-import { KeyboardNavigationHint } from "../../../../components/KeyboardNavigationHint";
 interface Step {
   step: number;
   id: string;
@@ -281,8 +280,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
               </Button>
             )}
           </div>
-
-          <KeyboardNavigationHint />
         </motion.div>
       </div>
     </div>
