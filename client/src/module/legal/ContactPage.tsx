@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Globe, Clock3, Bug, Loader2, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { Mail, Globe, Clock3, Bug, Loader2, Send, CheckCircle, AlertCircle, User, Tag, MessageSquare } from "lucide-react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
@@ -57,28 +57,57 @@ export default function ContactPage() {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Send us a message</h2>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Name */}
             <div>
               <label htmlFor="name" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Name</label>
-              <input id="name" name="name" value={formData.name} onChange={handleChange} required
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500" />
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 flex-shrink-0 text-lime-500 dark:text-lime-400" />
+                <input
+                  id="name" name="name" value={formData.name} onChange={handleChange} required
+                  placeholder="Your name"
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                />
+              </div>
             </div>
+
+            {/* Email */}
             <div>
               <label htmlFor="email" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Email</label>
-              <input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500" />
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 flex-shrink-0 text-lime-500 dark:text-lime-400" />
+                <input
+                  id="email" name="email" type="email" value={formData.email} onChange={handleChange} required
+                  placeholder="you@example.com"
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                />
+              </div>
             </div>
           </div>
 
+          {/* Subject */}
           <div>
             <label htmlFor="subject" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Subject</label>
-            <input id="subject" name="subject" value={formData.subject} onChange={handleChange} required
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500" />
+            <div className="flex items-center gap-2">
+              <Tag className="h-4 w-4 flex-shrink-0 text-lime-500 dark:text-lime-400" />
+              <input
+                id="subject" name="subject" value={formData.subject} onChange={handleChange} required
+                placeholder="What's this about?"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+              />
+            </div>
           </div>
 
+          {/* Message */}
           <div>
             <label htmlFor="message" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Message</label>
-            <textarea id="message" name="message" rows={5} value={formData.message} onChange={handleChange} required
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500 resize-y" />
+            <div className="flex items-start gap-2">
+              <MessageSquare className="mt-2 h-4 w-4 flex-shrink-0 text-lime-500 dark:text-lime-400" />
+              <textarea
+                id="message" name="message" rows={5} value={formData.message} onChange={handleChange} required
+                placeholder="Tell us what's on your mind..."
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500 resize-y"
+              />
+            </div>
           </div>
 
           {error && (

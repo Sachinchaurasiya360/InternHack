@@ -12,6 +12,7 @@ import { grantsAiDeepTech } from "./grants-ai-deeptech";
 export interface Grant {
   id: number;
   name: string;
+  deadline: string;
   organization: string;
   logo: string;
   description: string;
@@ -23,6 +24,7 @@ export interface Grant {
   status: "Active" | "Paused" | "Invite Only";
   ecosystem: string;
   highlights: string[];
+  deadline?: string | null;
 }
 
 export type GrantCategory =

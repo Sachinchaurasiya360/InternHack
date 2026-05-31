@@ -1,6 +1,8 @@
 ﻿import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
+import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import {
   Target,
   Search,
@@ -210,6 +212,12 @@ export default function AtsLandingPage() {
 
   return (
     <div className="font-sans bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
+      <SEO
+        title="Free ATS Resume Checker - Score Your Resume in Seconds"
+        description="Get a free ATS compatibility score with keyword analysis, formatting check, and personalized tips across 6 categories. Upload your PDF resume. No signup needed. Used by 54,000+ students."
+        canonicalUrl={canonicalUrl("/ats-score")}
+        ogType="website"
+      />
 
       {/* ── Hero ── */}
       <section className="relative w-full overflow-hidden bg-stone-50 dark:bg-stone-950 border-b border-stone-200 dark:border-white/10">

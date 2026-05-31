@@ -18,6 +18,7 @@ import {
   Bookmark,
   BookmarkCheck,
   ClipboardList,
+  Clock,
 } from "lucide-react";
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { SEO } from "../../../components/SEO";
@@ -41,6 +42,76 @@ const STATUS_CONFIG = {
 };
 
 const ECOSYSTEMS = Array.from(new Set(grants.map((g) => g.ecosystem))).sort();
+
+function getDeadlineCountdown(deadline?: string | null) {
+  if (!deadline) return null;
+
+  const deadlineDate = new Date(deadline);
+  if (Number.isNaN(deadlineDate.getTime())) return null;
+
+  const now = new Date();
+  const utcToday = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const utcDeadline = Date.UTC(deadlineDate.getFullYear(), deadlineDate.getMonth(), deadlineDate.getDate());
+  const daysRemaining = Math.floor((utcDeadline - utcToday) / 86400000);
+
+  if (daysRemaining < 0) return "Expired";
+  if (daysRemaining === 0) return "Ends today";
+  if (daysRemaining === 1) return "1 day left";
+  return `${daysRemaining} days left`;
+function getDeadlineBadge(deadline: string) {
+  const now = new Date();
+  const endDate = new Date(deadline);
+
+  const utcNow = Date.UTC(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+
+  const utcDeadline = Date.UTC(
+    endDate.getFullYear(),
+    endDate.getMonth(),
+    endDate.getDate()
+  );
+
+  const diffTime = utcDeadline - utcNow;
+
+  const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (daysLeft < 0) {
+    return {
+      text: "Closed",
+      className:
+        "bg-gray-200 text-gray-600 dark:bg-stone-800 dark:text-stone-400",
+      isClosed: true,
+    };
+  }
+
+  if (daysLeft < 7) {
+    return {
+      text: `${daysLeft} days left — Closing soon`,
+      className:
+        "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300",
+      isClosed: false,
+    };
+  }
+
+  if (daysLeft <= 30) {
+    return {
+      text: `${daysLeft} days left`,
+      className:
+        "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
+      isClosed: false,
+    };
+  }
+
+  return {
+    text: `${daysLeft} days left`,
+    className:
+      "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+    isClosed: false,
+  };
+}
 
 function MetaChip({ icon, children, className = "" }: { icon?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
@@ -427,6 +498,8 @@ function GrantCard({
   const statusCfg = STATUS_CONFIG[grant.status];
   const StatusIcon = statusCfg.icon;
   const logoSrc = resolveGrantLogo(grant.logo, grant.website);
+  const countdown = getDeadlineCountdown(grant.deadline);
+  const deadlineBadge = getDeadlineBadge(grant.deadline);
 
   return (
     <motion.div
@@ -436,7 +509,9 @@ function GrantCard({
     >
       <div
         onClick={onClick}
-        className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full cursor-pointer"
+        className={`group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full cursor-pointer ${
+  deadlineBadge.isClosed ? "opacity-60" : ""
+}`} 
       >
         <span
           role="button"
@@ -490,9 +565,22 @@ function GrantCard({
           >
             {grant.status}
           </MetaChip>
+          {countdown && (
+            <MetaChip
+              icon={<Clock className="w-3 h-3" />}
+              className="text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-stone-800"
+            >
+              {countdown}
+            </MetaChip>
+          )}
           <MetaChip icon={<DollarSign className="w-3 h-3" />}>{grant.fundingAmount}</MetaChip>
           <MetaChip icon={<Globe className="w-3 h-3" />}>{grant.ecosystem}</MetaChip>
           <MetaChip icon={<Tag className="w-3 h-3" />}>{grant.category}</MetaChip>
+          <span
+  className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider ${deadlineBadge.className}`}
+          >
+            {deadlineBadge.text}
+          </span>
         </div>
 
         <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
@@ -510,6 +598,7 @@ function GrantDetailModal({ grant, onClose }: { grant: Grant; onClose: () => voi
   const statusCfg = STATUS_CONFIG[grant.status];
   const StatusIcon = statusCfg.icon;
   const logoSrc = resolveGrantLogo(grant.logo, grant.website);
+  const deadlineBadge = getDeadlineBadge(grant.deadline);
 
   return (
     <motion.div
@@ -572,6 +661,11 @@ function GrantDetailModal({ grant, onClose }: { grant: Grant; onClose: () => voi
             <MetaChip icon={<DollarSign className="w-3 h-3" />}>{grant.fundingAmount}</MetaChip>
             <MetaChip icon={<Globe className="w-3 h-3" />}>{grant.ecosystem}</MetaChip>
             <MetaChip icon={<Tag className="w-3 h-3" />}>{grant.category}</MetaChip>
+            <span
+            className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono tracking-wider ${deadlineBadge.className}`}
+          >
+            {deadlineBadge.text}
+          </span>
           </div>
 
           <div>

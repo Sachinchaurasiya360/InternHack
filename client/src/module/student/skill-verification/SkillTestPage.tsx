@@ -135,6 +135,7 @@ export default function SkillTestPage() {
   /* Fetch test detail ----------------------------------------------- */
   useEffect(() => {
     if (!testId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     api
       .get(`/skill-tests/${testId}`)
