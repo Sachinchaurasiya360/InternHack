@@ -123,8 +123,27 @@ export default function FirstPRRoadmapPage() {
           >
             <Trophy className="w-8 h-8 text-green-500 shrink-0" />
             <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">You're an open source contributor!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">You've completed all {totalSteps} steps. Time to find your next issue!</p>
+              <p className="text-base font-bold text-green-900 dark:text-green-300">You shipped your first PR!</p>
+              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">10 / 10 steps complete. Your open source journey has begun.</p>
+            <div className="flex gap-4 mt-3 flex-wrap items-center">
+                <Link
+                  to="/student/opensource"
+                  className="text-sm text-lime-700 dark:text-lime-400 underline font-medium"
+                >
+                  Discover repos to contribute to
+                </Link>
+                <button
+                  onClick={() => {
+                    if (window.confirm("Reset all steps?")) {
+                      setCompleted(new Set());
+                      try { localStorage.removeItem(STORAGE_KEY); } catch { /**/ }
+                    }
+                  }}
+                  className="text-sm text-lime-700 dark:text-lime-400 border border-lime-400 px-3 py-0.5 rounded-lg font-medium"
+                >
+                  Start over
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
