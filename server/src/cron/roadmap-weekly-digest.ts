@@ -143,3 +143,12 @@ export function startWeeklyRoadmapDigestCron(schedule = "0 9 * * 1"): void {
   );
   console.log(`[RoadmapDigest] Weekly digest scheduled with cron "${schedule}"`);
 }
+
+/** Stop the weekly roadmap digest cron (used during graceful shutdown). */
+export function stopWeeklyRoadmapDigestCron(): void {
+  if (cronJob) {
+    cronJob.stop();
+    cronJob = null;
+    console.log("[RoadmapDigest] Weekly digest cron stopped");
+  }
+}
