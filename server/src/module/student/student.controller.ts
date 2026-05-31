@@ -163,7 +163,11 @@ export class StudentController {
       if (isNaN(adminJobId)) return res.status(400).json({ message: "Invalid job ID" });
 
       const application = await this.studentService.applyToExternalJob(req.user.id, adminJobId);
-      return res.status(201).json({ message: "Applied successfully", application });
+
+      await prisma.usageLog.create({ data: { userId: req.user.id, action: "JOB_APPLICATION" } });
+      const usage = req.usageInfo ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit } : undefined;
+
+      return res.status(201).json({ message: "Applied successfully", application, usage });
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === "External job not found") return res.status(404).json({ message: error.message });
