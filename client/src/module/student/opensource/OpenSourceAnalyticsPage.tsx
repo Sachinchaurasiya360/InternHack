@@ -412,6 +412,29 @@ export default function OpenSourceAnalyticsPage() {
     );
   }
 
+  // Empty state: student has zero contributions
+  if (!trendIsLoading && !trendIsError && contributionTotal === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center">
+        <div className="bg-indigo-50 rounded-full p-6 mb-5">
+          <BarChart3 className="w-12 h-12 text-indigo-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          No contributions tracked yet
+        </h2>
+        <p className="text-gray-500 max-w-md mb-8">
+          Submit a repo suggestion and get it approved to start tracking
+          your open source journey.
+        </p>
+        <Link
+          to="/student/opensource"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+        >
+          Discover Repositories →
+        </Link>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
       {/* Header */}
