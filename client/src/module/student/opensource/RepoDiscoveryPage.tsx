@@ -33,9 +33,12 @@ import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
 import { SuggestRepoModal } from "./SuggestRepoModal";
+import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
+import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 
 const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+
 
 export default function RepoDiscoveryPage() {
   const [search, setSearch] = useState("");
@@ -61,6 +64,12 @@ export default function RepoDiscoveryPage() {
   const [page, setPage] = useState(1);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const { user } = useAuthStore();
+  const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
+
+  const handleSelectRepo = (repo: OpenSourceRepo) => {
+    addRepo(repo);
+    setSelectedRepo(repo);
+  };
 
   const queryParams = useMemo(() => {
     const params: Record<string, string | number> = { page, limit: 12, sortBy: sortKey, sortOrder: "desc" };
@@ -228,6 +237,9 @@ export default function RepoDiscoveryPage() {
         {/* Guidance Cards */}
         <GuidanceCards />
 
+        {/* Recently Viewed */}
+        <RecentlyViewedSection repos={recentlyViewed} onSelect={setSelectedRepo} />
+
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
           {/* Domain chips */}
@@ -393,7 +405,7 @@ export default function RepoDiscoveryPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {repos.map((repo, i) => (
-                <RepoCard key={repo.id} repo={repo} index={i} onSelect={setSelectedRepo} />
+                <RepoCard key={repo.id} repo={repo} index={i} onSelect={handleSelectRepo} />
               ))}
             </AnimatePresence>
           </div>
