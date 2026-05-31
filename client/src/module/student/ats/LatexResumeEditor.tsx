@@ -31,6 +31,7 @@ import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { useLatexAutoSave } from "./useLatexAutoSave";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import { getLatexTemplate } from "./latex-templates.data";
 
 const DEFAULT_TEMPLATE = `\\documentclass[11pt,a4paper]{article}
@@ -395,15 +396,7 @@ export default function LatexResumeEditor() {
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={handleCopyLatex}
-            className={ghostBtnCls}
-            title="Copy LaTeX"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-lime-500" /> : <Copy className="w-3.5 h-3.5" />}
-            {copied ? "Copied" : "Copy"}
-          </button>
+          <CopyButton text={code} />
 
           <button
             type="button"
