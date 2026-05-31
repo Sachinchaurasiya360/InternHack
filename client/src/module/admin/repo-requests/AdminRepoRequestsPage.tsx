@@ -45,6 +45,9 @@ type RepoRequestCardProps = {
   index: number;
   onApprove: (id: number, payload: ApprovePayload) => Promise<void>;
   onReject: (id: number) => Promise<void>;
+  selectedIds: number[];
+  onToggleSelect: (id: number) => void;
+  statusFilter: string;
 };
 
 const buildFormState = (req: RepoRequest): RepoRequestFormState => ({
@@ -209,26 +212,16 @@ export default function AdminRepoRequestsPage() {
       ) : (
         <div className="space-y-4">
           {requests.map((req, i) => (
-            <div key={req.id} className="flex gap-3 items-start">
-              {statusFilter === "PENDING" && (
-                <div className="pt-5 select-none shrink-0">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.includes(req.id)}
-                    onChange={() => toggleSelect(req.id)}
-                    className="w-4 h-4 rounded-sm border-gray-600 bg-gray-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 cursor-pointer"
-                  />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <RepoRequestCard
-                  req={req}
-                  index={i}
-                  onApprove={handleApprove}
-                  onReject={handleReject}
-                />
-              </div>
-            </div>
+            <RepoRequestCard
+              key={req.id}
+              req={req}
+              index={i}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+              statusFilter={statusFilter}
+            />
           ))}
 
           {pagination && pagination.totalPages > 1 && (
@@ -241,6 +234,7 @@ export default function AdminRepoRequestsPage() {
         </div>
       )}
 
+      {/* Bulk Action Toolbar */}
       {selectedIds.length > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-700 px-6 py-4 rounded-xl shadow-xl flex items-center gap-4 z-50 animate-in fade-in slide-in-from-bottom-4">
           <span className="text-sm text-gray-300 font-semibold shrink-0 select-none">
@@ -281,6 +275,9 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
   index,
   onApprove,
   onReject,
+  selectedIds,
+  onToggleSelect,
+  statusFilter,
 }: RepoRequestCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formState, setFormState] = useState<RepoRequestFormState>(() => buildFormState(req));
@@ -317,11 +314,22 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className="bg-gray-800/50 border border-gray-700 rounded-xl p-5"
+      className="bg-gray-800/50 border border-gray-700 rounded-xl p-5 flex gap-4"
     >
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+      {statusFilter === "PENDING" && (
+        <div className="pt-1.5 select-none shrink-0">
+          <input
+            type="checkbox"
+            checked={selectedIds.includes(req.id)}
+            onChange={() => onToggleSelect(req.id)}
+            className="w-4 h-4 rounded-sm border-gray-600 bg-gray-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 cursor-pointer"
+          />
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
             <h3 className="text-base font-bold text-white truncate">
               {req.owner}/{isEditing ? formState.name : req.name}
             </h3>
@@ -475,6 +483,7 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
             </button>
           </div>
         )}
+      </div>
       </div>
     </motion.div>
   );
