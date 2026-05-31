@@ -146,7 +146,7 @@ export default function ScrapedJobsPage() {
           Jobs scraped from top job boards across the web, updated every 6 hours
         </p>
 
-        <div className="flex flex-wrap items-center gap-3 mb-8">
+        <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="flex-1 min-w-0 relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
             <input
@@ -166,7 +166,9 @@ export default function ScrapedJobsPage() {
             placeholder="Location"
             className="w-full sm:w-52"
           />
-          <div className="relative">
+          
+          {/* Mobile Source Dropdown (hidden on desktop) */}
+          <div className="relative flex-1 sm:hidden">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
             <select
               value={source}
@@ -176,7 +178,7 @@ export default function ScrapedJobsPage() {
                 setPage(1);
               }}
               disabled={sourcesLoading && !sources.length}
-              className="pl-10 pr-8 py-3 border border-stone-200 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 text-sm appearance-none bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 w-full sm:w-44 disabled:opacity-60"
+              className="pl-10 pr-8 py-3 border border-stone-200 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 text-sm appearance-none bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 w-full disabled:opacity-60"
             >
               <option value="">
                 {sourcesError ? "Sources unavailable" : "All Sources"}
@@ -189,9 +191,48 @@ export default function ScrapedJobsPage() {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
           </div>
-          <Button variant="mono" size="lg" onClick={flushSearch} className="rounded-md">
+
+          <Button variant="mono" size="lg" onClick={flushSearch} className="rounded-md shrink-0">
             Search
           </Button>
+        </div>
+
+        {/* Desktop Source Chips (hidden on mobile) */}
+        <div className="hidden sm:flex items-center gap-3 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+          <span className="text-sm text-stone-500 mr-1 flex items-center gap-1.5 shrink-0"><Filter className="w-4 h-4" /> Source:</span>
+          <button
+            onClick={() => {
+              commitFilters();
+              setSource("");
+              setPage(1);
+            }}
+            className={`px-5 py-3 rounded-md text-sm font-medium transition-all shrink-0 border ${
+              source === ""
+                ? "border-lime-500 ring-1 ring-lime-500/20 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-stone-50"
+                : "border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-white/20"
+            }`}
+          >
+            All
+          </button>
+          {!sourcesError &&
+            sources.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  commitFilters();
+                  setSource(s.id);
+                  setPage(1);
+                }}
+                disabled={sourcesLoading}
+                className={`px-5 py-3 rounded-md text-sm font-medium transition-all shrink-0 border disabled:opacity-50 ${
+                  source === s.id
+                    ? "border-lime-500 ring-1 ring-lime-500/20 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-stone-50"
+                    : "border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-white/20"
+                }`}
+              >
+                {s.name}
+              </button>
+            ))}
         </div>
 
         {isError ? (

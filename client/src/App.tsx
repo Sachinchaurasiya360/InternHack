@@ -334,7 +334,6 @@ function App() {
 
 
  <Route path="/ats-score" element={<PublicAtsPage />} />
-<Route path="/test-cover-letter" element={<CoverLetterPage />} />
 <Route path="/grants" element={<GrantsPage />} />
 
 

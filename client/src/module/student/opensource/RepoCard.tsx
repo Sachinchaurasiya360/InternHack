@@ -39,19 +39,35 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
 
         <div className="flex flex-col flex-1 p-5">
           <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <div
                 className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-sm font-bold text-stone-700 dark:text-stone-200"
                 aria-hidden
               >
                 {repo.owner[0].toUpperCase()}
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <div className="h-1 w-1 bg-lime-400"></div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
-                    {repo.owner}
-                  </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 justify-between">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <div className="h-1 w-1 bg-lime-400"></div>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
+                      {repo.owner}
+                    </span>
+                  </div>
+                  {repo.matchedSkills && repo.matchedSkills.length > 0 && (
+                    <div className="relative group/why shrink-0">
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-lime-400/10 text-lime-600 dark:text-lime-400 text-[9px] font-bold uppercase tracking-tighter">
+                        Why?
+                      </span>
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover/why:block z-50 w-48 p-2 bg-stone-900 border border-white/10 rounded-md shadow-xl pointer-events-none">
+                        <div className="text-[10px] text-white leading-snug">
+                          <span className="text-stone-400 block mb-1">Recommended for you</span>
+                          Matches your stack: <span className="text-lime-400">{repo.matchedSkills.join(", ")}</span>
+                        </div>
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-4 border-x-transparent border-t-4 border-t-stone-900"></div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

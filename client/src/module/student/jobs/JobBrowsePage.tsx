@@ -7,6 +7,7 @@ import {
   Search,
   MapPin,
   IndianRupee,
+  Wallet,
   Clock,
   X,
   Landmark,
@@ -40,6 +41,19 @@ const FILTER_TAGS = [
   "Data Science",
 ] as const;
 
+const SALARY_HAS_CURRENCY = /[₹$€£¥]|\b(USD|EUR|GBP|INR|JPY|CAD|AUD)\b/i;
+
+const cardBase =
+  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
+
+function CompanyMark({ label }: { label: string }) {
+  return (
+    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
+      {label?.charAt(0)?.toUpperCase() || "?"}
+    </div>
+  );
+}
+
 function MetaChip({
   icon,
   children,
@@ -55,6 +69,97 @@ function MetaChip({
   );
 }
 
+const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: ExternalJob }) {
+  const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
+  const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
+  return (
+    <Link to={job.slug ? `/jobs/ext/${job.slug}` : "#"} className={cardBase}>
+      <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
+        <span className="h-1 w-1 bg-lime-400" />
+        external
+      </span>
+      <div className="flex items-start gap-3 mb-3 pr-16">
+        <CompanyMark label={job.company || "?"} />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
+            {job.role || "Open Role"}
+          </h3>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+            {job.company || "company"}
+          </span>
+        </div>
+      </div>
+      {job.description && (
+        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+          {job.description}
+        </p>
+      )}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
+        {job.salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{job.salary}</MetaChip>}
+      </div>
+      {job.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-4">
+          {job.tags.slice(0, 3).map((tag) => (
+            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
+        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+      </div>
+    </Link>
+  );
+});
+
+const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: ScrapedJob }) {
+  const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
+  const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
+  return (
+    <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer" className={cardBase}>
+      <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
+        <span className="h-1 w-1 bg-lime-400" />
+        {job.source}
+      </span>
+      <div className="flex items-start gap-3 mb-3 pr-20">
+        <CompanyMark label={job.company || "?"} />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
+            {job.title || "Open Role"}
+          </h3>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+            {job.company || "company"}
+          </span>
+        </div>
+      </div>
+      {job.description && (
+        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+          {job.description}
+        </p>
+      )}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
+        {job.salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{job.salary}</MetaChip>}
+      </div>
+      {job.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-4">
+          {job.tags.slice(0, 3).map((tag) => (
+            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
+        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+      </div>
+    </a>
+  );
+});
 
 export default function JobBrowsePage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
@@ -210,6 +315,19 @@ export default function JobBrowsePage() {
   };
 
   const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
+
+  const submitSearch = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setDebouncedSearch(search);
+    setDebouncedLocation(locationFilter);
+    setPage(1);
+    setExtPage(1);
+    setScrPage(1);
+    const next = new URLSearchParams(searchParams);
+    if (search) next.set("search", search); else next.delete("search");
+    if (locationFilter) next.set("location", locationFilter); else next.delete("location");
+    setSearchParams(next, { replace: true });
+  };
 
   const filteredExtJobs = extData?.jobs ?? [];
   const scrapedJobs = scrData?.jobs ?? [];
@@ -492,20 +610,7 @@ export default function JobBrowsePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredExtJobs.map((job, i) => (
                 <motion.div key={`ext-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-                  <JobCard
-                    to={job.slug ? `/jobs/ext/${job.slug}` : "#"}
-                    company={job.company || "?"}
-                    title={job.role || "Open Role"}
-                    badge="external"
-                    description={job.description}
-                    tags={job.tags}
-                    metaChips={
-                      <>
-                        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
-                        {job.salary && <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>}
-                      </>
-                    }
-                  />
+                  <ExternalJobCard job={job} />
                 </motion.div>
               ))}
             </div>
@@ -539,20 +644,7 @@ export default function JobBrowsePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {scrapedJobs.map((job, i) => (
                 <motion.div key={`scr-${job.id}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-                  <JobCard
-                    href={job.applicationUrl}
-                    company={job.company || "?"}
-                    title={job.title || "Open Role"}
-                    badge={job.source}
-                    description={job.description}
-                    tags={job.tags}
-                    metaChips={
-                      <>
-                        {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
-                        {job.salary && <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>}
-                      </>
-                    }
-                  />
+                  <ScrapedJobCard job={job} />
                 </motion.div>
               ))}
             </div>

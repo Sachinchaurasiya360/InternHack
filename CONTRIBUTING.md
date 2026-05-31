@@ -129,18 +129,20 @@ npm run seed
 npm run seed:admin
 ```
 
-> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent, you can run it multiple times without creating duplicates. Default login for all seeded users is `Test@1234`.
+> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent, you can run it multiple times without creating duplicates. Default password for all seeded accounts is `Test@1234`.
 >
-> Seeded accounts:
-> | Email | Role |
-> |---|---|
-> | `admin@internhack.xyz` | Admin |
-> | `recruiter@internhack.xyz` | Recruiter |
-> | `aarav@example.com` | Student |
-> | `priya@example.com` | Student |
-> | `rohan@example.com` | Student |
-> | `sneha@example.com` | Student |
-> | `arjun@example.com` | Student |
+> **Seeded accounts:**
+>
+> | Email | Role | Plan | Notes |
+> |---|---|---|---|
+> | `admin@internhack.xyz` | Admin | Free | Super-admin with full dashboard access |
+> | `recruiter@internhack.xyz` | Recruiter | Free | Pre-linked to TechCorp, can post jobs |
+> | `aarav@example.com` | Student | Free | IIT Delhi, JavaScript/React/Node.js |
+> | `priya@example.com` | Student | Free | NIT Trichy, Python/Django/ML |
+> | `rohan@example.com` | Student | Free | BITS Pilani, Java/Spring Boot/AWS |
+> | `sneha@example.com` | Student | Free | IIIT Hyderabad, TypeScript/React/PostgreSQL |
+> | `arjun@example.com` | Student | Free | VIT Vellore, C++/DSA |
+> | `premium@example.com` | Student | **Monthly (Active)** | Use this account to test all premium/subscription-gated features (AI roadmaps, cover letter generation, mock interviews, etc.) |
 
 ### Step 6: Start the dev servers
 
@@ -196,6 +198,10 @@ client/src/module/<area>/
 ```
 
 Shared components live in `client/src/components/`. State management uses Zustand (`lib/*.store.ts`) and data fetching uses React Query.
+
+### AI Assistant Context Files
+
+This repository includes optional AI assistant context files (`CLAUDE.md` and `.claude/`) designed for Claude Code users. These files provide project-specific development context and are not required for contributors using other tools or workflows.
 
 ### Key files to read first
 

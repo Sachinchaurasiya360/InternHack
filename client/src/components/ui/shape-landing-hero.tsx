@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, useAnimation, useMotionValue } from "framer-motion";
+import { motion, AnimatePresence, useAnimation, useMotionValue, useReducedMotion } from "framer-motion";
 import { Link } from "react-router";
 import { useEffect, useState, useRef } from "react";
 import NumberFlow from "@number-flow/react";
@@ -245,8 +245,12 @@ function WinsMarquee() {
   const controls = useAnimation();
   const x = useMotionValue(0)
   const isPausedByClick = useRef(false);
-  
+  const shouldReduceMotion = useReducedMotion();
+  const [isDragging, setIsDragging] = useState(false);
+
   const startAnimation = () => {
+    if (shouldReduceMotion || isDragging) return;
+
     controls.start({
       x: "-50%",
       transition: {
@@ -259,7 +263,34 @@ function WinsMarquee() {
 
   useEffect( () => {
     startAnimation();
-  }, []);
+  }, [shouldReduceMotion, isDragging]);
+
+  // Pause animation when tab is not active and resume when active again
+  useEffect(() => {
+  const handleVisibilityChange = () => {
+      if (document.hidden) {
+        controls.stop();
+      } else if (
+        !isPausedByClick.current &&
+        !shouldReduceMotion &&
+        !isDragging
+      ) {
+        startAnimation();
+      }
+    };
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
+    );
+
+    return () => {
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange,
+      );
+    };
+  }, [controls, shouldReduceMotion, isDragging]);
 
   const mouseEnter = () => {
     controls.stop();
@@ -285,7 +316,7 @@ function WinsMarquee() {
   return (
     <div
       className="relative py-6 border-y border-stone-200 dark:border-white/10 bg-stone-100/60 dark:bg-white/2 overflow-hidden"
-      aria-hidden
+      aria-label="Recent student placement wins"
     >
       <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r from-stone-100/60 dark:from-stone-950 to-transparent z-10" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l from-stone-100/60 dark:from-stone-950 to-transparent z-10" />
@@ -306,6 +337,21 @@ function WinsMarquee() {
         className="flex gap-3 whitespace-nowrap w-max"
         animate={ controls }
         style={{ x }}
+        drag="x"
+        dragConstraints={{ left: -1200, right: 0 }}
+        dragElastic={0.08}
+        whileTap={{ cursor: "grabbing" }}
+        onDragStart={() => {
+          setIsDragging(true);
+          controls.stop();
+        }}
+        onDragEnd={() => {
+          setIsDragging(false);
+
+          if (!isPausedByClick.current && !shouldReduceMotion) {
+            startAnimation();
+          }
+        }}
       >
         {row.map((w, i) => (
           <div
