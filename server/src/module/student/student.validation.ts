@@ -20,3 +20,7 @@ export const mockInterviewFeedbackSchema = z.object({
   topic: z.string().min(1),
   transcript: z.array(mockInterviewTranscriptSchema).min(1),
 });
+
+export const updateApplicationNotesSchema = z.object({
+  notes: z.string().max(4000),
+});

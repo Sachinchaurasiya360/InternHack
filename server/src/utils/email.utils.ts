@@ -21,6 +21,25 @@ export async function sendEmail(options: {
 }): Promise<boolean> {
   if (!resend) {
     console.warn(`[Email] RESEND_API_KEY not set — skipping email "${options.subject}" to ${options.to}`);
+    
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`\n==================================================`);
+      console.log(`[Email Dev Fallback] To: ${options.to}`);
+      console.log(`[Email Dev Fallback] Subject: ${options.subject}`);
+
+      // Parse individual digits from styled OTP cells (e.g. <td>8</td>)
+      const cellMatches = [...options.html.matchAll(/>(\d)<\/td>/g)];
+      if (cellMatches.length === 6) {
+        const otpCode = cellMatches.map((m) => m[1]).join("");
+        console.log(`[Email Dev Fallback] OTP Code Found: ${otpCode}`);
+      } else {
+        const otpMatch = options.html.match(/\b\d{6}\b/);
+        if (otpMatch) {
+          console.log(`[Email Dev Fallback] OTP Code Found: ${otpMatch[0]}`);
+        }
+      }
+      console.log(`==================================================\n`);
+    }
     return false;
   }
   console.log(`[Email] Sending "${options.subject}" to ${options.to}`);

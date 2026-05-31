@@ -17,6 +17,7 @@ import {
 } from "./roadmap.validation.js";
 import {
   buildWeeklyPlan,
+  getEnrollmentAnalyticsForUser,
   enrollUser,
   findDuplicateRoadmap,
   getEnrollmentForUser,
@@ -39,6 +40,8 @@ import {
 import { generateRoadmapPdf, generateCertificatePdf } from "./roadmap.pdf.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { roadmapWelcomeEmailHtml } from "../../utils/email-templates.js";
+// FIX: import clearCache so we can bust the cache for the new roadmap slug
+import { clearCache } from "../../middleware/cache.middleware.js";
 
 const validationError = (res: Response, errors: unknown) =>
   res.status(400).json({ message: "Validation failed", errors });
@@ -173,7 +176,7 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
             experienceLevel: full.experienceLevel,
             goal: full.goal,
           },
-          weeklyPlan: weeklyPlan.map((w) => ({
+          weeklyPlan: (weeklyPlan || []).map((w) => ({
             week: w.week,
             topicSlugs: w.topicSlugs,
             totalHours: w.totalHours,
@@ -207,7 +210,7 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
         });
 
         if (userRecord) {
-          const weekOne = weeklyPlan[0]?.topicSlugs ?? [];
+          const weekOne = weeklyPlan?.[0]?.topicSlugs ?? [];
           await sendEmail({
             to: userRecord.email,
             subject: `Your ${full.roadmap.title} is ready`,
@@ -285,6 +288,29 @@ export async function getMyEnrollment(req: Request, res: Response, next: NextFun
   }
 }
 
+export async function getMyEnrollmentAnalytics(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = enrollmentIdParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    const analytics = await getEnrollmentAnalyticsForUser({
+      userId: req.user!.id,
+      enrollmentId: params.data.id,
+    });
+    if (!analytics) {
+      res.status(404).json({ message: "Enrollment not found" });
+      return;
+    }
+
+    res.json({ analytics });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function deleteMyEnrollment(req: Request, res: Response, next: NextFunction) {
   try {
     const params = enrollmentIdParam.safeParse(req.params);
@@ -331,7 +357,6 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
       notes: body.data.notes,
     });
     res.json({ progress, roadmapCompleted });
-
 
   } catch (err) {
     if (typeof err === "object" && err && "status" in err) {
@@ -537,7 +562,10 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
           prerequisites: generated.prerequisites,
           tags: generated.tags,
           faqs: generated.faqs as unknown as Prisma.InputJsonValue,
-          isPublished: false,
+          // FIX: was `false` — AI-generated roadmaps must be published so the
+          // canvas page can load them via GET /roadmaps/:slug without hitting
+          // the unpublished ownership gate and returning a 404.
+          isPublished: true,
           isAiGenerated: true,
           ownerUserId: userId,
           topicCount,
@@ -707,6 +735,12 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
       });
     }
 
+    // FIX: Bust the cache for this slug so the first GET after generation
+    // always hits the DB and returns the freshly created roadmap, not a
+    // stale cache entry from a previous 404 or an earlier roadmap at the
+    // same URL pattern.
+    clearCache(`roadmap:/api/roadmaps/${slug}`);
+
     res.status(201).json({
       message: "Roadmap generated",
       slug: enrollment.roadmap.slug,
@@ -716,9 +750,6 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     next(err);
   }
 }
-
-
-
 
 export async function downloadCertificate(req: Request, res: Response, next: NextFunction) {
   try {
@@ -755,8 +786,6 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
       select: { name: true },
     });
 
-
-
     const completedTopics = enrollment.topicProgress
       .filter((p) => p.status === "COMPLETED" && p.completedAt)
       .sort((a, b) => b.completedAt!.getTime() - a.completedAt!.getTime());
@@ -768,9 +797,6 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
       roadmapTitle: enrollment.roadmap.title,
       completedAt: actualCompletedAt,
     });
-
-
-
 
     const suffix = theme === "dark" ? "-dark" : "";
     res.setHeader("Content-Type", "application/pdf");
@@ -940,6 +966,9 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
         },
       });
     });
+
+    // FIX: Bust the cache for this roadmap so section changes are visible immediately
+    clearCache(`roadmap:/api/roadmaps/${slug}`);
 
     res.json({
       message: "Section regenerated successfully",

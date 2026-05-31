@@ -45,6 +45,9 @@ type RepoRequestCardProps = {
   index: number;
   onApprove: (id: number, payload: ApprovePayload) => Promise<void>;
   onReject: (id: number) => Promise<void>;
+  selectedIds: number[];
+  onToggleSelect: (id: number) => void;
+  statusFilter: string;
 };
 
 const buildFormState = (req: RepoRequest): RepoRequestFormState => ({
@@ -76,6 +79,7 @@ export default function AdminRepoRequestsPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("PENDING");
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -94,6 +98,23 @@ export default function AdminRepoRequestsPage() {
 
   useEffect(() => { setPage(1); }, [statusFilter]);
   useEffect(() => { fetchRequests(); }, [statusFilter, page]);
+  useEffect(() => { setSelectedIds([]); }, [statusFilter, page]);
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const pendingOnPage = requests.filter((r) => r.status === "PENDING").map((r) => r.id);
+    const allSelected = pendingOnPage.every((id) => selectedIds.includes(id));
+    if (allSelected) {
+      setSelectedIds((prev) => prev.filter((id) => !pendingOnPage.includes(id)));
+    } else {
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...pendingOnPage])));
+    }
+  };
 
   const handleApprove = async (id: number, payload: ApprovePayload) => {
     try {
@@ -112,6 +133,30 @@ export default function AdminRepoRequestsPage() {
       fetchRequests();
     } catch {
       toast.error("Failed to reject request");
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await api.put("/opensource/requests/bulk", { ids: selectedIds, action: "approve" });
+      toast.success(`Successfully approved ${selectedIds.length} repositories`);
+      setSelectedIds([]);
+      fetchRequests();
+    } catch {
+      toast.error("Failed to approve selected requests");
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await api.put("/opensource/requests/bulk", { ids: selectedIds, action: "reject" });
+      toast.success(`Successfully rejected ${selectedIds.length} requests`);
+      setSelectedIds([]);
+      fetchRequests();
+    } catch {
+      toast.error("Failed to reject selected requests");
     }
   };
 
@@ -139,6 +184,24 @@ export default function AdminRepoRequestsPage() {
         ))}
       </div>
 
+      {statusFilter === "PENDING" && requests.length > 0 && (
+        <div className="flex items-center gap-3 mb-6 bg-gray-800/40 border border-gray-700 p-3 rounded-lg w-fit">
+          <input
+            type="checkbox"
+            id="selectAll"
+            className="w-4 h-4 rounded-sm border-gray-600 bg-gray-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 cursor-pointer"
+            checked={
+              requests.length > 0 &&
+              requests.filter((r) => r.status === "PENDING").map((r) => r.id).every((id) => selectedIds.includes(id))
+            }
+            onChange={handleSelectAll}
+          />
+          <label htmlFor="selectAll" className="text-sm text-gray-300 font-medium cursor-pointer select-none">
+            Select All on this page
+          </label>
+        </div>
+      )}
+
       {loading ? (
         <LoadingScreen />
       ) : requests.length === 0 ? (
@@ -155,6 +218,9 @@ export default function AdminRepoRequestsPage() {
               index={i}
               onApprove={handleApprove}
               onReject={handleReject}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+              statusFilter={statusFilter}
             />
           ))}
 
@@ -167,6 +233,39 @@ export default function AdminRepoRequestsPage() {
           )}
         </div>
       )}
+
+      {/* Bulk Action Toolbar */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-700 px-6 py-4 rounded-xl shadow-xl flex items-center gap-4 z-50 animate-in fade-in slide-in-from-bottom-4">
+          <span className="text-sm text-gray-300 font-semibold shrink-0 select-none">
+            {selectedIds.length} {selectedIds.length === 1 ? "request" : "requests"} selected
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              className="flex items-center gap-1 shrink-0"
+              onClick={handleBulkReject}
+            >
+              <X className="w-3.5 h-3.5" /> Reject Selected
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              className="flex items-center gap-1 shrink-0"
+              onClick={handleBulkApprove}
+            >
+              <Check className="w-3.5 h-3.5" /> Approve Selected
+            </Button>
+          </div>
+          <button
+            onClick={() => setSelectedIds([])}
+            className="text-xs text-gray-400 hover:text-white font-medium transition-colors cursor-pointer shrink-0 select-none"
+          >
+            Deselect
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -176,6 +275,9 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
   index,
   onApprove,
   onReject,
+  selectedIds,
+  onToggleSelect,
+  statusFilter,
 }: RepoRequestCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formState, setFormState] = useState<RepoRequestFormState>(() => buildFormState(req));
@@ -212,11 +314,22 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className="bg-gray-800/50 border border-gray-700 rounded-xl p-5"
+      className="bg-gray-800/50 border border-gray-700 rounded-xl p-5 flex gap-4"
     >
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+      {statusFilter === "PENDING" && (
+        <div className="pt-1.5 select-none shrink-0">
+          <input
+            type="checkbox"
+            checked={selectedIds.includes(req.id)}
+            onChange={() => onToggleSelect(req.id)}
+            className="w-4 h-4 rounded-sm border-gray-600 bg-gray-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 cursor-pointer"
+          />
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
             <h3 className="text-base font-bold text-white truncate">
               {req.owner}/{isEditing ? formState.name : req.name}
             </h3>
@@ -370,6 +483,7 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
             </button>
           </div>
         )}
+      </div>
       </div>
     </motion.div>
   );

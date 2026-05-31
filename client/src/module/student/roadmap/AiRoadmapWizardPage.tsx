@@ -124,6 +124,8 @@ export default function AiRoadmapWizardPage() {
       return titleNorm.includes(goalNorm) || goalNorm.includes(titleNorm);
     });
   })();
+  
+  const [forceCreate, setForceCreate] = useState(false);
 
   // Rotating loading copy
   useEffect(() => {
@@ -303,6 +305,37 @@ export default function AiRoadmapWizardPage() {
             Build a roadmap that fits you.
           </h1>
         </motion.div>
+
+        {step === 4 && similarEnrollment && !forceCreate && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 flex gap-4"
+          >
+            <div className="h-10 w-10 shrink-0 rounded-xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center text-amber-600">
+              <MapIcon className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-bold text-amber-900 dark:text-amber-200 mb-1">
+                Wait, is this familiar?
+              </h3>
+              <p className="text-xs text-amber-700/80 dark:text-amber-400/80 leading-relaxed mb-3">
+                You already have an active roadmap called <strong>"{similarEnrollment.roadmap.title}"</strong>. 
+                Want to continue where you left off?
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild size="sm" variant="secondary" className="bg-white dark:bg-amber-900 dark:hover:bg-amber-800">
+                  <Link to={`/learn/roadmaps/${similarEnrollment.roadmap.slug}`}>
+                    Open Existing
+                  </Link>
+                </Button>
+                <Button size="sm" variant="ghost" className="text-amber-700 dark:text-amber-400" onClick={() => setForceCreate(true)}>
+                  Create anyway
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Step bar */}
         <motion.div

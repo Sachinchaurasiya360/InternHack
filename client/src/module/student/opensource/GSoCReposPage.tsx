@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,8 +19,6 @@ import {
   Lightbulb,
   BookOpen,
   ArrowUpRight,
-  Copy,
-  Check,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -105,25 +103,17 @@ function FilterDropdown({
   value,
   options,
   onChange,
-  isOpen,
-  setIsOpen,
-  dropdownRef,
 }: {
   label: string;
   icon: ReactNode;
   value: string;
   options: string[];
   onChange: (v: string) => void;
-  isOpen: boolean;
-  setIsOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
-  dropdownRef: React.RefObject<HTMLDivElement | null>;
 }) {
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative group">
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
         className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-stone-300 bg-white px-3 text-xs font-mono uppercase tracking-widest text-stone-600 transition-colors hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
       >
         <span className="text-stone-400">{icon}</span>
@@ -131,28 +121,20 @@ function FilterDropdown({
         <span className="max-w-28 truncate font-bold normal-case tracking-normal text-stone-900 dark:text-stone-50">
           {value}
         </span>
-        <ChevronDown className={`h-3.5 w-3.5 opacity-60 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className="h-3.5 w-3.5 opacity-60" />
       </button>
-      <div
-        className={`${
-          isOpen ? "block active" : "hidden"
-        } absolute left-0 top-full z-20 mt-1 max-h-80 min-w-56 overflow-y-auto rounded-md border border-stone-200 bg-white p-1 shadow-xl dark:border-white/10 dark:bg-stone-900`}
-      >
+      <div className="absolute left-0 top-full z-20 mt-1 hidden max-h-80 min-w-56 overflow-y-auto rounded-md border border-stone-200 bg-white p-1 shadow-xl group-hover:block dark:border-white/10 dark:bg-stone-900">
         {options.map((opt) => {
           const active = opt === value;
           return (
             <button
               key={opt}
               type="button"
-onClick={() => {
-                onChange(opt);
-                setIsOpen(false);
-              }}
-              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${
-                active
-                  ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
-                  : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
-              }`}
+              onClick={() => onChange(opt)}
+              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${active
+                ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
+                : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
+                }`}
             >
               <span className="truncate">{opt}</span>
               {active && <span className="h-1 w-1 bg-lime-400" />}
@@ -163,6 +145,29 @@ onClick={() => {
     </div>
   );
 }
+
+const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }) => {
+  const yearsRange = Array.from({ length: 10 }, (_, i) => 2016 + i);
+
+  return (
+    <div className="mb-4 flex items-center gap-1" aria-label="GSoC Participation History (2016-2025)">
+      {yearsRange.map((year) => {
+        const participated = participatedYears.includes(year);
+        return (
+          <div
+            key={year}
+            title={participated ? `${year}: Participated` : `${year}: Did not participate`}
+            className={`h-1.5 w-1.5 rounded-sm transition-transform duration-200 hover:scale-125 cursor-help ${
+              participated
+                ? "bg-lime-500"
+                : "bg-stone-200 dark:bg-stone-700"
+            }`}
+          />
+        );
+      })}
+    </div>
+  );
+};
 
 function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => void }) {
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
@@ -205,6 +210,8 @@ function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => v
         </div>
       )}
 
+      <ParticipationBar participatedYears={org.yearsParticipated} />
+
       <div className="mt-auto flex items-center justify-between border-t border-stone-100 pt-3 dark:border-white/5">
         <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
           inspect org
@@ -225,22 +232,9 @@ interface GSoCOrgModalProps {
 
 function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: GSoCOrgModalProps) {
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
-  const [copiedField, setCopiedField] = useState<string | null>(null);
-
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
   const activeYear = selectedYear || (years[0] ? String(years[0]) : null);
   const yearData = activeYear && org.projectsData ? org.projectsData[activeYear] : null;
-
-  const handleCopy = (url: string, field: string) => {
-    navigator.clipboard.writeText(url);
-    setCopiedField(field);
-    setTimeout(() => setCopiedField(null), 1500);
-  };
-
-  const handleClose = () => {
-    setCopiedField(null);
-    onClose();
-  };
 
   return (
     <motion.div
@@ -248,7 +242,7 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/50 p-4 backdrop-blur-sm"
-      onClick={handleClose}
+      onClick={onClose}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -273,7 +267,7 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
           </div>
           <button
             type="button"
-            onClick={handleClose}
+            onClick={onClose}
             aria-label="Close"
             className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-stone-500 transition-colors hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5"
           >
@@ -405,56 +399,16 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
               </a>
             )}
             {org.ideasUrl && (
-              <div className="flex items-center gap-1">
-                <a href={org.ideasUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
-                  <Lightbulb className="h-3 w-3" />
-                  Project Ideas
-                </a>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(org.ideasUrl!, "ideas")}
-                  className={`px-2 py-1.5 text-[10px] font-mono uppercase tracking-widest border rounded-md inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    copiedField === "ideas"
-                      ? "border-lime-400 text-lime-600 dark:text-lime-400 bg-lime-50/50 dark:bg-lime-400/5 font-bold"
-                      : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 bg-white dark:bg-stone-900"
-                  }`}
-                >
-                  {copiedField === "ideas" ? (
-                    <>
-                      <Check className="h-3 w-3" />
-                      Copied!
-                    </>
-                  ) : (
-                    <Copy className="h-3 w-3" />
-                  )}
-                </button>
-              </div>
+              <a href={org.ideasUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                <Lightbulb className="h-3 w-3" />
+                Project Ideas
+              </a>
             )}
             {org.guideUrl && (
-              <div className="flex items-center gap-1">
-                <a href={org.guideUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
-                  <BookOpen className="h-3 w-3" />
-                  Contributor Guide
-                </a>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(org.guideUrl!, "guide")}
-                  className={`px-2 py-1.5 text-[10px] font-mono uppercase tracking-widest border rounded-md inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    copiedField === "guide"
-                      ? "border-lime-400 text-lime-600 dark:text-lime-400 bg-lime-50/50 dark:bg-lime-400/5 font-bold"
-                      : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 bg-white dark:bg-stone-900"
-                  }`}
-                >
-                  {copiedField === "guide" ? (
-                    <>
-                      <Check className="h-3 w-3" />
-                      Copied!
-                    </>
-                  ) : (
-                    <Copy className="h-3 w-3" />
-                  )}
-                </button>
-              </div>
+              <a href={org.guideUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+                <BookOpen className="h-3 w-3" />
+                Contributor Guide
+              </a>
             )}
           </div>
 
@@ -537,49 +491,17 @@ export default function GSoCReposPage() {
 
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
-
-  // Dropdown states
-  const [categoryOpen, setCategoryOpen] = useState(false);
-  const [techOpen, setTechOpen] = useState(false);
-  const [yearOpen, setYearOpen] = useState(false);
-
-  // Refs for outside click detection
-  const categoryRef = useRef<HTMLDivElement>(null);
-  const techRef = useRef<HTMLDivElement>(null);
-  const yearRef = useRef<HTMLDivElement>(null);
-
-  // Outside click handler
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (categoryRef.current && !categoryRef.current.contains(e.target as Node)) {
-        setCategoryOpen(false);
-      }
-      if (techRef.current && !techRef.current.contains(e.target as Node)) {
-        setTechOpen(false);
-      }
-      if (yearRef.current && !yearRef.current.contains(e.target as Node)) {
-        setYearOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Escape key handler
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setCategoryOpen(false);
-        setTechOpen(false);
-        setYearOpen(false);
-      }
-    };
-    document.addEventListener("keydown", handleEsc);
-    return () => document.removeEventListener("keydown", handleEsc);
-  }, []);
-
-  const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  
+  // ---> CHANGED TO useRef TO FIX STALE CLOSURES <---
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const limit = 18;
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   // FIX 2: Functional updater.
   // This ensures that delayed debounced calls always use the freshest URL state.
@@ -598,14 +520,15 @@ export default function GSoCReposPage() {
     );
     setPage(1);
   };
+
+  // ---> UPDATED TO USE timerRef <---
   const handleSearch = (value: string) => {
     setSearch(value);
-    if (timer) clearTimeout(timer);
-    setTimer(
-      setTimeout(() => {
-        updateFilter("q", value);
-      }, 400)
-    );
+    if (timerRef.current) clearTimeout(timerRef.current);
+    
+    timerRef.current = setTimeout(() => {
+      updateFilter("q", value);
+    }, 400);
   };
 
   const clearFilters = () => {
@@ -722,9 +645,6 @@ export default function GSoCReposPage() {
             label="category"
             value={selectedCategory}
             options={categoryOptions}
-isOpen={categoryOpen}
-            setIsOpen={setCategoryOpen}
-            dropdownRef={categoryRef}
             onChange={(value) => updateFilter("category", value)}
           />
           <FilterDropdown
@@ -732,9 +652,6 @@ isOpen={categoryOpen}
             label="year"
             value={selectedYear}
             options={yearOptions}
-isOpen={yearOpen}
-            setIsOpen={setYearOpen}
-            dropdownRef={yearRef}
             onChange={(value) => updateFilter("year", value)}
           />
           <FilterDropdown
@@ -742,9 +659,6 @@ isOpen={yearOpen}
             label="tech"
             value={selectedTech}
             options={techOptions}
-isOpen={techOpen}
-            setIsOpen={setTechOpen}
-            dropdownRef={techRef}
             onChange={(value) => updateFilter("tech", value)}
           />
           {hasFilters && (

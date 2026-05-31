@@ -79,6 +79,7 @@ model user {
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
@@ -176,6 +177,7 @@ model application {
   customFieldAnswers Json              @default("{}")
   resumeUrl          String?
   coverLetter        String?
+  studentNotes       String?           @db.Text
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   job                job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
@@ -1036,6 +1038,8 @@ model externalJobApplication {
   id         Int      @id @default(autoincrement())
   studentId  Int
   adminJobId Int
+  studentNotes String?  @db.Text
+  updatedAt    DateTime @updatedAt
   createdAt  DateTime @default(now())
   student    user     @relation("StudentExternalApplications", fields: [studentId], references: [id], onDelete: Cascade)
   adminJob   adminJob @relation("AdminJobApplications", fields: [adminJobId], references: [id], onDelete: Cascade)
@@ -1414,3 +1418,19 @@ enum InterviewOutcome {
   PENDING
   GHOSTED
 }
+
+model guideFeedback {
+  id        Int      @id @default(autoincrement())
+  guideId   String
+  stepId    String
+  userId    Int
+  rating    String
+  createdAt DateTime @default(now())
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideId, stepId])
+  @@index([guideId])
+  @@index([stepId])
+  }
+

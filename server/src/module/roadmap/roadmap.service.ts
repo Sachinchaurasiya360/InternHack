@@ -12,7 +12,7 @@ interface WeeklyPlanWeek {
 }
 export async function findDuplicateRoadmap(
   goalDescription: string,
-  userId: number
+  userId: number,
 ) {
   const normalizedGoal = goalDescription.toLowerCase().trim();
   if (!normalizedGoal) return null;
@@ -31,6 +31,13 @@ export async function findDuplicateRoadmap(
     where: {
       ownerUserId: userId,
       isAiGenerated: true,
+      slug: {
+        startsWith: "ai-",
+      },
+      title: {
+        contains: normalizedGoal.slice(0, 30),
+        mode: "insensitive",
+      },
       OR: keywords.map(kw => ({
         title: { contains: kw, mode: 'insensitive' }
       }))
@@ -120,7 +127,7 @@ export async function listPublishedRoadmaps(opts: {
   tag?: string | undefined;
   category?: string | undefined;
 }) {
-  const where: Prisma.roadmapWhereInput = { isPublished: true };
+  const where: Prisma.roadmapWhereInput = { isPublished: true, isAiGenerated: false };
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
@@ -339,14 +346,20 @@ export async function getEnrollmentForUser(args: {
   return enrollment;
 }
 
-export async function deleteEnrollment(args: { userId: number; enrollmentId: number }) {
+export async function deleteEnrollment(args: {
+  userId: number;
+  enrollmentId: number;
+}) {
   const enrollment = await prisma.roadmapEnrollment.findFirst({
     where: { id: args.enrollmentId, userId: args.userId },
   });
-  if (!enrollment) throw Object.assign(new Error("Enrollment not found"), { status: 404 });
+  if (!enrollment)
+    throw Object.assign(new Error("Enrollment not found"), { status: 404 });
 
   await prisma.$transaction(async (tx) => {
-    await tx.roadmapTopicProgress.deleteMany({ where: { enrollmentId: enrollment.id } });
+    await tx.roadmapTopicProgress.deleteMany({
+      where: { enrollmentId: enrollment.id },
+    });
     await tx.roadmapEnrollment.delete({ where: { id: enrollment.id } });
     await tx.roadmap.update({
       where: { id: enrollment.roadmapId },
@@ -512,6 +525,384 @@ export interface ProgressSummary {
   percentComplete: number;
   hoursDone: number;
   hoursTotal: number;
+}
+
+export type RoadmapTrackStatus = "AHEAD" | "ON_TRACK" | "BEHIND";
+
+export interface RoadmapProgressTrendPoint {
+  date: string;
+  completed: number;
+  cumulative: number;
+}
+
+export interface RoadmapEnrollmentAnalytics {
+  enrollmentId: number;
+  currentStreak: number;
+  longestStreak: number;
+  onTrackStatus: RoadmapTrackStatus;
+  paceDeviation: number;
+  expectedTopicsCompleted: number;
+  actualTopicsCompleted: number;
+  topicsCompletedThisWeek: number;
+  weeklyTarget: number;
+  estimatedCompletionDate: string;
+  targetEndDate: string;
+  progressTrend: RoadmapProgressTrendPoint[];
+}
+
+type AnalyticsRow = {
+  enrollmentId: number;
+  startDate: Date;
+  targetEndDate: Date;
+  weeklyPlan: Prisma.JsonValue;
+  totalTopics: number;
+  actualCompletedTopics: number;
+  completedEvents: { completedAt: string | Date }[];
+  progressTrend: RoadmapProgressTrendPoint[];
+};
+
+const toUtcDayKey = (date: Date): string => date.toISOString().slice(0, 10);
+
+const utcDateFromDayKey = (dayKey: string): Date =>
+  new Date(`${dayKey}T00:00:00.000Z`);
+
+const addUtcDays = (date: Date, days: number): Date =>
+  new Date(
+    Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate() + days,
+    ),
+  );
+
+const startOfUtcWeek = (date: Date): Date => {
+  const start = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
+  const day = start.getUTCDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  start.setUTCDate(start.getUTCDate() + mondayOffset);
+  return start;
+};
+
+function getActivePlanWeek(
+  weeklyPlan: WeeklyPlanWeek[],
+  now: Date,
+): WeeklyPlanWeek | null {
+  for (const week of weeklyPlan) {
+    const startDate = new Date(week.startDate);
+    const endDate = new Date(week.endDate);
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      continue;
+    }
+
+    if (now >= startDate && now <= endDate) {
+      return week;
+    }
+  }
+
+  return null;
+}
+
+function getCompletedUtcDays(
+  completedEvents: { completedAt: string | Date }[],
+): string[] {
+  return Array.from(
+    new Set(
+      completedEvents.map((event) =>
+        toUtcDayKey(
+          event.completedAt instanceof Date
+            ? event.completedAt
+            : new Date(event.completedAt),
+        ),
+      ),
+    ),
+  ).sort();
+}
+
+function calculateStreaks(completedDayKeys: string[]): {
+  currentStreak: number;
+  longestStreak: number;
+} {
+  if (completedDayKeys.length === 0) {
+    return { currentStreak: 0, longestStreak: 0 };
+  }
+
+  const completedDays = new Set(completedDayKeys);
+  let longestStreak = 0;
+  let runningStreak = 0;
+  let previousDay: Date | null = null;
+
+  for (const dayKey of completedDayKeys) {
+    const day = utcDateFromDayKey(dayKey);
+    if (previousDay && day.getTime() - previousDay.getTime() === MS_PER_DAY) {
+      runningStreak += 1;
+    } else {
+      runningStreak = 1;
+    }
+    longestStreak = Math.max(longestStreak, runningStreak);
+    previousDay = day;
+  }
+
+  const today = new Date();
+  const todayKey = toUtcDayKey(today);
+  const yesterdayKey = toUtcDayKey(addUtcDays(today, -1));
+  const currentAnchor = completedDays.has(todayKey)
+    ? today
+    : completedDays.has(yesterdayKey)
+      ? addUtcDays(today, -1)
+      : null;
+
+  if (!currentAnchor) {
+    return { currentStreak: 0, longestStreak };
+  }
+
+  let currentStreak = 0;
+  let cursor = currentAnchor;
+  while (completedDays.has(toUtcDayKey(cursor))) {
+    currentStreak += 1;
+    cursor = addUtcDays(cursor, -1);
+  }
+
+  return { currentStreak, longestStreak };
+}
+
+function parseWeeklyPlan(value: Prisma.JsonValue): WeeklyPlanWeek[] {
+  if (!Array.isArray(value)) return [];
+  const weeks: WeeklyPlanWeek[] = [];
+  for (const week of value) {
+    if (!week || typeof week !== "object" || Array.isArray(week)) continue;
+    const maybeWeek = week as Partial<WeeklyPlanWeek>;
+    if (
+      typeof maybeWeek.week === "number" &&
+      typeof maybeWeek.startDate === "string" &&
+      typeof maybeWeek.endDate === "string" &&
+      Array.isArray(maybeWeek.topicSlugs)
+    ) {
+      weeks.push({
+        week: maybeWeek.week,
+        startDate: maybeWeek.startDate,
+        endDate: maybeWeek.endDate,
+        topicSlugs: maybeWeek.topicSlugs.filter(
+          (slug): slug is string => typeof slug === "string",
+        ),
+        totalHours:
+          typeof maybeWeek.totalHours === "number" ? maybeWeek.totalHours : 0,
+      });
+    }
+  }
+  return weeks;
+}
+
+function getPlanStats(weeklyPlan: WeeklyPlanWeek[], now: Date) {
+  let expectedTopicsCompleted = 0;
+  let weeklyTarget = 0;
+
+  for (const week of weeklyPlan) {
+    const startDate = new Date(week.startDate);
+    const endDate = new Date(week.endDate);
+    const topicCount = week.topicSlugs.length;
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      continue;
+    }
+
+    if (now >= startDate && now <= endDate) {
+      weeklyTarget = topicCount;
+      expectedTopicsCompleted += topicCount;
+    } else if (endDate < now) {
+      expectedTopicsCompleted += topicCount;
+    }
+  }
+
+  return { expectedTopicsCompleted, weeklyTarget };
+}
+
+function getOnTrackStatus(
+  actualCompletedTopics: number,
+  expectedTopicsCompleted: number,
+): {
+  paceDeviation: number;
+  onTrackStatus: RoadmapTrackStatus;
+} {
+  if (expectedTopicsCompleted <= 0) {
+    return {
+      paceDeviation: 0,
+      onTrackStatus: actualCompletedTopics > 0 ? "AHEAD" : "ON_TRACK",
+    };
+  }
+
+  const paceDeviation =
+    (expectedTopicsCompleted - actualCompletedTopics) / expectedTopicsCompleted;
+
+  if (actualCompletedTopics > expectedTopicsCompleted) {
+    return { paceDeviation, onTrackStatus: "AHEAD" };
+  }
+
+  if (paceDeviation > 0.15) {
+    return { paceDeviation, onTrackStatus: "BEHIND" };
+  }
+
+  return { paceDeviation, onTrackStatus: "ON_TRACK" };
+}
+
+function getEstimatedCompletionDate(args: {
+  startDate: Date;
+  targetEndDate: Date;
+  totalTopics: number;
+  actualCompletedTopics: number;
+  now: Date;
+}): string {
+  if (args.totalTopics <= args.actualCompletedTopics) {
+    return args.now.toISOString();
+  }
+
+  if (args.actualCompletedTopics <= 0) {
+    return args.targetEndDate.toISOString();
+  }
+
+  const elapsedDays = Math.max(
+    1,
+    Math.ceil((args.now.getTime() - args.startDate.getTime()) / MS_PER_DAY),
+  );
+  const topicsPerDay = args.actualCompletedTopics / elapsedDays;
+  if (topicsPerDay <= 0) {
+    return args.targetEndDate.toISOString();
+  }
+
+  const remainingTopics = Math.max(
+    0,
+    args.totalTopics - args.actualCompletedTopics,
+  );
+  const daysRemaining = Math.ceil(remainingTopics / topicsPerDay);
+  return addUtcDays(args.now, daysRemaining).toISOString();
+}
+
+export async function getEnrollmentAnalyticsForUser(args: {
+  userId: number;
+  enrollmentId: number;
+}): Promise<RoadmapEnrollmentAnalytics | null> {
+  const rows = await prisma.$queryRaw<AnalyticsRow[]>`
+    WITH enrollment AS (
+      SELECT
+        e.id AS "enrollmentId",
+        e."startDate" AS "startDate",
+        e."targetEndDate" AS "targetEndDate",
+        e."weeklyPlan" AS "weeklyPlan",
+        r."topicCount" AS "totalTopics"
+      FROM "roadmapEnrollment" e
+      INNER JOIN "roadmap" r ON r.id = e."roadmapId"
+      WHERE e.id = ${args.enrollmentId}
+        AND e."userId" = ${args.userId}
+      LIMIT 1
+    ),
+    completed AS (
+      SELECT
+        p."completedAt" AS "completedAt",
+        (p."completedAt" AT TIME ZONE 'UTC')::date AS day
+      FROM "roadmapTopicProgress" p
+      INNER JOIN enrollment e ON e."enrollmentId" = p."enrollmentId"
+      WHERE p.status = 'COMPLETED'
+        AND p."completedAt" IS NOT NULL
+    ),
+    daily AS (
+      SELECT
+        day,
+        COUNT(*)::int AS completed
+      FROM completed
+      GROUP BY day
+    ),
+    trend AS (
+      SELECT
+        day,
+        completed,
+        SUM(completed) OVER (ORDER BY day)::int AS cumulative
+      FROM daily
+    )
+    SELECT
+      e."enrollmentId",
+      e."startDate",
+      e."targetEndDate",
+      e."weeklyPlan",
+      e."totalTopics",
+      COALESCE((SELECT COUNT(*)::int FROM completed), 0) AS "actualCompletedTopics",
+      COALESCE(
+        (
+          SELECT jsonb_agg(jsonb_build_object('completedAt', c."completedAt") ORDER BY c."completedAt")
+          FROM completed c
+        ),
+        '[]'::jsonb
+      ) AS "completedEvents",
+      COALESCE(
+        (
+          SELECT jsonb_agg(
+            jsonb_build_object(
+              'date', t.day::text,
+              'completed', t.completed,
+              'cumulative', t.cumulative
+            )
+            ORDER BY t.day
+          )
+          FROM trend t
+        ),
+        '[]'::jsonb
+      ) AS "progressTrend"
+    FROM enrollment e
+  `;
+
+  const row = rows[0];
+  if (!row) return null;
+
+  const now = new Date();
+  const completedDayKeys = getCompletedUtcDays(row.completedEvents);
+  const { currentStreak, longestStreak } = calculateStreaks(completedDayKeys);
+  const weeklyPlan = parseWeeklyPlan(row.weeklyPlan);
+  const { expectedTopicsCompleted, weeklyTarget } = getPlanStats(
+    weeklyPlan,
+    now,
+  );
+  const { paceDeviation, onTrackStatus } = getOnTrackStatus(
+    row.actualCompletedTopics,
+    expectedTopicsCompleted,
+  );
+  const activePlanWeek = getActivePlanWeek(weeklyPlan, now);
+  const topicsCompletedThisWeek = activePlanWeek
+    ? row.completedEvents.filter((event) => {
+        const completedAt =
+          event.completedAt instanceof Date
+            ? event.completedAt
+            : new Date(event.completedAt);
+        const weekStart = new Date(activePlanWeek.startDate);
+        const weekEnd = new Date(activePlanWeek.endDate);
+        return (
+          completedAt >= weekStart &&
+          completedAt <= weekEnd &&
+          completedAt <= now
+        );
+      }).length
+    : 0;
+
+  return {
+    enrollmentId: row.enrollmentId,
+    currentStreak,
+    longestStreak,
+    onTrackStatus,
+    paceDeviation,
+    expectedTopicsCompleted,
+    actualTopicsCompleted: row.actualCompletedTopics,
+    topicsCompletedThisWeek,
+    weeklyTarget,
+    estimatedCompletionDate: getEstimatedCompletionDate({
+      startDate: row.startDate,
+      targetEndDate: row.targetEndDate,
+      totalTopics: row.totalTopics,
+      actualCompletedTopics: row.actualCompletedTopics,
+      now,
+    }),
+    targetEndDate: row.targetEndDate.toISOString(),
+    progressTrend: row.progressTrend,
+  };
 }
 
 export function summarizeProgress(
