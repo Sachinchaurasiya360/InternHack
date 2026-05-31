@@ -1414,3 +1414,18 @@ enum InterviewOutcome {
   PENDING
   GHOSTED
 }
+
+model guideFeedback {
+  id        Int      @id @default(autoincrement())
+  guideId   String
+  stepId    String
+  userId    Int
+  rating    String
+  createdAt DateTime @default(now())
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideId, stepId])
+  @@index([guideId])
+  @@index([stepId])
+}

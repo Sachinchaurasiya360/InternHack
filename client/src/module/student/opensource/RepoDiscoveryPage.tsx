@@ -40,8 +40,17 @@ const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function RepoDiscoveryPage() {
+  const [inputValue, setInputValue] = useState("");
   const [search, setSearch] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(inputValue);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [inputValue]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -227,8 +236,8 @@ export default function RepoDiscoveryPage() {
           <input
             ref={searchRef}
             type="text"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder="Search repos, languages, tags..."
             className="w-full pl-10 pr-10 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
           />
@@ -427,6 +436,7 @@ export default function RepoDiscoveryPage() {
                         setSelectedDomain("ALL");
                         setSelectedDifficulty("ALL");
                         setSelectedLanguage("ALL");
+                        setInputValue("");
                         setSearch("");
                         setPage(1);
                       }}
