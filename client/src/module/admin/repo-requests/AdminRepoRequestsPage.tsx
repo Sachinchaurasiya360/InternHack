@@ -242,9 +242,9 @@ export default function AdminRepoRequestsPage() {
           </span>
           <div className="flex items-center gap-2">
             <Button
-              variant="destructive"
+              variant="danger"
               size="sm"
-              className="flex items-center gap-1 bg-red-900/40 text-red-400 hover:bg-red-900/60 border border-red-800/40 shrink-0"
+              className="flex items-center gap-1 shrink-0"
               onClick={handleBulkReject}
             >
               <X className="w-3.5 h-3.5" /> Reject Selected
@@ -252,7 +252,7 @@ export default function AdminRepoRequestsPage() {
             <Button
               variant="primary"
               size="sm"
-              className="flex items-center gap-1 bg-emerald-900/40 text-emerald-400 hover:bg-emerald-900/60 border border-emerald-800/40 shrink-0"
+              className="flex items-center gap-1 shrink-0"
               onClick={handleBulkApprove}
             >
               <Check className="w-3.5 h-3.5" /> Approve Selected

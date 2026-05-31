@@ -467,19 +467,35 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     const userId = req.user!.id;
     const input = parsed.data;
 
+    // 1. Enforce max capacity threshold guard
+    const MAX_AI_ROADMAPS = 5;
+    const existingCount = await prisma.roadmapEnrollment.count({
+      where: {
+        userId,
+        roadmap: { ownerUserId: userId },
+      },
+    });
+
+    if (existingCount >= MAX_AI_ROADMAPS) {
+      res.status(409).json({
+        message: "You have reached the limit of 5 active AI roadmaps. Please complete or delete existing ones before generating new ones.",
+      });
+      return;
+    }
+
+    // 2. Evaluate similarity duplicate check block
     const duplicate = await findDuplicateRoadmap(
-  input.goalDescription,
-  userId
-);
+      input.goalDescription,
+      userId
+    );
 
-if (duplicate && !input.forceCreate) {
-  res.status(409).json({
-    message: "Similar roadmap already exists",
-    roadmap: duplicate,
-  });
-
-  return;
-}
+    if (duplicate && !input.forceCreate) {
+      res.status(409).json({
+        message: "Similar roadmap already exists",
+        roadmap: duplicate,
+      });
+      return;
+    }
 
     // 1. Generate via Gemini, validate shape
     let generated;
@@ -859,7 +875,7 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
     };
 
     const updatedSection = await prisma.$transaction(async (tx) => {
-      
+
       await tx.roadmapTopic.deleteMany({ where: { sectionId } });
 
       await tx.roadmapSection.update({
