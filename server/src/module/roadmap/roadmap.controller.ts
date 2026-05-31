@@ -17,6 +17,7 @@ import {
 } from "./roadmap.validation.js";
 import {
   buildWeeklyPlan,
+  getEnrollmentAnalyticsForUser,
   enrollUser,
   findDuplicateRoadmap,
   getEnrollmentForUser,
@@ -282,6 +283,29 @@ export async function getMyEnrollment(req: Request, res: Response, next: NextFun
       enrollment,
       summary: summarizeProgress(enrollment),
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getMyEnrollmentAnalytics(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = enrollmentIdParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    const analytics = await getEnrollmentAnalyticsForUser({
+      userId: req.user!.id,
+      enrollmentId: params.data.id,
+    });
+    if (!analytics) {
+      res.status(404).json({ message: "Enrollment not found" });
+      return;
+    }
+
+    res.json({ analytics });
   } catch (err) {
     next(err);
   }
