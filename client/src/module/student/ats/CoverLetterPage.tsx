@@ -135,6 +135,8 @@ export default function CoverLetterPage() {
 const [coverLetter, setCoverLetter] = useState("");
 const [originalCoverLetter, setOriginalCoverLetter] = useState("");
 const [isModified, setIsModified] = useState(false);
+const wordCount = coverLetter.trim() === "" ? 0 : coverLetter.trim().split(/\s+/).filter(Boolean).length;
+const charCount = coverLetter.length;
 
 const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -981,6 +983,9 @@ useEffect(() => {
   setIsModified(updatedValue !== originalCoverLetter);
 }}
                   />
+                  <p className="mt-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+  {wordCount} words · {charCount} characters
+</p>
                 </div>
               </motion.div>
             )}
