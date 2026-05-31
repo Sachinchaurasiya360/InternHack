@@ -171,7 +171,6 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
             experienceLevel: full.experienceLevel,
             goal: full.goal,
           },
-          // Add a || [] to ensure it always has something to map over
           weeklyPlan: (weeklyPlan || []).map((w) => ({
             week: w.week,
             topicSlugs: w.topicSlugs,
