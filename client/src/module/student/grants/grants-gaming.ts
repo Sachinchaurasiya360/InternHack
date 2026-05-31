@@ -1,4 +1,3 @@
-<<<<<<< main
 import type { Grant } from "./grantsData";
 
 export const grantsGaming: Grant[] = [
@@ -164,4 +163,3 @@ export const grantsGaming: Grant[] = [
     ],
   },
 ];
->>>>>>> main
