@@ -432,6 +432,7 @@ function LinkCompanyModal({
   const [results, setResults] = useState<InterviewExperienceCompany[]>([]);
   const [saving, setSaving] = useState(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (!query.trim()) { setResults([]); return; }
     const t = setTimeout(async () => {

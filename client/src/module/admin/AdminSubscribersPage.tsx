@@ -31,9 +31,8 @@ export default function AdminSubscribersPage() {
       .finally(() => setLoading(false));
   }, [page]);
 
-  useEffect(() => {
-    fetchSubscribers();
-  }, [fetchSubscribers]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchSubscribers(); }, [fetchSubscribers]);
 
   const handleDelete = async (id: number) => {
     try {

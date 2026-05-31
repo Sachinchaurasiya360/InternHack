@@ -29,6 +29,7 @@ export default function AdminReviewsPage() {
   };
 
   useEffect(() => { setPage(1); }, [statusFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchReviews(); }, [statusFilter, page]);
 
   const handleStatus = async (id: number, status: "APPROVED" | "REJECTED") => {

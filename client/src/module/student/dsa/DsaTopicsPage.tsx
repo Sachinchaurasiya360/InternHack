@@ -10,7 +10,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaTopicsResponse, DsaProgress, LeetcodeImportStatus } from "../../../lib/types";
+import type { DsaTopicsResponse, DsaProgress, LeetcodeImportStatus, DsaTopic, User } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -59,10 +59,10 @@ const DsaTopicCard = React.memo(function DsaTopicCard({
   user,
   onShowGate,
 }: {
-  topic: any;
+  topic: DsaTopic;
   idx: number;
   page: number;
-  user: any;
+  user: User | null;
   onShowGate: () => void;
 }) {
   const FREE_LIMIT = 5;

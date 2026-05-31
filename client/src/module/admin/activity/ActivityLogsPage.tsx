@@ -33,10 +33,10 @@ export default function ErrorLogsPage() {
     }
   };
 
-  useEffect(() => {
-    fetchLogs();
-  }, [statusGroup, method]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchLogs(); }, [statusGroup, method]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const timeout = setTimeout(() => fetchLogs(), 400);
     return () => clearTimeout(timeout);

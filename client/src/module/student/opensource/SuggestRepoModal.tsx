@@ -429,9 +429,9 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
 
             {mutation.isError && (
               <p className="text-sm text-red-500">
-                {(mutation.error as any)?.response?.status === 429
-                  ? (mutation.error as any)?.response?.data?.message
-                  : (mutation.error as any)?.response?.data?.message ||
+                {(mutation.error as { response?: { status?: number; data?: { message?: string } } })?.response?.status === 429
+                  ? (mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message
+                  : (mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
                     "Failed to submit. Please try again."}
               </p>
             )}
