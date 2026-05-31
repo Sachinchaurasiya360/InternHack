@@ -166,19 +166,19 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="rounded-3xl overflow-hidden border border-indigo-200 dark:border-indigo-500/20 bg-linear-to-r from-indigo-600 to-purple-600 shadow-2xl"
+            className="rounded-3xl overflow-hidden border border-stone-200 dark:border-white/10 bg-stone-100 dark:bg-stone-900 shadow-sm"
           >
             <div className="p-8 md:p-10 text-center">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 mb-5">
-                <Mail className="text-white" size={26} />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 mb-5">
+                <Mail size={26} />
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">Want to get in touch?</h2>
-              <p className="text-stone-400 max-w-2xl mx-auto mb-8 leading-relaxed">
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mb-3">Want to get in touch?</h2>
+              <p className="text-stone-600 dark:text-stone-400 max-w-2xl mx-auto mb-8 leading-relaxed">
                 Have questions, feedback, or partnership ideas? We would love to hear from you.
               </p>
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-2 bg-white text-indigo-700 hover:bg-gray-100 transition px-6 py-3 rounded-xl font-semibold shadow-lg no-underline"
+                className="inline-flex items-center gap-2 bg-lime-400 text-stone-950 hover:bg-lime-300 transition px-6 py-3 rounded-xl font-semibold shadow-lg no-underline"
               >
                 <Mail size={18} />
                 Contact Us
