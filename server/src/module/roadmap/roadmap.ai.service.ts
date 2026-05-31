@@ -9,6 +9,26 @@ import {
   type RegenerateSectionPromptInput,
 } from "./roadmap.ai.prompts.js";
 
+// ── Retry helper ──────────────────────────────────────────────────────────
+const MAX_RETRIES = 2;
+const BACKOFF_MS = [1000, 2000];
+
+class NonRetryableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NonRetryableError";
+  }
+}
+
+function isRetryable(err: unknown): boolean {
+  if (err instanceof NonRetryableError) return false;
+  return true;
+}
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // ── Output schema (what the AI must return) ────────────────────────────────
 const aiResourceSchema = z.object({
   kind: z.enum(["VIDEO", "ARTICLE", "DOCS", "COURSE", "BOOK", "PROJECT", "OTHER"]),
@@ -63,24 +83,46 @@ export async function generateAiRoadmap(
 ): Promise<GeneratedRoadmap> {
   const provider = new GeminiProvider("gemini-2.5-flash-lite");
   const prompt = buildRoadmapPrompt(input);
-  const response = await provider.generateText(prompt);
 
-  let parsed: unknown;
-  try {
-    parsed = parseJsonResponse(response.text);
-    logAIRequest("AI_ROADMAP_GENERATION", response, true, undefined, userId);
-  } catch (err) {
-    logAIRequest("AI_ROADMAP_GENERATION", response, false, (err as Error).message, userId);
-    throw new Error("AI returned a response we could not parse. Please try again.");
+  let lastError: Error | undefined;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await provider.generateText(prompt);
+
+      let parsed: unknown;
+      try {
+        parsed = parseJsonResponse(response.text);
+        logAIRequest("AI_ROADMAP_GENERATION", response, true, undefined, userId);
+      } catch (err) {
+        logAIRequest("AI_ROADMAP_GENERATION", response, false, (err as Error).message, userId);
+        throw err; // retryable — will be caught below
+      }
+
+      const result = aiRoadmapSchema.safeParse(parsed);
+      if (!result.success) {
+        console.error(`[AiRoadmap] Validation failed (attempt ${attempt + 1})`, result.error.flatten());
+        throw new Error("AI returned an incomplete roadmap."); // retryable
+      }
+
+      return result.data;
+    } catch (err) {
+      lastError = err as Error;
+
+      if (!isRetryable(err)) {
+        throw lastError;
+      }
+
+      if (attempt < MAX_RETRIES) {
+        console.warn(`[AiRoadmap] Attempt ${attempt + 1} failed, retrying in ${BACKOFF_MS[attempt]}ms…`, lastError.message);
+        await sleep(BACKOFF_MS[attempt]);
+      }
+    }
   }
 
-  const result = aiRoadmapSchema.safeParse(parsed);
-  if (!result.success) {
-    console.error("[AiRoadmap] Validation failed", result.error.flatten());
-    throw new Error("AI returned an incomplete roadmap. Please try again.");
-  }
-
-  return result.data;
+  throw new Error(
+    `AI roadmap generation failed after ${MAX_RETRIES + 1} attempts. ${lastError?.message ?? "Please try again."}`,
+  );
 }
 
 /** Slugify section + topic titles, ensuring uniqueness within their parent. */
@@ -159,22 +201,44 @@ export async function regenerateSection(
 ): Promise<RegeneratedSection> {
   const provider = new GeminiProvider("gemini-2.5-flash-lite");
   const prompt = buildSectionPrompt(input);
-  const response = await provider.generateText(prompt);
 
-  let parsed: unknown;
-  try {
-    parsed = parseJsonResponse(response.text);
-    logAIRequest("AI_ROADMAP_GENERATION", response, true, undefined, userId);
-  } catch (err) {
-    logAIRequest("AI_ROADMAP_GENERATION", response, false, (err as Error).message, userId);
-    throw new Error("AI returned a response we could not parse. Please try again.");
+  let lastError: Error | undefined;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await provider.generateText(prompt);
+
+      let parsed: unknown;
+      try {
+        parsed = parseJsonResponse(response.text);
+        logAIRequest("AI_ROADMAP_GENERATION", response, true, undefined, userId);
+      } catch (err) {
+        logAIRequest("AI_ROADMAP_GENERATION", response, false, (err as Error).message, userId);
+        throw err;
+      }
+
+      const result = aiSectionRegenerateSchema.safeParse(parsed);
+      if (!result.success) {
+        console.error(`[AiRoadmap] Section regeneration validation failed (attempt ${attempt + 1})`, result.error.flatten());
+        throw new Error("AI returned an incomplete section.");
+      }
+
+      return result.data;
+    } catch (err) {
+      lastError = err as Error;
+
+      if (!isRetryable(err)) {
+        throw lastError;
+      }
+
+      if (attempt < MAX_RETRIES) {
+        console.warn(`[AiRoadmap] Section attempt ${attempt + 1} failed, retrying in ${BACKOFF_MS[attempt]}ms…`, lastError.message);
+        await sleep(BACKOFF_MS[attempt]);
+      }
+    }
   }
 
-  const result = aiSectionRegenerateSchema.safeParse(parsed);
-  if (!result.success) {
-    console.error("[AiRoadmap] Section regeneration validation failed", result.error.flatten());
-    throw new Error("AI returned an incomplete section. Please try again.");
-  }
-
-  return result.data;
+  throw new Error(
+    `Section regeneration failed after ${MAX_RETRIES + 1} attempts. ${lastError?.message ?? "Please try again."}`,
+  );
 }
