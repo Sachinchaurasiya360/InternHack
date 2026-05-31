@@ -1010,14 +1010,6 @@ export default function AtsScorePage() {
                         </span>
                       </div>
                     }
-                      
-                      
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
-                      >
-                        / {overallTier.label.toLowerCase()}
-                      </span>
-                    }
                   />
                   <div className="p-6 flex items-center gap-6">
                     <ScoreCircle score={result.overallScore} />
