@@ -1,8 +1,9 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
   Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter,
+  LayoutGrid, AlignLeft,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 
@@ -496,6 +497,184 @@ const ELIGIBILITY_STYLE: Record<string, string> = {
   "Diversity-focused": "bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
 };
 
+// ─── Timeline colours (12 distinct non-lime accents) ──────────────
+const TIMELINE_COLORS: string[] = [
+  "#ef4444", // red   – GSoC
+  "#3b82f6", // blue  – LFX
+  "#6366f1", // indigo – MLH Fellowship
+  "#14b8a6", // teal  – Outreachy
+  "#f97316", // orange – Hacktoberfest
+  "#ec4899", // pink  – GSSoC
+  "#f59e0b", // amber – GSoD
+  "#64748b", // slate – Hyperledger
+  "#8b5cf6", // violet – MLH Localhost
+  "#f43f5e", // rose  – RGSoC
+  "#0ea5e9", // sky   – OMP
+  "#06b6d4", // cyan  – K8s Shadow
+];
+
+// Map short month names to 0-based index
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+/** Parse a program's `window` string into {startMonth, endMonth} (0-based, relative to year). */
+function parseWindow(window: string): { start: number; end: number } | null {
+  // Try to find two month names separated by "–" or "-"
+  const match = window.match(/([A-Z][a-z]{2})[^A-Za-z]+([A-Z][a-z]{2})/);
+  if (match) {
+    const s = MONTH_NAMES.indexOf(match[1]);
+    const e = MONTH_NAMES.indexOf(match[2]);
+    if (s !== -1 && e !== -1) return { start: s, end: e };
+  }
+  // Single month like "October"
+  for (let i = 0; i < MONTH_NAMES.length; i++) {
+    if (window.includes(MONTH_NAMES[i])) return { start: i, end: i };
+  }
+  return null;
+}
+
+// ─── Timeline View Component ──────────────────────────────────────
+function TimelineView({ programs }: { programs: Program[] }) {
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0-based
+  const currentYear = now.getFullYear();
+
+  // Build 7 month columns: current month + next 6
+  const columns = Array.from({ length: 7 }, (_, i) => {
+    const monthIdx = (currentMonth + i) % 12;
+    const year = currentYear + Math.floor((currentMonth + i) / 12);
+    return { label: `${MONTH_NAMES[monthIdx]} '${String(year).slice(2)}`, monthIdx, offset: i };
+  });
+
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; program: Program } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div ref={containerRef} className="relative overflow-x-auto rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+      {/* Column headers */}
+      <div className="grid" style={{ gridTemplateColumns: `180px repeat(7, 1fr)` }}>
+        <div className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 rounded-tl-2xl">
+          Program
+        </div>
+        {columns.map((col) => (
+          <div
+            key={col.offset}
+            className={`px-2 py-3 text-xs font-semibold text-center uppercase tracking-wider border-b border-l border-gray-100 dark:border-gray-800 ${
+              col.offset === 0
+                ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400"
+                : "bg-gray-50 dark:bg-gray-950 text-gray-400"
+            } ${col.offset === 6 ? "rounded-tr-2xl" : ""}`}
+          >
+            {col.label}
+          </div>
+        ))}
+      </div>
+
+      {/* Program rows */}
+      {programs.map((program, idx) => {
+        const parsed = parseWindow(program.window);
+        const color = TIMELINE_COLORS[idx % TIMELINE_COLORS.length];
+
+        // Determine which columns (offsets 0-6) fall inside this program's window
+        const activeCols = columns.map((col) => {
+          if (!parsed) return false;
+          // Handle wrap-around (e.g. Oct–Mar)
+          if (parsed.start <= parsed.end) {
+            return col.monthIdx >= parsed.start && col.monthIdx <= parsed.end;
+          } else {
+            return col.monthIdx >= parsed.start || col.monthIdx <= parsed.end;
+          }
+        });
+
+        return (
+          <div
+            key={program.id}
+            className="grid border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition-colors"
+            style={{ gridTemplateColumns: `180px repeat(7, 1fr)` }}
+          >
+            {/* Label */}
+            <div className="px-4 py-3 flex items-center gap-2 border-r border-gray-100 dark:border-gray-800">
+              <span
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ backgroundColor: color }}
+              />
+              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate">
+                {program.short}
+              </span>
+            </div>
+
+            {/* Month cells */}
+            {columns.map((col, ci) => (
+              <div
+                key={col.offset}
+                className="relative border-l border-gray-100 dark:border-gray-800 flex items-center justify-center py-2.5 px-1"
+              >
+                {activeCols[ci] && (
+                  <motion.div
+                    initial={{ scaleX: 0, opacity: 0 }}
+                    animate={{ scaleX: 1, opacity: 1 }}
+                    transition={{ duration: 0.35, delay: idx * 0.04 }}
+                    style={{
+                      backgroundColor: color,
+                      originX: 0,
+                    }}
+                    className="absolute inset-x-0.5 inset-y-1.5 rounded-md opacity-85 cursor-pointer"
+                    onMouseEnter={(e) => {
+                      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                      const containerRect = containerRef.current?.getBoundingClientRect();
+                      setTooltip({
+                        x: rect.left - (containerRect?.left ?? 0) + rect.width / 2,
+                        y: rect.top - (containerRect?.top ?? 0) - 8,
+                        program,
+                      });
+                    }}
+                    onMouseLeave={() => setTooltip(null)}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        );
+      })}
+
+      {/* Tooltip */}
+      <AnimatePresence>
+        {tooltip && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.15 }}
+            className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-full"
+            style={{ left: tooltip.x, top: tooltip.y }}
+          >
+            <div className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs rounded-lg px-3 py-2 shadow-xl max-w-[200px] text-center">
+              <p className="font-bold">{tooltip.program.name}</p>
+              <p className="text-gray-300 dark:text-gray-600 mt-0.5">{tooltip.program.window}</p>
+              {tooltip.program.stipendPaid && (
+                <p className="text-emerald-400 dark:text-emerald-600 mt-0.5 font-medium">{tooltip.program.stipend}</p>
+              )}
+              <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-900 dark:border-t-gray-100" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Legend */}
+      <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-800 flex flex-wrap gap-3">
+        {programs.map((program, idx) => (
+          <div key={program.id} className="flex items-center gap-1.5">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: TIMELINE_COLORS[idx % TIMELINE_COLORS.length] }}
+            />
+            <span className="text-[10px] text-gray-500 dark:text-gray-400">{program.short}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Program Card ─────────────────────────────────────────────
 function ProgramCard({ program }: { program: Program }) {
   const [expanded, setExpanded] = useState(false);
@@ -669,6 +848,7 @@ export default function ProgramTrackerPage() {
 
   const savedFilters = getSavedFilters();
 
+  const [viewMode, setViewMode] = useState<"card" | "timeline">("card");
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
   const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
@@ -786,6 +966,36 @@ export default function ProgramTrackerPage() {
               <X className="w-3.5 h-3.5" /> Clear
             </Button>
           )}
+
+          {/* View toggle */}
+          <div className="flex items-center rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <button
+              id="view-card"
+              onClick={() => setViewMode("card")}
+              title="Card view"
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-colors ${
+                viewMode === "card"
+                  ? "bg-emerald-500 text-white"
+                  : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              Cards
+            </button>
+            <button
+              id="view-timeline"
+              onClick={() => setViewMode("timeline")}
+              title="Timeline view"
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-colors border-l border-gray-200 dark:border-gray-700 ${
+                viewMode === "timeline"
+                  ? "bg-emerald-500 text-white"
+                  : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+              }`}
+            >
+              <AlignLeft className="w-3.5 h-3.5" />
+              Timeline
+            </button>
+          </div>
         </div>
       </div>
 
@@ -793,12 +1003,25 @@ export default function ProgramTrackerPage() {
         Showing <span className="font-semibold text-gray-900 dark:text-white">{filtered.length}</span> of {PROGRAMS.length} programs
       </p>
 
-      {/* List */}
+      {/* List / Timeline */}
       {filtered.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 dark:bg-gray-950 rounded-2xl">
           <GraduationCap className="w-10 h-10 text-gray-200 mx-auto mb-3" />
           <p className="text-sm text-gray-500 font-medium">No programs match your filters</p>
         </div>
+      ) : viewMode === "timeline" ? (
+        <motion.div
+          key="timeline"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          <p className="text-xs text-gray-400 mb-3 flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5" />
+            Showing application windows for current month + next 6 months. Hover a bar for details.
+          </p>
+          <TimelineView programs={filtered} />
+        </motion.div>
       ) : (
         <div className="space-y-4">
           {filtered.map((program) => (
