@@ -53,7 +53,7 @@ const itemVariants: Variants = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-linear-to-br from-white via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
+    <div className="min-h-screen flex flex-col bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
         title="About Us"
         description="Learn more about InternHack — the AI-powered career and hiring platform built for students and recruiters."
@@ -73,10 +73,10 @@ export default function AboutPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 mb-5">
               <Globe size={30} />
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-stone-900 dark:text-white mb-4 tracking-tight">
               About InternHack
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg">
+            <p className="text-stone-600 dark:text-stone-400 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
               InternHack is an AI-powered career and hiring platform that helps students
               prepare for placements, practice interviews, and get placed — while giving
               recruiters the tools to hire smarter.
@@ -93,12 +93,12 @@ export default function AboutPage() {
           >
             <motion.div variants={itemVariants} className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg shadow-sm p-6 md:p-8 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                <div className="p-3 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400">
                   <Target size={22} />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Our Mission</h2>
+                <h2 className="text-xl font-semibold text-stone-900 dark:text-white">Our Mission</h2>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+              <p className="text-stone-600 dark:text-stone-300 leading-relaxed text-sm md:text-base">
                 To democratize access to career opportunities for students globally —
                 regardless of their background, college, or location — by giving them
                 world-class tools to compete and succeed.
@@ -107,12 +107,12 @@ export default function AboutPage() {
 
             <motion.div variants={itemVariants} className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg shadow-sm p-6 md:p-8 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                <div className="p-3 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400">
                   <Globe size={22} />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Our Vision</h2>
+                <h2 className="text-xl font-semibold text-stone-900 dark:text-white">Our Vision</h2>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm md:text-base">
+              <p className="text-stone-600 dark:text-stone-300 leading-relaxed text-sm md:text-base">
                 To become the most trusted early-career ecosystem on the planet —
                 connecting millions of students with companies that value their
                 potential, not just their pedigree.
@@ -149,7 +149,7 @@ export default function AboutPage() {
                     variants={itemVariants}
                     className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-300 p-6"
                   >
-                    <div className="p-3 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 w-fit mb-4">
+                    <div className="p-3 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 w-fit mb-4">
                       <Icon size={22} />
                     </div>
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
@@ -172,8 +172,8 @@ export default function AboutPage() {
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 mb-5">
                 <Mail className="text-white" size={26} />
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Want to get in touch?</h2>
-              <p className="text-indigo-100 max-w-2xl mx-auto mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">Want to get in touch?</h2>
+              <p className="text-stone-400 max-w-2xl mx-auto mb-8 leading-relaxed">
                 Have questions, feedback, or partnership ideas? We would love to hear from you.
               </p>
               <Link
