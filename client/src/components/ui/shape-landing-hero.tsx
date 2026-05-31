@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, useAnimation, useMotionValue, useReducedMotion } from "framer-motion";
 import { Link } from "react-router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import NumberFlow from "@number-flow/react";
 import { ArrowRight, Play, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/auth.store";
@@ -248,7 +248,7 @@ function WinsMarquee() {
   const shouldReduceMotion = useReducedMotion();
   const [isDragging, setIsDragging] = useState(false);
 
-  const startAnimation = () => {
+  const startAnimation = useCallback(() => {
     if (shouldReduceMotion || isDragging) return;
 
     controls.start({
@@ -259,11 +259,11 @@ function WinsMarquee() {
         ease: "linear",
       },
     });
-  };
+  }, [shouldReduceMotion, isDragging, controls]);
 
   useEffect( () => {
     startAnimation();
-  }, [shouldReduceMotion, isDragging]);
+  }, [startAnimation]);
 
   // Pause animation when tab is not active and resume when active again
   useEffect(() => {
@@ -290,7 +290,7 @@ function WinsMarquee() {
         handleVisibilityChange,
       );
     };
-  }, [controls, shouldReduceMotion, isDragging]);
+  }, [controls, shouldReduceMotion, isDragging, startAnimation]);
 
   const mouseEnter = () => {
     controls.stop();

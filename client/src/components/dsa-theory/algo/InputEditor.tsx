@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Shuffle } from "lucide-react";
 
 interface Preset {

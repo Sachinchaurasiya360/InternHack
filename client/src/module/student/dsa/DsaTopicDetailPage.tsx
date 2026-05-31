@@ -386,6 +386,9 @@ export default function DsaTopicDetailPage() {
         )}
       </div>
     </div>
+  );
+}
+
 export const DsaProblemCard = React.memo(function DsaProblemCard({
   problem,
   pIdx,
