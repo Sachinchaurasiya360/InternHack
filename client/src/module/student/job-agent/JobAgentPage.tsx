@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   RotateCcw,
-  BotMessageSquare,
   Briefcase,
   MapPin,
   Code2,
@@ -102,7 +101,7 @@ export default function JobAgentPage() {
   const [hasChatted, setHasChatted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
-    minHeight: 44,
+    minHeight: 24,
     maxHeight: 200,
   });
 
@@ -169,10 +168,12 @@ export default function JobAgentPage() {
   const hitFreeLimit =
     manualHitFreeLimit || (!isPremium && userMsgCount >= FREE_LIMIT);
   useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
+    const el = scrollRef.current;
+    if (!el) return;
+    const scroll = () => el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    requestAnimationFrame(scroll);
+    const t = setTimeout(scroll, 300);
+    return () => clearTimeout(t);
   }, [messages]);
 
   const chatMut = useMutation({
@@ -381,18 +382,17 @@ export default function JobAgentPage() {
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <div className="flex h-full min-h-0 w-full flex-col px-4 sm:px-8">
-          <AnimatePresence mode="wait">
-            {isEmpty ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25 }}
-                className="flex h-full w-full max-w-xl mx-auto flex-col items-center justify-center gap-4 pt-2 pb-1"
-              >
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden px-4 sm:px-8">
+        <AnimatePresence mode="wait">
+          {isEmpty ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className="flex-1 min-h-0 flex flex-col items-center justify-center gap-4 w-full max-w-xl mx-auto pt-2 pb-1 overflow-y-auto"
+            >
                 {/* Hero icon box */}
                 <motion.div
                   className="relative mb-2 mt-0.5"
@@ -405,8 +405,8 @@ export default function JobAgentPage() {
                 >
                   <div className="absolute inset-0 bg-lime-400/15 dark:bg-lime-400/10 blur-3xl rounded-full" />
 
-                  <div className="relative w-11 h-11 rounded-2xl bg-stone-900 dark:bg-stone-50 flex items-center justify-center border border-lime-400/20 shadow-lg">
-                    <BotMessageSquare className="w-5 h-5 text-stone-50 dark:text-stone-900 animate-pulse" />
+                  <div className="relative w-11 h-11 rounded-2xl bg-white dark:bg-stone-900 flex items-center justify-center border border-stone-200 dark:border-stone-700 shadow-lg">
+                    <img src="/logo.png" alt="InternHack" className="w-7 h-7 object-contain" />
                   </div>
 
                   <div className="absolute -top-1 -right-1 h-2 w-2 bg-lime-400 rounded-full border-2 border-white dark:border-stone-950 shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
@@ -461,16 +461,14 @@ export default function JobAgentPage() {
                 )}
               </motion.div>
             ) : (
-              <div
+              <motion.div
+                key="messages"
                 ref={scrollRef}
-                className="h-full min-h-0 overflow-y-auto pt-2 pb-2 mask-[linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex-1 min-h-0 overflow-y-auto pt-2 pb-2 mask-[linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)]"
               >
-                <motion.div
-                  key="messages"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="mx-auto w-full max-w-4xl space-y-5"
-                >
+                <div className="mx-auto w-full max-w-4xl space-y-5">
                   {messages.map((msg) => (
                     <AgentMessage
                       key={msg.id}
@@ -481,93 +479,91 @@ export default function JobAgentPage() {
                   ))}
 
                   {chatMut.isPending && <ThinkingIndicator />}
-                </motion.div>
-              </div>
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
-        </div>
       </div>
 
       {/* Input bar */}
-      <div className="shrink-0 px-4 sm:px-8 pb-0.5 pt-2 border-t border-stone-200 dark:border-white/10 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-md w-full">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative rounded-[26px] border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm focus-within:border-lime-500/50 focus-within:ring-4 focus-within:ring-lime-500/10 transition-all">
-            <div className="flex items-end gap-2 px-3.5 py-1.5">
-              {voiceSupported && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    if (isListening) {
-                      setInterimText("");
-                      stopListening();
-                    } else {
-                      startListening();
-                    }
-                  }}
-                  aria-label={
-                    isListening ? "Stop recording" : "Start voice input"
-                  }
-                  aria-pressed={isListening}
-                  className={cn(
-                    "inline-flex items-center justify-center w-9 h-9 rounded-full transition-colors cursor-pointer shadow-sm",
-                    isListening
-                      ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200/50 dark:border-red-500/20"
-                      : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200/40 dark:border-white/5 bg-white/60 dark:bg-stone-900/40",
-                  )}
-                >
-                  {isListening ? (
-                    <motion.span
-                      animate={{ scale: [1, 1.15, 1] }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 1.2,
-                        ease: "easeInOut",
-                      }}
-                      className="inline-flex items-center justify-center"
-                    >
-                      <MicOff className="w-4 h-4" />
-                    </motion.span>
-                  ) : (
-                    <Mic className="w-4 h-4" />
-                  )}
-                </Button>
-              )}
+      <div className="shrink-0 px-4 sm:px-8 pb-4 pt-2 border-t border-stone-200 dark:border-white/10 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-md w-full">
+        <div className="max-w-4xl mx-auto space-y-2">
+          <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus-within:border-stone-400 dark:focus-within:border-stone-600 transition-colors shadow-sm">
+            {/* Textarea */}
+            <div className="px-4 pt-3 pb-0">
+              <textarea
+                ref={textareaRef}
+                value={displayValue}
+                onChange={(e) => {
+                  setInterimText("");
+                  setInput(e.target.value);
+                  adjustHeight();
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={
+                  hitFreeLimit
+                    ? "Upgrade to continue chatting..."
+                    : chatMut.isPending
+                      ? "Thinking..."
+                      : "Ask me about jobs..."
+                }
+                disabled={inputDisabled}
+                className={cn(
+                  "w-full resize-none bg-transparent border-none",
+                  "text-stone-900 dark:text-stone-50 text-sm leading-relaxed",
+                  "focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                  "placeholder:text-stone-400 dark:placeholder:text-stone-500 placeholder:text-sm",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  "scrollbar-thin overflow-y-auto",
+                )}
+                style={{ minHeight: "24px" }}
+              />
+            </div>
 
-              <div className="flex-1 min-w-0 overflow-y-auto">
-                <textarea
-                  ref={textareaRef}
-                  value={displayValue}
-                  onChange={(e) => {
-                    setInterimText("");
-                    setInput(e.target.value);
-                    adjustHeight();
-                  }}
-                  onKeyDown={handleKeyDown}
-                  placeholder={
-                    hitFreeLimit
-                      ? "Upgrade to continue chatting..."
-                      : chatMut.isPending
-                        ? "Thinking..."
-                        : "Ask me about jobs..."
-                  }
-                  disabled={inputDisabled}
-                  className={cn(
-                    "w-full px-2 py-2.5",
-                    "resize-none",
-                    "overflow-y-auto",
-                    "scrollbar-thin",
-                    "bg-transparent",
-                    "border-none",
-                    "text-stone-900 dark:text-stone-50 text-sm",
-                    "focus:outline-none",
-                    "focus-visible:ring-0 focus-visible:ring-offset-0",
-                    "placeholder:text-stone-400 dark:placeholder:text-stone-500 placeholder:text-sm",
-                    "disabled:opacity-50 disabled:cursor-not-allowed",
-                  )}
-                  style={{ minHeight: "44px" }}
-                />
+            {/* Bottom action row */}
+            <div className="flex items-center justify-between px-3 py-2.5">
+              <div className="flex items-center gap-1">
+                {voiceSupported && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (isListening) {
+                        setInterimText("");
+                        stopListening();
+                      } else {
+                        startListening();
+                      }
+                    }}
+                    aria-label={
+                      isListening ? "Stop recording" : "Start voice input"
+                    }
+                    aria-pressed={isListening}
+                    className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer",
+                      isListening
+                        ? "bg-red-50 dark:bg-red-950/30 text-red-500 dark:text-red-400 border border-red-200/50 dark:border-red-500/20"
+                        : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800",
+                    )}
+                  >
+                    {isListening ? (
+                      <motion.span
+                        animate={{ scale: [1, 1.15, 1] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1.2,
+                          ease: "easeInOut",
+                        }}
+                        className="flex items-center justify-center"
+                      >
+                        <MicOff className="w-4 h-4" />
+                      </motion.span>
+                    ) : (
+                      <Mic className="w-4 h-4" />
+                    )}
+                  </Button>
+                )}
               </div>
 
               <Button
@@ -578,10 +574,10 @@ export default function JobAgentPage() {
                   !(input.trim() || interimText.trim()) || inputDisabled
                 }
                 className={cn(
-                  "inline-flex items-center justify-center w-9 h-9 rounded-full transition-colors cursor-pointer disabled:cursor-not-allowed shadow-sm border border-stone-200/40 dark:border-white/5",
+                  "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer disabled:cursor-not-allowed",
                   (input.trim() || interimText.trim()) && !inputDisabled
-                    ? "bg-lime-400 hover:bg-lime-300 text-stone-950"
-                    : "bg-stone-200 dark:bg-white/10 text-stone-400 dark:text-stone-600",
+                    ? "bg-lime-400 hover:bg-lime-300 text-stone-950 shadow-sm"
+                    : "bg-stone-100 dark:bg-white/10 text-stone-400 dark:text-stone-600",
                 )}
                 aria-label="Send"
               >
@@ -590,7 +586,7 @@ export default function JobAgentPage() {
             </div>
           </div>
 
-          <div className="mt-1.5 flex flex-col items-center gap-1 px-1 text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 select-none">
+          <div className="flex flex-col items-center gap-1 px-1 text-center text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 select-none">
             <div className="flex items-center justify-center gap-1.5 flex-wrap">
               <span>
                 {hitFreeLimit
@@ -603,7 +599,6 @@ export default function JobAgentPage() {
                 </span>
               )}
             </div>
-
             <p className="text-stone-500 dark:text-stone-500">
               Powered by InternHack AI · Always verify job details
             </p>

@@ -10,7 +10,8 @@ import {
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaTopicDetail, DsaProblem } from "../../../lib/types";
+import type { DsaTopicDetail, DsaProblem, User } from "../../../lib/types";
+import type { UseMutationResult } from "@tanstack/react-query";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
@@ -396,14 +397,14 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
 }: {
   problem: DsaProblem;
   pIdx: number;
-  user: any;
+  user: User | null;
   isExpanded: boolean;
-  toggleMutation: any;
-  bookmarkMutation: any;
+  toggleMutation: UseMutationResult<unknown, Error, { problemId: number; solved: boolean }>;
+  bookmarkMutation: UseMutationResult<unknown, Error, { problemId: number; bookmarked: boolean }>;
   expandedNotes: Set<number>;
   savingNotes: Set<number>;
   noteValues: Record<number, string>;
-  setNoteValues: any;
+  setNoteValues: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   saveNotes: (problemId: number, val: string) => void;
   toggleNotes: (problemId: number, notes: string | null | undefined) => void;
   setExpandedId: (val: number | null) => void;
@@ -588,7 +589,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                       <textarea
                         value={noteValues[problem.id] ?? ""}
                         onChange={(e) =>
-                          setNoteValues((prev: any) => ({ ...prev, [problem.id]: e.target.value }))
+                          setNoteValues((prev) => ({ ...prev, [problem.id]: e.target.value }))
                         }
                         onBlur={() => {
                           const val = noteValues[problem.id];

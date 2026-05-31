@@ -162,6 +162,7 @@ function BTreeDrilldown() {
       clearInterval(seekHandle);
       clearTimeout(stopHandle);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [racing, target]);
 
   const startRace = () => {

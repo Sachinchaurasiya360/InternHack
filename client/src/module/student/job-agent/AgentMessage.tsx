@@ -1,5 +1,5 @@
 import React from "react";
-import { BotMessageSquare, Check, Copy, User } from "lucide-react";
+import { Check, Copy, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { AgentJobCard } from "./AgentJobCard";
 import { EmailJobsButton } from "./EmailJobsButton";
@@ -108,7 +108,7 @@ export const AgentMessage = React.memo(function AgentMessage({ role, content, jo
         className={`w-8 h-8 rounded-md overflow-hidden flex items-center justify-center shrink-0 text-xs font-bold ${
           isUser
             ? "bg-stone-200 dark:bg-white/10 text-stone-700 dark:text-stone-200"
-            : "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+            : "bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700"
         }`}
       >
         {isUser ? (
@@ -122,7 +122,7 @@ export const AgentMessage = React.memo(function AgentMessage({ role, content, jo
             user?.name?.charAt(0)?.toUpperCase() || <User className="w-4 h-4" />
           )
         ) : (
-          <BotMessageSquare className="w-4 h-4" />
+          <img src="/logo.png" alt="InternHack" className="w-5 h-5 object-contain" />
         )}
       </div>
 

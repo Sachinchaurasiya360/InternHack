@@ -206,6 +206,7 @@ export default function JobBrowsePage() {
       setSearchParams(next, { replace: true });
     }, 400);
     return () => clearTimeout(timerRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, locationFilter]);
 
   const { data, isLoading, isFetching } = useQuery({
@@ -336,8 +337,8 @@ export default function JobBrowsePage() {
     if (locationFilter) next.set("location", locationFilter); else next.delete("location");
     setSearchParams(next, { replace: true });
   };
-  const filteredExtJobs = extData?.jobs ?? [];
-  const scrapedJobs = scrData?.jobs ?? [];
+  const filteredExtJobs = React.useMemo(() => extData?.jobs ?? [], [extData?.jobs]);
+  const scrapedJobs = React.useMemo(() => scrData?.jobs ?? [], [scrData?.jobs]);
   const scrapedPagination = scrData?.pagination;
   const allLocations = React.useMemo<string[]>(
     () =>

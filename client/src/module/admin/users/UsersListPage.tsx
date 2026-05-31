@@ -31,9 +31,8 @@ export default function UsersListPage() {
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, [roleFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchUsers(); }, [roleFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

@@ -174,6 +174,18 @@ export default function InterviewQuestionPage() {
     sectionQuestions,
   ]);
 
+  const language = useMemo(() => {
+    if (!sectionSlug) return "javascript";
+    if (sectionSlug.includes("javascript") || sectionSlug.includes("nodejs") || sectionSlug.includes("system-design") || sectionSlug.includes("behavioral")) return "javascript";
+    if (sectionSlug.includes("react")) return "tsx";
+    if (sectionSlug.includes("typescript")) return "typescript";
+    if (sectionSlug.includes("python") || sectionSlug.includes("fastapi")) return "python";
+    if (sectionSlug.includes("sql")) return "sql";
+    if (sectionSlug.includes("html-css")) return "html";
+    if (sectionSlug.includes("git-devops")) return "bash";
+    return "javascript";
+  }, [sectionSlug]);
+
   if (section && !section.freeTier && !isAuthenticated) {
     return <Navigate to={basePath} replace />;
   }
@@ -194,18 +206,6 @@ export default function InterviewQuestionPage() {
 
   const { content } = question;
   const codeExamples = content.codeExamples ?? [];
-
-  const language = useMemo(() => {
-    if (!sectionSlug) return "javascript";
-    if (sectionSlug.includes("javascript") || sectionSlug.includes("nodejs") || sectionSlug.includes("system-design") || sectionSlug.includes("behavioral")) return "javascript";
-    if (sectionSlug.includes("react")) return "tsx";
-    if (sectionSlug.includes("typescript")) return "typescript";
-    if (sectionSlug.includes("python") || sectionSlug.includes("fastapi")) return "python";
-    if (sectionSlug.includes("sql")) return "sql";
-    if (sectionSlug.includes("html-css")) return "html";
-    if (sectionSlug.includes("git-devops")) return "bash";
-    return "javascript";
-  }, [sectionSlug]);
 
   return (
     <div className="relative text-stone-900 dark:text-stone-50 pb-12">

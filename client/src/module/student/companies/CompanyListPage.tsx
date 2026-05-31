@@ -619,9 +619,8 @@ export default function CompanyListPage() {
     }
   }, [selectedCity, search, industry, size, hiring, minRating, page]);
 
-  useEffect(() => {
-    fetchCompanies();
-  }, [fetchCompanies]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchCompanies(); }, [fetchCompanies]);
 
   useEffect(() => {
     api

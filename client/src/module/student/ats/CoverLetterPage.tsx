@@ -1,5 +1,5 @@
 import CoverLetterHistoryPanel from "./CoverLetterHistoryPanel";
-import { CopyButton } from "../../../components/ui/CopyButton";
+
 import { useState, useRef, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

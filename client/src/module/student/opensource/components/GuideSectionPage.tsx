@@ -71,7 +71,15 @@ useEffect(() => {
     setRating(saved);
     setSubmitted(true);
   }
-}, [step]);
+}, [step, basePath]);
+
+  const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
+  const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
+  useKeyboardNavigation({
+    prevPath: prev ? `${basePath}/${prev.id}` : null,
+    nextPath: next ? `${basePath}/${next.id}` : null,
+  });
+
 if (!step) return <Navigate to={basePath} replace />;
 const submitFeedback = async (
   value: "up" | "down"
@@ -109,15 +117,6 @@ const submitFeedback = async (
   }
 };
   const isDone = completed.has(step.id);
-  const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
-  const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
-
-  useKeyboardNavigation({
-    prevPath: prev ? `${basePath}/${prev.id}` : null,
-    nextPath: next ? `${basePath}/${next.id}` : null,
-  });
-
-  if (!step) return <Navigate to={basePath} replace />;
 
   return (
     <div className="relative pb-12">

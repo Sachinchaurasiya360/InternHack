@@ -97,6 +97,7 @@ export default function AdminRepoRequestsPage() {
   };
 
   useEffect(() => { setPage(1); }, [statusFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchRequests(); }, [statusFilter, page]);
   useEffect(() => { setSelectedIds([]); }, [statusFilter, page]);
 
@@ -283,6 +284,7 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
   const [formState, setFormState] = useState<RepoRequestFormState>(() => buildFormState(req));
   const [adminNote, setAdminNote] = useState(req.adminNote ?? "");
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setFormState(buildFormState(req));
     setAdminNote(req.adminNote ?? "");
