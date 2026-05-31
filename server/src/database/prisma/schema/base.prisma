@@ -1039,7 +1039,7 @@ model externalJobApplication {
   studentId  Int
   adminJobId Int
   studentNotes String?  @db.Text
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
   createdAt  DateTime @default(now())
   student    user     @relation("StudentExternalApplications", fields: [studentId], references: [id], onDelete: Cascade)
   adminJob   adminJob @relation("AdminJobApplications", fields: [adminJobId], references: [id], onDelete: Cascade)

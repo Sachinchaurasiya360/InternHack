@@ -4,9 +4,7 @@ import toast from "@/components/ui/toast";
 import { motion } from "framer-motion";
 import {
   Download,
-  Copy,
   AlertCircle,
-  Check,
   FileCode2,
   Eye,
   Loader2,
@@ -142,7 +140,6 @@ export default function LatexResumeEditor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [copied, setCopied] = useState(false);
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
   const [chatOpen, setChatOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
@@ -232,17 +229,6 @@ export default function LatexResumeEditor() {
       })
       .finally(() => setCompiling(false));
   }, [code, supportingFiles]);
-
-  const handleCopyLatex = async () => {
-  try {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    toast.success("Copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
-  } catch {
-    toast.error("Failed to copy");
-  }
-};
 
   const handleCompile = async () => {
     setCompiling(true);

@@ -1093,7 +1093,7 @@ export default function AtsScorePage() {
                           text={[
                             `ATS Score: ${result.overallScore}/100`,
                             `Tier: ${overallTier.label}`,
-                            `\nSuggestions:\n${result.suggestions.map((s, i) => `${i + 1}. ${s.suggestion}`).join("\n")}`,
+                            `\nSuggestions:\n${result.suggestions.map((s, i) => `${i + 1}. ${s}`).join("\n")}`,
                           ].join("\n")}
                         />
                         <span
