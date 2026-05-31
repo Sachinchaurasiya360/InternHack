@@ -224,7 +224,6 @@ interface GSoCOrgModalProps {
 }
 
 function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: GSoCOrgModalProps) {
-  const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
