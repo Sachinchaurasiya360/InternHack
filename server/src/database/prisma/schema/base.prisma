@@ -79,6 +79,7 @@ model user {
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
@@ -1413,4 +1414,19 @@ enum InterviewOutcome {
   WITHDRAWN
   PENDING
   GHOSTED
+}
+
+model guideFeedback {
+  id        Int      @id @default(autoincrement())
+  guideId   String
+  stepId    String
+  userId    Int
+  rating    String
+  createdAt DateTime @default(now())
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideId, stepId])
+  @@index([guideId])
+  @@index([stepId])
 }

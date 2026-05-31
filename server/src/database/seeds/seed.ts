@@ -1441,53 +1441,6 @@ async function seedGsocOrgs() {
   log("GSoC Organizations", count);
 }
 
-async function seedRepoRequests() {
-  const student = await prisma.user.findFirst({ where: { email: "aarav@example.com" } });
-  if (!student) {
-    console.log("  ⚠ Skipping repo requests, student user not found");
-    return;
-  }
-
-  const domains: ("AI" | "WEB" | "DEVOPS" | "MOBILE" | "BLOCKCHAIN" | "DATA" | "SECURITY" | "CLOUD" | "GAMING" | "OTHER")[] = 
-    ["AI", "WEB", "DEVOPS", "MOBILE", "DATA"];
-    
-  const repos = await prisma.opensourceRepo.findMany({ take: 6 });
-  
-  if (repos.length === 0) {
-    console.log("  ⚠ Skipping repo requests, no opensource repos found");
-    return;
-  }
-
-  let count = 0;
-  for (let i = 0; i < 8; i++) {
-    const repo = repos[i % repos.length];
-    const existing = await prisma.repoRequest.findFirst({
-      where: { userId: student.id, url: repo.url },
-    });
-    
-    if (!existing) {
-      await prisma.repoRequest.create({
-        data: {
-          name: repo.name,
-          owner: repo.owner,
-          description: repo.description,
-          language: repo.language,
-          url: repo.url,
-          domain: domains[i % domains.length],
-          difficulty: repo.difficulty,
-          status: "APPROVED",
-          userId: student.id,
-          reason: "Test request for analytics",
-          techStack: repo.techStack,
-          tags: repo.tags,
-        },
-      });
-      count++;
-    }
-  }
-  log("Repo Requests (Approved)", count);
-}
-
 // ─── Main ─────────────────────────────────────────────────────────────
 async function main() {
   console.log("\n🌱 Seeding InternHack database...\n");
@@ -1500,7 +1453,6 @@ async function main() {
   await seedSkillTests();
   await seedHackathons();
   await seedOpensourceRepos();
-  await seedRepoRequests();
   await seedGovInternships();
   await seedJobs();
   await seedFundingSignals();
@@ -1509,7 +1461,6 @@ async function main() {
   await seedProfessors();
   await seedBlogPosts();
   await seedGsocOrgs();
-
   console.log("\n✅ Seed complete!\n");
 }
 

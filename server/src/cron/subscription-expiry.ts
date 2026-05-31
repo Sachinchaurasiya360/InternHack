@@ -45,3 +45,12 @@ export function startSubscriptionExpiryCron(): void {
 
   console.log("[Cron] Subscription expiry cron started (daily at midnight)");
 }
+
+/** Stop the subscription expiry cron (used during graceful shutdown). */
+export function stopSubscriptionExpiryCron(): void {
+  if (cronJob) {
+    cronJob.stop();
+    cronJob = null;
+    console.log("[Cron] Subscription expiry cron stopped");
+  }
+}

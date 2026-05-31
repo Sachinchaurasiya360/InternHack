@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -15,6 +15,7 @@ import { Button } from "../../../components/ui/button";
 import { CodeBlock } from "../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/open-source-guide.json";
+import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource { title: string; url: string; type: string }
@@ -65,34 +66,19 @@ export default function FirstPRSectionPage() {
     });
   }, [step]);
 
-  if (!step) return <Navigate to="/student/opensource/first-pr" replace />;
-
-  const isDone = completed.has(step.id);
+  // ---> FIX: Define variables and call hook BEFORE the early return <---
   const prev = stepIndex > 0 ? STEPS[stepIndex - 1] : null;
   const next = stepIndex < STEPS.length - 1 ? STEPS[stepIndex + 1] : null;
 
-  // ---> ADDED: KEYBOARD NAVIGATION HOOK <---
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable
-      ) {
-        return;
-      }
+  useKeyboardNavigation({
+    prevPath: prev ? `/student/opensource/first-pr/${prev.id}` : null,
+    nextPath: next ? `/student/opensource/first-pr/${next.id}` : null,
+  });
 
-      if (e.key === "ArrowRight" || e.key === "l") {
-        if (next) navigate(`/student/opensource/first-pr/${next.id}`);
-      } else if (e.key === "ArrowLeft" || e.key === "h") {
-        if (prev) navigate(`/student/opensource/first-pr/${prev.id}`);
-      }
-    };
+  // ---> The guard is now safely below all hook calls <---
+  if (!step) return <Navigate to="/student/opensource/first-pr" replace />;
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigate, next, prev]);
+  const isDone = completed.has(step.id);
 
   return (
     <div className="relative pb-12">
@@ -320,16 +306,6 @@ export default function FirstPRSectionPage() {
               </Button>
             )}
           </div>
-          
-          {/* ---> ADDED: KEYBOARD HINT UI <--- */}
-          <div className="flex justify-end mt-4">
-            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
-              <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm mr-1">←</kbd>
-              <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm mr-2">→</kbd>
-              navigate steps
-            </span>
-          </div>
-
         </motion.div>
       </div>
     </div>

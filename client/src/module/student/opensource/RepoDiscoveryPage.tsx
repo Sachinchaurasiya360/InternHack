@@ -30,7 +30,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
-import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS, LANGUAGE_OPTIONS } from "./reposData";
+import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
@@ -38,7 +38,6 @@ import { SuggestRepoModal } from "./SuggestRepoModal";
 
 const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
-
 
 export default function RepoDiscoveryPage() {
   const [search, setSearch] = useState("");
@@ -58,7 +57,7 @@ export default function RepoDiscoveryPage() {
 
   const [selectedDomain, setSelectedDomain] = useState("ALL");
   const [selectedDifficulty, setSelectedDifficulty] = useState("ALL");
-const [selectedLanguage, setSelectedLanguage] = useState("ALL");
+  const [selectedLanguage, setSelectedLanguage] = useState("ALL");
   const [sortKey, setSortKey] = useState("stars");
   const [trendingOnly, setTrendingOnly] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -113,13 +112,15 @@ const [selectedLanguage, setSelectedLanguage] = useState("ALL");
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
-if (selectedLanguage !== "ALL") params.language = selectedLanguage;
+
+    if (selectedLanguage !== "ALL") params.language = selectedLanguage;
     if (trendingOnly) params.trending = "true";
+    
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
     
     return params;
-}, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, trendingOnly, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, trendingOnly, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -160,7 +161,6 @@ if (selectedLanguage !== "ALL") params.language = selectedLanguage;
     setPage(1);
   };
 
-  // <-- UPDATED FILTER COUNT
   const activeFilters =
     (selectedDomain !== "ALL" ? 1 : 0) +
     (selectedDifficulty !== "ALL" ? 1 : 0) +
@@ -289,6 +289,9 @@ if (selectedLanguage !== "ALL") params.language = selectedLanguage;
         {/* Guidance Cards */}
         <GuidanceCards />
 
+        {/* Recommended for you */}
+        {user?.role === "STUDENT" && <RecommendedSection onSelect={setSelectedRepo} />}
+
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
           {/* Domain chips */}
@@ -398,11 +401,6 @@ if (selectedLanguage !== "ALL") params.language = selectedLanguage;
                   </select>
                 </div>
 
-<option value="ALL">All Languages</option>
-                    {languages.map((lang) => (
-                      <option key={lang} value={lang}>
-                        {lang}
-                      </option>
                 <div>
                   <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     language
@@ -412,7 +410,11 @@ if (selectedLanguage !== "ALL") params.language = selectedLanguage;
                     onChange={(e) => updateFilter(setSelectedLanguage, e.target.value)}
                     className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
                   >
-{/* <-- NEW LANGUAGE SELECTOR --> */}
+                    <option value="ALL">All Languages</option>
+                    {languages.map((lang) => (
+                      <option key={lang} value={lang}>
+                        {lang}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -424,7 +426,7 @@ if (selectedLanguage !== "ALL") params.language = selectedLanguage;
                       onClick={() => {
                         setSelectedDomain("ALL");
                         setSelectedDifficulty("ALL");
-setSelectedLanguage("ALL");
+                        setSelectedLanguage("ALL");
                         setSearch("");
                         setPage(1);
                       }}
@@ -728,6 +730,63 @@ setSelectedLanguage("ALL");
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.opensource.list({ recommended: true }),
+    queryFn: async () => {
+      const res = await api.get<{ repos: OpenSourceRepo[] }>("/opensource/recommended");
+      return res.data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="mb-10">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-4 w-32 bg-stone-200 dark:bg-white/10 rounded animate-pulse" />
+        </div>
+        <div className="flex gap-4 overflow-x-hidden">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="min-w-[280px] sm:min-w-[320px]">
+              <RepoCardSkeleton />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const repos = data?.repos || [];
+  if (repos.length === 0) return null;
+
+  return (
+    <div className="mb-10 group/rec">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Wand2 className="w-4 h-4 text-lime-600 dark:text-lime-400" />
+          <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 uppercase tracking-tight">
+            Recommended for you
+          </h2>
+          <div className="h-px w-8 bg-stone-200 dark:bg-white/10 group-hover/rec:w-16 transition-all" />
+        </div>
+        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">
+          Based on your stack
+        </span>
+      </div>
+
+      <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-4">
+        <div className="flex gap-4 min-w-full">
+          {repos.map((repo, i) => (
+            <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
+              <RepoCard repo={repo} index={i} onSelect={onSelect} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
