@@ -179,7 +179,20 @@ opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"),
       };
     });
 
-    res.json({ trend, total: approvedRequests.length });
+    const allApproved = await prisma.repoRequest.findMany({
+      where: { userId: req.user!.id, status: "APPROVED" },
+      select: { domain: true },
+    });
+
+    const domainCounts: Record<string, number> = {};
+    allApproved.forEach((r) => {
+      if (r.domain) domainCounts[r.domain] = (domainCounts[r.domain] || 0) + 1;
+    });
+    const domains = Object.entries(domainCounts)
+      .map(([domain, count]) => ({ domain, count }))
+      .sort((a, b) => b.count - a.count);
+
+    res.json({ trend, total: approvedRequests.length, domains });
   } catch (err) {
     next(err);
   }
