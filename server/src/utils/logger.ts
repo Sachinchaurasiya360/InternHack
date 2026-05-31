@@ -4,25 +4,42 @@
  * Swap this file for pino/winston in production without touching call sites.
  */
 
-function fmt(level: string, module: string, msg: string, meta?: unknown): string {
-  const ts = new Date().toISOString();
-  const base = `${ts} [${level}] [${module}] ${msg}`;
-  return meta ? `${base} ${JSON.stringify(meta)}` : base;
-}
+import pino from "pino";
 
-export function createLogger(module: string) {
+const isDev = process.env.NODE_ENV !== "production";
+
+// Create a single root logger
+const rootLogger = pino({
+  level: process.env.LOG_LEVEL || "info",
+  transport: isDev
+    ? {
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: "SYS:standard",
+          ignore: "pid,hostname",
+        },
+      }
+    : undefined,
+});
+
+export function createLogger(moduleName: string) {
+  const logger = rootLogger.child({ module: moduleName });
   return {
     info(msg: string, meta?: unknown) {
-      console.log(fmt("INFO", module, msg, meta));
+      meta ? logger.info(meta, msg) : logger.info(msg);
     },
     warn(msg: string, meta?: unknown) {
-      console.warn(fmt("WARN", module, msg, meta));
+      meta ? logger.warn(meta, msg) : logger.warn(msg);
     },
     error(msg: string, error?: unknown, meta?: unknown) {
-      const errInfo = error instanceof Error
-        ? { message: error.message, stack: error.stack }
-        : error;
-      console.error(fmt("ERROR", module, msg, meta ?? errInfo));
+      const errInfo =
+        error instanceof Error
+          ? { err: { message: error.message, stack: error.stack } }
+          : { err: error };
+          
+      const payload = meta ? { ...errInfo, ...(meta as object) } : errInfo;
+      logger.error(payload, msg);
     },
   };
 }
