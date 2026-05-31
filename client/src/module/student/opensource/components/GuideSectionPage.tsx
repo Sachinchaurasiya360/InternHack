@@ -272,7 +272,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.35 }}
-          className="flex items-center justify-between pt-2"
+          className="flex items-center justify-between sticky bottom-0 sm:static bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10 shadow-[0_-4px_8px_rgba(0,0,0,0.05)] px-4 py-3 -mx-4"
         >
           <Button
             variant={isDone ? "ghost" : "mono"}
