@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
@@ -43,6 +43,68 @@ function Kicker({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+export const ScrapedJobCard = React.memo(function ScrapedJobCard({
+  job,
+  sources,
+}: {
+  job: ScrapedJob;
+  sources: ScrapedJobSource[];
+}) {
+  return (
+    <Link to={`/external-jobs/${String(job.id)}`} className={cardBase}>
+      <span
+        className={`absolute top-4 right-4 text-[10px] px-2 py-0.5 rounded font-medium shrink-0 ${getSourceBadgeColor(job.source)}`}
+      >
+        {getSourceLabel(job.source, sources)}
+      </span>
+      <div className="flex items-start gap-3 mb-3 pr-16">
+        <CompanyMark label={job.company || "?"} />
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1">
+            {job.title}
+          </h3>
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+            {job.company}
+          </span>
+        </div>
+      </div>
+      <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+        {job.description}
+      </p>
+      <div className="flex flex-wrap gap-3 text-xs text-stone-500 mb-3">
+        <span className="flex items-center gap-1">
+          <MapPin className="w-3 h-3" />
+          {job.location}
+        </span>
+        {job.salary && (
+          <span className="flex items-center gap-1">
+            <DollarSign className="w-3 h-3" />
+            {job.salary}
+          </span>
+        )}
+      </div>
+      {job.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {job.tags.slice(0, 4).map((tag) => (
+            <span
+              key={tag}
+              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+          view role
+        </span>
+        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+      </div>
+    </Link>
+  );
+});
 
 export default function ScrapedJobsPage() {
   const [search, setSearch] = useState("");
@@ -274,57 +336,7 @@ export default function ScrapedJobsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03 }}
                   >
-                    <Link to={`/external-jobs/${String(job.id)}`} className={cardBase}>
-                      <span
-                        className={`absolute top-4 right-4 text-[10px] px-2 py-0.5 rounded font-medium shrink-0 ${getSourceBadgeColor(job.source)}`}
-                      >
-                        {getSourceLabel(job.source, sources)}
-                      </span>
-                      <div className="flex items-start gap-3 mb-3 pr-16">
-                        <CompanyMark label={job.company || "?"} />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1">
-                            {job.title}
-                          </h3>
-                          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
-                            {job.company}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
-                        {job.description}
-                      </p>
-                      <div className="flex flex-wrap gap-3 text-xs text-stone-500 mb-3">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {job.location}
-                        </span>
-                        {job.salary && (
-                          <span className="flex items-center gap-1">
-                            <DollarSign className="w-3 h-3" />
-                            {job.salary}
-                          </span>
-                        )}
-                      </div>
-                      {job.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {job.tags.slice(0, 4).map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
-                          view role
-                        </span>
-                        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
-                      </div>
-                    </Link>
+                    <ScrapedJobCard job={job} sources={sources} />
                   </motion.div>
                 ))}
               </div>

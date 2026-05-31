@@ -236,6 +236,7 @@ export const queryKeys = {
     detail: (slug: string) => ["roadmaps", "detail", slug] as const,
     enrollments: () => ["roadmaps", "enrollments"] as const,
     enrollmentDetail: (id: number) => ["roadmaps", "enrollment-detail", id] as const,
+    enrollmentAnalytics: (id: number) => ["roadmaps", "enrollment-analytics", id] as const,
     topic: (slug: string, topicSlug: string) => ["roadmaps", "topic", slug, topicSlug] as const,
   },
 };

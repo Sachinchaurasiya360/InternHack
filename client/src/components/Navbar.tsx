@@ -85,10 +85,41 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
 
           <div className="hidden lg:flex items-center gap-1">
             {NAV_ITEMS.map((item) => {
-              const active =
-                item.href === "/"
-                  ? location.pathname === "/"
-                  : location.pathname.startsWith(item.href + "/") || location.pathname === item.href;
+              const active = (() => {
+                if (item.href === "/") {
+                  return location.pathname === "/";
+                }
+                if (item.href === "/jobs") {
+                  return (
+                    location.pathname === "/jobs" ||
+                    location.pathname.startsWith("/jobs/") ||
+                    location.pathname === "/student/jobs" ||
+                    location.pathname.startsWith("/student/jobs/") ||
+                    location.pathname === "/internships" ||
+                    location.pathname.startsWith("/internships/") ||
+                    location.pathname === "/student/internships" ||
+                    location.pathname.startsWith("/student/internships/") ||
+                    location.pathname === "/external-jobs" ||
+                    location.pathname.startsWith("/external-jobs/")
+                  );
+                }
+                if (item.href === "/companies") {
+                  return (
+                    location.pathname === "/companies" ||
+                    location.pathname.startsWith("/companies/") ||
+                    location.pathname === "/student/companies" ||
+                    location.pathname.startsWith("/student/companies/") ||
+                    location.pathname === "/yc" ||
+                    location.pathname.startsWith("/yc/") ||
+                    location.pathname === "/student/yc" ||
+                    location.pathname.startsWith("/student/yc/")
+                  );
+                }
+                return (
+                  location.pathname === item.href ||
+                  location.pathname.startsWith(item.href + "/")
+                );
+              })();
               return (
                 <Link key={item.href} to={item.href} aria-current={active ? "page" : undefined} className="no-underline">
                   <button

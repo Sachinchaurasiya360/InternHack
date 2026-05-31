@@ -59,8 +59,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
     });
   }, [step, storageKey]);
 
-<<<<<<< HEAD
-=======
   
 useEffect(() => {
   if (!step) return;
@@ -111,7 +109,6 @@ const submitFeedback = async (
   }
 };
   const isDone = completed.has(step.id);
->>>>>>> 1631b05 (Add guide feedback system for open source guides)
   const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
   const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
 
@@ -301,8 +298,6 @@ const submitFeedback = async (
     Was this step helpful?
   </p>
 
-<<<<<<< HEAD
-=======
   <div className="flex gap-2">
     <Button
       onClick={() => submitFeedback("up")}
@@ -328,7 +323,6 @@ const submitFeedback = async (
   )}
 </div>
         {/* Mark as Complete + Next */}
->>>>>>> 1631b05 (Add guide feedback system for open source guides)
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
