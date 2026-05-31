@@ -253,14 +253,16 @@ export class SkillTestService {
     });
 
     const score =
-      totalQuestions > 0
-        ? Math.round((correctCount / totalQuestions) * 100)
-        : 0;
-    const passed = score >= test.passThreshold;
+    totalQuestions > 0
+      ? Math.round((correctCount / totalQuestions) * 100)
+      : 0;
 
     // Calculate proctoring integrity score
     const proctoringScore = this.calculateProctoringScore(proctorLog);
     const autoTerminated = !!(proctorLog && (proctorLog as any).terminated);
+
+    const PROCTOR_MINIMUM = 60;
+    const passed = score >= test.passThreshold && proctoringScore >= PROCTOR_MINIMUM;
 
     // Update the existing session with graded results
     const attempt = await prisma.skillTestAttempt.update({
