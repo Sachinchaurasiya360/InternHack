@@ -92,7 +92,7 @@ const submitFeedback = async (
     });
 
     localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`
+      `guide-feedback-${basePath}-${step.id}`,
       value
     );
 
@@ -100,7 +100,7 @@ const submitFeedback = async (
     setSubmitted(true);
   } catch {
     localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`
+      `guide-feedback-${basePath}-${step.id}`,
       value
     );
 
@@ -118,7 +118,6 @@ const submitFeedback = async (
   });
 
   if (!step) return <Navigate to={basePath} replace />;
-  const isDone = completed.has(step.id);
 
   return (
     <div className="relative pb-12">

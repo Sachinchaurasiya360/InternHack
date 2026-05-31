@@ -590,6 +590,23 @@ export default function RoadmapCanvasPage() {
     return data.enrollment.roadmap.sections.flatMap((s) => s.topics);
   }, [data]);
 
+  const regenProgressImpact = useMemo(() => {
+    const empty = { totalAffected: 0, completed: 0, inProgress: 0 };
+    if (!regenModal || !data) return empty;
+    const section = data.enrollment.roadmap.sections.find(
+      (s) => s.id === regenModal.sectionId,
+    );
+    if (!section) return empty;
+    let completed = 0;
+    let inProgress = 0;
+    for (const topic of section.topics) {
+      const p = progressByTopicId.get(topic.id);
+      if (p?.status === "COMPLETED") completed++;
+      else if (p?.status === "IN_PROGRESS") inProgress++;
+    }
+    return { totalAffected: completed + inProgress, completed, inProgress };
+  }, [regenModal, data, progressByTopicId]);
+
   const [nodes, setNodes, onNodesChange] = useNodesState<
     TopicNodeData | SectionLabelData
   >([]);

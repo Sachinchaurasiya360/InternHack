@@ -457,7 +457,7 @@ export default function JobBrowsePage() {
           className="mb-10 space-y-4"
         >
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={(e) => { e.preventDefault(); submitSearch(); }}
             className="flex flex-col sm:flex-row gap-2"
           >
             <div className="flex-1 relative">

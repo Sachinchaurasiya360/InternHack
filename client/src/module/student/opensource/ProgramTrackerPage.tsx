@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
   Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus,
-  LayoutGrid, AlignLeft,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 

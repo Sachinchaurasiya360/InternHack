@@ -166,17 +166,6 @@ export default function DsaTopicDetailPage() {
   const pct = topic.totalProblems > 0 ? Math.round((topic.totalSolved / topic.totalProblems) * 100) : 0;
   const topicNum = topic.orderIndex >= 0 ? String(topic.orderIndex + 1).padStart(2, "0") : "00";
 
-  const externalLinks = (p: DsaProblem) => {
-    const links: { href: string; label: string }[] = [];
-    if (p.leetcodeUrl) links.push({ href: p.leetcodeUrl, label: "LeetCode" });
-    if (p.gfgUrl) links.push({ href: p.gfgUrl, label: "GFG" });
-    if (p.hackerrankUrl) links.push({ href: p.hackerrankUrl, label: "HackerRank" });
-    if (p.codechefUrl) links.push({ href: p.codechefUrl, label: "CodeChef" });
-    if (p.articleUrl) links.push({ href: p.articleUrl, label: "Article" });
-    if (p.videoUrl) links.push({ href: p.videoUrl, label: "Video" });
-    return links;
-  };
-
   const diffTabs: DiffFilter[] = ["All", "Easy", "Medium", "Hard"];
 
   return (
@@ -386,6 +375,9 @@ export default function DsaTopicDetailPage() {
         )}
       </div>
     </div>
+  );
+}
+
 export const DsaProblemCard = React.memo(function DsaProblemCard({
   problem,
   pIdx,

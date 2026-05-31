@@ -92,7 +92,6 @@ const [searchParams, setSearchParams] = useSearchParams();
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const { user } = useAuthStore();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     setSelectedRepo(repo);
@@ -362,8 +361,7 @@ value={inputValue}
           <button
             type="button"
             onClick={() => {
-              setTrendingOnly((v) => !v);
-              setPage(1);
+              updateFilter("trending", trendingOnly ? "" : "true");
             }}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
               trendingOnly
@@ -452,7 +450,7 @@ value={inputValue}
                   </label>
                   <select
                     value={selectedLanguage}
-                    onChange={(e) => updateFilter(setSelectedLanguage, e.target.value)}
+                    onChange={(e) => updateFilter("language", e.target.value)}
                     className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
                   >
                     <option value="ALL">All Languages</option>
@@ -780,7 +778,7 @@ onClick={() => {
 
 function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
   const { data, isLoading } = useQuery({
-    queryKey: queryKeys.opensource.list({ recommended: true }),
+    queryKey: queryKeys.opensource.list({ recommended: "true" }),
     queryFn: async () => {
       const res = await api.get<{ repos: OpenSourceRepo[] }>("/opensource/recommended");
       return res.data;

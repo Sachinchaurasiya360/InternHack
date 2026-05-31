@@ -58,6 +58,8 @@ function getDeadlineCountdown(deadline?: string | null) {
   if (daysRemaining === 0) return "Ends today";
   if (daysRemaining === 1) return "1 day left";
   return `${daysRemaining} days left`;
+}
+
 function getDeadlineBadge(deadline: string) {
   const now = new Date();
   const endDate = new Date(deadline);

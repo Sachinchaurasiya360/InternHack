@@ -242,7 +242,7 @@ export default function AdminRepoRequestsPage() {
           </span>
           <div className="flex items-center gap-2">
             <Button
-              variant="danger"
+              variant="destructive"
               size="sm"
               className="flex items-center gap-1 shrink-0"
               onClick={handleBulkReject}

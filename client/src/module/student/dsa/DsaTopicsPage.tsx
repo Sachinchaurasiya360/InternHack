@@ -21,7 +21,6 @@ import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 import { DsaHeatmap } from "./components/DsaHeatmap";
 import { ResultCount } from "../../../components/ui/ResultCount";
 
-const FREE_LIMIT = 5;
 const TOPICS_PER_PAGE = 20;
 const IMPORT_ENABLED = import.meta.env["VITE_LEETCODE_IMPORT_ENABLED"] !== "false";
 

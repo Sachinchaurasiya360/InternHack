@@ -306,7 +306,7 @@ export default function AiRoadmapWizardPage() {
           </h1>
         </motion.div>
 
-        {step === 4 && similarRoadmap && !forceCreate && (
+        {step === 4 && similarEnrollment && !forceCreate && (
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -320,12 +320,12 @@ export default function AiRoadmapWizardPage() {
                 Wait, is this familiar?
               </h3>
               <p className="text-xs text-amber-700/80 dark:text-amber-400/80 leading-relaxed mb-3">
-                You already have an active roadmap called <strong>"{similarRoadmap.roadmap.title}"</strong>. 
+                You already have an active roadmap called <strong>"{similarEnrollment.roadmap.title}"</strong>. 
                 Want to continue where you left off?
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button asChild size="sm" variant="secondary" className="bg-white dark:bg-amber-900 dark:hover:bg-amber-800">
-                  <Link to={`/learn/roadmaps/${similarRoadmap.roadmap.slug}`}>
+                  <Link to={`/learn/roadmaps/${similarEnrollment.roadmap.slug}`}>
                     Open Existing
                   </Link>
                 </Button>
