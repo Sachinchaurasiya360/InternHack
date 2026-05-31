@@ -92,7 +92,7 @@ const submitFeedback = async (
     });
 
     localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`
+      `guide-feedback-${basePath}-${step.id}`,
       value
     );
 
@@ -100,7 +100,7 @@ const submitFeedback = async (
     setSubmitted(true);
   } catch {
     localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`
+      `guide-feedback-${basePath}-${step.id}`,
       value
     );
 
