@@ -276,7 +276,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
       whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
       whileTap={{ scale: 0.98 }}
       onClick={data.onClick}
-      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-grab active:cursor-grabbing w-72 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10 ${weakRing}`}
+      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-pointer active:cursor-grabbing w-72 min-h-16 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10 ${weakRing}`}
     >
       <Handle
         type="target"
@@ -415,6 +415,25 @@ const nodeTypes = { topic: TopicNode, sectionLabel: SectionLabelNode };
 // ─── Page ──────────────────────────────────────────────────────────────────
 export default function RoadmapCanvasPage() {
   const { slug = "" } = useParams();
+
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false,
+  );
+  const [isTouchDevice, setIsTouchDevice] = useState(() =>
+    typeof window !== "undefined"
+      ? "ontouchstart" in window || navigator.maxTouchPoints > 0
+      : false,
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  }, []);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
@@ -422,6 +441,11 @@ export default function RoadmapCanvasPage() {
   const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">(
     "LINEAR",
   );
+
+  // On small screens (< 768px), default to a linear list view.
+  useEffect(() => {
+    if (isMobile && viewMode !== "LINEAR") setViewMode("LINEAR");
+  }, [isMobile, viewMode]);
   // Track which sectionId is currently being regenerated
   const [regeneratingSectionId, setRegeneratingSectionId] = useState<
     number | null
@@ -1097,6 +1121,8 @@ export default function RoadmapCanvasPage() {
             <ReactFlow
               nodes={nodes}
               edges={edges}
+              panOnScroll={isTouchDevice}
+              zoomOnScroll={isTouchDevice}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               nodeTypes={nodeTypes}
@@ -1176,7 +1202,11 @@ export default function RoadmapCanvasPage() {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 28, stiffness: 280 }}
-                className="fixed inset-y-0 right-0 w-full sm:w-115 bg-white dark:bg-stone-950 border-l border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto"
+                className={
+                  isMobile
+                    ? "fixed bottom-0 left-0 right-0 h-[78vh] bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto rounded-t-2xl"
+                    : "fixed inset-y-0 right-0 w-full sm:w-115 bg-white dark:bg-stone-950 border-l border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto"
+                }
               >
                 <div className="sticky top-0 z-10 bg-white/90 dark:bg-stone-950/90 backdrop-blur border-b border-stone-200 dark:border-stone-800 px-5 py-3 flex items-center justify-between">
                   <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-stone-400">
@@ -1271,8 +1301,16 @@ export default function RoadmapCanvasPage() {
                     </StatusChip>
                     <button
                       type="button"
-                      aria-label={drawerProgress?.bookmarked ? "Remove bookmark" : "Add bookmark"}
-                      title={drawerProgress?.bookmarked ? "Remove bookmark" : "Add bookmark"}
+                      aria-label={
+                        drawerProgress?.bookmarked
+                          ? "Remove bookmark"
+                          : "Add bookmark"
+                      }
+                      title={
+                        drawerProgress?.bookmarked
+                          ? "Remove bookmark"
+                          : "Add bookmark"
+                      }
                       onClick={() =>
                         updateProgress(drawerTopic.id, {
                           bookmarked: !drawerProgress?.bookmarked,
@@ -1419,7 +1457,7 @@ export default function RoadmapCanvasPage() {
                 onClick={() =>
                   !regenerateMutation.isPending && setRegenModal(null)
                 }
-                className="fixed inset-0 z-[60] bg-stone-950/60 backdrop-blur-sm"
+                className="fixed inset-0 z-60 bg-stone-950/60 backdrop-blur-sm"
               />
               {/* Dialog */}
               <motion.div
@@ -1431,7 +1469,7 @@ export default function RoadmapCanvasPage() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.94, y: 8 }}
                 transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                className="fixed inset-0 z-[70] flex items-center justify-center px-4 pointer-events-none"
+                className="fixed inset-0 z-70 flex items-center justify-center px-4 pointer-events-none"
               >
                 <div className="w-full max-w-md pointer-events-auto bg-stone-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
                   {/* Header */}
