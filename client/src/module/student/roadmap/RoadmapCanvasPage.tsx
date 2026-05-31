@@ -168,11 +168,6 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             ) : (
               <ChevronUp className="w-5 h-5" />
             )}
-            {data.isCollapsed ? (
-              <ChevronDown className="w-5 h-5" />
-            ) : (
-              <ChevronUp className="w-5 h-5" />
-            )}
           </button>
         )}
 
@@ -421,6 +416,7 @@ export default function RoadmapCanvasPage() {
   const { slug = "" } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const graphOffsetsRef = useRef(new Map<number, { x: number; y: number }>());
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
   const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">(
@@ -605,6 +601,21 @@ export default function RoadmapCanvasPage() {
     [],
   );
 
+  const getGraphOffset = useCallback((topicId: number) => {
+    const existing = graphOffsetsRef.current.get(topicId);
+    if (existing) return existing;
+
+    const xSeed = (topicId * 37) % 100;
+    const ySeed = (topicId * 53) % 50;
+    const offset = {
+      x: xSeed - 50,
+      y: ySeed - 25,
+    };
+
+    graphOffsetsRef.current.set(topicId, offset);
+    return offset;
+  }, []);
+
   useEffect(() => {
     if (!data) return;
 
@@ -680,8 +691,8 @@ export default function RoadmapCanvasPage() {
             position:
               viewMode === "GRAPH"
                 ? {
-                    x: TOPIC_X + (Math.random() * 100 - 50),
-                    y: cursorY + (Math.random() * 50 - 25),
+                    x: TOPIC_X + getGraphOffset(topic.id).x,
+                    y: cursorY + getGraphOffset(topic.id).y,
                   }
                 : { x: TOPIC_X, y: cursorY },
             data: {
@@ -741,10 +752,6 @@ export default function RoadmapCanvasPage() {
         ? (section.topics[section.topics.length - 1]?.id ??
           prevSectionLastTopicId)
         : prevSectionLastTopicId;
-      prevSectionLastTopicId = !isCollapsed
-        ? (section.topics[section.topics.length - 1]?.id ??
-          prevSectionLastTopicId)
-        : prevSectionLastTopicId;
       cursorY += SECTION_GAP;
     });
 
@@ -772,10 +779,11 @@ export default function RoadmapCanvasPage() {
 
     regeneratingSectionId,
 
+    getGraphOffset,
+
     setNodes,
 
     setEdges,
-    ,
     weakTopicTitles,
   ]);
 
@@ -887,10 +895,6 @@ export default function RoadmapCanvasPage() {
       sectionId: regenModal.sectionId,
       instructions: regenInstructions,
     });
-    regenerateMutation.mutate({
-      sectionId: regenModal.sectionId,
-      instructions: regenInstructions,
-    });
   };
 
   // useStudentSidebar must be called unconditionally (rules of hooks). It always
@@ -929,15 +933,6 @@ export default function RoadmapCanvasPage() {
         </div>
         {sidebar}
         <div className="flex flex-col items-center justify-center pt-32 px-6 text-center">
-          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">
-            Could not load your roadmap
-          </p>
-          <p className="text-sm text-stone-500 mb-6">
-            There was a problem connecting to the server. Please try again.
-          </p>
-          <Button onClick={() => window.location.reload()} variant="outline">
-            Retry
-          </Button>
           <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">
             Could not load your roadmap
           </p>
@@ -1333,72 +1328,29 @@ export default function RoadmapCanvasPage() {
                         resources
                       </p>
                       <ul className="space-y-1">
-                        {drawerTopic.resources.map(
-                          (r: RoadmapResource, i: number) => (
-                            <motion.li
-                              key={r.id}
-                              initial={{ opacity: 0, x: 8 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{
-                                delay: 0.25 + i * 0.04,
-                                duration: 0.3,
-                              }}
+                        {drawerTopic.resources.map((r: RoadmapResource) => (
+                          <li key={r.id}>
+                            <a
+                              href={r.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors group no-underline"
                             >
-                              <a
-                                href={r.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors group no-underline"
-                              >
-                                <span className="text-[9px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-500 shrink-0 w-12">
-                                  {r.kind}
-                                </span>
-                                <span className="flex-1 text-sm text-stone-700 dark:text-stone-300 group-hover:text-stone-950 dark:group-hover:text-stone-50">
-                                  {r.title}
-                                  {r.source && (
-                                    <span className="text-stone-400 ml-1.5">
-                                      ({r.source})
-                                    </span>
-                                  )}
-                                </span>
-                                <ExternalLink className="w-3 h-3 text-stone-300 dark:text-stone-700 shrink-0 group-hover:text-lime-500 transition-colors" />
-                              </a>
-                            </motion.li>
-                          ),
-                        )}
-                        {drawerTopic.resources.map(
-                          (r: RoadmapResource, i: number) => (
-                            <motion.li
-                              key={r.id}
-                              initial={{ opacity: 0, x: 8 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{
-                                delay: 0.25 + i * 0.04,
-                                duration: 0.3,
-                              }}
-                            >
-                              <a
-                                href={r.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors group no-underline"
-                              >
-                                <span className="text-[9px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-500 shrink-0 w-12">
-                                  {r.kind}
-                                </span>
-                                <span className="flex-1 text-sm text-stone-700 dark:text-stone-300 group-hover:text-stone-950 dark:group-hover:text-stone-50">
-                                  {r.title}
-                                  {r.source && (
-                                    <span className="text-stone-400 ml-1.5">
-                                      ({r.source})
-                                    </span>
-                                  )}
-                                </span>
-                                <ExternalLink className="w-3 h-3 text-stone-300 dark:text-stone-700 shrink-0 group-hover:text-lime-500 transition-colors" />
-                              </a>
-                            </motion.li>
-                          ),
-                        )}
+                              <span className="text-[9px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-500 shrink-0 w-12">
+                                {r.kind}
+                              </span>
+                              <span className="flex-1 text-sm text-stone-700 dark:text-stone-300 group-hover:text-stone-950 dark:group-hover:text-stone-50">
+                                {r.title}
+                                {r.source && (
+                                  <span className="text-stone-400 ml-1.5">
+                                    ({r.source})
+                                  </span>
+                                )}
+                              </span>
+                              <ExternalLink className="w-3 h-3 text-stone-300 dark:text-stone-700 shrink-0 group-hover:text-lime-500 transition-colors" />
+                            </a>
+                          </li>
+                        ))}
                       </ul>
                     </motion.div>
                   )}
@@ -1483,7 +1435,7 @@ export default function RoadmapCanvasPage() {
                 onClick={() =>
                   !regenerateMutation.isPending && setRegenModal(null)
                 }
-                className="fixed inset-0 z-[60] bg-stone-950/60 backdrop-blur-sm"
+                className="fixed inset-0 z-60 bg-stone-950/60 backdrop-blur-sm"
               />
               {/* Dialog */}
               <motion.div
@@ -1495,7 +1447,7 @@ export default function RoadmapCanvasPage() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.94, y: 8 }}
                 transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                className="fixed inset-0 z-[70] flex items-center justify-center px-4 pointer-events-none"
+                className="fixed inset-0 z-70 flex items-center justify-center px-4 pointer-events-none"
               >
                 <div className="w-full max-w-md pointer-events-auto bg-stone-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
                   {/* Header */}
@@ -1582,12 +1534,6 @@ export default function RoadmapCanvasPage() {
                       ) : (
                         <Sparkles className="w-3.5 h-3.5" />
                       )}
-                      {regenerateMutation.isPending
-                        ? "Regenerating…"
-                        : "Regenerate"}
-                      {regenerateMutation.isPending
-                        ? "Regenerating…"
-                        : "Regenerate"}
                     </Button>
                   </div>
                 </div>
@@ -1664,7 +1610,7 @@ function RoadmapAnalyticsStrip({
 
           <div className="min-w-0 rounded-md border border-white/10 bg-white/5 px-3 py-2">
             <p className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
-              trend (last 30 days)
+              trend
             </p>
 
             <div className="h-8 mt-1">
@@ -1707,7 +1653,6 @@ function RoadmapAnalyticsStrip({
                   complete 2 days to see
                 </div>
               )}
-              <div />
             </div>
           </div>
         </div>

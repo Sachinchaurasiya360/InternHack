@@ -12,7 +12,7 @@ interface WeeklyPlanWeek {
 }
 export async function findDuplicateRoadmap(
   goalDescription: string,
-  userId: number
+  userId: number,
 ) {
   const normalizedGoal = goalDescription.trim();
   if (!normalizedGoal) return null;
@@ -22,11 +22,11 @@ export async function findDuplicateRoadmap(
       ownerUserId: userId,
       isAiGenerated: true,
       slug: {
-        startsWith: 'ai-',
+        startsWith: "ai-",
       },
       title: {
         contains: normalizedGoal.slice(0, 30),
-        mode: 'insensitive',
+        mode: "insensitive",
       },
     },
   });
@@ -332,14 +332,20 @@ export async function getEnrollmentForUser(args: {
   return enrollment;
 }
 
-export async function deleteEnrollment(args: { userId: number; enrollmentId: number }) {
+export async function deleteEnrollment(args: {
+  userId: number;
+  enrollmentId: number;
+}) {
   const enrollment = await prisma.roadmapEnrollment.findFirst({
     where: { id: args.enrollmentId, userId: args.userId },
   });
-  if (!enrollment) throw Object.assign(new Error("Enrollment not found"), { status: 404 });
+  if (!enrollment)
+    throw Object.assign(new Error("Enrollment not found"), { status: 404 });
 
   await prisma.$transaction(async (tx) => {
-    await tx.roadmapTopicProgress.deleteMany({ where: { enrollmentId: enrollment.id } });
+    await tx.roadmapTopicProgress.deleteMany({
+      where: { enrollmentId: enrollment.id },
+    });
     await tx.roadmapEnrollment.delete({ where: { id: enrollment.id } });
     await tx.roadmap.update({
       where: { id: enrollment.roadmapId },
@@ -542,30 +548,68 @@ type AnalyticsRow = {
 
 const toUtcDayKey = (date: Date): string => date.toISOString().slice(0, 10);
 
-const utcDateFromDayKey = (dayKey: string): Date => new Date(`${dayKey}T00:00:00.000Z`);
+const utcDateFromDayKey = (dayKey: string): Date =>
+  new Date(`${dayKey}T00:00:00.000Z`);
 
 const addUtcDays = (date: Date, days: number): Date =>
-  new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + days));
+  new Date(
+    Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate() + days,
+    ),
+  );
 
 const startOfUtcWeek = (date: Date): Date => {
-  const start = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const start = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
   const day = start.getUTCDay();
   const mondayOffset = day === 0 ? -6 : 1 - day;
   start.setUTCDate(start.getUTCDate() + mondayOffset);
   return start;
 };
 
-function getCompletedUtcDays(completedEvents: { completedAt: string | Date }[]): string[] {
+function getActivePlanWeek(
+  weeklyPlan: WeeklyPlanWeek[],
+  now: Date,
+): WeeklyPlanWeek | null {
+  for (const week of weeklyPlan) {
+    const startDate = new Date(week.startDate);
+    const endDate = new Date(week.endDate);
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      continue;
+    }
+
+    if (now >= startDate && now <= endDate) {
+      return week;
+    }
+  }
+
+  return null;
+}
+
+function getCompletedUtcDays(
+  completedEvents: { completedAt: string | Date }[],
+): string[] {
   return Array.from(
     new Set(
       completedEvents.map((event) =>
-        toUtcDayKey(event.completedAt instanceof Date ? event.completedAt : new Date(event.completedAt)),
+        toUtcDayKey(
+          event.completedAt instanceof Date
+            ? event.completedAt
+            : new Date(event.completedAt),
+        ),
       ),
     ),
   ).sort();
 }
 
-function calculateStreaks(completedDayKeys: string[]): { currentStreak: number; longestStreak: number } {
+function calculateStreaks(completedDayKeys: string[]): {
+  currentStreak: number;
+  longestStreak: number;
+} {
   if (completedDayKeys.length === 0) {
     return { currentStreak: 0, longestStreak: 0 };
   }
@@ -625,8 +669,11 @@ function parseWeeklyPlan(value: Prisma.JsonValue): WeeklyPlanWeek[] {
         week: maybeWeek.week,
         startDate: maybeWeek.startDate,
         endDate: maybeWeek.endDate,
-        topicSlugs: maybeWeek.topicSlugs.filter((slug): slug is string => typeof slug === "string"),
-        totalHours: typeof maybeWeek.totalHours === "number" ? maybeWeek.totalHours : 0,
+        topicSlugs: maybeWeek.topicSlugs.filter(
+          (slug): slug is string => typeof slug === "string",
+        ),
+        totalHours:
+          typeof maybeWeek.totalHours === "number" ? maybeWeek.totalHours : 0,
       });
     }
   }
@@ -657,7 +704,10 @@ function getPlanStats(weeklyPlan: WeeklyPlanWeek[], now: Date) {
   return { expectedTopicsCompleted, weeklyTarget };
 }
 
-function getOnTrackStatus(actualCompletedTopics: number, expectedTopicsCompleted: number): {
+function getOnTrackStatus(
+  actualCompletedTopics: number,
+  expectedTopicsCompleted: number,
+): {
   paceDeviation: number;
   onTrackStatus: RoadmapTrackStatus;
 } {
@@ -706,7 +756,10 @@ function getEstimatedCompletionDate(args: {
     return args.targetEndDate.toISOString();
   }
 
-  const remainingTopics = Math.max(0, args.totalTopics - args.actualCompletedTopics);
+  const remainingTopics = Math.max(
+    0,
+    args.totalTopics - args.actualCompletedTopics,
+  );
   const daysRemaining = Math.ceil(remainingTopics / topicsPerDay);
   return addUtcDays(args.now, daysRemaining).toISOString();
 }
@@ -790,16 +843,30 @@ export async function getEnrollmentAnalyticsForUser(args: {
   const completedDayKeys = getCompletedUtcDays(row.completedEvents);
   const { currentStreak, longestStreak } = calculateStreaks(completedDayKeys);
   const weeklyPlan = parseWeeklyPlan(row.weeklyPlan);
-  const { expectedTopicsCompleted, weeklyTarget } = getPlanStats(weeklyPlan, now);
+  const { expectedTopicsCompleted, weeklyTarget } = getPlanStats(
+    weeklyPlan,
+    now,
+  );
   const { paceDeviation, onTrackStatus } = getOnTrackStatus(
     row.actualCompletedTopics,
     expectedTopicsCompleted,
   );
-  const weekStart = startOfUtcWeek(now);
-  const topicsCompletedThisWeek = row.completedEvents.filter((event) => {
-    const completedAt = event.completedAt instanceof Date ? event.completedAt : new Date(event.completedAt);
-    return completedAt >= weekStart && completedAt <= now;
-  }).length;
+  const activePlanWeek = getActivePlanWeek(weeklyPlan, now);
+  const topicsCompletedThisWeek = activePlanWeek
+    ? row.completedEvents.filter((event) => {
+        const completedAt =
+          event.completedAt instanceof Date
+            ? event.completedAt
+            : new Date(event.completedAt);
+        const weekStart = new Date(activePlanWeek.startDate);
+        const weekEnd = new Date(activePlanWeek.endDate);
+        return (
+          completedAt >= weekStart &&
+          completedAt <= weekEnd &&
+          completedAt <= now
+        );
+      }).length
+    : 0;
 
   return {
     enrollmentId: row.enrollmentId,
