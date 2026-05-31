@@ -21,57 +21,75 @@ const controller = new OpensourceController();
 // Public: list available languages
 opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
 
-// Public: list available languages
-opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
-
-// Public: list repos with optional filters
-<<<<<<< HEAD
-opensourceRouter.get("/", (req, res, next) => controller.listRepos(req, res, next));
-
-=======
-opensourceRouter.get("/", async (req, res, next) => {
+// Personalized repo recommendations for authenticated students
+opensourceRouter.get("/recommended", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
   try {
-    const parsed = opensourceListQuerySchema.safeParse(req.query);
-    if (!parsed.success) {
-      res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
+    const userId = req.user!.id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { skills: true, projects: true },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
       return;
     }
-    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder, trending } = parsed.data;
 
-    const where: Record<string, unknown> = {};
-    if (language) where["language"] = { equals: language, mode: "insensitive" };
-    if (difficulty) where["difficulty"] = difficulty;
-    if (domain) where["domain"] = domain;
-    if (trending === "true") where["trending"] = true;
-    if (search) {
-      where["OR"] = [
-        { name: { contains: search, mode: "insensitive" } },
-        { owner: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { tags: { hasSome: [search] } },
-      ];
+    const studentTechStack = user.skills || [];
+    const projects = (user.projects as any[]) || [];
+    const projectTech = projects.flatMap((p) => p.techStack || []);
+    const allStudentTech = [...new Set([...studentTechStack, ...projectTech])];
+
+    if (allStudentTech.length === 0) {
+      const topRepos = await prisma.opensourceRepo.findMany({
+        take: 6,
+        orderBy: { stars: "desc" },
+      });
+      res.json({ repos: topRepos.map((r) => ({ ...r, matchedSkills: [] })) });
+      return;
     }
 
-    const skip = (page - 1) * limit;
-    const [repos, total] = await Promise.all([
-      prisma.opensourceRepo.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { [sortBy]: sortOrder },
-      }),
-      prisma.opensourceRepo.count({ where }),
-    ]);
-
-    res.json({
-      repos,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    const recommendedRepos = await prisma.opensourceRepo.findMany({
+      where: {
+        OR: [
+          { techStack: { hasSome: allStudentTech } },
+          { language: { in: allStudentTech } },
+        ],
+      },
+      take: 6,
+      orderBy: { stars: "desc" },
     });
+
+    let results = recommendedRepos.map((repo) => {
+      const matchedSkills = repo.techStack.filter((skill) =>
+        allStudentTech.some((s) => s.toLowerCase() === skill.toLowerCase())
+      );
+      if (allStudentTech.some((s) => s.toLowerCase() === repo.language.toLowerCase())) {
+        if (!matchedSkills.includes(repo.language)) {
+          matchedSkills.push(repo.language);
+        }
+      }
+      return { ...repo, matchedSkills };
+    });
+
+    if (results.length < 6) {
+      const existingIds = results.map((r) => r.id);
+      const extra = await prisma.opensourceRepo.findMany({
+        where: { id: { notIn: existingIds } },
+        take: 6 - results.length,
+        orderBy: { stars: "desc" },
+      });
+      results = [...results, ...extra.map((r) => ({ ...r, matchedSkills: [] }))];
+    }
+
+    res.json({ repos: results });
   } catch (err) {
     next(err);
   }
 });
->>>>>>> origin/main
+
+// Public: list repos with optional filters
+opensourceRouter.get("/", (req, res, next) => controller.listRepos(req, res, next));
 // ─── Repo Requests (Student-authenticated) ───────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
@@ -91,16 +109,23 @@ opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), async
       res.status(409).json({ message: "This repository has already been submitted" });
       return;
     }
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    const existingRepo = await prisma.opensourceRepo.findFirst({
-      where: { url: parsed.data.url },
+    const requestCount = await prisma.repoRequest.count({
+      where: {
+        userId: req.user!.id,
+        createdAt: {
+          gte: twentyFourHoursAgo,
+        },
+      },
     });
-    if (existingRepo) {
-      res.status(409).json({ message: "This repository is already listed on the platform" });
+
+    if (requestCount >= 5) {
+      res.status(429).json({
+        message: "You can submit at most 5 repo suggestions in the last 24 hours.",
+      });
       return;
     }
-
-
     const request = await prisma.repoRequest.create({
       data: { ...parsed.data, userId: req.user!.id },
       include: { user: { select: { name: true, email: true } } },
@@ -134,8 +159,57 @@ opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), a
   }
 });
 
-// Student analytics (trend + domains)
-opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"), (req, res, next) => controller.getAnalytics(req, res, next));
+// Student contribution trend
+opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
+  try {
+    const now = new Date();
+    const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const startMonth = addMonthsUTC(currentMonthStart, -5);
+    const endMonth = addMonthsUTC(currentMonthStart, 1);
+
+    const approvedRequests = await prisma.repoRequest.findMany({
+      where: {
+        userId: req.user!.id,
+        status: "APPROVED",
+        updatedAt: { gte: startMonth, lt: endMonth },
+      },
+      select: { updatedAt: true },
+    });
+
+    const countsByMonth = new Map<string, number>();
+    for (const request of approvedRequests) {
+      const monthKey = getMonthKeyUTC(request.updatedAt);
+      countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
+    }
+
+    const trend = Array.from({ length: 6 }, (_, index) => {
+      const monthStart = addMonthsUTC(startMonth, index);
+      const monthKey = getMonthKeyUTC(monthStart);
+      return {
+        month: monthKey,
+        label: getMonthLabelUTC(monthStart),
+        count: countsByMonth.get(monthKey) ?? 0,
+      };
+    });
+
+    const allApproved = await prisma.repoRequest.findMany({
+      where: { userId: req.user!.id, status: "APPROVED" },
+      select: { domain: true },
+    });
+
+    const domainCounts: Record<string, number> = {};
+    allApproved.forEach((r) => {
+      if (r.domain) domainCounts[r.domain] = (domainCounts[r.domain] || 0) + 1;
+    });
+    const domains = Object.entries(domainCounts)
+      .map(([domain, count]) => ({ domain, count }))
+      .sort((a, b) => b.count - a.count);
+
+    res.json({ trend, total: approvedRequests.length, domains });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // ─── Admin: Manage Repo Requests ─────────────────────────────────
 
