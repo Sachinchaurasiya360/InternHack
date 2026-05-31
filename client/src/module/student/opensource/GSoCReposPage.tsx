@@ -146,6 +146,29 @@ function FilterDropdown({
   );
 }
 
+const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }) => {
+  const yearsRange = Array.from({ length: 10 }, (_, i) => 2016 + i);
+
+  return (
+    <div className="mb-4 flex items-center gap-1" aria-label="GSoC Participation History (2016-2025)">
+      {yearsRange.map((year) => {
+        const participated = participatedYears.includes(year);
+        return (
+          <div
+            key={year}
+            title={participated ? `${year}: Participated` : `${year}: Did not participate`}
+            className={`h-1.5 w-1.5 rounded-sm transition-transform duration-200 hover:scale-125 cursor-help ${
+              participated
+                ? "bg-lime-500"
+                : "bg-stone-200 dark:bg-stone-700"
+            }`}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
 function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => void }) {
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
 
@@ -186,6 +209,8 @@ function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => v
           {org.technologies.length > 4 && <PlainChip>+{org.technologies.length - 4}</PlainChip>}
         </div>
       )}
+
+      <ParticipationBar participatedYears={org.yearsParticipated} />
 
       <div className="mt-auto flex items-center justify-between border-t border-stone-100 pt-3 dark:border-white/5">
         <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
