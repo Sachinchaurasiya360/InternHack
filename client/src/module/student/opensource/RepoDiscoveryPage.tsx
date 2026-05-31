@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -38,13 +38,18 @@ const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function RepoDiscoveryPage() {
-  const [search, setSearch] = useState("");
-  const [selectedDomain, setSelectedDomain] = useState("ALL");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("ALL");
-  const [sortKey, setSortKey] = useState("stars");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // 1. Initialize filter states directly from the URL (with fallbacks)
+  const search = searchParams.get("q") || "";
+  const selectedDomain = searchParams.get("domain") || "ALL";
+  const selectedDifficulty = searchParams.get("difficulty") || "ALL";
+  const sortKey = searchParams.get("sort") || "stars";
+  const page = Number(searchParams.get("page")) || 1;
+
+  // Local UI states (these don't need to be in the URL)
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
-  const [page, setPage] = useState(1);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const { user } = useAuthStore();
 
@@ -67,7 +72,7 @@ export default function RepoDiscoveryPage() {
     placeholderData: (prev) => prev,
   });
 
-  const repos = data?.repos ?? [];
+  const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
 
   const stats = useMemo(() => {
@@ -82,9 +87,27 @@ export default function RepoDiscoveryPage() {
     };
   }, [repos, pagination]);
 
-  const updateFilter = (setter: (v: string) => void, value: string) => {
-    setter(value);
-    setPage(1);
+  // 2. Unified function to update URL query params
+  const updateFilter = (key: string, value: string | number) => {
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        
+        if (value === "ALL" || value === "") {
+          newParams.delete(key);
+        } else {
+          newParams.set(key, String(value));
+        }
+
+        // Reset to page 1 if modifying any filter other than page
+        if (key !== "page") {
+          newParams.set("page", "1");
+        }
+
+        return newParams;
+      },
+      { replace: true }
+    );
   };
 
   const activeFilters =
@@ -152,7 +175,7 @@ export default function RepoDiscoveryPage() {
           <input
             type="text"
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => updateFilter("q", e.target.value)}
             placeholder="Search repos, languages, tags..."
             className="w-full pl-10 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
           />
@@ -219,7 +242,7 @@ export default function RepoDiscoveryPage() {
               <button
                 key={d.key}
                 type="button"
-                onClick={() => updateFilter(setSelectedDomain, d.key === selectedDomain ? "ALL" : d.key)}
+                onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
                 className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
                   active
                     ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
@@ -263,7 +286,7 @@ export default function RepoDiscoveryPage() {
                 <button
                   key={opt.key}
                   type="button"
-                  onClick={() => updateFilter(setSortKey, opt.key)}
+                  onClick={() => updateFilter("sort", opt.key)}
                   className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                     sortKey === opt.key
                       ? "bg-stone-900 dark:bg-stone-50 text-lime-400"
@@ -293,7 +316,7 @@ export default function RepoDiscoveryPage() {
                   </label>
                   <select
                     value={selectedDifficulty}
-                    onChange={(e) => updateFilter(setSelectedDifficulty, e.target.value)}
+                    onChange={(e) => updateFilter("difficulty", e.target.value)}
                     className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
                   >
                     {DIFFICULTY_OPTIONS.map((d) => (
@@ -306,12 +329,7 @@ export default function RepoDiscoveryPage() {
                   <div className="flex items-end">
                     <button
                       type="button"
-                      onClick={() => {
-                        setSelectedDomain("ALL");
-                        setSelectedDifficulty("ALL");
-                        setSearch("");
-                        setPage(1);
-                      }}
+                      onClick={() => setSearchParams(new URLSearchParams(), { replace: true })}
                       className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer py-2"
                     >
                       / clear all
@@ -386,7 +404,7 @@ export default function RepoDiscoveryPage() {
           <PaginationControls
             currentPage={page}
             totalPages={pagination.totalPages}
-            onPageChange={setPage}
+            onPageChange={(newPage) => updateFilter("page", newPage)}
           />
         )}
       </div>
