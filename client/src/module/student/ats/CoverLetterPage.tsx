@@ -1,4 +1,5 @@
 import CoverLetterHistoryPanel from "./CoverLetterHistoryPanel";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import { useState, useRef, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -998,15 +999,19 @@ useEffect(() => {
                   title="Cover letter ready"
                   right={
                     <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={handleGenerate}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
-                      >
-                        <RefreshCw className="w-3 h-3" /> Regenerate
-                      </button>
-                      <button
-                        type="button"
+                      <CopyButton text={coverLetter} />
+                      <div className="relative" ref={downloadMenuRef}>
+                        <button
+                          type="button"
+                          onClick={() => setShowDownloadMenu((v) => !v)}
+                          className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-md bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/10 transition-colors"
+                        >
+                          <Download size={14} />
+                          <span>Export</span>
+                        </button>
+                      </div>
+                    </div>
+                  }
                         onClick={handleCopy}
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
                       >

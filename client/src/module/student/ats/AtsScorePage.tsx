@@ -4,6 +4,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import toast from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { uploadDirectToS3 } from "../../../utils/upload";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import {
   Upload,
   FileText,
@@ -1087,11 +1088,20 @@ export default function AtsScorePage() {
                     kicker="result"
                     title="Overall ATS score"
                     right={
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
-                      >
-                        / {overallTier.label.toLowerCase()}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <CopyButton
+                          text={[
+                            `ATS Score: ${result.overallScore}/100`,
+                            `Tier: ${overallTier.label}`,
+                            `\nSuggestions:\n${result.suggestions.map((s, i) => `${i + 1}. ${s.suggestion}`).join("\n")}`,
+                          ].join("\n")}
+                        />
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
+                        >
+                          / {overallTier.label.toLowerCase()}
+                        </span>
+                      </div>
                     }
                   />
                   <div className="p-6 flex items-center gap-6">
