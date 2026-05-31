@@ -37,3 +37,9 @@ export const approveRequestOverrideSchema = z.object({
   difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
   tags: z.array(z.string()).optional(),
 });
+
+export const bulkRepoRequestSchema = z.object({
+  ids: z.array(z.number().int().positive("Invalid ID in request list")).min(1, "At least one ID must be specified"),
+  action: z.enum(["approve", "reject"], { message: "Action must be either 'approve' or 'reject'" }),
+  adminNote: z.string().max(1000).optional(),
+});
