@@ -199,15 +199,16 @@ export default function AtsScorePage() {
     doc.setFont("helvetica", "normal");
 
     result.suggestions.forEach((suggestion) => {
-      checkPageBreak();
+      const lines = doc.splitTextToSize(`• ${suggestion}`, 160);
+      const blockHeight = lines.length * 6 + 2;
 
-      const lines = doc.splitTextToSize(
-        `• ${suggestion}`,
-        160,
-      );
+      if (y + blockHeight > pageHeight - 20) {
+        doc.addPage();
+        y = 20;
+      }
 
       doc.text(lines, 25, y);
-      y += lines.length * 6 + 2;
+      y += blockHeight;
     });
 
     doc.save(filename);
