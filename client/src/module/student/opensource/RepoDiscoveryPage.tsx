@@ -35,14 +35,18 @@ import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
 import { SuggestRepoModal } from "./SuggestRepoModal";
+import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
+import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 
 const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
-export default function RepoDiscoveryPage() {
-const [searchParams, setSearchParams] = useSearchParams();
 
-  // 1. Initialize filter states directly from the URL (including the new ones from main!)
+export default function RepoDiscoveryPage() {
+  // CONFLICT 1 RESOLVED: single useSearchParams declaration
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Initialize filter states directly from the URL
   const search = searchParams.get("q") || "";
   const selectedDomain = searchParams.get("domain") || "ALL";
   const selectedDifficulty = searchParams.get("difficulty") || "ALL";
@@ -51,7 +55,7 @@ const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
 
-  // 2. Debounced search state & ref (from main)
+  // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -63,7 +67,7 @@ const [searchParams, setSearchParams] = useSearchParams();
             const newParams = new URLSearchParams(prev);
             if (inputValue.trim() === "") newParams.delete("q");
             else newParams.set("q", inputValue);
-            newParams.set("page", "1"); // Reset to page 1 on new search
+            newParams.set("page", "1");
             return newParams;
           },
           { replace: true }
@@ -73,7 +77,7 @@ const [searchParams, setSearchParams] = useSearchParams();
     return () => clearTimeout(timer);
   }, [inputValue, search, setSearchParams]);
 
-  // 3. Keyboard shortcut to focus search (from main)
+  // Keyboard shortcut to focus search
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
@@ -86,25 +90,37 @@ const [searchParams, setSearchParams] = useSearchParams();
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Local UI states (these don't need to be in the URL)
+  // Local UI states
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const { user } = useAuthStore();
-  const [searchParams, setSearchParams] = useSearchParams();
+
+  // CONFLICT 2 RESOLVED: keep both recently-viewed AND deep-linking, unified into one handler
+  const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
+    addRepo(repo);
     setSelectedRepo(repo);
-    setSearchParams({ repo: String(repo.id) }, { replace: true });
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("repo", String(repo.id));
+      return params;
+    }, { replace: true });
   };
 
   const handleCloseRepo = () => {
     setSelectedRepo(null);
-    setSearchParams({}, { replace: true });
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.delete("repo");
+      return params;
+    }, { replace: true });
     setCopiedShareUrl(false);
   };
 
+  // Deep-link support: load a repo from URL on first render
   const initialRepoId = searchParams.get("repo");
   const { data: deepLinkData, isError: deepLinkError } = useQuery({
     queryKey: ["repo-deep-link", initialRepoId],
@@ -122,7 +138,11 @@ const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (deepLinkError) {
-      setSearchParams({}, { replace: true });
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+        params.delete("repo");
+        return params;
+      }, { replace: true });
     }
   }, [deepLinkError, setSearchParams]);
 
@@ -134,17 +154,16 @@ const [searchParams, setSearchParams] = useSearchParams();
 
   const queryParams = useMemo(() => {
     const params: Record<string, string | number> = { page, limit: 12, sortBy: sortKey, sortOrder: "desc" };
-    
+
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
-
     if (selectedLanguage !== "ALL") params.language = selectedLanguage;
     if (trendingOnly) params.trending = "true";
-    
+
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
-    
+
     return params;
   }, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, trendingOnly, page]);
 
@@ -157,7 +176,7 @@ const [searchParams, setSearchParams] = useSearchParams();
     placeholderData: (prev) => prev,
   });
 
-const { data: languagesData } = useQuery({
+  const { data: languagesData } = useQuery({
     queryKey: ["opensource-languages"],
     queryFn: () => api.get("/opensource/languages").then((r) => r.data.languages as string[]),
     staleTime: 10 * 60 * 1000,
@@ -167,7 +186,6 @@ const { data: languagesData } = useQuery({
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
   }, [languagesData]);
 
-  // Your clean ESLint fix!
   const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
 
@@ -183,19 +201,17 @@ const { data: languagesData } = useQuery({
     };
   }, [repos, pagination]);
 
-  // 2. Unified function to update URL query params
   const updateFilter = (key: string, value: string | number) => {
     setSearchParams(
       (prev) => {
         const newParams = new URLSearchParams(prev);
-        
+
         if (value === "ALL" || value === "") {
           newParams.delete(key);
         } else {
           newParams.set(key, String(value));
         }
 
-        // Reset to page 1 if modifying any filter other than page
         if (key !== "page") {
           newParams.set("page", "1");
         }
@@ -272,7 +288,7 @@ const { data: languagesData } = useQuery({
           <input
             ref={searchRef}
             type="text"
-value={inputValue}
+            value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Search repos, languages, tags..."
             className="w-full pl-10 pr-10 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
@@ -334,8 +350,12 @@ value={inputValue}
         {/* Guidance Cards */}
         <GuidanceCards />
 
-        {/* Recommended for you */}
-        {user?.role === "STUDENT" && <RecommendedSection onSelect={setSelectedRepo} />}
+        {/* CONFLICT 3 RESOLVED: keep both Recently Viewed AND Recommended */}
+        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
+
+        {user?.role === "STUDENT" && (
+          <RecommendedSection onSelect={handleOpenRepo} />
+        )}
 
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -361,10 +381,7 @@ value={inputValue}
           {/* Trending toggle */}
           <button
             type="button"
-            onClick={() => {
-              setTrendingOnly((v) => !v);
-              setPage(1);
-            }}
+            onClick={() => updateFilter("trending", trendingOnly ? "" : "true")}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
               trendingOnly
                 ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
@@ -450,9 +467,10 @@ value={inputValue}
                   <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     language
                   </label>
+                  {/* CONFLICT 5 RESOLVED: was updateFilter(setSelectedLanguage, ...) — now correct string key */}
                   <select
                     value={selectedLanguage}
-                    onChange={(e) => updateFilter(setSelectedLanguage, e.target.value)}
+                    onChange={(e) => updateFilter("language", e.target.value)}
                     className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
                   >
                     <option value="ALL">All Languages</option>
@@ -468,10 +486,8 @@ value={inputValue}
                   <div className="flex items-end">
                     <button
                       type="button"
-onClick={() => {
-                        // 1. Clear the URL parameters
+                      onClick={() => {
                         setSearchParams(new URLSearchParams(), { replace: true });
-                        // 2. Clear the local search box so it doesn't trigger again
                         setInputValue("");
                       }}
                       className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer py-2"
@@ -534,6 +550,7 @@ onClick={() => {
         )}
 
         {/* Cards grid */}
+        {/* CONFLICT 4 RESOLVED: unified handler is handleOpenRepo (tracks recently viewed + deep link) */}
         {!isLoading && !isError && repos.length > 0 && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
