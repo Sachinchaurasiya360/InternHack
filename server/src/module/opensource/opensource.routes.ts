@@ -21,8 +21,72 @@ const controller = new OpensourceController();
 // Public: list available languages
 opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
 
-// Public: list available languages
-opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
+// Personalized repo recommendations for authenticated students
+opensourceRouter.get("/recommended", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
+  try {
+    const userId = req.user!.id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { skills: true, projects: true },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const studentTechStack = user.skills || [];
+    const projects = (user.projects as any[]) || [];
+    const projectTech = projects.flatMap((p) => p.techStack || []);
+    const allStudentTech = [...new Set([...studentTechStack, ...projectTech])];
+
+    if (allStudentTech.length === 0) {
+      const topRepos = await prisma.opensourceRepo.findMany({
+        take: 6,
+        orderBy: { stars: "desc" },
+      });
+      res.json({ repos: topRepos.map((r) => ({ ...r, matchedSkills: [] })) });
+      return;
+    }
+
+    const recommendedRepos = await prisma.opensourceRepo.findMany({
+      where: {
+        OR: [
+          { techStack: { hasSome: allStudentTech } },
+          { language: { in: allStudentTech } },
+        ],
+      },
+      take: 6,
+      orderBy: { stars: "desc" },
+    });
+
+    let results = recommendedRepos.map((repo) => {
+      const matchedSkills = repo.techStack.filter((skill) =>
+        allStudentTech.some((s) => s.toLowerCase() === skill.toLowerCase())
+      );
+      if (allStudentTech.some((s) => s.toLowerCase() === repo.language.toLowerCase())) {
+        if (!matchedSkills.includes(repo.language)) {
+          matchedSkills.push(repo.language);
+        }
+      }
+      return { ...repo, matchedSkills };
+    });
+
+    if (results.length < 6) {
+      const existingIds = results.map((r) => r.id);
+      const extra = await prisma.opensourceRepo.findMany({
+        where: { id: { notIn: existingIds } },
+        take: 6 - results.length,
+        orderBy: { stars: "desc" },
+      });
+      results = [...results, ...extra.map((r) => ({ ...r, matchedSkills: [] }))];
+    }
+
+    res.json({ repos: results });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Public: list repos with optional filters
 opensourceRouter.get("/", (req, res, next) => controller.listRepos(req, res, next));
