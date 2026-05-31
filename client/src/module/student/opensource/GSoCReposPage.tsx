@@ -224,12 +224,9 @@ interface GSoCOrgModalProps {
 }
 
 function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: GSoCOrgModalProps) {
-<<<<<<< HEAD
-=======
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
->>>>>>> origin/main
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
 
   const handleCopy = (url: string, field: string) => {
@@ -347,17 +344,8 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
                   {sortedYears.map((year, idx) => (
                     <details
                       key={year}
-<<<<<<< HEAD
                       open={idx < 3}
                       className="group rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950 overflow-hidden"
-=======
-                      type="button"
-                      onClick={() => setSelectedYear(String(year))}
-                      className={`rounded-md border px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${active
-                        ? "border-lime-400 bg-lime-400 text-stone-950"
-                        : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
-                        }`}
->>>>>>> origin/main
                     >
                       <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-lime-500 dark:hover:text-lime-400 transition-colors select-none [&::-webkit-details-marker]:hidden">
                         <span>{year} — {projectsByYear[year].length} project{projectsByYear[year].length !== 1 ? "s" : ""}</span>
