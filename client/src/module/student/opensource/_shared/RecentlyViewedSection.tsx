@@ -1,5 +1,4 @@
-import { ChevronRight } from "lucide-react";
-import type { OpenSourceRepo } from "../../../lib/types";
+import type { OpenSourceRepo } from "../../../../lib/types";
 
 interface RecentlyViewedSectionProps {
   repos: OpenSourceRepo[];

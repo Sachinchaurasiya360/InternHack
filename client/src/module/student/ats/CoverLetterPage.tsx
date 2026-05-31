@@ -9,7 +9,7 @@ import {
   FileText,
   Search,
   CheckCircle,
-  Copy,
+
   Download,
   RefreshCw,
   Briefcase,
@@ -267,14 +267,7 @@ queryClient.invalidateQueries({
   };
 
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(coverLetter);
-      toast.success("Copied to clipboard!");
-    } catch {
-      toast.error("Failed to copy");
-    }
-  };
+
   const handleLoadFromHistory = (letter: {
   jobTitle: string;
   companyName: string;
@@ -1000,23 +993,6 @@ useEffect(() => {
                   right={
                     <div className="flex items-center gap-1.5">
                       <CopyButton text={coverLetter} />
-                      <div className="relative" ref={downloadMenuRef}>
-                        <button
-                          type="button"
-                          onClick={() => setShowDownloadMenu((v) => !v)}
-                          className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-md bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/10 transition-colors"
-                        >
-                          <Download size={14} />
-                          <span>Export</span>
-                        </button>
-                      </div>
-                    </div>
-                  }
-                        onClick={handleCopy}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
-                      >
-                        <Copy className="w-3 h-3" /> Copy
-                      </button>
                       <div className="relative" ref={downloadMenuRef}>
                         <button
                           type="button"

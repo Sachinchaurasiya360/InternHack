@@ -96,12 +96,8 @@ export default function RepoDiscoveryPage() {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const { user } = useAuthStore();
-<<<<<<< HEAD
-=======
-
   // CONFLICT 2 RESOLVED: keep both recently-viewed AND deep-linking, unified into one handler
   const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
->>>>>>> b617c26473dd19421b29dd8cdd506044dba6f0cd
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     addRepo(repo);
@@ -384,13 +380,7 @@ export default function RepoDiscoveryPage() {
           {/* Trending toggle */}
           <button
             type="button"
-<<<<<<< HEAD
-            onClick={() => {
-              updateFilter("trending", trendingOnly ? "" : "true");
-            }}
-=======
             onClick={() => updateFilter("trending", trendingOnly ? "" : "true")}
->>>>>>> b617c26473dd19421b29dd8cdd506044dba6f0cd
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
               trendingOnly
                 ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
