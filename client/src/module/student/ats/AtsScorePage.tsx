@@ -5,6 +5,7 @@ import { useReactToPrint } from "react-to-print";
 import toast from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { uploadDirectToS3 } from "../../../utils/upload";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import {
   Upload,
   FileText,
@@ -994,6 +995,23 @@ export default function AtsScorePage() {
                     kicker="result"
                     title="Overall ATS score"
                     right={
+                      <div className="flex items-center gap-3">
+                        <CopyButton
+                          text={[
+                            `ATS Score: ${result.overallScore}/100`,
+                            `Tier: ${overallTier.label}`,
+                            `\nSuggestions:\n${result.suggestions.map((s, i) => `${i + 1}. ${s.suggestion}`).join("\n")}`,
+                          ].join("\n")}
+                        />
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
+                        >
+                          / {overallTier.label.toLowerCase()}
+                        </span>
+                      </div>
+                    }
+                      
+                      
                       <span
                         className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
                       >
