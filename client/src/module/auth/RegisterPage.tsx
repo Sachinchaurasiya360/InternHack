@@ -10,7 +10,8 @@ import { GoogleAuthButton } from "../../components/GoogleAuthButton";
 const PASSWORD_CRITERIA = [
   { id: "length",    label: "At least 8 characters",  test: (p: string) => p.length >= 8 },
   { id: "uppercase", label: "One uppercase letter",    test: (p: string) => /[A-Z]/.test(p) },
-  { id: "lowercase", label: "One lowercase letter",    test: (p: string) => /[a-z]/.test(p) },`n  { id: "number",    label: "One number",              test: (p: string) => /[0-9]/.test(p) },
+  { id: "lowercase", label: "One lowercase letter",    test: (p: string) => /[a-z]/.test(p) },
+  { id: "number",    label: "One number",              test: (p: string) => /[0-9]/.test(p) },
   { id: "special",   label: "One special character",  test: (p: string) => /[\W_]/.test(p) },
 ] as const;
 
@@ -26,12 +27,14 @@ const STRENGTH_META: Record<
   StrengthLevel,
   { label: string; segmentClass: string; labelClass: string }
 > = {
-  0: { label: "",       segmentClass: "bg-stone-200 dark:bg-stone-700",  labelClass: "" },
-  1: { label: "Weak",   segmentClass: "bg-red-500",                       labelClass: "text-red-500" },
-  2: { label: "Weak",   segmentClass: "bg-red-500",                      labelClass: "text-red-500" },`n  3: { label: "Fair",   segmentClass: "bg-amber-400",                     labelClass: "text-amber-500" },
-  4: { label: "Good",   segmentClass: "bg-lime-400",                      labelClass: "text-lime-600 dark:text-lime-400" },
-  5: { label: "Strong", segmentClass: "bg-lime-400",                      labelClass: "text-lime-600 dark:text-lime-400" },
+  0: { label: "",       segmentClass: "bg-stone-200 dark:bg-stone-700", labelClass: "" },
+  1: { label: "Weak",   segmentClass: "bg-red-500",                     labelClass: "text-red-500" },
+  2: { label: "Weak",   segmentClass: "bg-red-500",                     labelClass: "text-red-500" },
+  3: { label: "Fair",   segmentClass: "bg-amber-400",                   labelClass: "text-amber-500" },
+  4: { label: "Good",   segmentClass: "bg-lime-400",                    labelClass: "text-lime-600 dark:text-lime-400" },
+  5: { label: "Strong", segmentClass: "bg-lime-400",                    labelClass: "text-lime-600 dark:text-lime-400" },
 };
+  
 
 const PasswordStrengthIndicator = React.memo(function PasswordStrengthIndicator({
   password,
