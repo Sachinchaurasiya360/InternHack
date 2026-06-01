@@ -87,6 +87,28 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
+body,
+.glass,
+.glass-dark,
+.card-eng,
+button,
+a,
+input,
+textarea,
+select,
+summary,
+[role="button"],
+[role="tab"],
+[role="menuitem"] {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
 html,
 body {
   scrollbar-width: thin;
@@ -122,6 +144,22 @@ body::-webkit-scrollbar-thumb:hover {
   color: #f3f4f6;
 }
 
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #84cc16;
+  outline-offset: 3px;
+  box-shadow:
+    0 0 0 4px rgba(132, 204, 22, 0.2),
+    0 0 0 1px rgba(132, 204, 22, 0.35);
+}
+
+:where(a, button, input, textarea, select, summary, [role="button"], [role="tab"], [role="menuitem"]):focus-visible {
+  border-radius: 0.5rem;
+}
+
 /* Hide scrollbar but keep scrolling */
 @utility no-scrollbar {
   -ms-overflow-style: none;
@@ -139,6 +177,10 @@ body::-webkit-scrollbar-thumb:hover {
 /* Glass card utility */
 .glass {
   background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 12px 30px rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -146,12 +188,91 @@ body::-webkit-scrollbar-thumb:hover {
 .dark .glass {
   background: rgba(17, 24, 39, 0.8);
   border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 18px 40px rgba(0, 0, 0, 0.22);
 }
 
 .glass-dark {
   background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 18px 40px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+.slide-up {
+  animation: slideUp 0.4s ease-out both;
+}
+
+.scale-in {
+  animation: scaleIn 0.3s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  .glass,
+  .glass-dark,
+  .card-eng,
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  summary,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"] {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .fade-in,
+  .slide-up,
+  .scale-in {
+    animation: none !important;
+  }
 }
 
 /* Animated gradient border */
