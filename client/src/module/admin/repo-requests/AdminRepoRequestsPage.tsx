@@ -96,9 +96,11 @@ export default function AdminRepoRequestsPage() {
     }
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setPage(1); }, [statusFilter]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
   useEffect(() => { fetchRequests(); }, [statusFilter, page]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setSelectedIds([]); }, [statusFilter, page]);
 
   const toggleSelect = (id: number) => {
@@ -284,11 +286,12 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
   const [formState, setFormState] = useState<RepoRequestFormState>(() => buildFormState(req));
   const [adminNote, setAdminNote] = useState(req.adminNote ?? "");
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormState(buildFormState(req));
     setAdminNote(req.adminNote ?? "");
     setIsEditing(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [req.id, req.updatedAt]);
 
   const handleApproveClick = () => {

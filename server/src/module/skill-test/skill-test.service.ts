@@ -1,5 +1,13 @@
-import { prisma } from "../../database/db.js";
+﻿import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
+import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from "../../utils/cache.js";
+
+const TESTS_LIST_TTL = 600;    // 10 min â€” shared across all students
+const VERIFIED_TTL  = 3600;   // 1 hour â€” verified skills rarely change
+const ATTEMPTS_TTL  = 300;    // 5 min  â€” attempts change after each test
+
+const verifiedKey = (id: number) => `skill:verified:${id}`;
+const attemptsKey = (id: number) => `skill:attempts:${id}`;
 
 const QUESTIONS_PER_SESSION = 20;
 
@@ -14,17 +22,23 @@ function shuffle<T>(arr: T[]): T[] {
 
 export class SkillTestService {
   async listTests(skill?: string, difficulty?: string) {
+    const cacheKey = `skill:tests:list:${skill ?? ""}:${difficulty ?? ""}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const where: Record<string, unknown> = { isActive: true };
     if (skill) where.skillName = skill.toLowerCase().trim();
     if (difficulty) where.difficulty = difficulty;
 
-    return prisma.skillTest.findMany({
+    const result = await prisma.skillTest.findMany({
       where,
       include: {
         _count: { select: { questions: true, attempts: true } },
       },
       orderBy: { skillName: "asc" },
     });
+    await cacheSet(cacheKey, result, TESTS_LIST_TTL);
+    return result;
   }
 
   async getTestDetail(testId: number, studentId: number) {
@@ -147,7 +161,7 @@ export class SkillTestService {
       };
     }
 
-    // New session — shuffle and pick subset
+    // New session â€” shuffle and pick subset
     const pool = shuffle([...test.questions]);
     const selected = pool.slice(
       0,
@@ -166,6 +180,8 @@ export class SkillTestService {
         completedAt: null,
       },
     });
+    // New attempt created â€” bust the student's attempts cache
+    await cacheDel(attemptsKey(studentId));
 
     const sanitizedQuestions = selected.map(
       ({ correctIndex, ...rest }) => rest,
@@ -199,7 +215,7 @@ export class SkillTestService {
     });
     if (!test) throw new Error("Test not found");
 
-    // Require an open session — prevents bypassing the timer by skipping /start
+    // Require an open session â€” prevents bypassing the timer by skipping /start
     const session = await prisma.skillTestAttempt.findFirst({
       where: { testId, studentId, completedAt: null },
       orderBy: { startedAt: "desc" },
@@ -302,6 +318,12 @@ export class SkillTestService {
       });
     }
 
+    // Bust per-user caches â€” attempts always change, verified changes on pass
+    await Promise.all([
+      cacheDel(attemptsKey(studentId)),
+      ...(passed ? [cacheDel(verifiedKey(studentId))] : []),
+    ]);
+
     return {
       attempt: { id: attempt.id, score, passed },
       score,
@@ -313,27 +335,42 @@ export class SkillTestService {
   }
 
   async getMyAttempts(studentId: number) {
-    return prisma.skillTestAttempt.findMany({
+    const cached = await cacheGet(attemptsKey(studentId));
+    if (cached) return cached as never;
+
+    const result = await prisma.skillTestAttempt.findMany({
       where: { studentId },
       include: {
         test: { select: { title: true, skillName: true } },
       },
       orderBy: { startedAt: "desc" },
     });
+    await cacheSet(attemptsKey(studentId), result, ATTEMPTS_TTL);
+    return result;
   }
 
   async getMyVerified(studentId: number) {
-    return prisma.verifiedSkill.findMany({
+    const cached = await cacheGet(verifiedKey(studentId));
+    if (cached) return cached as never;
+
+    const result = await prisma.verifiedSkill.findMany({
       where: { studentId },
       orderBy: { verifiedAt: "desc" },
     });
+    await cacheSet(verifiedKey(studentId), result, VERIFIED_TTL);
+    return result;
   }
 
   async getStudentVerified(studentId: number) {
-    return prisma.verifiedSkill.findMany({
+    const cached = await cacheGet(verifiedKey(studentId));
+    if (cached) return cached as never;
+
+    const result = await prisma.verifiedSkill.findMany({
       where: { studentId },
       orderBy: { verifiedAt: "desc" },
     });
+    await cacheSet(verifiedKey(studentId), result, VERIFIED_TTL);
+    return result;
   }
 
   async createTest(
@@ -349,7 +386,7 @@ export class SkillTestService {
   ) {
     const skillName = data.skillName.toLowerCase().trim();
 
-    return prisma.skillTest.create({
+    const test = await prisma.skillTest.create({
       data: {
         skillName,
         title: data.title,
@@ -360,6 +397,8 @@ export class SkillTestService {
         createdById: createdById ?? null,
       },
     });
+    await cacheDelPattern("skill:tests:list:");
+    return test;
   }
 
   private calculateProctoringScore(
@@ -399,7 +438,7 @@ export class SkillTestService {
     });
     const startIndex = lastQuestion ? lastQuestion.orderIndex + 1 : 0;
 
-    return prisma.skillTestQuestion.createMany({
+    const result = await prisma.skillTestQuestion.createMany({
       data: questions.map((q, i) => ({
         testId,
         question: q.question,
@@ -409,5 +448,9 @@ export class SkillTestService {
         orderIndex: startIndex + i,
       })),
     });
+    // Question count changed â€” bust all test list variants
+    await cacheDelPattern("skill:tests:list:");
+    return result;
   }
 }
+

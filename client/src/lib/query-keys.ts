@@ -38,7 +38,7 @@ export const queryKeys = {
   // Companies
   companies: {
     all: ["companies"] as const,
-    list: (params?: Record<string, string | number>) =>
+    list: (params?: Record<string, string | number | undefined>) =>
       ["companies", "list", params] as const,
     cities: () => ["companies", "cities"] as const,
     detail: (id: string | number) => ["companies", "detail", id] as const,

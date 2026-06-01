@@ -273,6 +273,7 @@ export default function MyApplicationsPage() {
       api.get("/student/applications").then(
         (res) => res.data as { applications: Application[]; externalApplications: ExternalApplication[] }
       ),
+    staleTime: 2 * 60 * 1000,
   });
 
   const applications = useMemo(() => data?.applications ?? [], [data]);

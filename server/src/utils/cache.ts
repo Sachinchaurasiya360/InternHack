@@ -36,3 +36,18 @@ export async function cacheDel(key: string): Promise<void> {
   }
   fallback.delete(key);
 }
+
+export async function cacheDelPattern(prefix: string): Promise<void> {
+  if (redis) {
+    let cursor = "0";
+    do {
+      const [next, keys] = await redis.scan(cursor, "MATCH", `${prefix}*`, "COUNT", 100);
+      cursor = next;
+      if (keys.length > 0) await redis.del(...keys);
+    } while (cursor !== "0");
+    return;
+  }
+  for (const key of fallback.keys()) {
+    if (key.startsWith(prefix)) fallback.delete(key);
+  }
+}

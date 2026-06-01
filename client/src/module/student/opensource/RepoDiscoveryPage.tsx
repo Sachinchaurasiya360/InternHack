@@ -131,6 +131,7 @@ export default function RepoDiscoveryPage() {
 
   useEffect(() => {
     if (deepLinkData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedRepo(deepLinkData);
     }
   }, [deepLinkData]);
@@ -173,6 +174,7 @@ export default function RepoDiscoveryPage() {
       return res.data;
     },
     placeholderData: (prev) => prev,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: languagesData } = useQuery({
@@ -801,6 +803,7 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
       const res = await api.get<{ repos: OpenSourceRepo[] }>("/opensource/recommended");
       return res.data;
     },
+    staleTime: 10 * 60 * 1000,
   });
 
   if (isLoading) {

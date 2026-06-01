@@ -68,6 +68,7 @@ useEffect(() => {
   );
 
   if (saved) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRating(saved);
     setSubmitted(true);
   }

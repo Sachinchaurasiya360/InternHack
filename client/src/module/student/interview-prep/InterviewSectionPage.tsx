@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowUpRight } from "lucide-react";
@@ -7,6 +7,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
+import { useQuery } from "@tanstack/react-query";
 
 const DIFF_STYLE: Record<string, string> = {
   Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
@@ -41,29 +42,17 @@ export default function InterviewSectionPage() {
   const basePath = "/learn/interview";
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const [completedIds, setCompletedIds] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [diffFilter, setDiffFilter] = useState<
     "all" | "Beginner" | "Intermediate" | "Advanced"
   >("all");
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const loadProgress = async () => {
-      setIsLoading(true);
-      try {
-        const res = await api.get("/interview-progress");
-        setCompletedIds(res.data.completedIds || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadProgress();
-  }, [isAuthenticated]);
+  const { data: progressData, isLoading } = useQuery({
+    queryKey: ["interview-progress"],
+    queryFn: () => api.get("/interview-progress").then((r) => r.data),
+    enabled: !!isAuthenticated,
+    staleTime: 5 * 60 * 1000,
+  });
+  const completedIds: string[] = progressData?.completedIds ?? [];
 
   const section = sections.find((s) => s.id === sectionSlug);
 

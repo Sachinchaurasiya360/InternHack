@@ -27,10 +27,10 @@ export function createLogger(moduleName: string) {
   const logger = rootLogger.child({ module: moduleName });
   return {
     info(msg: string, meta?: unknown) {
-      meta ? logger.info(meta, msg) : logger.info(msg);
+      if (meta) { logger.info(meta, msg); } else { logger.info(msg); }
     },
     warn(msg: string, meta?: unknown) {
-      meta ? logger.warn(meta, msg) : logger.warn(msg);
+      if (meta) { logger.warn(meta, msg); } else { logger.warn(msg); }
     },
     error(msg: string, error?: unknown, meta?: unknown) {
       const errInfo =

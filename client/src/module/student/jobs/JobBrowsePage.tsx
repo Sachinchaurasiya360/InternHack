@@ -221,7 +221,7 @@ export default function JobBrowsePage() {
     }),
     queryFn: async () => {
       const params = new URLSearchParams({
-        page: String(scrPage),
+        page: String(page),
         limit: "12",
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
@@ -233,19 +233,18 @@ export default function JobBrowsePage() {
       const res = await api.get(`/jobs?${params}`);
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
+    staleTime: 60_000,
     placeholderData: keepPreviousData,
   });
 
   const { data: extData } = useQuery({
-    queryKey: [
-      "public-external-jobs",
-      {
-        page: extPage,
-        search: debouncedSearch,
-        location: debouncedLocation,
-        tags: selectedTags.join(","),
-      },
-    ],
+    queryKey: queryKeys.jobs.list({
+      _src: "ext",
+      page: extPage,
+      search: debouncedSearch,
+      location: debouncedLocation,
+      tags: selectedTags.join(","),
+    }),
     queryFn: async () => {
       const params = new URLSearchParams({
         page: String(extPage),
@@ -262,19 +261,18 @@ export default function JobBrowsePage() {
         page: number;
       };
     },
+    staleTime: 60_000,
     placeholderData: keepPreviousData,
   });
 
   const { data: scrData } = useQuery({
-    queryKey: [
-      "public-scraped-jobs",
-      {
-        page: scrPage,
-        search: debouncedSearch,
-        location: debouncedLocation,
-        tags: selectedTags.join(","),
-      },
-    ],
+    queryKey: queryKeys.jobs.list({
+      _src: "scr",
+      page: scrPage,
+      search: debouncedSearch,
+      location: debouncedLocation,
+      tags: selectedTags.join(","),
+    }),
     queryFn: async () => {
       const params = new URLSearchParams({
         page: String(scrPage),
@@ -282,12 +280,11 @@ export default function JobBrowsePage() {
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
-
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
-
       const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
+    staleTime: 60_000,
     placeholderData: keepPreviousData,
   });
 

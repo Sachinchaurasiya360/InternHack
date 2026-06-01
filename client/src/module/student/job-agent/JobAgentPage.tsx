@@ -292,6 +292,7 @@ export default function JobAgentPage() {
       });
       return () => cancelAnimationFrame(raf);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isListening]);
 
   const isEmpty = messages.length === 0;

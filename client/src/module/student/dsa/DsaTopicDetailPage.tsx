@@ -399,8 +399,8 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   pIdx: number;
   user: User | null;
   isExpanded: boolean;
-  toggleMutation: UseMutationResult<unknown, Error, { problemId: number; solved: boolean }>;
-  bookmarkMutation: UseMutationResult<unknown, Error, { problemId: number; bookmarked: boolean }>;
+  toggleMutation: UseMutationResult<unknown, Error, number>;
+  bookmarkMutation: UseMutationResult<unknown, Error, number>;
   expandedNotes: Set<number>;
   savingNotes: Set<number>;
   noteValues: Record<number, string>;

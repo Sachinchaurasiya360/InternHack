@@ -41,10 +41,10 @@ export function ApplicationNotes({
   const lastSavedRef = useRef(notes ?? "");
   const saveSeqRef = useRef(0);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     const nextNotes = notes ?? "";
     lastSavedRef.current = nextNotes;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!isEditing) setValue(nextNotes);
   }, [notes, isEditing]);
 

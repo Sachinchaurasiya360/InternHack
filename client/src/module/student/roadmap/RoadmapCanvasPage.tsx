@@ -439,6 +439,7 @@ export default function RoadmapCanvasPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
   }, []);
   const navigate = useNavigate();
@@ -452,6 +453,7 @@ export default function RoadmapCanvasPage() {
 
   // On small screens (< 768px), default to a linear list view.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isMobile && viewMode !== "LINEAR") setViewMode("LINEAR");
   }, [isMobile, viewMode]);
   // Track which sectionId is currently being regenerated
@@ -1172,8 +1174,8 @@ export default function RoadmapCanvasPage() {
             <ReactFlow
               nodes={nodes}
               edges={edges}
-              panOnScroll={isTouchDevice}
-              zoomOnScroll={isTouchDevice}
+              panOnScroll={false}
+              zoomOnScroll={!isTouchDevice}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               nodeTypes={nodeTypes}
@@ -1188,7 +1190,7 @@ export default function RoadmapCanvasPage() {
               nodesDraggable={true}
               nodesConnectable={false}
               elementsSelectable={true}
-              panOnDrag={[1, 2]}
+              panOnDrag={true}
               minZoom={0.4}
               maxZoom={1.5}
               className="bg-stone-50 dark:bg-stone-950"

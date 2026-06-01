@@ -53,6 +53,7 @@ export default function RoadmapTopicPage() {
         .get<TopicResponse>(`/roadmaps/${slug}/topics/${topicSlug}`)
         .then((res) => res.data),
     enabled: !!slug && !!topicSlug,
+    staleTime: 10 * 60 * 1000,
   });
 
   const topic = topicData?.topic || null;
@@ -76,6 +77,7 @@ export default function RoadmapTopicPage() {
         }>("/roadmaps/me/enrollments")
         .then((res) => res.data),
     enabled: isAuthenticated && !!topic,
+    staleTime: 5 * 60 * 1000,
   });
 
   const enrollment = enrollmentsData?.enrollments.find(

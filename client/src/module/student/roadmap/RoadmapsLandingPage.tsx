@@ -77,12 +77,14 @@ export default function RoadmapsLandingPage() {
   const { data: roadmapsData, isLoading: roadmapsLoading, error: roadmapsError } = useQuery({
     queryKey: queryKeys.roadmaps.list(params),
     queryFn: () => api.get<ListResponse>("/roadmaps", { params }).then(res => res.data),
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: enrollmentsData, isError: enrollmentsError } = useQuery({
     queryKey: queryKeys.roadmaps.enrollments(),
     queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
     enabled: isStudent,
+    staleTime: 5 * 60 * 1000,
   });
 
   const roadmaps = useMemo(() => roadmapsData?.roadmaps || [], [roadmapsData]);

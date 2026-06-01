@@ -1,4 +1,5 @@
 import CoverLetterHistoryPanel from "./CoverLetterHistoryPanel";
+import { CopyButton } from "../../../components/ui/CopyButton";
 
 import { useState, useRef, useMemo, useEffect } from "react";
 import { Link } from "react-router";
@@ -192,6 +193,7 @@ const [toneManuallySelected, setToneManuallySelected] = useState(false);
     if (
       /\bvp\b|vice president|director|executive|c-suite|cto|ceo|cfo/.test(jd)
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTone("formal");
     } else if (
       /engineer|developer|architect|backend|frontend|fullstack|devops|sre|infrastructure/.test(
@@ -294,6 +296,7 @@ useEffect(() => {
   const savedDraft = localStorage.getItem(STORAGE_KEY);
 
   if (savedDraft) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCoverLetter(savedDraft);
     setIsModified(true);
   }
@@ -512,6 +515,7 @@ useEffect(() => {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
         {/* ─── Left column: form ─── */}
         <div className="lg:col-span-2 space-y-6">
+          <CoverLetterHistoryPanel onLoad={handleLoadFromHistory} />
           <div className={cardCls}>
             <CardHeader kicker="step 01" title="Job details" />
             <div className="p-5 space-y-4">
@@ -601,95 +605,117 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* ─── Tone card ─── */}
+          {/* ─── Writing style card (tone + length merged) ─── */}
           <div className={cardCls}>
-            <CardHeader kicker="step 02" title="Tone" />
-            <div className="p-5">
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
-                {TONES.map((t, i) => {
-                  const isActive = tone === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => {
-                        setTone(t.id);
-                        setToneManuallySelected(true);
-                      }}
-                      className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
-                        isActive
-                          ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
-                          : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
-                      }`}
-                    >
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest ${
-                          isActive ? "text-lime-400" : "text-stone-500"
-                        }`}
-                      >
-                        / {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="text-sm font-bold">{t.label}</span>
-                      <span
-                        className={`text-[11px] ${
+            <CardHeader kicker="step 02" title="Writing style" />
+            <div className="p-5 space-y-5">
+              {/* Tone */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className={sectionKickerCls}>
+                    <span className="h-1 w-1 bg-stone-300 dark:bg-stone-600" />
+                    tone
+                  </span>
+                  {!toneManuallySelected && tone !== "professional" && (
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
+                      auto-suggested
+                    </span>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                  {TONES.map((t, i) => {
+                    const isActive = tone === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => {
+                          setTone(t.id);
+                          setToneManuallySelected(true);
+                        }}
+                        className={`group relative flex flex-col gap-1 p-3 text-left transition-colors border-0 cursor-pointer ${
                           isActive
-                            ? "text-stone-300 dark:text-stone-600"
-                            : "text-stone-500"
+                            ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                            : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
                         }`}
                       >
-                        {t.description}
-                      </span>
-                    </button>
-                  );
-                })}
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${
+                            isActive ? "text-lime-400" : "text-stone-400 dark:text-stone-600"
+                          }`}
+                        >
+                          /{String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="text-xs font-bold leading-snug mt-0.5">{t.label}</span>
+                        <span
+                          className={`text-[10px] leading-snug ${
+                            isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
+                          }`}
+                        >
+                          {t.description}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Length */}
+              <div>
+                <div className="mb-2.5">
+                  <span className={sectionKickerCls}>
+                    <span className="h-1 w-1 bg-stone-300 dark:bg-stone-600" />
+                    length
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                  {LENGTHS.map((l, i) => {
+                    const isActive = length === l.id;
+                    return (
+                      <button
+                        key={l.id}
+                        type="button"
+                        onClick={() => setLength(l.id)}
+                        className={`group relative flex flex-col gap-1 p-3.5 text-left transition-colors border-0 cursor-pointer ${
+                          isActive
+                            ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                            : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
+                        }`}
+                      >
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${
+                            isActive ? "text-lime-400" : "text-stone-400 dark:text-stone-600"
+                          }`}
+                        >
+                          /{String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="text-sm font-bold mt-0.5">{l.label}</span>
+                        <span
+                          className={`text-[10px] font-mono tabular-nums ${
+                            isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-400 dark:text-stone-600"
+                          }`}
+                        >
+                          {l.words}
+                        </span>
+                        <span
+                          className={`text-[10px] leading-snug mt-0.5 ${
+                            isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
+                          }`}
+                        >
+                          {l.description}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* ─── Length card ─── */}
-          <div className={cardCls}>
-  <CardHeader kicker="step 03" title="Length" />
-  <div className="p-5">
-    <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10">
-      {LENGTHS.map((l, i) => {
-        const isActive = length === l.id;
-        return (
-          <button
-            key={l.id}
-            type="button"
-            onClick={() => setLength(l.id)}
-            className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
-              isActive
-                ? "bg-stone-900 text-stone-50 dark:text-stone-50"
-                : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-800"
-            }`}
-          >
-            <span
-              className={`text-[10px] font-mono uppercase tracking-widest ${
-                isActive ? "text-lime-400" : "text-stone-500"
-              }`}
-            >
-              / {String(i + 1).padStart(2, "0")}
-            </span>
-            <span className="text-sm font-bold">{l.label}</span>
-            <span
-              className={`text-[11px] ${
-                isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
-              }`}
-            >
-              {l.words}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  </div>
-</div>
-
           {/* ─── Profile toggle ─── */}
           <div className={cardCls}>
             <CardHeader
-              kicker="step 04"
+              kicker="step 03"
               title="Use my profile"
               right={
                 <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -813,10 +839,6 @@ useEffect(() => {
               </AnimatePresence>
             </div>
           </div>
-
-          <CoverLetterHistoryPanel onLoad={handleLoadFromHistory} />
-
-          
 
           <button
             type="button"
@@ -991,7 +1013,11 @@ useEffect(() => {
                   kicker="result"
                   title="Cover letter ready"
                   right={
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+                        {tone} · {length}
+                      </span>
+                      <div className="w-px h-4 bg-stone-200 dark:bg-white/10 hidden sm:block" />
                       <CopyButton text={coverLetter} />
                       <div className="relative" ref={downloadMenuRef}>
                         <button
@@ -1033,35 +1059,58 @@ useEffect(() => {
                           )}
                         </AnimatePresence>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCoverLetter(originalCoverLetter);
-                          setIsModified(false);
-                          localStorage.setItem(STORAGE_KEY, originalCoverLetter);
-                        }}
-                        disabled={!isModified}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                      >
-                        Reset
-                      </button>
+                      {isModified && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCoverLetter(originalCoverLetter);
+                            setIsModified(false);
+                            localStorage.setItem(STORAGE_KEY, originalCoverLetter);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                        >
+                          Reset
+                        </button>
+                      )}
                     </div>
                   }
                 />
+                {(jobTitle || companyName) && (
+                  <div className="px-6 pt-5 pb-0 flex flex-wrap items-center gap-x-4 gap-y-1">
+                    {jobTitle && (
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                        <span className="text-stone-400 dark:text-stone-600 mr-1.5">role</span>
+                        {jobTitle}
+                      </span>
+                    )}
+                    {companyName && (
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                        <span className="text-stone-400 dark:text-stone-600 mr-1.5">company</span>
+                        {companyName}
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className="p-6">
                   <textarea
                     className="w-full min-h-100 text-sm text-stone-700 dark:text-stone-300 leading-relaxed border-none outline-none resize-y bg-transparent font-serif"
                     value={coverLetter}
-                   onChange={(e) => {
-  const updatedValue = e.target.value;
-
-  setCoverLetter(updatedValue);
-  setIsModified(updatedValue !== originalCoverLetter);
-}}
+                    onChange={(e) => {
+                      const updatedValue = e.target.value;
+                      setCoverLetter(updatedValue);
+                      setIsModified(updatedValue !== originalCoverLetter);
+                    }}
                   />
-                  <p className="mt-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
-  {wordCount} words · {charCount} characters
-</p>
+                  <div className="mt-3 pt-3 border-t border-stone-100 dark:border-white/5 flex items-center justify-between gap-4">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 tabular-nums">
+                      {wordCount} words · {charCount} chars
+                    </span>
+                    {isModified && (
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-amber-600 dark:text-amber-400">
+                        unsaved edits
+                      </span>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )
