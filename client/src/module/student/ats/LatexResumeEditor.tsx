@@ -230,6 +230,7 @@ export default function LatexResumeEditor() {
       .finally(() => setCompiling(false));
   }, [code, supportingFiles]);
 
+
   const handleCompile = async () => {
     setCompiling(true);
     setPreviewError(null);

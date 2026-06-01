@@ -74,6 +74,9 @@ import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/sche
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
+import { createLogger } from "./utils/logger.js";
+
+const logger = createLogger("Index");
 
 
 // ── Validate required environment variables ──
@@ -88,10 +91,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 process.on("unhandledRejection", (reason) => {
-  console.error("[process] unhandledRejection:", reason);
+  logger.error("unhandledRejection:", reason);
 });
 process.on("uncaughtException", (err) => {
-  console.error("[process] uncaughtException:", err);
+  logger.error("uncaughtException:", err);
   if (!shutdownManager.isShutdown()) {
     process.exit(1);
   }
@@ -312,13 +315,13 @@ app.get("/api/stats", async (_req, res) => {
 app.use(errorMiddleware);
 
 const server = app.listen(PORT, async () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  logger.info(`Server running on http://localhost:${PORT}`);
 
   // Attach server to shutdown manager
   shutdownManager.attachServer(server);
 
   // Load AI service provider configs into memory
-  await initServiceProviders().catch((err) => console.error("[AI] Failed to init providers:", err));
+  await initServiceProviders().catch((err) => logger.error("Failed to init AI providers:", err));
 
   // Start the job scraper cron (every 6 hours)
   const cronSchedule = process.env["SCRAPER_CRON"] || "0 */6 * * *";
@@ -382,7 +385,7 @@ const server = app.listen(PORT, async () => {
       fn: () => stopWeeklyRoadmapDigestCron(),
     });
   } else {
-    console.log("[RoadmapDigest] Weekly digest cron disabled on this process");
+    logger.info("Weekly digest cron disabled on this process");
   }
 
   // Register Redis disconnect
@@ -392,7 +395,7 @@ const server = app.listen(PORT, async () => {
       priority: 20,
       fn: async () => {
         await redis!.quit();
-        console.log("[Redis] Disconnected");
+        logger.info("Redis Disconnected");
       },
     });
   }
@@ -403,7 +406,7 @@ const server = app.listen(PORT, async () => {
     priority: 20,
     fn: async () => {
       await prisma.$disconnect();
-      console.log("[Prisma] Disconnected");
+      logger.info("Prisma Disconnected");
     },
   });
 

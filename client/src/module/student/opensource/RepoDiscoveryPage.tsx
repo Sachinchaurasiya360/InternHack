@@ -96,7 +96,7 @@ export default function RepoDiscoveryPage() {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const { user } = useAuthStore();
-
+  // CONFLICT 2 RESOLVED: keep both recently-viewed AND deep-linking, unified into one handler
   const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
