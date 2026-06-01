@@ -1,4 +1,4 @@
-﻿import crypto from "crypto";
+import crypto from "crypto";
 import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
@@ -516,15 +516,16 @@ export class AuthService {
     return user;
   }
 
-  async getPublicProfile(userId: number) {
+  async getPublicProfile(userId: number, viewer?: { id: number; role: string }) {
     const cacheKey = `profile:public:${userId}`;
     const cached = await cacheGet(cacheKey);
     if (cached) return cached as never;
 
     const user = await prisma.user.findUnique({
-      where: { id: userId, role: "STUDENT", isProfilePublic: true },
+      where: { id: userId, role: "STUDENT" },
       select: {
         ...this.profileSelect,
+        isProfilePublic: true,
         verifiedSkills: {
           select: { skillName: true, score: true, verifiedAt: true },
         },
@@ -538,6 +539,17 @@ export class AuthService {
 
     if (!user) {
       throw new Error("User not found");
+    }
+
+    if (!user.isProfilePublic) {
+      const isAuthorized = viewer && (
+        viewer.role === "ADMIN" ||
+        viewer.role === "RECRUITER" ||
+        viewer.id === userId
+      );
+      if (!isAuthorized) {
+        throw new Error("Profile is private");
+      }
     }
 
     const { atsScores, ...rest } = user;
@@ -554,7 +566,11 @@ export class AuthService {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
     };
-    await cacheSet(cacheKey, result, PROFILE_TTL);
+
+    if (user.isProfilePublic) {
+      await cacheSet(cacheKey, result, PROFILE_TTL);
+    }
+
     return result;
   }
 

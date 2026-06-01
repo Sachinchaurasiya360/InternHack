@@ -331,6 +331,7 @@ function App() {
           <Route path="/companies" element={<CompanyListOrRedirect />} />
           <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
           <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
+          <Route path="/student/profile/public/:id" element={<PublicProfilePage />} />
 
 
  <Route path="/ats-score" element={<PublicAtsPage />} />

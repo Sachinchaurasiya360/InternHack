@@ -137,23 +137,22 @@ export class AuthController {
 
   async getPublicProfile(req: Request, res: Response) {
     try {
-      if (!req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
-      if (req.user.role !== "RECRUITER" && req.user.role !== "ADMIN") {
-        return res.status(403).json({ message: "Not authorized" });
-      }
-
       const id = Number(req.params["id"]);
       if (!id || isNaN(id)) {
         return res.status(400).json({ message: "Invalid user ID" });
       }
 
-      const profile = await this.authService.getPublicProfile(id);
+      const viewer = req.user ? { id: req.user.id, role: req.user.role } : undefined;
+      const profile = await this.authService.getPublicProfile(id, viewer);
       return res.status(200).json({ profile });
     } catch (error) {
-      if (error instanceof Error && error.message === "User not found") {
-        return res.status(404).json({ message: error.message });
+      if (error instanceof Error) {
+        if (error.message === "User not found") {
+          return res.status(404).json({ message: error.message });
+        }
+        if (error.message === "Profile is private") {
+          return res.status(403).json({ message: error.message, isPrivate: true });
+        }
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
