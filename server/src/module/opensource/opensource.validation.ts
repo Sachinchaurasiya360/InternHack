@@ -10,6 +10,7 @@ export const opensourceListQuerySchema = z.object({
   sortBy: z.enum(["stars", "forks", "name", "createdAt", "openIssues", "lastUpdated"]).default("stars"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
   trending: z.enum(["true", "false"]).optional(),
+  ids: z.string().optional(), // Comma-separated string of IDs
 });
 
 export const repoIdSchema = z.object({

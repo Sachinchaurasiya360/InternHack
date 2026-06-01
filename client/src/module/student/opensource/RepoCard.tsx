@@ -4,6 +4,7 @@ import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck } 
 import type { OpenSourceRepo } from "../../../lib/types";
 import { LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
+import { Button } from "../../../components/ui/button";
 
 interface RepoCardProps {
   repo: OpenSourceRepo;
@@ -35,22 +36,23 @@ export const RepoCard = React.memo(function RepoCard({
       className="h-full"
     >
       <div className="group relative flex flex-col h-full w-full">
-        <button
-          type="button"
+        <Button
+          mode="icon"
+          variant="ghost"
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
             onToggleBookmark?.();
           }}
           aria-label={bookmarked ? "Remove bookmark" : "Bookmark this repo"}
-          className="absolute top-3 right-3 p-1 rounded-md text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors border-0 bg-transparent cursor-pointer z-10"
+          className="absolute top-3 right-3 z-10"
         >
           {bookmarked ? (
             <BookmarkCheck className="w-4 h-4 text-lime-500" />
           ) : (
             <Bookmark className="w-4 h-4" />
           )}
-        </button>
+        </Button>
 
         <button
           onClick={() => onSelect(repo)}

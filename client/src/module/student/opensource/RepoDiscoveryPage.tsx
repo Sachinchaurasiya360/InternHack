@@ -53,7 +53,12 @@ const BOOKMARK_KEY = "oss_bookmarks";
 const getBookmarks = (): number[] => {
   try {
     const saved = localStorage.getItem(BOOKMARK_KEY);
-    return saved ? JSON.parse(saved) : [];
+    if (!saved) return [];
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed) && parsed.every((id) => typeof id === "number")) {
+      return parsed;
+    }
+    return [];
   } catch {
     return [];
   }
@@ -234,12 +239,23 @@ export default function RepoDiscoveryPage() {
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
   }, [languagesData]);
 
+  const { data: bookmarkedData, isLoading: isLoadingBookmarks } = useQuery({
+    queryKey: ["opensource-bookmarked", bookmarks],
+    queryFn: () =>
+      api
+        .get("/opensource", { params: { ids: bookmarks.join(","), limit: 100 } })
+        .then((r) => r.data.repos as OpenSourceRepo[]),
+    enabled: showSaved && bookmarks.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
 
   const displayedRepos = useMemo(() => {
-    return showSaved ? repos.filter((r) => bookmarks.includes(r.id)) : repos;
-  }, [repos, showSaved, bookmarks]);
+    if (showSaved) return bookmarkedData || [];
+    return repos;
+  }, [repos, showSaved, bookmarkedData]);
 
   const stats = useMemo(() => {
     if (!pagination) return null;
@@ -694,7 +710,7 @@ export default function RepoDiscoveryPage() {
         )}
 
         {/* Empty */}
-        {!isLoading && !isError && repos.length === 0 && (
+        {!isLoading && !isLoadingBookmarks && !isError && displayedRepos.length === 0 && (
           <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
             <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
               <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />

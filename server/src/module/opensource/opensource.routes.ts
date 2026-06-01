@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import {
   approveRequestOverrideSchema,
@@ -36,9 +36,15 @@ opensourceRouter.get("/", async (req, res, next) => {
       res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
       return;
     }
-    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = parsed.data;
+    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder, ids } = parsed.data;
 
     const where: Record<string, unknown> = {};
+    if (ids) {
+      const idArray = ids.split(",").map(Number).filter((id) => !isNaN(id));
+      if (idArray.length > 0) {
+        where["id"] = { in: idArray };
+      }
+    }
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
