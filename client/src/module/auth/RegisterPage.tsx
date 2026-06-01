@@ -10,11 +10,11 @@ import { GoogleAuthButton } from "../../components/GoogleAuthButton";
 const PASSWORD_CRITERIA = [
   { id: "length",    label: "At least 8 characters",  test: (p: string) => p.length >= 8 },
   { id: "uppercase", label: "One uppercase letter",    test: (p: string) => /[A-Z]/.test(p) },
-  { id: "number",    label: "One number",              test: (p: string) => /[0-9]/.test(p) },
+  { id: "lowercase", label: "One lowercase letter",    test: (p: string) => /[a-z]/.test(p) },`n  { id: "number",    label: "One number",              test: (p: string) => /[0-9]/.test(p) },
   { id: "special",   label: "One special character",  test: (p: string) => /[\W_]/.test(p) },
 ] as const;
 
-type StrengthLevel = 0 | 1 | 2 | 3 | 4;
+type StrengthLevel = 0 | 1 | 2 | 3 | 4 | 5;
 
 function getPasswordStrength(password: string): StrengthLevel {
   if (!password) return 0;
@@ -28,9 +28,9 @@ const STRENGTH_META: Record<
 > = {
   0: { label: "",       segmentClass: "bg-stone-200 dark:bg-stone-700",  labelClass: "" },
   1: { label: "Weak",   segmentClass: "bg-red-500",                       labelClass: "text-red-500" },
-  2: { label: "Fair",   segmentClass: "bg-amber-400",                     labelClass: "text-amber-500" },
-  3: { label: "Good",   segmentClass: "bg-lime-400",                      labelClass: "text-lime-600 dark:text-lime-400" },
-  4: { label: "Strong", segmentClass: "bg-lime-400",                      labelClass: "text-lime-600 dark:text-lime-400" },
+  2: { label: "Weak",   segmentClass: "bg-red-500",                      labelClass: "text-red-500" },`n  3: { label: "Fair",   segmentClass: "bg-amber-400",                     labelClass: "text-amber-500" },
+  4: { label: "Good",   segmentClass: "bg-lime-400",                      labelClass: "text-lime-600 dark:text-lime-400" },
+  5: { label: "Strong", segmentClass: "bg-lime-400",                      labelClass: "text-lime-600 dark:text-lime-400" },
 };
 
 const PasswordStrengthIndicator = React.memo(function PasswordStrengthIndicator({
@@ -55,7 +55,7 @@ const PasswordStrengthIndicator = React.memo(function PasswordStrengthIndicator(
       {/* Strength bar */}
       <div className="flex items-center gap-2">
         <div className="flex gap-1 flex-1">
-          {([1, 2, 3, 4] as StrengthLevel[]).map((level) => (
+          {([1, 2, 3, 4, 5] as StrengthLevel[]).map((level) => (
             <motion.div
               key={level}
               className="h-1 flex-1 rounded-sm overflow-hidden bg-stone-200 dark:bg-stone-700"
