@@ -68,3 +68,9 @@ export const aiGenerateSchema = z.object({
   avoid: z.array(z.string().max(40)).max(20).default([]),
 });
 export type AiGenerateInput = z.infer<typeof aiGenerateSchema>;
+
+export const updateRoadmapSchema = z.object({
+  title: z.string().min(3).max(100).optional(),
+  shortDescription: z.string().min(20).max(500).optional(),
+  level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
+});
