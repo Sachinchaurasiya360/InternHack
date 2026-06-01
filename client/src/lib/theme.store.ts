@@ -9,6 +9,8 @@ type ViewTransitionDocument = Document & {
   };
 };
 
+let themeTransitionId = 0;
+
 interface ThemeState {
   theme: Theme;
   toggleTheme: (origin?: ThemeTransitionOrigin) => void;
@@ -46,6 +48,7 @@ function prepareThemeTransition(origin?: ThemeTransitionOrigin) {
   }
 
   const root = document.documentElement;
+  const transitionId = String(++themeTransitionId);
   const x = origin?.x ?? window.innerWidth / 2;
   const y = origin?.y ?? window.innerHeight / 2;
   const radius = Math.ceil(
@@ -56,9 +59,13 @@ function prepareThemeTransition(origin?: ThemeTransitionOrigin) {
   root.style.setProperty("--theme-transition-y", `${y}px`);
   root.style.setProperty("--theme-transition-radius", `${radius}px`);
   root.setAttribute("data-theme-transition", "running");
+  root.setAttribute("data-theme-transition-id", transitionId);
 
   return () => {
+    if (root.getAttribute("data-theme-transition-id") !== transitionId) return;
+
     root.removeAttribute("data-theme-transition");
+    root.removeAttribute("data-theme-transition-id");
     root.style.removeProperty("--theme-transition-x");
     root.style.removeProperty("--theme-transition-y");
     root.style.removeProperty("--theme-transition-radius");
