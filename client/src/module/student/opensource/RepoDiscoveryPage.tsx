@@ -190,7 +190,12 @@ export default function RepoDiscoveryPage() {
     staleTime: 10 * 60 * 1000,
   });
 
-  const { data: myRequestsData, isLoading: isMyRequestsLoading } = useQuery({
+  const {
+    data: myRequestsData,
+    isLoading: isMyRequestsLoading,
+    isError: isMyRequestsError,
+    refetch: refetchMyRequests,
+  } = useQuery({
     queryKey: ["opensource-my-requests"],
     queryFn: () => api.get("/opensource/requests/mine").then((r) => r.data.requests as RepoRequest[]),
     enabled: !!user,
@@ -381,7 +386,7 @@ export default function RepoDiscoveryPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <span className="h-1.5 w-1.5 bg-lime-400 rounded-full" />
+                <div className="h-1 w-1 bg-lime-400" />
                 my submissions
               </div>
             </div>
@@ -398,15 +403,29 @@ export default function RepoDiscoveryPage() {
               </div>
             )}
 
+            {/* Error state */}
+            {!isMyRequestsLoading && isMyRequestsError && (
+              <div className="flex items-center justify-between py-2 px-1">
+                <p className="text-sm text-red-500">Failed to load submissions</p>
+                <button
+                  type="button"
+                  onClick={() => refetchMyRequests()}
+                  className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent"
+                >
+                  Retry ↻
+                </button>
+              </div>
+            )}
+
             {/* Empty state */}
-            {!isMyRequestsLoading && myRequests?.length === 0 && (
+            {!isMyRequestsLoading && !isMyRequestsError && myRequests?.length === 0 && (
               <p className="text-sm text-stone-400 dark:text-stone-500 py-2">
                 You haven't suggested any repos yet.
               </p>
             )}
 
             {/* Submissions list */}
-            {!isMyRequestsLoading && myRequests && myRequests.length > 0 && (
+            {!isMyRequestsLoading && !isMyRequestsError && myRequests && myRequests.length > 0 && (
               <div className="space-y-2">
                 {(showAllSubmissions ? myRequests : myRequests.slice(0, 3)).map(
                   (req) => (
