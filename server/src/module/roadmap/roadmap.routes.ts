@@ -12,6 +12,7 @@ import {
   patchTopicProgress,
   postAiGenerate,
   postRecomputePace,
+  updateRoadmap,
 } from "./roadmap.controller.js";
 
 export const roadmapRouter = Router();
@@ -27,6 +28,11 @@ roadmapRouter.patch(
   "/me/enrollments/:id/topics/:topicId",
   authMiddleware,
   patchTopicProgress,
+);
+roadmapRouter.patch(
+  "/:slug",
+  authMiddleware,
+  updateRoadmap
 );
 roadmapRouter.post(
   "/me/enrollments/:id/recompute-pace",
