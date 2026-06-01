@@ -100,12 +100,11 @@ const valuePool: Record<string, string[]> = {
 
   skill: ["leadership", "communication", "debugging", "ownership"],
 
-  situation: [
-    "a tight deadline",
-    "a team conflict",
-    "a production bug",
-    "a failure",
-  ],
+  situation: [ "a tight deadline", "a team conflict", "a production bug","a failure",],
+
+  challenge: [ "tight deadlines", "production failures", "unexpected bugs", ],
+
+  scenario: [ "a high-pressure interview", "a client escalation","a project delay", ],
 };
 /* ───────────────────────────────
    GENERATOR
@@ -121,22 +120,26 @@ function generate(
 
   let i = 0;
 
+  // Cycle through templates and value pools to create variations
+  const pick = (arr: string[]) =>
+  arr[Math.floor(Math.random() * arr.length)];
+
   while (result.length < target) {
-    const categoryPool = valuePool as Record<string, string[]>;
+  const concept = pick(valuePool.concept);
+  const system = pick(valuePool.system);
+  const skill = pick(valuePool.skill);
+  const situation = pick(valuePool.situation);
+  const challenge = pick(valuePool.challenge);
+  const scenario = pick(valuePool.scenario);
 
-    const keys = Object.keys(categoryPool);
-    const poolKey = keys[i % keys.length];
-
-    const valueList = categoryPool[poolKey] ?? ["system"];
-    const value = valueList[i % valueList.length];
-
-    const variables: Record<string, string> = {
-        concept: value,
-        system: value,
-        skill: value,
-        situation: value,
+  const variables: Record<string, string> = {
+    concept,
+    system,
+    skill,
+    situation,
+    challenge,
+    scenario,
     };
-
     result.push({
         category,
         difficulty: i % 3 === 0 ? "Easy" : i % 3 === 1 ? "Medium" : "Hard",
