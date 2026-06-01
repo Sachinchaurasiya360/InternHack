@@ -45,7 +45,13 @@ export async function sendEmail(options: {
   console.log(`[Email] Sending "${options.subject}" to ${options.to}`);
   try {
     const from = FROM();
-    const to = options.to;
+    const to =
+      from === TEST_FROM && process.env.NODE_ENV !== "production"
+        ? process.env.RESEND_TEST_TO || DEFAULT_TEST_TO
+        : options.to;
+    if (to !== options.to) {
+      console.warn(`[Email] Using test recipient ${to} for Resend sandbox send`);
+    }
     const payload: Parameters<typeof resend.emails.send>[0] = {
       from,
       to,
