@@ -455,8 +455,9 @@ model opensourceRepo {
   highlights  String[]       @default([])
   trending    Boolean        @default(false)
   lastUpdated DateTime       @default(now())
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  githubStatsUpdatedAt DateTime?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 
   @@index([domain])
   @@index([difficulty])

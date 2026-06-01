@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import {
   approveRequestOverrideSchema,
@@ -11,6 +11,7 @@ import { requireRole } from "../../middleware/role.middleware.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/email-templates.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
+import { fetchGithubStats } from "../../lib/github.js";
 
 export const opensourceRouter = Router();
 
@@ -255,6 +256,22 @@ opensourceRouter.put("/requests/:id/approve", authMiddleware, requireRole("ADMIN
       });
     } catch { /* email failure is non-blocking */ }
 
+    // Fetch stats on approval
+    fetchGithubStats(repo.url)
+      .then(async (stats) => {
+        if (!stats) return;
+        await prisma.opensourceRepo.update({
+          where: { id: repo.id },
+          data: {
+            stars: stats.stars,
+            forks: stats.forks,
+            openIssues: stats.openIssues,
+            githubStatsUpdatedAt: new Date(),
+          } as any,
+        });
+      })
+      .catch((err) => console.error("[github] approval stats fetch failed:", err));
+
     res.json({ message: "Request approved and repository added", repo });
   } catch (err) {
     next(err);
@@ -289,8 +306,36 @@ opensourceRouter.get("/:id", async (req, res, next) => {
     if (!parsed.success) { res.status(400).json({ message: "Invalid repo ID" }); return; }
     const { id } = parsed.data;
 
-    const repo = await prisma.opensourceRepo.findUnique({ where: { id } });
+    const repo = (await prisma.opensourceRepo.findUnique({ where: { id } })) as any;
     if (!repo) { res.status(404).json({ message: "Repository not found" }); return; }
+
+    // Start: Background stats update (non-blocking)
+    const SIX_HOURS = 6 * 60 * 60 * 1000;
+    const isStale =
+      !repo.githubStatsUpdatedAt ||
+      Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
+
+    if (isStale && repo.url?.includes("github.com")) {
+      fetchGithubStats(repo.url)
+        .then(async (stats) => {
+          if (!stats) return;
+          await prisma.opensourceRepo.update({
+            where: { id: repo.id },
+            data: {
+              stars: stats.stars,
+              forks: stats.forks,
+              openIssues: stats.openIssues,
+              githubStatsUpdatedAt: new Date(),
+              ...(stats.language && { language: stats.language }),
+            } as any,
+          });
+          console.info(`[github] updated stats for ${repo.name}`);
+        })
+        .catch((err) =>
+          console.error(`[github] background update failed for ${repo.id}:`, err)
+        );
+    }
+    // End: Background stats update
 
     res.json({ repo });
   } catch (err) {
