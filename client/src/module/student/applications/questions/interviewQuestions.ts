@@ -120,17 +120,14 @@ function generate(
 
   let i = 0;
 
-  // Cycle through templates and value pools to create variations
-  const pick = (arr: string[]) =>
-  arr[Math.floor(Math.random() * arr.length)];
 
   while (result.length < target) {
-  const concept = pick(valuePool.concept);
-  const system = pick(valuePool.system);
-  const skill = pick(valuePool.skill);
-  const situation = pick(valuePool.situation);
-  const challenge = pick(valuePool.challenge);
-  const scenario = pick(valuePool.scenario);
+  const concept = valuePool.concept[i % valuePool.concept.length];
+  const system = valuePool.system[i % valuePool.system.length];
+  const skill = valuePool.skill[i % valuePool.skill.length];
+  const situation = valuePool.situation[i % valuePool.situation.length];
+  const challenge = valuePool.challenge[i % valuePool.challenge.length];
+  const scenario = valuePool.scenario[i % valuePool.scenario.length];
 
   const variables: Record<string, string> = {
     concept,
