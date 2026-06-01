@@ -101,6 +101,7 @@ export const queryKeys = {
     trend: () => ["opensource", "trend"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
+    stats: () => ["opensource", "stats"] as const,
   },
 
   // Blog

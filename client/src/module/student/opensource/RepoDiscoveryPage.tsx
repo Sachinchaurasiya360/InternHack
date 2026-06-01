@@ -153,17 +153,31 @@ export default function RepoDiscoveryPage() {
   const repos = useMemo(() => data?.repos ?? [], [data]);
   const pagination = data?.pagination;
 
-  const stats = useMemo(() => {
-    if (!pagination) return null;
-    const totalStars = repos.reduce((s, r) => s + r.stars, 0);
-    const trendingCount = repos.filter((r) => r.trending).length;
-    return {
-      totalRepos: pagination.total,
-      totalStars: formatCount(totalStars),
-      trendingCount,
-      languages: [...new Set(repos.map((r) => r.language))].length,
-    };
-  }, [repos, pagination]);
+  // Global stats — fetched independently from the paginated list so the
+  // header strip stays accurate regardless of active filters or page.
+  const { data: globalStats } = useQuery({
+    queryKey: queryKeys.opensource.stats(),
+    queryFn: () =>
+      api
+        .get<{
+          totalRepos: number;
+          totalStars: number;
+          trendingCount: number;
+          languageCount: number;
+          domainBreakdown: { domain: string; count: number }[];
+        }>("/opensource/stats")
+        .then((r) => r.data),
+    staleTime: 5 * 60 * 1000, // matches server cache TTL
+  });
+
+  const stats = globalStats
+    ? {
+        totalRepos: globalStats.totalRepos,
+        totalStars: formatCount(globalStats.totalStars),
+        trendingCount: globalStats.trendingCount,
+        languages: globalStats.languageCount,
+      }
+    : null;
 
   const updateFilter = (setter: (v: string) => void, value: string) => {
     setter(value);
