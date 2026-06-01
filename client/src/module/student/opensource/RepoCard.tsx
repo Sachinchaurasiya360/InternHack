@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, GitFork, CircleDot, Flame, ArrowRight } from "lucide-react";
+import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck } from "lucide-react";
 import type { OpenSourceRepo } from "../../../lib/types";
 import { LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
@@ -9,11 +9,19 @@ interface RepoCardProps {
   repo: OpenSourceRepo;
   index: number;
   onSelect: (repo: OpenSourceRepo) => void;
+  bookmarked?: boolean;
+  onToggleBookmark?: () => void;
 }
 
 const MAX_STAGGER_INDEX = 8;
 
-export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: RepoCardProps) {
+export const RepoCard = React.memo(function RepoCard({
+  repo,
+  index,
+  onSelect,
+  bookmarked,
+  onToggleBookmark,
+}: RepoCardProps) {
   const badge = difficultyBadge(repo.difficulty);
   const delay = Math.min(index, MAX_STAGGER_INDEX) * 0.04;
 
@@ -26,16 +34,34 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
       transition={{ delay, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className="h-full"
     >
-      <button
-        onClick={() => onSelect(repo)}
-        className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
-      >
-        {repo.trending && (
-          <div className="absolute -top-2 right-4 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
-            <Flame size={10} aria-hidden />
-            trending
-          </div>
-        )}
+      <div className="group relative flex flex-col h-full w-full">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            onToggleBookmark?.();
+          }}
+          aria-label={bookmarked ? "Remove bookmark" : "Bookmark this repo"}
+          className="absolute top-3 right-3 p-1 rounded-md text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors border-0 bg-transparent cursor-pointer z-10"
+        >
+          {bookmarked ? (
+            <BookmarkCheck className="w-4 h-4 text-lime-500" />
+          ) : (
+            <Bookmark className="w-4 h-4" />
+          )}
+        </button>
+
+        <button
+          onClick={() => onSelect(repo)}
+          className="flex flex-col flex-1 text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
+        >
+          {repo.trending && (
+            <div className="absolute -top-2 right-12 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
+              <Flame size={10} aria-hidden />
+              trending
+            </div>
+          )}
 
         <div className="flex flex-col flex-1 p-5">
           <div className="flex items-start justify-between mb-3">
@@ -125,7 +151,8 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
           </div>
         </div>
       </button>
-    </motion.div>
+    </div>
+  </motion.div>
   );
 });
 
