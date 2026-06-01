@@ -63,21 +63,27 @@ export default function RoadmapDashboardPage() {
 
   const downloadPdf = async (id: number, slug: string) => {
     setDownloadingId(id);
+    
     try {
-      const res = await api.get(`/roadmaps/me/enrollments/${id}/pdf`, {
-        responseType: "blob",
-      });
-      const url = URL.createObjectURL(res.data as Blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${slug}-roadmap.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      toast.error("Could not download PDF");
-    } finally {
-      setDownloadingId(null);
-    }
+  const res = await api.get(`/roadmaps/me/enrollments/${id}/pdf`, {
+    responseType: "blob",
+  });
+
+  const url = URL.createObjectURL(res.data as Blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${slug}-roadmap.pdf`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  toast.success("PDF downloaded successfully");
+} catch {
+  toast.error("PDF generation failed. Please try again.");
+} finally {
+  setDownloadingId(null);
+} 
   };
 
   const handleDeleteClick = (roadmapId: number) => {

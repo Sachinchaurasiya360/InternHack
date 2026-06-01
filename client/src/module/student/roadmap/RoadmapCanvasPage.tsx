@@ -872,25 +872,32 @@ export default function RoadmapCanvasPage() {
   };
 
   const downloadPdf = async (theme: "light" | "dark") => {
-    if (!enrollmentId) return;
-    setDownloading(theme);
-    try {
-      const res = await api.get(
-        `/roadmaps/me/enrollments/${enrollmentId}/pdf`,
-        { responseType: "blob" },
-      );
-      const url = URL.createObjectURL(res.data as Blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${slug}-roadmap${theme === "dark" ? "-dark" : ""}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      toast.error("Could not download PDF");
-    } finally {
-      setDownloading(null);
-    }
-  };
+  if (!enrollmentId) return;
+
+  setDownloading(theme);
+
+  try {
+    const res = await api.get(
+      `/roadmaps/me/enrollments/${enrollmentId}/pdf`,
+      { responseType: "blob" },
+    );
+
+    const url = URL.createObjectURL(res.data as Blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${slug}-roadmap${theme === "dark" ? "-dark" : ""}.pdf`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    toast.success("PDF downloaded successfully");
+  } catch {
+    toast.error("PDF generation failed. Please try again.");
+  } finally {
+    setDownloading(null);
+  }
+};
 
   // ── Section regeneration mutation ────────────────────────────────────────
   const regenerateMutation = useMutation({
@@ -1141,18 +1148,18 @@ export default function RoadmapCanvasPage() {
             </div>
 
             <button
-              type="button"
-              onClick={() => downloadPdf("light")}
-              disabled={downloading !== null}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-lime-400 text-stone-950 text-xs font-bold rounded-md hover:bg-lime-300 transition-colors disabled:opacity-60 cursor-pointer border-0"
-            >
-              {downloading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Download className="w-3.5 h-3.5" />
-              )}
-              PDF
-            </button>
+  type="button"
+  onClick={() => downloadPdf("light")}
+  disabled={downloading !== null}
+>
+  {downloading === "light" ? (
+    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+  ) : (
+    <Download className="w-3.5 h-3.5" />
+  )}
+
+  {downloading === "light" ? "Generating..." : "PDF"}
+</button>
           </div>
 
           <RoadmapAnalyticsStrip analytics={analytics} />
