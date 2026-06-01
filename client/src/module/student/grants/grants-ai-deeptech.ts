@@ -1,10 +1,9 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsAiDeepTech: Grant[] = [
   {
     id: 121,
     name: "Google Research Scholar Program",
-     deadline: "2026-07-20",
     organization: "Google",
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
@@ -20,6 +19,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Annual call with October deadline",
     ],
     status: "Active",
+    deadline: "2026-05-30",
     ecosystem: "USA",
     highlights: [
       "Unrestricted gift funding - use it for anything research-related",
@@ -30,7 +30,6 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 122,
     name: "Microsoft Research Grants",
-     deadline: "2026-07-20",
     organization: "Microsoft",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -46,6 +45,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Proposals reviewed by Microsoft Research scientists",
     ],
     status: "Active",
+    deadline: "2026-05-29",
     ecosystem: "USA",
     highlights: [
       "Access to Azure compute credits for research",
@@ -56,7 +56,6 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 123,
     name: "NVIDIA Academic Hardware Grant",
-     deadline: "2026-07-20",
     organization: "NVIDIA",
     logo: "https://placehold.co/100x100/EEE/999?text=N",
     description:
@@ -72,6 +71,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Applications accepted on a rolling basis",
     ],
     status: "Active",
+    deadline: "2026-09-13",
     ecosystem: "USA",
     highlights: [
       "Free GPU hardware for academic research",
@@ -82,7 +82,6 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 124,
     name: "Meta Research Awards",
-     deadline: "2026-07-20",
     organization: "Meta",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -98,6 +97,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Multiple RFPs released throughout the year",
     ],
     status: "Active",
+    deadline: "2026-09-18",
     ecosystem: "USA",
     highlights: [
       "Unrestricted gift funding",
@@ -108,7 +108,6 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 125,
     name: "Amazon Science Research Awards",
-     deadline: "2026-07-20",
     organization: "Amazon",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -124,6 +123,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Annual open call with multiple topic areas",
     ],
     status: "Active",
+    deadline: "2026-09-23",
     ecosystem: "USA",
     highlights: [
       "Cash award plus significant AWS credits",
@@ -134,7 +134,6 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 126,
     name: "OpenAI Researcher Access Program",
-     deadline: "2026-07-20",
     organization: "OpenAI",
     logo: "https://placehold.co/100x100/EEE/999?text=O",
     description:
@@ -150,6 +149,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Rolling applications",
     ],
     status: "Active",
+    deadline: "2026-09-28",
     ecosystem: "USA",
     highlights: [
       "Free API access for approved research",
@@ -160,7 +160,6 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 127,
     name: "AI2 Grants (Allen Institute for AI)",
-     deadline: "2026-07-20",
     organization: "Allen Institute for AI",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -176,6 +175,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Collaborative projects with AI2 researchers preferred",
     ],
     status: "Active",
+    deadline: "2026-10-03",
     ecosystem: "USA",
     highlights: [
       "Founded by Paul Allen with $125M+ investment",
@@ -186,7 +186,6 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 128,
     name: "Samsung AI Research Fund",
-     deadline: "2026-07-20",
     organization: "Samsung",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -202,6 +201,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Annual call with specific topic announcements",
     ],
     status: "Active",
+    deadline: "2026-10-08",
     ecosystem: "Global",
     highlights: [
       "Collaboration with Samsung Research labs globally",
@@ -212,7 +212,6 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 129,
     name: "Huawei Spark Program",
-     deadline: "2026-07-20",
     organization: "Huawei",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
@@ -228,6 +227,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Multiple programs for different career stages",
     ],
     status: "Active",
+    deadline: "2026-10-13",
     ecosystem: "Global",
     highlights: [
       "Joint research with Huawei's 15 R&D centers",
@@ -238,7 +238,6 @@ export const grantsAiDeepTech: Grant[] = [
   {
     id: 130,
     name: "Intel oneAPI Innovation Program",
-     deadline: "2026-07-20",
     organization: "Intel",
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
@@ -254,6 +253,7 @@ export const grantsAiDeepTech: Grant[] = [
       "Hardware donation programs also available",
     ],
     status: "Active",
+    deadline: "2026-10-18",
     ecosystem: "USA",
     highlights: [
       "Access to Intel DevCloud for testing and development",

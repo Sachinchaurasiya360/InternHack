@@ -2,16 +2,11 @@ import React from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
-  GitPullRequest,
-  Trophy,
-  Award,
-  GraduationCap,
-  BookOpen,
-  GitBranch,
-  MessageSquare,
-  Settings,
+  GitPullRequest, Trophy, Award, GraduationCap,
+  BookOpen, GitBranch, MessageSquare, Settings,
   type LucideIcon,
 } from "lucide-react";
+import { GuideSearch } from "./GuideSearch";
 
 interface GuidanceCard {
   to: string;
@@ -21,65 +16,28 @@ interface GuidanceCard {
 }
 
 const GUIDANCE_CARDS: GuidanceCard[] = [
-  {
-    to: "/student/opensource/first-pr",
-    icon: GitPullRequest,
-    title: "Your First Contribution",
-    desc: "10 steps from zero to your first merged PR",
-  },
-  {
-    to: "/student/opensource/gsoc",
-    icon: Trophy,
-    title: "GSoC Repos",
-    desc: "Organisations accepted into Google Summer of Code",
-  },
-  {
-    to: "/student/opensource/gsoc-proposal",
-    icon: Award,
-    title: "GSoC Proposal Guide",
-    desc: "Write a winning proposal in 8 steps",
-  },
-  {
-    to: "/student/opensource/programs",
-    icon: GraduationCap,
-    title: "Program Tracker",
-    desc: "Deadlines for GSoC, LFX, MLH, Outreachy",
-  },
-  {
-    to: "/student/opensource/read-codebase",
-    icon: BookOpen,
-    title: "Read a Codebase",
-    desc: "Understand unfamiliar code like a senior",
-  },
-  {
-    to: "/student/opensource/git-guide",
-    icon: GitBranch,
-    title: "Git for Open Source",
-    desc: "Fork to PR workflow with copy, paste commands",
-  },
-  {
-    to: "/student/opensource/communication",
-    icon: MessageSquare,
-    title: "Communication Templates",
-    desc: "Issues, PRs, reviews and bug reports",
-  },
-  {
-    to: "/student/opensource/cicd",
-    icon: Settings,
-    title: "CI / CD Basics",
-    desc: "Fix lint, test and build errors",
-  },
+  { to: "/student/opensource/first-pr", icon: GitPullRequest, title: "Your First Contribution", desc: "10 steps from zero to your first merged PR" },
+  { to: "/student/opensource/gsoc", icon: Trophy, title: "GSoC Repos", desc: "Organisations accepted into Google Summer of Code" },
+  { to: "/student/opensource/gsoc-proposal", icon: Award, title: "GSoC Proposal Guide", desc: "Write a winning proposal in 8 steps" },
+  { to: "/student/opensource/programs", icon: GraduationCap, title: "Program Tracker", desc: "Deadlines for GSoC, LFX, MLH, Outreachy" },
+  { to: "/student/opensource/read-codebase", icon: BookOpen, title: "Read a Codebase", desc: "Understand unfamiliar code like a senior" },
+  { to: "/student/opensource/git-guide", icon: GitBranch, title: "Git for Open Source", desc: "Fork to PR workflow with copy, paste commands" },
+  { to: "/student/opensource/communication", icon: MessageSquare, title: "Communication Templates", desc: "Issues, PRs, reviews and bug reports" },
+  { to: "/student/opensource/cicd", icon: Settings, title: "CI / CD Basics", desc: "Fix lint, test and build errors" },
 ];
 
 export const GuidanceCards = React.memo(function GuidanceCards() {
   return (
     <div className="mb-10">
       <div className="flex items-center gap-2 mb-3">
-        <div className="h-1 w-1 bg-lime-400"></div>
+        <div className="h-1 w-1 bg-lime-400" />
         <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
           guides / play it like a senior
         </span>
       </div>
+
+      <GuideSearch />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 border-t border-l border-stone-200 dark:border-white/10">
         {GUIDANCE_CARDS.map((card, i) => (
           <motion.div

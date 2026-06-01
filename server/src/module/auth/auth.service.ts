@@ -1,10 +1,14 @@
-import crypto from "crypto";
+﻿import crypto from "crypto";
 import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+
+// TTL shorter than S3 presigned URL expiry (S3 default â‰¥15 min)
+const PROFILE_TTL = 300;
 
 const badgeService = new BadgeService();
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
@@ -273,7 +277,7 @@ export class AuthService {
         },
       });
 
-      // Send welcome email (fire-and-forget) — temporarily disabled
+      // Send welcome email (fire-and-forget) â€” temporarily disabled
       // sendEmail({
       //   to: user.email,
       //   subject: "Welcome to InternHack!",
@@ -407,6 +411,10 @@ export class AuthService {
   } as const;
 
   async getProfile(userId: number) {
+    const cacheKey = `profile:me:${userId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: this.profileSelect,
@@ -426,6 +434,7 @@ export class AuthService {
       (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
     }
 
+    await cacheSet(cacheKey, user, PROFILE_TTL);
     return user;
   }
 
@@ -500,10 +509,18 @@ export class AuthService {
       (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
     }
 
+    // Bust cached profile so next GET /auth/me returns fresh data
+    await cacheDel(`profile:me:${userId}`);
+    await cacheDel(`profile:public:${userId}`);
+
     return user;
   }
 
   async getPublicProfile(userId: number) {
+    const cacheKey = `profile:public:${userId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const user = await prisma.user.findUnique({
       where: { id: userId, role: "STUDENT", isProfilePublic: true },
       select: {
@@ -533,10 +550,12 @@ export class AuthService {
     if (rest.coverImage) {
       (rest as Record<string, unknown>).coverImage = await signUrl(rest.coverImage);
     }
-    return {
+    const result = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
     };
+    await cacheSet(cacheKey, result, PROFILE_TTL);
+    return result;
   }
 
   async verifyEmail(email: string, otp: string) {
@@ -584,7 +603,7 @@ export class AuthService {
       },
     });
 
-    // Send welcome email (fire-and-forget) — temporarily disabled
+    // Send welcome email (fire-and-forget) â€” temporarily disabled
     // sendEmail({
     //   to: user.email,
     //   subject: "Welcome to InternHack!",
@@ -814,3 +833,4 @@ export class AuthService {
     return data;
   }
 }
+

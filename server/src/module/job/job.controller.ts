@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { createJobSchema, updateJobSchema, updateJobStatusSchema, jobQuerySchema } from "./job.validation.js";
 import { JobService } from "./job.service.js";
 import { createLogger } from "../../utils/logger.js";
+import { clearCache } from "../../middleware/cache.middleware.js";
 
 const logger = createLogger("JobController");
 
@@ -20,6 +21,7 @@ export class JobController {
       }
 
       const job = await this.jobService.createJob({ ...result.data, recruiterId: req.user.id });
+      clearCache("jobs:list");
       return res.status(201).json({ message: "Job created successfully", job });
     } catch (error) {
       logger.error("Failed to create job", error);
@@ -124,6 +126,9 @@ export class JobController {
       }
 
       const job = await this.jobService.updateJob(id, req.user.id, result.data);
+      clearCache("jobs:list");
+      clearCache("jobs:detail");
+      clearCache("jobs:related");
       return res.status(200).json({ message: "Job updated successfully", job });
     } catch (error) {
       if (error instanceof Error) {
@@ -152,6 +157,8 @@ export class JobController {
       }
 
       const job = await this.jobService.updateJobStatus(id, req.user.id, result.data.status);
+      clearCache("jobs:list");
+      clearCache("jobs:detail");
       return res.status(200).json({ message: "Job status updated", job });
     } catch (error) {
       if (error instanceof Error) {
@@ -175,6 +182,9 @@ export class JobController {
       }
 
       await this.jobService.deleteJob(id, req.user.id);
+      clearCache("jobs:list");
+      clearCache("jobs:detail");
+      clearCache("jobs:related");
       return res.status(200).json({ message: "Job deleted successfully" });
     } catch (error) {
       if (error instanceof Error) {

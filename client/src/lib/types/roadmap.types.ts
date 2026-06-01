@@ -118,6 +118,29 @@ export interface RoadmapEnrollmentSummary {
   hoursTotal: number;
 }
 
+export type RoadmapTrackStatus = "AHEAD" | "ON_TRACK" | "BEHIND";
+
+export interface RoadmapProgressTrendPoint {
+  date: string;
+  completed: number;
+  cumulative: number;
+}
+
+export interface RoadmapEnrollmentAnalytics {
+  enrollmentId: number;
+  currentStreak: number;
+  longestStreak: number;
+  onTrackStatus: RoadmapTrackStatus;
+  paceDeviation: number;
+  expectedTopicsCompleted: number;
+  actualTopicsCompleted: number;
+  topicsCompletedThisWeek: number;
+  weeklyTarget: number;
+  estimatedCompletionDate: string;
+  targetEndDate: string;
+  progressTrend: RoadmapProgressTrendPoint[];
+}
+
 export interface RoadmapEnrollment {
   id: number;
   userId: number;
@@ -159,6 +182,7 @@ export interface RoadmapEnrollmentListItem {
     tags?: string[];
     isAiGenerated?: boolean;
     ownerUserId?: number | null;
+    ownerUserId: number | null;
   };
   createdAt: string;
 }

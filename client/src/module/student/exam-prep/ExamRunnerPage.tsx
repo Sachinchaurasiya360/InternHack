@@ -49,6 +49,7 @@ export default function ExamRunnerPage({ mode }: { mode: Mode }) {
   const [remaining, setRemaining] = useState(durationSec);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRemaining(durationSec);
   }, [durationSec]);
 

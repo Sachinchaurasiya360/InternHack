@@ -1,4 +1,4 @@
-
+import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
@@ -6,27 +6,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { Application } from "../../../lib/types";
+import type { Application, ExternalApplication } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { ApplicationNotes } from "./ApplicationNotes";
 import toast from "@/components/ui/toast";
-interface ExternalApplication {
-  id: number;
-  studentId: number;
-  adminJobId: number;
-  createdAt: string;
-  adminJob: {
-    id: number;
-    slug: string | null;
-    company: string | null;
-    role: string | null;
-    location: string | null;
-    salary: string | null;
-    tags: string[];
-    applyLink: string | null;
-  };
-}
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -149,6 +134,12 @@ const ApplicationCard = React.memo(function ApplicationCard({
           </Link>
         </div>
       </div>
+
+      <ApplicationNotes
+        applicationId={app.id}
+        kind="internal"
+        notes={app.studentNotes}
+      />
     </div>
   );
 });
@@ -221,6 +212,12 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
           )}
         </div>
       </div>
+
+      <ApplicationNotes
+        applicationId={app.id}
+        kind="external"
+        notes={app.studentNotes}
+      />
     </div>
   );
 });
@@ -276,6 +273,7 @@ export default function MyApplicationsPage() {
       api.get("/student/applications").then(
         (res) => res.data as { applications: Application[]; externalApplications: ExternalApplication[] }
       ),
+    staleTime: 2 * 60 * 1000,
   });
 
   const applications = useMemo(() => data?.applications ?? [], [data]);
@@ -458,6 +456,7 @@ export default function MyApplicationsPage() {
         </select>
       </div>
       {/* Search */}
+      <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
         <input

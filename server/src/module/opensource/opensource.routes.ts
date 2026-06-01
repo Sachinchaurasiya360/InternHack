@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import {
   approveRequestOverrideSchema,
@@ -43,11 +43,23 @@ opensourceRouter.get("/", async (req, res, next) => {
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
     if (search) {
+      // Prisma's scalar-list filters can't do case-insensitive substring match
+      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+      // subquery and merge the matching ids into the OR clause.
+      const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
+        SELECT id FROM "opensourceRepo"
+        WHERE EXISTS (
+          SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${search}%`}
+        )
+      `;
+      const tagMatchIds = tagMatches.map((r) => r.id);
+
       where["OR"] = [
         { name: { contains: search, mode: "insensitive" } },
         { owner: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
-        { tags: { hasSome: [search] } },
+        { language: { contains: search, mode: "insensitive" } },
+        ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
       ];
     }
 

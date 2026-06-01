@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import {
   Toaster as SonnerToaster,
@@ -52,7 +53,7 @@ function ToastContent({
 }: {
   toastId: string | number;
   variant: Variant;
-  message: string;
+  message: ReactNode;
 }) {
   const Icon = variantIcons[variant];
 
@@ -70,7 +71,7 @@ function ToastContent({
     >
       <div className="flex items-start gap-2">
         <Icon className={cn("h-4 w-4 mt-0.5 shrink-0", iconColor[variant])} />
-        <p className="text-xs text-muted-foreground">{message}</p>
+        <div className="text-xs text-muted-foreground">{message}</div>
       </div>
 
       <button
@@ -91,7 +92,7 @@ interface ToastOptions {
   id?: string;
 }
 
-function show(variant: Variant, message: string, opts?: ToastOptions) {
+function show(variant: Variant, message: ReactNode, opts?: ToastOptions) {
   sonnerToast.custom(
     (toastId) => (
       <ToastContent toastId={toastId} variant={variant} message={message} />
@@ -101,10 +102,11 @@ function show(variant: Variant, message: string, opts?: ToastOptions) {
 }
 
 const toast = {
-  success: (msg: string, opts?: ToastOptions) => show("success", msg, opts),
-  error: (msg: string, opts?: ToastOptions) => show("error", msg, opts),
-  info: (msg: string, opts?: ToastOptions) => show("default", msg, opts),
-  warning: (msg: string, opts?: ToastOptions) => show("warning", msg, opts),
+  success: (msg: ReactNode, opts?: ToastOptions) => show("success", msg, opts),
+  error: (msg: ReactNode, opts?: ToastOptions) => show("error", msg, opts),
+  info: (msg: ReactNode, opts?: ToastOptions) => show("default", msg, opts),
+  warning: (msg: ReactNode, opts?: ToastOptions) => show("warning", msg, opts),
+  dismiss: (id?: string | number) => sonnerToast.dismiss(id),
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

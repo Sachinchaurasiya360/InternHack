@@ -1,10 +1,9 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsGaming: Grant[] = [
   {
     id: 22,
     name: "Champion Grants",
-     deadline: "2026-07-20",
     organization: "TON Foundation",
     logo: "https://cryptologos.cc/logos/toncoin-ton-logo.svg",
     description:
@@ -20,6 +19,7 @@ export const grantsGaming: Grant[] = [
       "Early-stage projects can participate via IdeaTON challenges",
     ],
     status: "Invite Only",
+    deadline: "2026-12-27",
     ecosystem: "TON",
     highlights: [
       "Five high-growth verticals including GameFi",
@@ -30,7 +30,6 @@ export const grantsGaming: Grant[] = [
   {
     id: 34,
     name: "Ecosystem Fund",
-     deadline: "2026-07-20",
     organization: "Flow / Dapper Labs",
     logo: "https://cryptologos.cc/logos/flow-flow-logo.svg",
     description:
@@ -46,6 +45,7 @@ export const grantsGaming: Grant[] = [
       "7,500+ developer community",
     ],
     status: "Active",
+    deadline: "2027-01-01",
     ecosystem: "Flow",
     highlights: [
       "$725M ecosystem fund",
@@ -56,7 +56,6 @@ export const grantsGaming: Grant[] = [
   {
     id: 35,
     name: "Ventures & Developer Fund",
-     deadline: "2026-07-20",
     organization: "Immutable",
     logo: "https://assets-global.website-files.com/646557ee455c3e16e4a9bcb3/646557ee455c3e16e4a9bd55_immutable-icon.svg",
     description:
@@ -72,6 +71,7 @@ export const grantsGaming: Grant[] = [
       "Rolling applications reviewed by Immutable panel",
     ],
     status: "Active",
+    deadline: "2027-01-06",
     ecosystem: "Immutable",
     highlights: [
       "$500M fund deployed over 4 years",

@@ -62,15 +62,21 @@ import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
 import { recommendationRouter } from "./module/recommendation/recommendation.routes.js";
 import { learnRouter } from "./module/learn/learn.routes.js";
+import { healthRouter } from "./module/health/health.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
-import { startFollowUpCron } from "./cron/scheduled-emails.js";
-import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
-import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
-import { startScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
-import { startWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
+import { startFollowUpCron, stopFollowUpCron } from "./cron/scheduled-emails.js";
+import { startAIPipelineCrons, stopAIPipelineCrons } from "./cron/internhack-ai.cron.js";
+import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
+import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
+import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
+import { shutdownManager } from "./utils/graceful-shutdown.js";
+import { redis } from "./config/redis.js";
+import { createLogger } from "./utils/logger.js";
+
+const logger = createLogger("Index");
 
 
 // ── Validate required environment variables ──
@@ -85,12 +91,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 process.on("unhandledRejection", (reason) => {
-  console.error("[process] unhandledRejection:", reason);
+  logger.error("unhandledRejection:", reason);
 });
 process.on("uncaughtException", (err) => {
-  console.error("[process] uncaughtException:", err);
-
-  process.exit(1);
+  logger.error("uncaughtException:", err);
+  if (!shutdownManager.isShutdown()) {
+    process.exit(1);
+  }
 });
 
 const app = express();
@@ -107,7 +114,7 @@ app.use(
         scriptSrc: ["'self'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
-        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com"],
+        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com", "https://intern-hack-prod-bucket.s3.ap-south-1.amazonaws.com"],
         frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com", "blob:"],
         fontSrc: ["'self'", "https:", "data:"],
       },
@@ -151,14 +158,14 @@ app.use((req, res, next) => {
 app.use(compression());
 
 // ── Health check ──
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", uptime: process.uptime() });
-});
+app.use("/api/health", healthRouter);
 
 // Raw body for webhooks (must be BEFORE express.json())
 app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
 // Raw body for Dodo Payments webhook (must be BEFORE express.json())
 app.use(PAYMENT_WEBHOOK_PATH, express.raw({ type: "application/json" }));
+// Larger body parser for DSA CSV import (must be BEFORE the global parser)
+app.use("/api/dsa/import/csv", express.json({ limit: "6mb" }));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -307,31 +314,64 @@ app.get("/api/stats", async (_req, res) => {
 
 app.use(errorMiddleware);
 
-app.listen(PORT, async () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+const server = app.listen(PORT, async () => {
+  logger.info(`Server running on http://localhost:${PORT}`);
+
+  // Attach server to shutdown manager
+  shutdownManager.attachServer(server);
 
   // Load AI service provider configs into memory
-  await initServiceProviders().catch((err) => console.error("[AI] Failed to init providers:", err));
+  await initServiceProviders().catch((err) => logger.error("Failed to init AI providers:", err));
 
   // Start the job scraper cron (every 6 hours)
   const cronSchedule = process.env["SCRAPER_CRON"] || "0 */6 * * *";
   scraperController.getService().startCron(cronSchedule);
+  shutdownManager.register({
+    name: "Scraper Cron",
+    priority: 10,
+    fn: () => scraperController.getService().stopCron(),
+  });
 
   // Start the funding signals ingest cron (offset 30 min from scraper)
   const signalsSchedule = process.env["SIGNALS_CRON"] || "30 */6 * * *";
   signalsController.getService().startCron(signalsSchedule);
+  shutdownManager.register({
+    name: "Signals Cron",
+    priority: 10,
+    fn: () => signalsController.getService().stopCron(),
+  });
 
   // Start the 10-day follow-up email cron (daily at 9 AM)
   startFollowUpCron();
+  shutdownManager.register({
+    name: "FollowUp Cron",
+    priority: 10,
+    fn: () => stopFollowUpCron(),
+  });
 
   // Start subscription expiry cron (daily at midnight)
   startSubscriptionExpiryCron();
+  shutdownManager.register({
+    name: "Subscription Expiry Cron",
+    priority: 10,
+    fn: () => stopSubscriptionExpiryCron(),
+  });
 
   // Start InternHack AI pipeline crons
   startAIPipelineCrons();
+  shutdownManager.register({
+    name: "AI Pipeline Crons",
+    priority: 10,
+    fn: () => stopAIPipelineCrons(),
+  });
 
   // Start the scheduled-email worker (drains roadmap day-10, future digests)
   startScheduledEmailWorker();
+  shutdownManager.register({
+    name: "Scheduled Email Worker",
+    priority: 10,
+    fn: () => stopScheduledEmailWorker(),
+  });
 
   // Start weekly roadmap progress digests from one owner only in production.
   const runWeeklyDigestCron =
@@ -339,9 +379,39 @@ app.listen(PORT, async () => {
     (process.env["NODE_ENV"] !== "production" && process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] !== "false");
   if (runWeeklyDigestCron) {
     startWeeklyRoadmapDigestCron();
+    shutdownManager.register({
+      name: "Roadmap Weekly Digest Cron",
+      priority: 10,
+      fn: () => stopWeeklyRoadmapDigestCron(),
+    });
   } else {
-    console.log("[RoadmapDigest] Weekly digest cron disabled on this process");
+    logger.info("Weekly digest cron disabled on this process");
   }
+
+  // Register Redis disconnect
+  if (redis) {
+    shutdownManager.register({
+      name: "Redis Disconnect",
+      priority: 20,
+      fn: async () => {
+        await redis!.quit();
+        logger.info("Redis Disconnected");
+      },
+    });
+  }
+
+  // Register Prisma disconnect
+  shutdownManager.register({
+    name: "Prisma Disconnect",
+    priority: 20,
+    fn: async () => {
+      await prisma.$disconnect();
+      logger.info("Prisma Disconnected");
+    },
+  });
+
+  // Install signal handlers after all hooks are registered
+  shutdownManager.installSignalHandlers();
 });
 
 
@@ -349,5 +419,4 @@ app.listen(PORT, async () => {
 app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
-
 

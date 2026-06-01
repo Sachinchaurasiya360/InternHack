@@ -55,12 +55,14 @@ export default function JobDetailPage() {
     queryKey: queryKeys.jobs.detail(id!),
     queryFn: () => api.get(`/jobs/${id}`).then((res) => res.data.job as Job),
     enabled: !!id,
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: applicationStatus } = useQuery({
     queryKey: queryKeys.applications.statusByJob(id!),
     queryFn: () => api.get(`/student/jobs/${id}/application-status`).then((res) => res.data as { applied: boolean; application: { id: number; status: string } | null }),
     enabled: !!id && isAuthenticated && user?.role === "STUDENT",
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: relatedJobs = [], isLoading: isRelatedJobsLoading } = useQuery({
@@ -69,6 +71,7 @@ export default function JobDetailPage() {
       api.get(`/jobs/${id}/related`, { params: { limit: 4 } })
         .then((res) => res.data.jobs as Job[]),
     enabled: !!id && !!job,
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: relatedPosts = [] } = useQuery({
@@ -77,6 +80,7 @@ export default function JobDetailPage() {
       api.get("/blog/by-tags", { params: { tags: job!.tags.join(",") } })
         .then((res) => res.data.posts as { id: number; title: string; slug: string; excerpt: string; readingTime: number; featuredImage?: string }[]),
     enabled: !!job && job.tags.length > 0,
+    staleTime: 30 * 60 * 1000,
   });
 
   const backPath = inStudentLayout ? "/student/jobs" : "/jobs";
