@@ -228,12 +228,24 @@ export default function RepoDiscoveryPage() {
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
-      <SEO
-        title="Open Source Projects, Find Beginner-Friendly Repos"
-        description="Discover beginner-friendly open-source projects, track trending repos, and make your first contribution. Curated by engineers for students."
-        keywords="open source, first contribution, good first issue, github, beginner friendly, GSoC, hacktoberfest"
-        canonicalUrl={canonicalUrl("/student/opensource")}
-      />
+      {selectedRepo ? (
+        <SEO
+          title={`${selectedRepo.owner}/${selectedRepo.name} — Open Source on InternHack`}
+          description={
+            selectedRepo.description
+              ? selectedRepo.description.slice(0, 160)
+              : `Contribute to ${selectedRepo.owner}/${selectedRepo.name} on InternHack. Discover beginner-friendly open-source projects curated for students.`
+          }
+          canonicalUrl={canonicalUrl(`/student/opensource?repo=${selectedRepo.id}`)}
+        />
+      ) : (
+        <SEO
+          title="Open Source Projects, Find Beginner-Friendly Repos"
+          description="Discover beginner-friendly open-source projects, track trending repos, and make your first contribution. Curated by engineers for students."
+          keywords="open source, first contribution, good first issue, github, beginner friendly, GSoC, hacktoberfest"
+          canonicalUrl={canonicalUrl("/student/opensource")}
+        />
+      )}
 
       <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8">
         {/* Editorial header */}
