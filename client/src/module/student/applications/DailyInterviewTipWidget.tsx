@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronLeft, ChevronRight, Lightbulb } from "lucide-react";
+import { ChevronDown, ChevronRight, Lightbulb } from "lucide-react";
 import {QUESTIONS} from "./questions/interviewQuestions";
 
 const DIFFICULTY_STYLE: Record<string, string> = {

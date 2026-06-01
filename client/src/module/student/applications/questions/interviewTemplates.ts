@@ -1,5 +1,3 @@
-import type { Question } from "./interviewQuestions";
-
 export const dsaTemplates = {
   question: [
     "Explain how {concept} works internally.",
