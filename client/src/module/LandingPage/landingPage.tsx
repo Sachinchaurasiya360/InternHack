@@ -13,9 +13,9 @@ import { SEO } from "../../components/SEO"
 import { canonicalUrl } from "../../lib/seo.utils"
 import { faqSchema, websiteSchema, platformOrganizationSchema } from "../../lib/structured-data"
 
-
 export default function LandingPage(){
     return(
+      
         <div className="font-sans bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 pt-16 md:pt-0">
            
             <SEO

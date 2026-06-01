@@ -3,6 +3,7 @@ import { useLayoutStore } from "../../lib/layout.store";
 import { useStudentSidebar } from "../../components/StudentSidebar";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
+import { FloatingQuickActions } from "../../components/FloatingQuickActions";
 
 export default function StudentLayout() {
   const immersive = useLayoutStore((s) => s.immersive);
@@ -34,6 +35,7 @@ export default function StudentLayout() {
       >
         <Outlet />
       </main>
+        <FloatingQuickActions />
     </div>
   );
 }
