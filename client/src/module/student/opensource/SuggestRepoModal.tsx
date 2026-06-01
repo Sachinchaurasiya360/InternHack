@@ -131,7 +131,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
     onSuccess: () => {
       setSuccess(true);
       queryClient.invalidateQueries({
-        queryKey: queryKeys.opensource.myRequests(),
+        queryKey: ["opensource-my-requests"],
       });
       setTimeout(() => {
         setSuccess(false);
