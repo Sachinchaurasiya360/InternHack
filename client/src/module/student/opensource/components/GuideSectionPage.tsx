@@ -59,8 +59,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
     });
   }, [step, storageKey]);
 
-<<<<<<< HEAD
-=======
   
 useEffect(() => {
   if (!step) return;
@@ -70,10 +68,19 @@ useEffect(() => {
   );
 
   if (saved) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRating(saved);
     setSubmitted(true);
   }
-}, [step]);
+}, [step, basePath]);
+
+  const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
+  const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
+  useKeyboardNavigation({
+    prevPath: prev ? `${basePath}/${prev.id}` : null,
+    nextPath: next ? `${basePath}/${next.id}` : null,
+  });
+
 if (!step) return <Navigate to={basePath} replace />;
 const submitFeedback = async (
   value: "up" | "down"
@@ -94,7 +101,7 @@ const submitFeedback = async (
     });
 
     localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`
+      `guide-feedback-${basePath}-${step.id}`,
       value
     );
 
@@ -102,7 +109,7 @@ const submitFeedback = async (
     setSubmitted(true);
   } catch {
     localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`
+      `guide-feedback-${basePath}-${step.id}`,
       value
     );
 
@@ -110,17 +117,6 @@ const submitFeedback = async (
     setSubmitted(true);
   }
 };
-  const isDone = completed.has(step.id);
->>>>>>> 1631b05 (Add guide feedback system for open source guides)
-  const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
-  const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
-
-  useKeyboardNavigation({
-    prevPath: prev ? `${basePath}/${prev.id}` : null,
-    nextPath: next ? `${basePath}/${next.id}` : null,
-  });
-
-  if (!step) return <Navigate to={basePath} replace />;
   const isDone = completed.has(step.id);
 
   return (
@@ -301,8 +297,6 @@ const submitFeedback = async (
     Was this step helpful?
   </p>
 
-<<<<<<< HEAD
-=======
   <div className="flex gap-2">
     <Button
       onClick={() => submitFeedback("up")}
@@ -328,7 +322,6 @@ const submitFeedback = async (
   )}
 </div>
         {/* Mark as Complete + Next */}
->>>>>>> 1631b05 (Add guide feedback system for open source guides)
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}

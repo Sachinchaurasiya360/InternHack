@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  ArrowLeft,
   Clock,
   BookOpen,
   Download,
   Map,
   Loader2,
   X,
-  Sparkles,
+  Zap,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -24,21 +25,25 @@ import {
 } from "../learn/components/RecommendationCard";
 
 export default function RoadmapDashboardPage() {
+  const navigate = useNavigate();
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedRoadmapId, setSelectedRoadmapId] = useState<number | null>(
     null,
   );
-  const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    api
-      .get<{ weakAreas: WeakArea[] }>("/student/recommendations")
-      .then((res) => setWeakAreas(res.data.weakAreas ?? []))
-      .catch(() => {});
-  }, []);
+  const { data: weakAreasData } = useQuery({
+    queryKey: ["student-recommendations"],
+    queryFn: () =>
+      api
+        .get<{ weakAreas: WeakArea[] }>("/student/recommendations")
+        .then((r) => r.data),
+    staleTime: 30 * 60 * 1000,
+  });
+  const weakAreas = weakAreasData?.weakAreas ?? [];
+
   const {
     data,
     isLoading: loading,
@@ -51,6 +56,7 @@ export default function RoadmapDashboardPage() {
           enrollments: RoadmapEnrollmentListItem[];
         }>("/roadmaps/me/enrollments")
         .then((res) => res.data),
+    staleTime: 5 * 60 * 1000,
   });
 
   const enrollments = data?.enrollments || [];
@@ -114,30 +120,54 @@ export default function RoadmapDashboardPage() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mt-6 mb-8"
+        transition={{ duration: 0.4 }}
+        className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
       >
-        <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white mb-2">
-          My roadmaps
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Resume where you left off, or start a new path.
-        </p>
+        <div>
+          <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            <span className="h-1.5 w-1.5 bg-lime-400" />
+            learning / roadmaps
+          </div>
+          <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            My roadmaps.
+          </h1>
+          <p className="mt-3 text-sm text-stone-500 max-w-md">
+            Resume where you left off, or start a new path.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+          className="inline-flex items-center justify-center w-9 h-9 rounded-md bg-stone-100 hover:bg-stone-200 dark:bg-white/5 dark:hover:bg-white/10 text-stone-600 dark:text-stone-400 transition-colors border-0 cursor-pointer shrink-0"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </button>
       </motion.div>
 
       {weakAreas.length > 0 && (
         <motion.section
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5"
+          transition={{ duration: 0.3 }}
+          className="mb-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-4 h-4 text-lime-500" />
-            <span className="text-sm font-bold text-gray-950 dark:text-white">
-              Skill gaps to address
-            </span>
+          <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10">
+            <div className="flex flex-col gap-1 min-w-0">
+              <span className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <span className="h-1 w-1 bg-lime-400" />
+                ai-powered
+              </span>
+              <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                Skill gaps to address
+              </span>
+            </div>
+            <div className="shrink-0 flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-400">
+              <Zap className="w-3 h-3 text-lime-500" />
+              {weakAreas.length} area{weakAreas.length !== 1 ? "s" : ""}
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
             {weakAreas.slice(0, 4).map((area, i) => (
               <RecommendationCard
                 key={`${area.type}-${area.topic}`}

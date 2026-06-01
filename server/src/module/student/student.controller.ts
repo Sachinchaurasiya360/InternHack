@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { StudentService } from "./student.service.js";
-import { applyToJobSchema, mockInterviewFeedbackSchema, submitRoundSchema } from "./student.validation.js";
+import { applyToJobSchema, submitRoundSchema, mockInterviewFeedbackSchema, updateApplicationNotesSchema } from "./student.validation.js";
 import { prisma } from "../../database/db.js";
 import { getPlanTier } from "../../config/usage-limits.js";
 import { createLogger } from "../../utils/logger.js";
@@ -226,6 +226,48 @@ export class StudentController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to get application detail", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async updateApplicationNotes(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId)) return res.status(400).json({ message: "Invalid application ID" });
+
+      const result = updateApplicationNotesSchema.safeParse(req.body);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+
+      const updated = await this.studentService.updateApplicationNotes(applicationId, req.user.id, result.data.notes);
+      return res.status(200).json({ notes: updated.studentNotes ?? "", updatedAt: updated.updatedAt });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Application not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      logger.error("Failed to update application notes", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async updateExternalApplicationNotes(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId)) return res.status(400).json({ message: "Invalid application ID" });
+
+      const result = updateApplicationNotesSchema.safeParse(req.body);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+
+      const updated = await this.studentService.updateExternalApplicationNotes(applicationId, req.user.id, result.data.notes);
+      return res.status(200).json({ notes: updated.studentNotes ?? "", updatedAt: updated.updatedAt });
+    } catch (error) {
+      if (error instanceof Error && error.message === "External application not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      logger.error("Failed to update external application notes", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

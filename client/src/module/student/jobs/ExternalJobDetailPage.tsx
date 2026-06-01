@@ -51,6 +51,7 @@ export default function ExternalJobDetailPage() {
     },
     enabled: !!slug,
     retry: false,
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: similarJobs = [] } = useQuery({
@@ -71,6 +72,7 @@ export default function ExternalJobDetailPage() {
         .map((x) => x.job);
     },
     enabled: !!job,
+    staleTime: 10 * 60 * 1000,
   });
 
   useQuery({
@@ -81,6 +83,7 @@ export default function ExternalJobDetailPage() {
       return res.data;
     },
     enabled: !!job && isAuthenticated,
+    staleTime: 2 * 60 * 1000,
   });
 
   const applyMutation = useMutation({

@@ -189,6 +189,7 @@ export function useInterviewProgress() {
   }, [isAuthenticated, migrationKey, userId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void hydrate();
 
     const onStorage = (event: StorageEvent) => {

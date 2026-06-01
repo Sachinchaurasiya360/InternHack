@@ -164,9 +164,10 @@ export default function AiRoadmapWizardPage() {
       );
       toast.success("Your roadmap is ready");
       navigate(`/learn/roadmaps/${res.data.slug}`);
-    } catch (err: any) {
-      if (err.response?.status === 409) {
-        if (err.response.data.message.includes("limit")) {
+    } catch (err) {
+      const axiosErr = err as { response?: { status?: number; data?: { message?: string; roadmap?: { title: string; slug: string } } } };
+      if (axiosErr.response?.status === 409) {
+        if (axiosErr.response.data?.message?.includes("limit")) {
           toast.error(
             <div className="flex flex-col gap-2 p-1 text-left">
               <p>You have reached the limit of 5 active AI roadmaps. Please complete or delete existing ones first.</p>
@@ -176,8 +177,8 @@ export default function AiRoadmapWizardPage() {
             </div>,
             { duration: 8000 }
           );
-        } else if (err.response.data.roadmap) {
-          const duplicate = err.response.data.roadmap;
+        } else if (axiosErr.response.data?.roadmap) {
+          const duplicate = axiosErr.response.data.roadmap;
           toast.warning(
             <div className="flex flex-col gap-2 p-1 text-left">
               <p className="font-bold">Similar roadmap exists</p>
@@ -186,7 +187,7 @@ export default function AiRoadmapWizardPage() {
                 <Link to={`/learn/roadmaps/${duplicate.slug}`} className="text-xs font-bold text-stone-950 dark:text-stone-50 hover:underline">
                   View existing
                 </Link>
-                <button 
+                <button
                   onClick={() => {
                     toast.dismiss();
                     submit(true);
@@ -201,7 +202,7 @@ export default function AiRoadmapWizardPage() {
           );
         }
       } else {
-        const msg = err.response?.data?.message ?? "Could not generate roadmap. Please try again.";
+        const msg = axiosErr.response?.data?.message ?? "Could not generate roadmap. Please try again.";
         toast.error(msg);
       }
       setSubmitting(false);
@@ -306,7 +307,7 @@ export default function AiRoadmapWizardPage() {
           </h1>
         </motion.div>
 
-        {step === 4 && similarRoadmap && !forceCreate && (
+        {step === 4 && similarEnrollment && !forceCreate && (
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -320,12 +321,12 @@ export default function AiRoadmapWizardPage() {
                 Wait, is this familiar?
               </h3>
               <p className="text-xs text-amber-700/80 dark:text-amber-400/80 leading-relaxed mb-3">
-                You already have an active roadmap called <strong>"{similarRoadmap.roadmap.title}"</strong>. 
+                You already have an active roadmap called <strong>"{similarEnrollment.roadmap.title}"</strong>. 
                 Want to continue where you left off?
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button asChild size="sm" variant="secondary" className="bg-white dark:bg-amber-900 dark:hover:bg-amber-800">
-                  <Link to={`/learn/roadmaps/${similarRoadmap.roadmap.slug}`}>
+                  <Link to={`/learn/roadmaps/${similarEnrollment.roadmap.slug}`}>
                     Open Existing
                   </Link>
                 </Button>

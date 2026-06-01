@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -42,6 +42,8 @@ const STATUS_CONFIG = {
 };
 
 const ECOSYSTEMS = Array.from(new Set(grants.map((g) => g.ecosystem))).sort();
+// Derived from static data — computed once at module level, never recomputed
+const ACTIVE_COUNT = grants.filter((g) => g.status === "Active").length;
 
 function getDeadlineCountdown(deadline?: string | null) {
   if (!deadline) return null;
@@ -58,6 +60,8 @@ function getDeadlineCountdown(deadline?: string | null) {
   if (daysRemaining === 0) return "Ends today";
   if (daysRemaining === 1) return "1 day left";
   return `${daysRemaining} days left`;
+}
+
 function getDeadlineBadge(deadline: string) {
   const now = new Date();
   const endDate = new Date(deadline);
@@ -139,7 +143,7 @@ export default function GrantsPage() {
   });
   const [showSavedOnly, setShowSavedOnly] = useState(false);
 
-  const toggleSave = (grantId: number) => {
+  const toggleSave = useCallback((grantId: number) => {
     setSavedGrants((prev) => {
       const next = new Set(prev);
       if (next.has(grantId)) next.delete(grantId);
@@ -147,7 +151,11 @@ export default function GrantsPage() {
       localStorage.setItem("savedGrants", JSON.stringify([...next]));
       return next;
     });
-  };
+  }, []);
+
+  // Stable callbacks passed into memo'd GrantCard — never recreated between renders
+  const handleCardSelect = useCallback((grant: Grant) => setSelectedGrant(grant), []);
+  const handleCloseModal = useCallback(() => setSelectedGrant(null), []);
 
   const filtered = useMemo(() => {
     let result = grants.filter((g) => {
@@ -185,8 +193,6 @@ export default function GrantsPage() {
     setSelectedStatus("ALL");
     setSearch("");
   };
-
-  const activeCount = grants.filter((g) => g.status === "Active").length;
 
   return (
     <div className="relative text-stone-900 dark:text-stone-50 pb-12">
@@ -246,7 +252,7 @@ export default function GrantsPage() {
             <span>
               active
               <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-2">
-                {activeCount}
+                {ACTIVE_COUNT}
               </span>
             </span>
             <span>
@@ -464,9 +470,9 @@ export default function GrantsPage() {
                 key={grant.id}
                 grant={grant}
                 index={i}
-                onClick={() => setSelectedGrant(grant)}
+                onSelect={handleCardSelect}
                 saved={savedGrants.has(grant.id)}
-                onToggleSave={() => toggleSave(grant.id)}
+                onToggleSave={toggleSave}
               />
             ))}
           </div>
@@ -475,25 +481,25 @@ export default function GrantsPage() {
 
       <AnimatePresence>
         {selectedGrant && (
-          <GrantDetailModal grant={selectedGrant} onClose={() => setSelectedGrant(null)} />
+          <GrantDetailModal grant={selectedGrant} onClose={handleCloseModal} />
         )}
       </AnimatePresence>
     </div>
   );
 }
 
-function GrantCard({
+const GrantCard = memo(function GrantCard({
   grant,
   index,
-  onClick,
+  onSelect,
   saved,
   onToggleSave,
 }: {
   grant: Grant;
   index: number;
-  onClick: () => void;
+  onSelect: (grant: Grant) => void;
   saved: boolean;
-  onToggleSave: () => void;
+  onToggleSave: (id: number) => void;
 }) {
   const statusCfg = STATUS_CONFIG[grant.status];
   const StatusIcon = statusCfg.icon;
@@ -508,16 +514,16 @@ function GrantCard({
       transition={{ delay: index * 0.03 }}
     >
       <div
-        onClick={onClick}
+        onClick={() => onSelect(grant)}
         className={`group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full cursor-pointer ${
   deadlineBadge.isClosed ? "opacity-60" : ""
-}`} 
+}`}
       >
         <span
           role="button"
           onClick={(e) => {
             e.stopPropagation();
-            onToggleSave();
+            onToggleSave(grant.id);
           }}
           className="absolute top-4 right-4 p-1 rounded hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
         >
@@ -592,7 +598,7 @@ function GrantCard({
       </div>
     </motion.div>
   );
-}
+});
 
 function GrantDetailModal({ grant, onClose }: { grant: Grant; onClose: () => void }) {
   const statusCfg = STATUS_CONFIG[grant.status];

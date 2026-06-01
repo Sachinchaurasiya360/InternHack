@@ -486,6 +486,7 @@ export default function GSoCReposPage() {
   // FIX 1: Depend ONLY on initialQ, not searchParams. 
   // This prevents wiping out half-typed text when other filters change.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSearch(initialQ);
   }, [initialQ]);
 

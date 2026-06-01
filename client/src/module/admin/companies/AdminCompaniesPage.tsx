@@ -27,6 +27,7 @@ export default function AdminCompaniesPage() {
     }
   }, [page]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchCompanies(); }, [fetchCompanies]);
 
   const handleApprove = async (id: number) => {

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, useAnimation, useMotionValue, useReducedMotion } from "framer-motion";
 import { Link } from "react-router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import NumberFlow from "@number-flow/react";
 import { ArrowRight, Play, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/auth.store";
@@ -227,9 +227,9 @@ function StatCell({
   suffix?: string;
 }) {
   return (
-    <div className="bg-stone-50 dark:bg-stone-950 p-3 sm:p-5 text-left min-w-0">
-      <div className="text-lg sm:text-2xl md:text-4xl font-bold tracking-tight tabular-nums text-stone-900 dark:text-stone-50 wrap-break-word">
-        <NumberFlow value={value} />
+    <div className="bg-stone-50 dark:bg-stone-950 p-3 sm:p-5 min-w-0 flex flex-col items-center">
+      <div className="text-lg sm:text-2xl md:text-4xl font-bold tracking-tight tabular-nums text-stone-900 dark:text-stone-50 w-[6ch] text-right">
+        <NumberFlow value={value} className="tabular-nums"/>
         {suffix && (
           <span className="text-lime-500 dark:text-lime-400">{suffix}</span>
         )}
@@ -248,7 +248,7 @@ function WinsMarquee() {
   const shouldReduceMotion = useReducedMotion();
   const [isDragging, setIsDragging] = useState(false);
 
-  const startAnimation = () => {
+  const startAnimation = useCallback(() => {
     if (shouldReduceMotion || isDragging) return;
 
     controls.start({
@@ -259,11 +259,11 @@ function WinsMarquee() {
         ease: "linear",
       },
     });
-  };
+  }, [controls, isDragging, shouldReduceMotion]);
 
-  useEffect( () => {
+  useEffect(() => {
     startAnimation();
-  }, [shouldReduceMotion, isDragging]);
+  }, [startAnimation]);
 
   // Pause animation when tab is not active and resume when active again
   useEffect(() => {
@@ -290,7 +290,7 @@ function WinsMarquee() {
         handleVisibilityChange,
       );
     };
-  }, [controls, shouldReduceMotion, isDragging]);
+  }, [controls, shouldReduceMotion, isDragging, startAnimation]);
 
   const mouseEnter = () => {
     controls.stop();

@@ -186,6 +186,10 @@ export default function JobBrowsePage() {
   const debouncedSalaryMin = useDebounce(salaryMin, 500);
   const debouncedSalaryMax = useDebounce(salaryMax, 500);
   const [hideExpired, setHideExpired] = useState(true);
+
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
+
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
@@ -202,6 +206,7 @@ export default function JobBrowsePage() {
       setSearchParams(next, { replace: true });
     }, 400);
     return () => clearTimeout(timerRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, locationFilter]);
 
   const { data, isLoading, isFetching } = useQuery({
@@ -216,7 +221,7 @@ export default function JobBrowsePage() {
     }),
     queryFn: async () => {
       const params = new URLSearchParams({
-        page: String(scrPage),
+        page: String(page),
         limit: "12",
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
@@ -228,19 +233,18 @@ export default function JobBrowsePage() {
       const res = await api.get(`/jobs?${params}`);
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
+    staleTime: 60_000,
     placeholderData: keepPreviousData,
   });
 
   const { data: extData } = useQuery({
-    queryKey: [
-      "public-external-jobs",
-      {
-        page: extPage,
-        search: debouncedSearch,
-        location: debouncedLocation,
-        tags: selectedTags.join(","),
-      },
-    ],
+    queryKey: queryKeys.jobs.list({
+      _src: "ext",
+      page: extPage,
+      search: debouncedSearch,
+      location: debouncedLocation,
+      tags: selectedTags.join(","),
+    }),
     queryFn: async () => {
       const params = new URLSearchParams({
         page: String(extPage),
@@ -257,19 +261,18 @@ export default function JobBrowsePage() {
         page: number;
       };
     },
+    staleTime: 60_000,
     placeholderData: keepPreviousData,
   });
 
   const { data: scrData } = useQuery({
-    queryKey: [
-      "public-scraped-jobs",
-      {
-        page: scrPage,
-        search: debouncedSearch,
-        location: debouncedLocation,
-        tags: selectedTags.join(","),
-      },
-    ],
+    queryKey: queryKeys.jobs.list({
+      _src: "scr",
+      page: scrPage,
+      search: debouncedSearch,
+      location: debouncedLocation,
+      tags: selectedTags.join(","),
+    }),
     queryFn: async () => {
       const params = new URLSearchParams({
         page: String(scrPage),
@@ -277,17 +280,16 @@ export default function JobBrowsePage() {
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (debouncedLocation) params.set("location", debouncedLocation);
-
       if (selectedTags.length) params.set("tags", selectedTags.join(","));
-
       const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
+    staleTime: 60_000,
     placeholderData: keepPreviousData,
   });
 
   const toggleTag = (tag: string) => {
-  const updated = selectedTags.includes(tag)
+    const updated = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)
       : [...selectedTags, tag];
     setSelectedTags(updated);
@@ -315,7 +317,11 @@ export default function JobBrowsePage() {
   };
 
   const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
-
+  const selectSuggestion = (location: string) => {
+    setLocationFilter(location);
+    setShowSuggestions(false);
+    setActiveSuggestion(-1);
+  };
   const submitSearch = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setDebouncedSearch(search);
@@ -328,10 +334,44 @@ export default function JobBrowsePage() {
     if (locationFilter) next.set("location", locationFilter); else next.delete("location");
     setSearchParams(next, { replace: true });
   };
-
-  const filteredExtJobs = extData?.jobs ?? [];
-  const scrapedJobs = scrData?.jobs ?? [];
+  const filteredExtJobs = React.useMemo(() => extData?.jobs ?? [], [extData?.jobs]);
+  const scrapedJobs = React.useMemo(() => scrData?.jobs ?? [], [scrData?.jobs]);
   const scrapedPagination = scrData?.pagination;
+  const allLocations = React.useMemo<string[]>(
+    () =>
+      Array.from(
+        new Set(
+          [
+            ...(data?.jobs ?? []).map((job) => job.location),
+            ...(filteredExtJobs ?? []).map((job) => job.location),
+            ...(scrapedJobs ?? []).map((job) => job.location),
+          ].filter((loc): loc is string => Boolean(loc))
+        )
+      ),
+    [data?.jobs, filteredExtJobs, scrapedJobs]
+  );
+
+  const locationSuggestions = locationFilter.trim()
+    ? allLocations
+      .filter((location) =>
+        location.toLowerCase().includes(locationFilter.toLowerCase())
+      )
+      .sort((a, b) => {
+        const aStarts = a
+          .toLowerCase()
+          .startsWith(locationFilter.toLowerCase());
+
+        const bStarts = b
+          .toLowerCase()
+          .startsWith(locationFilter.toLowerCase());
+
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+
+        return a.localeCompare(b);
+      })
+      .slice(0, 6)
+    : [];
 
   const internalTotal = data?.pagination?.total;
   const externalTotal = extData?.total;
@@ -457,7 +497,7 @@ export default function JobBrowsePage() {
           className="mb-10 space-y-4"
         >
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={(e) => { e.preventDefault(); submitSearch(); }}
             className="flex flex-col sm:flex-row gap-2"
           >
             <div className="flex-1 relative">
@@ -478,13 +518,59 @@ export default function JobBrowsePage() {
             </div>
             <div className="relative sm:w-60">
               <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+
               <input
                 type="text"
                 value={locationFilter}
-                onChange={(e) => setLocationFilter(e.target.value)}
+                onChange={(e) => {
+                  setLocationFilter(e.target.value);
+                  setShowSuggestions(true);
+                  setActiveSuggestion(-1);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onKeyDown={(e) => {
+                  if (!locationSuggestions.length) return;
+
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    setActiveSuggestion((prev) =>
+                      prev < locationSuggestions.length - 1 ? prev + 1 : prev
+                    );
+                  }
+
+                  if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    setActiveSuggestion((prev) =>
+                      prev > 0 ? prev - 1 : 0
+                    );
+                  }
+
+                  if (e.key === "Enter" && activeSuggestion >= 0) {
+                    e.preventDefault();
+                    selectSuggestion(locationSuggestions[activeSuggestion]);
+                  }
+                }}
                 className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
                 placeholder="Location"
               />
+
+              {showSuggestions && locationSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md shadow-lg overflow-hidden">
+                  {locationSuggestions.map((location, index) => (
+                    <button
+                      key={location}
+                      type="button"
+                      onClick={() => selectSuggestion(location)}
+                      className={`w-full text-left px-4 py-3 text-sm transition-colors ${activeSuggestion === index
+                          ? "bg-stone-100 dark:bg-stone-800"
+                          : "hover:bg-stone-100 dark:hover:bg-stone-800"
+                        }`}
+                    >
+                      {location}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </form>
 
@@ -537,11 +623,10 @@ export default function JobBrowsePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.02, duration: 0.2 }}
                   onClick={() => toggleTag(tag)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
-                    active
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${active
                       ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
                       : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
+                    }`}
                 >
                   {tag}
                 </motion.button>
@@ -549,11 +634,10 @@ export default function JobBrowsePage() {
             })}
 
             <label
-              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors cursor-pointer select-none ${
-                hideExpired
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors cursor-pointer select-none ${hideExpired
                   ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
                   : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30"
-              }`}
+                }`}
             >
               <input
                 type="checkbox"
@@ -562,9 +646,8 @@ export default function JobBrowsePage() {
                 className="w-4 h-4 rounded bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/20 accent-lime-400"
               />
               <span
-                className={`text-xs font-mono uppercase tracking-widest ${
-                  hideExpired ? "text-lime-700 dark:text-lime-400" : "text-stone-500"
-                }`}
+                className={`text-xs font-mono uppercase tracking-widest ${hideExpired ? "text-lime-700 dark:text-lime-400" : "text-stone-500"
+                  }`}
               >
                 Hide expired
               </span>

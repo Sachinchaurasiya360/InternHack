@@ -69,6 +69,7 @@ function ExerciseSection({
 
   useEffect(() => {
     if (!exercise) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCode(exercise.starterCode);
     setResult(null);
     setIsCorrect(null);

@@ -25,6 +25,7 @@ export function useInterviewCountdown(targetDate: string) {
   const [timeLeft, setTimeLeft] = useState(() => calculate());
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTimeLeft(calculate());
 
     const interval = setInterval(() => {

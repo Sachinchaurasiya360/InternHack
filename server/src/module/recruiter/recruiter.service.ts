@@ -297,7 +297,7 @@ export class RecruiterService {
         subject: applicationStatusSubject(status, application.job.title),
         html,
       }).catch((err) => {
-        logger.error("Failed to send application status email", { applicationId, status, err });
+        logger.error("Failed to send application status email", err, { applicationId, status });
       });
     }
 

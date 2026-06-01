@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -94,7 +94,7 @@ function persistGrants(list: TrackedGrant[]) {
 
 // ---- TrackedGrantCard ------------------------------------------------------
 
-function TrackedGrantCard({
+const TrackedGrantCard = memo(function TrackedGrantCard({
   grant,
   onUpdate,
   onDelete,
@@ -218,7 +218,7 @@ function TrackedGrantCard({
       </p>
     </motion.div>
   );
-}
+});
 
 // ---- Add Grant Modal -------------------------------------------------------
 

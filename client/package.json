@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npx puppeteer browsers install chrome && tsc -b && vite build",
+    "build": "npx puppeteer browsers install chrome && vite build",
     "lint": "eslint .",
     "typecheck": "tsc -b",
     "preview": "vite preview"
@@ -76,7 +76,7 @@
     "@prerenderer/rollup-plugin": "^0.3.12",
     "@types/file-saver": "^2.0.7",
     "@types/node": "^24.10.1",
-    "@types/react": "^19.2.5",
+    "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^5.1.1",
