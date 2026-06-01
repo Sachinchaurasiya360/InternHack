@@ -134,7 +134,6 @@ export async function listPublishedRoadmaps(opts: {
     : { isPublished: true };
 
   // Build additional AND filters
-
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
@@ -290,7 +289,6 @@ export async function enrollUser(args: {
         userId_roadmapId: { userId: args.userId, roadmapId: roadmap.id },
       },
     });
-    if (existing) {
       throw Object.assign(new Error("Already enrolled in this roadmap"), {
         status: 409,
       });
