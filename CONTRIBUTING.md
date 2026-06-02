@@ -210,6 +210,7 @@ This repository includes optional AI assistant context files (`CLAUDE.md` and `.
 | `server/src/index.ts` | All API routes, middleware order, CORS setup |
 | `client/src/App.tsx` | All frontend routes and lazy-loaded pages |
 | `server/src/database/prisma/schema/base.prisma` | Core database models |
+| `docs/database-schema.md` | [Visual ER diagram](../docs/database-schema.md) of all models and their relationships |
 | `client/src/lib/types.ts` | Client-side TypeScript interfaces |
 | `.claude/REPO_MAP.md` | Detailed map of every module and file |
 

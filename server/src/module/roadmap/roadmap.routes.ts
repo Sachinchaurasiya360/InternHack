@@ -39,7 +39,7 @@ roadmapRouter.post(
   postRecomputePace,
 );
 
-roadmapRouter.get("/", getRoadmaps);
+roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);
