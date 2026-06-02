@@ -865,13 +865,14 @@ export default function ProgramTrackerPage() {
           status: STATUS_OPTIONS.includes(parsed.status) ? parsed.status : "All",
           eligibility: ELIGIBILITY_OPTIONS.includes(parsed.eligibility) ? parsed.eligibility : "All",
           stipend: STIPEND_OPTIONS.includes(parsed.stipend) ? parsed.stipend : "All",
+          sortBy: ["default", "deadline"].includes(parsed.sortBy) ? parsed.sortBy : "default",
         };
       }
     }
   } catch {
     // ignore errors
   }
-  return { status: "All", eligibility: "All", stipend: "All" };
+  return { status: "All", eligibility: "All", stipend: "All", sortBy: "default" };
 };
 
   const savedFilters = getSavedFilters();
@@ -880,6 +881,7 @@ export default function ProgramTrackerPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
   const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
   const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
+  const [sortBy, setSortBy] = useState<string>(savedFilters.sortBy);
 
   // Save filters to localStorage whenever they change
   useEffect(() => {
@@ -890,12 +892,13 @@ export default function ProgramTrackerPage() {
           status: selectedStatus,
           eligibility: selectedEligibility,
           stipend: selectedStipend,
+          sortBy: sortBy,
         })
       );
     } catch {
       // ignore storage errors
     }
-  }, [selectedStatus, selectedEligibility, selectedStipend]);
+  }, [selectedStatus, selectedEligibility, selectedStipend, sortBy]);
 
   const filtered = useMemo(() => {
     let list = [...PROGRAMS];
@@ -913,14 +916,19 @@ export default function ProgramTrackerPage() {
     if (selectedEligibility !== "All")
       list = list.filter((p) => p.eligibilityType === selectedEligibility);
     if (selectedStipend === "Paid") list = list.filter((p) => p.stipendPaid);
-    if (selectedStipend === "High ($5k+)")
-      list = list.filter((p) => p.stipendRange === "High");
-    if (selectedStipend === "Medium ($1k–5k)")
-      list = list.filter((p) => p.stipendRange === "Medium");
-    if (selectedStipend === "Low/None")
-      list = list.filter((p) => p.stipendRange === "Low/None");
+    if (selectedStipend === "High ($5k+)") list = list.filter((p) => p.stipendRange === "High");
+    if (selectedStipend === "Medium ($1k–5k)") list = list.filter((p) => p.stipendRange === "Medium");
+    if (selectedStipend === "Low/None") list = list.filter((p) => p.stipendRange === "Low/None");
+
+    if (sortBy === "deadline") {
+      list.sort((a, b) => {
+        const dateA = a.applicationDeadline ? new Date(a.applicationDeadline).getTime() : Infinity;
+        const dateB = b.applicationDeadline ? new Date(b.applicationDeadline).getTime() : Infinity;
+        return dateA - dateB;
+      });
+    }
     return list;
-  }, [search, selectedStatus, selectedEligibility, selectedStipend]);
+  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy]);
 
   const totalStipend = PROGRAMS.filter((p) => p.stipendPaid).length;
   const highStipend = PROGRAMS.filter((p) => p.stipendRange === "High").length;
@@ -1033,19 +1041,20 @@ export default function ProgramTrackerPage() {
               </div>
             </div>
           ))}
-          {(selectedStatus !== "All" ||
-            selectedEligibility !== "All" ||
-            selectedStipend !== "All" ||
-            search) && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortBy((prev) => (prev === "deadline" ? "default" : "deadline"))}
+            className={sortBy === "deadline" ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}
+          >
+            <Calendar className="w-3.5 h-3.5 mr-1.5" />
+            Sort by deadline
+          </Button>
+          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default") && (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                setSearch("");
-                setSelectedStatus("All");
-                setSelectedEligibility("All");
-                setSelectedStipend("All");
-              }}
+              onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); }}
               className="text-gray-500"
             >
               <X className="w-3.5 h-3.5" /> Clear
