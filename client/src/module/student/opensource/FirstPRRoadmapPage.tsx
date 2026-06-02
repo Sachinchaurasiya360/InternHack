@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, GitPullRequest, ArrowRight,
@@ -48,6 +48,11 @@ export default function FirstPRRoadmapPage() {
   const allDone = completed.size === totalSteps;
   const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
 
+  const firstUncompletedIndex = useMemo(() => {
+    const idx = STEPS.findIndex(s => !completed.has(s.id));
+    return idx === -1 ? STEPS.length : idx;
+  }, [completed]);
+
   return (
     <div className="relative pb-12">
       <SEO
@@ -90,7 +95,7 @@ export default function FirstPRRoadmapPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-3 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
       >
         {[
           { icon: GitPullRequest, value: totalSteps, label: "Steps", iconColor: "text-indigo-500" },
@@ -112,6 +117,20 @@ export default function FirstPRRoadmapPage() {
         ))}
       </motion.div>
 
+      {/* Progress Bar */}
+      <div className="space-y-2 mb-8">
+        <div className="flex justify-between text-sm font-medium">
+          <span className="text-gray-700 dark:text-gray-300">Overall Progress</span>
+          <span className="text-gray-700 dark:text-gray-300">{pct}%</span>
+        </div>
+        <div className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-indigo-600 transition-all duration-500"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+
       {/* Completion banner */}
       <AnimatePresence>
         {allDone && (
@@ -125,7 +144,7 @@ export default function FirstPRRoadmapPage() {
             <div>
               <p className="text-base font-bold text-green-900 dark:text-green-300">You shipped your first PR!</p>
               <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">10 / 10 steps complete. Your open source journey has begun.</p>
-            <div className="flex gap-4 mt-3 flex-wrap items-center">
+              <div className="flex gap-4 mt-3 flex-wrap items-center">
                 <Link
                   to="/student/opensource"
                   className="text-sm text-lime-700 dark:text-lime-400 underline font-medium"
@@ -150,9 +169,28 @@ export default function FirstPRRoadmapPage() {
       </AnimatePresence>
 
       {/* Section Cards */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {STEPS.map((step, i) => {
           const done = completed.has(step.id);
+          const inProgress = !done && i === firstUncompletedIndex;
+          
+          let borderStyles = "border-gray-200 dark:border-gray-800";
+          let numberStyles = "bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400";
+          let badgeStyles = "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+          let statusText = "Upcoming";
+          
+          if (done) {
+            borderStyles = "border-green-500 dark:border-green-500";
+            numberStyles = "bg-green-600 text-white";
+            badgeStyles = "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400";
+            statusText = "Completed";
+          } else if (inProgress) {
+            borderStyles = "border-indigo-500 dark:border-indigo-500";
+            numberStyles = "bg-indigo-600 text-white";
+            badgeStyles = "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400";
+            statusText = "In Progress";
+          }
+
           return (
             <motion.div
               key={step.id}
@@ -162,48 +200,52 @@ export default function FirstPRRoadmapPage() {
             >
               <Link
                 to={`/student/opensource/first-pr/${step.id}`}
-                className={`group flex items-center gap-4 bg-white dark:bg-gray-900 px-5 py-5 rounded-2xl border transition-all duration-300 no-underline ${
-                  done
-                    ? "border-green-200 dark:border-green-800 hover:shadow-lg hover:shadow-green-100/50 dark:hover:shadow-green-900/20"
-                    : "border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50"
-                }`}
+                className={`group flex items-start sm:items-center gap-4 px-5 py-5 rounded-xl border bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm hover:shadow-md transition hover:scale-[1.01] no-underline ${borderStyles}`}
               >
-                {/* Step number / check */}
-                <Button
-                  variant="ghost"
-                  mode="icon"
-                  size="sm"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
-                  className="shrink-0"
-                >
-                  {done ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
-                    </div>
-                  )}
-                </Button>
+                {/* Step number */}
+                <div className="flex-shrink-0 mt-1 sm:mt-0">
+                  <div className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold ${numberStyles}`}>
+                    {done ? <CheckCircle2 className="w-5 h-5 text-white" /> : i + 1}
+                  </div>
+                </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <h3 className={`text-sm font-bold mb-0.5 ${
-                    done
-                      ? "text-gray-400 dark:text-gray-500 line-through"
-                      : "text-gray-950 dark:text-white"
-                  }`}>
-                    {step.title}
-                  </h3>
-                  {step.estimatedMinutes && (
-                    <p className="text-xs font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</p>
-                  )}
-                  <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <h3 className={`text-base font-bold ${
+                      done
+                        ? "text-gray-500 dark:text-gray-400 line-through"
+                        : "text-gray-950 dark:text-white"
+                    }`}>
+                      {step.title}
+                    </h3>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${badgeStyles}`}>
+                      {statusText}
+                    </span>
+                  </div>
+                  
+                  <p className="line-clamp-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
                     {step.description}
                   </p>
+                  
+                  {step.estimatedMinutes && (
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      ⏱ {step.estimatedMinutes} min
+                    </span>
+                  )}
                 </div>
 
                 {/* Arrow */}
-                <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-1 transition-all shrink-0" />
+                <div className="flex-shrink-0 self-center">
+                  <Button
+                    variant="ghost"
+                    mode="icon"
+                    size="sm"
+                    className="pointer-events-none group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30"
+                  >
+                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                  </Button>
+                </div>
               </Link>
             </motion.div>
           );
