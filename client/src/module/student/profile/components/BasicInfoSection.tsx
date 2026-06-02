@@ -59,7 +59,18 @@ export function BasicInfoSection({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelClass}><Phone className="w-3.5 h-3.5" /> Phone</label>
-          <input type="tel" value={contactNo} onChange={(e) => onChange("contactNo", e.target.value)} className={inputClass} placeholder="+91 98765 43210" />
+          <input
+            type="tel"
+            value={contactNo}
+            onChange={(e) => {
+              const val = e.target.value.replace(/[^\d\s+\-]/g, "");
+              onChange("contactNo", val);
+            }}
+            className={fieldErrors.contactNo ? inputErrorClass : inputClass}
+            placeholder="+91 98765 43210"
+            maxLength={15}
+          />
+          <FieldError errs={fieldErrors.contactNo} />
         </div>
         <div>
           <label className={labelClass}><MapPin className="w-3.5 h-3.5" /> Location</label>
