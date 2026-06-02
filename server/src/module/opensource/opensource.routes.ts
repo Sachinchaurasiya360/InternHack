@@ -14,51 +14,6 @@ import { parsePagination } from "../../utils/pagination.utils.js";
 
 import { OpensourceController } from "./opensource.controller.js";
 
-// ─── In-memory stats cache (refreshes every 5 minutes) ───────────
-const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
-let statsCache: {
-  data: {
-    totalRepos: number;
-    totalStars: number;
-    trendingCount: number;
-    languageCount: number;
-    domainBreakdown: { domain: string; count: number }[];
-  } | null;
-  expiresAt: number;
-} = { data: null, expiresAt: 0 };
-
-async function getGlobalStats() {
-  if (statsCache.data && Date.now() < statsCache.expiresAt) {
-    return statsCache.data;
-  }
-
-  const [totalRepos, trendingCount, starsAgg, languageGroups, domainGroups] = await Promise.all([
-    prisma.opensourceRepo.count(),
-    prisma.opensourceRepo.count({ where: { trending: true } }),
-    prisma.opensourceRepo.aggregate({ _sum: { stars: true } }),
-    prisma.opensourceRepo.groupBy({ by: ["language"] }),
-    prisma.opensourceRepo.groupBy({
-      by: ["domain"],
-      _count: { _all: true },
-      orderBy: { _count: { domain: "desc" } },
-    }),
-  ]);
-
-  const data = {
-    totalRepos,
-    totalStars: starsAgg._sum.stars ?? 0,
-    trendingCount,
-    languageCount: languageGroups.length,
-    domainBreakdown: domainGroups.map((g) => ({
-      domain: g.domain || "Other",
-      count: g._count._all,
-    })),
-  };
-
-  statsCache = { data, expiresAt: Date.now() + STATS_TTL_MS };
-  return data;
-}
-
 export const opensourceRouter = Router();
 
 function addMonthsUTC(date: Date, months: number): Date {
@@ -66,14 +21,7 @@ function addMonthsUTC(date: Date, months: number): Date {
 }
 
 // Public: global stats (cached every 5 min, independent of pagination/filters)
-opensourceRouter.get("/stats", async (req, res, next) => {
-  try {
-    const stats = await getGlobalStats();
-    res.json(stats);
-  } catch (err) {
-    next(err);
-  }
-});
+opensourceRouter.get("/stats", (req, res, next) => controller.getGlobalStats(req, res, next));
 
 // Personalized repo recommendations for authenticated students
 opensourceRouter.get("/recommended", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {

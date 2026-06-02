@@ -1,6 +1,50 @@
 import { prisma } from "../../database/db.js";
 
+const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
+let statsCache: {
+  data: {
+    totalRepos: number;
+    totalStars: number;
+    trendingCount: number;
+    languageCount: number;
+    domainBreakdown: { domain: string; count: number }[];
+  } | null;
+  expiresAt: number;
+} = { data: null, expiresAt: 0 };
+
 export class OpensourceService {
+  async getGlobalStats() {
+    if (statsCache.data && Date.now() < statsCache.expiresAt) {
+      return statsCache.data;
+    }
+
+    const [totalRepos, trendingCount, starsAgg, languageGroups, domainGroups] = await Promise.all([
+      prisma.opensourceRepo.count(),
+      prisma.opensourceRepo.count({ where: { trending: true } }),
+      prisma.opensourceRepo.aggregate({ _sum: { stars: true } }),
+      prisma.opensourceRepo.groupBy({ by: ["language"] }),
+      prisma.opensourceRepo.groupBy({
+        by: ["domain"],
+        _count: { _all: true },
+        orderBy: { _count: { domain: "desc" } },
+      }),
+    ]);
+
+    const data = {
+      totalRepos,
+      totalStars: starsAgg._sum.stars ?? 0,
+      trendingCount,
+      languageCount: languageGroups.length,
+      domainBreakdown: domainGroups.map((g) => ({
+        domain: g.domain || "Other",
+        count: g._count._all,
+      })),
+    };
+
+    statsCache = { data, expiresAt: Date.now() + STATS_TTL_MS };
+    return data;
+  }
+
   async getLanguages() {
     const rows = await prisma.opensourceRepo.findMany({
       select: { language: true },

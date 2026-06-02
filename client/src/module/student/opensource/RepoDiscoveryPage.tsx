@@ -304,6 +304,10 @@ export default function RepoDiscoveryPage() {
                 <span>
                   <span className="text-lime-600 dark:text-lime-400">{stats.trendingCount}</span> trending
                 </span>
+                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                <span>
+                  <span className="text-stone-900 dark:text-stone-50">{stats.languages}</span> languages
+                </span>
               </div>
             )}
           </div>
