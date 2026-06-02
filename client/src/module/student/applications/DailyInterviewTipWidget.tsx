@@ -25,7 +25,7 @@ export default function DailyInterviewTipWidget() {
     categoryFilter === "All"
     ? QUESTIONS
     : QUESTIONS.filter(q => q.category === categoryFilter);
-  const [currentIndex, setCurrentIndex] = useState(() =>0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [focusMode, setFocusMode] = useState(false);
 
   const safeIndex = currentIndex >= filteredQuestions.length ? 0 : currentIndex;
@@ -82,14 +82,6 @@ export default function DailyInterviewTipWidget() {
           </span>
         </div>
         <div className="flex items-center gap-0.5">
-          {/* <button
-            type="button"
-            onClick={handleNav}
-            title="Previous question"
-            className="p-1 rounded-sm text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer border-0 bg-transparent"
-          >
-            <ChevronLeft className="w-3.5 h-3.5" />
-          </button> */}
           <motion.button
             whileTap={{ scale: 0.95 }}
             whileHover={{ scale: 1.05 }}
@@ -155,7 +147,7 @@ export default function DailyInterviewTipWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
             transition={{ duration: 0.25 }}
-            className={`text-sm font-semibold text-stone-900 dark:text-stone-50 leading-relaxed mb-3 ${focusMode ? "text-lg md:text-xl" : "text-sm"}`}
+            className={`font-semibold text-stone-900 dark:text-stone-50 leading-relaxed mb-3 ${focusMode ? "text-lg md:text-xl" : "text-sm"}`}
           >
             {q.question}
           </motion.p>
