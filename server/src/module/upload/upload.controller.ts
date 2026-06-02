@@ -10,6 +10,43 @@ const logger = createLogger("UploadController");
 
 const MAX_RESUMES = 2;
 
+/**
+ * Server-side allowlist of permitted MIME types for presigned URL generation.
+ * Executables, scripts, HTML, SVG, and other potentially dangerous types are excluded.
+ */
+const ALLOWED_MIME_TYPES = new Set([
+  // Images (raster only — SVG excluded due to XSS risk)
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/avif",
+  "image/bmp",
+  "image/tiff",
+  // Documents
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "text/plain",
+  "text/csv",
+  // Videos
+  "video/mp4",
+  "video/webm",
+  "video/ogg",
+  "video/quicktime",
+  "video/x-msvideo",
+  // Audio
+  "audio/mpeg",
+  "audio/ogg",
+  "audio/wav",
+  "audio/webm",
+]);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const UPLOADS_DIR = path.join(__dirname, "../../../uploads");
@@ -46,6 +83,10 @@ export class UploadController {
       const { fileName, fileType, folder } = req.body;
       if (!fileName || !fileType || !folder) {
         return res.status(400).json({ message: "fileName, fileType, and folder are required" });
+      }
+
+      if (!ALLOWED_MIME_TYPES.has(fileType as string)) {
+        return res.status(400).json({ message: "File type not allowed. Only images, documents, videos, and audio files are permitted." });
       }
 
       const fileKey = createUniqueS3Key(folder, String(req.user.id), fileName);
