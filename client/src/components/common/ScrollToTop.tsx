@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { useLocation } from "react-router";
 
 /**
- * Scrolls the window to the top on every route change.
- * Place this once inside <BrowserRouter> (already done in App.tsx).
+ * ScrollToTop — scrolls the window to the top on every route change.
+ * Place this once inside your Router context (already done in App.tsx).
  * It renders nothing — it only runs the side-effect.
  */
 export default function ScrollToTop() {
