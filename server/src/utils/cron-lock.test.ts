@@ -19,6 +19,8 @@ describe("withAdvisoryLock", () => {
     vi.mocked(prisma.$queryRaw)
       .mockResolvedValueOnce([{ locked: true }]) // acquire lock
       .mockResolvedValueOnce([]); // release lock
+      .mockResolvedValueOnce([{ locked: true }])   // pg_try_advisory_lock
+      .mockResolvedValueOnce([{ pg_advisory_unlock: true }]); // pg_advisory_unlock
 
     await withAdvisoryLock("test-job", mockFn);
 
@@ -36,6 +38,7 @@ describe("withAdvisoryLock", () => {
   });
 
   it("should handle transaction errors gracefully", async () => {
+  it("should handle errors gracefully", async () => {
     vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error("DB Error"));
 
     await withAdvisoryLock("error-job", mockFn);
