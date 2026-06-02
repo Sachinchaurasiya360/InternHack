@@ -14,12 +14,14 @@ export function AchievementsSection({ achievements, onChange, errors }: {
 
   const startAdd = () => {
     if (achievements.length >= 10) return;
+    setDateError("");
     const id = crypto.randomUUID();
     setDraft({ id, title: "", description: "", date: "" });
     setEditing(id);
   };
 
   const startEdit = (a: AchievementItem) => {
+    setDateError("");
     setDraft({ ...a });
     setEditing(a.id);
   };
@@ -111,7 +113,7 @@ export function AchievementsSection({ achievements, onChange, errors }: {
             </button>
             <button
               type="button"
-              onClick={() => setEditing(null)}
+              onClick={() => { setDateError(""); setEditing(null); }}
               className="inline-flex items-center gap-1.5 px-4 py-2 border border-stone-300 dark:border-white/10 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 hover:border-stone-500 dark:hover:border-white/30 transition-colors bg-transparent cursor-pointer"
             >
               Cancel

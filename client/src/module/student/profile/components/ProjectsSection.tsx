@@ -198,6 +198,7 @@ export function ProjectsSection({
 
   const startAdd = () => {
     if (projects.length >= 4) return;
+    setDraftErrors({});
     const id = crypto.randomUUID();
     setDraft({
       id,
@@ -212,6 +213,7 @@ export function ProjectsSection({
   };
 
   const startEdit = (p: ProjectItem) => {
+    setDraftErrors({});
     setDraft({ ...p, builtAt: p.builtAt || "" });
     setEditing(p.id);
     setTechInput("");
@@ -472,7 +474,7 @@ export function ProjectsSection({
             </Button>
             <Button
               type="button"
-              onClick={() => setEditing(null)}
+              onClick={() => { setDraftErrors({}); setEditing(null); }}
               variant="outline"
               className="text-xs font-bold text-stone-700 dark:text-stone-300 hover:border-stone-500 dark:hover:border-white/30"
             >
