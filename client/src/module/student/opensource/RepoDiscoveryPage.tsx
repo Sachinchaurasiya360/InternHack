@@ -196,7 +196,7 @@ export default function RepoDiscoveryPage() {
     isError: isMyRequestsError,
     refetch: refetchMyRequests,
   } = useQuery({
-    queryKey: ["opensource-my-requests"],
+    queryKey: queryKeys.opensource.myRequests(),
     queryFn: () => api.get("/opensource/requests/mine").then((r) => r.data.requests as RepoRequest[]),
     enabled: !!user,
     staleTime: 2 * 60 * 1000,
@@ -435,7 +435,7 @@ export default function RepoDiscoveryPage() {
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="text-sm text-stone-700 dark:text-stone-300 truncate font-medium">
-                          {req.url ?? req.name}
+                          {req.owner}/{req.name}
                         </span>
                         <span className="text-xs text-stone-400 shrink-0">
                           {new Date(req.createdAt).toLocaleDateString("en-GB", {
