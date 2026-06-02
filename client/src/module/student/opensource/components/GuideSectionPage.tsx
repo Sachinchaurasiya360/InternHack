@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -46,8 +46,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
-  const [rating, setRating] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
@@ -59,20 +58,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
     });
   }, [step, storageKey]);
 
-  
-useEffect(() => {
-  if (!step) return;
 
-  const saved = localStorage.getItem(
-    `guide-feedback-${basePath}-${step.id}`
-  );
-
-  if (saved) {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setRating(saved);
-    setSubmitted(true);
-  }
-}, [step, basePath]);
 
   const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
   const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
@@ -82,41 +68,7 @@ useEffect(() => {
   });
 
 if (!step) return <Navigate to={basePath} replace />;
-const submitFeedback = async (
-  value: "up" | "down"
-) => {
-  if (!step || submitted) return;
 
-  try {
-    await fetch("/api/opensource/guide-feedback", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        guideId: basePath,
-        stepId: step.id,
-        rating: value,
-      }),
-    });
-
-    localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`,
-      value
-    );
-
-    setRating(value);
-    setSubmitted(true);
-  } catch {
-    localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`,
-      value
-    );
-
-    setRating(value);
-    setSubmitted(true);
-  }
-};
   const isDone = completed.has(step.id);
 
   return (
@@ -292,35 +244,7 @@ const submitFeedback = async (
             </ul>
           </motion.div>
         )}
-<div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-  <p className="text-sm font-medium mb-3">
-    Was this step helpful?
-  </p>
 
-  <div className="flex gap-2">
-    <Button
-      onClick={() => submitFeedback("up")}
-      disabled={submitted}
-      variant={rating === "up" ? "mono" : "outline"}
-    >
-      👍 Thumbs Up
-    </Button>
-
-    <Button
-      onClick={() => submitFeedback("down")}
-      disabled={submitted}
-      variant={rating === "down" ? "mono" : "outline"}
-    >
-      👎 Thumbs Down
-    </Button>
-  </div>
-
-  {submitted && (
-    <p className="text-green-600 text-sm mt-2">
-      Thanks for your feedback!
-    </p>
-  )}
-</div>
         {/* Mark as Complete + Next */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}

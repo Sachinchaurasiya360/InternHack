@@ -29,7 +29,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import type { OpenSourceRepo, Pagination, RepoRequest } from "../../../lib/types";
+import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
@@ -41,12 +41,6 @@ import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 
 const ghostBtnCls =
   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
-
-const STATUS_STYLE: Record<string, string> = {
-  PENDING: "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
-  APPROVED: "bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-800",
-  REJECTED: "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
-};
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -121,7 +115,6 @@ export default function RepoDiscoveryPage() {
   // Local UI states
   const [showFilters, setShowFilters] = useState(false);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
-  const [showAllSubmissions, setShowAllSubmissions] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const [bookmarks, setBookmarks] = useState<number[]>(() => getBookmarks());
   const [showSaved, setShowSaved] = useState(false);
@@ -225,15 +218,6 @@ export default function RepoDiscoveryPage() {
     queryFn: () => api.get("/opensource/languages").then((r) => r.data.languages as string[]),
     staleTime: 10 * 60 * 1000,
   });
-
-  const { data: myRequestsData, isLoading: isMyRequestsLoading } = useQuery({
-    queryKey: ["opensource-my-requests"],
-    queryFn: () => api.get("/opensource/requests/mine").then((r) => r.data.requests as RepoRequest[]),
-    enabled: !!user,
-    staleTime: 2 * 60 * 1000,
-  });
-
-  const myRequests = myRequestsData;
 
   const languages = useMemo(() => {
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
@@ -427,92 +411,11 @@ export default function RepoDiscoveryPage() {
           </button>
         </div>
 
-        {/* My Submissions */}
-        {!!user && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <span className="h-1.5 w-1.5 bg-lime-400 rounded-full" />
-                my submissions
-              </div>
-            </div>
-
-            {/* Loading skeleton */}
-            {isMyRequestsLoading && (
-              <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-10 bg-stone-100 dark:bg-stone-800 rounded-md animate-pulse"
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Empty state */}
-            {!isMyRequestsLoading && myRequests?.length === 0 && (
-              <p className="text-sm text-stone-400 dark:text-stone-50 py-2">
-                You haven't suggested any repos yet.
-              </p>
-            )}
-
-            {/* Submissions list */}
-            {!isMyRequestsLoading && myRequests && myRequests.length > 0 && (
-              <div className="space-y-2">
-                {(showAllSubmissions ? myRequests : myRequests.slice(0, 3)).map(
-                  (req) => (
-                    <div
-                      key={req.id}
-                      className="flex items-center justify-between px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-sm text-stone-700 dark:text-stone-300 truncate font-medium">
-                          {req.url ?? req.name}
-                        </span>
-                        <span className="text-xs text-stone-400 shrink-0">
-                          {new Date(req.createdAt).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-md border shrink-0 ml-3 ${
-                          STATUS_STYLE[req.status] ?? STATUS_STYLE.PENDING
-                        }`}
-                      >
-                        {req.status}
-                      </span>
-                    </div>
-                  )
-                )}
-
-                {myRequests.length > 3 && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAllSubmissions((v) => !v)}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
-                  >
-                    {showAllSubmissions
-                      ? "Show less ↑"
-                      : `Show all ${myRequests.length} →`}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Guidance Cards */}
         <GuidanceCards />
 
-        {/* CONFLICT 3 RESOLVED: keep both Recently Viewed AND Recommended */}
         <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
-
-        {user?.role === "STUDENT" && (
-          <RecommendedSection onSelect={handleOpenRepo} />
-        )}
 
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -972,61 +875,4 @@ export default function RepoDiscoveryPage() {
     </div>
   );
 }
-
-function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.opensource.list({ recommended: "true" }),
-    queryFn: async () => {
-      const res = await api.get<{ repos: OpenSourceRepo[] }>("/opensource/recommended");
-      return res.data;
-    },
-    staleTime: 10 * 60 * 1000,
-  });
-
-  if (isLoading) {
-    return (
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="h-4 w-32 bg-stone-200 dark:bg-white/10 rounded animate-pulse" />
-        </div>
-        <div className="flex gap-4 overflow-x-hidden">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="min-w-[280px] sm:min-w-[320px]">
-              <RepoCardSkeleton />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  const repos = data?.repos || [];
-  if (repos.length === 0) return null;
-
-  return (
-    <div className="mb-10 group/rec">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Wand2 className="w-4 h-4 text-lime-600 dark:text-lime-400" />
-          <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 uppercase tracking-tight">
-            Recommended for you
-          </h2>
-          <div className="h-px w-8 bg-stone-200 dark:bg-white/10 group-hover/rec:w-16 transition-all" />
-        </div>
-        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">
-          Based on your stack
-        </span>
-      </div>
-
-      <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-4">
-        <div className="flex gap-4 min-w-full">
-          {repos.map((repo, i) => (
-            <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
-              <RepoCard repo={repo} index={i} onSelect={onSelect} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+

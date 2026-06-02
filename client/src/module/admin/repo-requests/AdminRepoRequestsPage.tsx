@@ -139,29 +139,7 @@ export default function AdminRepoRequestsPage() {
     }
   };
 
-  const handleBulkApprove = async () => {
-    if (selectedIds.length === 0) return;
-    try {
-      await api.put("/opensource/requests/bulk", { ids: selectedIds, action: "approve" });
-      toast.success(`Successfully approved ${selectedIds.length} repositories`);
-      setSelectedIds([]);
-      fetchRequests();
-    } catch {
-      toast.error("Failed to approve selected requests");
-    }
-  };
 
-  const handleBulkReject = async () => {
-    if (selectedIds.length === 0) return;
-    try {
-      await api.put("/opensource/requests/bulk", { ids: selectedIds, action: "reject" });
-      toast.success(`Successfully rejected ${selectedIds.length} requests`);
-      setSelectedIds([]);
-      fetchRequests();
-    } catch {
-      toast.error("Failed to reject selected requests");
-    }
-  };
 
   const statusTabs = ["PENDING", "APPROVED", "REJECTED"];
 
@@ -237,38 +215,7 @@ export default function AdminRepoRequestsPage() {
         </div>
       )}
 
-      {/* Bulk Action Toolbar */}
-      {selectedIds.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-700 px-6 py-4 rounded-xl shadow-xl flex items-center gap-4 z-50 animate-in fade-in slide-in-from-bottom-4">
-          <span className="text-sm text-gray-300 font-semibold shrink-0 select-none">
-            {selectedIds.length} {selectedIds.length === 1 ? "request" : "requests"} selected
-          </span>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="destructive"
-              size="sm"
-              className="flex items-center gap-1 shrink-0"
-              onClick={handleBulkReject}
-            >
-              <X className="w-3.5 h-3.5" /> Reject Selected
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              className="flex items-center gap-1 shrink-0"
-              onClick={handleBulkApprove}
-            >
-              <Check className="w-3.5 h-3.5" /> Approve Selected
-            </Button>
-          </div>
-          <button
-            onClick={() => setSelectedIds([])}
-            className="text-xs text-gray-400 hover:text-white font-medium transition-colors cursor-pointer shrink-0 select-none"
-          >
-            Deselect
-          </button>
-        </div>
-      )}
+
     </div>
   );
 }
