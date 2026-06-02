@@ -228,9 +228,12 @@ const toggleSection = (id: string) => {
         className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-[#111111] shadow-sm overflow-hidden scroll-mt-32"
       >
         <button
-          onClick={() => toggleSection(section.id)}
-          className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 dark:hover:bg-[#1A1A1A] transition"
-        >
+  onClick={() => toggleSection(section.id)}
+  aria-expanded={isOpen}
+  aria-controls={`content-${section.id}`}
+  id={`trigger-${section.id}`}
+  className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 dark:hover:bg-[#1A1A1A] transition"
+>
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-lime-100 dark:bg-lime-500/10 text-lime-600 dark:text-lime-400">
               <Icon size={22} />
@@ -248,9 +251,13 @@ const toggleSection = (id: string) => {
             }`}
           />
         </button>
-
-        {isOpen && (
-          <div className="px-6 pb-6 md:px-8 md:pb-8">
+{isOpen && (
+  <div
+    id={`content-${section.id}`}
+    role="region"
+    aria-labelledby={`trigger-${section.id}`}
+    className="px-6 pb-6 md:px-8 md:pb-8"
+  >
             {section.content && (
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm md:text-base mb-3">
                 {section.content}
