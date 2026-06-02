@@ -10,6 +10,7 @@ export function AchievementsSection({ achievements, onChange, errors }: {
 }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState<AchievementItem>({ id: "", title: "", description: "", date: "" });
+  const [dateError, setDateError] = useState<string>("");
 
   const startAdd = () => {
     if (achievements.length >= 10) return;
@@ -25,6 +26,18 @@ export function AchievementsSection({ achievements, onChange, errors }: {
 
   const save = () => {
     if (!draft.title.trim()) return;
+
+    if (draft.date && draft.date.trim()) {
+      const parsed = new Date(draft.date.trim());
+      const isValidDate = !isNaN(parsed.getTime());
+      const looksReasonable = parsed.getFullYear() >= 1900 && parsed.getFullYear() <= new Date().getFullYear() + 1;
+      if (!isValidDate || !looksReasonable) {
+        setDateError("Please enter a valid date (e.g. June 2025 or 2024-06-01)");
+        return;
+      }
+    }
+
+    setDateError("");
     const exists = achievements.find((a) => a.id === draft.id);
     if (exists) {
       onChange(achievements.map((a) => (a.id === draft.id ? draft : a)));
@@ -77,7 +90,15 @@ export function AchievementsSection({ achievements, onChange, errors }: {
           </div>
           <div>
             <label className={labelClass}><Calendar className="w-3 h-3" /> Date</label>
-            <input type="text" value={draft.date ?? ""} onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))} className={inputClass} placeholder="e.g. June 2025 or 2024-2025" maxLength={20} />
+            <input
+              type="text"
+              value={draft.date ?? ""}
+              onChange={(e) => { setDraft((d) => ({ ...d, date: e.target.value })); setDateError(""); }}
+              className={dateError ? `${inputClass} border-red-400` : inputClass}
+              placeholder="e.g. June 2025 or 2024-06-01"
+              maxLength={20}
+            />
+            {dateError && <p className="text-xs text-red-500 mt-1 font-mono">{dateError}</p>}
           </div>
           <div className="flex gap-2 pt-1">
             <button
