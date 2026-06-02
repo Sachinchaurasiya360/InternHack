@@ -279,12 +279,15 @@ export default function StudentProfilePage() {
     if (!form.name.trim() || form.name.trim().length < 2) {
       toast.error("Name must be at least 2 characters"); return;
     }
-    if (form.contactNo && !/^\+\d{1,3}[-\s]?\d{10}$/.test(form.contactNo.trim())) {
-  toast.error("Phone must include country code (e.g. +91 9876543210)");
-  setFieldErrors((prev) => ({ ...prev, contactNo: ["Phone must include country code e.g. +91 9876543210"] }));
-  setOpenSections((prev) => ({ ...prev, basic: true }));
-  return;
-}
+    if (form.contactNo && form.contactNo.trim()) {
+      const digits = form.contactNo.replace(/[^\d]/g, "");
+      if (!form.contactNo.trim().startsWith("+") || digits.length < 10) {
+        toast.error("Phone must include country code (e.g. +91 9876543210)");
+        setFieldErrors((prev) => ({ ...prev, contactNo: ["Phone must include country code (e.g. +91 9876543210)"] }));
+        setOpenSections((prev) => ({ ...prev, basic: true }));
+        return;
+      }
+    }
     setFieldErrors({});
     setSaving(true);
     try {
