@@ -306,13 +306,13 @@ const toggleSection = (id: string) => {
               {/* Contact CTA Banner */}
              <div className="mt-4 rounded-3xl overflow-hidden border border-lime-400 bg-lime-400 shadow-2xl">
                <div className="p-8 md:p-10 text-center">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 mb-5">
-                    <Mail className="text-white" size={26} />
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-black/10 mb-5">
+                    <Mail className="text-gray-900" size={26} />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
                     Privacy Questions?
                   </h2>
-                  <p className="text-lime-100 max-w-2xl mx-auto mb-6">
+                  <p className="text-gray-800 max-w-2xl mx-auto mb-6">
                     If you have any questions or concerns about this Privacy
                     Policy or your personal data, our team is here to help.
                   </p>
