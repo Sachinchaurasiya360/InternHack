@@ -290,6 +290,7 @@ export async function enrollUser(args: {
         userId_roadmapId: { userId: args.userId, roadmapId: roadmap.id },
       },
     });
+    if (existing) {
       throw Object.assign(new Error("Already enrolled in this roadmap"), {
         status: 409,
       });
