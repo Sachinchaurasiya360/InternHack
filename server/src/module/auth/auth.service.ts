@@ -1,13 +1,17 @@
-import crypto from "crypto";
+﻿import crypto from "crypto";
 import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+
+// TTL shorter than S3 presigned URL expiry (S3 default â‰¥15 min)
+const PROFILE_TTL = 300;
 
 const badgeService = new BadgeService();
-import { signUrls } from "../../utils/s3.utils.js";
+import { signUrl, signUrls } from "../../utils/s3.utils.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
 import type { UserRole } from "@prisma/client";
@@ -38,7 +42,8 @@ interface UpdateProfileInput {
   portfolioUrl?: string;
   leetcodeUrl?: string;
   jobStatus?: string | null;
-  projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string }[];
+  // Added builtAt for GSSoC '26 Featured Projects
+  projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string; builtAt?: string }[];
   achievements?: { id: string; title: string; description: string; date?: string }[];
   isProfilePublic?: boolean;
 }
@@ -52,6 +57,65 @@ interface GoogleAuthInput {
   credential?: string;
   accessToken?: string;
   role?: UserRole;
+}
+
+const GITHUB_STATS_CACHE_TTL = 60 * 60 * 1000;
+const GITHUB_STATS_MAX_REPO_PAGES = 100;
+
+type GitHubStats = {
+  username: string;
+  profileUrl: string;
+  publicRepos: number;
+  totalStars: number;
+  topLanguages: { name: string; count: number }[];
+};
+
+type GitHubStatsRepo = {
+  stargazers_count: number;
+  language: string | null;
+  fork: boolean;
+};
+
+const githubStatsCache = new Map<string, { data: GitHubStats; expiresAt: number }>();
+
+function parseGitHubUsername(input: string) {
+  const value = input.trim();
+  if (!value) return "";
+
+  try {
+    const parsed = new URL(value.startsWith("http") ? value : `https://${value}`);
+    if (!parsed.hostname.toLowerCase().includes("github.com")) return value.replace(/^@/, "");
+    return parsed.pathname.split("/").filter(Boolean)[0]?.replace(/^@/, "") ?? "";
+  } catch {
+    return value.replace(/^github\.com\//i, "").split("/")[0]?.replace(/^@/, "") ?? "";
+  }
+}
+
+async function fetchAllGitHubStatsRepos(username: string, headers: Record<string, string>): Promise<GitHubStatsRepo[]> {
+  const repos: GitHubStatsRepo[] = [];
+  let hasNextPage = false;
+
+  for (let page = 1; page <= GITHUB_STATS_MAX_REPO_PAGES; page += 1) {
+    const reposRes = await fetch(
+      `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&type=owner&sort=updated&page=${page}`,
+      { headers },
+    );
+    if (!reposRes.ok) {
+      throw new Error(`GitHub API error: ${reposRes.status}`);
+    }
+
+    const pageRepos = (await reposRes.json()) as GitHubStatsRepo[];
+    repos.push(...pageRepos);
+    const linkHeader = reposRes.headers.get("link") ?? "";
+    hasNextPage = linkHeader.includes('rel="next"');
+    if (!hasNextPage) break;
+  }
+
+  if (hasNextPage) {
+    throw new Error("Exceeded max GitHub repository pages while fetching stats");
+  }
+
+  return repos;
 }
 
 export class AuthService {
@@ -118,6 +182,10 @@ export class AuthService {
   }
 
   async googleAuth(data: GoogleAuthInput) {
+    if (!process.env["GOOGLE_CLIENT_ID"]) {
+      throw Object.assign(new Error("Google authentication is not configured on this server"), { statusCode: 503 });
+    }
+
     let email: string | undefined;
     let name: string | undefined;
     let picture: string | undefined;
@@ -209,12 +277,12 @@ export class AuthService {
         },
       });
 
-      // Send welcome email (fire-and-forget)
-      sendEmail({
-        to: user.email,
-        subject: "Welcome to InternHack!",
-        html: welcomeEmailHtml(user.name),
-      }).catch((err) => console.error("Failed to send welcome email:", err));
+      // Send welcome email (fire-and-forget) â€” temporarily disabled
+      // sendEmail({
+      //   to: user.email,
+      //   subject: "Welcome to InternHack!",
+      //   html: welcomeEmailHtml(user.name),
+      // }).catch((err) => console.error("Failed to send welcome email:", err));
     }
 
     // Increment tokenVersion to invalidate all previous sessions (single-device enforcement)
@@ -343,6 +411,10 @@ export class AuthService {
   } as const;
 
   async getProfile(userId: number) {
+    const cacheKey = `profile:me:${userId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: this.profileSelect,
@@ -355,7 +427,14 @@ export class AuthService {
     if (user.resumes.length > 0) {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
     }
+    if (user.profilePic) {
+      (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
+    }
+    if (user.coverImage) {
+      (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
+    }
 
+    await cacheSet(cacheKey, user, PROFILE_TTL);
     return user;
   }
 
@@ -376,7 +455,33 @@ export class AuthService {
       updateData.jobStatus = data.jobStatus || null;
     }
     if ("projects" in data) {
-      updateData.projects = Array.isArray(data.projects) ? data.projects : [];
+      if (Array.isArray(data.projects)) {
+        const dateRegex = /^\d{4}-(?:0[1-9]|1[0-2])$/;
+        updateData.projects = data.projects.map((p: any) => {
+          if (!p || typeof p !== "object") return p;
+          const proj = { ...p };
+          if (proj.builtAt != null && typeof proj.builtAt !== "string") {
+            throw Object.assign(new Error("Invalid type for builtAt. Expected string."), { statusCode: 400 });
+          }
+          if (typeof proj.builtAt === "string") {
+            const trimmed = proj.builtAt.trim();
+            if (trimmed) {
+              if (dateRegex.test(trimmed)) {
+                proj.builtAt = trimmed;
+              } else if (!isNaN(Date.parse(trimmed))) {
+                proj.builtAt = new Date(trimmed).toISOString();
+              } else {
+                throw Object.assign(new Error(`Invalid date format for builtAt. Use YYYY-MM or ISO-8601.`), { statusCode: 400 });
+              }
+            } else {
+              delete proj.builtAt;
+            }
+          }
+          return proj;
+        });
+      } else {
+        updateData.projects = [];
+      }
     }
     if ("achievements" in data) {
       updateData.achievements = Array.isArray(data.achievements) ? data.achievements : [];
@@ -397,11 +502,25 @@ export class AuthService {
     if (user.resumes.length > 0) {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
     }
+    if (user.profilePic) {
+      (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
+    }
+    if (user.coverImage) {
+      (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
+    }
+
+    // Bust cached profile so next GET /auth/me returns fresh data
+    await cacheDel(`profile:me:${userId}`);
+    await cacheDel(`profile:public:${userId}`);
 
     return user;
   }
 
   async getPublicProfile(userId: number) {
+    const cacheKey = `profile:public:${userId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const user = await prisma.user.findUnique({
       where: { id: userId, role: "STUDENT", isProfilePublic: true },
       select: {
@@ -425,10 +544,18 @@ export class AuthService {
     if (rest.resumes.length > 0) {
       (rest as Record<string, unknown>).resumes = await signUrls(rest.resumes);
     }
-    return {
+    if (rest.profilePic) {
+      (rest as Record<string, unknown>).profilePic = await signUrl(rest.profilePic);
+    }
+    if (rest.coverImage) {
+      (rest as Record<string, unknown>).coverImage = await signUrl(rest.coverImage);
+    }
+    const result = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
     };
+    await cacheSet(cacheKey, result, PROFILE_TTL);
+    return result;
   }
 
   async verifyEmail(email: string, otp: string) {
@@ -476,12 +603,12 @@ export class AuthService {
       },
     });
 
-    // Send welcome email (fire-and-forget)
-    sendEmail({
-      to: user.email,
-      subject: "Welcome to InternHack!",
-      html: welcomeEmailHtml(user.name),
-    }).catch((err) => console.error("Failed to send welcome email:", err));
+    // Send welcome email (fire-and-forget) â€” temporarily disabled
+    // sendEmail({
+    //   to: user.email,
+    //   subject: "Welcome to InternHack!",
+    //   html: welcomeEmailHtml(user.name),
+    // }).catch((err) => console.error("Failed to send welcome email:", err));
 
     // Increment tokenVersion, first real login after email verification
     const versionUpdate = await prisma.user.update({
@@ -581,8 +708,11 @@ export class AuthService {
         password: hashedPassword,
         resetPasswordOtp: null,
         resetOtpExpiresAt: null,
+        tokenVersion: { increment: 1 },
       },
     });
+    // Revoke existing sessions only after the atomic password + version update succeeds.
+    invalidateVersionCache(user.id);
   }
 
   async importGitHub(username: string) {
@@ -641,4 +771,66 @@ export class AuthService {
       projects,
     };
   }
+
+  async getGitHubStats(input: string): Promise<GitHubStats> {
+    const username = parseGitHubUsername(input);
+    if (!username) {
+      throw new Error("GitHub username is required");
+    }
+
+    const cacheKey = username.toLowerCase();
+    const cached = githubStatsCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+
+    const headers = { "User-Agent": "InternHack-App" };
+    const [userRes, repos] = await Promise.all([
+      fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
+      fetchAllGitHubStatsRepos(username, headers),
+    ]);
+
+    if (!userRes.ok) {
+      if (userRes.status === 404) throw new Error("GitHub user not found");
+      throw new Error(`GitHub API error: ${userRes.status}`);
+    }
+    const profile = (await userRes.json()) as {
+      login: string;
+      html_url: string;
+      public_repos: number;
+    };
+
+    const ownRepos = repos.filter((repo) => !repo.fork);
+    const languageCounts = new Map<string, number>();
+    let totalStars = 0;
+
+    for (const repo of ownRepos) {
+      totalStars += repo.stargazers_count ?? 0;
+      if (repo.language) {
+        languageCounts.set(repo.language, (languageCounts.get(repo.language) ?? 0) + 1);
+      }
+    }
+
+    const data: GitHubStats = {
+      username: profile.login,
+      profileUrl: profile.html_url,
+      publicRepos: profile.public_repos ?? ownRepos.length,
+      totalStars,
+      topLanguages: [...languageCounts.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 3)
+        .map(([name, count]) => ({ name, count })),
+    };
+
+    githubStatsCache.set(cacheKey, { data, expiresAt: Date.now() + GITHUB_STATS_CACHE_TTL });
+    if (githubStatsCache.size > 200) {
+      const now = Date.now();
+      for (const [key, entry] of githubStatsCache) {
+        if (entry.expiresAt <= now) githubStatsCache.delete(key);
+      }
+    }
+
+    return data;
+  }
 }
+

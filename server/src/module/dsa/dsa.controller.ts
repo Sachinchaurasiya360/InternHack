@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { DsaService } from "./dsa.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
+import { syncLeetCodeSolvedProblems } from "./leetcode.service.js";
 
 export class DsaController {
   constructor(private dsaService: DsaService) {}
@@ -77,6 +78,43 @@ export class DsaController {
       res.json(result);
     } catch (err) {
       next(err);
+    }
+  }
+
+  async reportProblem(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+      }
+
+      const problemId = Number(req.params.problemId);
+
+      if (Number.isNaN(problemId)) {
+        return res.status(400).json({
+          message: "Invalid problem ID",
+        });
+      }
+
+      const { reason, message } = req.body;
+
+      if (!reason) {
+        return res.status(400).json({
+          message: "Reason is required",
+        });
+      }
+
+      const report = await this.dsaService.reportProblem({
+        userId: req.user.id,
+        problemId,
+        reason,
+        message,
+      });
+
+      res.status(201).json(report);
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -176,6 +214,87 @@ export class DsaController {
       if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
       const history = await this.dsaService.getSubmissionHistory(userId, problemId);
       res.json(history);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async syncLeetCode(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const { leetcodeUsername } = req.body;
+      if (!leetcodeUsername) { res.status(400).json({ message: "LeetCode username is required" }); return; }
+      const result = await syncLeetCodeSolvedProblems(userId, leetcodeUsername);
+      res.json({
+        success: true,
+        message: `Successfully synced ${result.syncedCount} problems from LeetCode.`,
+        data: result,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getActivity(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+
+      const currentYear = new Date().getUTCFullYear();
+      const year = req.query.year ? parseInt(req.query.year as string, 10) : currentYear;
+      if (!Number.isInteger(year) || year < 1970 || year > currentYear) {
+        res.status(400).json({ message: "Invalid year" });
+        return;
+      }
+
+      const activity = await this.dsaService.getActivity(userId, year);
+
+      if (year < currentYear) {
+        res.setHeader("Cache-Control", "private, max-age=31536000");
+      } else {
+        res.setHeader("Cache-Control", "private, max-age=600");
+      }
+
+      res.json(activity);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getDailyProblem(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      const dailyProblem = await this.dsaService.getDailyProblem(userId);
+      res.json(dailyProblem);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getUserDsaStreak(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
+      const streak = await this.dsaService.getUserDsaStreak(userId);
+      res.json(streak);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getSimilarProblems(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(req.params.id as string, 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 3, 1), 10);
+      const data = await this.dsaService.getSimilarProblems(id, limit);
+      res.json(data);
     } catch (err) {
       next(err);
     }

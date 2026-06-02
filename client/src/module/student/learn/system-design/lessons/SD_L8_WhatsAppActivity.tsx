@@ -139,6 +139,7 @@ function TickDemo() {
   // when recipient comes online, deliver any pending messages
   useEffect(() => {
     if (recipientOnline) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMessages((ms) => ms.map((m) => (m.tick === "sent" ? { ...m, tick: "delivered" as Tick } : m)));
       if (recipientOpened) {
         setTimeout(() => setMessages((ms) => ms.map((m) => (m.tick === "delivered" ? { ...m, tick: "read" as Tick } : m))), 600);

@@ -24,6 +24,7 @@ import type {
 } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { formatLabel, initials } from "./hr-utils";
 
 const CYCLES: ReviewCycle[] = ["QUARTERLY", "HALF_YEARLY", "ANNUAL"];
 const REVIEW_STATUSES: HRReviewStatus[] = [
@@ -33,17 +34,6 @@ const REVIEW_STATUSES: HRReviewStatus[] = [
   "CALIBRATION",
   "COMPLETED",
 ];
-
-function formatLabel(value: string) {
-  return value
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function initials(first?: string, last?: string) {
-  return `${first?.[0] ?? ""}${last?.[0] ?? ""}`.toUpperCase() || "?";
-}
 
 function RatingStars({
   rating,

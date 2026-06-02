@@ -43,14 +43,6 @@ export const adminUpdateJobStatusSchema = z.object({
   reason: z.string().optional(),
 });
 
-export const activityLogQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
-  adminId: z.coerce.number().int().optional(),
-  action: z.string().optional(),
-  targetType: z.string().optional(),
-});
-
 export const errorLogQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),

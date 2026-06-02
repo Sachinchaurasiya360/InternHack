@@ -1,6 +1,11 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { prisma } from "../../database/db.js";
-import { opensourceListQuerySchema, repoIdSchema, submitRepoRequestSchema } from "./opensource.validation.js";
+import {
+  approveRequestOverrideSchema,
+  opensourceListQuerySchema,
+  repoIdSchema,
+  submitRepoRequestSchema,
+} from "./opensource.validation.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -8,6 +13,20 @@ import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/e
 import { parsePagination } from "../../utils/pagination.utils.js";
 
 export const opensourceRouter = Router();
+
+function addMonthsUTC(date: Date, months: number): Date {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1));
+}
+
+function getMonthKeyUTC(date: Date): string {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+}
+
+function getMonthLabelUTC(date: Date): string {
+  return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
+}
 
 // Public: list repos with optional filters
 opensourceRouter.get("/", async (req, res, next) => {
@@ -24,11 +43,23 @@ opensourceRouter.get("/", async (req, res, next) => {
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
     if (search) {
+      // Prisma's scalar-list filters can't do case-insensitive substring match
+      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+      // subquery and merge the matching ids into the OR clause.
+      const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
+        SELECT id FROM "opensourceRepo"
+        WHERE EXISTS (
+          SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${search}%`}
+        )
+      `;
+      const tagMatchIds = tagMatches.map((r) => r.id);
+
       where["OR"] = [
         { name: { contains: search, mode: "insensitive" } },
         { owner: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
-        { tags: { hasSome: [search] } },
+        { language: { contains: search, mode: "insensitive" } },
+        ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
       ];
     }
 
@@ -105,6 +136,45 @@ opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), a
   }
 });
 
+// Student contribution trend
+opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
+  try {
+    const now = new Date();
+    const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const startMonth = addMonthsUTC(currentMonthStart, -5);
+    const endMonth = addMonthsUTC(currentMonthStart, 1);
+
+    const approvedRequests = await prisma.repoRequest.findMany({
+      where: {
+        userId: req.user!.id,
+        status: "APPROVED",
+        updatedAt: { gte: startMonth, lt: endMonth },
+      },
+      select: { updatedAt: true },
+    });
+
+    const countsByMonth = new Map<string, number>();
+    for (const request of approvedRequests) {
+      const monthKey = getMonthKeyUTC(request.updatedAt);
+      countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
+    }
+
+    const trend = Array.from({ length: 6 }, (_, index) => {
+      const monthStart = addMonthsUTC(startMonth, index);
+      const monthKey = getMonthKeyUTC(monthStart);
+      return {
+        month: monthKey,
+        label: getMonthLabelUTC(monthStart),
+        count: countsByMonth.get(monthKey) ?? 0,
+      };
+    });
+
+    res.json({ trend, total: approvedRequests.length });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── Admin: Manage Repo Requests ─────────────────────────────────
 
 // List all repo requests
@@ -141,6 +211,13 @@ opensourceRouter.put("/requests/:id/approve", authMiddleware, requireRole("ADMIN
     const id = Number(req.params.id);
     if (isNaN(id)) { res.status(400).json({ message: "Invalid request ID" }); return; }
 
+    const overridesParsed = approveRequestOverrideSchema.safeParse(req.body);
+    if (!overridesParsed.success) {
+      res.status(400).json({ message: "Validation failed", errors: overridesParsed.error.flatten().fieldErrors });
+      return;
+    }
+    const overrides = overridesParsed.data;
+
     const request = await prisma.repoRequest.findUnique({
       where: { id },
       include: { user: { select: { name: true, email: true } } },
@@ -151,22 +228,22 @@ opensourceRouter.put("/requests/:id/approve", authMiddleware, requireRole("ADMIN
     // Create the actual repo from the request
     const repo = await prisma.opensourceRepo.create({
       data: {
-        name: request.name,
+        name: overrides.name ?? request.name,
         owner: request.owner,
-        description: request.description,
+        description: overrides.description ?? request.description,
         language: request.language,
         url: request.url,
-        domain: request.domain,
-        difficulty: request.difficulty,
+        domain: overrides.domain ?? request.domain,
+        difficulty: overrides.difficulty ?? request.difficulty,
         techStack: request.techStack,
-        tags: request.tags,
+        tags: overrides.tags ?? request.tags,
       },
     });
 
     // Update request status
     await prisma.repoRequest.update({
       where: { id },
-      data: { status: "APPROVED", adminNote: req.body.adminNote || null },
+      data: { status: "APPROVED", adminNote: overrides.adminNote ?? null },
     });
 
     // Send approval email
@@ -174,7 +251,7 @@ opensourceRouter.put("/requests/:id/approve", authMiddleware, requireRole("ADMIN
       await sendEmail({
         to: request.user.email,
         subject: "Your Repo Has Been Approved, InternHack",
-        html: repoRequestApprovedHtml(request.user.name, request.name, request.owner),
+        html: repoRequestApprovedHtml(request.user.name, overrides.name ?? request.name, request.owner),
       });
     } catch { /* email failure is non-blocking */ }
 
