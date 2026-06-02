@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, GitPullRequest, ArrowRight,
@@ -7,7 +7,9 @@ import {
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
+import { fetchFirstPRProgress, patchFirstPRProgress } from "./api/opensource.api";
 import guideData from "./data/open-source-guide.json";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -25,28 +27,117 @@ const STORAGE_KEY = "first-pr-roadmap-completed";
 
 // ─── Page ──────────────────────────────────────────────────────
 export default function FirstPRRoadmapPage() {
-  const [completed, setCompleted] = useState<Set<string>>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(true);
 
-  const toggle = useCallback((id: string) => {
-    setCompleted((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
-      return next;
-    });
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchFirstPRProgress()
+      .then((completedStepIds: string[]) => {
+        if (isMounted) {
+          setCompleted(new Set(completedStepIds));
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setCompleted(new Set());
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  const toggle = useCallback(
+    (id: string) => {
+      const isCurrentlyCompleted = completed.has(id);
+      const nextCompleted = !isCurrentlyCompleted;
+
+      setCompleted((prev) => {
+        const next = new Set(prev);
+        if (nextCompleted) next.add(id);
+        else next.delete(id);
+        return next;
+      });
+
+      void patchFirstPRProgress(id, nextCompleted).catch(() => {
+        setCompleted((prev) => {
+          const rolledBack = new Set(prev);
+          if (isCurrentlyCompleted) rolledBack.add(id);
+          else rolledBack.delete(id);
+          return rolledBack;
+        });
+        toast.error("Failed to update progress. Please try again.");
+      });
+    },
+    [completed]
+  );
 
   const totalSteps = STEPS.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
   const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+
+  if (isLoading) {
+    return (
+      <div className="relative pb-12">
+        <SEO
+          title="First Pull Request Guide - Open Source for Beginners"
+          description="Step-by-step roadmap to making your first pull request on GitHub. Learn git workflow, finding issues, and contributing to open source projects."
+          keywords="first pull request, open source contribution, GitHub beginner, git workflow, contribute to open source"
+          canonicalUrl={canonicalUrl("/student/opensource/first-pr")}
+        />
+
+        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+          <div className="absolute -top-32 -right-32 w-150 h-150 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-40" />
+          <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
+        </div>
+
+        <div className="text-center mb-10 mt-6">
+          <div className="mx-auto h-12 w-96 max-w-full rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+          <div className="mx-auto mt-4 h-6 w-[28rem] max-w-full rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
+            >
+              <div className="mx-auto mb-3 h-6 w-6 rounded-full bg-gray-100 dark:bg-gray-800 animate-pulse" />
+              <div className="mx-auto h-8 w-16 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse" />
+              <div className="mx-auto mt-3 h-3 w-12 rounded-full bg-gray-100 dark:bg-gray-800 animate-pulse" />
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-white dark:bg-gray-900 px-5 py-5 rounded-2xl border border-gray-100 dark:border-gray-800"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-800 animate-pulse shrink-0" />
+                <div className="flex-1 min-w-0 space-y-3">
+                  <div className="h-5 w-full max-w-md rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse" />
+                  <div className="h-4 w-3/4 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse" />
+                </div>
+                <div className="h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-800 animate-pulse shrink-0" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative pb-12">
@@ -116,16 +207,18 @@ export default function FirstPRRoadmapPage() {
       <AnimatePresence>
         {allDone && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 flex items-center gap-4"
+            exit={{ opacity: 0, y: -10 }}
+            className="mb-8 rounded-2xl border border-green-200/80 dark:border-green-800 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 p-5 shadow-lg shadow-green-100/40 dark:shadow-green-950/20 flex items-center gap-4"
           >
-            <Trophy className="w-8 h-8 text-green-500 shrink-0" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 dark:bg-white/5 border border-green-200/70 dark:border-green-800 shrink-0">
+              <Trophy className="w-7 h-7 text-green-600 dark:text-green-400" />
+            </div>
             <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">You shipped your first PR!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">10 / 10 steps complete. Your open source journey has begun.</p>
-            <div className="flex gap-4 mt-3 flex-wrap items-center">
+              <p className="text-base font-bold text-green-950 dark:text-green-200">Congratulations, you completed your first PR roadmap.</p>
+              <p className="text-sm text-green-800 dark:text-green-300 mt-0.5">10 / 10 steps complete. You are ready to contribute with confidence.</p>
+              <div className="flex gap-4 mt-3 flex-wrap items-center">
                 <Link
                   to="/student/opensource"
                   className="text-sm text-lime-700 dark:text-lime-400 underline font-medium"
