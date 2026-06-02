@@ -79,7 +79,9 @@ function runThemeTransition(updateTheme: () => void, origin?: ThemeTransitionOri
   }
 
   const viewTransition = (document as ViewTransitionDocument).startViewTransition;
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const prefersReducedMotion =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (!viewTransition || prefersReducedMotion) {
     updateTheme();
