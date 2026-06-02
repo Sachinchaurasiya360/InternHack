@@ -13,9 +13,9 @@ export const opensourceListQuerySchema = z.object({
   sortBy: z.enum(opensourceSortFields).optional(),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
   trending: z.enum(["true", "false"]).optional(),
-}).transform((query) => ({
+}).transform(({ sort, ...query }) => ({
   ...query,
-  sortBy: query.sort ?? query.sortBy ?? "stars",
+  sortBy: sort ?? query.sortBy ?? "stars",
 }));
 
 export const repoIdSchema = z.object({
