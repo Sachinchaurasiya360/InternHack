@@ -112,8 +112,8 @@ erDiagram
     }
 
     externalJobApplication {
-        int int studentId  FK
-        int int adminJobId FK
+        int studentId  FK
+        int adminJobId FK
     }
 
     user        ||--o{ externalJobApplication : "applies to"
@@ -248,8 +248,8 @@ erDiagram
     }
 
     dsaBookmark {
-        int int studentId FK
-        int int problemId FK
+        int studentId FK
+        int problemId FK
     }
 
     dsaSubmission {
@@ -261,12 +261,12 @@ erDiagram
     }
 
     dsaProblemReport {
-        int int userId    FK
-        int int problemId FK
+        int userId    FK
+        int problemId FK
     }
 
     dsaTestCase {
-        int int problemId FK
+        int problemId FK
         string input
         string expected
     }
@@ -292,13 +292,13 @@ erDiagram
     }
 
     aptitudeTopic {
-        int int categoryId FK
+        int categoryId FK
         string name
         string slug        UK
     }
 
     aptitudeQuestion {
-        int int topicId FK
+        int topicId FK
         string question
         string correctAnswer
         string difficulty
@@ -330,7 +330,7 @@ erDiagram
     }
 
     skillTestQuestion {
-        int int testId FK
+        int testId FK
         string question
         int    correctIndex
     }
@@ -368,8 +368,8 @@ erDiagram
     }
 
     studentBadge {
-        int int studentId FK
-        int int badgeId   FK
+        int studentId FK
+        int badgeId   FK
     }
 
     badge ||--o{ studentBadge : "awarded via"
@@ -478,13 +478,13 @@ erDiagram
     }
 
     roadmapSection {
-        int int roadmapId  FK
+        int roadmapId  FK
         string title
         int    orderIndex
     }
 
     roadmapTopic {
-        int int sectionId FK
+        int sectionId FK
         string title
         string contentMd
         int    orderIndex
@@ -618,13 +618,13 @@ erDiagram
     %% ─────────────────────────────────────────────
 
     savedCandidate {
-        int int recruiterId FK
-        int int studentId   FK
+        int recruiterId FK
+        int studentId   FK
     }
 
     userCustomRole {
-        int int userId FK
-        int int roleId FK
+        int userId FK
+        int roleId FK
     }
 
     customRole {
