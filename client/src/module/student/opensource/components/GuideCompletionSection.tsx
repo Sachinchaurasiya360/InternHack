@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Download, ArrowRight } from "lucide-react";
-import toast from "@/components/ui/toast";
+import toast from "../../../../components/ui/toast";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { downloadGuideCertificate } from "../_shared/guide-certificate.utils";
 import GuideCertificateCard from "./GuideCertificateCard";
@@ -52,9 +52,9 @@ export default function GuideCompletionSection({
     year: "numeric",
   });
 
-const handleDownload = async () => {
-  setDownloading(true);
-  const currentCompletionDate = new Date().toLocaleDateString("en-US", {
+  const handleDownload = async () => {
+   setDownloading(true);
+   const currentCompletionDate = new Date().toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
