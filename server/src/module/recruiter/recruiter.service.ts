@@ -673,6 +673,18 @@ export class RecruiterService {
     const student = await prisma.user.findUnique({ where: { id: studentId } });
     if (!student || student.role !== "STUDENT") throw new Error("Student not found");
 
+    if (notes) {
+      const existing = await prisma.savedCandidate.findUnique({
+        where: { recruiterId_studentId: { recruiterId, studentId } },
+        select: { notes: true },
+      });
+
+      if (existing?.notes) {
+        const timestamp = new Date().toISOString();
+        notes = `${existing.notes}\n--- ${timestamp} ---\n${notes}`;
+      }
+    }
+
     return prisma.savedCandidate.upsert({
       where: { recruiterId_studentId: { recruiterId, studentId } },
       update: { notes: notes ?? null },
