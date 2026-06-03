@@ -27,7 +27,7 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
       className="h-full"
     >
       <button
-        role="gridcell"
+        role="listitem"
         aria-label={`${repo.name} by ${repo.owner}, ${repo.difficulty} difficulty, ${repo.stars} stars, ${repo.openIssues} open issues`}
         onClick={() => onSelect(repo)}
         className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
@@ -132,7 +132,7 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
 
 export const RepoCardSkeleton = React.memo(function RepoCardSkeleton() {
   return (
-    <div role="gridcell" aria-busy="true" className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5 animate-pulse">
+    <div role="listitem" aria-busy="true" className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5 animate-pulse">
       <div className="flex items-start gap-3 mb-3">
         <div className="h-9 w-9 rounded-md bg-stone-100 dark:bg-white/5" />
         <div className="flex-1">

@@ -86,10 +86,8 @@ export default function RepoDiscoveryPage() {
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
   const searchRef = useRef<HTMLInputElement>(null);
-  const sortDropdownRef = useRef<HTMLDivElement>(null);
 
   const [showFilters, setShowFilters] = useState(false);
-  const [sortOpen, setSortOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
 
   useEffect(() => {
@@ -118,22 +116,11 @@ export default function RepoDiscoveryPage() {
         e.preventDefault();
         searchRef.current?.focus();
       }
-      if (e.key === "Escape") {
-        setSortOpen(false);
-      }
-    };
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
-        setSortOpen(false);
-      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -163,6 +150,7 @@ export default function RepoDiscoveryPage() {
 
     return Array.from(langs);
   }, [user]);
+
   const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
@@ -227,7 +215,7 @@ export default function RepoDiscoveryPage() {
     if (languageMode === "auto"){
       if (inferredLanguages.length > 0) {
         params.language = inferredLanguages[0]; 
-    }
+      }
     }
     else if (selectedLanguage.length > 0) params.language = selectedLanguage[0];
     
@@ -295,23 +283,6 @@ export default function RepoDiscoveryPage() {
     };
   }, [repos, pagination]);
 
-  const applyLanguages = (langs: string[]) => {
-  setSearchParams((prev) => {
-    const params = new URLSearchParams(prev);
-
-    params.delete("language");
-
-    langs.forEach((lang) => {
-      params.append("language", lang);
-    });
-
-    params.set("page", "1");
-
-    return params;
-  }, { replace: true });
-  
-};
-
   const updateFilter = (key: string, value: string | number) => {
     setSearchParams(
       (prev) => {
@@ -339,12 +310,17 @@ export default function RepoDiscoveryPage() {
     (selectedLanguage.length > 0 ? 1 : 0);
 
   // Accessibility: Focus Trap & Escape Key for Modal
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     if (!selectedRepo) return;
 
+    // Store previously focused element so we can restore it on close
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setSelectedRepo(null);
+        handleCloseRepo();
         return;
       }
 
@@ -372,7 +348,7 @@ export default function RepoDiscoveryPage() {
 
     document.addEventListener("keydown", handleKeyDown);
     
-    // Auto-focus the close button when it opens (setTimeout allows Framer Motion to mount it first)
+    // Auto-focus the close button when it opens
     const timeoutId = setTimeout(() => {
       const closeBtn = document.getElementById("repo-modal-close");
       closeBtn?.focus();
@@ -381,6 +357,8 @@ export default function RepoDiscoveryPage() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       clearTimeout(timeoutId);
+      // Restore focus to the card that opened the modal
+      previousFocusRef.current?.focus();
     };
   }, [selectedRepo]);
 
@@ -620,14 +598,12 @@ export default function RepoDiscoveryPage() {
         {/* Guidance Cards */}
         <GuidanceCards />
 
-        {/* Recently viewed & recommended */}
         <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
 
         {user?.role === "STUDENT" && (
           <RecommendedSection onSelect={handleOpenRepo} />
         )}
 
-        {/* Accessible Filter Fieldset */}
         <fieldset className="flex flex-wrap items-center gap-2 mb-4">
           <legend className="sr-only">Filter repositories</legend>
           
@@ -725,55 +701,18 @@ export default function RepoDiscoveryPage() {
           </button>
 
           {/* Sort dropdown */}
-          <div className="relative" ref={sortDropdownRef}>
-            <Button 
-              type="button" 
-              variant="ghost"
-              size="sm"
-              onClick={() => setSortOpen(!sortOpen)}
-              aria-haspopup="listbox"
+          <div className="relative flex items-center">
+            <TrendingUp aria-hidden="true" className="w-3 h-3 absolute left-3 text-stone-700 dark:text-stone-300 pointer-events-none" />
+            <select
               aria-label="Sort repositories"
-              aria-expanded={sortOpen}
+              value={sortKey}
+              onChange={(e) => updateFilter("sort", e.target.value)}
+              className="pl-8 pr-3 py-1.5 rounded-md text-xs font-bold border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 focus:outline-none focus:border-stone-400 dark:focus:border-white/25 cursor-pointer appearance-none"
             >
-              <TrendingUp className="w-3 h-3" />
-              {SORT_OPTIONS.find((s) => s.key === sortKey)?.label ?? "Sort"}
-              <ChevronDown className={`w-3 h-3 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
-            </Button>
-            <AnimatePresence>
-              {sortOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl origin-top"
-                  role="listbox"
-                >
-                  {SORT_OPTIONS.map((opt) => (
-                    <Button
-                      key={opt.key}
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      role="option"
-                      aria-label={`Sort by ${opt.label}`}
-                      aria-selected={sortKey === opt.key}
-                      onClick={() => {
-                        updateFilter("sort", opt.key);
-                        setSortOpen(false);
-                      }}
-                      className={`w-full justify-start text-left px-2.5 py-1.5 rounded-md text-xs font-normal transition-colors cursor-pointer ${
-                        sortKey === opt.key
-                          ? "bg-stone-900 dark:bg-stone-50 text-lime-400 hover:bg-stone-900 dark:hover:bg-stone-50 hover:text-lime-400"
-                          : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
-                      }`}
-                    >
-                      {opt.label}
-                    </Button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.key} value={opt.key}>{opt.label}</option>
+              ))}
+            </select>
           </div>
         </fieldset>
 
@@ -794,7 +733,6 @@ export default function RepoDiscoveryPage() {
                   </label>
                   <select
                     id="difficulty-filter"
-                    aria-label="Filter by difficulty"
                     value={selectedDifficulty}
                     onChange={(e) => updateFilter("difficulty", e.target.value)}
                     className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
@@ -808,7 +746,6 @@ export default function RepoDiscoveryPage() {
                   <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     language
                   </label>
-
                   <select
                     value={selectedLanguage}
                     disabled={languageMode === "auto"}
@@ -879,7 +816,7 @@ export default function RepoDiscoveryPage() {
 
         {/* Loading */}
         {isLoading && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" role="list" aria-busy="true">
             {Array.from({ length: 6 }).map((_, i) => (
               <RepoCardSkeleton key={i} />
             ))}
@@ -909,11 +846,10 @@ export default function RepoDiscoveryPage() {
         )}
 
         {/* Cards grid */}
-
         {!isLoading && !isError && repos.length > 0 && (
           <div 
             className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-            role="grid"
+            role="list"
             aria-label="Open source repositories"
           >
             <AnimatePresence mode="popLayout">
@@ -950,7 +886,7 @@ export default function RepoDiscoveryPage() {
             onClick={handleCloseRepo}
           >
             <motion.div
-              id="repo-modal-content" // NEW: Required for Focus Trap
+              id="repo-modal-content"
               role="dialog"
               aria-modal="true"
               aria-labelledby="repo-dialog-title"
@@ -1204,7 +1140,12 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
         <div className="flex items-center gap-2 mb-4">
           <div className="h-4 w-32 bg-stone-200 dark:bg-white/10 rounded animate-pulse" />
         </div>
-        <div className="flex gap-4 overflow-x-hidden">
+        <div 
+          className="flex gap-4 overflow-x-hidden" 
+          role="list" 
+          aria-busy="true" 
+          aria-label="Loading recommended repositories"
+        >
           {[1, 2, 3].map((i) => (
             <div key={i} className="min-w-[280px] sm:min-w-[320px]">
               <RepoCardSkeleton />
@@ -1234,7 +1175,11 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
       </div>
 
       <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-4">
-        <div className="flex gap-4 min-w-full">
+        <div 
+          className="flex gap-4 min-w-full"
+          role="list"
+          aria-label="Recommended repositories"
+        >
           {repos.map((repo, i) => (
             <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
               <RepoCard repo={repo} index={i} onSelect={onSelect} />

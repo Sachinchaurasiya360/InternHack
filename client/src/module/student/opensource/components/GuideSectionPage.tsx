@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -47,6 +47,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [dismissedHint, setDismissedHint] = useState(() => {
@@ -80,6 +81,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
 
   const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
   const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
+  
   useKeyboardNavigation({
     prevPath: prev ? `${basePath}/${prev.id}` : null,
     nextPath: next ? `${basePath}/${next.id}` : null,
@@ -134,6 +136,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       setSubmitted(true);
     }
   };
+  
   const isDone = completed.has(step.id);
 
   return (
@@ -340,7 +343,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
             </Button>
           </div>
           {submitted && (
-            <p className="text-green-600 text-sm mt-2">
+            <p className="text-green-600 dark:text-green-400 text-sm mt-2">
               Thanks for your feedback!
             </p>
           )}
