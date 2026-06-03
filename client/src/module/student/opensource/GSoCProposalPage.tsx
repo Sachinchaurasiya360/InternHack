@@ -9,6 +9,7 @@ import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
+import GuideCompletionSection from "./components/GuideCompletionSection";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -131,18 +132,12 @@ export default function GSoCProposalPage() {
       {/* Completion banner */}
       <AnimatePresence>
         {allDone && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 flex items-center gap-4"
-          >
-            <Trophy className="w-8 h-8 text-green-500 shrink-0" />
-            <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">You've completed the guide!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline.</p>
-            </div>
-          </motion.div>
+          <GuideCompletionSection
+            headline="You've completed the guide!"
+            subtitle="Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline."
+            certificateGuideName="GSoC Proposal Guide"
+            accentWord="guide"
+          />
         )}
       </AnimatePresence>
 
