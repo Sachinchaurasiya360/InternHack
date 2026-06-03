@@ -1,11 +1,14 @@
 import { z } from "zod";
 
+// sanitization function
+const sanitizeText = (value: string) => value.replace(/<[^>]*>?/gm, "").trim();
+
 const customFieldDefinitionSchema = z.object({
   id: z.string(),
-  label: z.string(),
+  label: z.string().min(1).transform((value) => sanitizeText(value)),
   fieldType: z.enum(["TEXT", "TEXTAREA", "DROPDOWN", "MULTI_SELECT", "FILE_UPLOAD", "BOOLEAN", "NUMERIC", "DATE", "EMAIL", "URL"]),
   required: z.boolean(),
-  placeholder: z.string().optional(),
+  placeholder: z.string().optional().transform((value) => value ? sanitizeText(value) : value),
   options: z.array(z.string()).optional(),
   validation: z.object({
     min: z.number().optional(),
