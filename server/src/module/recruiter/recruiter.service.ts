@@ -339,7 +339,8 @@ export class RecruiterService {
         });
       }
 
-      const nextRound = rounds[nextIndex]!;
+      const nextRound = rounds[nextIndex];
+      if (!nextRound) throw new Error("Round not found");
 
       // Create submission record for next round if not exists
       await tx.roundSubmission.upsert({
