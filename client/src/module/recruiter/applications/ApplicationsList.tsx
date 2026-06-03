@@ -31,6 +31,11 @@ export default function ApplicationsList() {
     };
   }, [search]);
 
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
+
   const fetchApplications = () => {
     setLoading(true);
     const params = new URLSearchParams({ page: String(page), limit: "10" });
