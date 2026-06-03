@@ -182,11 +182,22 @@ opensourceRouter.get("/requests/all", authMiddleware, requireRole("ADMIN"), asyn
   try {
     const { page, limit, skip } = parsePagination(req);
     const status = req.query.status as string | undefined;
+const domain = req.query.domain as string | undefined;
+const difficulty = req.query.difficulty as string | undefined;
 
-    const where: Record<string, unknown> = {};
-    if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
-      where.status = status;
-    }
+const where: Record<string, unknown> = {};
+
+if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
+  where.status = status;
+}
+
+if (domain) {
+  where.domain = domain;
+}
+
+if (difficulty) {
+  where.difficulty = difficulty;
+}
 
     const [requests, total] = await Promise.all([
       prisma.repoRequest.findMany({
