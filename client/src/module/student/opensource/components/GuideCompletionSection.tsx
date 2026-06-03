@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Download, ArrowRight } from "lucide-react";
 import toast from "@/components/ui/toast";
@@ -46,30 +46,31 @@ export default function GuideCompletionSection({
   const user = useAuthStore((s) => s.user);
   const [downloading, setDownloading] = useState(false);
 
-  const completionDate = useMemo(
-    () =>
-      new Date().toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }),
-    [],
-  );
+  const completionDate = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 
   const handleDownload = useCallback(async () => {
     setDownloading(true);
+    const currentCompletionDate = new Date().toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
     try {
       await downloadGuideCertificate({
         studentName: user?.name ?? "Student",
         guideName: certificateGuideName,
-        completionDate,
+        completionDate: currentCompletionDate,
       });
     } catch {
       toast.error("Could not generate certificate. Please try again.");
     } finally {
       setDownloading(false);
     }
-  }, [user?.name, certificateGuideName, completionDate]);
+  }, [user?.name, certificateGuideName]);
 
   return (
     <motion.section
@@ -159,7 +160,7 @@ export default function GuideCompletionSection({
             type="button"
             onClick={handleDownload}
             disabled={downloading}
-            className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors"
           >
             <Download className="w-4 h-4" />
             {downloading ? "Generating…" : "Download Certificate"}
