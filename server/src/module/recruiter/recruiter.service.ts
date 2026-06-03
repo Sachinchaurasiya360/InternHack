@@ -64,6 +64,44 @@ interface ApplicationFilter {
   search?: string | undefined;
 }
 
+interface EvaluationCriterion {
+  id: string;
+  maxScore: number;
+}
+
+function getEvaluationCriteriaById(criteria: unknown): Map<string, EvaluationCriterion> {
+  if (!Array.isArray(criteria)) return new Map();
+
+  const criteriaById = new Map<string, EvaluationCriterion>();
+  for (const criterion of criteria) {
+    if (
+      typeof criterion === "object" &&
+      criterion !== null &&
+      "id" in criterion &&
+      "maxScore" in criterion &&
+      typeof criterion.id === "string" &&
+      typeof criterion.maxScore === "number"
+    ) {
+      criteriaById.set(criterion.id, { id: criterion.id, maxScore: criterion.maxScore });
+    }
+  }
+
+  return criteriaById;
+}
+
+function validateEvaluationScores(
+  evaluationScores: Record<string, { score: number; comment?: string | undefined }>,
+  evaluationCriteria: unknown,
+) {
+  const criteriaById = getEvaluationCriteriaById(evaluationCriteria);
+
+  for (const [criterionId, evaluation] of Object.entries(evaluationScores)) {
+    const criterion = criteriaById.get(criterionId);
+    if (criterion && evaluation.score > criterion.maxScore) {
+      throw new Error(`Evaluation score for ${criterionId} cannot exceed maxScore ${criterion.maxScore}`);
+    }
+  }
+}
 
 type UpdateRoundData = {
   [K in keyof CreateRoundData]?: CreateRoundData[K] | undefined;
@@ -437,10 +475,11 @@ export class RecruiterService {
     // checking round ownership
     const round = await prisma.round.findUnique({
       where: { id: roundId },
-      select: { jobId: true },
+      select: { jobId: true, evaluationCriteria: true },
     });
 
     if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
+    validateEvaluationScores(evaluationScores, round.evaluationCriteria);
     
     return prisma.roundSubmission.update({
       where: { applicationId_roundId: { applicationId, roundId } },
