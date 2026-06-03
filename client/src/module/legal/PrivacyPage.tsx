@@ -16,6 +16,7 @@ import {
   ChevronRight,
   ChevronDown,
 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface PolicySection {
   id: string;
@@ -150,7 +151,7 @@ const toggleSection = (id: string) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-[#0A0A0A]">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-stone-950">
     <SEO
         title="Privacy Policy"
         description="Privacy Policy for InternHack — how we collect, use, and protect your data."
@@ -183,7 +184,7 @@ const toggleSection = (id: string) => {
 
             {/* Sticky Table of Contents */}
             <aside className="lg:w-64 shrink-0 w-full">
-              <div className="lg:sticky lg:top-28 rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-[#111111] shadow-sm p-5">
+              <div className="lg:sticky lg:top-28 rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-stone-900 shadow-sm p-5">
                 <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">
                   On This Page
                 </p>
@@ -199,7 +200,7 @@ const toggleSection = (id: string) => {
                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-sm transition-all duration-200 ${
                           isActive
                             ? "bg-lime-100 dark:bg-lime-500/15 text-lime-700 dark:text-lime-400 font-semibold"
-                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white"
+                            : "text-gray-600 dark:text-gray-400 hover:bg-stone-100 dark:hover:bg-stone-800/60 hover:text-gray-900 dark:hover:text-white"
                         }`}
                       >
                         <Icon size={15} className="shrink-0" />
@@ -216,7 +217,7 @@ const toggleSection = (id: string) => {
               </div>
             </aside>
 
-            <div className="flex-1 space-y-4">
+          <div className="flex-1 space-y-4">
   {sections.map((section, index) => {
     const Icon = section.icon;
     const isOpen = openSection === section.id;
@@ -225,21 +226,21 @@ const toggleSection = (id: string) => {
       <div
         id={section.id}
         key={section.id}
-        className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-[#111111] shadow-sm overflow-hidden scroll-mt-32"
+        className="rounded-2xl border border-stone-200/70 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm overflow-hidden scroll-mt-32"
       >
         <button
-  onClick={() => toggleSection(section.id)}
-  aria-expanded={isOpen}
-  aria-controls={`content-${section.id}`}
-  id={`trigger-${section.id}`}
-  className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 dark:hover:bg-[#1A1A1A] transition"
->
+          onClick={() => toggleSection(section.id)}
+          aria-expanded={isOpen}
+          aria-controls={`content-${section.id}`}
+          id={`trigger-${section.id}`}
+          className="w-full flex items-center justify-between p-6 text-left hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+        >
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-lime-100 dark:bg-lime-500/10 text-lime-600 dark:text-lime-400">
               <Icon size={22} />
             </div>
 
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-lg md:text-xl font-semibold text-stone-900 dark:text-white">
               {index + 1}. {section.title}
             </h2>
           </div>
@@ -251,58 +252,77 @@ const toggleSection = (id: string) => {
             }`}
           />
         </button>
-{isOpen && (
-  <div
-    id={`content-${section.id}`}
-    role="region"
-    aria-labelledby={`trigger-${section.id}`}
-    className="px-6 pb-6 md:px-8 md:pb-8"
-  >
-            {section.content && (
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm md:text-base mb-3">
-                {section.content}
-              </p>
-            )}
 
-            {section.list && (
-              <ul className="space-y-2 mt-2">
-                {section.list.map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-3 text-gray-600 dark:text-gray-300 text-sm md:text-base"
-                  >
-                    <span className="mt-2 h-2 w-2 rounded-full bg-lime-500 shrink-0" />
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              id={`content-${section.id}`}
+              key="content"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{
+                height: "auto",
+                opacity: 1,
+              }}
+              exit={{
+                height: 0,
+                opacity: 0,
+              }}
+              transition={{
+                duration: 0.25,
+                ease: "easeInOut",
+              }}
+              className="overflow-hidden"
+            >
+              <div className="px-6 pb-6">
+                {section.content && (
+                  <p className="text-stone-600 dark:text-stone-300 leading-relaxed text-sm md:text-base mb-3">
+                    {section.content}
+                  </p>
+                )}
 
-                    <span>
-                      {item.label && (
-                        <strong className="text-gray-800 dark:text-gray-100">
-                          {item.label}:{" "}
-                        </strong>
-                      )}
-                      {item.text}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
+                {section.list && (
+                  <ul className="space-y-2 mt-2">
+                    {section.list.map((item, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3 text-stone-600 dark:text-stone-300 text-sm md:text-base"
+                      >
+                        <span className="mt-2 h-2 w-2 rounded-full bg-lime-500 shrink-0" />
 
-            {section.contactNote && (
-              <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                To exercise these rights, contact us at{" "}
-                <a
-                  href="mailto:mrsachinchaurasiya@gmail.com"
-                  className="text-lime-600 dark:text-lime-400 hover:underline font-medium"
-                >
-                  mrsachinchaurasiya@gmail.com
-                </a>
-                .
-              </p>
-            )}
-          </div>
-        )}
+                        <span>
+                          {item.label && (
+                            <strong className="text-stone-800 dark:text-stone-100">
+                              {item.label}:{" "}
+                            </strong>
+                          )}
+                          {item.text}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {section.contactNote && (
+                  <p className="mt-4 text-sm text-stone-600 dark:text-stone-400">
+                    To exercise these rights, contact us at{" "}
+                    <a
+                      href="mailto:mrsachinchaurasiya@gmail.com"
+                      className="text-lime-600 dark:text-lime-400 hover:underline font-medium"
+                    >
+                      mrsachinchaurasiya@gmail.com
+                    </a>
+                    .
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   })}
+
+  
               {/* Contact CTA Banner */}
              <div className="mt-4 rounded-3xl overflow-hidden border border-lime-400 bg-lime-400 shadow-2xl">
                <div className="p-8 md:p-10 text-center">
