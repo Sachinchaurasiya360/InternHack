@@ -210,6 +210,8 @@ export class RecruiterService {
 
     if (filter.status) {
       where.status = filter.status as ApplicationStatus;
+    } else {
+      where.status = { not: "WITHDRAWN" };
     }
 
     if (filter.search) {
