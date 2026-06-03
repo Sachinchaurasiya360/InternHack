@@ -68,7 +68,7 @@ export default function CreateJobPage() {
         salary: form.salary,
         company: form.company,
         deadline: form.deadline ? new Date(form.deadline).toISOString() : undefined,
-        tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        tags: [...new Set(form.tags.split(",").map((t) => t.trim()).filter(Boolean))],
         customFields,
         status: "DRAFT",
       });
