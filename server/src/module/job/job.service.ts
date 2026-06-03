@@ -27,10 +27,10 @@ interface JobQuery {
   salaryMax?: number | undefined;
 }
 
-
 type UpdateJobData = {
   [K in keyof CreateJobData]?: CreateJobData[K] | undefined;
 };
+
 export class JobService {
   async createJob(data: CreateJobData) {
     return prisma.job.create({
@@ -109,6 +109,7 @@ export class JobService {
         where,
         select: { id: true, salary: true },
         orderBy: { createdAt: "desc" },
+        take: 1000,
       });
 
       const filtered = candidates.filter((job) => {
@@ -124,15 +125,21 @@ export class JobService {
 
       const jobs = await prisma.job.findMany({
         where: { id: { in: pageIds } },
-        orderBy: { createdAt: "desc" },
         include: {
           recruiter: { select: { id: true, name: true, company: true } },
           _count: { select: { applications: true, rounds: true } },
         },
       });
 
+      // Restore salary-filtered order — IN(...) does not preserve order in PostgreSQL
+      const jobMap = new Map(jobs.map((j) => [j.id, j]));
+      // Properly typed — removes undefined with type predicate
+      const orderedJobs = pageIds
+        .map((id) => jobMap.get(id))
+        .filter((job): job is NonNullable<typeof job> => job !== undefined);
+
       return {
-        jobs,
+        jobs: orderedJobs,
         pagination: {
           page: query.page,
           limit: query.limit,
@@ -178,7 +185,6 @@ export class JobService {
 
     let tag = slug;
     let location: string | undefined;
-
     // Check if the last part is a location
     const lastPart = parts[parts.length - 1]!.toLowerCase();
     if (LOCATIONS.includes(lastPart) && parts.length > 1) {

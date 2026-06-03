@@ -130,7 +130,29 @@ opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), a
       where: { userId: req.user!.id },
       orderBy: { createdAt: "desc" },
     });
-    res.json({ requests });
+
+    // For approved requests, look up the corresponding InternHack repo ID so
+    // the client can open the repo detail popup directly.
+    const approvedUrls = requests
+      .filter((r) => r.status === "APPROVED")
+      .map((r) => r.url);
+
+    const approvedRepos =
+      approvedUrls.length > 0
+        ? await prisma.opensourceRepo.findMany({
+            where: { url: { in: approvedUrls } },
+            select: { id: true, url: true },
+          })
+        : [];
+
+    const repoIdByUrl = new Map(approvedRepos.map((r) => [r.url, r.id]));
+
+    const enriched = requests.map((r) => ({
+      ...r,
+      repoId: r.status === "APPROVED" ? (repoIdByUrl.get(r.url) ?? null) : null,
+    }));
+
+    res.json({ requests: enriched });
   } catch (err) {
     next(err);
   }
