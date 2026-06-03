@@ -681,12 +681,9 @@ export class RecruiterService {
   }
 
   async unsaveCandidate(recruiterId: number, studentId: number) {
-    const existing = await prisma.savedCandidate.findUnique({
-      where: { recruiterId_studentId: { recruiterId, studentId } },
+    const { count } = await prisma.savedCandidate.deleteMany({
+      where: { recruiterId, studentId },
     });
-    if (!existing) return;
-    await prisma.savedCandidate.delete({
-      where: { recruiterId_studentId: { recruiterId, studentId } },
-    });
+    return count;
   }
 }

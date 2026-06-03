@@ -359,7 +359,8 @@ export class RecruiterController {
       const studentId = parseInt(String(req.params["studentId"]), 10);
       if (isNaN(studentId)) return res.status(400).json({ message: "Invalid student ID" });
 
-      await this.recruiterService.unsaveCandidate(req.user.id, studentId);
+      const count = await this.recruiterService.unsaveCandidate(req.user.id, studentId);
+      if (count === 0) return res.status(404).json({ message: "Candidate not found in saved list" });
       return res.status(200).json({ message: "Candidate removed" });
     } catch (error) {
       logger.error("Failed to unsave candidate", error);
