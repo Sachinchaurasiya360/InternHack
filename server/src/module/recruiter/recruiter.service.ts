@@ -15,9 +15,12 @@ function isValidS3Url(url: string) {
   try {
     const parsed = new URL(url);
 
+    if (!S3_BUCKET || parsed.protocol !== "https:") return false;
+
     return (
       parsed.hostname === `${S3_BUCKET}.s3.amazonaws.com` ||
-      parsed.hostname.endsWith(`.${S3_BUCKET}.s3.amazonaws.com`)
+      (parsed.hostname.startsWith(`${S3_BUCKET}.s3.`) &&
+        parsed.hostname.endsWith(".amazonaws.com"))
     );
   } catch {
     return false;
