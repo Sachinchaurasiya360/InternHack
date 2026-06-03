@@ -144,6 +144,18 @@ export class RecruiterService {
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
+    
+    const existingRounds = await prisma.round.findMany({
+      where: {
+        id: { in: rounds.map((r) => r.roundId) },
+        jobId,
+      },
+      select: { id: true },
+    });
+
+    if (existingRounds.length !== rounds.length) {
+      throw new Error("Invalid round IDs");
+    }
 
     // Use a transaction with temporary high indices to avoid unique constraint conflicts
     await prisma.$transaction(async (tx) => {

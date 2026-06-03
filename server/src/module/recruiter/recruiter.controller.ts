@@ -119,6 +119,7 @@ export class RecruiterController {
       if (error instanceof Error) {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "Invalid round IDs") return res.status(400).json({ message: error.message });
       }
       logger.error("Failed to reorder rounds", error);
       return res.status(500).json({ message: "Internal Server Error" });
