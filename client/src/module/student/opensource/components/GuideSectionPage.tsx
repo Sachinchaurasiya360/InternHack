@@ -9,6 +9,7 @@ import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
+import { InlineCodeText } from "../../../../components/ui/InlineCodeText";
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -194,7 +195,7 @@ const submitFeedback = async (
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white mb-4">Explanation</h2>
             <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-              {step.mentor_guidance}
+              <InlineCodeText text={step.mentor_guidance} />
             </div>
           </motion.div>
         )}
@@ -228,9 +229,9 @@ const submitFeedback = async (
             </div>
             <ul className="space-y-3">
               {step.details.map((detail, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
-                  {detail}
+                  <InlineCodeText text={detail} />
                 </li>
               ))}
             </ul>
@@ -252,9 +253,9 @@ const submitFeedback = async (
             </div>
             <ul className="space-y-3">
               {step.tips.map((tip, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
-                  {tip}
+                  <InlineCodeText text={tip} />
                 </li>
               ))}
             </ul>
@@ -276,7 +277,7 @@ const submitFeedback = async (
             </div>
             <ul className="space-y-3">
               {step.resources.map((r, i) => (
-                <li key={i} className="flex items-start gap-2.5">
+                <li key={i} className="flex">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
                   <a
                     href={r.url}
