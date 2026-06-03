@@ -38,9 +38,9 @@ export default function JobLandingPage() {
   const meta = data?.meta;
 
   // Split the title so we can animate only the final word (Acceptance Criteria #2)
-  const titleText = meta?.title || "Find your next role.";
-  const words = titleText.split(" ");
-  const lastWord = words.pop();
+  const titleText = (meta?.title ?? "Find your next role.").trim();
+  const words = titleText ? titleText.split(/\s+/) : ["Find", "your", "next", "role."];
+  const lastWord = words.pop() ?? "role.";
   const restOfTitle = words.join(" ");
 
   return (
