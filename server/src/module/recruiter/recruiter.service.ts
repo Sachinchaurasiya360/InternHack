@@ -353,6 +353,12 @@ export class RecruiterService {
       if (!application) throw new Error("Application not found");
       if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+      if (application.status === "WITHDRAWN") {
+        throw new Error(
+          "Withdrawn applications cannot participate in the hiring process"
+        );
+      }
+
       const rounds = await tx.round.findMany({
         where: { jobId: application.jobId },
         orderBy: { orderIndex: "asc" },
