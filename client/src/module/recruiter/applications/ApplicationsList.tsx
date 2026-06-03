@@ -17,7 +17,7 @@ export default function ApplicationsList() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
-  const [advancingId, setAdvancingId] = useState<number | null>(null);
+  const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounce search input
@@ -64,15 +64,19 @@ const handleStatusChange = async (appId: number, status: string) => {
 };
 
   const handleAdvance = async (appId: number) => {
-    if (advancingId === appId) return;
-    setAdvancingId(appId);
+    if (advancingIds.has(appId)) return;
+    setAdvancingIds((current) => new Set(current).add(appId));
     try {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       fetchApplications();
     } catch {
       alert("Failed to advance application");
     } finally {
-      setAdvancingId(null);
+      setAdvancingIds((current) => {
+        const next = new Set(current);
+        next.delete(appId);
+        return next;
+      });
     }
   };
 
@@ -151,7 +155,10 @@ const handleStatusChange = async (appId: number, status: string) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                {applications.map((app, i) => (
+                {applications.map((app, i) => {
+                  const isAdvancing = advancingIds.has(app.id);
+
+                  return (
                   <motion.tr key={app.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
                     className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                     <td className="px-6 py-4">
@@ -190,10 +197,10 @@ const handleStatusChange = async (appId: number, status: string) => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleAdvance(app.id)}
-                          disabled={advancingId === app.id}
-                          className={`inline-flex min-w-[86px] items-center justify-center gap-1.5 text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors ${advancingId === app.id ? "cursor-not-allowed opacity-70" : ""}`}>
-                          {advancingId === app.id && <Loader2 className="h-3 w-3 animate-spin" />}
-                          {advancingId === app.id ? "Advancing" : "Advance"}
+                          disabled={isAdvancing}
+                          className={`inline-flex min-w-[86px] items-center justify-center gap-1.5 text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors ${isAdvancing ? "cursor-not-allowed opacity-70" : ""}`}>
+                          {isAdvancing && <Loader2 className="h-3 w-3 animate-spin" />}
+                          {isAdvancing ? "Advancing" : "Advance"}
                         </button>
                         <Link to={`/recruiters/applications/${app.id}`}
                           className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 no-underline">
@@ -202,7 +209,8 @@ const handleStatusChange = async (appId: number, status: string) => {
                       </div>
                     </td>
                   </motion.tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
