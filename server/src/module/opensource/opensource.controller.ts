@@ -6,6 +6,7 @@ import {
   submitRepoRequestSchema,
   approveRequestOverrideSchema,
   repoIdSchema,
+  firstPrProgressUpdateSchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
@@ -161,6 +162,38 @@ export class OpensourceController {
     try {
       const result = await service.getStudentContributionTrend(req.user!.id);
       res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getFirstPrProgress(req: Request, res: Response, next: NextFunction) {
+    try {
+      const completedStepIds = await service.getFirstPrProgress(req.user!.id);
+      res.json({ completedStepIds });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async patchFirstPrProgress(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = firstPrProgressUpdateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+
+      const { stepId, completed } = parsed.data;
+      const completedStepIds = await service.patchFirstPrProgress(
+        req.user!.id,
+        stepId,
+        completed,
+      );
+      res.json({ completedStepIds });
     } catch (err) {
       next(err);
     }

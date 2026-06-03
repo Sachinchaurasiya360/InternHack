@@ -81,6 +81,7 @@ model user {
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
   guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
+  firstPrProgress       studentFirstPrProgress[]    @relation("StudentFirstPrProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
   roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
@@ -107,6 +108,18 @@ model userInterviewProgress {
   updatedAt     DateTime  @updatedAt
 
   user user @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model studentFirstPrProgress {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @unique
+  completedStepIds   String[] @default([])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user user @relation("StudentFirstPrProgress", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }

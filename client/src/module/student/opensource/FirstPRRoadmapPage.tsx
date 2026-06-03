@@ -1,15 +1,15 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  CheckCircle2, GitPullRequest, ArrowRight,
-  Trophy,
-} from "lucide-react";
+import { CheckCircle2, GitPullRequest, ArrowRight, Trophy } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
-import { fetchFirstPRProgress, patchFirstPRProgress } from "./api/opensource.api";
+import {
+  fetchFirstPRProgress,
+  patchFirstPRProgress,
+} from "./api/opensource.api";
 import guideData from "./data/open-source-guide.json";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -77,13 +77,16 @@ export default function FirstPRRoadmapPage() {
         toast.error("Failed to update progress. Please try again.");
       });
     },
-    [completed]
+    [completed],
   );
 
   const totalSteps = STEPS.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
-  const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+  const totalEstimatedMinutes = STEPS.reduce(
+    (sum, step) => sum + (step.estimatedMinutes || 0),
+    0,
+  );
 
   if (isLoading) {
     return (
@@ -155,7 +158,8 @@ export default function FirstPRRoadmapPage() {
         <div
           className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
           style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+            backgroundImage:
+              "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
         />
@@ -184,10 +188,30 @@ export default function FirstPRRoadmapPage() {
         className="grid grid-cols-3 gap-4 mb-8"
       >
         {[
-          { icon: GitPullRequest, value: totalSteps, label: "Steps", iconColor: "text-indigo-500" },
-          { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
-          { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
-          { icon: ArrowRight, value: `${totalEstimatedMinutes} min`, label: "Est. Time", iconColor: "text-indigo-500" },
+          {
+            icon: GitPullRequest,
+            value: totalSteps,
+            label: "Steps",
+            iconColor: "text-indigo-500",
+          },
+          {
+            icon: CheckCircle2,
+            value: completed.size,
+            label: "Completed",
+            iconColor: "text-green-500",
+          },
+          {
+            icon: Trophy,
+            value: `${pct}%`,
+            label: "Progress",
+            iconColor: "text-amber-500",
+          },
+          {
+            icon: ArrowRight,
+            value: `${totalEstimatedMinutes} min`,
+            label: "Est. Time",
+            iconColor: "text-indigo-500",
+          },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -197,8 +221,12 @@ export default function FirstPRRoadmapPage() {
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
           >
             <stat.icon className={`w-6 h-6 ${stat.iconColor} mx-auto mb-3`} />
-            <p className="font-display text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-0.5">{stat.label}</p>
+            <p className="font-display text-2xl font-bold text-gray-950 dark:text-white">
+              {stat.value}
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-0.5">
+              {stat.label}
+            </p>
           </motion.div>
         ))}
       </motion.div>
@@ -216,8 +244,13 @@ export default function FirstPRRoadmapPage() {
               <Trophy className="w-7 h-7 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-base font-bold text-green-950 dark:text-green-200">Congratulations, you completed your first PR roadmap.</p>
-              <p className="text-sm text-green-800 dark:text-green-300 mt-0.5">10 / 10 steps complete. You are ready to contribute with confidence.</p>
+              <p className="text-base font-bold text-green-950 dark:text-green-200">
+                Congratulations, you completed your first PR roadmap.
+              </p>
+              <p className="text-sm text-green-800 dark:text-green-300 mt-0.5">
+                10 / 10 steps complete. You are ready to contribute with
+                confidence.
+              </p>
               <div className="flex gap-4 mt-3 flex-wrap items-center">
                 <Link
                   to="/student/opensource"
@@ -229,7 +262,11 @@ export default function FirstPRRoadmapPage() {
                   onClick={() => {
                     if (window.confirm("Reset all steps?")) {
                       setCompleted(new Set());
-                      try { localStorage.removeItem(STORAGE_KEY); } catch { /**/ }
+                      try {
+                        localStorage.removeItem(STORAGE_KEY);
+                      } catch {
+                        /**/
+                      }
                     }
                   }}
                   className="text-sm text-lime-700 dark:text-lime-400 border border-lime-400 px-3 py-0.5 rounded-lg font-medium"
@@ -266,29 +303,39 @@ export default function FirstPRRoadmapPage() {
                   variant="ghost"
                   mode="icon"
                   size="sm"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggle(step.id);
+                  }}
                   className="shrink-0"
                 >
                   {done ? (
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   ) : (
                     <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
+                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                        {step.step}
+                      </span>
                     </div>
                   )}
                 </Button>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <h3 className={`text-sm font-bold mb-0.5 ${
-                    done
-                      ? "text-gray-400 dark:text-gray-500 line-through"
-                      : "text-gray-950 dark:text-white"
-                  }`}>
+                  <h3
+                    className={`text-sm font-bold mb-0.5 ${
+                      done
+                        ? "text-gray-400 dark:text-gray-500 line-through"
+                        : "text-gray-950 dark:text-white"
+                    }`}
+                  >
                     {step.title}
                   </h3>
                   {step.estimatedMinutes && (
-                    <p className="text-xs font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</p>
+                    <p className="text-xs font-mono text-gray-400 dark:text-gray-500">
+                      ~{step.estimatedMinutes} min
+                    </p>
                   )}
                   <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
                     {step.description}

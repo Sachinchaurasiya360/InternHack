@@ -9,7 +9,6 @@ export class OpensourceService {
       select: { language: true },
       distinct: ["language"],
     });
-
     return rows
       .map((r) => r.language)
       .filter((l): l is string => Boolean(l && l.trim() !== ""))
@@ -17,18 +16,22 @@ export class OpensourceService {
   }
 
   async listRepos(query: any) {
-    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = query;
+    const {
+      page,
+      limit,
+      search,
+      language,
+      difficulty,
+      domain,
+      sortBy,
+      sortOrder,
+    } = query;
     const skip = (page - 1) * limit;
-
     const where: Record<string, any> = {};
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
-
     if (search) {
-      // Prisma's scalar-list filters can't do case-insensitive substring match
-      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-      // subquery and merge the matching ids into the OR clause.
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
@@ -36,7 +39,6 @@ export class OpensourceService {
         )
       `;
       const tagMatchIds = tagMatches.map((r) => r.id);
-
       where["OR"] = [
         { name: { contains: search, mode: "insensitive" } },
         { owner: { contains: search, mode: "insensitive" } },
@@ -66,7 +68,6 @@ export class OpensourceService {
     const repo = (await prisma.opensourceRepo.findUnique({ where: { id } })) as any;
     if (!repo) return null;
 
-    // Start: Background stats update (non-blocking)
     const SIX_HOURS = 6 * 60 * 60 * 1000;
     const isStale =
       !repo.githubStatsUpdatedAt ||
@@ -77,14 +78,12 @@ export class OpensourceService {
         console.error(`[github] background update failed for ${id}:`, err)
       );
     }
-
     return repo;
   }
 
   private async updateGithubStats(id: number, url: string, name: string) {
     const stats = await fetchGithubStats(url);
     if (!stats) return;
-
     await prisma.opensourceRepo.update({
       where: { id },
       data: {
@@ -108,7 +107,6 @@ export class OpensourceService {
   }) {
     const { page, limit, search, category, tech, year } = query;
     const skip = (page - 1) * limit;
-
     const where: any = {};
 
     if (search) {
@@ -117,15 +115,12 @@ export class OpensourceService {
         { description: { contains: search, mode: "insensitive" } },
       ];
     }
-
     if (category) {
       where.category = { contains: category, mode: "insensitive" };
     }
-
     if (tech) {
       where.technologies = { has: tech };
     }
-
     if (year) {
       where.yearsParticipated = { has: year };
     }
@@ -155,13 +150,11 @@ export class OpensourceService {
     if (existing) {
       throw new Error("This repository has already been submitted");
     }
-
     const request = await prisma.repoRequest.create({
       data: { ...data, userId },
       include: { user: { select: { name: true, email: true } } },
     });
 
-    // Send confirmation email
     try {
       await sendEmail({
         to: request.user.email,
@@ -169,7 +162,6 @@ export class OpensourceService {
         html: repoRequestSubmittedHtml(request.user.name, request.name, request.owner),
       });
     } catch { /* email failure is non-blocking */ }
-
     return request;
   }
 
@@ -186,7 +178,6 @@ export class OpensourceService {
     if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
       where.status = status;
     }
-
     const [requests, total] = await Promise.all([
       prisma.repoRequest.findMany({
         where,
@@ -197,7 +188,6 @@ export class OpensourceService {
       }),
       prisma.repoRequest.count({ where }),
     ]);
-
     return {
       requests,
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
@@ -209,11 +199,9 @@ export class OpensourceService {
       where: { id },
       include: { user: { select: { name: true, email: true } } },
     });
-
     if (!request) throw new Error("Request not found");
     if (request.status !== "PENDING") throw new Error("Request is not pending");
 
-    // Create the actual repo from the request
     const repo = await prisma.opensourceRepo.create({
       data: {
         name: overrides.name ?? request.name,
@@ -228,13 +216,11 @@ export class OpensourceService {
       },
     });
 
-    // Update request status
     await prisma.repoRequest.update({
       where: { id },
       data: { status: "APPROVED", adminNote: overrides.adminNote ?? null },
     });
 
-    // Send approval email
     try {
       await sendEmail({
         to: request.user.email,
@@ -243,11 +229,9 @@ export class OpensourceService {
       });
     } catch { /* email failure is non-blocking */ }
 
-    // Fetch stats on approval
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err)
     );
-
     return repo;
   }
 
@@ -255,7 +239,6 @@ export class OpensourceService {
     const request = await prisma.repoRequest.findUnique({ where: { id } });
     if (!request) throw new Error("Request not found");
     if (request.status !== "PENDING") throw new Error("Request is not pending");
-
     return prisma.repoRequest.update({
       where: { id },
       data: { status: "REJECTED", adminNote: adminNote || null },
@@ -267,7 +250,6 @@ export class OpensourceService {
     const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
     const startMonth = this.addMonthsUTC(currentMonthStart, -5);
     const endMonth = this.addMonthsUTC(currentMonthStart, 1);
-
     const approvedRequests = await prisma.repoRequest.findMany({
       where: {
         userId,
@@ -292,7 +274,6 @@ export class OpensourceService {
         count: countsByMonth.get(monthKey) ?? 0,
       };
     });
-
     return { trend, total: approvedRequests.length };
   }
 
@@ -308,5 +289,42 @@ export class OpensourceService {
 
   private getMonthLabelUTC(date: Date): string {
     return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
+  }
+
+  async getFirstPrProgress(userId: number): Promise<string[]> {
+    const progress = await prisma.studentFirstPrProgress.findUnique({
+      where: { userId },
+      select: { completedStepIds: true },
+    });
+    return progress?.completedStepIds ?? [];
+  }
+
+  async patchFirstPrProgress(
+    userId: number,
+    stepId: string,
+    completed: boolean,
+  ): Promise<string[]> {
+    const existing = await prisma.studentFirstPrProgress.findUnique({
+      where: { userId },
+      select: { completedStepIds: true },
+    });
+    const completedStepIds = new Set(existing?.completedStepIds ?? []);
+    if (completed) {
+      completedStepIds.add(stepId);
+    } else {
+      completedStepIds.delete(stepId);
+    }
+    const progress = await prisma.studentFirstPrProgress.upsert({
+      where: { userId },
+      create: {
+        userId,
+        completedStepIds: Array.from(completedStepIds),
+      },
+      update: {
+        completedStepIds: Array.from(completedStepIds),
+      },
+      select: { completedStepIds: true },
+    });
+    return progress.completedStepIds;
   }
 }
