@@ -1,18 +1,32 @@
 import { useState, useCallback, useEffect } from "react";
 import { Copy, Check } from "lucide-react";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
+
+// @ts-ignore - react-syntax-highlighter lacks types for deep esm imports
 import markup from "react-syntax-highlighter/dist/esm/languages/prism/markup";
+// @ts-ignore
 import css from "react-syntax-highlighter/dist/esm/languages/prism/css";
+// @ts-ignore
 import javascript from "react-syntax-highlighter/dist/esm/languages/prism/javascript";
+// @ts-ignore
 import typescript from "react-syntax-highlighter/dist/esm/languages/prism/typescript";
+// @ts-ignore
 import jsx from "react-syntax-highlighter/dist/esm/languages/prism/jsx";
+// @ts-ignore
 import tsx from "react-syntax-highlighter/dist/esm/languages/prism/tsx";
+// @ts-ignore
 import python from "react-syntax-highlighter/dist/esm/languages/prism/python";
+// @ts-ignore
 import bash from "react-syntax-highlighter/dist/esm/languages/prism/bash";
+// @ts-ignore
 import solidity from "react-syntax-highlighter/dist/esm/languages/prism/solidity";
+// @ts-ignore
 import json from "react-syntax-highlighter/dist/esm/languages/prism/json";
+// @ts-ignore
 import sql from "react-syntax-highlighter/dist/esm/languages/prism/sql";
+// @ts-ignore
 import { vscDarkPlus, prism } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 import { useThemeStore } from "../../lib/theme.store";
 import { Button } from "./button";
 import toast from "./toast";
@@ -86,7 +100,6 @@ export function CodeBlock({ code, label, example, language = "javascript" }: Cod
 
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {
         e.preventDefault();
-
         await handleCopy();
       }
     },

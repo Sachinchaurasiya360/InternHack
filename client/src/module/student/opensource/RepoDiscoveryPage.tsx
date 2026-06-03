@@ -41,7 +41,6 @@ import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 
-
 const STATUS_STYLE: Record<string, string> = {
   PENDING: "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
   APPROVED: "bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-800",
@@ -88,7 +87,6 @@ export default function RepoDiscoveryPage() {
   const [inputValue, setInputValue] = useState(search);
   const searchRef = useRef<HTMLInputElement>(null);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
-
 
   const [showFilters, setShowFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
@@ -340,6 +338,52 @@ export default function RepoDiscoveryPage() {
     (selectedDifficulty !== "ALL" ? 1 : 0) +
     (selectedLanguage.length > 0 ? 1 : 0);
 
+  // Accessibility: Focus Trap & Escape Key for Modal
+  useEffect(() => {
+    if (!selectedRepo) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedRepo(null);
+        return;
+      }
+
+      if (e.key === "Tab") {
+        const modal = document.getElementById("repo-modal-content");
+        if (!modal) return;
+        
+        const focusableElements = modal.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey && document.activeElement === firstElement) {
+          lastElement.focus();
+          e.preventDefault();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    
+    // Auto-focus the close button when it opens (setTimeout allows Framer Motion to mount it first)
+    const timeoutId = setTimeout(() => {
+      const closeBtn = document.getElementById("repo-modal-close");
+      closeBtn?.focus();
+    }, 100);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      clearTimeout(timeoutId);
+    };
+  }, [selectedRepo]);
+
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       {selectedRepo ? (
@@ -407,15 +451,25 @@ export default function RepoDiscoveryPage() {
           </div>
         </div>
 
+        {/* Screen Reader Announcer for Search Results */}
+        <div aria-live="polite" className="sr-only">
+          {isLoading
+            ? "Searching repositories..."
+            : pagination
+            ? `Showing ${pagination.total} repositories`
+            : ""}
+        </div>
+
         {/* Search bar */}
         <div className="mb-6 relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-500" />
+          <Search aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-500" />
           <input
             ref={searchRef}
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Search repos, languages, tags..."
+            aria-label="Search open source repositories"
             className="w-full pl-10 pr-10 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
           />
           <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-stone-200 dark:border-white/10 text-[10px] font-mono text-stone-400 dark:text-stone-500 bg-stone-50 dark:bg-stone-800">
@@ -573,8 +627,10 @@ export default function RepoDiscoveryPage() {
           <RecommendedSection onSelect={handleOpenRepo} />
         )}
 
-        {/* Filter bar */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
+        {/* Accessible Filter Fieldset */}
+        <fieldset className="flex flex-wrap items-center gap-2 mb-4">
+          <legend className="sr-only">Filter repositories</legend>
+          
           {/* Domain chips */}
           {REPO_DOMAINS.map((d) => {
             const active = selectedDomain === d.key;
@@ -582,6 +638,8 @@ export default function RepoDiscoveryPage() {
               <button
                 key={d.key}
                 type="button"
+                aria-pressed={active}
+                aria-label={`Filter by domain: ${d.label}`}
                 onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
                 className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
                   active
@@ -646,6 +704,9 @@ export default function RepoDiscoveryPage() {
           {/* More filters toggle */}
           <button
             type="button"
+            aria-expanded={showFilters}
+            aria-controls="expanded-filters-section"
+            aria-label="Toggle additional filters"
             onClick={() => setShowFilters(!showFilters)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
               activeFilters > 0
@@ -671,6 +732,7 @@ export default function RepoDiscoveryPage() {
               size="sm"
               onClick={() => setSortOpen(!sortOpen)}
               aria-haspopup="listbox"
+              aria-label="Sort repositories"
               aria-expanded={sortOpen}
             >
               <TrendingUp className="w-3 h-3" />
@@ -694,6 +756,7 @@ export default function RepoDiscoveryPage() {
                       variant="ghost"
                       size="sm"
                       role="option"
+                      aria-label={`Sort by ${opt.label}`}
                       aria-selected={sortKey === opt.key}
                       onClick={() => {
                         updateFilter("sort", opt.key);
@@ -712,12 +775,13 @@ export default function RepoDiscoveryPage() {
               )}
             </AnimatePresence>
           </div>
-        </div>
+        </fieldset>
 
         {/* Expanded filters */}
         <AnimatePresence>
           {showFilters && (
             <motion.div
+              id="expanded-filters-section"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -725,10 +789,12 @@ export default function RepoDiscoveryPage() {
             >
               <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
                 <div>
-                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
+                  <label htmlFor="difficulty-filter" className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     difficulty
                   </label>
                   <select
+                    id="difficulty-filter"
+                    aria-label="Filter by difficulty"
                     value={selectedDifficulty}
                     onChange={(e) => updateFilter("difficulty", e.target.value)}
                     className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
@@ -778,6 +844,7 @@ export default function RepoDiscoveryPage() {
                   <div className="flex items-end">
                     <button
                       type="button"
+                      aria-label="Clear all active filters"
                       onClick={() => {
                         setSearchParams(new URLSearchParams(), { replace: true });
                         setInputValue("");
@@ -793,8 +860,8 @@ export default function RepoDiscoveryPage() {
           )}
         </AnimatePresence>
 
-        {/* Results count */}
-        <div className="flex items-center justify-between mb-4">
+        {/* Results count (Visual only, SR already read the live region above) */}
+        <div className="flex items-center justify-between mb-4" aria-hidden="true">
           <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
             {pagination ? (
               <>
@@ -812,7 +879,7 @@ export default function RepoDiscoveryPage() {
 
         {/* Loading */}
         {isLoading && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true">
             {Array.from({ length: 6 }).map((_, i) => (
               <RepoCardSkeleton key={i} />
             ))}
@@ -821,9 +888,9 @@ export default function RepoDiscoveryPage() {
 
         {/* Error */}
         {isError && (
-          <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
+          <div role="alert" className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
             <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
-              <AlertCircle className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+              <AlertCircle aria-hidden="true" className="w-5 h-5 text-stone-400 dark:text-stone-500" />
             </div>
             <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">Failed to load repositories</h3>
             <p className="text-sm text-stone-500 dark:text-stone-400">There was an error fetching the list. Please try again later.</p>
@@ -834,7 +901,7 @@ export default function RepoDiscoveryPage() {
         {!isLoading && !isError && repos.length === 0 && (
           <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
             <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
-              <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+              <Search aria-hidden="true" className="w-5 h-5 text-stone-400 dark:text-stone-500" />
             </div>
             <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">No repositories found</h3>
             <p className="text-sm text-stone-500 dark:text-stone-400">Try adjusting your search or filters.</p>
@@ -844,7 +911,11 @@ export default function RepoDiscoveryPage() {
         {/* Cards grid */}
 
         {!isLoading && !isError && repos.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div 
+            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            role="grid"
+            aria-label="Open source repositories"
+          >
             <AnimatePresence mode="popLayout">
               {repos.map((repo, i) => (
                 <RepoCard key={repo.id} repo={repo} index={i} onSelect={handleOpenRepo} />
@@ -868,7 +939,7 @@ export default function RepoDiscoveryPage() {
         <SuggestRepoModal open={showSuggestModal} onClose={() => setShowSuggestModal(false)} />
       </AnimatePresence>
 
-      {/* Detail Modal */}
+      {/* Accessible Detail Modal */}
       <AnimatePresence>
         {selectedRepo && (
           <motion.div
@@ -879,6 +950,10 @@ export default function RepoDiscoveryPage() {
             onClick={handleCloseRepo}
           >
             <motion.div
+              id="repo-modal-content" // NEW: Required for Focus Trap
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="repo-dialog-title"
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -899,7 +974,8 @@ export default function RepoDiscoveryPage() {
                         repository
                       </span>
                     </div>
-                    <h2 className="text-base font-bold text-stone-900 dark:text-stone-50 truncate">
+                    {/* ID links back to aria-labelledby on the dialog */}
+                    <h2 id="repo-dialog-title" className="text-base font-bold text-stone-900 dark:text-stone-50 truncate">
                       {selectedRepo.owner}/{selectedRepo.name}
                     </h2>
                   </div>
@@ -927,12 +1003,13 @@ export default function RepoDiscoveryPage() {
                     )}
                   </button>
                   <button
+                    id="repo-modal-close" // NEW: Required for Focus Trap auto-focus
                     type="button"
                     onClick={handleCloseRepo}
                     className="w-8 h-8 rounded-md flex items-center justify-center text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-white/5 cursor-pointer"
-                    aria-label="Close"
+                    aria-label="Close dialog"
                   >
-                    <X className="w-4 h-4" />
+                    <X aria-hidden="true" className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -952,7 +1029,7 @@ export default function RepoDiscoveryPage() {
                   </span>
                   {selectedRepo.trending && (
                     <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-stone-900 dark:bg-stone-50 text-lime-400">
-                      <Flame size={10} /> trending
+                      <Flame aria-hidden="true" size={10} /> trending
                     </span>
                   )}
                 </div>
@@ -966,7 +1043,7 @@ export default function RepoDiscoveryPage() {
                     </p>
                   </div>
                   <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex items-start gap-2">
-                    <BookOpen className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0 mt-0.5" />
+                    <BookOpen aria-hidden="true" className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0 mt-0.5" />
                     <span>{selectedRepo.description}</span>
                   </p>
                 </div>
@@ -983,7 +1060,7 @@ export default function RepoDiscoveryPage() {
                       className="p-3 border-r border-b border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-center"
                     >
                       <div className="flex items-center justify-center gap-1.5 mb-1">
-                        <s.icon className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
+                        <s.icon aria-hidden="true" className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
                         <span className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">{s.value}</span>
                       </div>
                       <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{s.label}</p>
@@ -997,7 +1074,7 @@ export default function RepoDiscoveryPage() {
                     <div className="flex items-center gap-1.5 mb-2">
                       <div className="h-1 w-1 bg-lime-400"></div>
                       <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
-                        <Code2 className="w-3 h-3" />
+                        <Code2 aria-hidden="true" className="w-3 h-3" />
                         tech stack
                       </p>
                     </div>
@@ -1036,7 +1113,7 @@ export default function RepoDiscoveryPage() {
                     <div className="flex items-center gap-1.5 mb-2">
                       <div className="h-1 w-1 bg-lime-400"></div>
                       <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
-                        <Wand2 className="w-3 h-3" />
+                        <Wand2 aria-hidden="true" className="w-3 h-3" />
                         why contribute
                       </p>
                     </div>
@@ -1068,16 +1145,17 @@ export default function RepoDiscoveryPage() {
                   </div>
                 </div>
 
-                {/* Quick actions */}
+                {/* Quick actions & View on GitHub */}
                 <div className="grid grid-cols-2 gap-2">
                   <a
                     href={selectedRepo.url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`Open ${selectedRepo.name} on GitHub`}
                     className="group flex items-center justify-center gap-2 py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 text-sm font-bold transition-colors no-underline"
                   >
                     Open on GitHub
-                    <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                    <ExternalLink aria-hidden="true" className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                   </a>
                   <button
                     type="button"

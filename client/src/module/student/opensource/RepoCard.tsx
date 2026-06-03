@@ -27,22 +27,24 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
       className="h-full"
     >
       <button
+        role="gridcell"
+        aria-label={`${repo.name} by ${repo.owner}, ${repo.difficulty} difficulty, ${repo.stars} stars, ${repo.openIssues} open issues`}
         onClick={() => onSelect(repo)}
         className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
       >
         {repo.trending && (
           <div className="absolute -top-2 right-4 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
-            <Flame size={10} aria-hidden />
+            <Flame size={10} aria-hidden="true" />
             trending
           </div>
         )}
 
-        <div className="flex flex-col flex-1 p-5">
+        {/* aria-hidden="true" on the inner content ensures screen readers only read our clean aria-label above */}
+        <div className="flex flex-col flex-1 p-5" aria-hidden="true">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <div
                 className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-sm font-bold text-stone-700 dark:text-stone-200"
-                aria-hidden
               >
                 {repo.owner[0].toUpperCase()}
               </div>
@@ -89,7 +91,6 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
               <span
                 className="inline-block h-2 w-2 rounded-full"
                 style={{ backgroundColor: LANGUAGE_COLORS[repo.language] ?? "#888" }}
-                aria-hidden
               />
               {repo.language}
             </span>
@@ -106,21 +107,21 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
           <div className="flex items-center justify-between pt-3 border-t border-stone-200 dark:border-white/10">
             <div className="flex items-center gap-3 text-[11px] font-mono text-stone-500 dark:text-stone-400">
               <span className="flex items-center gap-1">
-                <Star size={12} className="text-lime-600 dark:text-lime-400" aria-hidden />
+                <Star size={12} className="text-lime-600 dark:text-lime-400" />
                 {formatCount(repo.stars)}
               </span>
               <span className="flex items-center gap-1">
-                <GitFork size={12} aria-hidden />
+                <GitFork size={12} />
                 {formatCount(repo.forks)}
               </span>
               <span className="flex items-center gap-1">
-                <CircleDot size={12} aria-hidden />
+                <CircleDot size={12} />
                 {formatCount(repo.openIssues)}
               </span>
             </div>
             <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors">
               details
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" aria-hidden />
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
             </span>
           </div>
         </div>
@@ -131,7 +132,7 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
 
 export const RepoCardSkeleton = React.memo(function RepoCardSkeleton() {
   return (
-    <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5 animate-pulse">
+    <div role="gridcell" aria-busy="true" className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5 animate-pulse">
       <div className="flex items-start gap-3 mb-3">
         <div className="h-9 w-9 rounded-md bg-stone-100 dark:bg-white/5" />
         <div className="flex-1">
