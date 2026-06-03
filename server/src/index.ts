@@ -114,7 +114,7 @@ app.use(
         scriptSrc: ["'self'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
-        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com"],
+        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com", "https://intern-hack-prod-bucket.s3.ap-south-1.amazonaws.com"],
         frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com", "blob:"],
         fontSrc: ["'self'", "https:", "data:"],
       },

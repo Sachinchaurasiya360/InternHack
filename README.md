@@ -270,6 +270,8 @@ InternHack/
     └── REPO_MAP.md           # Detailed module map
 ```
 
+> 📊 **Database Schema:** For a visual overview of all models and their relationships, see [docs/database-schema.md](./docs/database-schema.md).
+
 ### Module Pattern (Server)
 
 Every backend feature follows: **routes** → **controller** → **service**

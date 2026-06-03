@@ -202,7 +202,8 @@ export default function AtsScorePage() {
     doc.setFont("helvetica", "normal");
 
     result.suggestions.forEach((suggestion) => {
-      const lines = doc.splitTextToSize(`• ${suggestion}`, 160);
+      const text = typeof suggestion === "string" ? suggestion : (suggestion as { suggestion?: string }).suggestion ?? String(suggestion);
+      const lines = doc.splitTextToSize(`• ${text}`, 160);
       const blockHeight = lines.length * 6 + 2;
 
       if (y + blockHeight > pageHeight - 20) {
@@ -1123,7 +1124,7 @@ export default function AtsScorePage() {
                           text={[
                             `ATS Score: ${result.overallScore}/100`,
                             `Tier: ${overallTier.label}`,
-                            `\nSuggestions:\n${result.suggestions.map((s, i) => `${i + 1}. ${s}`).join("\n")}`,
+                            `\nSuggestions:\n${result.suggestions.map((s, i) => `${i + 1}. ${typeof s === "string" ? s : (s as { suggestion?: string }).suggestion ?? ""}`).join("\n")}`,
                           ].join("\n")}
                         />
                         <span

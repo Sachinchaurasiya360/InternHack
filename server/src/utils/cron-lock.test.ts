@@ -4,7 +4,7 @@ import { prisma } from "../database/db.js";
 
 vi.mock("../database/db.js", () => ({
   prisma: {
-    $transaction: vi.fn(),
+    $queryRaw: vi.fn(),
   },
 }));
 
@@ -16,39 +16,31 @@ describe("withAdvisoryLock", () => {
   });
 
   it("should run the function if lock is acquired", async () => {
-    vi.mocked(prisma.$transaction).mockImplementation(async (callback: any) => {
-      const tx = {
-        $queryRaw: vi.fn().mockResolvedValue([{ locked: true }]),
-      };
-      return await callback(tx);
-    });
+    vi.mocked(prisma.$queryRaw)
+      .mockResolvedValueOnce([{ locked: true }])   // pg_try_advisory_lock
+      .mockResolvedValueOnce([{ pg_advisory_unlock: true }]); // pg_advisory_unlock
 
     await withAdvisoryLock("test-job", mockFn);
 
-    expect(prisma.$transaction).toHaveBeenCalledOnce();
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(2);
     expect(mockFn).toHaveBeenCalledOnce();
   });
 
   it("should skip the function if lock is NOT acquired", async () => {
-    vi.mocked(prisma.$transaction).mockImplementation(async (callback: any) => {
-      const tx = {
-        $queryRaw: vi.fn().mockResolvedValue([{ locked: false }]),
-      };
-      return await callback(tx);
-    });
+    vi.mocked(prisma.$queryRaw).mockResolvedValueOnce([{ locked: false }]);
 
     await withAdvisoryLock("locked-job", mockFn);
 
-    expect(prisma.$transaction).toHaveBeenCalledOnce();
+    expect(prisma.$queryRaw).toHaveBeenCalledOnce();
     expect(mockFn).not.toHaveBeenCalled();
   });
 
-  it("should handle transaction errors gracefully", async () => {
-    vi.mocked(prisma.$transaction).mockRejectedValueOnce(new Error("DB Error"));
+  it("should handle errors gracefully", async () => {
+    vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error("DB Error"));
 
     await withAdvisoryLock("error-job", mockFn);
 
-    expect(prisma.$transaction).toHaveBeenCalledOnce();
+    expect(prisma.$queryRaw).toHaveBeenCalledOnce();
     expect(mockFn).not.toHaveBeenCalled();
   });
 });

@@ -14,7 +14,7 @@
     "prisma:generate": "npx prisma generate --config src/database/prisma.config.ts",
     "seed": "tsx src/database/seeds/seed.ts",
     "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
-    "seed:admin": "tsx src/database/seed-admin.ts"
+    "seed:admin": "tsx src/database/seeds/seed.ts"
   },
   "keywords": [],
   "author": "Sachin Chaurasiya",
