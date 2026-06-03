@@ -99,7 +99,7 @@ server: {
   },
 },
   build: {
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
         // Use function form so we can split both vendor AND lesson-data into

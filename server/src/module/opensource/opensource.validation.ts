@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const opensourceSortFields = ["stars", "forks", "name", "createdAt", "openIssues", "lastUpdated"] as const;
+
 export const opensourceListQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
@@ -7,11 +9,15 @@ export const opensourceListQuerySchema = z.object({
   language: z.string().optional(),
   difficulty: z.string().optional(),
   domain: z.string().optional(),
-  sortBy: z.enum(["stars", "forks", "name", "createdAt", "openIssues", "lastUpdated"]).default("stars"),
+  sort: z.enum(opensourceSortFields).optional(),
+  sortBy: z.enum(opensourceSortFields).optional(),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
   trending: z.enum(["true", "false"]).optional(),
   ids: z.string().optional(), // Comma-separated string of IDs
-});
+}).transform(({ sort, ...query }) => ({
+  ...query,
+  sortBy: sort ?? query.sortBy ?? "stars",
+}));
 
 export const repoIdSchema = z.object({
   id: z.coerce.number().int().positive("Invalid repo ID"),

@@ -164,13 +164,14 @@ jobs:
             let targetLabel = null;
             if (score >= 5) {
               targetLabel = 'quality:exceptional';
-            } else if (score >= 2) {
+            } else {
+              // Always assign at least quality:clean so every PR gets a quality label
               targetLabel = 'quality:clean';
             }
 
             console.log(`PR #${prNumber} quality score: ${score}/10`);
             reasons.forEach(r => console.log(` ${r}`));
-            console.log(`Target quality label: ${targetLabel || 'none (score too low)'}`);
+            console.log(`Target quality label: ${targetLabel}`);
 
             await ensureQualityLabelsExist();
 
@@ -195,8 +196,6 @@ jobs:
                 labels: [targetLabel]
               });
               console.log(`Applied quality label: ${targetLabel}`);
-            } else if (!targetLabel) {
-              console.log('PR quality score is below threshold — no quality label applied.');
             } else {
               console.log(`Quality label already correct: ${targetLabel} — skipping.`);
             }
