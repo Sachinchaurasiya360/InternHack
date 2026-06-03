@@ -21,12 +21,15 @@ export class OpensourceService {
     if (language) where.language = language;
     if (difficulty) where.difficulty = difficulty;
     if (domain) where.domain = domain;
-    if (search) {
+
+    if (search?.trim()) {
+      const s = search.trim();
+
       where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { owner: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { tags: { hasSome: [search] } },
+        { name: { contains: s, mode: "insensitive" } },
+        { owner: { contains: s, mode: "insensitive" } },
+        { description: { contains: s, mode: "insensitive" } },
+        { tags: { hasSome: [s] } },
       ];
     }
 
@@ -59,10 +62,12 @@ export class OpensourceService {
 
     const where: any = {};
 
-    if (search) {
+    if (search?.trim()) {
+      const s = search.trim();
+
       where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
+        { name: { contains: s, mode: "insensitive" } },
+        { description: { contains: s, mode: "insensitive" } },
       ];
     }
 
