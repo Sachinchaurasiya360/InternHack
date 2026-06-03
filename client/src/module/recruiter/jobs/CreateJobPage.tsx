@@ -58,6 +58,7 @@ export default function CreateJobPage() {
   const canAdvance = stepIdx === 0 ? basicsComplete : true;
 
   const handleSubmit = async () => {
+    if (loading) return;
     setError("");
     setLoading(true);
 
