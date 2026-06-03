@@ -133,11 +133,11 @@ export default function ApplicationsList() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Candidate</th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Status</th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Rounds</th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Applied</th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Actions</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Candidate</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Status</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Rounds</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Applied</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
