@@ -486,6 +486,9 @@ export class RecruiterService {
       statusCounts[s.status] = s._count.id;
     }
 
+    const hiredCount = statusCounts["HIRED"] ?? 0;
+    const conversionRate = totalApplications === 0 ? 0 : (hiredCount / totalApplications) * 100;
+
     const roundAnalytics = rounds.map((round) => {
       const completed = round.roundSubmissions.filter((s) => s.status === "COMPLETED").length;
       const inProgress = round.roundSubmissions.filter((s) => s.status === "IN_PROGRESS").length;
@@ -506,6 +509,8 @@ export class RecruiterService {
       jobId,
       jobTitle: job.title,
       totalApplications,
+      hiredCount,
+      conversionRate,
       statusBreakdown: statusCounts,
       roundAnalytics,
     };
