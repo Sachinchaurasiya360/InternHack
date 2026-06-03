@@ -428,7 +428,14 @@ export class RecruiterService {
 
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
+    // checking round ownership
+    const round = await prisma.round.findUnique({
+      where: { id: roundId },
+      select: { jobId: true },
+    });
 
+    if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
+    
     return prisma.roundSubmission.update({
       where: { applicationId_roundId: { applicationId, roundId } },
       data: {
