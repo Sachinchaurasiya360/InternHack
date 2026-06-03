@@ -181,15 +181,7 @@ export default function RecruiterDashboard() {
                 {Object.entries(data.statusBreakdown).map(([status, count]) => (
                   <li key={status} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      {(() => {
-                        const StatusIcon = getStatusIcon(status);
-                        return (
-                          <StatusIcon
-                            className={`w-3.5 h-3.5 shrink-0 ${getStatusDot(status).replace("bg-", "text-")}`}
-                            aria-hidden="true"
-                          />
-                        );
-                      })()}
+                      {renderStatusIcon(status)}
                       <span className="text-sm text-stone-700 dark:text-stone-300 truncate">
                         {humanizeStatus(status)}
                       </span>
@@ -326,16 +318,7 @@ export default function RecruiterDashboard() {
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
                       <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
-                        {(() => {
-                          const StatusIcon = getStatusIcon(app.status);
-
-                          return (
-                            <StatusIcon
-                              className={`w-3.5 h-3.5 ${getStatusDot(app.status).replace("bg-", "text-")}`}
-                              aria-hidden="true"
-                            />
-                          );
-                        })()}
+                        {renderStatusIcon(status)}
                         {humanizeStatus(app.status)}
                       </span>
                       <span className="text-[11px] font-mono text-stone-400 tabular-nums">
@@ -417,4 +400,14 @@ function getStatusIcon(status: string) {
     default:
       return CircleDashed;
   }
+}
+
+function renderStatusIcon(status: string) {
+  const StatusIcon = getStatusIcon(status);
+  return (
+    <StatusIcon
+      className={`w-3.5 h-3.5 shrink-0 ${getStatusDot(status).replace("bg-", "text-")}`}
+      aria-hidden="true"
+    />
+  );
 }
