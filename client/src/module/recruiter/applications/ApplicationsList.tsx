@@ -180,7 +180,7 @@ const handleStatusChange = async (appId: number, status: string) => {
                       {app.roundSubmissions?.length || 0} completed
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
-                      {new Date(app.createdAt).toLocaleDateString()}
+                      {new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(app.createdAt))}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
