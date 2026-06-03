@@ -48,6 +48,29 @@ const STATUS_STYLE: Record<string, string> = {
   REJECTED: "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
 };
 
+// skill language map
+const SKILL_LANGUAGE_MAP: Record<string, string[]> = {
+  react: ["JavaScript", "TypeScript"],
+  nextjs: ["JavaScript", "TypeScript"],
+  javascript: ["JavaScript"],
+  typescript: ["TypeScript"],
+  nodejs: ["JavaScript", "TypeScript"],
+  express: ["JavaScript", "TypeScript"],
+  python: ["Python"],
+  django: ["Python"],
+  flask: ["Python"],
+  fastapi: ["Python"],
+  java: ["Java"],
+  spring: ["Java"],
+  golang: ["Go"],
+  go: ["Go"],
+  cpp: ["C++"],
+  cplusplus: ["C++"],
+  c: ["C"],
+  rust: ["Rust"],
+  php: ["PHP"],
+  laravel: ["PHP"],
+};
 
 export default function RepoDiscoveryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,7 +79,7 @@ export default function RepoDiscoveryPage() {
   const search = searchParams.get("q") || "";
   const selectedDomain = searchParams.get("domain") || "ALL";
   const selectedDifficulty = searchParams.get("difficulty") || "ALL";
-  const selectedLanguage = searchParams.get("language") || "ALL";
+  const selectedLanguage = searchParams.getAll("language") || "ALL";
   const sortKey = searchParams.get("sort") || "stars";
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
@@ -122,6 +145,26 @@ export default function RepoDiscoveryPage() {
   const { copied: copiedCloneUrl, copy: copyCloneUrl } = useCopyToClipboard();
   const { user } = useAuthStore();
 
+  const languageMode = searchParams.get("languageMode") || "manual";
+
+  const inferredLanguages = useMemo(() => {
+    if (!user?.skills?.length) return [];
+
+    const normalizedSkills = user.skills.map((skill) =>
+      skill.toLowerCase().replace(/[^a-z]/g, "")
+    );
+
+    const langs = new Set<string>();
+
+    normalizedSkills.forEach((skill) => {
+      const mapped = SKILL_LANGUAGE_MAP[skill];
+      if (mapped) {
+        mapped.forEach((lang) => langs.add(lang));
+      }
+    });
+
+    return Array.from(langs);
+  }, [user]);
   const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
@@ -183,7 +226,9 @@ export default function RepoDiscoveryPage() {
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
-    if (selectedLanguage !== "ALL") params.language = selectedLanguage;
+    if (languageMode === "auto") params.language = inferredLanguages;
+    else if (selectedLanguage.length > 0) params.language = selectedLanguage;
+    
     if (trendingOnly) params.trending = "true";
 
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
@@ -226,6 +271,13 @@ export default function RepoDiscoveryPage() {
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
   }, [languagesData]);
 
+  const isMyLanguagesActive = useMemo(() => {
+    if (!inferredLanguages.length) return false;
+    if (selectedLanguage.length !== inferredLanguages.length) return false;
+
+    return inferredLanguages.every((l) => selectedLanguage.includes(l));
+  }, [inferredLanguages, selectedLanguage]);
+
   const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
 
@@ -240,6 +292,23 @@ export default function RepoDiscoveryPage() {
       languages: [...new Set(repos.map((r) => r.language))].length,
     };
   }, [repos, pagination]);
+
+  const applyLanguages = (langs: string[]) => {
+  setSearchParams((prev) => {
+    const params = new URLSearchParams(prev);
+
+    params.delete("language");
+
+    langs.forEach((lang) => {
+      params.append("language", lang);
+    });
+
+    params.set("page", "1");
+
+    return params;
+  }, { replace: true });
+  
+};
 
   const updateFilter = (key: string, value: string | number) => {
     setSearchParams(
@@ -265,7 +334,7 @@ export default function RepoDiscoveryPage() {
   const activeFilters =
     (selectedDomain !== "ALL" ? 1 : 0) +
     (selectedDifficulty !== "ALL" ? 1 : 0) +
-    (selectedLanguage !== "ALL" ? 1 : 0);
+    (selectedLanguage.length > 0 ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -535,6 +604,41 @@ export default function RepoDiscoveryPage() {
             Trending
           </button>
 
+          {inferredLanguages.length > 0 && (
+            <button
+            type="button"
+            onClick={() => {
+              setSearchParams((prev) => {
+                const params = new URLSearchParams(prev);
+
+                const isActive = languageMode === "auto";
+
+                if (isActive) {
+                  params.delete("languageMode");
+                  params.delete("language");
+                } else {
+                  params.set("languageMode", "auto");
+
+                  params.delete("language");
+                  inferredLanguages.forEach((lang) => {
+                    params.append("language", lang);
+                  });
+                }
+
+                params.set("page", "1");
+                return params;
+              }, { replace: true });
+            }}
+            className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
+              languageMode === "auto"
+                ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+            }`}
+          >
+            My Languages
+          </button>
+          )}
+
           {/* More filters toggle */}
           <button
             type="button"
@@ -630,7 +734,6 @@ export default function RepoDiscoveryPage() {
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     language
@@ -638,8 +741,29 @@ export default function RepoDiscoveryPage() {
 
                   <select
                     value={selectedLanguage}
-                    onChange={(e) => updateFilter("language", e.target.value)}
-                    className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
+                    disabled={languageMode === "auto"}
+                    onChange={(e) => {
+                      const values = Array.from(e.target.selectedOptions).map(
+                        (option) => option.value
+                      );
+
+                      setSearchParams((prev) => {
+                        const params = new URLSearchParams(prev);
+
+                        params.delete("language");
+
+                        values.forEach((lang) => {
+                          if (lang !== "ALL") {
+                            params.append("language", lang);
+                          }
+                        });
+
+                        params.set("page", "1");
+
+                        return params;
+                      }, { replace: true });
+                    }}
+                    className={`px-3 ${languageMode === "auto" ? "opacity-50 cursor-not-allowed" : ""} py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25`}
                   >
                     <option value="ALL">All Languages</option>
                     {languages.map((lang) => (
@@ -677,7 +801,7 @@ export default function RepoDiscoveryPage() {
                 <span className="text-stone-900 dark:text-stone-50">{pagination.total}</span>
                 {" "}repositor{pagination.total !== 1 ? "ies" : "y"}
                 {selectedDomain !== "ALL" && <> / <span className="text-stone-900 dark:text-stone-50">{REPO_DOMAINS.find((d) => d.key === selectedDomain)?.label}</span></>}
-                {selectedLanguage !== "ALL" && <> / <span className="text-stone-900 dark:text-stone-50">{selectedLanguage}</span></>}
+                {selectedLanguage.length > 0 && <> / <span className="text-stone-900 dark:text-stone-50">{selectedLanguage.join(", ")}</span></>}
                 {search && <> / matching "<span className="text-stone-900 dark:text-stone-50">{search}</span>"</>}
               </>
             ) : (
