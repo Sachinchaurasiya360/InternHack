@@ -94,7 +94,7 @@ export const ProjectCard = React.memo(function ProjectCard({ p }: { p: ProjectIt
   return (
     <div className="px-4 py-3.5 bg-stone-50 dark:bg-stone-800/30 rounded-xl border border-stone-100 dark:border-stone-800/80 hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 hover:shadow-xs group">
       <div className="flex items-center gap-2 mb-1 justify-between">
-        <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 group-hover:text-indigo-650 dark:group-hover:text-indigo-400 transition-colors truncate max-w-[70%]">{p.title}</h4>
+        <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate max-w-[70%]">{p.title}</h4>
         {p.builtAt && (
           <span className="text-[10px] text-stone-500 dark:text-stone-400 font-mono flex items-center gap-1 shrink-0 bg-stone-100 dark:bg-stone-800 px-2 py-0.5 rounded-sm">
             <Calendar className="w-3 h-3" /> {p.builtAt}
@@ -105,12 +105,12 @@ export const ProjectCard = React.memo(function ProjectCard({ p }: { p: ProjectIt
       {p.techStack.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2.5">
           {p.techStack.map((t, i) => (
-            <span key={i} className="px-2 py-0.5 text-[10px] font-medium bg-stone-100 dark:bg-stone-800 text-stone-650 dark:text-stone-300 rounded-md border border-stone-200/30 dark:border-stone-700/30">{t}</span>
+            <span key={i} className="px-2 py-0.5 text-[10px] font-medium bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 rounded-md border border-stone-200/30 dark:border-stone-700/30">{t}</span>
           ))}
         </div>
       )}
       {(p.liveUrl || p.repoUrl) && (
-        <div className="flex gap-3 mt-3 pt-3 border-t border-stone-250/30 dark:border-stone-800/30">
+        <div className="flex gap-3 mt-3 pt-3 border-t border-stone-200/30 dark:border-stone-800/30">
           {p.liveUrl && (
             <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
               <ExternalLink className="w-3 h-3" /> Live
@@ -130,7 +130,7 @@ export const ProjectCard = React.memo(function ProjectCard({ p }: { p: ProjectIt
 // Memoized Achievement Card Component
 export const AchievementCard = React.memo(function AchievementCard({ a }: { a: AchievementItem }) {
   return (
-    <div className="flex items-start gap-3.5 px-4 py-3.5 bg-stone-50 dark:bg-stone-800/30 rounded-xl border border-stone-100 dark:border-stone-800/80 hover:border-rose-500 dark:hover:border-rose-450 transition-all duration-300 shadow-xs">
+    <div className="flex items-start gap-3.5 px-4 py-3.5 bg-stone-50 dark:bg-stone-800/30 rounded-xl border border-stone-100 dark:border-stone-800/80 hover:border-rose-500 dark:hover:border-rose-400 transition-all duration-300 shadow-xs">
       <div className="w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/30 flex items-center justify-center shrink-0">
         <Trophy className="w-4.5 h-4.5 text-rose-500 dark:text-rose-400" />
       </div>
@@ -330,7 +330,7 @@ export default function PublicProfilePage() {
             {(profile.linkedinUrl || profile.githubUrl || profile.portfolioUrl) && (
               <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-5 pt-4 border-t border-stone-100 dark:border-stone-800/80">
                 {profile.linkedinUrl && (
-                  <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-650 dark:text-blue-400 hover:scale-[1.02] transition-transform">
+                  <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:scale-[1.02] transition-transform">
                     <Linkedin className="w-3.5 h-3.5" /> LinkedIn
                   </a>
                 )}
@@ -340,7 +340,7 @@ export default function PublicProfilePage() {
                   </a>
                 )}
                 {profile.portfolioUrl && (
-                  <a href={profile.portfolioUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-650 dark:text-violet-400 hover:scale-[1.02] transition-transform">
+                  <a href={profile.portfolioUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 hover:scale-[1.02] transition-transform">
                     <Globe className="w-3.5 h-3.5" /> Portfolio
                   </a>
                 )}
@@ -380,7 +380,7 @@ export default function PublicProfilePage() {
                     const v = verifiedMap.get(skill.toLowerCase());
                     return (
                       <span key={skill} className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-medium transition-all ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200/30 dark:border-green-800/35" : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400"}`}>
-                        {v && <ShieldCheck className="w-3 h-3 text-green-600 dark:text-green-450" />}
+                        {v && <ShieldCheck className="w-3 h-3 text-green-600 dark:text-green-400" />}
                         {skill}
                         {v && <span className="text-[9px] opacity-80 font-mono">({v.score}%)</span>}
                       </span>
@@ -405,9 +405,9 @@ export default function PublicProfilePage() {
                 <div className="space-y-2">
                   {profile.resumes.map((url) => (
                     <a key={url} href={url} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-2.5 px-3.5 py-2.5 bg-stone-50 dark:bg-stone-800/30 rounded-xl border border-stone-105 dark:border-white/10 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-white dark:hover:bg-stone-850 transition-all duration-300 no-underline shadow-xs group">
+                      className="flex items-center gap-2.5 px-3.5 py-2.5 bg-stone-50 dark:bg-stone-800/30 rounded-xl border border-stone-100 dark:border-white/10 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-white dark:hover:bg-stone-900 transition-all duration-300 no-underline shadow-xs group">
                       <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
-                        <FileText className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-455" />
+                        <FileText className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
                       </div>
                       <span className="text-xs font-medium text-stone-700 dark:text-stone-300 truncate flex-1">{getFileNameFromUrl(url)}</span>
                       <ExternalLink className="w-3 h-3 text-stone-400 group-hover:text-indigo-500 transition-colors shrink-0" />
