@@ -400,15 +400,14 @@ function VisualizeTab() {
   const [radixStr, setRadixStr] = useState("170, 45, 75, 90, 802, 24, 2, 66");
   const [bucketStr, setBucketStr] = useState("29, 25, 3, 49, 9, 37, 21, 43");
 
-  const countArr = parseArr(countingStr, 8) ?? [4, 2, 2, 8, 3, 3, 1];
-  const radixArr = parseArr(radixStr, 8) ?? [170, 45, 75, 90, 802, 24, 2, 66];
-  const bucketArr = parseArr(bucketStr, 10) ?? [29, 25, 3, 49, 9, 37, 21, 43];
-
   const frames = useMemo(() => {
+    const countArr = parseArr(countingStr, 8) ?? [4, 2, 2, 8, 3, 3, 1];
+    const radixArr = parseArr(radixStr, 8) ?? [170, 45, 75, 90, 802, 24, 2, 66];
+    const bucketArr = parseArr(bucketStr, 10) ?? [29, 25, 3, 49, 9, 37, 21, 43];
     if (algo === "counting") return buildCountingFrames(countArr);
     if (algo === "radix") return buildRadixFrames(radixArr);
     return buildBucketFrames(bucketArr, 4);
-  }, [algo, countArr, radixArr, bucketArr]);
+  }, [algo, countingStr, radixStr, bucketStr]);
 
   const player = useStepPlayer(frames);
   const frame = player.current;

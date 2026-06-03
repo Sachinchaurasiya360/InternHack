@@ -46,12 +46,15 @@ export default function AptitudeCategoriesPage() {
   const { data: categories, isLoading } = useQuery({
     queryKey: queryKeys.aptitude.categories(),
     queryFn: () => api.get<AptitudeCategory[]>("/aptitude/categories").then((r) => r.data),
+    staleTime: 30 * 60 * 1000,
   });
 
   const { data: progress, isSuccess } = useQuery({
     queryKey: queryKeys.aptitude.progress(),
     queryFn: () => api.get<AptitudeProgress>("/aptitude/progress").then((r) => r.data),
     enabled: !!user,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
 const clearFilters = () => {
     setTopicSearch("");

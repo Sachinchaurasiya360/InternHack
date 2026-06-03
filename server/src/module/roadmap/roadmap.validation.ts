@@ -33,7 +33,7 @@ export type EnrollInput = z.infer<typeof enrollSchema>;
 export const updateProgressSchema = z.object({
   status: z.enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "SKIPPED"]).optional(),
   bookmarked: z.boolean().optional(),
-  notes: z.string().max(5000).optional(),
+  notes: z.string().max(1000).optional(),
 }).refine(
   (v) => v.status !== undefined || v.bookmarked !== undefined || v.notes !== undefined,
   { message: "Provide at least one field" },
@@ -67,6 +67,7 @@ export const aiGenerateSchema = z.object({
   knownSkills: z.array(z.string().max(40)).max(20).default([]),
   mustInclude: z.array(z.string().max(40)).max(20).default([]),
   avoid: z.array(z.string().max(40)).max(20).default([]),
+  forceCreate: z.boolean().optional().default(false),
 });
 export type AiGenerateInput = z.infer<typeof aiGenerateSchema>;
 

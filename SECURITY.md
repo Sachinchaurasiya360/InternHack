@@ -42,8 +42,8 @@ When reporting, please provide as much of the following as possible:
 | Action                        | Timeframe          |
 | ----------------------------- | ------------------ |
 | Acknowledgement of report     | Within **48 hours** |
-| Initial assessment            | Within **5 business days** |
-| Status update / fix timeline  | Within **10 business days** |
+| Initial assessment            | Within **2 business days** |
+| Status update / fix timeline  | Within **30 business days** |
 | Public disclosure (if applicable) | After fix is deployed |
 
 ---

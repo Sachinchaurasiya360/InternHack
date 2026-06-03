@@ -8,6 +8,7 @@ import {
   Clock,
   Map as MapIcon,
   Search,
+  Sparkles,
   Users,
   Wand2,
 } from "lucide-react";
@@ -77,12 +78,14 @@ export default function RoadmapsLandingPage() {
   const { data: roadmapsData, isLoading: roadmapsLoading, error: roadmapsError } = useQuery({
     queryKey: queryKeys.roadmaps.list(params),
     queryFn: () => api.get<ListResponse>("/roadmaps", { params }).then(res => res.data),
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: enrollmentsData, isError: enrollmentsError } = useQuery({
     queryKey: queryKeys.roadmaps.enrollments(),
     queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
     enabled: isStudent,
+    staleTime: 5 * 60 * 1000,
   });
 
   const roadmaps = useMemo(() => roadmapsData?.roadmaps || [], [roadmapsData]);
@@ -120,12 +123,11 @@ export default function RoadmapsLandingPage() {
     setSearchParams({}, { replace: true });
   };
 
-  // Index of slugs the student is already enrolled in
-  const enrolledBySlug = useMemo(() => {
-    const map = new Map<string, RoadmapEnrollmentListItem>();
-    for (const e of enrollments) map.set(e.roadmap.slug, e);
-    return map;
-  }, [enrollments]);
+  // Set of enrolled slugs for fast lookup
+  const enrolledSlugs = useMemo(
+    () => new Set(enrollments.map((e) => e.roadmap.slug)),
+    [enrollments],
+  );
 
   // Secondary client-side filtering for ultra-smooth UX while API loads
   const filtered = useMemo(() => {
@@ -156,8 +158,32 @@ export default function RoadmapsLandingPage() {
     return result;
   }, [roadmaps, debouncedSearch, level, tag, category]);
 
-  const inProgress = filtered.filter((r) => enrolledBySlug.has(r.slug));
-  const available = filtered.filter((r) => !enrolledBySlug.has(r.slug));
+  // "In progress" is built directly from enrollments so AI-generated roadmaps
+  // (isPublished: false) are included even though they're absent from the
+  // public catalogue. Apply the same text/level/tag filters where possible.
+  const inProgressEnrollments = useMemo(() => {
+    const needle = debouncedSearch.trim().toLowerCase();
+    return enrollments.filter((e) => {
+      const r = e.roadmap;
+      if (needle) {
+        const matchesText =
+          r.title.toLowerCase().includes(needle) ||
+          r.shortDescription.toLowerCase().includes(needle) ||
+          (r.tags ?? []).some((t) => t.toLowerCase().includes(needle));
+        if (!matchesText) return false;
+      }
+      if (level && level !== "ALL_LEVELS" && r.level && r.level !== level) return false;
+      if (tag && !(r.tags ?? []).includes(tag)) return false;
+      if (category && !(r.tags ?? []).includes(category)) return false;
+      return true;
+    });
+  }, [enrollments, debouncedSearch, level, tag, category]);
+
+  // "Available" = public catalogue minus already-enrolled slugs
+  const available = useMemo(
+    () => filtered.filter((r) => !enrolledSlugs.has(r.slug)),
+    [filtered, enrolledSlugs],
+  );
 
   // ItemList JSON-LD over the visible (unfiltered) catalogue
   const itemListSchema = {
@@ -405,28 +431,27 @@ export default function RoadmapsLandingPage() {
             </div>
           ) : (
             <>
-              {inProgress.length > 0 && (
+              {inProgressEnrollments.length > 0 && (
                 <RoadmapSection
                   label="in progress"
                   title="Pick up where you left off"
-                  count={inProgress.length}
+                  count={inProgressEnrollments.length}
                 >
-                  {inProgress.map((r, idx) => (
-                    <RoadmapCard
-                      key={r.id}
-                      roadmap={r}
+                  {inProgressEnrollments.map((e, idx) => (
+                    <EnrollmentCard
+                      key={e.id}
+                      enrollment={e}
                       index={idx}
-                      enrollment={enrolledBySlug.get(r.slug)}
                     />
                   ))}
                 </RoadmapSection>
               )}
 
               <RoadmapSection
-                label={inProgress.length > 0 ? "explore more" : "all roadmaps"}
-                title={inProgress.length > 0 ? "More paths to explore" : "Career paths"}
+                label={inProgressEnrollments.length > 0 ? "explore more" : "all roadmaps"}
+                title={inProgressEnrollments.length > 0 ? "More paths to explore" : "Career paths"}
                 count={available.length}
-                className={inProgress.length > 0 ? "mt-14" : ""}
+                className={inProgressEnrollments.length > 0 ? "mt-14" : ""}
               >
                 {available.map((r, idx) => (
                   <RoadmapCard key={r.id} roadmap={r} index={idx} />
@@ -492,24 +517,25 @@ function RoadmapSection({
   );
 }
 
-function RoadmapCard({
-  roadmap, index, enrollment,
+/**
+ * Card for roadmaps the user is enrolled in (including AI-generated ones that
+ * are not in the public catalogue). Reads directly from the enrollment object.
+ */
+function EnrollmentCard({
+  enrollment,
+  index,
 }: {
-  roadmap: RoadmapListItem;
+  enrollment: RoadmapEnrollmentListItem;
   index: number;
-  enrollment?: RoadmapEnrollmentListItem | undefined;
 }) {
   const MAX_STAGGER = 8;
   const delay = 0.05 + Math.min(index, MAX_STAGGER) * 0.04;
-  const isEnrolled = !!enrollment;
+  const r = enrollment.roadmap;
+  const isAi = r.isAiGenerated ?? false;
 
-  let percentComplete = 0;
-  if (enrollment && roadmap.topicCount > 0) {
-    const completed = enrollment.topicProgress.filter((p) => p.status === "COMPLETED").length;
-    percentComplete = Math.round((completed / roadmap.topicCount) * 100);
-  }
-
-  const href = isEnrolled ? `/learn/roadmaps/${roadmap.slug}` : `/roadmaps/${roadmap.slug}`;
+  const completed = enrollment.topicProgress.filter((p) => p.status === "COMPLETED").length;
+  const percentComplete =
+    r.topicCount > 0 ? Math.round((completed / r.topicCount) * 100) : 0;
 
   return (
     <li>
@@ -519,13 +545,126 @@ function RoadmapCard({
         transition={{ delay, duration: 0.4 }}
       >
         <Link
-          to={href}
-          aria-label={`${roadmap.title}${isEnrolled ? `, enrolled, ${percentComplete}% complete` : ""}`}
+          to={`/learn/roadmaps/${r.slug}`}
+          aria-label={`${r.title}, enrolled, ${percentComplete}% complete`}
+          className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2"
+        >
+          {/* Top-right badge */}
+          <span
+            className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5"
+            aria-hidden="true"
+          >
+            {isAi ? (
+              <>
+                <Sparkles className="w-3 h-3 text-lime-500" />
+                ai · enrolled
+              </>
+            ) : (
+              <>
+                <span className="h-1 w-1 bg-lime-400" />
+                enrolled
+              </>
+            )}
+          </span>
+
+          <div className="flex items-start gap-3 mb-3 pr-24">
+            <div
+              className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0"
+              aria-hidden="true"
+            >
+              {isAi ? (
+                <Sparkles className="w-5 h-5 text-lime-500" />
+              ) : (
+                <MapIcon className="w-5 h-5 text-lime-600 dark:text-lime-500" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
+                {r.title}
+              </h3>
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+                {r.level ? r.level.replace("_", " ").toLowerCase() : "custom"}
+              </span>
+            </div>
+          </div>
+
+          <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+            {r.shortDescription}
+          </p>
+
+          {/* Progress bar */}
+          <div className="mb-4">
+            <div className="flex items-baseline justify-between mb-1.5" aria-hidden="true">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">progress</span>
+              <span className="text-[10px] font-mono font-bold text-stone-900 dark:text-stone-50 tabular-nums">
+                {percentComplete}%
+              </span>
+            </div>
+            <div
+              role="progressbar"
+              aria-valuenow={percentComplete}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`${r.title} progress`}
+              className="h-1 w-full bg-stone-100 dark:bg-stone-800 overflow-hidden rounded-full"
+            >
+              <motion.div
+                className="h-full bg-lime-500"
+                initial={{ width: 0 }}
+                animate={{ width: `${percentComplete}%` }}
+                transition={{ duration: 0.6, delay: delay + 0.1 }}
+              />
+            </div>
+          </div>
+
+          <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+            <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <span className="inline-flex items-center gap-1">
+                <Clock className="w-3 h-3" aria-hidden="true" />
+                <span>{r.estimatedHours}h</span>
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <BookOpen className="w-3 h-3" aria-hidden="true" />
+                <span>{r.topicCount} topics</span>
+              </span>
+            </div>
+            <ArrowUpRight
+              className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all"
+              aria-hidden="true"
+            />
+          </div>
+        </Link>
+      </motion.div>
+    </li>
+  );
+}
+
+/** Card for public (non-enrolled) roadmaps in the catalogue. */
+function RoadmapCard({
+  roadmap,
+  index,
+}: {
+  roadmap: RoadmapListItem;
+  index: number;
+}) {
+  const MAX_STAGGER = 8;
+  const delay = 0.05 + Math.min(index, MAX_STAGGER) * 0.04;
+
+  return (
+    <li>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay, duration: 0.4 }}
+      >
+        <Link
+          to={`/roadmaps/${roadmap.slug}`}
+          aria-label={roadmap.title}
           className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2"
         >
           <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5" aria-hidden="true">
             <span className="h-1 w-1 bg-lime-400" />
-            {isEnrolled ? "enrolled" : "free"}
+            free
           </span>
 
           <div className="flex items-start gap-3 mb-3 pr-20">
@@ -548,31 +687,6 @@ function RoadmapCard({
           <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
             {roadmap.shortDescription}
           </p>
-
-          {/* Progress bar for enrolled */}
-          {isEnrolled && (
-            <div className="mb-4">
-              <div className="flex items-baseline justify-between mb-1.5" aria-hidden="true">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">progress</span>
-                <span className="text-[10px] font-mono font-bold text-stone-900 dark:text-stone-50 tabular-nums">{percentComplete}%</span>
-              </div>
-              <div
-                role="progressbar"
-                aria-valuenow={percentComplete}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-label={`${roadmap.title} progress`}
-                className="h-1 w-full bg-stone-100 dark:bg-stone-800 overflow-hidden rounded-full"
-              >
-                <motion.div
-                  className="h-full bg-lime-500"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${percentComplete}%` }}
-                  transition={{ duration: 0.6, delay: delay + 0.1 }}
-                />
-              </div>
-            </div>
-          )}
 
           <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
             <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500">

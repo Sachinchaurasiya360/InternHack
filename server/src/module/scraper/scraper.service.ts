@@ -1,5 +1,6 @@
 import cron from "node-cron";
 import { prisma } from "../../database/db.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 import type { BaseScraper } from "./scrapers/base.scraper.js";
 import type { ScrapedJobData } from "./scrapers/base.scraper.js";
 import { ArbeitnowScraper } from "./scrapers/arbeitnow.scraper.js";
@@ -36,7 +37,9 @@ export class ScraperService {
     }
 
     this.cronJob = cron.schedule(schedule, () => {
-      void this.runAllScrapers();
+      void withAdvisoryLock("external-job-scraper", async () => {
+        await this.runAllScrapers();
+      });
     });
 
     console.log(`[Scraper] Cron scheduled: ${schedule}`);

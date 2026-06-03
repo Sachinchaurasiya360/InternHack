@@ -1,10 +1,9 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsUniversity: Grant[] = [
   {
     id: 91,
     name: "MIT Solve",
-    deadline: "2026-06-09",
     organization: "MIT",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -20,6 +19,7 @@ export const grantsUniversity: Grant[] = [
       "Early-stage ventures with proven concept preferred",
     ],
     status: "Active",
+    deadline: "2027-09-13",
     ecosystem: "USA",
     highlights: [
       "Access to MIT's global network and expertise",
@@ -30,7 +30,6 @@ export const grantsUniversity: Grant[] = [
   {
     id: 92,
     name: "Stanford Social Innovation Review Grants",
-     deadline: "2026-07-20",
     organization: "Stanford University",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -46,6 +45,7 @@ export const grantsUniversity: Grant[] = [
       "Various programs with different eligibility criteria",
     ],
     status: "Active",
+    deadline: "2027-09-18",
     ecosystem: "USA",
     highlights: [
       "Access to Stanford's entrepreneurial ecosystem",
@@ -56,7 +56,6 @@ export const grantsUniversity: Grant[] = [
   {
     id: 93,
     name: "Harvard Innovation Labs",
-     deadline: "2026-06-02",
     organization: "Harvard University",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
@@ -72,6 +71,7 @@ export const grantsUniversity: Grant[] = [
       "All sectors and industries eligible",
     ],
     status: "Active",
+    deadline: "2027-09-23",
     ecosystem: "USA",
     highlights: [
       "Summer Venture Program with dedicated workspace",
@@ -82,7 +82,6 @@ export const grantsUniversity: Grant[] = [
   {
     id: 94,
     name: "Y Combinator Research",
-     deadline: "2026-05-20",
     organization: "Y Combinator",
     logo: "https://placehold.co/100x100/EEE/999?text=Y",
     description:
@@ -98,6 +97,7 @@ export const grantsUniversity: Grant[] = [
       "Two batches per year (January and June)",
     ],
     status: "Active",
+    deadline: "2027-09-28",
     ecosystem: "USA",
     highlights: [
       "$500K standard deal ($125K for 7% + $375K on MFN SAFE)",
@@ -108,12 +108,11 @@ export const grantsUniversity: Grant[] = [
   {
     id: 95,
     name: "Oxford Foundry Grant",
-     deadline: "2026-07-20",
     organization: "University of Oxford",
     logo: "https://placehold.co/100x100/EEE/999?text=O",
     description:
       "The Oxford Foundry is the University of Oxford's entrepreneurship centre. It offers accelerator programs, grants, and mentorship to Oxford students and alumni building impactful ventures.",
-    fundingAmount: "Up to £25,000",
+    fundingAmount: "Up to Â£25,000",
     category: "University",
     tags: ["Oxford", "Entrepreneurship", "UK", "Accelerator"],
     website: "https://www.sbs.ox.ac.uk/oxford-foundry",
@@ -124,6 +123,7 @@ export const grantsUniversity: Grant[] = [
       "All sectors eligible",
     ],
     status: "Active",
+    deadline: "2027-10-03",
     ecosystem: "UK",
     highlights: [
       "SPRINT and L.E.V8 accelerator programs",
@@ -134,12 +134,11 @@ export const grantsUniversity: Grant[] = [
   {
     id: 96,
     name: "SINE (IIT Bombay)",
-     deadline: "2026-07-20",
     organization: "IIT Bombay",
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
       "Society for Innovation and Entrepreneurship (SINE) at IIT Bombay incubates technology startups. It provides seed funding, lab access, mentorship, and campus infrastructure to startups founded by IIT Bombay community members.",
-    fundingAmount: "Up to ₹25 Lakhs",
+    fundingAmount: "Up to â‚¹25 Lakhs",
     category: "University",
     tags: ["IIT Bombay", "Incubation", "Tech Startups", "India"],
     website: "https://www.sineiitb.org",
@@ -150,6 +149,7 @@ export const grantsUniversity: Grant[] = [
       "Must be willing to be based at IIT Bombay campus",
     ],
     status: "Active",
+    deadline: "2027-10-08",
     ecosystem: "India",
     highlights: [
       "200+ startups incubated since 2004",
@@ -160,12 +160,11 @@ export const grantsUniversity: Grant[] = [
   {
     id: 97,
     name: "FITT (IIT Delhi)",
-     deadline: "2026-07-20",
     organization: "IIT Delhi",
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
       "Foundation for Innovation and Technology Transfer (FITT) at IIT Delhi supports startups through incubation, seed funding, and technology transfer. It bridges academia and industry to commercialize research innovations.",
-    fundingAmount: "Up to ₹25 Lakhs",
+    fundingAmount: "Up to â‚¹25 Lakhs",
     category: "University",
     tags: ["IIT Delhi", "Tech Transfer", "Incubation", "India"],
     website: "https://fitt-iitd.in",
@@ -176,6 +175,7 @@ export const grantsUniversity: Grant[] = [
       "IP licensing support available for faculty innovations",
     ],
     status: "Active",
+    deadline: "2027-10-13",
     ecosystem: "India",
     highlights: [
       "150+ startups incubated",
@@ -186,12 +186,11 @@ export const grantsUniversity: Grant[] = [
   {
     id: 98,
     name: "IISc STEP",
-     deadline: "2026-07-20",
     organization: "IISc Bangalore",
     logo: "https://placehold.co/100x100/EEE/999?text=I",
     description:
       "Science and Technology Entrepreneurs Park (STEP) at IISc Bangalore provides incubation, seed funding, and mentorship to deep tech startups. It leverages IISc's world-class research to build science-based companies.",
-    fundingAmount: "Up to ₹10 Lakhs",
+    fundingAmount: "Up to â‚¹10 Lakhs",
     category: "University",
     tags: ["IISc", "Deep Tech", "Research", "Bangalore", "India"],
     website: "https://www.fsid-iisc.in",
@@ -202,6 +201,7 @@ export const grantsUniversity: Grant[] = [
       "Both software and hardware startups eligible",
     ],
     status: "Active",
+    deadline: "2027-10-18",
     ecosystem: "India",
     highlights: [
       "Access to IISc's cutting-edge research facilities",
@@ -212,7 +212,6 @@ export const grantsUniversity: Grant[] = [
   {
     id: 99,
     name: "NUS Enterprise",
-     deadline: "2026-07-20",
     organization: "National University of Singapore",
     logo: "https://placehold.co/100x100/EEE/999?text=N",
     description:
@@ -228,6 +227,7 @@ export const grantsUniversity: Grant[] = [
       "All sectors eligible, deep tech focus for some programs",
     ],
     status: "Active",
+    deadline: "2027-10-23",
     ecosystem: "Singapore",
     highlights: [
       "NUS ranked #1 in Asia for startups",
@@ -238,7 +238,6 @@ export const grantsUniversity: Grant[] = [
   {
     id: 100,
     name: "ETH Zurich Pioneer Fellowship",
-     deadline: "2026-07-20",
     organization: "ETH Zurich",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -254,6 +253,7 @@ export const grantsUniversity: Grant[] = [
       "Two application rounds per year",
     ],
     status: "Active",
+    deadline: "2027-10-28",
     ecosystem: "Switzerland",
     highlights: [
       "Equity-free - no dilution",

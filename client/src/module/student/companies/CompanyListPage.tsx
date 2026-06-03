@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Link, useSearchParams, useLocation } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -518,13 +518,7 @@ type Tab = "all" | "interviews" | "yc" | "professors";
 export default function CompanyListPage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
   const [searchParams, setSearchParams] = useSearchParams();
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [cities, setCities] = useState<CityCount[]>([]);
-  const [pagination, setPagination] = useState<Pagination | null>(null);
-  const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-  const [cityLimited, setCityLimited] = useState(false);
-  const [totalUnlimited, setTotalUnlimited] = useState(0);
 
   // Active tab
   const [activeTab, setActiveTab] = useState<Tab>("all");
@@ -596,39 +590,39 @@ export default function CompanyListPage() {
     setSearchParams({});
   };
 
-  const fetchCompanies = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params: Record<string, string> = { page };
-      if (selectedCity) params["city"] = selectedCity;
-      if (search) params["search"] = search;
-      if (industry) params["industry"] = industry;
-      if (size) params["size"] = size;
-      if (hiring) params["hiring"] = hiring;
-      if (minRating) params["minRating"] = minRating;
+  const companyQueryParams = {
+    page,
+    ...(selectedCity && { city: selectedCity }),
+    ...(search && { search }),
+    ...(industry && { industry }),
+    ...(size && { size }),
+    ...(hiring && { hiring }),
+    ...(minRating && { minRating }),
+  };
 
-      const res = await api.get("/companies", { params });
-      setCompanies(res.data.companies);
-      setPagination(res.data.pagination);
-      setCityLimited(!!res.data.limited);
-      setTotalUnlimited(res.data.totalUnlimited || 0);
-    } catch {
-      setCompanies([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedCity, search, industry, size, hiring, minRating, page]);
+  const { data: companiesData, isLoading: loading } = useQuery<{
+    companies: Company[];
+    pagination: Pagination;
+    limited?: boolean;
+    totalUnlimited?: number;
+  }>({
+    queryKey: queryKeys.companies.list(companyQueryParams),
+    queryFn: () => api.get("/companies", { params: companyQueryParams }).then((r) => r.data),
+    staleTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
+  });
 
-  useEffect(() => {
-    fetchCompanies();
-  }, [fetchCompanies]);
+  const companies = companiesData?.companies ?? [];
+  const pagination = companiesData?.pagination ?? null;
+  const cityLimited = !!companiesData?.limited;
+  const totalUnlimited = companiesData?.totalUnlimited ?? 0;
 
-  useEffect(() => {
-    api
-      .get("/companies/cities")
-      .then((res) => setCities(res.data.cities))
-      .catch(() => {});
-  }, []);
+  const { data: citiesData } = useQuery<{ cities: CityCount[] }>({
+    queryKey: queryKeys.companies.cities(),
+    queryFn: () => api.get("/companies/cities").then((r) => r.data),
+    staleTime: 60 * 60 * 1000,
+  });
+  const cities = citiesData?.cities ?? [];
 
   const hasActiveFilters =
     selectedCity || industry || size || hiring || minRating || search;
@@ -637,7 +631,7 @@ export default function CompanyListPage() {
   const { data: ycStats } = useQuery<YCStats>({
     queryKey: queryKeys.yc.stats(),
     queryFn: () => api.get("/yc/stats").then((r) => r.data),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 60 * 1000,
   });
 
   const ycQueryParams: Record<string, string | number> = { page: ycPage, limit: 24 };
@@ -653,6 +647,8 @@ export default function CompanyListPage() {
     queryKey: queryKeys.yc.list(ycQueryParams),
     queryFn: () => api.get("/yc/companies", { params: ycQueryParams }).then((r) => r.data),
     enabled: activeTab === "yc",
+    staleTime: 60 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 
   const ycCompanies = ycData?.companies ?? [];
@@ -662,7 +658,7 @@ export default function CompanyListPage() {
   const { data: profStats } = useQuery<ProfessorStats>({
     queryKey: queryKeys.professors.stats(),
     queryFn: () => api.get("/professors/stats").then((r) => r.data),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 60 * 1000,
   });
 
   const profQueryParams: Record<string, string | number> = { page: profPage, limit: 24 };
@@ -678,6 +674,8 @@ export default function CompanyListPage() {
     queryKey: queryKeys.professors.list(profQueryParams),
     queryFn: () => api.get("/professors", { params: profQueryParams }).then((r) => r.data),
     enabled: activeTab === "professors",
+    staleTime: 60 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 
   const professors = profData?.professors ?? [];

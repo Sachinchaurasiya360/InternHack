@@ -88,11 +88,13 @@ export default function RoadmapEnrollPage() {
     queryKey: queryKeys.roadmaps.detail(slug),
     queryFn: () => api.get<{ roadmap: Roadmap }>(`/roadmaps/${slug}`).then(res => res.data),
     enabled: !!slug,
+    staleTime: 15 * 60 * 1000,
   });
 
   const { data: enrollmentsData } = useQuery({
     queryKey: queryKeys.roadmaps.enrollments(),
     queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
+    staleTime: 5 * 60 * 1000,
   });
 
   const roadmap = roadmapData?.roadmap || null;

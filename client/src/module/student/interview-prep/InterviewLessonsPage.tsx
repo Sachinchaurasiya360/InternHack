@@ -63,6 +63,7 @@ export default function InterviewLessonsPage() {
 
   useEffect(() => {
   if (!isAuthenticated) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgress(getLocalProgress());
     return;
   }

@@ -54,6 +54,7 @@ export default function AdminSkillTestsPage() {
       .catch(() => setLoading(false));
   }, [search]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchTests(); }, [fetchTests]);
 
   const handleEdit = async (id: number) => {

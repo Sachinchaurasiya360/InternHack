@@ -38,7 +38,7 @@ export const queryKeys = {
   // Companies
   companies: {
     all: ["companies"] as const,
-    list: (params?: Record<string, string | number>) =>
+    list: (params?: Record<string, string | number | undefined>) =>
       ["companies", "list", params] as const,
     cities: () => ["companies", "cities"] as const,
     detail: (id: string | number) => ["companies", "detail", id] as const,
@@ -236,6 +236,7 @@ export const queryKeys = {
     detail: (slug: string) => ["roadmaps", "detail", slug] as const,
     enrollments: () => ["roadmaps", "enrollments"] as const,
     enrollmentDetail: (id: number) => ["roadmaps", "enrollment-detail", id] as const,
+    enrollmentAnalytics: (id: number) => ["roadmaps", "enrollment-analytics", id] as const,
     topic: (slug: string, topicSlug: string) => ["roadmaps", "topic", slug, topicSlug] as const,
   },
 };
