@@ -77,7 +77,7 @@ export default function TalentSearchPage() {
 
   const savedSet = useMemo(() => new Set(savedIdsData ?? []), [savedIdsData]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: queryKeys.recruiter.talentSearch({ ...appliedFilters, page }),
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), limit: "12" });
@@ -181,7 +181,7 @@ export default function TalentSearchPage() {
       {/* Search bar */}
       <div className="mb-4 flex items-center gap-2">
         <div className="relative flex-1">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-300" />
           <input
             type="text"
             value={filters.search}
@@ -191,8 +191,8 @@ export default function TalentSearchPage() {
             className="w-full pl-9 pr-3 py-2.5 rounded-md bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors"
           />
         </div>
-        <Button variant="primary" size="md" onClick={applyFilters}>
-          Search
+        <Button variant="primary" size="md" onClick={applyFilters} disabled={isFetching}>
+          {isFetching ? "Searching..." : "Search"}
         </Button>
       </div>
 
@@ -446,7 +446,7 @@ function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950">
       <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-4">
-        <Users className="w-5 h-5 text-stone-400" />
+        <Users className="w-5 h-5 text-stone-400 dark:text-stone-300" />
       </div>
       <h3 className="text-base font-semibold text-stone-900 dark:text-stone-50 mb-1">
         No candidates found
