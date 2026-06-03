@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import api from "../../lib/axios";
 import { LoadingScreen } from "../../components/LoadingScreen";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { SEO } from "../../components/SEO";
 import { Button } from "../../components/ui/button";
 import { useAuthStore } from "../../lib/auth.store";
@@ -33,7 +34,7 @@ interface DashboardData {
   }[];
 }
 
-export default function RecruiterDashboard() {
+function RecruiterDashboardInner() {
   const { user } = useAuthStore();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -350,6 +351,14 @@ function humanizeStatus(status: string) {
 function formatDate(iso: string) {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+export default function RecruiterDashboard() {
+  return (
+    <ErrorBoundary>
+      <RecruiterDashboardInner />
+    </ErrorBoundary>
+  );
 }
 
 function getStatusDot(status: string) {
