@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Download, ArrowRight } from "lucide-react";
 import toast from "@/components/ui/toast";
@@ -52,25 +52,25 @@ export default function GuideCompletionSection({
     year: "numeric",
   });
 
-  const handleDownload = useCallback(async () => {
-    setDownloading(true);
-    const currentCompletionDate = new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
+const handleDownload = async () => {
+  setDownloading(true);
+  const currentCompletionDate = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+  try {
+    await downloadGuideCertificate({
+      studentName: user?.name ?? "Student",
+      guideName: certificateGuideName,
+      completionDate: currentCompletionDate,
     });
-    try {
-      await downloadGuideCertificate({
-        studentName: user?.name ?? "Student",
-        guideName: certificateGuideName,
-        completionDate: currentCompletionDate,
-      });
-    } catch {
-      toast.error("Could not generate certificate. Please try again.");
-    } finally {
-      setDownloading(false);
-    }
-  }, [user?.name, certificateGuideName]);
+  } catch {
+    toast.error("Could not generate certificate. Please try again.");
+  } finally {
+    setDownloading(false);
+  }
+};
 
   return (
     <motion.section
