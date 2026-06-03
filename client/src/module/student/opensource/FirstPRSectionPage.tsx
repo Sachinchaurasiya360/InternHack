@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -12,8 +12,9 @@ import {
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
-import { CodeBlock } from "../../../components/ui/CodeBlock";
+import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
+import { fetchFirstPRProgress, patchFirstPRProgress } from "./api/opensource.api";
 import guideData from "./data/open-source-guide.json";
 import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
 
@@ -33,19 +34,22 @@ interface Step {
   tips: string[];
 }
 
-const STEPS: Step[] = guideData.openSourceRoadmap as Step[];
-const STORAGE_KEY = "first-pr-roadmap-completed";
-
-// ─── Helpers ───────────────────────────────────────────────────
-function getCompleted(): Set<string> {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? new Set(JSON.parse(stored)) : new Set();
-  } catch {
-    return new Set();
-  }
+function CommandBlock({ label, code }: Command) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+      <div className="flex items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950/40 px-4 py-3">
+        <span className="text-xs font-mono uppercase tracking-widest text-gray-500 dark:text-gray-400 truncate">
+          {label}
+        </span>
+      </div>
+      <pre className="overflow-x-auto bg-gray-950 dark:bg-black px-4 py-4 text-xs sm:text-sm font-mono leading-relaxed text-gray-100">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
 }
 
+const STEPS: Step[] = guideData.openSourceRoadmap as Step[];
 
 // ─── Page ──────────────────────────────────────────────────────
 export default function FirstPRSectionPage() {
@@ -54,17 +58,56 @@ export default function FirstPRSectionPage() {
   const stepIndex = STEPS.findIndex((s) => s.id === sectionSlug);
   const step = STEPS[stepIndex];
 
-  const [completed, setCompleted] = useState<Set<string>>(getCompleted);
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchFirstPRProgress()
+      .then((completedStepIds: string[]) => {
+        if (isMounted) {
+          setCompleted(new Set(completedStepIds));
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setCompleted(new Set());
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const toggleComplete = useCallback(() => {
+    if (!step) return;
+
+    const isCurrentlyCompleted = completed.has(step.id);
+
     setCompleted((prev) => {
       const next = new Set(prev);
-      if (!step) return next;
-      if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
+      if (isCurrentlyCompleted) next.delete(step.id);
+      else next.add(step.id);
       return next;
     });
-  }, [step]);
+
+    void patchFirstPRProgress(step.id, !isCurrentlyCompleted).catch(() => {
+      setCompleted((prev) => {
+        const rolledBack = new Set(prev);
+        if (isCurrentlyCompleted) rolledBack.add(step.id);
+        else rolledBack.delete(step.id);
+        return rolledBack;
+      });
+      toast.error("Failed to update progress. Please try again.");
+    });
+  }, [completed, step]);
 
   // ---> FIX: Define variables and call hook BEFORE the early return <---
   const prev = stepIndex > 0 ? STEPS[stepIndex - 1] : null;
@@ -74,6 +117,36 @@ export default function FirstPRSectionPage() {
     prevPath: prev ? `/student/opensource/first-pr/${prev.id}` : null,
     nextPath: next ? `/student/opensource/first-pr/${next.id}` : null,
   });
+
+  if (isLoading) {
+    return (
+      <div className="relative pb-12">
+        <SEO
+          title="First PR Guide - Open Source for Beginners"
+          description={step?.description || "Learn each step of your first pull request journey."}
+          canonicalUrl={canonicalUrl(`/student/opensource/first-pr/${sectionSlug}`)}
+        />
+
+        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+          <div className="absolute -top-32 -right-32 w-150 h-150 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-40" />
+          <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
+        </div>
+
+        <div className="mx-auto flex min-h-[60vh] max-w-4xl items-center justify-center px-4">
+          <div className="w-full max-w-2xl space-y-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm animate-pulse">
+            <div className="h-8 w-40 rounded-xl bg-gray-100 dark:bg-gray-800" />
+            <div className="h-12 w-full rounded-2xl bg-gray-100 dark:bg-gray-800" />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="h-24 rounded-2xl bg-gray-100 dark:bg-gray-800" />
+              <div className="h-24 rounded-2xl bg-gray-100 dark:bg-gray-800" />
+            </div>
+            <div className="h-4 w-3/4 rounded-full bg-gray-100 dark:bg-gray-800" />
+            <div className="h-4 w-2/3 rounded-full bg-gray-100 dark:bg-gray-800" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ---> The guard is now safely below all hook calls <---
   if (!step) return <Navigate to="/student/opensource/first-pr" replace />;
@@ -176,7 +249,7 @@ export default function FirstPRSectionPage() {
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white">Code Examples</h2>
             {step.commands.map((cmd, i) => (
-              <CodeBlock key={`${step.id}-${cmd.label || i}`} code={cmd.code} label={cmd.label} language="bash" />
+              <CommandBlock key={`${step.id}-${cmd.label || i}`} label={cmd.label} code={cmd.code} />
             ))}
           </motion.div>
         )}
