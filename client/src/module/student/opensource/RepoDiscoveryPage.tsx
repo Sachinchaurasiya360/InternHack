@@ -61,11 +61,13 @@ const getBookmarks = (): number[] => {
 const saveBookmarks = (ids: number[]) => {
   try {
     localStorage.setItem(BOOKMARK_KEY, JSON.stringify(ids));
-  } catch {}
+  } catch (error) {
+    // Silence intentional: non-fatal if localStorage is unavailable
+    console.warn("Failed to save bookmarks to localStorage", error);
+  }
 };
 
 export default function RepoDiscoveryPage() {
-  // CONFLICT 1 RESOLVED: single useSearchParams declaration
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Initialize filter states directly from the URL
