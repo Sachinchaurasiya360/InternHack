@@ -199,7 +199,7 @@ export class RecruiterController {
       return res.status(200).json({ message: "Application advanced to next round", application });
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message === "Application not found") return res.status(404).json({ message: error.message });
+        if (error.message === "Application not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
         if (error.message === "No rounds defined for this job") return res.status(400).json({ message: error.message });
       }
