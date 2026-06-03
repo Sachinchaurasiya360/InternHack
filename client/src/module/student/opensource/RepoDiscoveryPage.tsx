@@ -226,8 +226,12 @@ export default function RepoDiscoveryPage() {
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
-    if (languageMode === "auto") params.language = inferredLanguages;
-    else if (selectedLanguage.length > 0) params.language = selectedLanguage;
+    if (languageMode === "auto"){
+      if (inferredLanguages.length > 0) {
+        params.language = inferredLanguages[0]; 
+    }
+    }
+    else if (selectedLanguage.length > 0) params.language = selectedLanguage[0];
     
     if (trendingOnly) params.trending = "true";
 
@@ -235,7 +239,7 @@ export default function RepoDiscoveryPage() {
     if (sortOpt) params.sortOrder = sortOpt.order;
 
     return params;
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, trendingOnly, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -743,20 +747,16 @@ export default function RepoDiscoveryPage() {
                     value={selectedLanguage}
                     disabled={languageMode === "auto"}
                     onChange={(e) => {
-                      const values = Array.from(e.target.selectedOptions).map(
-                        (option) => option.value
-                      );
+                      const value = e.target.value;
 
                       setSearchParams((prev) => {
                         const params = new URLSearchParams(prev);
 
                         params.delete("language");
 
-                        values.forEach((lang) => {
-                          if (lang !== "ALL") {
-                            params.append("language", lang);
-                          }
-                        });
+                        if (value !== "ALL") {
+                          params.append("language", value);
+                        }
 
                         params.set("page", "1");
 
