@@ -322,7 +322,7 @@ export class RecruiterService {
         orderBy: { orderIndex: "asc" },
       });
 
-      if (rounds.length === 0) throw new Error("No rounds defined for this job");
+      if (rounds.length === 0) throw new Error("No rounds are configured for this job. Please add at least one round before advancing applicants.");
 
       // Find current round index
       let currentIndex = -1;

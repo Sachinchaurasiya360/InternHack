@@ -201,7 +201,7 @@ export class RecruiterController {
       if (error instanceof Error) {
         if (error.message === "Application not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
-        if (error.message === "No rounds defined for this job") return res.status(400).json({ message: error.message });
+        if (error.message === "No rounds are configured for this job. Please add at least one round before advancing applicants.") return res.status(422).json({ message: error.message });
       }
       logger.error("Failed to advance application", error);
       return res.status(500).json({ message: "Internal Server Error" });
