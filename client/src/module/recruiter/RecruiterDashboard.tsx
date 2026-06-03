@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -16,6 +16,7 @@ import {
   CircleDashed,
   UserCheck,
   MinusCircle,
+  RefreshCw,
 } from "lucide-react";
 import api from "../../lib/axios";
 import { LoadingScreen } from "../../components/LoadingScreen";
@@ -45,15 +46,26 @@ function RecruiterDashboardInner() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchDashboard = useCallback(async () => {
+    try {
+      const res = await api.get("/recruiter/dashboard");
+      setData(res.data);
+    } catch {
+      if (!data) setData(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [data]);
+
   useEffect(() => {
-    api
-      .get("/recruiter/dashboard")
-      .then((res) => {
-        setData(res.data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+    fetchDashboard();
+  }, [fetchDashboard]);
+
+  useEffect(() => {
+    const onFocus = () => fetchDashboard();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [fetchDashboard]);
 
   if (loading) return <DashboardSkeleton />;
 
@@ -121,6 +133,9 @@ function RecruiterDashboardInner() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Button variant="secondary" size="md" onClick={fetchDashboard} aria-label="Refresh dashboard">
+              <RefreshCw className="w-3.5 h-3.5" />
+            </Button>
             <Button asChild variant="secondary" size="md">
               <Link to="/recruiters/jobs" className="no-underline">
                 My jobs
