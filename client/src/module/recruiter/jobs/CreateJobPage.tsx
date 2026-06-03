@@ -276,7 +276,7 @@ export default function CreateJobPage() {
                       className={inputClass()}
                     />
                   </Field>
-                  <Field label="Salary" htmlFor="salary">
+                  <Field label="Salary" htmlFor="salary" hint="e.g. 15k-25k / month or ₹10 LPA">
                     <input
                       id="salary"
                       type="text"
