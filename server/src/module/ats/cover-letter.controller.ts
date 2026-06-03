@@ -67,6 +67,8 @@ export class CoverLetterController {
         tone:           result.data.tone ?? "professional",
         useProfile:     result.data.useProfile ?? false,
         keySkills:      result.data.keySkills,
+        length:         result.data.length,
+        targetWords:    result.data.targetWords ?? 300,
       }).catch(() => {});
 
       await prisma.usageLog.create({ data: { userId: req.user.id, action: "COVER_LETTER" as UsageAction } });

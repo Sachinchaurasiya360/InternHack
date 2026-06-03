@@ -7,7 +7,8 @@ import {
   AlertCircle,
   Filter,
   X,
-  Maximize2
+  Maximize2,
+  Download
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import {
@@ -33,7 +34,11 @@ import {
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { Button } from "../../../components/ui/button";
-import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
+import type {
+  GSoCOrganization,
+  GSoCStats,
+  OpenSourceContributionTrendResponse,
+} from "../../../lib/types";
 
 // ─── Theme ──────────────────────────────────────────────────────
 const CHART_COLORS = [
@@ -155,6 +160,53 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
   );
 }
 
+function TrendSkeleton() {
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="flex items-end gap-3 h-64">
+        {[42, 68, 58, 88, 54, 76].map((height, index) => (
+          <div key={index} className="flex-1 flex flex-col items-center gap-2">
+            <div className="w-full rounded-t-xl bg-gray-100" style={{ height: `${height}%` }} />
+            <div className="h-3 w-14 rounded-full bg-gray-100" />
+          </div>
+        ))}
+      </div>
+      <div className="h-4 w-48 rounded-full bg-gray-100" />
+    </div>
+  );
+}
+
+function TrendEmptyState({
+  message,
+  showButton = false,
+}: {
+  message: string;
+  showButton?: boolean;
+}) {
+  return (
+    <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 text-center">
+      <BarChart3 className="w-10 h-10 text-indigo-500 mb-3" />
+
+      <p className="text-base font-semibold text-gray-900">
+        No contributions tracked yet
+      </p>
+
+      <p className="mt-2 max-w-sm text-sm text-gray-500">
+        {message}
+      </p>
+
+      {showButton && (
+        <Link to="/student/opensource">
+          <Button className="mt-4">
+            Discover Repositories
+          </Button>
+        </Link>
+      )}
+    </div>
+  );
+}
+  
+
 const selectClass = "text-sm bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 min-w-[130px]";
 
 // ─── Page ───────────────────────────────────────────────────────
@@ -191,7 +243,38 @@ export default function OpenSourceAnalyticsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const allOrgs = orgsData ?? [];
+  const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
+    queryKey: queryKeys.opensource.trend(),
+    queryFn: () => api.get("/opensource/analytics/trend").then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const allOrgs = useMemo(() => orgsData ?? [], [orgsData]);
+  const contributionTrend = contributionTrendData?.trend ?? [];
+  const contributionTotal = contributionTrendData?.total ?? 0;
+  const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
+  const showContributionEmptyState =
+  contributionTotal === 0 &&
+  contributionTrend.length > 0 &&
+  contributionTrend.every((entry) => entry.count === 0);
+
+  const handleExportCSV = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+
+    const header = "Month,Label,Contributions";
+    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
+    const csv = [header, ...rows].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "my-oss-contributions.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   // ─── Derive filter options ──────────────────────────────────
   const years = useMemo(() => {
@@ -329,6 +412,29 @@ export default function OpenSourceAnalyticsPage() {
     );
   }
 
+  // Empty state: student has zero contributions
+  if (!trendIsLoading && !trendIsError && contributionTotal === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center">
+        <div className="bg-indigo-50 rounded-full p-6 mb-5">
+          <BarChart3 className="w-12 h-12 text-indigo-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          No contributions tracked yet
+        </h2>
+        <p className="text-gray-500 max-w-md mb-8">
+          Submit a repo suggestion and get it approved to start tracking
+          your open source journey.
+        </p>
+        <Link
+          to="/student/opensource"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+        >
+          Discover Repositories →
+        </Link>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
       {/* Header */}
@@ -342,6 +448,16 @@ export default function OpenSourceAnalyticsPage() {
               {hasActiveFilter && " (filtered)"}
               {stats && ` \u00b7 ${stats.years.length} years \u00b7 ${stats.technologies.length} technologies`}
             </p>
+          </div>
+          <div className="ml-auto flex items-center gap-3">
+            <button
+              onClick={handleExportCSV}
+              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
+              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export CSV
+            </button>
           </div>
         </div>
       </div>
@@ -394,8 +510,139 @@ export default function OpenSourceAnalyticsPage() {
       {orgs.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          {/* 1 - Category Distribution (Pie) */}
-          <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={0}
+          {/* 1 - Monthly Contribution Activity */}
+          <ChartCard
+            title="Monthly Contribution Activity"
+            subtitle={
+              trendIsLoading
+                ? "Loading your approved open source contribution history"
+                : `Approved repo requests in the last 6 months${contributionTotal ? ` · ${contributionTotal} total` : ""}`
+            }
+            index={0}
+            className="lg:col-span-2"
+            expandedChildren={
+              trendIsLoading ? (
+                <TrendSkeleton />
+              ) : trendIsError ? (
+                <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
+              ) : showContributionEmptyState ? (
+                <TrendEmptyState
+                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+                  showButton
+                />
+              ) : hasContributionActivity ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
+                    <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
+                    <Tooltip {...tooltipStyle} />
+                    <Bar dataKey="count" fill="#0ea5e9" radius={[8, 8, 0, 0]} name="Approved contributions" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <TrendEmptyState
+                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+                  showButton
+                />
+              )
+            }
+          >
+            {trendIsLoading ? (
+              <TrendSkeleton />
+            ) : hasContributionActivity ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
+                  <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <Tooltip {...tooltipStyle} />
+                  <Bar dataKey="count" fill="#0ea5e9" radius={[8, 8, 0, 0]} name="Approved contributions" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : trendIsError ? (
+            <TrendEmptyState
+              message="We could not load your contribution trend right now. Try again in a moment."
+            />
+          ) : showContributionEmptyState ? (
+            <TrendEmptyState
+              message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+              showButton
+            />
+          ) : (
+            <TrendEmptyState
+              message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+              showButton
+            />
+          )}
+          </ChartCard>
+
+          {/* Contributions by Domain */}
+          {(trendIsLoading || (contributionTrendData?.domains && contributionTrendData.domains.length > 0) || (contributionTrendData && contributionTrendData.total === 0)) && (
+            <motion.div
+              custom={0.5}
+              variants={cardVariant}
+              initial="hidden"
+              animate="visible"
+              className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <div className="h-1.5 w-1.5 rounded-full bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.5)]" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  contributions / by domain
+                </span>
+              </div>
+
+              {trendIsLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3 animate-pulse">
+                      <div className="w-24 h-3 bg-gray-100 rounded" />
+                      <div className="flex-1 h-2 bg-gray-100 rounded-sm" />
+                      <div className="w-6 h-3 bg-gray-100 rounded" />
+                    </div>
+                  ))}
+                </div>
+              ) : contributionTrendData?.domains && contributionTrendData.domains.length > 0 ? (
+                <div className="space-y-3.5">
+                  {(() => {
+                    const domains = contributionTrendData.domains;
+                    const maxCount = Math.max(...domains.map(d => d.count), 1);
+                    return domains.map(({ domain, count }) => {
+                      const pct = Math.round((count / maxCount) * 100);
+                      return (
+                        <div key={domain} className="flex items-center gap-3 group">
+                          <span className="text-xs font-medium text-stone-600 w-24 shrink-0 truncate group-hover:text-stone-900 transition-colors">
+                            {domain}
+                          </span>
+                          <div className="flex-1 bg-stone-100 dark:bg-stone-800 rounded-sm h-2 relative overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct}%` }}
+                              transition={{ duration: 1, ease: "easeOut" }}
+                              className="absolute inset-y-0 left-0 bg-lime-400 rounded-sm"
+                            />
+                          </div>
+                          <span className="text-xs font-mono text-stone-500 w-6 text-right shrink-0">
+                            {count}
+                          </span>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <p className="text-xs text-stone-400 italic">
+                    No domain data yet — get your first contribution approved to see your breakdown.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {/* 2 - Category Distribution (Pie) */}
+          <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={1}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -419,8 +666,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 2 - Year-wise Participation Trend (Line) */}
-          <ChartCard title="Year-wise Participation" subtitle="Number of organizations participating each year" index={1}
+          {/* 3 - Year-wise Participation Trend (Line) */}
+          <ChartCard title="Year-wise Participation" subtitle="Number of organizations participating each year" index={2}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={yearTrendData}>
@@ -444,8 +691,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 3 - Top Technologies (Horizontal Bar) */}
-          <ChartCard title="Top Technologies" subtitle="Most popular technologies across organizations" index={2}
+          {/* 4 - Top Technologies (Horizontal Bar) */}
+          <ChartCard title="Top Technologies" subtitle="Most popular technologies across organizations" index={3}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
@@ -473,8 +720,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 4 - Top Topics */}
-          <ChartCard title="Top Topics" subtitle="Most common topics across organizations" index={3}
+          {/* 5 - Top Topics */}
+          <ChartCard title="Top Topics" subtitle="Most common topics across organizations" index={4}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
@@ -502,8 +749,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 5 - Top Orgs by Projects */}
-          <ChartCard title="Top Organizations by Projects" subtitle="Organizations with the most GSoC projects" index={4}
+          {/* 6 - Top Orgs by Projects */}
+          <ChartCard title="Top Organizations by Projects" subtitle="Organizations with the most GSoC projects" index={5}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topProjectsData} margin={{ left: 10 }}>
@@ -531,8 +778,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 6 - Years Active Distribution */}
-          <ChartCard title="Longevity Distribution" subtitle="How many years organizations have been in GSoC" index={5}
+          {/* 7 - Years Active Distribution */}
+          <ChartCard title="Longevity Distribution" subtitle="How many years organizations have been in GSoC" index={6}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={yearCountData}>
@@ -556,8 +803,8 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 7 - Org Comparison Radar */}
-          <ChartCard title="Organization Comparison" subtitle="Select 2-4 organizations to compare" index={6} className="lg:col-span-2">
+          {/* 8 - Org Comparison Radar */}
+          <ChartCard title="Organization Comparison" subtitle="Select 2-4 organizations to compare" index={7} className="lg:col-span-2">
             <div className="flex flex-wrap gap-1.5 mb-4 max-h-24 overflow-y-auto">
               {orgs.slice(0, 60).map((o) => (
                 <Button

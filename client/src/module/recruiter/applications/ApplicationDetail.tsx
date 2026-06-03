@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, Download, CheckCircle, XCircle, Clock, FileText, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
@@ -15,14 +16,14 @@ export default function ApplicationDetail() {
   const [evaluatingRoundId, setEvaluatingRoundId] = useState<number | null>(null);
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
 
-  const fetchDetail = () => {
+  const fetchDetail = useCallback(() => {
     api.get(`/recruiter/applications/${applicationId}`).then((res) => {
       setApplication(res.data.application);
       setLoading(false);
     }).catch(() => setLoading(false));
-  };
+  }, [applicationId]);
 
-  useEffect(() => { fetchDetail(); }, [applicationId]);
+  useEffect(() => { fetchDetail(); }, [fetchDetail]);
 
   useEffect(() => {
     if (application?.student?.id) {
@@ -217,17 +218,6 @@ function getStatusIcon(status: string) {
     case "IN_PROGRESS": return <Clock className="w-4 h-4 text-yellow-500" />;
     case "PENDING": return <Clock className="w-4 h-4 text-gray-400" />;
     default: return <XCircle className="w-4 h-4 text-red-500" />;
-  }
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "APPLIED": return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
-    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
-    case "SHORTLISTED": return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
-    case "REJECTED": return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
-    case "HIRED": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
-    default: return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
   }
 }
 

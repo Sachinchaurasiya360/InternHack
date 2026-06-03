@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
+import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
 import {
   MapPin,
@@ -82,35 +84,42 @@ export default function CompanyDetailPage() {
   const { user, isAuthenticated } = useAuthStore();
   const location = useLocation();
   const isInsideLayout = location.pathname.startsWith("/student/");
-  const [company, setCompany] = useState<Company | null>(null);
-  const [reviews, setReviews] = useState<CompanyReview[]>([]);
   const [sortBy, setSortBy] = useState("latest");
-  const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  useEffect(() => {
-    if (!slug) return;
-    setLoading(true);
-    Promise.all([
-      api.get(`/companies/${slug}`),
-      api.get(`/companies/${slug}/reviews?sort=${sortBy}`),
-    ])
-      .then(([companyRes, reviewsRes]) => {
-        setCompany(companyRes.data.company);
-        setReviews(reviewsRes.data.reviews);
-      })
-      .catch(() => setCompany(null))
-      .finally(() => setLoading(false));
-  }, [slug, sortBy]);
+  const { 
+    data: company, 
+    isLoading: companyLoading,
+    isError: companyIsError,
+    error: companyError 
+  } = useQuery<Company>({
+    queryKey: queryKeys.companies.detail(slug!),
+    queryFn: () => api.get(`/companies/${slug}`).then((r) => r.data.company),
+    enabled: !!slug,
+    staleTime: 15 * 60 * 1000,
+  });
+
+  const {
+    data: reviewsData,
+    isLoading: reviewsLoading,
+    isError: reviewsIsError,
+    error: reviewsError,
+    refetch: refetchReviews,
+  } = useQuery<{ reviews: CompanyReview[] }>({
+    queryKey: [...queryKeys.companies.reviews(slug!), sortBy],
+    queryFn: () => api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data),
+    enabled: !!slug,
+    placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const reviews = reviewsData?.reviews || [];
+  const loading = companyLoading || reviewsLoading;
 
   const refreshReviews = () => {
-    if (!slug) return;
     setShowReviewForm(false);
-    api
-      .get(`/companies/${slug}/reviews?sort=${sortBy}`)
-      .then((res) => setReviews(res.data.reviews))
-      .catch(() => {});
+    refetchReviews();
   };
 
   const backPath = isInsideLayout ? "/student/companies" : "/companies";
@@ -124,7 +133,38 @@ export default function CompanyDetailPage() {
     );
   }
 
-  if (!company) {
+  if (companyIsError || reviewsIsError) {
+    const errorMsg = companyIsError
+      ? (companyError as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || companyError?.message || "Failed to load company"
+      : (reviewsError as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || reviewsError?.message || "Failed to load reviews";
+      
+    const errorContent = (
+      <div className="max-w-6xl mx-auto px-6 pt-24 text-center">
+        <Kicker>error / api</Kicker>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-red-500">
+          Something went wrong
+        </h1>
+        <p className="mt-2 text-stone-500">{errorMsg}</p>
+        <Link
+          to={backPath}
+          className="mt-4 inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to companies
+        </Link>
+      </div>
+    );
+    
+    if (isInsideLayout) return errorContent;
+    return (
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <Navbar />
+        {errorContent}
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!companyIsError && !company) {
     const notFound = (
       <div className="max-w-6xl mx-auto px-6 pt-24 text-center">
         <Kicker>error / 404</Kicker>
@@ -229,7 +269,7 @@ export default function CompanyDetailPage() {
                   <div className="flex items-center gap-2">
                     <StarRating rating={Math.round(company.avgRating)} size="sm" />
                     <span className="text-sm font-bold text-stone-900 dark:text-stone-50 tabular-nums">
-                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : ","}
+                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : "—"}
                     </span>
                     <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                       {company.reviewCount} review{company.reviewCount === 1 ? "" : "s"}
@@ -440,7 +480,7 @@ export default function CompanyDetailPage() {
                       Rating
                     </dt>
                     <dd className="text-stone-900 dark:text-stone-50 text-right tabular-nums">
-                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : ","}
+                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : "—"}
                       <span className="text-stone-500 ml-1">/ 5</span>
                     </dd>
                   </div>

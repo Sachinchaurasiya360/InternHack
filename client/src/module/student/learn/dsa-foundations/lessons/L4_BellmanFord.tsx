@@ -307,9 +307,9 @@ function EdgeTable({ edges, rowStates }: { edges: { from: string; to: string; w:
 function VisualizeTab() {
   const [inputStr, setInputStr] = useState("A>B:6, A>C:7, B>C:8, B>D:5, B>E:-4, C>D:-3, C>E:9, D>B:-2, E>D:7, E>A:2");
   const [source, setSource] = useState("A");
-  const parsed = parseBF(inputStr);
-  const ids = parsed?.ids ?? [];
-  const edges = parsed?.edges ?? [];
+  const parsed = useMemo(() => parseBF(inputStr), [inputStr]);
+  const ids = useMemo(() => parsed?.ids ?? [], [parsed?.ids]);
+  const edges = useMemo(() => parsed?.edges ?? [], [parsed?.edges]);
 
   const frames = useMemo(() => buildBFFrames(ids, edges, source), [ids, edges, source]);
   const player = useStepPlayer(frames);

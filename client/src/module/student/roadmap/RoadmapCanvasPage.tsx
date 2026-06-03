@@ -11,6 +11,8 @@ import ReactFlow, {
   Handle,
   type NodeProps,
   ReactFlowProvider,
+  useNodesState,
+  useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,6 +32,15 @@ import {
   ChevronRight,
   BookOpen,
   Pencil,
+  LayoutTemplate,
+  GitCommit,
+  Network,
+  ChevronDown,
+  ChevronUp,
+  RefreshCw,
+  Sparkles,
+  TrendingUp,
+  AlertTriangle,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -40,15 +51,24 @@ import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import type {
   RoadmapEnrollment,
+  RoadmapEnrollmentAnalytics,
   RoadmapEnrollmentSummary,
+  RoadmapSection,
   RoadmapTopic,
   RoadmapTopicStatus,
   RoadmapResource,
 } from "../../../lib/types";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 interface EnrollmentResponse {
   enrollment: RoadmapEnrollment;
   summary: RoadmapEnrollmentSummary;
+}
+
+interface AnalyticsResponse {
+  analytics: RoadmapEnrollmentAnalytics;
 }
 
 interface TopicNodeData {
@@ -56,6 +76,7 @@ interface TopicNodeData {
   status: RoadmapTopicStatus;
   bookmarked: boolean;
   isNext: boolean;
+  isWeak: boolean;
   index: number;
   onClick: () => void;
 }
@@ -65,6 +86,12 @@ interface SectionLabelData {
   index: number;
   total: number;
   completed: number;
+  isCollapsed?: boolean;
+  onToggle?: () => void;
+  /** Present only on AI-generated roadmaps owned by the current user */
+  onRegenerate?: () => void;
+  isRegenerating?: boolean;
+  aiRegeneratedAt?: string | null;
 }
 
 // ─── Custom node: section banner (decorative, no handles) ─────────────────
@@ -79,7 +106,7 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: baseDelay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="select-none pointer-events-none w-120"
+      className="select-none w-120"
     >
       {/* Decorative spine break */}
       <div className="flex items-center gap-2 mb-5 px-2">
@@ -131,6 +158,41 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
           </p>
         </div>
 
+        {data.onToggle && (
+          <button
+            type="button"
+            onClick={data.onToggle}
+            title={data.isCollapsed ? "Expand section" : "Collapse section"}
+            className="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors pointer-events-auto mr-1 cursor-pointer"
+          >
+            {data.isCollapsed ? (
+              <ChevronDown className="w-5 h-5" />
+            ) : (
+              <ChevronUp className="w-5 h-5" />
+            )}
+          </button>
+        )}
+
+        {data.onRegenerate && (
+          <button
+            type="button"
+            onClick={data.onRegenerate}
+            disabled={data.isRegenerating}
+            title={
+              data.isRegenerating
+                ? "Regenerating section…"
+                : "Regenerate this section with AI"
+            }
+            className="p-1 rounded hover:bg-lime-100 dark:hover:bg-lime-950/40 text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors pointer-events-auto mr-2 cursor-pointer"
+          >
+            {data.isRegenerating ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4" />
+            )}
+          </button>
+        )}
+
         <div className="text-right shrink-0">
           <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-stone-400 mb-0.5">
             progress
@@ -176,21 +238,35 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
           </span>
         )}
       </div>
+
+      {/* AI-regenerated badge */}
+      {data.aiRegeneratedAt && (
+        <div className="mt-1.5 mx-2 flex items-center gap-1 text-[9px] font-mono text-lime-600 dark:text-lime-500 uppercase tracking-wider">
+          <Sparkles className="w-2.5 h-2.5" />
+          ai-rewritten
+        </div>
+      )}
     </motion.div>
   );
 }
 
 // ─── Custom node: topic card ────────────────────────────────────────────────
 function TopicNode({ data }: NodeProps<TopicNodeData>) {
-  const { status, topic, isNext, bookmarked, index } = data;
+  const { status, topic, isNext, bookmarked, index, isWeak } = data;
   const isCompleted = status === "COMPLETED";
   const isInProgress = status === "IN_PROGRESS";
+  const isSkipped = status === "SKIPPED";
 
   const railColor = isCompleted
     ? "bg-lime-500"
     : isInProgress
       ? "bg-amber-400"
-      : "bg-stone-200 dark:bg-stone-800";
+      : isSkipped
+        ? "bg-stone-400 dark:bg-stone-600"
+        : "bg-stone-200 dark:bg-stone-800";
+
+  const weakRing =
+    isWeak && !isCompleted ? "ring-2 ring-amber-400 ring-offset-1" : "";
 
   const cardBorder = isNext
     ? "border-lime-400 dark:border-lime-500"
@@ -208,7 +284,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
       whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
       whileTap={{ scale: 0.98 }}
       onClick={data.onClick}
-      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-grab active:cursor-grabbing w-72 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10`}
+      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-pointer active:cursor-grabbing w-72 min-h-16 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10 ${weakRing}`}
     >
       <Handle
         type="target"
@@ -261,6 +337,10 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
             >
               <Check className="w-2.5 h-2.5 text-stone-950" strokeWidth={3.5} />
             </motion.div>
+          ) : isSkipped ? (
+            <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              skipped
+            </span>
           ) : isInProgress ? (
             <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
               <motion.span
@@ -293,7 +373,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
         {/* Title */}
         <p
           className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${
-            isCompleted
+            isCompleted || isSkipped
               ? "text-stone-400 dark:text-stone-600 line-through decoration-1 decoration-stone-300 dark:decoration-stone-700"
               : "text-stone-950 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-stone-50"
           }`}
@@ -343,12 +423,81 @@ const nodeTypes = { topic: TopicNode, sectionLabel: SectionLabelNode };
 // ─── Page ──────────────────────────────────────────────────────────────────
 export default function RoadmapCanvasPage() {
   const { slug = "" } = useParams();
+
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false,
+  );
+  const [isTouchDevice, setIsTouchDevice] = useState(() =>
+    typeof window !== "undefined"
+      ? "ontouchstart" in window || navigator.maxTouchPoints > 0
+      : false,
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  }, []);
   const navigate = useNavigate();
-  const [data, setData] = useState<EnrollmentResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [enrollmentId, setEnrollmentId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
+  const graphOffsetsRef = useRef(new Map<number, { x: number; y: number }>());
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
+  const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">(
+    "LINEAR",
+  );
+
+  // On small screens (< 768px), default to a linear list view.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isMobile && viewMode !== "LINEAR") setViewMode("LINEAR");
+  }, [isMobile, viewMode]);
+  // Track which sectionId is currently being regenerated
+  const [regeneratingSectionId, setRegeneratingSectionId] = useState<
+    number | null
+  >(null);
+  const [regenModal, setRegenModal] = useState<{
+    sectionId: number;
+    sectionTitle: string;
+  } | null>(null);
+
+  const [regenInstructions, setRegenInstructions] = useState("");
+  const [collapsedSections, setCollapsedSections] = useState<Set<number>>(
+    new Set(),
+  );
+  const [weakTopicTitles, setWeakTopicTitles] = useState<Set<string>>(
+    new Set(),
+  );
+
+  useEffect(() => {
+    api
+      .get<{
+        weakAreas: { type: string; topic: string; topicSlug?: string }[];
+      }>("/student/recommendations")
+      .then((res) => {
+        const slugs = new Set(
+          res.data.weakAreas
+            .filter((w) => w.type === "roadmap" && w.topicSlug)
+            .map((w) => w.topicSlug as string),
+        );
+        setWeakTopicTitles(slugs);
+      })
+      .catch(() => {});
+  }, []);
+
+  const toggleSection = useCallback((id: number) => {
+    setCollapsedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showEditModal, setShowEditModal] =
   useState(false);
@@ -366,32 +515,64 @@ const [level, setLevel] =
   const prevPercentRef = useRef<number | null>(null);
   const hasShownCompletionRef = useRef(false);
 
+  const {
+    data: enrollmentsList,
+    isLoading: enrollmentsLoading,
+    error: enrollmentsError,
+  } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollments(),
+    queryFn: () =>
+      api
+        .get<{
+          enrollments: { id: number; roadmap: { slug: string } }[];
+        }>("/roadmaps/me/enrollments")
+        .then((res) => res.data),
+  });
+
   useEffect(() => {
-    let mounted = true;
-    api
-      .get<{ enrollments: { id: number; roadmap: { slug: string } }[] }>(
-        "/roadmaps/me/enrollments",
-      )
-      .then(async (res) => {
-        if (!mounted) return;
-        const e = res.data.enrollments.find((x) => x.roadmap.slug === slug);
-        if (!e) {
-          navigate(`/roadmaps/${slug}/enroll`);
-          return;
-        }
-        setEnrollmentId(e.id);
-        const detail = await api.get<EnrollmentResponse>(
-          `/roadmaps/me/enrollments/${e.id}`,
-        );
-        if (!mounted) return;
-        setData(detail.data);
-      })
-      .catch(() => mounted && navigate(`/roadmaps/${slug}`))
-      .finally(() => mounted && setLoading(false));
-    return () => {
-      mounted = false;
-    };
-  }, [slug, navigate]);
+    if (enrollmentsError) {
+      navigate(`/roadmaps/${slug}`);
+    }
+  }, [enrollmentsError, navigate, slug]);
+
+  const enrollmentMatch = enrollmentsList?.enrollments.find(
+    (x) => x.roadmap.slug === slug,
+  );
+
+  useEffect(() => {
+    if (enrollmentsList && !enrollmentMatch && !enrollmentsLoading) {
+      navigate(`/roadmaps/${slug}/enroll`);
+    }
+  }, [enrollmentsList, enrollmentMatch, enrollmentsLoading, navigate, slug]);
+
+  const enrollmentId = enrollmentMatch?.id || null;
+
+  const {
+    data,
+    isLoading: detailLoading,
+    isError: detailError,
+  } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId!),
+    queryFn: () =>
+      api
+        .get<EnrollmentResponse>(`/roadmaps/me/enrollments/${enrollmentId}`)
+        .then((res) => res.data),
+    enabled: !!enrollmentId,
+  });
+
+  const { data: analyticsData } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId!),
+    queryFn: () =>
+      api
+        .get<AnalyticsResponse>(
+          `/roadmaps/me/enrollments/${enrollmentId}/analytics`,
+        )
+        .then((res) => res.data),
+    enabled: !!enrollmentId,
+  });
+
+  const loading = enrollmentsLoading || detailLoading;
+  const error = enrollmentsError || detailError;
 
   // ── Fire completion modal when progress first reaches 100% ──────────────
   useEffect(() => {
@@ -478,18 +659,63 @@ const [level, setLevel] =
     return data.enrollment.roadmap.sections.flatMap((s) => s.topics);
   }, [data]);
 
-  const { nodes, edges } = useMemo<{
-    nodes: Node<TopicNodeData | SectionLabelData>[];
-    edges: Edge[];
-  }>(() => {
-    if (!data) return { nodes: [], edges: [] };
+  const regenProgressImpact = useMemo(() => {
+    const empty = { totalAffected: 0, completed: 0, inProgress: 0 };
+    if (!regenModal || !data) return empty;
+    const section = data.enrollment.roadmap.sections.find(
+      (s) => s.id === regenModal.sectionId,
+    );
+    if (!section) return empty;
+    let completed = 0;
+    let inProgress = 0;
+    for (const topic of section.topics) {
+      const p = progressByTopicId.get(topic.id);
+      if (p?.status === "COMPLETED") completed++;
+      else if (p?.status === "IN_PROGRESS") inProgress++;
+    }
+    return { totalAffected: completed + inProgress, completed, inProgress };
+  }, [regenModal, data, progressByTopicId]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<
+    TopicNodeData | SectionLabelData
+  >([]);
+
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+  const isAiOwned = !!(
+    data?.enrollment.roadmap.isAiGenerated &&
+    data?.enrollment.roadmap.ownerUserId
+  );
+
+  const openRegenModal = useCallback(
+    (sectionId: number, sectionTitle: string) => {
+      setRegenInstructions("");
+      setRegenModal({ sectionId, sectionTitle });
+    },
+    [],
+  );
+
+  const getGraphOffset = useCallback((topicId: number) => {
+    const existing = graphOffsetsRef.current.get(topicId);
+    if (existing) return existing;
+
+    const xSeed = (topicId * 37) % 100;
+    const ySeed = (topicId * 53) % 50;
+    const offset = {
+      x: xSeed - 50,
+      y: ySeed - 25,
+    };
+
+    graphOffsetsRef.current.set(topicId, offset);
+    return offset;
+  }, []);
+
+  useEffect(() => {
+    if (!data) return;
 
     const slugToTopicId = new Map<string, number>();
     for (const t of allTopics) slugToTopicId.set(t.slug, t.id);
 
-    // ── Vertical spine layout ────────────────────────────────────────────
-    // Topic node = w-72 (288px). Centered around x=0 ⇒ x = -144.
-    // Section banner = w-120 (480px). Centered around x=0 ⇒ x = -240.
     const TOPIC_NODE_WIDTH = 288;
     const TOPIC_X = -TOPIC_NODE_WIDTH / 2;
     const SECTION_BANNER_X = -240;
@@ -497,8 +723,8 @@ const [level, setLevel] =
     const ROW_HEIGHT = 110;
     const SECTION_GAP = 70;
 
-    const nodes: Node<TopicNodeData | SectionLabelData>[] = [];
-    const edges: Edge[] = [];
+    const newNodes: Node<TopicNodeData | SectionLabelData>[] = [];
+    const newEdges: Edge[] = [];
     const sections = data.enrollment.roadmap.sections;
 
     let cursorY = 0;
@@ -506,12 +732,12 @@ const [level, setLevel] =
     let prevSectionLastTopicId: number | null = null;
 
     sections.forEach((section, sIdx) => {
+      const isCollapsed = collapsedSections.has(section.id);
       const completedInSection = section.topics.filter(
         (t) => progressByTopicId.get(t.id)?.status === "COMPLETED",
       ).length;
 
-      // Section banner
-      nodes.push({
+      newNodes.push({
         id: `section-${section.id}`,
         type: "sectionLabel",
         position: { x: SECTION_BANNER_X, y: cursorY },
@@ -520,17 +746,23 @@ const [level, setLevel] =
           index: sIdx,
           total: section.topics.length,
           completed: completedInSection,
+          isCollapsed,
+          onToggle: () => toggleSection(section.id),
+          ...(isAiOwned && {
+            onRegenerate: () => openRegenModal(section.id, section.title),
+            isRegenerating: regeneratingSectionId === section.id,
+            aiRegeneratedAt: section.aiRegeneratedAt ?? null,
+          }),
         },
-        draggable: false,
-        selectable: false,
+        draggable: viewMode === "GRAPH",
+        selectable: viewMode === "GRAPH",
       });
       cursorY += SECTION_HEADER_HEIGHT;
 
       const firstTopicInSection = section.topics[0];
 
-      // Bridge edge from previous section's last topic to this section's first topic
-      if (prevSectionLastTopicId && firstTopicInSection) {
-        edges.push({
+      if (prevSectionLastTopicId && firstTopicInSection && !isCollapsed) {
+        newEdges.push({
           id: `bridge-${prevSectionLastTopicId}-${firstTopicInSection.id}`,
           source: String(prevSectionLastTopicId),
           target: String(firstTopicInSection.id),
@@ -544,71 +776,110 @@ const [level, setLevel] =
         });
       }
 
-      section.topics.forEach((topic, tIdx) => {
-        const p = progressByTopicId.get(topic.id);
-        nodes.push({
-          id: String(topic.id),
-          type: "topic",
-          position: { x: TOPIC_X, y: cursorY },
-          data: {
-            topic,
-            status: p?.status ?? "NOT_STARTED",
-            bookmarked: p?.bookmarked ?? false,
-            isNext: topic.id === nextTopicId,
-            index: globalIdx,
-            onClick: () => handleNodeClick(topic.id),
-          },
-        });
-        globalIdx += 1;
-        cursorY += ROW_HEIGHT;
-
-        // Sequential edges within a section
-        if (tIdx > 0) {
-          const prev = section.topics[tIdx - 1];
-          const prevDone =
-            progressByTopicId.get(prev.id)?.status === "COMPLETED";
-          const isFrontier = prevDone && topic.id === nextTopicId;
-          edges.push({
-            id: `e${prev.id}-${topic.id}`,
-            source: String(prev.id),
-            target: String(topic.id),
-            type: "smoothstep",
-            animated: isFrontier,
-            style: {
-              stroke: prevDone ? "#84cc16" : "#d6d3d1",
-              strokeWidth: prevDone ? 2 : 1.5,
+      if (!isCollapsed) {
+        section.topics.forEach((topic, tIdx) => {
+          const p = progressByTopicId.get(topic.id);
+          newNodes.push({
+            id: String(topic.id),
+            type: "topic",
+            position:
+              viewMode === "GRAPH"
+                ? {
+                    x: TOPIC_X + getGraphOffset(topic.id).x,
+                    y: cursorY + getGraphOffset(topic.id).y,
+                  }
+                : { x: TOPIC_X, y: cursorY },
+            data: {
+              topic,
+              status: p?.status ?? "NOT_STARTED",
+              bookmarked: p?.bookmarked ?? false,
+              isNext: topic.id === nextTopicId,
+              isWeak: weakTopicTitles.has(topic.slug),
+              index: globalIdx,
+              onClick: () => handleNodeClick(topic.id),
             },
+            draggable: viewMode === "GRAPH",
           });
-        }
+          globalIdx += 1;
+          cursorY += ROW_HEIGHT;
 
-        // Cross-section prereq edges (dashed)
-        for (const preSlug of topic.prerequisiteSlugs ?? []) {
-          const preId = slugToTopicId.get(preSlug);
-          if (preId && preId !== topic.id) {
-            edges.push({
-              id: `p${preId}-${topic.id}`,
-              source: String(preId),
+          if (tIdx > 0) {
+            const prev = section.topics[tIdx - 1];
+            const prevDone =
+              progressByTopicId.get(prev.id)?.status === "COMPLETED";
+            const isFrontier = prevDone && topic.id === nextTopicId;
+            newEdges.push({
+              id: `e${prev.id}-${topic.id}`,
+              source: String(prev.id),
               target: String(topic.id),
               type: "smoothstep",
-              animated: false,
+              animated: isFrontier,
               style: {
-                stroke: "#a8a29e",
-                strokeWidth: 1.25,
-                strokeDasharray: "4 4",
-                opacity: 0.45,
+                stroke: prevDone ? "#84cc16" : "#d6d3d1",
+                strokeWidth: prevDone ? 2 : 1.5,
               },
             });
           }
-        }
-      });
 
-      prevSectionLastTopicId =
-        section.topics[section.topics.length - 1]?.id ?? prevSectionLastTopicId;
+          for (const preSlug of topic.prerequisiteSlugs ?? []) {
+            const preId = slugToTopicId.get(preSlug);
+            if (preId && preId !== topic.id) {
+              newEdges.push({
+                id: `p${preId}-${topic.id}`,
+                source: String(preId),
+                target: String(topic.id),
+                type: "smoothstep",
+                animated: false,
+                style: {
+                  stroke: "#a8a29e",
+                  strokeWidth: 1.25,
+                  strokeDasharray: "4 4",
+                  opacity: 0.45,
+                },
+              });
+            }
+          }
+        });
+      }
+
+      prevSectionLastTopicId = !isCollapsed
+        ? (section.topics[section.topics.length - 1]?.id ??
+          prevSectionLastTopicId)
+        : prevSectionLastTopicId;
       cursorY += SECTION_GAP;
     });
 
-    return { nodes, edges };
-  }, [data, allTopics, progressByTopicId, nextTopicId, handleNodeClick]);
+    setNodes(newNodes);
+    setEdges(newEdges);
+  }, [
+    data,
+
+    allTopics,
+
+    progressByTopicId,
+
+    nextTopicId,
+
+    handleNodeClick,
+
+    viewMode,
+
+    collapsedSections,
+    toggleSection,
+
+    isAiOwned,
+
+    openRegenModal,
+
+    regeneratingSectionId,
+
+    getGraphOffset,
+
+    setNodes,
+
+    setEdges,
+    weakTopicTitles,
+  ]);
 
   const drawerTopic = useMemo(() => {
     if (!drawerTopicId || !data) return null;
@@ -629,10 +900,15 @@ const [level, setLevel] =
         `/roadmaps/me/enrollments/${enrollmentId}/topics/${topicId}`,
         patch,
       );
-      const detail = await api.get<EnrollmentResponse>(
-        `/roadmaps/me/enrollments/${enrollmentId}`,
-      );
-      setData(detail.data);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollments(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId),
+      });
     } catch {
       toast.error("Could not save progress");
     }
@@ -644,9 +920,7 @@ const [level, setLevel] =
     try {
       const res = await api.get(
         `/roadmaps/me/enrollments/${enrollmentId}/pdf`,
-        {
-          responseType: "blob",
-        },
+        { responseType: "blob" },
       );
       const url = URL.createObjectURL(res.data as Blob);
       const a = document.createElement("a");
@@ -659,6 +933,62 @@ const [level, setLevel] =
     } finally {
       setDownloading(null);
     }
+  };
+
+  // ── Section regeneration mutation ────────────────────────────────────────
+  const regenerateMutation = useMutation({
+    mutationFn: ({
+      sectionId,
+      instructions,
+    }: {
+      sectionId: number;
+      instructions?: string;
+    }) =>
+      api
+        .post<{
+          message: string;
+          section: RoadmapSection;
+        }>(`/roadmaps/${slug}/sections/${sectionId}/regenerate`, {
+          instructions: instructions?.trim() || undefined,
+        })
+        .then((r) => r.data),
+    onMutate: ({ sectionId }) => {
+      setRegeneratingSectionId(sectionId);
+    },
+    onSuccess: () => {
+      toast.success("Section regenerated");
+      // Refresh the enrollment detail so the canvas re-renders with new topics
+      if (enrollmentId) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollments(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId),
+        });
+      }
+      setRegenModal(null);
+      setRegenInstructions("");
+    },
+    onError: (err: { response?: { data?: { message?: string } } }) => {
+      const msg =
+        err?.response?.data?.message ??
+        "Could not regenerate section. Please try again.";
+      toast.error(msg);
+    },
+    onSettled: () => {
+      setRegeneratingSectionId(null);
+    },
+  });
+
+  const confirmRegen = () => {
+    if (!regenModal) return;
+    regenerateMutation.mutate({
+      sectionId: regenModal.sectionId,
+      instructions: regenInstructions,
+    });
   };
 
   // useStudentSidebar must be called unconditionally (rules of hooks). It always
@@ -685,9 +1015,36 @@ const [level, setLevel] =
       </div>
     );
   }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <div className="hidden lg:block">
+          <Navbar sidebarOffset={sidebarWidth} />
+        </div>
+        <div className="lg:hidden">
+          <Navbar />
+        </div>
+        {sidebar}
+        <div className="flex flex-col items-center justify-center pt-32 px-6 text-center">
+          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">
+            Could not load your roadmap
+          </p>
+          <p className="text-sm text-stone-500 mb-6">
+            There was a problem connecting to the server. Please try again.
+          </p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!data) return null;
 
   const { summary } = data;
+  const analytics = analyticsData?.analytics ?? null;
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -702,7 +1059,7 @@ const [level, setLevel] =
 
       {/* Main content area: fills the rest of the viewport, alongside sidebar */}
       <div
-        className={`flex flex-col h-screen pt-16 lg:pt-16 transition-all duration-300 ${
+        className={`flex flex-col min-h-screen overflow-y-auto pt-16 transition-all duration-300 ${
           collapsed ? "lg:ml-18" : "lg:ml-64"
         }`}
       >
@@ -735,6 +1092,50 @@ const [level, setLevel] =
             </div>
 
             <div className="hidden md:flex items-center gap-5 shrink-0">
+              <div className="flex bg-stone-900/50 p-1 rounded-lg border border-stone-800">
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
+                  onClick={() => setViewMode("LINEAR")}
+                  title="Linear View"
+                  className={
+                    viewMode === "LINEAR"
+                      ? "bg-stone-800 text-stone-50"
+                      : "text-stone-400 hover:text-stone-200"
+                  }
+                >
+                  <GitCommit className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
+                  onClick={() => setViewMode("GRID")}
+                  title="Grid View"
+                  className={
+                    viewMode === "GRID"
+                      ? "bg-stone-800 text-stone-50"
+                      : "text-stone-400 hover:text-stone-200"
+                  }
+                >
+                  <LayoutTemplate className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
+                  onClick={() => setViewMode("GRAPH")}
+                  title="Graph View"
+                  className={
+                    viewMode === "GRAPH"
+                      ? "bg-stone-800 text-stone-50"
+                      : "text-stone-400 hover:text-stone-200"
+                  }
+                >
+                  <Network className="w-4 h-4" />
+                </Button>
+              </div>
               <Stat
                 icon={Target}
                 label="progress"
@@ -776,7 +1177,7 @@ const [level, setLevel] =
                 label="streak"
                 value={
                   <span className="font-bold tabular-nums">
-                    {computeStreak(data)}d
+                    {analytics?.currentStreak ?? 0}d
                   </span>
                 }
               />
@@ -805,6 +1206,8 @@ const [level, setLevel] =
             </button>
           </div>
 
+          <RoadmapAnalyticsStrip analytics={analytics} />
+
           {/* Animated progress strip */}
           <div className="h-0.5 bg-stone-900 overflow-hidden">
             <motion.div
@@ -822,6 +1225,10 @@ const [level, setLevel] =
             <ReactFlow
               nodes={nodes}
               edges={edges}
+              panOnScroll={false}
+              zoomOnScroll={!isTouchDevice}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
               nodeTypes={nodeTypes}
               fitView={false}
               defaultViewport={{ x: 0, y: 0, zoom: 1 }}
@@ -834,7 +1241,7 @@ const [level, setLevel] =
               nodesDraggable={true}
               nodesConnectable={false}
               elementsSelectable={true}
-              panOnDrag={[1, 2]}
+              panOnDrag={true}
               minZoom={0.4}
               maxZoom={1.5}
               className="bg-stone-50 dark:bg-stone-950"
@@ -899,7 +1306,11 @@ const [level, setLevel] =
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 28, stiffness: 280 }}
-                className="fixed inset-y-0 right-0 w-full sm:w-115 bg-white dark:bg-stone-950 border-l border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto"
+                className={
+                  isMobile
+                    ? "fixed bottom-0 left-0 right-0 h-[78vh] bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto rounded-t-2xl"
+                    : "fixed inset-y-0 right-0 w-full sm:w-115 bg-white dark:bg-stone-950 border-l border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto"
+                }
               >
                 <div className="sticky top-0 z-10 bg-white/90 dark:bg-stone-950/90 backdrop-blur border-b border-stone-200 dark:border-stone-800 px-5 py-3 flex items-center justify-between">
                   <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-stone-400">
@@ -984,8 +1395,26 @@ const [level, setLevel] =
                     >
                       <Check className="w-3 h-3" /> Completed
                     </StatusChip>
+                    <StatusChip
+                      active={drawerProgress?.status === "SKIPPED"}
+                      onClick={() =>
+                        updateProgress(drawerTopic.id, { status: "SKIPPED" })
+                      }
+                    >
+                      Skipped
+                    </StatusChip>
                     <button
                       type="button"
+                      aria-label={
+                        drawerProgress?.bookmarked
+                          ? "Remove bookmark"
+                          : "Add bookmark"
+                      }
+                      title={
+                        drawerProgress?.bookmarked
+                          ? "Remove bookmark"
+                          : "Add bookmark"
+                      }
                       onClick={() =>
                         updateProgress(drawerTopic.id, {
                           bookmarked: !drawerProgress?.bookmarked,
@@ -1015,16 +1444,8 @@ const [level, setLevel] =
                         resources
                       </p>
                       <ul className="space-y-1">
-                        {drawerTopic.resources.map((r: RoadmapResource, i: number) => (
-                          <motion.li
-                            key={r.id}
-                            initial={{ opacity: 0, x: 8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{
-                              delay: 0.25 + i * 0.04,
-                              duration: 0.3,
-                            }}
-                          >
+                        {drawerTopic.resources.map((r: RoadmapResource) => (
+                          <li key={r.id}>
                             <a
                               href={r.url}
                               target="_blank"
@@ -1044,7 +1465,7 @@ const [level, setLevel] =
                               </span>
                               <ExternalLink className="w-3 h-3 text-stone-300 dark:text-stone-700 shrink-0 group-hover:text-lime-500 transition-colors" />
                             </a>
-                          </motion.li>
+                          </li>
                         ))}
                       </ul>
                     </motion.div>
@@ -1234,12 +1655,312 @@ const [level, setLevel] =
             onClose={() => setShowCompletionModal(false)}
           />
         )}
+
+        {/* ─── Section Regeneration Modal ───────────────────────────────── */}
+        <AnimatePresence>
+          {regenModal && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                key="regen-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() =>
+                  !regenerateMutation.isPending && setRegenModal(null)
+                }
+                className="fixed inset-0 z-60 bg-stone-950/60 backdrop-blur-sm"
+              />
+              {/* Dialog */}
+              <motion.div
+                key="regen-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="regen-dialog-title"
+                initial={{ opacity: 0, scale: 0.92, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.94, y: 8 }}
+                transition={{ type: "spring", damping: 26, stiffness: 320 }}
+                className="fixed inset-0 z-70 flex items-center justify-center px-4 pointer-events-none"
+              >
+                <div className="w-full max-w-md pointer-events-auto bg-stone-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-white/8">
+                    <div className="flex items-center gap-2">
+                      <div className="h-7 w-7 rounded-md bg-lime-400 flex items-center justify-center">
+                        <RefreshCw className="w-3.5 h-3.5 text-stone-950" />
+                      </div>
+                      <div>
+                        <p
+                          id="regen-dialog-title"
+                          className="text-sm font-bold text-stone-50"
+                        >
+                          Regenerate section
+                        </p>
+                        <p className="text-xs font-mono text-stone-500 truncate max-w-60">
+                          {regenModal.sectionTitle}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setRegenModal(null)}
+                      disabled={regenerateMutation.isPending}
+                      aria-label="Close"
+                      className="p-1.5 rounded-lg text-stone-500 hover:text-stone-300 hover:bg-white/5 transition-colors disabled:opacity-40 cursor-pointer border-0 bg-transparent"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Body */}
+                  <div className="px-5 py-4 space-y-4">
+                    <div
+                      role="alert"
+                      className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3"
+                    >
+                      <AlertTriangle
+                        className="mt-0.5 h-4 w-4 shrink-0 text-amber-400"
+                        aria-hidden
+                      />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-amber-100">
+                          Progress in this section will be reset
+                        </p>
+                        <p className="text-xs text-amber-100/80 leading-relaxed">
+                          Regenerating this section will reset your progress for
+                          all topics in it. This cannot be undone.
+                        </p>
+                        {regenProgressImpact.totalAffected > 0 ? (
+                          <p className="text-[11px] font-mono text-amber-200/90">
+                            {regenProgressImpact.completed > 0 && (
+                              <span>
+                                {regenProgressImpact.completed} completed
+                              </span>
+                            )}
+                            {regenProgressImpact.completed > 0 &&
+                              regenProgressImpact.inProgress > 0 &&
+                              " · "}
+                            {regenProgressImpact.inProgress > 0 && (
+                              <span>
+                                {regenProgressImpact.inProgress} in progress
+                              </span>
+                            )}{" "}
+                            topic
+                            {regenProgressImpact.totalAffected === 1
+                              ? ""
+                              : "s"}{" "}
+                            will be affected.
+                          </p>
+                        ) : (
+                          <p className="text-[11px] font-mono text-amber-200/70">
+                            No completed or in-progress topics in this section
+                            yet.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-stone-400 leading-relaxed">
+                      AI will rewrite this section's topics and resources while
+                      keeping the rest of your roadmap intact. Your progress on
+                      existing topics will be cleared for this section. AI will
+                      rewrite this section's topics and resources while keeping
+                      the rest of your roadmap intact. Your progress on existing
+                      topics will be cleared for this section.
+                    </p>
+
+                    <div>
+                      <label
+                        htmlFor="regen-instructions"
+                        className="block text-[10px] font-mono uppercase tracking-widest text-stone-400 mb-2"
+                      >
+                        Instructions (optional)
+                      </label>
+                      <textarea
+                        id="regen-instructions"
+                        value={regenInstructions}
+                        onChange={(e) => setRegenInstructions(e.target.value)}
+                        placeholder="e.g. make it more beginner-friendly, focus on practical projects, add more TypeScript content…"
+                        rows={3}
+                        maxLength={400}
+                        disabled={regenerateMutation.isPending}
+                        className="w-full px-3 py-2.5 bg-stone-800 border border-white/8 rounded-xl text-sm text-stone-100 placeholder:text-stone-600 focus:outline-none focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/30 resize-none disabled:opacity-50 transition-colors"
+                      />
+                      <p className="text-[10px] font-mono text-stone-600 mt-1 text-right tabular-nums">
+                        {regenInstructions.length}/400
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="px-5 pb-5 flex items-center justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setRegenModal(null)}
+                      disabled={regenerateMutation.isPending}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={confirmRegen}
+                      disabled={regenerateMutation.isPending}
+                    >
+                      {regenerateMutation.isPending ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-3.5 h-3.5" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
 }
 
 // ─── Small subcomponents ───────────────────────────────────────────────────
+function RoadmapAnalyticsStrip({
+  analytics,
+}: {
+  analytics: RoadmapEnrollmentAnalytics | null;
+}) {
+  const statusStyles = analytics
+    ? {
+        AHEAD: "text-lime-300",
+        ON_TRACK: "text-sky-300",
+        BEHIND: "text-amber-300",
+      }[analytics.onTrackStatus]
+    : "text-stone-500";
+
+  const statusLabel =
+    analytics?.onTrackStatus.replace("_", " ").toLowerCase() ?? "loading";
+  const estimatedDate = analytics
+    ? new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric",
+      }).format(new Date(analytics.estimatedCompletionDate))
+    : "calculating";
+
+  return (
+    <div className="border-t border-white/10 bg-stone-950/95 px-5 py-3">
+      <div className="grid gap-3 lg:grid-cols-5 lg:items-center">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:col-span-4">
+          <AnalyticsMetric
+            label="current streak"
+            value={analytics ? `${analytics.currentStreak}d` : "--"}
+          />
+          <AnalyticsMetric
+            label="best streak"
+            value={analytics ? `${analytics.longestStreak}d` : "--"}
+          />
+          <AnalyticsMetric
+            label="this week"
+            value={
+              analytics
+                ? `${analytics.topicsCompletedThisWeek}/${analytics.weeklyTarget}`
+                : "--"
+            }
+          />
+          <AnalyticsMetric label="finish est." value={estimatedDate} />
+        </div>
+
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex w-28 shrink-0 items-center gap-2">
+            <TrendingUp
+              className={`w-3.5 h-3.5 ${statusStyles}`}
+              aria-hidden="true"
+            />
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-stone-100 capitalize truncate">
+                {statusLabel}
+              </p>
+              <p className="text-[10px] font-mono text-stone-500 uppercase tracking-wider">
+                pace
+              </p>
+            </div>
+          </div>
+
+          <div className="min-w-0 rounded-md border border-white/10 bg-white/5 px-3 py-2">
+            <p className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+              trend
+            </p>
+
+            <div className="h-8 mt-1">
+              {analytics && analytics.progressTrend.length > 1 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={analytics.progressTrend}>
+                    <defs>
+                      <linearGradient
+                        id="trendFill"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="#a3e635"
+                          stopOpacity={0.35}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="#a3e635"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <Area
+                      type="monotone"
+                      dataKey="cumulative"
+                      stroke="#a3e635"
+                      strokeWidth={2}
+                      fill="url(#trendFill)"
+                      dot={{ r: 2, strokeWidth: 0, fill: "#a3e635" }}
+                      isAnimationActive={false}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-[10px] font-mono text-stone-600">
+                  complete 2 days to see
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="min-w-0 rounded-md border border-white/10 bg-white/5 px-3 py-2">
+      <p className="text-[10px] font-mono uppercase tracking-wider text-stone-500 truncate">
+        {label}
+      </p>
+      <p className="mt-0.5 text-sm font-bold text-stone-50 tabular-nums truncate">
+        {value}
+      </p>
+    </div>
+  );
+}
+
 function Stat({
   icon: Icon,
   label,
@@ -1312,16 +2033,4 @@ function StatusChip({
       {children}
     </button>
   );
-}
-
-function computeStreak(data: EnrollmentResponse): number {
-  // Count distinct days (UTC) on which any topic was completed.
-  // Simple approximation: number of unique YYYY-MM-DD strings across completedAt timestamps.
-  const days = new Set<string>();
-  for (const p of data.enrollment.topicProgress) {
-    if (p.status === "COMPLETED" && p.completedAt) {
-      days.add(new Date(p.completedAt).toISOString().slice(0, 10));
-    }
-  }
-  return days.size;
 }

@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { useState, useMemo, useRef } from "react";
+import { Link, useNavigate } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import toast from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { uploadDirectToS3 } from "../../../utils/upload";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import {
   Upload,
   FileText,
@@ -20,13 +22,15 @@ import {
   Loader2,
   Zap,
   ArrowRight,
-  Award,
   Mail,
+  Download,
+  ChevronDown,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
+import { useDebounce } from "../../../hooks/useDebounce";
 import type { AtsScore, UsageStats } from "../../../lib/types";
 import {
   LineChart,
@@ -37,20 +41,13 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-
-/** Recharts custom tooltip — renders score, date, role, and resume name on dot hover. */
-function ScoreTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div className="bg-stone-900 border border-white/10 rounded-md px-3 py-2 text-[11px] font-mono text-stone-300 shadow-xl">
-      <div className="text-stone-500 mb-1">{d.fullDate}</div>
-      <div>Role: {d.jobTitle}</div>
-      <div className="truncate max-w-[200px]">Resume: {d.resumeName}</div>
-      <div className="text-lime-400 font-bold mt-1">Score: {d.score}/100</div>
-    </div>
-  );
-}
+import { ScoreTooltip } from "./components/ScoreTooltip";
+import { CardHeader } from "./components/CardHeader";
+import { ScoreCircle, getScoreTier } from "./components/ScoreCircle";
+import { ScoreBreakdownPanel } from "./components/ScoreBreakdownPanel";
+import { KeywordAnalysisPanel } from "./components/KeywordAnalysisPanel";
+import { SuggestionsPanel } from "./components/SuggestionsPanel";
+import { cardCls, sectionKickerCls, sectionTitleCls, inputCls } from "./components/ats-ui";
 
 const CATEGORY_LABELS: Record<string, string> = {
   formatting: "Formatting",
@@ -61,167 +58,53 @@ const CATEGORY_LABELS: Record<string, string> = {
   impact: "Impact",
 };
 
-const CATEGORY_ICONS: Record<string, typeof BarChart2> = {
-  formatting: AlignLeft,
-  keywords: Search,
-  experience: Award,
-  skills: Zap,
-  education: FileText,
-  impact: TrendingUp,
-};
-
 type ResultTab = "suggestions" | "breakdown" | "keywords";
-
-// ── Score tiers ──────────────────────────────────────────────────────────
-interface ScoreTier {
-  min: number;
-  label: string;
-  stroke: string;
-  text: string;
-  bar: string;
-}
-const SCORE_TIERS: ScoreTier[] = [
-  {
-    min: 70,
-    label: "Excellent",
-    stroke: "#a3e635", // lime-400
-    text: "text-lime-600 dark:text-lime-400",
-    bar: "bg-lime-400",
-  },
-  {
-    min: 40,
-    label: "Needs Work",
-    stroke: "#eab308",
-    text: "text-yellow-600 dark:text-yellow-400",
-    bar: "bg-yellow-500",
-  },
-  {
-    min: 0,
-    label: "Poor",
-    stroke: "#ef4444",
-    text: "text-red-600 dark:text-red-400",
-    bar: "bg-red-500",
-  },
-];
-const getScoreTier = (score: number): ScoreTier =>
-  SCORE_TIERS.find((t) => score >= t.min) ??
-  SCORE_TIERS[SCORE_TIERS.length - 1]!;
 
 const JD_MAX_CHARS = 5000;
 const JD_WARN_CHARS = 4500;
 
-const ANALYSIS_STEPS = [
-  { icon: Upload, label: "Uploading resume" },
-  { icon: FileText, label: "Parsing document" },
-  { icon: Search, label: "Scanning keywords" },
-  { icon: AlignLeft, label: "Checking formatting" },
-  { icon: ScanSearch, label: "Analyzing impact statements" },
-  { icon: BarChart2, label: "Generating ATS score" },
-];
+type AtsHistoryItem = {
+  id: number;
+  overallScore: number;
+  jobTitle: string | null;
+  jobDescription?: string | null;
+  resumeUrl: string;
+  createdAt: string;
+};
 
-// ── Shared UI primitives ─────────────────────────────────────────────────
-const cardCls =
-  "bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md";
-const sectionKickerCls =
-  "inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500";
-const sectionTitleCls = "text-sm font-bold text-stone-900 dark:text-stone-50";
-const inputCls =
-  "w-full px-4 py-2.5 border border-stone-300 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600";
-
-function CardHeader({
-  kicker,
-  title,
-  right,
-}: {
-  kicker: string;
-  title: string;
-  right?: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10">
-      <div className="flex flex-col gap-1 min-w-0">
-        <span className={sectionKickerCls}>
-          <span className="h-1 w-1 bg-lime-400" />
-          {kicker}
-        </span>
-        <span className={sectionTitleCls}>{title}</span>
-      </div>
-      {right && <div className="shrink-0">{right}</div>}
-    </div>
+function getResumeName(resumeUrl: string) {
+  return decodeURIComponent(
+    (resumeUrl.split("?")[0] ?? resumeUrl).split("/").pop() ?? "resume.pdf",
   );
 }
 
-// ── Score Circle ─────────────────────────────────────────────────────────
-function ScoreCircle({
-  score,
-  size = "lg",
-}: {
-  score: number;
-  size?: "lg" | "sm";
-}) {
-  const isLg = size === "lg";
-  const radius = isLg ? 62 : 36;
-  const viewBox = isLg ? "0 0 160 160" : "0 0 88 88";
-  const cx = isLg ? 80 : 44;
-  const sw = isLg ? 10 : 6;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
+function getCompanyFromJobDescription(jobDescription?: string | null) {
+  if (!jobDescription) return "";
 
-  const tier = getScoreTier(score);
-  const { stroke: strokeColor, text: textColor } = tier;
+  const firstLines = jobDescription
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  const text = firstLines.join(" ");
+  const patterns = [
+    /\bcompany\s*[:|-]\s*([A-Za-z0-9&.,'() -]{2,80})/i,
+    /\bat\s+([A-Z][A-Za-z0-9&.,'() -]{2,80})\b/,
+  ];
 
-  return (
-    <div className="flex items-center shrink-0">
-      <div className={isLg ? "relative w-40 h-40" : "relative w-20 h-20"}>
-        <svg className="w-full h-full -rotate-90" viewBox={viewBox}>
-          <circle
-            cx={cx}
-            cy={cx}
-            r={radius}
-            fill="none"
-            stroke="#e7e5e4"
-            strokeWidth={sw}
-            className="dark:stroke-white/10"
-          />
-          <motion.circle
-            cx={cx}
-            cy={cx}
-            r={radius}
-            fill="none"
-            stroke={strokeColor}
-            strokeWidth={sw}
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset: offset }}
-            transition={{ duration: 1.3, ease: "easeOut", delay: 0.2 }}
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <motion.span
-            initial={{ opacity: 0, scale: 0.6 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
-            className={`${isLg ? "text-5xl" : "text-xl"} font-bold tracking-tight ${textColor} leading-none tabular-nums`}
-          >
-            {score}
-          </motion.span>
-          {isLg && (
-            <span className="text-stone-400 dark:text-stone-600 text-[10px] mt-1 font-mono uppercase tracking-widest">
-              / 100
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  for (const pattern of patterns) {
+    const match = text.match(pattern)?.[1]?.trim();
+    if (match) return match.replace(/\s{2,}/g, " ");
+  }
+
+  return "";
 }
 
 // ── Main Page ────────────────────────────────────────────────────────────
 export default function AtsScorePage() {
   const queryClient = useQueryClient();
+  const printRef = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -229,6 +112,111 @@ export default function AtsScorePage() {
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState<ResultTab>("suggestions");
+  const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
+  const [historySearch, setHistorySearch] = useState("");
+  const debouncedHistorySearch = useDebounce(historySearch, 300);
+  const [chartOpen, setChartOpen] = useState(true);
+  const navigate = useNavigate();
+
+  const handleDownloadPdf = async () => {
+    if (!result) return;
+
+    const { jsPDF } = await import("jspdf");
+
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const filename = `ats-report-${dateStr}.pdf`;
+
+    let y = 20;
+
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const checkPageBreak = () => {
+      if (y > pageHeight - 20) {
+        doc.addPage();
+        y = 20;
+      }
+    };
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("ATS Analysis Report", 20, y);
+
+    y += 12;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+
+    doc.text(`Resume: ${getResumeName(result.resumeUrl)}`, 20, y);
+    y += 8;
+
+    doc.text(`Generated: ${dateStr}`, 20, y);
+    y += 12;
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Overall ATS Score: ${result.overallScore}/100`, 20, y);
+
+    y += 12;
+
+    doc.text("Category Scores", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+
+    Object.entries(result.categoryScores).forEach(([key, value]) => {
+      doc.text(`${key}: ${value}`, 25, y);
+      y += 7;
+    });
+
+    y += 5;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Missing Keywords", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+
+    if (result.keywordAnalysis.missing.length === 0) {
+      doc.text("None", 25, y);
+      y += 7;
+    } else {
+      result.keywordAnalysis.missing.forEach((keyword) => {
+        checkPageBreak();
+
+        doc.text(`• ${keyword}`, 25, y);
+        y += 7;
+      });
+    }
+
+    y += 5;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Suggestions", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+
+    result.suggestions.forEach((suggestion) => {
+      const text = typeof suggestion === "string" ? suggestion : (suggestion as { suggestion?: string }).suggestion ?? String(suggestion);
+      const lines = doc.splitTextToSize(`• ${text}`, 160);
+      const blockHeight = lines.length * 6 + 2;
+
+      if (y + blockHeight > pageHeight - 20) {
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.text(lines, 25, y);
+      y += blockHeight;
+    });
+
+    doc.save(filename);
+  };
 
   const { data: usageData } = useQuery<UsageStats>({
     queryKey: queryKeys.ats.usage(),
@@ -243,19 +231,10 @@ export default function AtsScorePage() {
     staleTime: 60_000,
   });
 
-  const scoreHistory = (historyData ?? []) as {
-    id: number;
-    overallScore: number;
-    jobTitle: string | null;
-    resumeUrl: string;
-    createdAt: string;
-  }[];
+  const scoreHistory = (historyData ?? []) as AtsHistoryItem[];
 
   const chartData = scoreHistory.map((h) => {
-    const resumeName = decodeURIComponent(
-      (h.resumeUrl.split("?")[0] ?? h.resumeUrl).split("/").pop() ??
-        "resume.pdf",
-    );
+    const resumeName = getResumeName(h.resumeUrl);
     return {
       key: h.createdAt,
       date: new Date(h.createdAt).toLocaleDateString("en-IN", {
@@ -276,13 +255,28 @@ export default function AtsScorePage() {
     };
   });
 
+  const normalizedHistorySearch = debouncedHistorySearch.trim().toLowerCase();
+  const filteredHistory = [...scoreHistory]
+    .reverse()
+    .filter((item) => {
+      if (!normalizedHistorySearch) return true;
+
+      const searchableText = [
+        item.jobTitle,
+        getCompanyFromJobDescription(item.jobDescription),
+        getResumeName(item.resumeUrl),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(normalizedHistorySearch);
+    });
+
   const atsUsage = usageData?.usage.find((u) => u.action === "ATS_SCORE");
   const limitReached = atsUsage ? atsUsage.used >= atsUsage.limit : false;
   const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
-  const [currentStep, setCurrentStep] = useState(-1);
-  const [analysisComplete, setAnalysisComplete] = useState(false);
-  const [analysisRunId, setAnalysisRunId] = useState(0);
   const [analyzedFileName, setAnalyzedFileName] = useState("");
   const [analyzedFileSize, setAnalyzedFileSize] = useState(0);
   const [emailSent, setEmailSent] = useState(false);
@@ -294,12 +288,12 @@ export default function AtsScorePage() {
     }> => {
       let url = resumeUrl;
       if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const uploadRes = await api.post("/upload/profile-resume", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        const uploadRes = await uploadDirectToS3({
+          file,
+          folder: "resumes",
+          endpoint: "/profile-resume",
         });
-        url = uploadRes.data.file.url;
+        url = uploadRes.file?.url || uploadRes.fileUrl || uploadRes.url || url;
         setResumeUrl(url);
       }
       if (!url) throw new Error("Please upload a resume PDF first.");
@@ -315,8 +309,6 @@ export default function AtsScorePage() {
     onSuccess: ({ score, emailQueued }) => {
       setResult(score);
       setEmailSent(emailQueued);
-      setCurrentStep(ANALYSIS_STEPS.length - 1);
-      setAnalysisComplete(true);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.history() });
     },
@@ -332,28 +324,44 @@ export default function AtsScorePage() {
     },
   });
 
+  const applyMutation = useMutation({
+    mutationFn: async () => {
+      const suggestionsToApply = result?.suggestions.filter((_, i) => selectedSuggestions.has(i));
+      if (!suggestionsToApply?.length) throw new Error("Select at least one suggestion to apply.");
+
+      const res = await api.post("/ats/apply-suggestions", {
+        resumeUrl,
+        jobTitle: jobTitle.trim() || undefined,
+        jobDescription: jobDescription.trim() || undefined,
+        suggestions: suggestionsToApply,
+      });
+      return res.data as { reply: string; updatedLatex: string };
+    },
+    onSuccess: (data) => {
+      navigate("/student/ats/latex-editor", {
+        state: {
+          initialLatex: data.updatedLatex,
+          banner: "AI-improved draft based on your ATS analysis. Review carefully before saving."
+        }
+      });
+    },
+    onError: (err: unknown) => {
+      const errorObj = err as { response?: { status?: number; data?: { message?: string } } };
+
+      if (errorObj?.response?.status === 429) {
+        toast.error("AI usage limit reached. Please try again later.");
+        return;
+      }
+
+      const msg = errorObj?.response?.data?.message || "Failed to improve resume";
+      toast.error(msg);
+    },
+  });
+
   const loading = analyzeMutation.isPending;
-
-  useEffect(() => {
-    if (analysisRunId === 0 || !loading) return;
-
-    setAnalysisComplete(false);
-    setCurrentStep(0);
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    for (let i = 1; i < ANALYSIS_STEPS.length; i++) {
-      timers.push(setTimeout(() => setCurrentStep(i), i * 2200));
-    }
-    return () => timers.forEach(clearTimeout);
-  }, [analysisRunId, loading]);
-
-  useEffect(() => {
-    if (!file) {
-      setPreviewUrl("");
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
+  const previewUrl = useMemo(() => {
+    if (!file) return "";
+    return URL.createObjectURL(file);
   }, [file]);
 
   const validateFile = (file: File): string | null => {
@@ -379,8 +387,6 @@ export default function AtsScorePage() {
       setResumeUrl("");
       setResult(null);
       setError("");
-      setCurrentStep(-1);
-      setAnalysisComplete(false);
     }
   };
 
@@ -398,8 +404,6 @@ export default function AtsScorePage() {
     setResumeUrl("");
     setResult(null);
     setError("");
-    setCurrentStep(-1);
-    setAnalysisComplete(false);
   };
 
   const handleAnalyze = () => {
@@ -407,12 +411,14 @@ export default function AtsScorePage() {
     setResult(null);
     setEmailSent(false);
     setActiveTab("suggestions");
-    setAnalysisComplete(false);
-    setCurrentStep(0);
-    setAnalysisRunId((id) => id + 1);
+    setSelectedSuggestions(new Set());
     if (file) {
       setAnalyzedFileName(file.name);
       setAnalyzedFileSize(file.size);
+    } else if (resumeUrl) {
+      const fileName = (resumeUrl.split("?")[0] || resumeUrl).split("/").pop() || "profile-resume.pdf";
+      setAnalyzedFileName(fileName);
+      setAnalyzedFileSize(0);
     }
     analyzeMutation.mutate();
   };
@@ -422,8 +428,6 @@ export default function AtsScorePage() {
     setResumeUrl("");
     setResult(null);
     setError("");
-    setCurrentStep(-1);
-    setAnalysisComplete(false);
     setAnalyzedFileName("");
     setAnalyzedFileSize(0);
     setEmailSent(false);
@@ -458,7 +462,7 @@ export default function AtsScorePage() {
         noIndex
       />
 
-      {/* ─── Editorial header ─── */}
+      {/* Editorial header */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -506,85 +510,181 @@ export default function AtsScorePage() {
 
       <AtsToolsNav />
 
-      {/* ─── Score Progression Chart ─── */}
+      {/* Score Progression Chart */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
         className={`${cardCls} mb-6`}
       >
-        <CardHeader
-          kicker="progress"
-          title="Score over time"
-          right={
-            chartData.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => setChartOpen((o) => !o)}
+          className="w-full flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10 text-left bg-transparent cursor-pointer hover:bg-stone-50 dark:hover:bg-white/5 transition-colors"
+          aria-expanded={chartOpen}
+          aria-controls="chart-body"
+        >
+          <div className="flex flex-col gap-1 min-w-0">
+            <span className={sectionKickerCls}>
+              <span className="h-1 w-1 bg-lime-400" />
+              progress
+            </span>
+            <span className={sectionTitleCls}>Score over time</span>
+          </div>
+          <div className="shrink-0 flex items-center gap-3">
+            {chartData.length > 0 && (
               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 {chartData.length}{" "}
                 {chartData.length === 1 ? "analysis" : "analyses"}
               </span>
-            ) : null
-          }
-        />
-        <div className="p-5">
-          {chartData.length <= 1 ? (
-            <div className="flex items-center gap-3 py-4 text-sm text-stone-500">
-              <TrendingUp className="w-4 h-4 text-lime-500" />
-              {chartData.length === 0
-                ? "Analyze your first resume to start tracking progress."
-                : "Run one more analysis to start tracking your progress."}
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={chartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(120,113,108,0.15)"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="key"
-                  tickFormatter={(val: string) =>
-                    new Date(val).toLocaleDateString("en-IN", {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  }
-                  tick={{
-                    fontSize: 10,
-                    fontFamily: "monospace",
-                    fill: "#78716c",
-                  }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  domain={[0, 100]}
-                  tick={{
-                    fontSize: 10,
-                    fontFamily: "monospace",
-                    fill: "#78716c",
-                  }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip content={<ScoreTooltip />} cursor={false} />
-                <Line
-                  type="monotone"
-                  dataKey="score"
-                  stroke="#a3e635"
-                  strokeWidth={2}
-                  dot={{ fill: "#a3e635", strokeWidth: 0, r: 4 }}
-                  activeDot={{ r: 7, fill: "#a3e635" }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            )}
+            <ChevronDown
+              className={`w-4 h-4 text-stone-400 transition-transform duration-200 ${chartOpen ? "rotate-0" : "-rotate-90"}`}
+            />
+          </div>
+        </button>
+        <AnimatePresence initial={false}>
+          {chartOpen && (
+            <motion.div
+              id="chart-body"
+              key="chart-body"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              style={{ overflow: "hidden" }}
+            >
+              <div className="p-5">
+                {chartData.length <= 1 ? (
+                  <div className="flex items-center gap-3 py-4 text-sm text-stone-500">
+                    <TrendingUp className="w-4 h-4 text-lime-500" />
+                    {chartData.length === 0
+                      ? "Analyze your first resume to start tracking progress."
+                      : "Run one more analysis to start tracking your progress."}
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={chartData}>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="rgba(120,113,108,0.15)"
+                        vertical={false}
+                      />
+                      <XAxis
+                        dataKey="key"
+                        tickFormatter={(val: string) =>
+                          new Date(val).toLocaleDateString("en-IN", {
+                            month: "short",
+                            day: "numeric",
+                          })
+                        }
+                        tick={{
+                          fontSize: 10,
+                          fontFamily: "monospace",
+                          fill: "#78716c",
+                        }}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <YAxis
+                        domain={[0, 100]}
+                        tick={{
+                          fontSize: 10,
+                          fontFamily: "monospace",
+                          fill: "#78716c",
+                        }}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <Tooltip content={<ScoreTooltip />} cursor={false} />
+                      <Line
+                        type="monotone"
+                        dataKey="score"
+                        stroke="#a3e635"
+                        strokeWidth={2}
+                        dot={{ fill: "#a3e635", strokeWidth: 0, r: 4 }}
+                        activeDot={{ r: 7, fill: "#a3e635" }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+                {scoreHistory.length > 0 && (
+                  <div className="mt-5 border-t border-stone-200 pt-5 dark:border-white/10">
+                    <div className="relative mb-3">
+                      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+                      <input
+                        type="search"
+                        value={historySearch}
+                        onChange={(e) => setHistorySearch(e.target.value)}
+                        placeholder="Search by company, role, or resume"
+                        className={`${inputCls} pl-9 pr-10`}
+                        aria-label="Search ATS score history"
+                      />
+                      {historySearch && (
+                        <button
+                          type="button"
+                          onClick={() => setHistorySearch("")}
+                          className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md border-0 bg-transparent text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-white/10 dark:hover:text-stone-200"
+                          aria-label="Clear history search"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+
+                    {filteredHistory.length > 0 ? (
+                      <div className="divide-y divide-stone-200 overflow-hidden rounded-md border border-stone-200 dark:divide-white/10 dark:border-white/10">
+                        {filteredHistory.map((item) => {
+                          const company = getCompanyFromJobDescription(
+                            item.jobDescription,
+                          );
+                          const tier = getScoreTier(item.overallScore);
+
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex items-center gap-4 bg-white px-4 py-3 dark:bg-stone-900"
+                            >
+                              <div
+                                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-stone-100 text-sm font-bold tabular-nums dark:bg-stone-950 ${tier.text}`}
+                              >
+                                {item.overallScore}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-sm font-bold text-stone-900 dark:text-stone-50">
+                                  {item.jobTitle ?? "General ATS analysis"}
+                                </p>
+                                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                                  {company && <span>{company}</span>}
+                                  <span>{getResumeName(item.resumeUrl)}</span>
+                                </div>
+                              </div>
+                              <span className="shrink-0 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                                {new Date(item.createdAt).toLocaleDateString(
+                                  "en-IN",
+                                  { month: "short", day: "numeric" },
+                                )}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="rounded-md border border-dashed border-stone-300 px-4 py-6 text-center text-sm text-stone-500 dark:border-white/15">
+                        No ATS history matches that search.
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </motion.div>
 
-      {/* ─── Main grid ─── */}
+      {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-        {/* ─── Left column ─── */}
+        {/* Left column */}
         <div className="lg:col-span-2 space-y-6">
           <AnimatePresence mode="wait">
             {showUploadForm ? (
@@ -806,7 +906,7 @@ export default function AtsScorePage() {
                           {analyzedFileName}
                         </p>
                         <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-0.5">
-                          {(analyzedFileSize / 1024).toFixed(1)} kb · pdf
+                          {analyzedFileSize > 0 ? `${(analyzedFileSize / 1024).toFixed(1)} kb · ` : ""}pdf
                         </p>
                       </div>
                     </div>
@@ -888,8 +988,15 @@ export default function AtsScorePage() {
           </AnimatePresence>
         </div>
 
-        {/* ─── Right column: Results ─── */}
-        <div className="lg:col-span-3">
+        {/* Right column: Results */}
+        <div
+          ref={printRef}
+          id="ats-print-section"
+          className="lg:col-span-3"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           <AnimatePresence mode="wait">
             {/* Empty state */}
             {!result && !loading && (
@@ -952,120 +1059,44 @@ export default function AtsScorePage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className={`${cardCls} min-h-125`}
+                role="status"
+                aria-live="polite"
+                aria-label="Analyzing your resume"
+                className={`${cardCls} min-h-125 flex flex-col items-center justify-center p-10`}
               >
-                <CardHeader
-                  kicker="analyzing"
-                  title="Scanning your resume"
-                  right={
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                      ~10-20s
-                    </span>
-                  }
-                />
-                <div className="p-6">
-                  <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-full overflow-hidden mb-6">
+                <div className="max-w-xs w-full text-center space-y-6">
+                  <div className="w-14 h-14 rounded-md bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto">
                     <motion.div
-                      className="h-full bg-lime-400"
-                      initial={{ width: "0%" }}
-                      animate={{
-                        width: `${Math.min(((currentStep + 1) / ANALYSIS_STEPS.length) * 100, 100)}%`,
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "linear",
                       }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                    />
+                    >
+                      <ScanSearch className="w-6 h-6 text-stone-600 dark:text-stone-400" />
+                    </motion.div>
                   </div>
-
-                  <div className="space-y-1">
-                    {ANALYSIS_STEPS.map((step, i) => {
-                      const Icon = step.icon;
-                      const isDone =
-                        i < currentStep ||
-                        (i === currentStep && analysisComplete);
-                      const isCurrent = i === currentStep && !analysisComplete;
-                      const isPending = i > currentStep;
-                      return (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.08 }}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${
-                            isCurrent
-                              ? "bg-lime-400/10 border border-lime-400/40"
-                              : isDone
-                                ? "bg-stone-50 dark:bg-stone-950/60 border border-transparent"
-                                : "border border-transparent opacity-50"
-                          }`}
-                        >
-                          <div
-                            className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
-                              isDone
-                                ? "bg-lime-400 text-stone-950"
-                                : isCurrent
-                                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
-                                  : "bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-stone-400"
-                            }`}
-                          >
-                            {isDone ? (
-                              <CheckCircle className="w-3.5 h-3.5" />
-                            ) : isCurrent ? (
-                              <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{
-                                  duration: 1.5,
-                                  repeat: Infinity,
-                                  ease: "linear",
-                                }}
-                              >
-                                <Icon className="w-3.5 h-3.5" />
-                              </motion.div>
-                            ) : (
-                              <Icon className="w-3.5 h-3.5" />
-                            )}
-                          </div>
-                          <span
-                            className={`text-sm font-medium flex-1 ${
-                              isDone
-                                ? "text-stone-600 dark:text-stone-400"
-                                : isCurrent
-                                  ? "text-stone-900 dark:text-stone-50"
-                                  : "text-stone-400 dark:text-stone-600"
-                            }`}
-                          >
-                            {step.label}
-                          </span>
-                          {isDone && (
-                            <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
-                              done
-                            </span>
-                          )}
-                          {isCurrent && (
-                            <div className="flex gap-1">
-                              {[0, 0.15, 0.3].map((delay) => (
-                                <motion.div
-                                  key={delay}
-                                  className="w-1.5 h-1.5 rounded-full bg-lime-400"
-                                  animate={{
-                                    scale: [1, 1.4, 1],
-                                    opacity: [0.5, 1, 0.5],
-                                  }}
-                                  transition={{
-                                    duration: 0.8,
-                                    repeat: Infinity,
-                                    delay,
-                                  }}
-                                />
-                              ))}
-                            </div>
-                          )}
-                          {isPending && (
-                            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
-                              pending
-                            </span>
-                          )}
-                        </motion.div>
-                      );
-                    })}
+                  <div>
+                    <p className="text-sm font-bold text-stone-900 dark:text-stone-50 mb-1">
+                      Analyzing your resume
+                    </p>
+                    <p className="text-xs text-stone-500 font-mono uppercase tracking-widest">
+                      This takes 10-20 seconds
+                    </p>
+                  </div>
+                  {/* Indeterminate progress bar */}
+                  <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-lime-400 rounded-full"
+                      animate={{ x: ["-100%", "250%"] }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                      style={{ width: "40%" }}
+                    />
                   </div>
                 </div>
               </motion.div>
@@ -1080,7 +1111,6 @@ export default function AtsScorePage() {
                 transition={{ duration: 0.4 }}
                 className="space-y-6"
                 role="region"
-                aria-live="polite"
                 aria-label={`ATS analysis complete. Overall score ${result.overallScore} out of 100.`}
               >
                 {/* Score Header */}
@@ -1089,11 +1119,20 @@ export default function AtsScorePage() {
                     kicker="result"
                     title="Overall ATS score"
                     right={
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
-                      >
-                        / {overallTier.label.toLowerCase()}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <CopyButton
+                          text={[
+                            `ATS Score: ${result.overallScore}/100`,
+                            `Tier: ${overallTier.label}`,
+                            `\nSuggestions:\n${result.suggestions.map((s, i) => `${i + 1}. ${typeof s === "string" ? s : (s as { suggestion?: string }).suggestion ?? ""}`).join("\n")}`,
+                          ].join("\n")}
+                        />
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
+                        >
+                          / {overallTier.label.toLowerCase()}
+                        </span>
+                      </div>
                     }
                   />
                   <div className="p-6 flex items-center gap-6">
@@ -1138,192 +1177,71 @@ export default function AtsScorePage() {
 
                 {/* Tabbed Results */}
                 <div className={cardCls}>
-                  {/* Tab strip */}
-                  <div className="flex border-b border-stone-200 dark:border-white/10 overflow-x-auto">
-                    {TABS.map((tab) => {
-                      const isActive = activeTab === tab.id;
-                      return (
-                        <button
-                          key={tab.id}
-                          type="button"
-                          onClick={() => setActiveTab(tab.id)}
-                          className={`relative flex items-center gap-2 px-5 py-3.5 text-xs font-mono uppercase tracking-widest transition-colors border-0 bg-transparent cursor-pointer ${
-                            isActive
-                              ? "text-stone-900 dark:text-stone-50"
-                              : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-300"
-                          }`}
-                        >
-                          {tab.icon}
-                          {tab.label}
-                          {isActive && (
-                            <motion.span
-                              layoutId="ats-tab-underline"
-                              className="absolute left-0 right-0 -bottom-px h-0.5 bg-lime-400"
-                            />
-                          )}
-                        </button>
-                      );
-                    })}
+                  {/* Tab strip with print button */}
+                  <div className="flex items-center justify-between border-b border-stone-200 dark:border-white/10 overflow-x-auto">
+                    <div className="flex">
+                      {TABS.map((tab) => {
+                        const isActive = activeTab === tab.id;
+                        return (
+                          <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`relative flex items-center gap-2 px-5 py-3.5 text-xs font-mono uppercase tracking-widest transition-colors border-0 bg-transparent cursor-pointer ${
+                              isActive
+                                ? "text-stone-900 dark:text-stone-50"
+                                : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-300"
+                            }`}
+                          >
+                            {tab.icon}
+                            {tab.label}
+                            {isActive && (
+                              <motion.span
+                                layoutId="ats-tab-underline"
+                                className="absolute left-0 right-0 -bottom-px h-0.5 bg-lime-400"
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleDownloadPdf}
+                      disabled={loading}
+                      className="shrink-0 mr-1 inline-flex items-center gap-2 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed print:hidden"
+                      title="Download or print this ATS report"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Download Report</span>
+                    </button>
                   </div>
 
                   <div className="p-5">
                     <AnimatePresence mode="wait">
                       {activeTab === "breakdown" && (
-                        <motion.div
-                          key="breakdown"
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 8 }}
-                          transition={{ duration: 0.18 }}
-                          className="space-y-2.5"
-                        >
-                          {Object.entries(result.categoryScores).map(
-                            ([key, score]) => {
-                              const Icon = CATEGORY_ICONS[key] ?? BarChart2;
-                              const tier = getScoreTier(score);
-                              return (
-                                <div
-                                  key={key}
-                                  className="flex items-center gap-3 p-3.5 bg-stone-50/60 dark:bg-stone-950/40 border border-stone-200 dark:border-white/10 rounded-md"
-                                >
-                                  <div className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10">
-                                    <Icon className="w-4 h-4 text-stone-600 dark:text-stone-400" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-center mb-1.5">
-                                      <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
-                                        {CATEGORY_LABELS[key] ?? key}
-                                      </span>
-                                      <span
-                                        className={`text-sm font-bold tabular-nums ${tier.text}`}
-                                      >
-                                        {score}
-                                        <span className="text-stone-400 dark:text-stone-600 text-xs font-normal">
-                                          /100
-                                        </span>
-                                      </span>
-                                    </div>
-                                    <div className="h-1.5 bg-stone-200 dark:bg-white/10 rounded-full overflow-hidden">
-                                      <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${String(score)}%` }}
-                                        transition={{
-                                          duration: 0.9,
-                                          delay: 0.1,
-                                          ease: "easeOut",
-                                        }}
-                                        className={`h-full rounded-full ${tier.bar}`}
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            },
-                          )}
-                        </motion.div>
+                        <ScoreBreakdownPanel categoryScores={result.categoryScores} />
                       )}
 
                       {activeTab === "keywords" && (
-                        <motion.div
-                          key="keywords"
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 8 }}
-                          transition={{ duration: 0.18 }}
-                          className="space-y-5"
-                        >
-                          {result.keywordAnalysis.found.length > 0 && (
-                            <div>
-                              <div className={sectionKickerCls + " mb-3"}>
-                                <span className="h-1 w-1 bg-lime-400" />
-                                found · {result.keywordAnalysis.found.length}
-                              </div>
-                              <div className="flex flex-wrap gap-1.5">
-                                {result.keywordAnalysis.found.map((kw) => (
-                                  <span
-                                    key={kw}
-                                    className="px-2.5 py-1 bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 rounded-md text-xs font-medium border border-lime-200 dark:border-lime-400/30"
-                                  >
-                                    {kw}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          {result.keywordAnalysis.missing.length > 0 && (
-                            <div>
-                              <div className={sectionKickerCls + " mb-3"}>
-                                <span className="h-1 w-1 bg-orange-500" />
-                                missing ·{" "}
-                                {result.keywordAnalysis.missing.length}
-                              </div>
-                              <div className="flex flex-wrap gap-1.5">
-                                {result.keywordAnalysis.missing.map((kw) => (
-                                  <span
-                                    key={kw}
-                                    className="px-2.5 py-1 bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 rounded-md text-xs font-medium border border-dashed border-orange-200 dark:border-orange-900/50"
-                                  >
-                                    + {kw}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          {result.keywordAnalysis.found.length === 0 &&
-                            result.keywordAnalysis.missing.length === 0 && (
-                              <p className="text-sm text-stone-500 text-center py-8">
-                                No keyword data available for this analysis.
-                              </p>
-                            )}
-                        </motion.div>
+                        <KeywordAnalysisPanel keywordAnalysis={result.keywordAnalysis} />
                       )}
 
                       {activeTab === "suggestions" && (
-                        <motion.div
-                          key="suggestions"
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 8 }}
-                          transition={{ duration: 0.18 }}
-                        >
-                          {result.suggestions.length > 0 ? (
-                            <div className="divide-y divide-stone-200 dark:divide-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
-                              {result.suggestions.map((s, i) => (
-                                <motion.div
-                                  key={i}
-                                  initial={{ opacity: 0, y: 6 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: i * 0.05 }}
-                                  className="group flex items-start gap-4 px-5 py-4 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors"
-                                >
-                                  <div className="w-8 h-8 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center shrink-0 mt-0.5 tabular-nums">
-                                    <span className="text-[11px] font-bold text-stone-50 dark:text-stone-900">
-                                      {String(i + 1).padStart(2, "0")}
-                                    </span>
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed">
-                                      {s}
-                                    </p>
-                                  </div>
-                                  <ArrowRight className="w-4 h-4 text-stone-300 dark:text-white/20 shrink-0 mt-1 group-hover:text-lime-500 group-hover:translate-x-0.5 transition-all" />
-                                </motion.div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="flex flex-col items-center py-10 text-center">
-                              <div className="w-12 h-12 rounded-md bg-lime-400 flex items-center justify-center mb-4">
-                                <CheckCircle className="w-6 h-6 text-stone-950" />
-                              </div>
-                              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
-                                No improvements needed
-                              </p>
-                              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
-                                resume is ats-ready
-                              </p>
-                            </div>
-                          )}
-                        </motion.div>
+                        <SuggestionsPanel
+                          suggestions={result.suggestions}
+                          selectedSuggestions={selectedSuggestions}
+                          onSelectionChange={setSelectedSuggestions}
+                          onSelectAll={(checked) => {
+                            if (checked) {
+                              setSelectedSuggestions(new Set(result.suggestions.map((_, i) => i)));
+                            } else {
+                              setSelectedSuggestions(new Set());
+                            }
+                          }}
+                          onApply={() => applyMutation.mutate()}
+                          isApplying={applyMutation.isPending}
+                        />
                       )}
                     </AnimatePresence>
                   </div>

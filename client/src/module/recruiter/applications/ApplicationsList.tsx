@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, Search, Filter } from "lucide-react";
@@ -42,7 +43,10 @@ export default function ApplicationsList() {
     }).catch(() => setLoading(false));
   };
 
-  useEffect(() => { fetchApplications(); }, [jobId, page, statusFilter, debouncedSearch]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchApplications();
+  }, [jobId, page, statusFilter, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleStatusChange = async (appId: number, status: string) => {
     try {
@@ -95,8 +99,33 @@ export default function ApplicationsList() {
       </div>
 
       {loading ? (
-        <div className="text-center py-16 text-gray-500 dark:text-gray-500">Loading...</div>
-      ) : applications.length === 0 ? (
+  <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+    <div className="animate-pulse">
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-800"
+        >
+          <div className="space-y-2">
+            <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-3 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          </div>
+
+          <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+
+          <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+
+          <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+
+          <div className="flex gap-2">
+            <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+            <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+) : applications.length === 0 ?  (
         <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-gray-500 dark:text-gray-500">No applications found</div>
       ) : (
         <>
@@ -169,16 +198,4 @@ export default function ApplicationsList() {
       )}
     </div>
   );
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "APPLIED": return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
-    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
-    case "SHORTLISTED": return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
-    case "REJECTED": return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
-    case "HIRED": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
-    case "WITHDRAWN": return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
-    default: return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
-  }
 }

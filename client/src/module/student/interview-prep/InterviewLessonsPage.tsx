@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowUpRight, Lock } from "lucide-react";
@@ -10,29 +10,38 @@ import { courseSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
+import api from "../../../lib/axios"
 
 const STORAGE_KEY = "interview-progress";
 
 function getLocalProgress(): InterviewProgress {
   try {
     const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-    const out: InterviewProgress = {};
-    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-      if (v && typeof v === "object" && typeof (v as { completed?: unknown }).completed === "boolean") {
-        out[k] = { completed: (v as { completed: boolean }).completed };
-      }
+
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      return {};
     }
-    return out;
+
+    return raw as InterviewProgress;
   } catch {
     return {};
   }
+}
+
+function saveLocalProgress(progress: InterviewProgress) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
 }
 
 const LEVEL_STYLE: Record<string, string> = {
   Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
   Intermediate: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
   Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
+};
+
+const DIFF_STYLE: Record<string, string> = {
+  Beginner: "text-green-700 dark:text-green-400 border-green-200 dark:border-green-900/60 bg-green-50 dark:bg-green-900/20",
+  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-900/20",
+  Advanced: "text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-900/20",
 };
 
 function MetaChip({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -46,37 +55,82 @@ function MetaChip({ children, className = "" }: { children: React.ReactNode; cla
 export default function InterviewLessonsPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [showGate, setShowGate] = useState(false);
-  const [progress, setProgress] = useState<InterviewProgress>(() => getLocalProgress());
-
-  const refreshProgress = useCallback(() => setProgress(getLocalProgress()), []);
+  const [progress, setProgress] = useState<InterviewProgress>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [diffFilter, setDiffFilter] = useState<
+    "all" | "Beginner" | "Intermediate" | "Advanced"
+  >("all");
 
   useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY || e.key === null) refreshProgress();
-    };
-    const onVisible = () => {
-      if (document.visibilityState === "visible") refreshProgress();
-    };
-    window.addEventListener("storage", onStorage);
-    document.addEventListener("visibilitychange", onVisible);
-    window.addEventListener("focus", refreshProgress);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      document.removeEventListener("visibilitychange", onVisible);
-      window.removeEventListener("focus", refreshProgress);
-    };
-  }, [refreshProgress]);
+  if (!isAuthenticated) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setProgress(getLocalProgress());
+    return;
+  }
+
+  const loadProgress = async () => {
+    setIsLoading(true);
+    try {
+      const localProgress = getLocalProgress();
+
+      const response = await api.get("/interview-progress");
+
+      const serverData = response.data;
+
+      const merged: InterviewProgress = {
+        ...localProgress,
+      };
+
+      serverData.completedIds.forEach((id: string) => {
+        merged[id] = { completed: true };
+      });
+
+      setProgress(merged);
+
+      saveLocalProgress(merged);
+
+      const migrated = localStorage.getItem("interview-progress-migrated");
+
+      if (!migrated && Object.keys(localProgress).length > 0) {
+        for (const [questionId, value] of Object.entries(localProgress)) {
+          if (value.completed) {
+            await api.patch(`/interview-progress`, {
+             questionId: questionId, action: "complete"
+            });
+          }
+        }
+
+        localStorage.setItem("interview-progress-migrated", "true");
+      }
+    } catch (error) {
+      console.error("Failed to load interview progress", error);
+      setProgress(getLocalProgress());
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  loadProgress();
+}, [isAuthenticated]);
 
   const sectionStats = useMemo(() => {
     return sections.map((section) => {
       const sectionQuestions = questions.filter((q) => q.sectionId === section.id);
       const completed = sectionQuestions.filter((q) => progress[q.id]?.completed).length;
       const total = sectionQuestions.length;
-      return { ...section, completed, total };
+      const easy = sectionQuestions.filter((q) => q.difficulty === "Beginner").length;
+      const medium = sectionQuestions.filter((q) => q.difficulty === "Intermediate").length;
+      const hard = sectionQuestions.filter((q) => q.difficulty === "Advanced").length;
+      return { ...section, completed, total, easy, medium, hard };
     });
   }, [progress]);
 
-  const totalCompleted = Object.values(progress).filter((p) => p.completed).length;
+  const visibleSections = useMemo(() => {
+    if (diffFilter === "all") return sectionStats;
+    return sectionStats.filter((s) => s.level === diffFilter);
+  }, [sectionStats, diffFilter]);
+
+  const totalCompleted = Object.values(progress as InterviewProgress).filter((p) => p.completed).length;
   const totalQuestions = questions.length;
   const overallPct = totalQuestions > 0 ? Math.round((totalCompleted / totalQuestions) * 100) : 0;
 
@@ -172,7 +226,7 @@ export default function InterviewLessonsPage() {
         >
           <div className="flex items-center justify-between gap-4 mb-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              overall progress
+              {isLoading ? "syncing progress" : "overall progress"}
             </span>
             <span className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 tabular-nums">
               {totalCompleted} / {totalQuestions}
@@ -200,13 +254,44 @@ export default function InterviewLessonsPage() {
             </h2>
           </div>
           <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">
-            {sectionStats.length} sections
+            {visibleSections.length} sections
           </span>
         </div>
 
+        <div className="flex items-center gap-2 mb-6 flex-wrap">
+          {(["all", "Beginner", "Intermediate", "Advanced"] as const).map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => setDiffFilter(d)}
+              className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest
+                rounded-md border transition-all duration-200 cursor-pointer
+                ${diffFilter === d
+                  ? d === "all"
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 shadow-md scale-105"
+                    : `${DIFF_STYLE[d]} shadow-md scale-105`
+                  : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                }`}
+            >
+              {d === "all" ? "all levels" : d}
+            </button>
+          ))}
+        </div>
+
         {/* Section grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sectionStats.map((section, idx) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {visibleSections.length === 0 ? (
+            <div className="col-span-full py-20 text-center border border-dashed border-stone-200 dark:border-white/10 rounded-md">
+              <p className="text-sm text-stone-500 mb-2">No sections match this level.</p>
+              <button 
+                onClick={() => setDiffFilter("all")}
+                className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline"
+              >
+                Clear filter
+              </button>
+            </div>
+          ) : (
+            visibleSections.map((section, idx) => {
             const pct = section.total > 0 ? Math.round((section.completed / section.total) * 100) : 0;
             const basePath = "/learn/interview";
             const isComplete = pct === 100 && section.total > 0;
@@ -266,11 +351,35 @@ export default function InterviewLessonsPage() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-1.5 mb-4">
+                <div className="flex flex-wrap gap-1.5">
                   <MetaChip>
                     {isLocked ? `${section.total} questions` : `${section.completed} / ${section.total} done`}
                   </MetaChip>
                   <MetaChip className={LEVEL_STYLE[section.level]}>{section.level}</MetaChip>
+                </div>
+
+                <div className="flex items-center gap-1.5 mt-2 mb-4 flex-wrap">
+                  {section.easy > 0 && (
+                    <span className={`text-[9px] font-mono uppercase tracking-widest
+                      px-1.5 py-0.5 rounded border transition-all duration-300
+                      ${DIFF_STYLE["Beginner"]}`}>
+                      {section.easy} easy
+                    </span>
+                  )}
+                  {section.medium > 0 && (
+                    <span className={`text-[9px] font-mono uppercase tracking-widest
+                      px-1.5 py-0.5 rounded border transition-all duration-300
+                      ${DIFF_STYLE["Intermediate"]}`}>
+                      {section.medium} medium
+                    </span>
+                  )}
+                  {section.hard > 0 && (
+                    <span className={`text-[9px] font-mono uppercase tracking-widest
+                      px-1.5 py-0.5 rounded border transition-all duration-300
+                      ${DIFF_STYLE["Advanced"]}`}>
+                      {section.hard} hard
+                    </span>
+                  )}
                 </div>
 
                 <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
@@ -303,7 +412,8 @@ export default function InterviewLessonsPage() {
                 )}
               </motion.div>
             );
-          })}
+          })
+        )}
         </div>
       </div>
 

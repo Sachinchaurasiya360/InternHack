@@ -417,6 +417,7 @@ function LogReplication() {
   useEffect(() => {
     if (!playing) return;
     if (committed >= SAMPLE_LOG.length) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPlaying(false);
       return;
     }

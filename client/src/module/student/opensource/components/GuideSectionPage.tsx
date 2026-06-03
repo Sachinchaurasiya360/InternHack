@@ -1,21 +1,24 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
   ArrowRight, ChevronLeft, ChevronRight,
-  CheckCircle2, Copy, Check, ExternalLink, Lightbulb, Info,
+  CheckCircle2, ExternalLink, Lightbulb, Info,
 } from "lucide-react";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
+import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
+import { useKeyboardNavigation } from "../../../../hooks/useKeyboardNavigation";
 interface Step {
   step: number;
   id: string;
   title: string;
   description: string;
+  estimatedMinutes?: number;
   mentor_guidance: string;
   details: string[];
   commands: Command[];
@@ -26,37 +29,10 @@ interface Step {
 interface Props {
   steps: Step[];
   storageKey: string;
-  basePath: string;        // e.g. "/student/opensource/read-codebase"
-  seoSuffix: string;       // e.g. "Codebase Guide"
+  basePath: string;
+  seoSuffix: string;
 }
 
-function CodeBlock({ code, label }: { code: string; label?: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{label ?? "Command"}</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={copy}
-          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-        >
-          {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? "Copied" : "Copy"}
-        </Button>
-      </div>
-      <pre className="p-4 overflow-x-auto bg-gray-950 text-gray-100 text-sm leading-relaxed">
-        <code>{code}</code>
-      </pre>
-    </div>
-  );
-}
 
 export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffix }: Props) {
   const { sectionSlug } = useParams<{ sectionSlug: string }>();
@@ -70,22 +46,78 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  const [rating, setRating] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
       const next = new Set(prev);
       if (!step) return next;
-      next.has(step.id) ? next.delete(step.id) : next.add(step.id);
+      if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
       return next;
     });
   }, [step, storageKey]);
 
-  if (!step) return <Navigate to={basePath} replace />;
+  
+useEffect(() => {
+  if (!step) return;
 
-  const isDone = completed.has(step.id);
+  const saved = localStorage.getItem(
+    `guide-feedback-${basePath}-${step.id}`
+  );
+
+  if (saved) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setRating(saved);
+    setSubmitted(true);
+  }
+}, [step, basePath]);
+
   const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
   const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
+  useKeyboardNavigation({
+    prevPath: prev ? `${basePath}/${prev.id}` : null,
+    nextPath: next ? `${basePath}/${next.id}` : null,
+  });
+
+if (!step) return <Navigate to={basePath} replace />;
+const submitFeedback = async (
+  value: "up" | "down"
+) => {
+  if (!step || submitted) return;
+
+  try {
+    await fetch("/api/opensource/guide-feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        guideId: basePath,
+        stepId: step.id,
+        rating: value,
+      }),
+    });
+
+    localStorage.setItem(
+      `guide-feedback-${basePath}-${step.id}`,
+      value
+    );
+
+    setRating(value);
+    setSubmitted(true);
+  } catch {
+    localStorage.setItem(
+      `guide-feedback-${basePath}-${step.id}`,
+      value
+    );
+
+    setRating(value);
+    setSubmitted(true);
+  }
+};
+  const isDone = completed.has(step.id);
 
   return (
     <div className="relative pb-12">
@@ -100,7 +132,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
         <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
       </div>
 
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -154,7 +185,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       </motion.div>
 
       <div className="space-y-5">
-        {/* Mentor's Guidance */}
         {step.mentor_guidance && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -169,7 +199,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           </motion.div>
         )}
 
-        {/* Code Examples */}
         {step.commands.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -179,12 +208,11 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white">Code Examples</h2>
             {step.commands.map((cmd, i) => (
-              <CodeBlock key={i} code={cmd.code} label={cmd.label} />
+              <CodeBlock key={`${step.id}-${cmd.label || i}`} code={cmd.code} label={cmd.label} language="bash" />
             ))}
           </motion.div>
         )}
 
-        {/* Important Notes */}
         {step.details.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -209,7 +237,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           </motion.div>
         )}
 
-        {/* Pro Tips */}
         {step.tips.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -234,7 +261,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           </motion.div>
         )}
 
-        {/* Resources */}
         {step.resources.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -266,44 +292,74 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
             </ul>
           </motion.div>
         )}
+<div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+  <p className="text-sm font-medium mb-3">
+    Was this step helpful?
+  </p>
 
+  <div className="flex gap-2">
+    <Button
+      onClick={() => submitFeedback("up")}
+      disabled={submitted}
+      variant={rating === "up" ? "mono" : "outline"}
+    >
+      👍 Thumbs Up
+    </Button>
+
+    <Button
+      onClick={() => submitFeedback("down")}
+      disabled={submitted}
+      variant={rating === "down" ? "mono" : "outline"}
+    >
+      👎 Thumbs Down
+    </Button>
+  </div>
+
+  {submitted && (
+    <p className="text-green-600 text-sm mt-2">
+      Thanks for your feedback!
+    </p>
+  )}
+</div>
         {/* Mark as Complete + Next */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.35 }}
-          className="flex items-center justify-between pt-2"
+          className="pt-2"
         >
-          <Button
-            variant={isDone ? "ghost" : "mono"}
-            onClick={toggleComplete}
-            className={
-              isDone
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-xl"
-                : "rounded-xl"
-            }
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            {isDone ? "Completed" : "Mark as Complete"}
-          </Button>
-
-          {next ? (
+          <div className="flex items-center justify-between">
             <Button
-              variant="outline"
-              onClick={() => navigate(`${basePath}/${next.id}`)}
-              className="group text-gray-600 dark:text-gray-400 rounded-xl"
+              variant={isDone ? "ghost" : "mono"}
+              onClick={toggleComplete}
+              className={
+                isDone
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-xl"
+                  : "rounded-xl"
+              }
             >
-              Next Section
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <CheckCircle2 className="w-4 h-4" />
+              {isDone ? "Completed" : "Mark as Complete"}
             </Button>
-          ) : (
-            <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
-              <Link to={basePath} className="no-underline">
-                Back to Overview
+
+            {next ? (
+              <Button
+                variant="outline"
+                onClick={() => navigate(`${basePath}/${next.id}`)}
+                className="group text-gray-600 dark:text-gray-400 rounded-xl"
+              >
+                Next Section
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </Button>
-          )}
+              </Button>
+            ) : (
+              <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
+                <Link to={basePath} className="no-underline">
+                  Back to Overview
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </Button>
+            )}
+          </div>
         </motion.div>
       </div>
     </div>

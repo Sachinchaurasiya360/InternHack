@@ -1,10 +1,14 @@
 import { Router } from "express";
 import { authMiddleware, optionalAuthMiddleware } from "../../middleware/auth.middleware.js";
 import { aiRoadmapLimiter } from "../../middleware/rate-limit.middleware.js";
+import { cacheMiddleware } from "../../middleware/cache.middleware.js";
 import {
+  downloadCertificate,
   downloadPdf,
   enroll,
+  getMyEnrollmentAnalytics,
   getMyEnrollment,
+  deleteMyEnrollment,
   getMyEnrollments,
   getRoadmap,
   getRoadmaps,
@@ -14,17 +18,18 @@ import {
   postRecomputePace,
   updateRoadmap,
   
+  postRegenerateSection,
 } from "./roadmap.controller.js";
 
 export const roadmapRouter = Router();
 
-// ── AI generation (registered BEFORE /:slug to avoid conflicts) ──────────
 roadmapRouter.post("/ai/generate", authMiddleware, aiRoadmapLimiter, postAiGenerate);
-
-// ── Authenticated "me" routes (also BEFORE /:slug) ────────────────────────
 roadmapRouter.get("/me/enrollments", authMiddleware, getMyEnrollments);
+roadmapRouter.get("/me/enrollments/:id/analytics", authMiddleware, getMyEnrollmentAnalytics);
 roadmapRouter.get("/me/enrollments/:id", authMiddleware, getMyEnrollment);
+roadmapRouter.delete("/me/enrollments/:id", authMiddleware, deleteMyEnrollment);
 roadmapRouter.get("/me/enrollments/:id/pdf", authMiddleware, downloadPdf);
+roadmapRouter.get("/me/enrollments/:id/certificate", authMiddleware, downloadCertificate);
 roadmapRouter.patch(
   "/me/enrollments/:id/topics/:topicId",
   authMiddleware,
@@ -41,11 +46,9 @@ roadmapRouter.post(
   postRecomputePace,
 );
 
-// ── Public ────────────────────────────────────────────────────────────────
-roadmapRouter.get("/", getRoadmaps);
-roadmapRouter.get("/:slug", optionalAuthMiddleware, getRoadmap);
+roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
+roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
-
-
-// ── Auth: enrollment ──────────────────────────────────────────────────────
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);
+// Section-level AI regeneration — only for AI-generated roadmaps owned by the user
+roadmapRouter.post("/:slug/sections/:sectionId/regenerate", authMiddleware, aiRoadmapLimiter, postRegenerateSection);

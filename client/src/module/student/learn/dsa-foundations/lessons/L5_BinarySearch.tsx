@@ -323,8 +323,14 @@ function VisualizeTab() {
   const [variant, setVariant] = useState<Variant>("basic");
   const [inputStr, setInputStr] = useState("1, 3, 5, 7, 9, 11, 13, 15 | 9");
 
-  const parsed = parseInputs(inputStr) ?? { arr: [1, 3, 5, 7, 9, 11, 13, 15], target: 9 };
-  const arr = variant === "rotated" ? parsed.arr : [...parsed.arr].sort((a, b) => a - b);
+  const parsed = useMemo(
+    () => parseInputs(inputStr) ?? { arr: [1, 3, 5, 7, 9, 11, 13, 15], target: 9 },
+    [inputStr],
+  );
+  const arr = useMemo(
+    () => (variant === "rotated" ? parsed.arr : [...parsed.arr].sort((a, b) => a - b)),
+    [variant, parsed.arr],
+  );
 
   const frames = useMemo(() => {
     if (variant === "basic") return buildBasic(arr, parsed.target);

@@ -18,14 +18,13 @@ import HRModal from "./components/HRModal";
 import type { HRDepartment } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { labelClass } from "./hr-utils";
 
 type Tab = "list" | "org";
 
 const inputClass =
   "w-full px-3 py-2 rounded-md bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors";
 
-const labelClass =
-  "block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5";
 
 export default function DepartmentsPage() {
   const queryClient = useQueryClient();

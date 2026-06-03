@@ -127,6 +127,7 @@ function parseInput(s: string): { pkgs: number[]; D: number } | null {
   return { pkgs, D };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function BinarySearchAnswerViz({ frame, pkgs, D: _D }: { frame: Frame; pkgs: number[]; D: number }) {
   const totalLo = Math.max(...pkgs);
   const totalHi = pkgs.reduce((a, b) => a + b, 0);

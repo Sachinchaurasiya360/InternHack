@@ -43,6 +43,8 @@ This guide walks you through everything from setting up the project to submittin
 | PostgreSQL | 14+ | Database |
 | Git | 2.30+ | Version control |
 
+**Docker Compose shortcut:** You can run Postgres + API + client with only Docker by following the README “Docker Compose (alternative)” section (root `.env.example` plus `docker compose up`). That path does **not** use Redis — the app stack is PostgreSQL only.
+
 You'll also need:
 - A **Google Cloud Console** project for OAuth (client ID)
 - A **Gemini API key** ([free at aistudio.google.com](https://aistudio.google.com/apikey))
@@ -57,13 +59,19 @@ cd InternHack
 
 ### Step 2: Set up environment variables
 
-```bash
-# Server environment
-cp server/.env.example server/.env
+**Docker Compose:** copy the template at the repo root:
 
-# Client environment
+```bash
+cp .env.example .env
+```
+
+**Classic setup:** separate client and server copies:
+
+```bash
+cp server/.env.example server/.env
 cp client/.env.example client/.env
 ```
+
 
 Open `server/.env` and fill in the **required** values:
 
@@ -121,18 +129,20 @@ npm run seed
 npm run seed:admin
 ```
 
-> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent, you can run it multiple times without creating duplicates. Default login for all seeded users is `Test@1234`.
+> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent, you can run it multiple times without creating duplicates. Default password for all seeded accounts is `Test@1234`.
 >
-> Seeded accounts:
-> | Email | Role |
-> |---|---|
-> | `admin@internhack.xyz` | Admin |
-> | `recruiter@internhack.xyz` | Recruiter |
-> | `aarav@example.com` | Student |
-> | `priya@example.com` | Student |
-> | `rohan@example.com` | Student |
-> | `sneha@example.com` | Student |
-> | `arjun@example.com` | Student |
+> **Seeded accounts:**
+>
+> | Email | Role | Plan | Notes |
+> |---|---|---|---|
+> | `admin@internhack.xyz` | Admin | Free | Super-admin with full dashboard access |
+> | `recruiter@internhack.xyz` | Recruiter | Free | Pre-linked to TechCorp, can post jobs |
+> | `aarav@example.com` | Student | Free | IIT Delhi, JavaScript/React/Node.js |
+> | `priya@example.com` | Student | Free | NIT Trichy, Python/Django/ML |
+> | `rohan@example.com` | Student | Free | BITS Pilani, Java/Spring Boot/AWS |
+> | `sneha@example.com` | Student | Free | IIIT Hyderabad, TypeScript/React/PostgreSQL |
+> | `arjun@example.com` | Student | Free | VIT Vellore, C++/DSA |
+> | `premium@example.com` | Student | **Monthly (Active)** | Use this account to test all premium/subscription-gated features (AI roadmaps, cover letter generation, mock interviews, etc.) |
 
 ### Step 6: Start the dev servers
 
@@ -189,6 +199,10 @@ client/src/module/<area>/
 
 Shared components live in `client/src/components/`. State management uses Zustand (`lib/*.store.ts`) and data fetching uses React Query.
 
+### AI Assistant Context Files
+
+This repository includes optional AI assistant context files (`CLAUDE.md` and `.claude/`) designed for Claude Code users. These files provide project-specific development context and are not required for contributors using other tools or workflows.
+
 ### Key files to read first
 
 | File | What it tells you |
@@ -196,6 +210,7 @@ Shared components live in `client/src/components/`. State management uses Zustan
 | `server/src/index.ts` | All API routes, middleware order, CORS setup |
 | `client/src/App.tsx` | All frontend routes and lazy-loaded pages |
 | `server/src/database/prisma/schema/base.prisma` | Core database models |
+| `docs/database-schema.md` | [Visual ER diagram](../docs/database-schema.md) of all models and their relationships |
 | `client/src/lib/types.ts` | Client-side TypeScript interfaces |
 | `.claude/REPO_MAP.md` | Detailed map of every module and file |
 
@@ -312,7 +327,7 @@ Before opening a PR, verify:
 - [ ] You added dark mode support if your change includes UI
 - [ ] Database changes use `db push`, not migrations (for now)
 
-### PR format
+### PR format (General)
 
 ```markdown
 ## Summary
@@ -326,6 +341,38 @@ Before opening a PR, verify:
 
 ## Screenshots (if UI changes)
 - Before/after screenshots
+```
+
+### PR Template (Must Follow)
+
+```markdown
+# Pull Request
+
+## Description
+Describe your changes.
+
+## Related Issue
+Fixes #
+
+## Type of Change
+- [ ] Bug Fix
+- [ ] Feature
+- [ ] Enhancement
+- [ ] Documentation
+
+## Testing
+Explain how you tested it.
+
+## Screenshots
+(if applicable)
+
+## Checklist
+- [ ] Code follows project guidelines
+- [ ] No new compile/type errors
+- [ ] Tested manually (include steps above)
+- [ ] No `.env`, credentials, or `node_modules` committed
+- [ ] Docs updated (if needed)
+- [ ] Screenshots added for UI changes (if applicable)
 ```
 
 ### Review process
