@@ -9,6 +9,7 @@ import { RoundsManager } from "../rounds/RoundsManager";
 import type { CustomFieldDefinition } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import toast from "../../../components/ui/toast";
 
 interface RoundInput {
   name: string;
@@ -88,6 +89,7 @@ export default function CreateJobPage() {
         });
       }
 
+      toast.success("Job created successfully");
       navigate("/recruiters/jobs");
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string; errors?: { fieldErrors?: Record<string, string[]> } } } };
