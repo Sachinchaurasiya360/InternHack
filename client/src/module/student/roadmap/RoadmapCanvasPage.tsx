@@ -1021,8 +1021,9 @@ export default function RoadmapCanvasPage() {
 
       {/* Main content area: fills the rest of the viewport, alongside sidebar */}
       <div
-        className={`flex flex-col h-screen pt-16 lg:pt-16 transition-all duration-300 ${collapsed ? "lg:ml-18" : "lg:ml-64"
-          }`}
+        className={`flex flex-col min-h-screen overflow-y-auto pt-16 transition-all duration-300 ${
+          collapsed ? "lg:ml-18" : "lg:ml-64"
+        }`}
       >
         <SEO title={`Learn: ${data.enrollment.roadmap.title}`} noIndex />
 

@@ -54,7 +54,7 @@ export async function getRoadmaps(req: Request, res: Response, next: NextFunctio
       validationError(res, parsed.error.flatten().fieldErrors);
       return;
     }
-    const data = await listPublishedRoadmaps(parsed.data);
+    const data = await listPublishedRoadmaps({ ...parsed.data, userId: req.user?.id });
     res.json(data);
   } catch (err) {
     next(err);

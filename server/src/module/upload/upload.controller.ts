@@ -10,6 +10,26 @@ const logger = createLogger("UploadController");
 
 const MAX_RESUMES = 2;
 
+/**
+ * Server-side allowlist of permitted MIME types for presigned URL generation.
+ * Scoped to the four upload targets the application actually uses:
+ * resumes (PDF), profile-pics, cover-images, and company-logos (images + SVG).
+ * Executables, scripts, HTML, and other dangerous types are excluded.
+ */
+const ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+]);
+
+/**
+ * SVG is an XSS risk when served from S3, so it is excluded from the general
+ * allowlist. The company-logos folder intentionally permits SVG because the
+ * existing per-folder policy in s3.utils.ts already allows it there.
+ */
+const SVG_ALLOWED_FOLDERS = new Set(["company-logos"]);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const UPLOADS_DIR = path.join(__dirname, "../../../uploads");
@@ -46,6 +66,12 @@ export class UploadController {
       const { fileName, fileType, folder } = req.body;
       if (!fileName || !fileType || !folder) {
         return res.status(400).json({ message: "fileName, fileType, and folder are required" });
+      }
+
+      const isSvgForLogoFolder =
+        fileType === "image/svg+xml" && SVG_ALLOWED_FOLDERS.has(folder as string);
+      if (!ALLOWED_MIME_TYPES.has(fileType as string) && !isSvgForLogoFolder) {
+        return res.status(400).json({ message: "File type not allowed." });
       }
 
       const fileKey = createUniqueS3Key(folder, String(req.user.id), fileName);
