@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
@@ -6,6 +6,7 @@ import { ArrowLeft, Search, Filter, Loader2 } from "lucide-react";
 import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
@@ -13,26 +14,17 @@ export default function ApplicationsList() {
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
-  const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
-  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Debounce search input
+  // Reset to page 1 when search or filter changes
   useEffect(() => {
-    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-    searchTimerRef.current = setTimeout(() => {
-      setDebouncedSearch(search);
-      setPage(1);
-    }, 400);
-    return () => {
-      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-    };
-  }, [search]);
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
 
-  const fetchApplications = () => {
+  const fetchApplications = useCallback(() => {
     setLoading(true);
     const params = new URLSearchParams({ page: String(page), limit: "10" });
     if (debouncedSearch) params.set("search", debouncedSearch);
@@ -43,12 +35,11 @@ export default function ApplicationsList() {
       setPagination(res.data.pagination);
       setLoading(false);
     }).catch(() => setLoading(false));
-  };
+  }, [jobId, page, debouncedSearch, statusFilter]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchApplications();
-  }, [jobId, page, statusFilter, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fetchApplications]);
 
 const handleStatusChange = async (appId: number, status: string) => {
   if (updatingId === appId) return;
