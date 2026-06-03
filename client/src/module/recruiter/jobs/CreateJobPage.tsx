@@ -307,6 +307,7 @@ export default function CreateJobPage() {
                       type="date"
                       value={form.deadline}
                       onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+                      min={new Date().toISOString().split("T")[0]}
                       className={inputClass()}
                     />
                   </Field>
