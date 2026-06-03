@@ -5,7 +5,10 @@ const sanitizeText = (value: string) => value.replace(/<[^>]*>?/gm, "").trim();
 
 const customFieldDefinitionSchema = z.object({
   id: z.string(),
-  label: z.string().min(1).transform((value) => sanitizeText(value)),
+  label: z
+    .string()
+    .transform((value) => sanitizeText(value))
+    .refine((value) => value.length > 0, { message: "Label is required" }),
   fieldType: z.enum(["TEXT", "TEXTAREA", "DROPDOWN", "MULTI_SELECT", "FILE_UPLOAD", "BOOLEAN", "NUMERIC", "DATE", "EMAIL", "URL"]),
   required: z.boolean(),
   placeholder: z.string().optional().transform((value) => value ? sanitizeText(value) : value),
