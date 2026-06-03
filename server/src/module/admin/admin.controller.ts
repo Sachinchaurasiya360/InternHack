@@ -1114,14 +1114,23 @@ export class AdminController {
       // withAdvisoryLock silently returns if the lock is already held by another pod.
       let broadcastResult: Awaited<ReturnType<typeof this.adminService.sendBroadcastEmail>> | null = null;
       let lockAcquired = false;
+      let callbackError: unknown = null;
 
       await withAdvisoryLock("admin-broadcast-email", async () => {
         lockAcquired = true;
-        broadcastResult = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user!.id });
+        try {
+          broadcastResult = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user!.id });
+        } catch (err) {
+          callbackError = err;
+        }
       });
 
       if (!lockAcquired) {
         return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
+      }
+
+      if (callbackError) {
+        throw callbackError;
       }
 
       return res.status(200).json({
