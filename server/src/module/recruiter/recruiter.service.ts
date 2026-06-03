@@ -538,7 +538,7 @@ export class RecruiterService {
       if (filter.graduationYearMax) where.graduationYear.lte = filter.graduationYearMax;
     }
     if (filter.skills) {
-      const skillList = filter.skills.split(",").map((s) => s.trim()).filter(Boolean);
+      const skillList = filter.skills.split(",").map((s) => s.toLowerCase().trim()).filter(Boolean);
       if (skillList.length > 0) {
         where.skills = { hasSome: skillList };
       }
