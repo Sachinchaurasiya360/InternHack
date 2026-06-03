@@ -9,14 +9,19 @@ const controller = new OpensourceController();
 // ─── Public Routes ─────────────────────────────────────────────
 
 // List repos with optional filters
-opensourceRouter.get("/", (req, res, next) => controller.listRepos(req, res, next));
+opensourceRouter.get("/", (req, res, next) =>
+  controller.listRepos(req, res, next),
+);
 
 // Get all unique languages
-opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
+opensourceRouter.get("/languages", (req, res, next) =>
+  controller.getLanguages(req, res, next),
+);
 
 // Get GSoC organizations
-opensourceRouter.get("/gsoc-orgs", (req, res, next) => controller.getGsocOrgs(req, res, next));
-
+opensourceRouter.get("/gsoc-orgs", (req, res, next) =>
+  controller.getGsocOrgs(req, res, next),
+);
 
 // ─── Student Tracking Progress Routes (Custom Feature) ──────────
 
@@ -33,7 +38,6 @@ opensourceRouter.patch(
   requireRole("STUDENT"),
   (req, res, next) => controller.patchFirstPrProgress(req, res, next),
 );
-
 
 // ─── Repo Requests (Student-authenticated) ───────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
@@ -62,7 +66,6 @@ opensourceRouter.get(
   (req, res, next) => controller.getStudentContributionTrend(req, res, next),
 );
 
-
 // ─── Admin: Manage Repo Requests ─────────────────────────────────
 
 // List all repo requests
@@ -89,6 +92,7 @@ opensourceRouter.put(
   (req, res, next) => controller.rejectRepoRequest(req, res, next),
 );
 
-
 // Public: get single repo (Registered at the very end to prevent parameter conflicts)
-opensourceRouter.get("/:id", (req, res, next) => controller.getRepoById(req, res, next));
+opensourceRouter.get("/:id", (req, res, next) =>
+  controller.getRepoById(req, res, next),
+);

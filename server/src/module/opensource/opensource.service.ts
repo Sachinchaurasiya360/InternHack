@@ -1,7 +1,10 @@
 import { prisma } from "../../database/db.js";
 import { fetchGithubStats } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
-import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/email-templates.js";
+import {
+  repoRequestSubmittedHtml,
+  repoRequestApprovedHtml,
+} from "../../utils/email-templates.js";
 
 export class OpensourceService {
   async getLanguages() {
@@ -65,7 +68,9 @@ export class OpensourceService {
   }
 
   async getRepoById(id: number) {
-    const repo = (await prisma.opensourceRepo.findUnique({ where: { id } })) as any;
+    const repo = (await prisma.opensourceRepo.findUnique({
+      where: { id },
+    })) as any;
     if (!repo) return null;
 
     const SIX_HOURS = 6 * 60 * 60 * 1000;
@@ -75,7 +80,7 @@ export class OpensourceService {
 
     if (isStale && repo.url?.includes("github.com")) {
       this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-        console.error(`[github] background update failed for ${id}:`, err)
+        console.error(`[github] background update failed for ${id}:`, err),
       );
     }
     return repo;
@@ -159,9 +164,15 @@ export class OpensourceService {
       await sendEmail({
         to: request.user.email,
         subject: "Repo Request Received, InternHack",
-        html: repoRequestSubmittedHtml(request.user.name, request.name, request.owner),
+        html: repoRequestSubmittedHtml(
+          request.user.name,
+          request.name,
+          request.owner,
+        ),
       });
-    } catch { /* email failure is non-blocking */ }
+    } catch {
+      /* email failure is non-blocking */
+    }
     return request;
   }
 
@@ -172,7 +183,12 @@ export class OpensourceService {
     });
   }
 
-  async getAllRepoRequests(query: { status?: string; page: number; limit: number; skip: number }) {
+  async getAllRepoRequests(query: {
+    status?: string;
+    page: number;
+    limit: number;
+    skip: number;
+  }) {
     const { status, page, limit, skip } = query;
     const where: Record<string, any> = {};
     if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
@@ -181,7 +197,11 @@ export class OpensourceService {
     const [requests, total] = await Promise.all([
       prisma.repoRequest.findMany({
         where,
-        include: { user: { select: { id: true, name: true, email: true, profilePic: true } } },
+        include: {
+          user: {
+            select: { id: true, name: true, email: true, profilePic: true },
+          },
+        },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
@@ -225,12 +245,18 @@ export class OpensourceService {
       await sendEmail({
         to: request.user.email,
         subject: "Your Repo Has Been Approved, InternHack",
-        html: repoRequestApprovedHtml(request.user.name, overrides.name ?? request.name, request.owner),
+        html: repoRequestApprovedHtml(
+          request.user.name,
+          overrides.name ?? request.name,
+          request.owner,
+        ),
       });
-    } catch { /* email failure is non-blocking */ }
+    } catch {
+      /* email failure is non-blocking */
+    }
 
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-      console.error("[github] approval stats fetch failed:", err)
+      console.error("[github] approval stats fetch failed:", err),
     );
     return repo;
   }
@@ -247,7 +273,9 @@ export class OpensourceService {
 
   async getStudentContributionTrend(userId: number) {
     const now = new Date();
-    const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const currentMonthStart = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+    );
     const startMonth = this.addMonthsUTC(currentMonthStart, -5);
     const endMonth = this.addMonthsUTC(currentMonthStart, 1);
     const approvedRequests = await prisma.repoRequest.findMany({
@@ -278,7 +306,9 @@ export class OpensourceService {
   }
 
   private addMonthsUTC(date: Date, months: number): Date {
-    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1));
+    return new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1),
+    );
   }
 
   private getMonthKeyUTC(date: Date): string {
@@ -288,7 +318,11 @@ export class OpensourceService {
   }
 
   private getMonthLabelUTC(date: Date): string {
-    return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      year: "numeric",
+      timeZone: "UTC",
+    }).format(date);
   }
 
   async getFirstPrProgress(userId: number): Promise<string[]> {
