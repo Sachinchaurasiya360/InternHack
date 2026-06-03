@@ -271,9 +271,11 @@ function VisualizeTab() {
   const [opsStr, setOpsStr] = useState("E5, E10, E15, D, E20, D");
   const [cap, setCap] = useState(5);
 
-  const ops = parseOps(opsStr);
   const frames = useMemo(
-    () => mode === "linear" ? buildLinear(ops) : buildCircular(ops, Math.max(1, cap)),
+    () => {
+      const ops = parseOps(opsStr);
+      return mode === "linear" ? buildLinear(ops) : buildCircular(ops, Math.max(1, cap));
+    },
     [mode, opsStr, cap],
   );
   const player = useStepPlayer(frames);

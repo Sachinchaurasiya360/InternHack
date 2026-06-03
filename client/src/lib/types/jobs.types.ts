@@ -21,10 +21,18 @@ export interface CustomFieldDefinition {
   };
 }
 
+/** Scoring rubric for a single criterion within a hiring round */
 export interface EvaluationCriterion {
+  /** Unique identifier for this criterion entry */
   id: string;
+  /** Human-readable name of the criterion (e.g. "Communication Skills") */
   criterion: string;
+  /** Maximum possible score a candidate can receive for this criterion */
   maxScore: number;
+  /**
+   * Relative importance weight used to compute a weighted aggregate across criteria.
+   * When omitted all criteria are weighted equally.
+   */
   weight?: number;
 }
 
@@ -99,6 +107,7 @@ export interface Application {
   customFieldAnswers: Record<string, unknown>;
   resumeUrl?: string;
   coverLetter?: string;
+  studentNotes: string | null;
   job?: Job;
   student?: User;
   roundSubmissions?: RoundSubmission[];
@@ -132,6 +141,25 @@ export interface ExternalJob {
   tags: string[];
   expiresAt?: string;
   createdAt?: string;
+}
+
+export interface ExternalApplication {
+  id: number;
+  studentId: number;
+  adminJobId: number;
+  studentNotes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  adminJob: {
+    id: number;
+    slug: string | null;
+    company: string | null;
+    role: string | null;
+    location: string | null;
+    salary: string | null;
+    tags: string[];
+    applyLink: string | null;
+  };
 }
 
 // Scraped Jobs

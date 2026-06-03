@@ -55,6 +55,7 @@ model user {
   contributions         companyContribution[]       @relation("UserContributions")
   companyReviews        companyReview[]             @relation("UserReviews")
   dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
+  dsaProblemReports     dsaProblemReport[]          
   emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
   employeeProfile       employee?                   @relation("EmployeeUser")
   postedJobs            job[]                       @relation("RecruiterJobs")
@@ -78,6 +79,7 @@ model user {
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
@@ -87,7 +89,8 @@ model user {
   generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
   leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
-hackathonParticipations hackathonParticipation[] @relation("UserHackathonParticipations")
+  recommendation            userRecommendation?          @relation("UserRecommendation")
+  hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -174,6 +177,7 @@ model application {
   customFieldAnswers Json              @default("{}")
   resumeUrl          String?
   coverLetter        String?
+  studentNotes       String?           @db.Text
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   job                job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
@@ -623,9 +627,21 @@ model dsaProblem {
   progress         studentDsaProgress[]
   testCases        dsaTestCase[]
   submissions      dsaSubmission[]
+  reports          dsaProblemReport[]
 
   @@index([difficulty])
   @@index([leetcodeId])
+}
+
+model dsaProblemReport {
+  id         Int        @id @default(autoincrement())
+  reason     String
+  message    String?
+  createdAt  DateTime   @default(now())
+  userId     Int
+  user       user       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId  Int
+  problem    dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 }
 
 model studentDsaProgress {
@@ -751,6 +767,7 @@ model studentAptitudeProgress {
   answered   Boolean          @default(false)
   correct    Boolean          @default(false)
   createdAt  DateTime         @default(now())
+  lastPracticedAt DateTime @default(now())
   question   aptitudeQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
   student    user             @relation("StudentAptitudeProgress", fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -1021,6 +1038,8 @@ model externalJobApplication {
   id         Int      @id @default(autoincrement())
   studentId  Int
   adminJobId Int
+  studentNotes String?  @db.Text
+  updatedAt    DateTime @default(now()) @updatedAt
   createdAt  DateTime @default(now())
   student    user     @relation("StudentExternalApplications", fields: [studentId], references: [id], onDelete: Cascade)
   adminJob   adminJob @relation("AdminJobApplications", fields: [adminJobId], references: [id], onDelete: Cascade)
@@ -1366,6 +1385,17 @@ model interviewExperienceUpvote {
   @@index([experienceId])
 }
 
+model userRecommendation {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  weakAreas       Json     @default("[]")
+  lastRefreshedAt DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            user     @relation("UserRecommendation", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 enum InterviewSource {
   ON_CAMPUS
   OFF_CAMPUS
@@ -1388,3 +1418,19 @@ enum InterviewOutcome {
   PENDING
   GHOSTED
 }
+
+model guideFeedback {
+  id        Int      @id @default(autoincrement())
+  guideId   String
+  stepId    String
+  userId    Int
+  rating    String
+  createdAt DateTime @default(now())
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideId, stepId])
+  @@index([guideId])
+  @@index([stepId])
+  }
+

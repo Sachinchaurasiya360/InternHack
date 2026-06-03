@@ -16,6 +16,7 @@ export default function ApplicationsList() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounce search input
@@ -29,6 +30,11 @@ export default function ApplicationsList() {
       if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
     };
   }, [search]);
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
 
   const fetchApplications = () => {
     setLoading(true);
@@ -48,14 +54,18 @@ export default function ApplicationsList() {
     fetchApplications();
   }, [jobId, page, statusFilter, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleStatusChange = async (appId: number, status: string) => {
-    try {
-      await api.patch(`/recruiter/applications/${appId}/status`, { status });
-      fetchApplications();
-    } catch {
-      alert("Failed to update status");
-    }
-  };
+const handleStatusChange = async (appId: number, status: string) => {
+  if (updatingId === appId) return;
+  setUpdatingId(appId);
+  try {
+    await api.patch(`/recruiter/applications/${appId}/status`, { status });
+    fetchApplications();
+  } catch {
+    alert("Failed to update status");
+  } finally {
+    setUpdatingId(null);
+  }
+};
 
   const handleAdvance = async (appId: number) => {
     try {
@@ -133,11 +143,11 @@ export default function ApplicationsList() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Candidate</th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Status</th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Rounds</th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Applied</th>
-                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Actions</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Candidate</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Status</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Rounds</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Applied</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
@@ -150,21 +160,32 @@ export default function ApplicationsList() {
                         <p className="text-sm text-gray-500 dark:text-gray-500">{app.student?.email}</p>
                       </Link>
                     </td>
-                    <td className="px-6 py-4">
-                      <select value={app.status} onChange={(e) => handleStatusChange(app.id, e.target.value)}
-                        className={`text-xs px-2.5 py-1 rounded-full font-medium border-0 ${getStatusColor(app.status)}`}>
-                        <option value="APPLIED">Applied</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="SHORTLISTED">Shortlisted</option>
-                        <option value="REJECTED">Rejected</option>
-                        <option value="HIRED">Hired</option>
-                      </select>
-                    </td>
+                   <td className="px-6 py-4">
+  <div className="relative inline-flex items-center">
+    <select
+      value={app.status}
+      disabled={updatingId === app.id}
+      onChange={(e) => handleStatusChange(app.id, e.target.value)}
+      className={`text-xs px-2.5 py-1 rounded-full font-medium border-0 ${getStatusColor(app.status)} ${updatingId === app.id ? "opacity-50 cursor-not-allowed" : ""}`}>
+      <option value="APPLIED">Applied</option>
+      <option value="IN_PROGRESS">In Progress</option>
+      <option value="SHORTLISTED">Shortlisted</option>
+      <option value="REJECTED">Rejected</option>
+      <option value="HIRED">Hired</option>
+    </select>
+    {updatingId === app.id && (
+      <svg className="animate-spin ml-1.5 h-3 w-3 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 12 0 12 12H4z" />
+      </svg>
+    )}
+  </div>
+</td>
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
                       {app.roundSubmissions?.length || 0} completed
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
-                      {new Date(app.createdAt).toLocaleDateString()}
+                      {new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(app.createdAt))}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">

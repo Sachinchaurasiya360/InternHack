@@ -1,4 +1,4 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsGaming: Grant[] = [
   {
@@ -19,6 +19,7 @@ export const grantsGaming: Grant[] = [
       "Early-stage projects can participate via IdeaTON challenges",
     ],
     status: "Invite Only",
+    deadline: "2026-12-27",
     ecosystem: "TON",
     highlights: [
       "Five high-growth verticals including GameFi",
@@ -44,6 +45,7 @@ export const grantsGaming: Grant[] = [
       "7,500+ developer community",
     ],
     status: "Active",
+    deadline: "2027-01-01",
     ecosystem: "Flow",
     highlights: [
       "$725M ecosystem fund",
@@ -69,6 +71,7 @@ export const grantsGaming: Grant[] = [
       "Rolling applications reviewed by Immutable panel",
     ],
     status: "Active",
+    deadline: "2027-01-06",
     ecosystem: "Immutable",
     highlights: [
       "$500M fund deployed over 4 years",

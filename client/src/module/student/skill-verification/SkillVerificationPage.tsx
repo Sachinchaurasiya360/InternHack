@@ -182,14 +182,20 @@ export default function SkillVerificationPage() {
       const res = await api.get("/skill-tests");
       return res.data.tests as SkillTest[];
     },
+    staleTime: 10 * 60 * 1000,
   });
 
+  // Per-user queries: keep staleTime:0 so window-focus refetch always fires
+  // (test runs in a new tab; returning to this tab must show updated data).
+  // Server-side service caching absorbs the DB cost for unchanged data.
   const { data: verified = [], isLoading: loadingVerified } = useQuery({
     queryKey: queryKeys.skillTests.myVerified(),
     queryFn: async () => {
       const res = await api.get("/skill-tests/my-verified");
       return res.data.verified as VerifiedSkill[];
     },
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
 
   const { data: attempts = [], isLoading: loadingAttempts } = useQuery({
@@ -198,6 +204,8 @@ export default function SkillVerificationPage() {
       const res = await api.get("/skill-tests/my-attempts");
       return res.data.attempts as SkillTestAttempt[];
     },
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
 
   const isLoading = loadingTests || loadingVerified || loadingAttempts;
@@ -441,7 +449,7 @@ export default function SkillVerificationPage() {
                         variant="ghost"
                         autoHeight
                         onClick={() => setExpandedHistorySkill(historyOpen ? null : skillKey)}
-                        className="w-full rounded-none flex items-center justify-between gap-3 px-5 py-3 border-t border-stone-100 dark:border-white/5 bg-stone-50/70 dark:bg-white/[0.02] text-left hover:bg-stone-100 dark:hover:bg-white/[0.04]"
+                        className="w-full rounded-none flex items-center justify-between gap-3 px-5 py-3 border-t border-stone-100 dark:border-white/5 bg-stone-50/70 dark:bg-white/2 text-left hover:bg-stone-100 dark:hover:bg-white/4"
                       >
                         <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
                           <History className="w-3.5 h-3.5 text-stone-400" />

@@ -9,6 +9,24 @@ import {
 } from "../../utils/email-templates.js";
 import { createLogger } from "../../utils/logger.js";
 
+const S3_BUCKET = process.env["AWS_S3_BUCKET"] || "";
+// validating the URL
+function isValidS3Url(url: string) {
+  try {
+    const parsed = new URL(url);
+
+    if (!S3_BUCKET || parsed.protocol !== "https:") return false;
+
+    return (
+      parsed.hostname === `${S3_BUCKET}.s3.amazonaws.com` ||
+      (parsed.hostname.startsWith(`${S3_BUCKET}.s3.`) &&
+        parsed.hostname.endsWith(".amazonaws.com"))
+    );
+  } catch {
+    return false;
+  }
+}
+
 const logger = createLogger("recruiter.service");
 
 interface TalentSearchFilter {
@@ -144,6 +162,18 @@ export class RecruiterService {
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
+    
+    const existingRounds = await prisma.round.findMany({
+      where: {
+        id: { in: rounds.map((r) => r.roundId) },
+        jobId,
+      },
+      select: { id: true },
+    });
+
+    if (existingRounds.length !== rounds.length) {
+      throw new Error("Invalid round IDs");
+    }
 
     // Use a transaction with temporary high indices to avoid unique constraint conflicts
     await prisma.$transaction(async (tx) => {
@@ -180,6 +210,8 @@ export class RecruiterService {
 
     if (filter.status) {
       where.status = filter.status as ApplicationStatus;
+    } else {
+      where.status = { not: "WITHDRAWN" };
     }
 
     if (filter.search) {
@@ -217,7 +249,7 @@ export class RecruiterService {
       if (app.student) for (const u of app.student.resumes) allUrls.add(u);
     }
     const urlArr = [...allUrls];
-    const signedArr = await Promise.all(urlArr.map((u) => signUrl(u)));
+    const signedArr = await Promise.all( urlArr.map((u) => (isValidS3Url(u) ? signUrl(u) : Promise.resolve(u))),);
     const signedMap = new Map(urlArr.map((u, i) => [u, signedArr[i]!]));
 
     const signed = applications.map((app) => ({
@@ -257,10 +289,14 @@ export class RecruiterService {
 
     return {
       ...application,
-      resumeUrl: application.resumeUrl ? await signUrl(application.resumeUrl) : application.resumeUrl,
-      student: application.student
-        ? { ...application.student, resumes: await signUrls(application.student.resumes) }
-        : application.student,
+      resumeUrl: application.resumeUrl && isValidS3Url(application.resumeUrl)? await signUrl(application.resumeUrl) : application.resumeUrl,
+      student: application.student? { ...application.student, resumes: await Promise.all(
+        application.student.resumes.map((u) =>
+          isValidS3Url(u) ? signUrl(u) : Promise.resolve(u),
+        ),
+      ),
+    }
+  : application.student,
     };
   }
 
@@ -297,7 +333,7 @@ export class RecruiterService {
         subject: applicationStatusSubject(status, application.job.title),
         html,
       }).catch((err) => {
-        logger.error("Failed to send application status email", { applicationId, status, err });
+        logger.error("Failed to send application status email", err, { applicationId, status });
       });
     }
 
@@ -317,12 +353,18 @@ export class RecruiterService {
       if (!application) throw new Error("Application not found");
       if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+      if (application.status === "WITHDRAWN") {
+        throw new Error(
+          "Withdrawn applications cannot participate in the hiring process"
+        );
+      }
+
       const rounds = await tx.round.findMany({
         where: { jobId: application.jobId },
         orderBy: { orderIndex: "asc" },
       });
 
-      if (rounds.length === 0) throw new Error("No rounds defined for this job");
+      if (rounds.length === 0) throw new Error("No rounds are configured for this job. Please add at least one round before advancing applicants.");
 
       // Find current round index
       let currentIndex = -1;
@@ -339,7 +381,8 @@ export class RecruiterService {
         });
       }
 
-      const nextRound = rounds[nextIndex]!;
+      const nextRound = rounds[nextIndex];
+      if (!nextRound) throw new Error("Round not found");
 
       // Create submission record for next round if not exists
       await tx.roundSubmission.upsert({
@@ -391,7 +434,14 @@ export class RecruiterService {
 
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
+    // checking round ownership
+    const round = await prisma.round.findUnique({
+      where: { id: roundId },
+      select: { jobId: true },
+    });
 
+    if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
+    
     return prisma.roundSubmission.update({
       where: { applicationId_roundId: { applicationId, roundId } },
       data: {
@@ -598,7 +648,7 @@ export class RecruiterService {
     const allResumeUrls = new Set<string>();
     for (const s of students) for (const u of s.resumes) allResumeUrls.add(u);
     const resumeUrlArr = [...allResumeUrls];
-    const signedResumeArr = await Promise.all(resumeUrlArr.map((u) => signUrl(u)));
+    const signedResumeArr = await Promise.all(resumeUrlArr.map((u) => (isValidS3Url(u) ? signUrl(u) : Promise.resolve(u))),);
     const resumeSignedMap = new Map(resumeUrlArr.map((u, i) => [u, signedResumeArr[i]!]));
 
     const results = students.map((s) => ({
@@ -673,6 +723,18 @@ export class RecruiterService {
     const student = await prisma.user.findUnique({ where: { id: studentId } });
     if (!student || student.role !== "STUDENT") throw new Error("Student not found");
 
+    if (notes) {
+      const existing = await prisma.savedCandidate.findUnique({
+        where: { recruiterId_studentId: { recruiterId, studentId } },
+        select: { notes: true },
+      });
+
+      if (existing?.notes) {
+        const timestamp = new Date().toISOString();
+        notes = `${existing.notes}\n--- ${timestamp} ---\n${notes}`;
+      }
+    }
+
     return prisma.savedCandidate.upsert({
       where: { recruiterId_studentId: { recruiterId, studentId } },
       update: { notes: notes ?? null },
@@ -681,12 +743,9 @@ export class RecruiterService {
   }
 
   async unsaveCandidate(recruiterId: number, studentId: number) {
-    const existing = await prisma.savedCandidate.findUnique({
-      where: { recruiterId_studentId: { recruiterId, studentId } },
+    const { count } = await prisma.savedCandidate.deleteMany({
+      where: { recruiterId, studentId },
     });
-    if (!existing) return;
-    await prisma.savedCandidate.delete({
-      where: { recruiterId_studentId: { recruiterId, studentId } },
-    });
+    return count;
   }
 }

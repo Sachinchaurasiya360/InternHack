@@ -87,6 +87,7 @@ export default function SkillTestPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const submittingRef = useRef(false);
+  const terminateRef = useRef<() => void>(undefined);
   const [remainingSecs, setRemainingSecs] = useState<number | null>(null);
   const questionsRef = useRef<SkillTestWithQuestions["questions"]>([]);
   const currentQRef = useRef(0);
@@ -134,6 +135,7 @@ export default function SkillTestPage() {
   /* Fetch test detail ----------------------------------------------- */
   useEffect(() => {
     if (!testId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     api
       .get(`/skill-tests/${testId}`)
@@ -211,8 +213,9 @@ export default function SkillTestPage() {
   );
 
   // Wire terminate callback
-  const terminateRef = useRef<() => void>(undefined);
-  terminateRef.current = () => handleSubmit();
+  useLayoutEffect(() => {
+    terminateRef.current = () => handleSubmit();
+  }, [handleSubmit]);
 
   const selectAnswer = useCallback((questionId: number, optIdx: number) => {
     if (result) return;

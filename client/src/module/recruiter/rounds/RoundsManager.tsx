@@ -144,7 +144,7 @@ export function RoundsManager({ rounds, onChange }: RoundsManagerProps) {
                         placeholder="e.g. Communication Skills" />
                       <input type="number" value={crit.maxScore} onChange={(e) => updateCriterion(index, ci, { maxScore: Number(e.target.value) })}
                         className="w-20 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
-                        placeholder="Max" min={1} />
+                        placeholder="Max" min={1} title="Maximum score for this criterion" />
                       <button type="button" onClick={() => removeCriterion(index, ci)} className="p-1 text-red-400 hover:text-red-600">
                         <Trash2 className="w-3 h-3" />
                       </button>

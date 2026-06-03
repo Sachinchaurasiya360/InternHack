@@ -1,4 +1,11 @@
-import { prisma } from "../../database/db.js";
+﻿import { prisma } from "../../database/db.js";
+import { cacheGet, cacheSet } from "../../utils/cache.js";
+
+const PROF_TTL = 3600;
+
+function stableKey(obj: Record<string, unknown>): string {
+  return JSON.stringify(Object.fromEntries(Object.entries(obj).sort(([a], [b]) => a.localeCompare(b))));
+}
 
 interface ListParams {
   page: number;
@@ -12,6 +19,11 @@ const FREE_LIMIT = 100;
 
 export class ProfessorService {
   async list(params: ListParams, isPremium: boolean) {
+    const tier = isPremium ? "p" : "f";
+    const cacheKey = `professors:list:${tier}:${stableKey(params as unknown as Record<string, unknown>)}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const { page, limit, search, college, department } = params;
 
     const where: Record<string, unknown> = {};
@@ -58,14 +70,20 @@ export class ProfessorService {
       }
     }
 
-    return {
+    const result = {
       professors: results,
       pagination: { page, limit, total: effectiveTotal, totalPages: maxPage },
       premiumRequired: !isPremium && total > FREE_LIMIT,
     };
+    await cacheSet(cacheKey, result, PROF_TTL);
+    return result;
   }
 
   async stats() {
+    const cacheKey = "professors:stats";
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const [total, collegeGroups, departmentGroups] = await Promise.all([
       prisma.iitProfessor.count(),
       prisma.iitProfessor.groupBy({
@@ -80,10 +98,13 @@ export class ProfessorService {
       }),
     ]);
 
-    return {
+    const result = {
       total,
       colleges: collegeGroups.map((g) => ({ name: g.collegeName, count: g._count.id })),
       departments: departmentGroups.map((g) => ({ name: g.department, count: g._count.id })),
     };
+    await cacheSet(cacheKey, result, PROF_TTL);
+    return result;
   }
 }
+

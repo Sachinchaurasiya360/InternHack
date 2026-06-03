@@ -4,9 +4,7 @@ import toast from "@/components/ui/toast";
 import { motion } from "framer-motion";
 import {
   Download,
-  Copy,
   AlertCircle,
-  Check,
   FileCode2,
   Eye,
   Loader2,
@@ -31,6 +29,7 @@ import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { useLatexAutoSave } from "./useLatexAutoSave";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import { getLatexTemplate } from "./latex-templates.data";
 
 const DEFAULT_TEMPLATE = `\\documentclass[11pt,a4paper]{article}
@@ -141,7 +140,6 @@ export default function LatexResumeEditor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [copied, setCopied] = useState(false);
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
   const [chatOpen, setChatOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
@@ -158,6 +156,7 @@ export default function LatexResumeEditor() {
   const historyRef = useRef<string[]>([code]);
   const historyPosRef = useRef(0);
   const skipHistoryRef = useRef(false);
+  const [historyState, setHistoryState] = useState({ pos: 0, length: 1 });
 
   const pushHistory = useCallback((val: string) => {
     if (skipHistoryRef.current) return;
@@ -167,6 +166,7 @@ export default function LatexResumeEditor() {
     historyRef.current.push(val);
     if (historyRef.current.length > 50) historyRef.current.shift();
     historyPosRef.current = historyRef.current.length - 1;
+    setHistoryState({ pos: historyPosRef.current, length: historyRef.current.length });
   }, []);
 
   const handleCodeChange = useCallback((val: string) => {
@@ -180,6 +180,7 @@ export default function LatexResumeEditor() {
     skipHistoryRef.current = true;
     setCode(historyRef.current[historyPosRef.current]);
     skipHistoryRef.current = false;
+    setHistoryState({ pos: historyPosRef.current, length: historyRef.current.length });
   }, [setCode]);
 
   const handleRedo = useCallback(() => {
@@ -188,6 +189,7 @@ export default function LatexResumeEditor() {
     skipHistoryRef.current = true;
     setCode(historyRef.current[historyPosRef.current]);
     skipHistoryRef.current = false;
+    setHistoryState({ pos: historyPosRef.current, length: historyRef.current.length });
   }, [setCode]);
 
   const handleApplyCode = useCallback((newCode: string) => {
@@ -228,16 +230,6 @@ export default function LatexResumeEditor() {
       .finally(() => setCompiling(false));
   }, [code, supportingFiles]);
 
-  const handleCopyLatex = async () => {
-  try {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    toast.success("Copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
-  } catch {
-    toast.error("Failed to copy");
-  }
-};
 
   const handleCompile = async () => {
     setCompiling(true);
@@ -391,20 +383,12 @@ export default function LatexResumeEditor() {
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={handleCopyLatex}
-            className={ghostBtnCls}
-            title="Copy LaTeX"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-lime-500" /> : <Copy className="w-3.5 h-3.5" />}
-            {copied ? "Copied" : "Copy"}
-          </button>
+          <CopyButton text={code} />
 
           <button
             type="button"
             onClick={handleUndo}
-            disabled={historyPosRef.current <= 0}
+            disabled={historyState.pos <= 0}
             className={ghostBtnCls}
             title="Undo"
           >
@@ -414,7 +398,7 @@ export default function LatexResumeEditor() {
           <button
             type="button"
             onClick={handleRedo}
-            disabled={historyPosRef.current >= historyRef.current.length - 1}
+            disabled={historyState.pos >= historyState.length - 1}
             className={ghostBtnCls}
             title="Redo"
           >

@@ -160,6 +160,7 @@ export default function AptitudeTheoryPage() {
     queryFn: () =>
       api.get<AptitudeTopicDetail>(`/aptitude/topics/${slug}?page=1&limit=1`).then((r) => r.data),
     enabled: !!slug,
+    staleTime: 15 * 60 * 1000,
   });
 
   if (isLoading) return <LoadingScreen />;
@@ -185,7 +186,7 @@ export default function AptitudeTheoryPage() {
   }
 
   const basePath = "/learn/aptitude";
-  // eslint-disable-next-line react-hooks/immutability
+   
   let delay = 0.05;
   // eslint-disable-next-line react-hooks/immutability
   const nextDelay = () => { delay += 0.06; return delay; };

@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
 import { Save, Loader2, Github } from "lucide-react";
 import { ProfilePageHeader } from "./components/ProfilePageHeader";
@@ -87,7 +89,6 @@ export default function StudentProfilePage() {
   });
   const [memberSince, setMemberSince] = useState<string | null>(null);
   const [skillInput, setSkillInput] = useState("");
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingPic, setUploadingPic] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -110,8 +111,9 @@ export default function StudentProfilePage() {
   const [showGitHubImport, setShowGitHubImport] = useState(false);
   const [profileUrlCopied, setProfileUrlCopied] = useState(false);
 
-  const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
-  const verifiedMap = new Map(verifiedSkills.map((v) => [v.skillName.toLowerCase(), v]));
+  const queryClient = useQueryClient();
+  const formInitialized = useRef(false);
+  const jobPrefsInitialized = useRef(false);
 
   const [collegeSuggestions, setCollegeSuggestions] = useState<CollegeSuggestion[]>([]);
   const [collegeLoading, setCollegeLoading] = useState(false);
@@ -132,46 +134,61 @@ export default function StudentProfilePage() {
       })
     : [];
 
+  // ── React Query: profile, verified skills, job prefs ─────────────────
+  const { data: profileUser, isLoading } = useQuery({
+    queryKey: queryKeys.profile.me(),
+    queryFn: () => api.get("/auth/me").then((r) => r.data.user),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: verifiedData } = useQuery({
+    queryKey: queryKeys.skillTests.myVerified(),
+    queryFn: () => api.get("/skill-tests/my-verified").then((r) => r.data),
+    staleTime: 60 * 60 * 1000,
+  });
+
+  const { data: jobPrefsData } = useQuery({
+    queryKey: queryKeys.jobFeed.preferences(),
+    queryFn: () => api.get("/job-feed/preferences").then((r) => r.data),
+    staleTime: 30 * 60 * 1000,
+  });
+
+  // Initialise form once when profile data first arrives
   useEffect(() => {
-    api.get("/auth/me")
-      .then((res) => {
-        const u = res.data.user;
-        setForm({
-          name: u.name ?? "", email: u.email ?? "", contactNo: u.contactNo ?? "",
-          company: u.company ?? "", designation: u.designation ?? "",
-          resumes: u.resumes ?? [], profilePic: u.profilePic ?? "",
-          coverImage: u.coverImage ?? "", bio: u.bio ?? "", college: u.college ?? "",
-          graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
-          location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
-          githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
-          leetcodeUrl: u.leetcodeUrl ?? "",
-          jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
-          projects: u.projects ?? [], achievements: u.achievements ?? [],
-        });
-        setMemberSince(u.createdAt ?? null);
-      })
-      .catch(() => toast.error("Failed to load profile"))
-      .finally(() => setLoading(false));
+    if (!profileUser || formInitialized.current) return;
+    formInitialized.current = true;
+    const u = profileUser;
+    setForm({
+      name: u.name ?? "", email: u.email ?? "", contactNo: u.contactNo ?? "",
+      company: u.company ?? "", designation: u.designation ?? "",
+      resumes: u.resumes ?? [], profilePic: u.profilePic ?? "",
+      coverImage: u.coverImage ?? "", bio: u.bio ?? "", college: u.college ?? "",
+      graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
+      location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
+      githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
+      leetcodeUrl: u.leetcodeUrl ?? "",
+      jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
+      projects: u.projects ?? [], achievements: u.achievements ?? [],
+    });
+    setMemberSince(u.createdAt ?? null);
+  }, [profileUser]);
 
-    api.get("/skill-tests/my-verified")
-      .then((res) => setVerifiedSkills(res.data.verified ?? []))
-      .catch((err) => console.error("Failed to fetch verified skills:", err));
+  // Initialise job prefs form once when data first arrives
+  useEffect(() => {
+    if (!jobPrefsData || jobPrefsInitialized.current) return;
+    jobPrefsInitialized.current = true;
+    const p = jobPrefsData;
+    setJobPrefRoles(p.desiredRoles?.join(", ") || "");
+    setJobPrefSkills(p.desiredSkills?.join(", ") || "");
+    setJobPrefLocations(p.desiredLocations?.join(", ") || "");
+    setJobPrefSalary(p.minSalary ? String(p.minSalary / 100000) : "");
+    setJobPrefWorkMode(p.workMode || []);
+    setJobPrefExpLevel(p.experienceLevel || []);
+    setJobPrefDomains(p.domains || []);
+  }, [jobPrefsData]);
 
-    api.get("/job-feed/preferences")
-      .then((res) => {
-        if (res.data) {
-          const p = res.data;
-          setJobPrefRoles(p.desiredRoles?.join(", ") || "");
-          setJobPrefSkills(p.desiredSkills?.join(", ") || "");
-          setJobPrefLocations(p.desiredLocations?.join(", ") || "");
-          setJobPrefSalary(p.minSalary ? String(p.minSalary / 100000) : "");
-          setJobPrefWorkMode(p.workMode || []);
-          setJobPrefExpLevel(p.experienceLevel || []);
-          setJobPrefDomains(p.domains || []);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const verifiedSkills: VerifiedSkill[] = verifiedData?.verified ?? [];
+  const verifiedMap = new Map(verifiedSkills.map((v: VerifiedSkill) => [v.skillName.toLowerCase(), v]));
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -262,6 +279,15 @@ export default function StudentProfilePage() {
     if (!form.name.trim() || form.name.trim().length < 2) {
       toast.error("Name must be at least 2 characters"); return;
     }
+    if (form.contactNo && form.contactNo.trim()) {
+      const normalizedPhone = form.contactNo.replace(/[\s\-]/g, "");
+      if (!/^\+\d{11,13}$/.test(normalizedPhone)) {
+        toast.error("Phone must include country code (e.g. +91 9876543210)");
+        setFieldErrors((prev) => ({ ...prev, contactNo: ["Phone must include country code (e.g. +91 9876543210)"] }));
+        setOpenSections((prev) => ({ ...prev, basic: true }));
+        return;
+      }
+    }
     setFieldErrors({});
     setSaving(true);
     try {
@@ -290,6 +316,7 @@ export default function StudentProfilePage() {
       };
       setForm(updated);
       syncUser(updated);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.profile.me() });
       toast.success("Profile updated!");
     } catch (err: unknown) {
       const errData = (err as { response?: { data?: { errors?: { fieldErrors?: Record<string, string[]> } } } })?.response?.data;
@@ -434,7 +461,7 @@ export default function StudentProfilePage() {
     return Math.round(((filled + hasSkills + hasResume) / (fields.length + 2)) * 100);
   })();
 
-  if (loading) return <LoadingScreen />;
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div className="relative pb-16">
@@ -603,8 +630,8 @@ export default function StudentProfilePage() {
           <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
               kicker="section / 05"
-              title="Projects"
-              meta={`${form.projects.length}/10`}
+              title="Featured Projects"
+              meta={`${form.projects.length}/4`}
               open={openSections.projects}
               onToggle={() => toggleSection("projects")}
               right={

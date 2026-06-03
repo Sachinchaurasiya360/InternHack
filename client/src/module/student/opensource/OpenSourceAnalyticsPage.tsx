@@ -7,7 +7,8 @@ import {
   AlertCircle,
   Filter,
   X,
-  Maximize2
+  Maximize2,
+  Download
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import {
@@ -175,14 +176,36 @@ function TrendSkeleton() {
   );
 }
 
-function TrendEmptyState({ message }: { message: string }) {
+function TrendEmptyState({
+  message,
+  showButton = false,
+}: {
+  message: string;
+  showButton?: boolean;
+}) {
   return (
     <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 text-center">
-      <p className="text-sm font-semibold text-gray-900">No contribution activity yet</p>
-      <p className="mt-2 max-w-sm text-sm text-gray-500">{message}</p>
+      <BarChart3 className="w-10 h-10 text-indigo-500 mb-3" />
+
+      <p className="text-base font-semibold text-gray-900">
+        No contributions tracked yet
+      </p>
+
+      <p className="mt-2 max-w-sm text-sm text-gray-500">
+        {message}
+      </p>
+
+      {showButton && (
+        <Link to="/student/opensource">
+          <Button className="mt-4">
+            Discover Repositories
+          </Button>
+        </Link>
+      )}
     </div>
   );
 }
+  
 
 const selectClass = "text-sm bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 min-w-[130px]";
 
@@ -226,10 +249,32 @@ export default function OpenSourceAnalyticsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const allOrgs = orgsData ?? [];
+  const allOrgs = useMemo(() => orgsData ?? [], [orgsData]);
   const contributionTrend = contributionTrendData?.trend ?? [];
   const contributionTotal = contributionTrendData?.total ?? 0;
   const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
+  const showContributionEmptyState =
+  contributionTotal === 0 &&
+  contributionTrend.length > 0 &&
+  contributionTrend.every((entry) => entry.count === 0);
+
+  const handleExportCSV = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+
+    const header = "Month,Label,Contributions";
+    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
+    const csv = [header, ...rows].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "my-oss-contributions.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   // ─── Derive filter options ──────────────────────────────────
   const years = useMemo(() => {
@@ -367,6 +412,29 @@ export default function OpenSourceAnalyticsPage() {
     );
   }
 
+  // Empty state: student has zero contributions
+  if (!trendIsLoading && !trendIsError && contributionTotal === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center">
+        <div className="bg-indigo-50 rounded-full p-6 mb-5">
+          <BarChart3 className="w-12 h-12 text-indigo-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          No contributions tracked yet
+        </h2>
+        <p className="text-gray-500 max-w-md mb-8">
+          Submit a repo suggestion and get it approved to start tracking
+          your open source journey.
+        </p>
+        <Link
+          to="/student/opensource"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+        >
+          Discover Repositories →
+        </Link>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
       {/* Header */}
@@ -380,6 +448,16 @@ export default function OpenSourceAnalyticsPage() {
               {hasActiveFilter && " (filtered)"}
               {stats && ` \u00b7 ${stats.years.length} years \u00b7 ${stats.technologies.length} technologies`}
             </p>
+          </div>
+          <div className="ml-auto flex items-center gap-3">
+            <button
+              onClick={handleExportCSV}
+              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
+              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export CSV
+            </button>
           </div>
         </div>
       </div>
@@ -447,6 +525,11 @@ export default function OpenSourceAnalyticsPage() {
                 <TrendSkeleton />
               ) : trendIsError ? (
                 <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
+              ) : showContributionEmptyState ? (
+                <TrendEmptyState
+                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+                  showButton
+                />
               ) : hasContributionActivity ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
@@ -458,7 +541,10 @@ export default function OpenSourceAnalyticsPage() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <TrendEmptyState message="Approve a repository suggestion to start tracking your monthly open source activity here." />
+                <TrendEmptyState
+                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+                  showButton
+                />
               )
             }
           >
@@ -475,11 +561,85 @@ export default function OpenSourceAnalyticsPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : trendIsError ? (
-              <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
-            ) : (
-              <TrendEmptyState message="Approve a repository suggestion to start tracking your monthly open source activity here." />
-            )}
+            <TrendEmptyState
+              message="We could not load your contribution trend right now. Try again in a moment."
+            />
+          ) : showContributionEmptyState ? (
+            <TrendEmptyState
+              message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+              showButton
+            />
+          ) : (
+            <TrendEmptyState
+              message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+              showButton
+            />
+          )}
           </ChartCard>
+
+          {/* Contributions by Domain */}
+          {(trendIsLoading || (contributionTrendData?.domains && contributionTrendData.domains.length > 0) || (contributionTrendData && contributionTrendData.total === 0)) && (
+            <motion.div
+              custom={0.5}
+              variants={cardVariant}
+              initial="hidden"
+              animate="visible"
+              className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <div className="h-1.5 w-1.5 rounded-full bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.5)]" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  contributions / by domain
+                </span>
+              </div>
+
+              {trendIsLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3 animate-pulse">
+                      <div className="w-24 h-3 bg-gray-100 rounded" />
+                      <div className="flex-1 h-2 bg-gray-100 rounded-sm" />
+                      <div className="w-6 h-3 bg-gray-100 rounded" />
+                    </div>
+                  ))}
+                </div>
+              ) : contributionTrendData?.domains && contributionTrendData.domains.length > 0 ? (
+                <div className="space-y-3.5">
+                  {(() => {
+                    const domains = contributionTrendData.domains;
+                    const maxCount = Math.max(...domains.map(d => d.count), 1);
+                    return domains.map(({ domain, count }) => {
+                      const pct = Math.round((count / maxCount) * 100);
+                      return (
+                        <div key={domain} className="flex items-center gap-3 group">
+                          <span className="text-xs font-medium text-stone-600 w-24 shrink-0 truncate group-hover:text-stone-900 transition-colors">
+                            {domain}
+                          </span>
+                          <div className="flex-1 bg-stone-100 dark:bg-stone-800 rounded-sm h-2 relative overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct}%` }}
+                              transition={{ duration: 1, ease: "easeOut" }}
+                              className="absolute inset-y-0 left-0 bg-lime-400 rounded-sm"
+                            />
+                          </div>
+                          <span className="text-xs font-mono text-stone-500 w-6 text-right shrink-0">
+                            {count}
+                          </span>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <p className="text-xs text-stone-400 italic">
+                    No domain data yet — get your first contribution approved to see your breakdown.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          )}
 
           {/* 2 - Category Distribution (Pie) */}
           <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={1}
