@@ -60,4 +60,4 @@ authRouter.get("/me", authMiddleware, (req, res) => authController.getProfile(re
 authRouter.put("/me", authMiddleware, validateBody(updateProfileSchema), (req, res) => authController.updateProfile(req, res));
 authRouter.post("/import-github", authMiddleware, validateBody(importGitHubSchema), (req, res) => authController.importGitHub(req, res));
 authRouter.get("/github-stats", authMiddleware, usageLimit("GITHUB_STATS"), (req, res) => authController.getGitHubStats(req, res));
-authRouter.get("/profile/:id", authMiddleware, (req, res) => authController.getPublicProfile(req, res));
+authRouter.get("/profile/:identifier", authMiddleware, (req, res) => authController.getPublicProfile(req, res));

@@ -526,7 +526,7 @@ function App() {
             <Route path="talent-search" element={<TalentSearchPage />} />
             <Route path="saved" element={<SavedCandidatesPage />} />
             <Route path="profile" element={<RecruiterProfilePage />} />
-            <Route path="profile/:id" element={<PublicProfilePage />} />
+            <Route path="profile/:identifier" element={<PublicProfilePage />} />
             {/* HR Management */}
             <Route path="hr" element={<HRDashboardPage />} />
             <Route path="hr/employees" element={<EmployeesPage />} />
@@ -575,7 +575,7 @@ function App() {
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
-            <Route path="profile/:id" element={<PublicProfilePage />} />
+            <Route path="profile/:identifier" element={<PublicProfilePage />} />
           </Route>
 
           {/* 404 catch-all */}
