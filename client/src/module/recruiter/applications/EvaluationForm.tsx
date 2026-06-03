@@ -18,6 +18,15 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
+    const outOfRange = criteria.filter((c) => {
+      const s = scores[c.id]?.score ?? 0;
+      return s < 0 || s > c.maxScore;
+    });
+    if (outOfRange.length > 0) {
+      toast.error(`Scores out of range: ${outOfRange.map((c) => c.criterion).join(", ")}`);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       await api.put(`/recruiter/applications/${applicationId}/rounds/${roundId}/evaluate`, {
