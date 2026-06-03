@@ -9,6 +9,24 @@ import {
 } from "../../utils/email-templates.js";
 import { createLogger } from "../../utils/logger.js";
 
+const S3_BUCKET = process.env["AWS_S3_BUCKET"] || "";
+// validating the URL
+function isValidS3Url(url: string) {
+  try {
+    const parsed = new URL(url);
+
+    if (!S3_BUCKET || parsed.protocol !== "https:") return false;
+
+    return (
+      parsed.hostname === `${S3_BUCKET}.s3.amazonaws.com` ||
+      (parsed.hostname.startsWith(`${S3_BUCKET}.s3.`) &&
+        parsed.hostname.endsWith(".amazonaws.com"))
+    );
+  } catch {
+    return false;
+  }
+}
+
 const logger = createLogger("recruiter.service");
 
 interface TalentSearchFilter {
@@ -229,7 +247,7 @@ export class RecruiterService {
       if (app.student) for (const u of app.student.resumes) allUrls.add(u);
     }
     const urlArr = [...allUrls];
-    const signedArr = await Promise.all(urlArr.map((u) => signUrl(u)));
+    const signedArr = await Promise.all( urlArr.map((u) => (isValidS3Url(u) ? signUrl(u) : Promise.resolve(u))),);
     const signedMap = new Map(urlArr.map((u, i) => [u, signedArr[i]!]));
 
     const signed = applications.map((app) => ({
@@ -269,10 +287,14 @@ export class RecruiterService {
 
     return {
       ...application,
-      resumeUrl: application.resumeUrl ? await signUrl(application.resumeUrl) : application.resumeUrl,
-      student: application.student
-        ? { ...application.student, resumes: await signUrls(application.student.resumes) }
-        : application.student,
+      resumeUrl: application.resumeUrl && isValidS3Url(application.resumeUrl)? await signUrl(application.resumeUrl) : application.resumeUrl,
+      student: application.student? { ...application.student, resumes: await Promise.all(
+        application.student.resumes.map((u) =>
+          isValidS3Url(u) ? signUrl(u) : Promise.resolve(u),
+        ),
+      ),
+    }
+  : application.student,
     };
   }
 
@@ -611,7 +633,7 @@ export class RecruiterService {
     const allResumeUrls = new Set<string>();
     for (const s of students) for (const u of s.resumes) allResumeUrls.add(u);
     const resumeUrlArr = [...allResumeUrls];
-    const signedResumeArr = await Promise.all(resumeUrlArr.map((u) => signUrl(u)));
+    const signedResumeArr = await Promise.all(resumeUrlArr.map((u) => (isValidS3Url(u) ? signUrl(u) : Promise.resolve(u))),);
     const resumeSignedMap = new Map(resumeUrlArr.map((u, i) => [u, signedResumeArr[i]!]));
 
     const results = students.map((s) => ({
