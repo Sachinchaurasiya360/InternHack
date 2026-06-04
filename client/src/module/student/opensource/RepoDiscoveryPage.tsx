@@ -153,7 +153,7 @@ export default function RepoDiscoveryPage() {
   };
 
   const queryParams = useMemo(() => {
-    const params: Record<string, string | number> = { page, limit: 12, sortBy: sortKey, sortOrder: "desc" };
+    const params: Record<string, string | number> = { page, limit: 12, sort: sortKey, sortOrder: "desc" };
 
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;

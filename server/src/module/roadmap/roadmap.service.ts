@@ -126,30 +126,30 @@ export async function listPublishedRoadmaps(opts: {
   search?: string | undefined;
   tag?: string | undefined;
   category?: string | undefined;
+  userId?: number | undefined;
 }) {
-  const where: Prisma.roadmapWhereInput = { isPublished: true, isAiGenerated: false };
+  // Build the visibility condition: public roadmaps + caller's own unpublished ones
+  const visibilityCondition: Prisma.roadmapWhereInput = opts.userId
+    ? { OR: [{ isPublished: true }, { isPublished: false, ownerUserId: opts.userId }] }
+    : { isPublished: true };
+
+  // Build additional AND filters
+
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
-    where.level = opts.level as
-      | "BEGINNER"
-      | "INTERMEDIATE"
-      | "ADVANCED"
-      | "ALL_LEVELS";
+    andConditions.push({
+      level: opts.level as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS",
+    });
   }
-  // if (opts.tag) {
-  //   andConditions.push({ tags: { has: opts.tag } });
-  // }
-  // if (opts.category) {
-  //   andConditions.push({ tags: { has: opts.category } });
-  // }
+
   const tagFilters: string[] = [];
   if (opts.tag) tagFilters.push(opts.tag);
   if (opts.category) tagFilters.push(opts.category);
-
   if (tagFilters.length > 0) {
     andConditions.push({ tags: { hasSome: tagFilters } });
   }
+
   if (opts.search) {
     const s = opts.search.trim();
     if (s) {
@@ -163,9 +163,10 @@ export async function listPublishedRoadmaps(opts: {
     }
   }
 
-  if (andConditions.length > 0) {
-    where.AND = andConditions;
-  }
+  const where: Prisma.roadmapWhereInput =
+    andConditions.length > 0
+      ? { AND: [visibilityCondition, ...andConditions] }
+      : visibilityCondition;
 
   const [roadmaps, total] = await Promise.all([
     prisma.roadmap.findMany({
@@ -186,6 +187,8 @@ export async function listPublishedRoadmaps(opts: {
         enrolledCount: true,
         tags: true,
         updatedAt: true,
+        isAiGenerated: true,
+        ownerUserId: true,
       },
     }),
     prisma.roadmap.count({ where }),
@@ -252,7 +255,9 @@ export async function enrollUser(args: {
   input: EnrollInput;
 }): Promise<EnrolledRoadmap> {
   const roadmap = await prisma.roadmap.findFirst({
-    where: { slug: args.roadmapSlug, isPublished: true },
+    where: { slug: args.roadmapSlug, 
+      OR: [{ isPublished: true }, { ownerUserId:args.userId }],
+     },
     include: {
       sections: {
         orderBy: { orderIndex: "asc" },

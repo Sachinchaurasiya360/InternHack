@@ -125,11 +125,10 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             stiffness: 380,
             damping: 20,
           }}
-          className={`relative h-11 w-11 rounded-md flex items-center justify-center shrink-0 ${
-            sectionDone
+          className={`relative h-11 w-11 rounded-md flex items-center justify-center shrink-0 ${sectionDone
               ? "bg-lime-400 text-stone-950"
               : "bg-stone-950 dark:bg-stone-50 text-stone-50 dark:text-stone-950"
-          }`}
+            }`}
         >
           {sectionDone ? (
             <Check className="w-5 h-5" strokeWidth={3} />
@@ -371,11 +370,10 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
 
         {/* Title */}
         <p
-          className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${
-            isCompleted || isSkipped
+          className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${isCompleted || isSkipped
               ? "text-stone-400 dark:text-stone-600 line-through decoration-1 decoration-stone-300 dark:decoration-stone-700"
               : "text-stone-950 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-stone-50"
-          }`}
+            }`}
         >
           {topic.title}
         </p>
@@ -486,7 +484,7 @@ export default function RoadmapCanvasPage() {
         );
         setWeakTopicTitles(slugs);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const toggleSection = useCallback((id: number) => {
@@ -742,9 +740,9 @@ export default function RoadmapCanvasPage() {
             position:
               viewMode === "GRAPH"
                 ? {
-                    x: TOPIC_X + getGraphOffset(topic.id).x,
-                    y: cursorY + getGraphOffset(topic.id).y,
-                  }
+                  x: TOPIC_X + getGraphOffset(topic.id).x,
+                  y: cursorY + getGraphOffset(topic.id).y,
+                }
                 : { x: TOPIC_X, y: cursorY },
             data: {
               topic,
@@ -873,20 +871,27 @@ export default function RoadmapCanvasPage() {
 
   const downloadPdf = async (theme: "light" | "dark") => {
     if (!enrollmentId) return;
+
     setDownloading(theme);
+
     try {
       const res = await api.get(
         `/roadmaps/me/enrollments/${enrollmentId}/pdf`,
         { responseType: "blob" },
       );
+
       const url = URL.createObjectURL(res.data as Blob);
+
       const a = document.createElement("a");
       a.href = url;
       a.download = `${slug}-roadmap${theme === "dark" ? "-dark" : ""}.pdf`;
       a.click();
+
       URL.revokeObjectURL(url);
+
+      toast.success("PDF downloaded successfully");
     } catch {
-      toast.error("Could not download PDF");
+      toast.error("PDF generation failed. Please try again.");
     } finally {
       setDownloading(null);
     }
@@ -1016,7 +1021,7 @@ export default function RoadmapCanvasPage() {
 
       {/* Main content area: fills the rest of the viewport, alongside sidebar */}
       <div
-        className={`flex flex-col h-screen pt-16 lg:pt-16 transition-all duration-300 ${
+        className={`flex flex-col min-h-screen overflow-y-auto pt-16 transition-all duration-300 ${
           collapsed ? "lg:ml-18" : "lg:ml-64"
         }`}
       >
@@ -1146,12 +1151,13 @@ export default function RoadmapCanvasPage() {
               disabled={downloading !== null}
               className="inline-flex items-center gap-1.5 px-3 py-2 bg-lime-400 text-stone-950 text-xs font-bold rounded-md hover:bg-lime-300 transition-colors disabled:opacity-60 cursor-pointer border-0"
             >
-              {downloading ? (
+              {downloading === "light" ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
                 <Download className="w-3.5 h-3.5" />
               )}
-              PDF
+
+              {downloading === "light" ? "Generating..." : "PDF"}
             </button>
           </div>
 
@@ -1369,11 +1375,10 @@ export default function RoadmapCanvasPage() {
                           bookmarked: !drawerProgress?.bookmarked,
                         })
                       }
-                      className={`inline-flex items-center justify-center h-7 w-7 rounded-md text-xs font-bold transition-colors cursor-pointer border ${
-                        drawerProgress?.bookmarked
+                      className={`inline-flex items-center justify-center h-7 w-7 rounded-md text-xs font-bold transition-colors cursor-pointer border ${drawerProgress?.bookmarked
                           ? "bg-lime-400 text-stone-950 border-lime-400"
                           : "bg-white text-stone-500 border-stone-200 hover:border-stone-400 dark:bg-stone-900 dark:text-stone-400 dark:border-stone-800 dark:hover:border-stone-600"
-                      }`}
+                        }`}
                     >
                       <Bookmark
                         className={`w-3 h-3 ${drawerProgress?.bookmarked ? "fill-current" : ""}`}
@@ -1665,19 +1670,19 @@ function RoadmapAnalyticsStrip({
 }) {
   const statusStyles = analytics
     ? {
-        AHEAD: "text-lime-300",
-        ON_TRACK: "text-sky-300",
-        BEHIND: "text-amber-300",
-      }[analytics.onTrackStatus]
+      AHEAD: "text-lime-300",
+      ON_TRACK: "text-sky-300",
+      BEHIND: "text-amber-300",
+    }[analytics.onTrackStatus]
     : "text-stone-500";
 
   const statusLabel =
     analytics?.onTrackStatus.replace("_", " ").toLowerCase() ?? "loading";
   const estimatedDate = analytics
     ? new Intl.DateTimeFormat(undefined, {
-        month: "short",
-        day: "numeric",
-      }).format(new Date(analytics.estimatedCompletionDate))
+      month: "short",
+      day: "numeric",
+    }).format(new Date(analytics.estimatedCompletionDate))
     : "calculating";
 
   return (
@@ -1856,9 +1861,8 @@ function StatusChip({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-bold transition-colors cursor-pointer border ${
-        active ? activeBg : idle
-      }`}
+      className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-bold transition-colors cursor-pointer border ${active ? activeBg : idle
+        }`}
     >
       {children}
     </button>
