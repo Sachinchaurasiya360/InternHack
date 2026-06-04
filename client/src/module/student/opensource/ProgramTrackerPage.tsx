@@ -579,8 +579,8 @@ function getCountdown(
   const now = Date.now();
   if (program.deadline) {
     const days = Math.ceil(
-  (new Date(program.deadline + "T23:59:59").getTime() - now) / 86400000,
-);
+      (new Date(program.deadline + "T23:59:59").getTime() - now) / 86400000,
+    );
     if (days < 0) return null;
     if (days <= 7)
       return {
@@ -594,8 +594,9 @@ function getCountdown(
   }
   if (program.startDate) {
     const days = Math.ceil(
-  (new Date(program.deadline + "T23:59:59").getTime() - now) / 86400000,
-);
+-     (new Date(program.deadline + "T23:59:59").getTime() - now) / 86400000
++     (new Date(program.startDate + "T23:59:59").getTime() - now) / 86400000,
+    );
     if (days < 0) return null;
     return {
       text: `Opens in ${days} days`,
