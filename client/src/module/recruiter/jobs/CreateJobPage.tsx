@@ -58,9 +58,15 @@ export default function CreateJobPage() {
   const canAdvance = stepIdx === 0 ? basicsComplete : true;
 
   const handleSubmit = async () => {
-    if (loading) return;
-    setError("");
-    setLoading(true);
+  if (loading) return;
+
+  if (form.description.length > 5000) {
+    setError("Description cannot exceed 5000 characters");
+    return;
+  }
+
+  setError("");
+  setLoading(true);
 
     try {
       const { data } = await api.post("/jobs", {
@@ -260,12 +266,24 @@ export default function CreateJobPage() {
                   hint="Responsibilities, requirements, the kind of person you're looking for."
                 >
                   <textarea
-                    id="description"
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    placeholder="Describe the role..."
-                    className={`${inputClass()} min-h-40 resize-y`}
-                  />
+  id="description"
+  value={form.description}
+  maxLength={5000}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      description: e.target.value.slice(0, 5000),
+    })
+  }
+  placeholder="Describe the role..."
+  className={`${inputClass()} min-h-40 resize-y`}
+/>
+
+<div className="mt-2 flex justify-end">
+  <span className="text-xs text-stone-500">
+    {form.description.length} / 5000
+  </span>
+</div>
                 </Field>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

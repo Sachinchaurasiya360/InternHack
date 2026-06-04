@@ -64,10 +64,48 @@ interface ApplicationFilter {
   search?: string | undefined;
 }
 
+interface EvaluationCriterion {
+  id: string;
+  maxScore: number;
+}
 
+function getEvaluationCriteriaById(criteria: unknown): Map<string, EvaluationCriterion> {
+  if (!Array.isArray(criteria)) return new Map();
+
+  const criteriaById = new Map<string, EvaluationCriterion>();
+  for (const criterion of criteria) {
+    if (
+      typeof criterion === "object" &&
+      criterion !== null &&
+      "id" in criterion &&
+      "maxScore" in criterion &&
+      typeof criterion.id === "string" &&
+      typeof criterion.maxScore === "number"
+    ) {
+      criteriaById.set(criterion.id, { id: criterion.id, maxScore: criterion.maxScore });
+    }
+  }
+
+  return criteriaById;
+}
+
+function validateEvaluationScores(
+  evaluationScores: Record<string, { score: number; comment?: string | undefined }>,
+  evaluationCriteria: unknown,
+) {
+  const criteriaById = getEvaluationCriteriaById(evaluationCriteria);
+
+  for (const [criterionId, evaluation] of Object.entries(evaluationScores)) {
+    const criterion = criteriaById.get(criterionId);
+    if (criterion && evaluation.score > criterion.maxScore) {
+      throw new Error(`Evaluation score for ${criterionId} cannot exceed maxScore ${criterion.maxScore}`);
+    }
+  }
+}
 type UpdateRoundData = {
   [K in keyof CreateRoundData]?: CreateRoundData[K] | undefined;
 };
+
 export class RecruiterService {
   // ==================== ROUND MANAGEMENT ====================
 
@@ -235,7 +273,8 @@ export class RecruiterService {
           student: { select: { id: true, name: true, email: true, profilePic: true, resumes: true } },
           roundSubmissions: {
             include: { round: { select: { id: true, name: true, orderIndex: true } } },
-            orderBy: { round: { orderIndex: "asc" } },
+            orderBy: { createdAt: "desc" },
+            take: 5,
           },
         },
       }),
@@ -312,14 +351,18 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const previousStatus = application.status;
+    // Fix for #1111: Prevent duplicate status updates and emails
+    if (application.status === status) {
+      const { job: _job, student: _student, ...current } = application;
+      return current;
+    }
 
     const updated = await prisma.application.update({
       where: { id: applicationId },
       data: { status },
     });
 
-    if (previousStatus !== status && isEmailableStatus(status) && application.student.email) {
+    if (isEmailableStatus(status) && application.student.email) {
       const clientUrl = process.env["CLIENT_URL"] || "https://www.internhack.xyz";
       const html = applicationStatusEmailHtml({
         studentName: application.student.name,
@@ -434,18 +477,35 @@ export class RecruiterService {
 
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
+
+// Fix for #1116: Gracefully catch malformed JSON data during evaluation
+    let parsedScores;
+    try {
+      parsedScores = JSON.parse(JSON.stringify(evaluationScores));
+    } catch (error) {
+      const err = new Error("Invalid JSON format in evaluation data");
+      (err as any).status = 422;
+      throw err;
+    }
+
+    if (application.status === "WITHDRAWN") {
+      throw new Error(
+        "Withdrawn applications cannot participate in the hiring process"
+      );
+    }
+    
     // checking round ownership
     const round = await prisma.round.findUnique({
       where: { id: roundId },
-      select: { jobId: true },
+      select: { jobId: true, evaluationCriteria: true },
     });
 
     if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
-    
+    validateEvaluationScores(parsedScores, round.evaluationCriteria);
     return prisma.roundSubmission.update({
       where: { applicationId_roundId: { applicationId, roundId } },
       data: {
-        evaluationScores: JSON.parse(JSON.stringify(evaluationScores)),
+        evaluationScores: parsedScores,
         recruiterNotes: recruiterNotes ?? null,
         evaluatedAt: new Date(),
         status: "COMPLETED",
@@ -489,7 +549,7 @@ export class RecruiterService {
         student: { applications: { some: { job: { recruiterId } } } },
       },
       _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
+      orderBy: [{ _count: { id: "desc" } }, { skillName: "asc" }],
       take: 5,
     });
 
@@ -536,6 +596,9 @@ export class RecruiterService {
       statusCounts[s.status] = s._count.id;
     }
 
+    const hiredCount = statusCounts["HIRED"] || 0;
+    const conversionRate = totalApplications === 0 ? 0 : (hiredCount / totalApplications) * 100;
+
     const roundAnalytics = rounds.map((round) => {
       const completed = round.roundSubmissions.filter((s) => s.status === "COMPLETED").length;
       const inProgress = round.roundSubmissions.filter((s) => s.status === "IN_PROGRESS").length;
@@ -558,6 +621,8 @@ export class RecruiterService {
       totalApplications,
       statusBreakdown: statusCounts,
       roundAnalytics,
+      hiredCount,
+      conversionRate,
     };
   }
 
@@ -588,7 +653,7 @@ export class RecruiterService {
       if (filter.graduationYearMax) where.graduationYear.lte = filter.graduationYearMax;
     }
     if (filter.skills) {
-      const skillList = filter.skills.split(",").map((s) => s.trim()).filter(Boolean);
+      const skillList = filter.skills.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
       if (skillList.length > 0) {
         where.skills = { hasSome: skillList };
       }

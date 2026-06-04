@@ -48,6 +48,10 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   });
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [dismissedHint, setDismissedHint] = useState(() => {
+    try { return localStorage.getItem("keyboard-nav-hint-dismissed") === "true"; }
+    catch { return false; }
+  });
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
@@ -80,6 +84,17 @@ useEffect(() => {
     prevPath: prev ? `${basePath}/${prev.id}` : null,
     nextPath: next ? `${basePath}/${next.id}` : null,
   });
+  useEffect(() => {
+    if (dismissedHint) return;
+    const handle = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        setDismissedHint(true);
+        try { localStorage.setItem("keyboard-nav-hint-dismissed", "true"); } catch { /* */ }
+      }
+    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, [dismissedHint]);
 
 if (!step) return <Navigate to={basePath} replace />;
 const submitFeedback = async (
@@ -170,6 +185,11 @@ const submitFeedback = async (
             <span className="text-xs text-gray-400 dark:text-gray-500 px-2 font-medium tabular-nums">
               {step.step} / {steps.length}
             </span>
+            {!dismissedHint && (
+              <span className="hidden sm:inline-flex text-[10px] font-mono text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">
+                ← → keys
+              </span>
+            )}
             <Button
               variant="ghost"
               mode="icon"

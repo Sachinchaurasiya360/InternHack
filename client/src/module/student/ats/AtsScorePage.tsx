@@ -807,15 +807,7 @@ export default function AtsScorePage() {
                       </label>
                       <textarea
                         value={jobDescription}
-                        onChange={(e) => {
-                          const next = e.target.value.slice(0, JD_MAX_CHARS);
-                          if (e.target.value.length > JD_MAX_CHARS) {
-                            toast.error(
-                              `Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`,
-                            );
-                          }
-                          setJobDescription(next);
-                        }}
+                        onChange={(e) => setJobDescription(e.target.value)}
                         maxLength={JD_MAX_CHARS}
                         placeholder="Paste the job description for tailored keyword analysis..."
                         rows={5}

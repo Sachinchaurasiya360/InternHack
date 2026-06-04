@@ -7,6 +7,7 @@ import {
   downloadPdf,
   enroll,
   getMyEnrollmentAnalytics,
+  getMyEnrollmentByRoadmapSlug,
   getMyEnrollment,
   deleteMyEnrollment,
   getMyEnrollments,
@@ -40,6 +41,7 @@ roadmapRouter.post(
 );
 
 roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
+roadmapRouter.get("/:slug/enrollment", authMiddleware, getMyEnrollmentByRoadmapSlug);
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);

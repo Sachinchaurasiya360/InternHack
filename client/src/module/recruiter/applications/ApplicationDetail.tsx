@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import toast from "../../../components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, Download, CheckCircle, XCircle, Clock, FileText, ShieldCheck } from "lucide-react";
@@ -16,20 +17,57 @@ export default function ApplicationDetail() {
   const [evaluatingRoundId, setEvaluatingRoundId] = useState<number | null>(null);
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
 
-  const fetchDetail = useCallback(() => {
-    api.get(`/recruiter/applications/${applicationId}`).then((res) => {
+  const fetchDetail = useCallback(async () => {
+    try {
+      const res = await api.get(
+        `/recruiter/applications/${applicationId}`
+      );
       setApplication(res.data.application);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    } catch (err: any) {
+      console.error(err);
+    }
   }, [applicationId]);
 
-  useEffect(() => { fetchDetail(); }, [fetchDetail]);
+  useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+
+        const res = await api.get(
+          `/recruiter/applications/${applicationId}`,
+          { signal: controller.signal }
+        );
+
+        if (isMounted) {
+          setApplication(res.data.application);
+        }
+      } catch (err: any) {
+        if (err.name !== "CanceledError" && err.name !== "AbortError") {
+          console.error(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [applicationId]);
 
   useEffect(() => {
     if (application?.student?.id) {
       api.get(`/skill-tests/verified/${application.student.id}`)
         .then((res) => setVerifiedSkills(res.data.verifiedSkills || []))
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [application?.student?.id]);
 
@@ -37,8 +75,9 @@ export default function ApplicationDetail() {
     try {
       await api.patch(`/recruiter/applications/${applicationId}/advance`);
       fetchDetail();
+      toast.success("Application advanced");
     } catch {
-      alert("Failed to advance");
+      toast.error("Failed to advance");
     }
   };
 
@@ -46,8 +85,9 @@ export default function ApplicationDetail() {
     try {
       await api.patch(`/recruiter/applications/${applicationId}/status`, { status });
       fetchDetail();
+      toast.success("Status updated");
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 
@@ -117,7 +157,7 @@ export default function ApplicationDetail() {
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold dark:text-white flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-green-500" /> Verified Skills
+              <ShieldCheck className="w-5 h-5 text-green-500 dark:text-green-400" /> Verified Skills
             </h2>
             {application.job?.tags && application.job.tags.length > 0 && (() => {
               const verifiedNames = new Set(verifiedSkills.map((v) => v.skillName.toLowerCase()));
@@ -219,10 +259,10 @@ export default function ApplicationDetail() {
 
 function getStatusIcon(status: string) {
   switch (status) {
-    case "COMPLETED": return <CheckCircle className="w-4 h-4 text-green-500" />;
-    case "IN_PROGRESS": return <Clock className="w-4 h-4 text-yellow-500" />;
-    case "PENDING": return <Clock className="w-4 h-4 text-gray-400" />;
-    default: return <XCircle className="w-4 h-4 text-red-500" />;
+    case "COMPLETED": return <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />;
+    case "IN_PROGRESS": return <Clock className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />;
+    case "PENDING": return <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />;
+    default: return <XCircle className="w-4 h-4 text-red-500 dark:text-red-400" />;
   }
 }
 

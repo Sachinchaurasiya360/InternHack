@@ -51,6 +51,7 @@ import {
   ingestExternalJobSchema,
   broadcastEmailSchema,
 } from "./admin.validation.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -1099,7 +1100,6 @@ export class AdminController {
         return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
       }
       const isTest = !!result.data.testEmail;
-
       // Test emails skip the distributed lock — they target a single address
       if (isTest) {
         const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
@@ -1140,7 +1140,9 @@ export class AdminController {
       });
     } catch (error) {
       logger.error("Failed to send broadcast email", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      if (!res.headersSent) {
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
     }
   }
 }
