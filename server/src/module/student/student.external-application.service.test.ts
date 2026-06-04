@@ -13,6 +13,14 @@ const mocks = vi.hoisted(() => ({
       create: vi.fn(),
     },
   },
+  tx: {
+    externalJobApplication: {
+      create: vi.fn(),
+    },
+    usageLog: {
+      create: vi.fn(),
+    },
+  },
   badgeService: {
     checkAndAwardBadges: vi.fn().mockResolvedValue(undefined),
   },
@@ -30,7 +38,9 @@ vi.mock("../badge/badge.service.js", () => ({
 
 const { StudentService } = await import("./student.service.js");
 
-vi.spyOn(StudentService.prototype as any, "checkApplicationMilestone").mockResolvedValue(undefined);
+const checkApplicationMilestoneSpy = vi
+  .spyOn(StudentService.prototype as any, "checkApplicationMilestone")
+  .mockResolvedValue(undefined);
 
 describe("StudentService.applyToExternalJob", () => {
   const service = new StudentService();
@@ -51,18 +61,18 @@ describe("StudentService.applyToExternalJob", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.prisma.$transaction.mockImplementation(async (callback) => callback(mocks.prisma));
+    mocks.prisma.$transaction.mockImplementation(async (callback) => callback(mocks.tx));
   });
 
   it("creates the application and usage log in one transaction", async () => {
     mocks.prisma.adminJob.findUnique.mockResolvedValue(activeJob);
-    mocks.prisma.externalJobApplication.create.mockResolvedValue(createdApplication);
-    mocks.prisma.usageLog.create.mockResolvedValue({ id: 401 });
+    mocks.tx.externalJobApplication.create.mockResolvedValue(createdApplication);
+    mocks.tx.usageLog.create.mockResolvedValue({ id: 401 });
 
     await expect(service.applyToExternalJob(44, 23)).resolves.toEqual(createdApplication);
 
     expect(mocks.prisma.$transaction).toHaveBeenCalledOnce();
-    expect(mocks.prisma.externalJobApplication.create).toHaveBeenCalledWith({
+    expect(mocks.tx.externalJobApplication.create).toHaveBeenCalledWith({
       data: { studentId: 44, adminJobId: 23 },
       include: {
         adminJob: {
@@ -70,17 +80,20 @@ describe("StudentService.applyToExternalJob", () => {
         },
       },
     });
-    expect(mocks.prisma.usageLog.create).toHaveBeenCalledWith({
+    expect(mocks.tx.usageLog.create).toHaveBeenCalledWith({
       data: { userId: 44, action: "JOB_APPLICATION" },
     });
+    expect(mocks.prisma.externalJobApplication.create).not.toHaveBeenCalled();
+    expect(mocks.prisma.usageLog.create).not.toHaveBeenCalled();
   });
 
   it("does not run post-commit work when usage logging fails", async () => {
     mocks.prisma.adminJob.findUnique.mockResolvedValue(activeJob);
-    mocks.prisma.externalJobApplication.create.mockResolvedValue(createdApplication);
-    mocks.prisma.usageLog.create.mockRejectedValue(new Error("Usage log unavailable"));
+    mocks.tx.externalJobApplication.create.mockResolvedValue(createdApplication);
+    mocks.tx.usageLog.create.mockRejectedValue(new Error("Usage log unavailable"));
 
     await expect(service.applyToExternalJob(44, 23)).rejects.toThrow("Usage log unavailable");
     expect(mocks.badgeService.checkAndAwardBadges).not.toHaveBeenCalled();
+    expect(checkApplicationMilestoneSpy).not.toHaveBeenCalled();
   });
 });
