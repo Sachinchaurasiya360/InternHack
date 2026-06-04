@@ -22,8 +22,10 @@ import {
   Plus,
   Share2,
   Check,
+  Copy,
 } from "lucide-react";
 import api from "../../../lib/axios";
+import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 import { queryKeys } from "../../../lib/query-keys";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -102,6 +104,7 @@ export default function RepoDiscoveryPage() {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [showAllSubmissions, setShowAllSubmissions] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
+  const { copied: copiedCloneUrl, copy: copyCloneUrl } = useCopyToClipboard();
   const { user } = useAuthStore();
   // CONFLICT 2 RESOLVED: keep both recently-viewed AND deep-linking, unified into one handler
   const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
@@ -901,16 +904,39 @@ export default function RepoDiscoveryPage() {
                   </div>
                 </div>
 
-                {/* View on GitHub */}
-                <a
-                  href={selectedRepo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center justify-center gap-2 w-full py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 text-sm font-bold transition-colors no-underline"
-                >
-                  View on GitHub
-                  <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </a>
+                {/* Quick actions */}
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href={selectedRepo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-center gap-2 py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 text-sm font-bold transition-colors no-underline"
+                  >
+                    Open on GitHub
+                    <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => copyCloneUrl(`${selectedRepo.url}.git`)}
+                    className={`flex items-center justify-center gap-2 py-3 rounded-md text-sm font-bold transition-colors cursor-pointer ${
+                      copiedCloneUrl
+                        ? "bg-green-500 text-white"
+                        : "bg-stone-100 dark:bg-white/10 hover:bg-stone-200 dark:hover:bg-white/20 text-stone-700 dark:text-stone-300"
+                    }`}
+                  >
+                    {copiedCloneUrl ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        Copy Clone URL
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
