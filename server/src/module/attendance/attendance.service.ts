@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
 import type { AttendanceStatus, Prisma } from "@prisma/client";
+import { MAX_WORK_HOURS } from "./attendance.constants.js";
 
 interface AttendanceQuery {
   page: number;
@@ -148,7 +149,7 @@ export class AttendanceService {
     const workHours = (checkOut.getTime() - checkIn.getTime()) / 3600000;
 
     if (workHours <= 0) throw new Error("checkOut must be after checkIn");
-    if (workHours > 24) throw new Error("Work hours must not exceed 24");
+    if (workHours > MAX_WORK_HOURS) throw new Error("Work hours must not exceed 24");
 
     return prisma.attendanceRecord.upsert({
       where: { employeeId_date: { employeeId: data.employeeId, date } },
