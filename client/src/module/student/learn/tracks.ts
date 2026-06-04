@@ -38,7 +38,7 @@ export interface Track {
   /** Absolute path override. When present, the card links here instead of `/learn/${path}`. */
   to?: string;
   tags?: string[];
-  difficulty?: "Beginner" | "Intermediate" | "Advanced" | string;
+  difficulty?: "Beginner" | "Intermediate" | "Advanced";
   createdAt?: string;
   enrolledStudents?: number;
 }

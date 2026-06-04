@@ -17,6 +17,7 @@ import {
   type WeakArea,
 } from "./components/RecommendationCard";
 import api from "../../../lib/axios";
+import { Button } from "../../../components/ui/button";
 
 const CATEGORY_DESCRIPTION: Record<TrackCategory, string> = {
   practice: "Curated questions, animated lessons, and roadmaps to ace placements.",
@@ -215,33 +216,33 @@ const grouped = useMemo(() => {
             
             {/* Category Tabs */}
             <div className="flex flex-wrap items-center gap-1 bg-stone-100 dark:bg-stone-800 p-1 rounded-md">
-              <button
+              <Button
                 onClick={() => setActiveCategory("All")}
-                className={`px-3 py-1.5 text-xs font-medium rounded transition-all ${activeCategory === "All" ? "bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-white" : "text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"}`}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${activeCategory === "All" ? "bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-white" : "bg-transparent border-transparent text-stone-500 hover:bg-transparent hover:text-stone-700 dark:hover:text-stone-300"}`}
               >
                 All
-              </button>
+              </Button>
               {CATEGORY_ORDER.map((cat) => (
-                <button
+                <Button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded capitalize transition-all ${activeCategory === cat ? "bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-white" : "text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"}`}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md capitalize transition-all ${activeCategory === cat ? "bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-white" : "bg-transparent border-transparent text-stone-500 hover:bg-transparent hover:text-stone-700 dark:hover:text-stone-300"}`}
                 >
                   {CATEGORY_LABEL[cat] || cat}
-                </button>
+                </Button>
               ))}
             </div>
 
             {/* Difficulty Chips */}
             <div className="flex items-center gap-2">
               {["All", "Beginner", "Intermediate", "Advanced"].map((level) => (
-                <button
-                  key={level}
-                  onClick={() => setActiveDifficulty(level)}
-                  className={`px-3 py-1 text-xs font-medium rounded-full border transition-colors ${activeDifficulty === level ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-900 dark:border-stone-100" : "bg-transparent text-stone-500 border-stone-300 dark:border-stone-700 hover:border-stone-400"}`}
-                >
-                  {level}
-                </button>
+              <Button
+                key={level}
+                onClick={() => setActiveDifficulty(level)}
+                className={`px-3 py-1 text-xs font-medium rounded-md border transition-colors ${activeDifficulty === level ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-900 dark:border-stone-100" : "bg-transparent text-stone-500 border-stone-300 dark:border-stone-700 hover:border-stone-400"}`}
+              >
+                {level}
+              </Button>
               ))}
             </div>
           </div>
