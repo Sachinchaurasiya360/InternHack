@@ -147,6 +147,9 @@ export class AttendanceService {
 
     const workHours = (checkOut.getTime() - checkIn.getTime()) / 3600000;
 
+    if (workHours <= 0) throw new Error("checkOut must be after checkIn");
+    if (workHours > 24) throw new Error("Work hours must not exceed 24");
+
     return prisma.attendanceRecord.upsert({
       where: { employeeId_date: { employeeId: data.employeeId, date } },
       create: {
