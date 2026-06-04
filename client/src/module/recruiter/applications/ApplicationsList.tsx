@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import toast from "@/components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
@@ -57,7 +58,7 @@ const handleStatusChange = async (appId: number, status: string) => {
     await api.patch(`/recruiter/applications/${appId}/status`, { status });
     fetchApplications();
   } catch {
-    alert("Failed to update status");
+    toast.error("Failed to update status");
   } finally {
     setUpdatingId(null);
   }
@@ -70,7 +71,7 @@ const handleStatusChange = async (appId: number, status: string) => {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       fetchApplications();
     } catch {
-      alert("Failed to advance application");
+      toast.error("Failed to advance application");
     } finally {
       setAdvancingIds((current) => {
         const next = new Set(current);
