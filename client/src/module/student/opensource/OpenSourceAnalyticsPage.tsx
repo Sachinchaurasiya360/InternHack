@@ -7,8 +7,11 @@ import {
   AlertCircle,
   Filter,
   X,
-  Maximize2
+  Maximize2,
+  Flame,
+  TrendingUp
 } from "lucide-react";
+
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import {
   PieChart,
@@ -220,16 +223,37 @@ export default function OpenSourceAnalyticsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
+  const { data: contributionTrendData, isLoading: _trendIsLoading, isError: _trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
     queryKey: queryKeys.opensource.trend(),
     queryFn: () => api.get("/opensource/analytics/trend").then((r) => r.data),
     staleTime: 5 * 60 * 1000,
   });
 
+
+
   const allOrgs = orgsData ?? [];
-  const contributionTrend = contributionTrendData?.trend ?? [];
+  
+  const contributionTrend = contributionTrendData?.trend ?? []
   const contributionTotal = contributionTrendData?.total ?? 0;
   const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
+
+  const currentStreak = (() => {
+  let count = 0;
+  for (let i = contributionTrend.length - 1; i >= 0; i--) {
+    if (contributionTrend[i].count > 0) count++;
+    else break;
+  }
+  return count;
+})();
+
+const longestStreak = (() => {
+  let max = 0, cur = 0;
+  for (const point of contributionTrend) {
+    cur = point.count > 0 ? cur + 1 : 0;
+    max = Math.max(max, cur);
+  }
+  return max;
+})();
 
   // ─── Derive filter options ──────────────────────────────────
   const years = useMemo(() => {
@@ -462,6 +486,27 @@ export default function OpenSourceAnalyticsPage() {
               )
             }
           >
+            {!trendIsLoading && !trendIsError && contributionTrend.length > 0 && (
+              <div className="mb-4">
+                {currentStreak === 0 ? (
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Flame className="w-4 h-4 text-gray-400" />
+                    No active streak — contribute this month to start one!
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-md text-sm font-medium text-gray-800">
+                      <Flame className="w-4 h-4 text-orange-500" />
+                      Current streak: {currentStreak} month{currentStreak !== 1 ? "s" : ""}
+                    </div>
+                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-md text-sm font-medium text-gray-800">
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                      Longest streak: {longestStreak} month{longestStreak !== 1 ? "s" : ""}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             {trendIsLoading ? (
               <TrendSkeleton />
             ) : hasContributionActivity ? (
