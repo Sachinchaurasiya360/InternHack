@@ -266,8 +266,8 @@ export class BlogService {
       throw new Error("Post not found");
     }
 
-    if (!isAdmin && userId !== undefined && post.authorId !== userId) {
-      throw new Error("Not authorized to modify this post");
+    if (!isAdmin) {
+      throw new Error("Not authorized to feature this post");
     }
 
     return prisma.blogPost.update({
