@@ -82,10 +82,10 @@ export default function FirstPRRoadmapPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="text-center mb-10 mt-6"
       >
-        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-stone-950 dark:text-white mb-3">
           Your First <span className="text-gradient-accent">Contribution</span>
         </h1>
-        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
+        <p className="text-lg text-stone-500 dark:text-stone-500 max-w-xl mx-auto">
           A mentor-guided journey from zero to your first merged pull request
         </p>
       </motion.div>
@@ -108,11 +108,11 @@ export default function FirstPRRoadmapPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
+            className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-5 text-center"
           >
             <stat.icon className={`w-6 h-6 ${stat.iconColor} mx-auto mb-3`} />
-            <p className="font-display text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-0.5">{stat.label}</p>
+            <p className="font-display text-2xl font-bold text-stone-950 dark:text-white">{stat.value}</p>
+            <p className="text-xs text-stone-400 dark:text-stone-500 font-medium mt-0.5">{stat.label}</p>
           </motion.div>
         ))}
       </motion.div>
@@ -120,12 +120,12 @@ export default function FirstPRRoadmapPage() {
       {/* Progress Bar */}
       <div className="space-y-2 mb-8">
         <div className="flex justify-between text-sm font-medium">
-          <span className="text-gray-700 dark:text-gray-300">Overall Progress</span>
-          <span className="text-gray-700 dark:text-gray-300">{pct}%</span>
+          <span className="text-stone-700 dark:text-stone-300">Overall Progress</span>
+          <span className="text-stone-700 dark:text-stone-300">{pct}%</span>
         </div>
-        <div className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+        <div className="w-full h-1 bg-stone-100 dark:bg-stone-800 rounded-sm overflow-hidden">
           <div
-            className="h-full bg-indigo-600 transition-all duration-500"
+            className="h-full bg-lime-500 transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -174,18 +174,18 @@ export default function FirstPRRoadmapPage() {
           const done = completed.has(step.id);
           const inProgress = !done && i === firstUncompletedIndex;
           
-          let borderStyles = "border-gray-200 dark:border-gray-800";
-          let numberStyles = "bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400";
-          let badgeStyles = "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+          let borderStyles = "border-stone-200 dark:border-white/10";
+          let numberStyles = "bg-stone-200 text-stone-600 dark:bg-stone-800 dark:text-stone-400";
+          let badgeStyles = "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300";
           let statusText = "Upcoming";
           
           if (done) {
-            borderStyles = "border-green-500 dark:border-green-500";
+            borderStyles = "border-green-200 dark:border-green-800";
             numberStyles = "bg-green-600 text-white";
             badgeStyles = "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400";
             statusText = "Completed";
           } else if (inProgress) {
-            borderStyles = "border-indigo-500 dark:border-indigo-500";
+            borderStyles = "border-indigo-200 dark:border-indigo-800";
             numberStyles = "bg-indigo-600 text-white";
             badgeStyles = "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400";
             statusText = "In Progress";
@@ -200,7 +200,7 @@ export default function FirstPRRoadmapPage() {
             >
               <Link
                 to={`/student/opensource/first-pr/${step.id}`}
-                className={`group flex items-start sm:items-center gap-4 px-5 py-5 rounded-xl border bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm hover:shadow-md transition hover:scale-[1.01] no-underline ${borderStyles}`}
+                className={`group flex items-start sm:items-center gap-4 px-5 py-5 rounded-2xl border bg-white dark:bg-stone-900 hover:shadow-md transition hover:scale-[1.01] no-underline ${borderStyles}`}
               >
                 {/* Step number */}
                 <div className="flex-shrink-0 mt-1 sm:mt-0">
@@ -214,22 +214,22 @@ export default function FirstPRRoadmapPage() {
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <h3 className={`text-base font-bold ${
                       done
-                        ? "text-gray-500 dark:text-gray-400 line-through"
-                        : "text-gray-950 dark:text-white"
+                        ? "text-stone-500 dark:text-stone-400 line-through"
+                        : "text-stone-950 dark:text-white"
                     }`}>
                       {step.title}
                     </h3>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${badgeStyles}`}>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${badgeStyles}`}>
                       {statusText}
                     </span>
                   </div>
                   
-                  <p className="line-clamp-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  <p className="line-clamp-2 text-sm text-stone-500 dark:text-stone-400 mb-2">
                     {step.description}
                   </p>
                   
                   {step.estimatedMinutes && (
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <span className="text-xs font-medium text-stone-500 dark:text-stone-400 flex items-center gap-1">
                       ⏱ {step.estimatedMinutes} min
                     </span>
                   )}
@@ -243,7 +243,7 @@ export default function FirstPRRoadmapPage() {
                     size="sm"
                     className="pointer-events-none group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30"
                   >
-                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="w-5 h-5 text-stone-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
                   </Button>
                 </div>
               </Link>

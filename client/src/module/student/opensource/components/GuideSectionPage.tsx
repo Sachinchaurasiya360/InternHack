@@ -3,7 +3,7 @@ import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
   ArrowRight, ChevronLeft, ChevronRight,
-  CheckCircle2, ExternalLink, Lightbulb, Info,
+  CheckCircle2, ExternalLink, Lightbulb, Info, Code,
 } from "lucide-react";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
@@ -138,13 +138,13 @@ const submitFeedback = async (
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="mb-6"
       >
-        <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-6 py-4">
+        <div className="flex items-center justify-between bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-white/10 px-6 py-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
               <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">{step.step}</span>
             </div>
             <div className="min-w-0">
-              <h1 className="font-display text-xl font-bold text-gray-950 dark:text-white truncate">
+              <h1 className="font-display text-xl font-bold text-stone-950 dark:text-white truncate">
                 {step.title}
               </h1>
               {isDone && (
@@ -162,12 +162,12 @@ const submitFeedback = async (
               mode="icon"
               onClick={() => prev && navigate(`${basePath}/${prev.id}`)}
               disabled={!prev}
-              className="bg-gray-50 dark:bg-gray-800 rounded-xl"
+              className="bg-stone-50 dark:bg-stone-800 rounded-xl"
               title="Previous"
             >
-              <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <ChevronLeft className="w-4 h-4 text-stone-600 dark:text-stone-400" />
             </Button>
-            <span className="text-xs text-gray-400 dark:text-gray-500 px-2 font-medium tabular-nums">
+            <span className="text-xs text-stone-400 dark:text-stone-500 px-2 font-medium tabular-nums">
               {step.step} / {steps.length}
             </span>
             <Button
@@ -175,10 +175,10 @@ const submitFeedback = async (
               mode="icon"
               onClick={() => next && navigate(`${basePath}/${next.id}`)}
               disabled={!next}
-              className="bg-gray-50 dark:bg-gray-800 rounded-xl"
+              className="bg-stone-50 dark:bg-stone-800 rounded-xl"
               title="Next"
             >
-              <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-stone-600 dark:text-stone-400" />
             </Button>
           </div>
         </div>
@@ -190,10 +190,15 @@ const submitFeedback = async (
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6"
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-2xl p-6"
           >
-            <h2 className="text-lg font-bold text-gray-950 dark:text-white mb-4">Explanation</h2>
-            <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-md bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                <Info className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <h2 className="text-lg font-bold text-stone-950 dark:text-white">Explanation</h2>
+            </div>
+            <div className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
               {step.mentor_guidance}
             </div>
           </motion.div>
@@ -204,9 +209,14 @@ const submitFeedback = async (
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15 }}
-            className="space-y-4"
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-2xl p-6 space-y-4"
           >
-            <h2 className="text-lg font-bold text-gray-950 dark:text-white">Code Examples</h2>
+            <div className="flex items-center gap-2.5 mb-2">
+              <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-stone-800 flex items-center justify-center">
+                <Code className="w-4 h-4 text-stone-600 dark:text-stone-400" />
+              </div>
+              <h2 className="text-lg font-bold text-stone-950 dark:text-white">Code Examples</h2>
+            </div>
             {step.commands.map((cmd, i) => (
               <CodeBlock key={`${step.id}-${cmd.label || i}`} code={cmd.code} label={cmd.label} language="bash" />
             ))}
@@ -218,18 +228,18 @@ const submitFeedback = async (
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="rounded-2xl border border-white/60 dark:border-gray-700/40 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl p-6 shadow-sm"
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-2xl p-6"
           >
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gray-100/80 dark:bg-gray-800/60 flex items-center justify-center backdrop-blur-sm">
-                <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <div className="w-8 h-8 rounded-md bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="text-sm font-bold text-gray-950 dark:text-white">Important Notes</h3>
+              <h3 className="text-sm font-bold text-stone-950 dark:text-white">Important Notes</h3>
             </div>
             <ul className="space-y-3">
               {step.details.map((detail, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
+                <li key={i} className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
                   {detail}
                 </li>
               ))}
@@ -242,18 +252,18 @@ const submitFeedback = async (
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.25 }}
-            className="rounded-2xl border border-white/60 dark:border-gray-700/40 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl p-6 shadow-sm"
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-2xl p-6"
           >
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gray-100/80 dark:bg-gray-800/60 flex items-center justify-center backdrop-blur-sm">
-                <Lightbulb className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <div className="w-8 h-8 rounded-md bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               </div>
-              <h3 className="text-sm font-bold text-gray-950 dark:text-white">Pro Tips</h3>
+              <h3 className="text-sm font-bold text-stone-950 dark:text-white">Pro Tips</h3>
             </div>
             <ul className="space-y-3">
               {step.tips.map((tip, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
+                <li key={i} className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
                   {tip}
                 </li>
               ))}
@@ -266,23 +276,23 @@ const submitFeedback = async (
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
-            className="rounded-2xl border border-white/60 dark:border-gray-700/40 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl p-6 shadow-sm"
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-2xl p-6"
           >
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gray-100/80 dark:bg-gray-800/60 flex items-center justify-center backdrop-blur-sm">
-                <ExternalLink className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <div className="w-8 h-8 rounded-md bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                <ExternalLink className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
-              <h3 className="text-sm font-bold text-gray-950 dark:text-white">Resources</h3>
+              <h3 className="text-sm font-bold text-stone-950 dark:text-white">Resources</h3>
             </div>
             <ul className="space-y-3">
               {step.resources.map((r, i) => (
                 <li key={i} className="flex items-start gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
                   <a
                     href={r.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white transition-colors inline-flex items-center gap-1.5 leading-relaxed"
+                    className="text-sm text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-colors inline-flex items-center gap-1.5 leading-relaxed"
                   >
                     {r.title}
                     <ExternalLink className="w-3 h-3 shrink-0" />
@@ -292,7 +302,7 @@ const submitFeedback = async (
             </ul>
           </motion.div>
         )}
-<div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+<div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-2xl p-6">
   <p className="text-sm font-medium mb-3">
     Was this step helpful?
   </p>
@@ -326,7 +336,7 @@ const submitFeedback = async (
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.35 }}
-          className="pt-2"
+          className="sticky bottom-0 py-4 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10 z-10"
         >
           <div className="flex items-center justify-between">
             <Button
@@ -346,13 +356,13 @@ const submitFeedback = async (
               <Button
                 variant="outline"
                 onClick={() => navigate(`${basePath}/${next.id}`)}
-                className="group text-gray-600 dark:text-gray-400 rounded-xl"
+                className="group text-stone-600 dark:text-stone-400 rounded-xl"
               >
                 Next Section
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Button>
             ) : (
-              <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
+              <Button asChild variant="outline" className="group text-stone-600 dark:text-stone-400 rounded-xl">
                 <Link to={basePath} className="no-underline">
                   Back to Overview
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
