@@ -47,6 +47,7 @@ function RecruiterDashboardInner() {
   const [loading, setLoading] = useState(true);
 
   const fetchDashboard = useCallback(async () => {
+    setLoading(true);
     try {
       const res = await api.get("/recruiter/dashboard");
       setData(res.data);
