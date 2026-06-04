@@ -184,6 +184,8 @@ export default function TalentSearchPage() {
         <div className="relative flex-1">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-300" />
           <input
+            id="talent-search"
+            aria-label="Search candidates by name, email, or skill"
             type="text"
             value={filters.search}
             onChange={(e) => updateFilter("search", e.target.value)}
@@ -205,11 +207,10 @@ export default function TalentSearchPage() {
             <button
               key={opt.key}
               onClick={() => setJobStatus(opt.key)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
-                active
-                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                  : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-              }`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${active
+                ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+                }`}
             >
               {opt.label}
             </button>
@@ -220,11 +221,10 @@ export default function TalentSearchPage() {
 
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
-            activeFilterCount > 0
-              ? "bg-lime-400 text-stone-900 border-lime-400"
-              : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-          }`}
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${activeFilterCount > 0
+            ? "bg-lime-400 text-stone-900 border-lime-400"
+            : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+            }`}
         >
           <SlidersHorizontal className="w-3.5 h-3.5" />
           Filters
@@ -259,8 +259,9 @@ export default function TalentSearchPage() {
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md">
               <div>
-                <label className={labelClass}>skills</label>
+                <label htmlFor="skills" className={labelClass}>skills</label>
                 <input
+                  id="skills"
                   type="text"
                   value={filters.skills}
                   onChange={(e) => updateFilter("skills", e.target.value)}
@@ -272,12 +273,12 @@ export default function TalentSearchPage() {
               </div>
 
               <div>
-                <label className={labelClass}>verified skills</label>
+                <label htmlFor="verifiedSkills" className={labelClass}>verified skills</label>
                 <input
+                  id="verifiedSkills"
                   type="text"
                   value={filters.verifiedSkills}
                   onChange={(e) => updateFilter("verifiedSkills", e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && applyFilters()}
                   className={inputClass}
                   placeholder="javascript, react"
                 />
@@ -285,8 +286,9 @@ export default function TalentSearchPage() {
               </div>
 
               <div>
-                <label className={labelClass}>college</label>
+                <label htmlFor="college" className={labelClass}>college</label>
                 <input
+                  id="college"
                   type="text"
                   value={filters.college}
                   onChange={(e) => updateFilter("college", e.target.value)}
@@ -296,8 +298,9 @@ export default function TalentSearchPage() {
               </div>
 
               <div>
-                <label className={labelClass}>location</label>
+                <label htmlFor="location" className={labelClass}>location</label>
                 <input
+                  id="location"
                   type="text"
                   value={filters.location}
                   onChange={(e) => updateFilter("location", e.target.value)}
@@ -308,25 +311,35 @@ export default function TalentSearchPage() {
 
               <div>
                 <label className={labelClass}>graduation year</label>
+
                 <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    value={filters.graduationYearMin}
-                    onChange={(e) => updateFilter("graduationYearMin", e.target.value)}
-                    className={inputClass}
-                    placeholder="From"
-                    min={2000}
-                    max={2040}
-                  />
-                  <input
-                    type="number"
-                    value={filters.graduationYearMax}
-                    onChange={(e) => updateFilter("graduationYearMax", e.target.value)}
-                    className={inputClass}
-                    placeholder="To"
-                    min={2000}
-                    max={2040}
-                  />
+                  <div>
+                    <label htmlFor="gradYearMin" className={labelClass}>from</label>
+                    <input
+                      id="gradYearMin"
+                      type="number"
+                      value={filters.graduationYearMin}
+                      onChange={(e) => updateFilter("graduationYearMin", e.target.value)}
+                      className={inputClass}
+                      placeholder="From"
+                      min={2000}
+                      max={2040}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="gradYearMax" className={labelClass}>to</label>
+                    <input
+                      id="gradYearMax"
+                      type="number"
+                      value={filters.graduationYearMax}
+                      onChange={(e) => updateFilter("graduationYearMax", e.target.value)}
+                      className={inputClass}
+                      placeholder="To"
+                      min={2000}
+                      max={2040}
+                    />
+                  </div>
                 </div>
               </div>
 
