@@ -14,6 +14,9 @@ import {
   buildSectionPrompt,
   type RegenerateSectionPromptInput,
 } from "./roadmap.ai.prompts.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("RoadmapAI");
 
 // ── Retry helper ──────────────────────────────────────────────────────────
 const MAX_RETRIES = 2;
@@ -102,7 +105,7 @@ export async function generateAiRoadmap(
         }
       }
     } catch (err) {
-      console.warn("[AiRoadmap] Semantic cache lookup failed, proceeding to Gemini:", err);
+      logger.warn("Semantic cache lookup failed, proceeding to Gemini", err);
     }
   }
 
@@ -126,14 +129,14 @@ export async function generateAiRoadmap(
 
       const result = aiRoadmapSchema.safeParse(parsed);
       if (!result.success) {
-        console.error(`[AiRoadmap] Validation failed (attempt ${attempt + 1})`, result.error.flatten());
+        logger.error(`Validation failed (attempt ${attempt + 1})`, result.error.flatten());
         throw new Error("AI returned an incomplete roadmap."); // retryable
       }
 
       // ── Store in semantic cache (non-blocking) ──
       if (isSemanticCacheEnabled() && cacheEmbedding) {
         storeInCache(cacheEmbedding, result.data).catch((err) =>
-          console.warn("[AiRoadmap] Failed to store in cache:", err)
+          logger.warn("Failed to store in cache", err)
         );
       }
 
@@ -146,7 +149,7 @@ export async function generateAiRoadmap(
       }
 
       if (attempt < MAX_RETRIES) {
-        console.warn(`[AiRoadmap] Attempt ${attempt + 1} failed, retrying in ${BACKOFF_MS[attempt]}ms…`, lastError.message);
+        logger.warn(`Attempt ${attempt + 1} failed, retrying in ${BACKOFF_MS[attempt]}ms…`, lastError.message);
         await sleep(BACKOFF_MS[attempt]);
       }
     }
@@ -251,7 +254,7 @@ export async function regenerateSection(
 
       const result = aiSectionRegenerateSchema.safeParse(parsed);
       if (!result.success) {
-        console.error(`[AiRoadmap] Section regeneration validation failed (attempt ${attempt + 1})`, result.error.flatten());
+        logger.error(`Section regeneration validation failed (attempt ${attempt + 1})`, result.error.flatten());
         throw new Error("AI returned an incomplete section.");
       }
 
@@ -264,7 +267,7 @@ export async function regenerateSection(
       }
 
       if (attempt < MAX_RETRIES) {
-        console.warn(`[AiRoadmap] Section attempt ${attempt + 1} failed, retrying in ${BACKOFF_MS[attempt]}ms…`, lastError.message);
+        logger.warn(`Section attempt ${attempt + 1} failed, retrying in ${BACKOFF_MS[attempt]}ms…`, lastError.message);
         await sleep(BACKOFF_MS[attempt]);
       }
     }
