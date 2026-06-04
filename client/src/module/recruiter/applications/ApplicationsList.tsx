@@ -219,9 +219,11 @@ const handleStatusChange = async (appId: number, status: string) => {
           {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-6">
               <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
+                aria-label="Go to previous page"
                 className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Prev</button>
               <span className="text-sm text-gray-500 dark:text-gray-500">Page {page} of {pagination.totalPages}</span>
               <button onClick={() => setPage(Math.min(pagination.totalPages, page + 1))} disabled={page === pagination.totalPages}
+                aria-label={`Go to next page, page ${page + 1}`}
                 className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Next</button>
             </div>
           )}
