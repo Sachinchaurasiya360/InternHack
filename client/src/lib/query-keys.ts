@@ -2,9 +2,16 @@ export const queryKeys = {
   // Jobs
   jobs: {
     all: ["jobs"] as const,
-    list: (params?: Record<string, string | number>) =>
+    list: (params?: Record<string, string | number | boolean | undefined>) =>
       ["jobs", "list", params] as const,
     detail: (id: string | number) => ["jobs", "detail", id] as const,
+    related: (id: string | number) => ["jobs", "related", id] as const,
+  },
+  // Hackathons
+  hackathons: {
+    all: ["hackathons"] as const,
+    list: () => ["hackathons", "list"] as const,
+    myParticipations: () => ["hackathons", "my-participations"] as const,
   },
 
   // Applications
@@ -21,12 +28,17 @@ export const queryKeys = {
   ats: {
     all: ["ats"] as const,
     usage: () => ["ats", "usage"] as const,
+    history: () => ["ats", "history"] as const,
   },
+  coverLetter: {
+  history: ()           => ["cover-letter", "history"] as const,
+  detail:  (id: number) => ["cover-letter", "detail", id] as const,
+},
 
   // Companies
   companies: {
     all: ["companies"] as const,
-    list: (params?: Record<string, string | number>) =>
+    list: (params?: Record<string, string | number | undefined>) =>
       ["companies", "list", params] as const,
     cities: () => ["companies", "cities"] as const,
     detail: (id: string | number) => ["companies", "detail", id] as const,
@@ -86,6 +98,7 @@ export const queryKeys = {
       ["opensource", "list", params] as const,
     detail: (id: number) => ["opensource", "detail", id] as const,
     myRequests: () => ["opensource", "my-requests"] as const,
+    trend: () => ["opensource", "trend"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
   },
@@ -132,6 +145,15 @@ export const queryKeys = {
     list: (params?: Record<string, string | number>) =>
       ["internships", "list", params] as const,
     stats: () => ["internships", "stats"] as const,
+  },
+
+  // Scraped / external job aggregator
+  scrapedJobs: {
+    all: ["scraped-jobs"] as const,
+    sources: () => ["scraped-jobs", "sources"] as const,
+    list: (params?: Record<string, string | number | undefined>) =>
+      ["scraped-jobs", "list", params] as const,
+    detail: (id: string | number) => ["scraped-jobs", "detail", id] as const,
   },
 
   // Professors
@@ -201,5 +223,20 @@ export const queryKeys = {
     pattern: (name: string, page?: number) => ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
     submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
+    importStatus: () => ["dsa", "import-status"] as const,
+    activity: (year: number) => ["dsa", "activity", year] as const,
+    similar: (id: number) => ["dsa", "similar", id] as const,
+  },
+
+  // Roadmaps
+  roadmaps: {
+    all: ["roadmaps"] as const,
+    list: (params?: Record<string, string | number>) =>
+      ["roadmaps", "list", params] as const,
+    detail: (slug: string) => ["roadmaps", "detail", slug] as const,
+    enrollments: () => ["roadmaps", "enrollments"] as const,
+    enrollmentDetail: (id: number) => ["roadmaps", "enrollment-detail", id] as const,
+    enrollmentAnalytics: (id: number) => ["roadmaps", "enrollment-analytics", id] as const,
+    topic: (slug: string, topicSlug: string) => ["roadmaps", "topic", slug, topicSlug] as const,
   },
 };

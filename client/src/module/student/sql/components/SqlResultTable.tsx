@@ -1,4 +1,5 @@
 import { CheckCircle2, XCircle, Clock, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";             // Fix 3: project Button
 import type { QueryResult } from "../lib/sql-engine";
 import type { ValidationResult } from "../lib/query-validator";
 
@@ -10,6 +11,42 @@ interface SqlResultTableProps {
 }
 
 export default function SqlResultTable({ result, validation, showExpected, expectedOutput }: SqlResultTableProps) {
+  // ── CSV Download ──────────────────────────────────────────────────────────
+
+  // Fix 2: shared escaper applied to BOTH headers and data cells
+  const escapeCSV = (value: string) => `"${value.replace(/"/g, '""')}"`;
+
+  const handleDownloadCSV = () => {
+    if (!result || result.error || result.columns.length === 0) return;
+
+    // Fix 2: headers now go through escapeCSV
+    const headers = result.columns.map(col => escapeCSV(col)).join(',');
+
+    const csvRows = result.rows.map(row =>
+      row.map(cell => {
+        if (cell === null || cell === undefined) return '""';
+        const s = typeof cell === 'object' ? JSON.stringify(cell) : String(cell);
+        return escapeCSV(s);                                 // Fix 2: reuses same escaper
+      }).join(',')
+    );
+
+    // Fix 4: CRLF line endings per RFC 4180
+    const csv = [headers, ...csvRows].join('\r\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = `results_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────
+
   if (!result) {
     return (
       <div className="text-center py-8 text-[11px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
@@ -50,9 +87,36 @@ export default function SqlResultTable({ result, validation, showExpected, expec
             </span>
           )}
         </div>
-        <div className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 tabular-nums">
-          <Clock className="w-3 h-3" />
-          {result.timeMs}ms
+
+        {/* Right side: CSV download + timing */}
+        <div className="flex items-center gap-2">
+          {/* Fix 3: uses project Button component instead of raw <button> */}
+          {!result.error && result.rowCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDownloadCSV}
+              title="Download results as CSV"
+              className="h-6 px-2 text-[10px] font-mono uppercase tracking-widest gap-1.5"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-3 h-3"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              CSV
+            </Button>
+          )}
+
+          <div className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 tabular-nums">
+            <Clock className="w-3 h-3" />
+            {result.timeMs}ms
+          </div>
         </div>
       </div>
 

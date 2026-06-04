@@ -13,6 +13,7 @@ export function VariablesPanel({ vars, flashKeys, title = "variables" }: Variabl
 
   useEffect(() => {
     if (!flashKeys || flashKeys.length === 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFlashing(new Set(flashKeys));
     const t = setTimeout(() => setFlashing(new Set()), 450);
     return () => clearTimeout(t);

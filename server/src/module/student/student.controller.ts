@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { StudentService } from "./student.service.js";
-import { applyToJobSchema, submitRoundSchema } from "./student.validation.js";
+import { applyToJobSchema, submitRoundSchema, mockInterviewFeedbackSchema, updateApplicationNotesSchema } from "./student.validation.js";
 import { prisma } from "../../database/db.js";
 import { getPlanTier } from "../../config/usage-limits.js";
 import { createLogger } from "../../utils/logger.js";
@@ -108,6 +108,23 @@ export class StudentController {
     }
   }
 
+  async generateMockInterviewFeedback(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const result = mockInterviewFeedbackSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+      }
+
+      const feedback = await this.studentService.generateMockInterviewFeedback(result.data.topic, result.data.transcript);
+      return res.status(200).json(feedback);
+    } catch (error) {
+      logger.error("Failed to generate mock interview feedback", error);
+      return res.status(500).json({ message: "Failed to generate feedback" });
+    }
+  }
+
   async getApplicationStatusByJob(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -158,6 +175,27 @@ export class StudentController {
     }
   }
 
+  async deleteExternalApplication(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId) || applicationId <= 0) {
+        return res.status(400).json({ message: "Invalid application ID" });
+      }
+
+      const result = await this.studentService.deleteExternalApplication(applicationId, req.user.id);
+      return res.status(200).json({ message: "External application removed", ...result });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "External application not found") return res.status(404).json({ message: error.message });
+        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+      }
+      logger.error("Failed to delete external application", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   async getExternalApplicationStatus(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -188,6 +226,48 @@ export class StudentController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to get application detail", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async updateApplicationNotes(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId)) return res.status(400).json({ message: "Invalid application ID" });
+
+      const result = updateApplicationNotesSchema.safeParse(req.body);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+
+      const updated = await this.studentService.updateApplicationNotes(applicationId, req.user.id, result.data.notes);
+      return res.status(200).json({ notes: updated.studentNotes ?? "", updatedAt: updated.updatedAt });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Application not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      logger.error("Failed to update application notes", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async updateExternalApplicationNotes(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId)) return res.status(400).json({ message: "Invalid application ID" });
+
+      const result = updateApplicationNotesSchema.safeParse(req.body);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+
+      const updated = await this.studentService.updateExternalApplicationNotes(applicationId, req.user.id, result.data.notes);
+      return res.status(200).json({ notes: updated.studentNotes ?? "", updatedAt: updated.updatedAt });
+    } catch (error) {
+      if (error instanceof Error && error.message === "External application not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      logger.error("Failed to update external application notes", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -254,5 +334,42 @@ export class StudentController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  async downloadCalendarEvent(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId)) return res.status(400).json({ message: "Invalid ID" });
+
+      const type = req.query["type"] as string;
+      const roundIdParam = req.query["roundId"] as string;
+      
+      if (type !== "deadline" && type !== "round") {
+        return res.status(400).json({ message: "Invalid event type" });
+      }
+
+      const eventData = await this.studentService.getCalendarEventData(applicationId, req.user.id, type, roundIdParam ? parseInt(roundIdParam, 10) : undefined);
+      
+      const { generateICS } = await import("../../utils/calendar.utils.js");
+      const icsContent = generateICS(eventData);
+
+      res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename="event.ics"`);
+      return res.send(icsContent);
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "Application not found" || error.message === "Round not found" || error.message === "Event not found") {
+           return res.status(404).json({ message: error.message });
+        }
+        if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "Missing roundId") return res.status(400).json({ message: error.message });
+        if (error.message === "Round has no schedule") return res.status(400).json({ message: error.message });
+      }
+      logger.error("Failed to generate calendar event", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
 
 }

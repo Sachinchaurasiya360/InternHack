@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { DsaService } from "./dsa.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
+import { syncLeetCodeSolvedProblems } from "./leetcode.service.js";
 
 export class DsaController {
   constructor(private dsaService: DsaService) {}
@@ -20,7 +21,7 @@ export class DsaController {
 
   async getTopicBySlug(req: Request, res: Response, next: NextFunction) {
     try {
-      const { slug } = req.params;
+      const slug = req.params.slug as string;
       const studentId = req.user?.id;
       const { page, limit } = parsePagination(req, { defaultLimit: 50 });
       const difficulty = req.query.difficulty as string | undefined;
@@ -34,7 +35,7 @@ export class DsaController {
 
   async getProblemBySlug(req: Request, res: Response, next: NextFunction) {
     try {
-      const { slug } = req.params;
+      const slug = req.params.slug as string;
       const studentId = req.user?.id;
       const problem = await this.dsaService.getProblemBySlug(slug, studentId);
       res.json(problem);
@@ -47,7 +48,7 @@ export class DsaController {
     try {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
-      const problemId = parseInt(req.params.problemId);
+      const problemId = parseInt(req.params.problemId as string);
       const result = await this.dsaService.toggleProblem(userId, problemId);
       res.json(result);
     } catch (err) {
@@ -59,7 +60,7 @@ export class DsaController {
     try {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
-      const problemId = parseInt(req.params.problemId);
+      const problemId = parseInt(req.params.problemId as string);
       const { notes } = req.body;
       const result = await this.dsaService.updateNotes(userId, problemId, notes ?? "");
       res.json(result);
@@ -72,11 +73,48 @@ export class DsaController {
     try {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
-      const problemId = parseInt(req.params.problemId);
+      const problemId = parseInt(req.params.problemId as string);
       const result = await this.dsaService.toggleBookmark(userId, problemId);
       res.json(result);
     } catch (err) {
       next(err);
+    }
+  }
+
+  async reportProblem(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+      }
+
+      const problemId = Number(req.params.problemId);
+
+      if (Number.isNaN(problemId)) {
+        return res.status(400).json({
+          message: "Invalid problem ID",
+        });
+      }
+
+      const { reason, message } = req.body;
+
+      if (!reason) {
+        return res.status(400).json({
+          message: "Reason is required",
+        });
+      }
+
+      const report = await this.dsaService.reportProblem({
+        userId: req.user.id,
+        problemId,
+        reason,
+        message,
+      });
+
+      res.status(201).json(report);
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -102,7 +140,7 @@ export class DsaController {
 
   async getCompanyProblems(req: Request, res: Response, next: NextFunction) {
     try {
-      const { company } = req.params;
+      const company = req.params.company as string;
       const studentId = req.user?.id;
       const { page, limit } = parsePagination(req, { defaultLimit: 50 });
       const result = await this.dsaService.getCompanyProblems(company, studentId, page, limit);
@@ -123,7 +161,7 @@ export class DsaController {
 
   async getPatternProblems(req: Request, res: Response, next: NextFunction) {
     try {
-      const { pattern } = req.params;
+      const pattern = req.params.pattern as string;
       const studentId = req.user?.id;
       const { page, limit } = parsePagination(req, { defaultLimit: 50 });
       const result = await this.dsaService.getPatternProblems(pattern, studentId, page, limit);
@@ -158,7 +196,7 @@ export class DsaController {
     try {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
-      const problemId = parseInt(req.params.problemId);
+      const problemId = parseInt(req.params.problemId as string);
       if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
       const { language, code } = req.body;
       const result = await this.dsaService.executeCodeAgainstTestCases(userId, problemId, language, code);
@@ -172,10 +210,91 @@ export class DsaController {
     try {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
-      const problemId = parseInt(req.params.problemId);
+      const problemId = parseInt(req.params.problemId as string);
       if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
       const history = await this.dsaService.getSubmissionHistory(userId, problemId);
       res.json(history);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async syncLeetCode(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const { leetcodeUsername } = req.body;
+      if (!leetcodeUsername) { res.status(400).json({ message: "LeetCode username is required" }); return; }
+      const result = await syncLeetCodeSolvedProblems(userId, leetcodeUsername);
+      res.json({
+        success: true,
+        message: `Successfully synced ${result.syncedCount} problems from LeetCode.`,
+        data: result,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getActivity(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+
+      const currentYear = new Date().getUTCFullYear();
+      const year = req.query.year ? parseInt(req.query.year as string, 10) : currentYear;
+      if (!Number.isInteger(year) || year < 1970 || year > currentYear) {
+        res.status(400).json({ message: "Invalid year" });
+        return;
+      }
+
+      const activity = await this.dsaService.getActivity(userId, year);
+
+      if (year < currentYear) {
+        res.setHeader("Cache-Control", "private, max-age=31536000");
+      } else {
+        res.setHeader("Cache-Control", "private, max-age=600");
+      }
+
+      res.json(activity);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getDailyProblem(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      const dailyProblem = await this.dsaService.getDailyProblem(userId);
+      res.json(dailyProblem);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getUserDsaStreak(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
+      const streak = await this.dsaService.getUserDsaStreak(userId);
+      res.json(streak);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getSimilarProblems(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(req.params.id as string, 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 3, 1), 10);
+      const data = await this.dsaService.getSimilarProblems(id, limit);
+      res.json(data);
     } catch (err) {
       next(err);
     }

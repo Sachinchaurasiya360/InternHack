@@ -1,14 +1,13 @@
 import "dotenv/config";
-import crypto from "crypto";
-import express from "express";
 import compression from "compression";
-
+import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import { createRateLimitStore } from "./utils/rate-limit-store.js";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
 import { recruiterRouter } from "./module/recruiter/recruiter.routes.js";
@@ -31,6 +30,7 @@ import { ycRouter } from "./module/yc/yc.routes.js";
 import { dsaRouter } from "./module/dsa/dsa.routes.js";
 import { aptitudeRouter } from "./module/aptitude/aptitude.routes.js";
 import { sqlRouter } from "./module/sql/sql.routes.js";
+import { interviewProgressRouter } from "./module/interview-progress/interview-progress.routes.js";
 import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { professorRouter } from "./module/professor/professor.routes.js";
@@ -52,20 +52,32 @@ import { onboardingRouter } from "./module/onboarding/onboarding.routes.js";
 import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
+import { contactRouter } from "./module/contact/contact.routes.js";
+// import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
 import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
+import { recommendationRouter } from "./module/recommendation/recommendation.routes.js";
+import { learnRouter } from "./module/learn/learn.routes.js";
+import { healthRouter } from "./module/health/health.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
-import { startFollowUpCron } from "./cron/scheduled-emails.js";
-import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
-import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
-import { startScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
+import { startFollowUpCron, stopFollowUpCron } from "./cron/scheduled-emails.js";
+import { startAIPipelineCrons, stopAIPipelineCrons } from "./cron/internhack-ai.cron.js";
+import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
+import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
+import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
+import { shutdownManager } from "./utils/graceful-shutdown.js";
+import { redis } from "./config/redis.js";
+import { createLogger } from "./utils/logger.js";
+
+const logger = createLogger("Index");
+
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -79,15 +91,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 process.on("unhandledRejection", (reason) => {
-  console.error("[process] unhandledRejection:", reason);
+  logger.error("unhandledRejection:", reason);
 });
 process.on("uncaughtException", (err) => {
-  console.error("[process] uncaughtException:", err);
+  logger.error("uncaughtException:", err);
+  if (!shutdownManager.isShutdown()) {
+    process.exit(1);
+  }
 });
 
 const app = express();
 app.set("trust proxy", 1);
 const PORT = process.env["PORT"] || 3000;
+const PAYMENT_WEBHOOK_PATH = "/api/payments/webhook";
 
 // ── Security headers ──
 app.use(
@@ -98,8 +114,8 @@ app.use(
         scriptSrc: ["'self'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
-        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com"],
-        frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com"],
+        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com", "https://intern-hack-prod-bucket.s3.ap-south-1.amazonaws.com"],
+        frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com", "blob:"],
         fontSrc: ["'self'", "https:", "data:"],
       },
     },
@@ -142,12 +158,14 @@ app.use((req, res, next) => {
 app.use(compression());
 
 // ── Health check ──
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", uptime: process.uptime() });
-});
+app.use("/api/health", healthRouter);
 
+// Raw body for webhooks (must be BEFORE express.json())
+app.use("/api/email-inbound/webhook", express.raw({ type: "application/json" }));
 // Raw body for Dodo Payments webhook (must be BEFORE express.json())
-app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
+app.use(PAYMENT_WEBHOOK_PATH, express.raw({ type: "application/json" }));
+// Larger body parser for DSA CSV import (must be BEFORE the global parser)
+app.use("/api/dsa/import/csv", express.json({ limit: "6mb" }));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -170,6 +188,11 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  store: createRateLimitStore("global"),
+  skip: (req) => {
+    const path = req.originalUrl.split("?")[0];
+    return path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook";
+  },
   message: { message: "Too many requests, please try again later" },
 });
 app.use("/api/", globalLimiter);
@@ -177,6 +200,7 @@ app.use("/api/", globalLimiter);
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
+  store: createRateLimitStore("auth"),
   message: { message: "Too many login attempts, please try again later" },
 });
 app.use("/api/auth/login", authLimiter);
@@ -186,6 +210,7 @@ app.use("/api/admin/login", authLimiter);
 const latexLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
+  store: createRateLimitStore("latex"),
   message: { message: "LaTeX compilation limit reached. Try again later." },
 });
 app.use("/api/latex/compile", latexLimiter);
@@ -194,6 +219,7 @@ app.use("/api/latex/compile", latexLimiter);
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobRouter);
 app.use("/api/recruiter", recruiterRouter);
+app.use("/api/student/recommendations", recommendationRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/scraped-jobs", scraperRouter);
@@ -211,6 +237,7 @@ app.use("/api/yc", ycRouter);
 app.use("/api/dsa", dsaRouter);
 app.use("/api/aptitude", aptitudeRouter);
 app.use("/api/sql", sqlRouter);
+app.use("/api/interview-progress", interviewProgressRouter);
 app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/professors", professorRouter);
@@ -240,7 +267,11 @@ app.use("/api/hr/analytics", hrAnalyticsRouter);
 app.use("/api/email-inbound", emailInboundRouter);
 app.use("/api/milestones", milestoneRouter);
 app.use("/api/roadmaps", roadmapRouter);
+app.use("/api/learn", learnRouter);
 
+// Contact form (public, no auth)
+app.use("/api/contact", contactRouter);
+// app.use("/api/hackathons", hackathonRouter);
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
 // Public ingest endpoint, external websites POST jobs here with API key
@@ -283,29 +314,109 @@ app.get("/api/stats", async (_req, res) => {
 
 app.use(errorMiddleware);
 
-app.listen(PORT, async () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+const server = app.listen(PORT, async () => {
+  logger.info(`Server running on http://localhost:${PORT}`);
+
+  // Attach server to shutdown manager
+  shutdownManager.attachServer(server);
 
   // Load AI service provider configs into memory
-  await initServiceProviders().catch((err) => console.error("[AI] Failed to init providers:", err));
+  await initServiceProviders().catch((err) => logger.error("Failed to init AI providers:", err));
 
   // Start the job scraper cron (every 6 hours)
   const cronSchedule = process.env["SCRAPER_CRON"] || "0 */6 * * *";
   scraperController.getService().startCron(cronSchedule);
+  shutdownManager.register({
+    name: "Scraper Cron",
+    priority: 10,
+    fn: () => scraperController.getService().stopCron(),
+  });
 
   // Start the funding signals ingest cron (offset 30 min from scraper)
   const signalsSchedule = process.env["SIGNALS_CRON"] || "30 */6 * * *";
   signalsController.getService().startCron(signalsSchedule);
+  shutdownManager.register({
+    name: "Signals Cron",
+    priority: 10,
+    fn: () => signalsController.getService().stopCron(),
+  });
 
   // Start the 10-day follow-up email cron (daily at 9 AM)
   startFollowUpCron();
+  shutdownManager.register({
+    name: "FollowUp Cron",
+    priority: 10,
+    fn: () => stopFollowUpCron(),
+  });
 
   // Start subscription expiry cron (daily at midnight)
   startSubscriptionExpiryCron();
+  shutdownManager.register({
+    name: "Subscription Expiry Cron",
+    priority: 10,
+    fn: () => stopSubscriptionExpiryCron(),
+  });
 
   // Start InternHack AI pipeline crons
   startAIPipelineCrons();
+  shutdownManager.register({
+    name: "AI Pipeline Crons",
+    priority: 10,
+    fn: () => stopAIPipelineCrons(),
+  });
 
   // Start the scheduled-email worker (drains roadmap day-10, future digests)
   startScheduledEmailWorker();
+  shutdownManager.register({
+    name: "Scheduled Email Worker",
+    priority: 10,
+    fn: () => stopScheduledEmailWorker(),
+  });
+
+  // Start weekly roadmap progress digests from one owner only in production.
+  const runWeeklyDigestCron =
+    process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_WEEKLY_ROADMAP_DIGEST_CRON"] !== "false");
+  if (runWeeklyDigestCron) {
+    startWeeklyRoadmapDigestCron();
+    shutdownManager.register({
+      name: "Roadmap Weekly Digest Cron",
+      priority: 10,
+      fn: () => stopWeeklyRoadmapDigestCron(),
+    });
+  } else {
+    logger.info("Weekly digest cron disabled on this process");
+  }
+
+  // Register Redis disconnect
+  if (redis) {
+    shutdownManager.register({
+      name: "Redis Disconnect",
+      priority: 20,
+      fn: async () => {
+        await redis!.quit();
+        logger.info("Redis Disconnected");
+      },
+    });
+  }
+
+  // Register Prisma disconnect
+  shutdownManager.register({
+    name: "Prisma Disconnect",
+    priority: 20,
+    fn: async () => {
+      await prisma.$disconnect();
+      logger.info("Prisma Disconnected");
+    },
+  });
+
+  // Install signal handlers after all hooks are registered
+  shutdownManager.installSignalHandlers();
 });
+
+
+
+app.get("/", (req, res) => {
+  res.send("Server Running Successfully");
+});
+

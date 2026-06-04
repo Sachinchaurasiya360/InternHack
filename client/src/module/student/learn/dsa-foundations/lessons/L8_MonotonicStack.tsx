@@ -348,8 +348,10 @@ function MonotonicViz({ frame, A: arr, mode }: { frame: Frame; A: number[]; mode
 function VisualizeTab() {
   const [mode, setMode] = useState<Mode>("nge");
   const [inputStr, setInputStr] = useState("2,1,2,4,3,1");
-  const Arr = parseArr(inputStr) ?? [2, 1, 2, 4, 3, 1];
-  const frames = useMemo(() => (mode === "nge" ? buildFramesNGE(Arr) : buildFramesLRH(Arr)), [Arr, mode]);
+  const frames = useMemo(() => {
+    const Arr = parseArr(inputStr) ?? [2, 1, 2, 4, 3, 1];
+    return mode === "nge" ? buildFramesNGE(Arr) : buildFramesLRH(Arr);
+  }, [inputStr, mode]);
   const player = useStepPlayer(frames);
   const frame = player.current;
   const pseudo = mode === "nge" ? PSEUDO_NGE : PSEUDO_LRH;
@@ -399,7 +401,7 @@ function VisualizeTab() {
       variables={<VariablesPanel vars={frame?.vars ?? {}} flashKeys={frame?.flashKey ? [frame.flashKey] : []} />}
     >
       {frame ? (
-        <MonotonicViz frame={frame} A={Arr} mode={mode} />
+        <MonotonicViz frame={frame} A={parseArr(inputStr) ?? [2, 1, 2, 4, 3, 1]} mode={mode} />
       ) : (
         <Callout>Press play to step through the algorithm.</Callout>
       )}

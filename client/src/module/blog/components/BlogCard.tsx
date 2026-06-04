@@ -2,32 +2,8 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Clock, Eye, User, Calendar } from "lucide-react";
 
-export type BlogCategory =
-  | "CAREER_ADVICE"
-  | "INTERVIEW_TIPS"
-  | "SALARY_GUIDE"
-  | "INDUSTRY_INSIGHTS"
-  | "RESUME_TIPS"
-  | "TECH_TRENDS";
+import type { BlogPost, BlogCategory } from "@/lib/types";
 
-export interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  category: BlogCategory;
-  tags: string[];
-  author: { id: number; name: string; profilePic?: string };
-  status: "DRAFT" | "PUBLISHED";
-  featuredImage?: string;
-  readingTime: number;
-  viewCount: number;
-  isFeatured: boolean;
-  publishedAt?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
 
 const CATEGORY_LABELS: Record<BlogCategory, string> = {
   CAREER_ADVICE: "Career Advice",
@@ -70,7 +46,7 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ post, index = 0 }: BlogCardProps) {
-  const cat = CATEGORY_COLORS[post.category] ?? { bg: "bg-gray-100", text: "text-gray-700" };
+  const cat = CATEGORY_COLORS[post.category] ?? { bg: "bg-stone-100", text: "text-stone-700" };
   const gradient = GRADIENT_FALLBACKS[post.id % GRADIENT_FALLBACKS.length];
 
   return (
@@ -83,7 +59,7 @@ export default function BlogCard({ post, index = 0 }: BlogCardProps) {
     >
       <Link
         to={`/blog/${post.slug}`}
-        className="group relative flex flex-col h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 hover:shadow-lg hover:shadow-gray-100 dark:hover:shadow-black/20 transition-all duration-300 no-underline overflow-hidden"
+        className="group relative flex flex-col h-full bg-white dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-white/10 hover:shadow-2xl hover:shadow-lime-400/5 hover:border-lime-400/30 transition-all duration-300 no-underline overflow-hidden"
       >
         {/* Image */}
         <div className="relative h-48 overflow-hidden">
@@ -94,7 +70,7 @@ export default function BlogCard({ post, index = 0 }: BlogCardProps) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${gradient} opacity-80`} />
+            <div className={`w-full h-full bg-linear-to-br ${gradient} opacity-80`} />
           )}
           {/* Category badge */}
           <span
@@ -106,21 +82,21 @@ export default function BlogCard({ post, index = 0 }: BlogCardProps) {
 
         {/* Content */}
         <div className="flex flex-col flex-1 p-5">
-          <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 leading-snug line-clamp-2 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+          <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-2 leading-snug line-clamp-2 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors">
             {post.title}
           </h3>
 
-          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 leading-relaxed mb-4 flex-1">
+          <p className="text-sm text-stone-500 dark:text-stone-400 line-clamp-3 leading-relaxed mb-4 flex-1">
             {post.excerpt}
           </p>
 
           {/* Meta */}
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800">
-            <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+          <div className="flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/10">
+            <div className="flex items-center gap-2 text-xs text-stone-400 dark:text-stone-500">
               <User className="w-3.5 h-3.5" />
-              <span className="font-medium text-gray-600 dark:text-gray-400">{post.author.name}</span>
+              <span className="font-medium text-stone-600 dark:text-stone-400">{post.author.name}</span>
             </div>
-            <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+            <div className="flex items-center gap-3 text-xs text-stone-400 dark:text-stone-500">
               <span className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {formatDate(post.publishedAt ?? post.createdAt)}

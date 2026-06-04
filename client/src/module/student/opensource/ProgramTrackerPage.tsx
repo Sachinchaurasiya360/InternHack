@@ -1,18 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search,
-  ExternalLink,
-  GraduationCap,
-  ChevronDown,
-  ChevronUp,
-  Globe,
-  DollarSign,
-  Calendar,
-  Users,
-  CheckCircle2,
-  X,
-  Filter,
+  Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
+  Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 
@@ -41,6 +31,8 @@ interface Program {
   requirements: string[];
   timeline: { phase: string; dates: string }[];
   howToApply: string[];
+  applicationStart?: string;
+  applicationDeadline?: string;
 }
 
 const PROGRAMS: Program[] = [
@@ -91,6 +83,7 @@ const PROGRAMS: Program[] = [
       "Write a detailed proposal (problem statement, timeline, milestones)",
       "Submit via the GSoC portal before the deadline",
     ],
+    applicationDeadline: "2026-04-19T23:59:00Z",
   },
   {
     id: 2,
@@ -136,6 +129,7 @@ const PROGRAMS: Program[] = [
       "Complete any take-home tasks if requested",
       "Wait for mentor selection notification",
     ],
+    applicationDeadline: "2026-05-15T23:59:00Z",
   },
   {
     id: 3,
@@ -234,9 +228,10 @@ const PROGRAMS: Program[] = [
       "Fill in the initial application during the open window",
       "Get accepted for the contribution period",
       "Make contributions to 1–2 projects during the contribution period",
-      "Record your contributions in the Outreachy portal",
       "Submit a final application with your contribution summary",
     ],
+    applicationStart: "2026-02-06T16:00:00Z",
+    applicationDeadline: "2026-02-13T16:00:00Z",
   },
   {
     id: 5,
@@ -549,12 +544,9 @@ const PROGRAMS: Program[] = [
   },
 ];
 
-const ELIGIBILITY_OPTIONS = [
-  "All",
-  "Students",
-  "Open to All",
-  "Diversity-focused",
-];
+const STORAGE_KEY = "program_tracker_filters";
+
+const ELIGIBILITY_OPTIONS = ["All", "Students", "Open to All", "Diversity-focused"];
 const STATUS_OPTIONS = ["All", "Annual", "Ongoing", "Batch"];
 const STIPEND_OPTIONS = [
   "All",
@@ -612,6 +604,31 @@ function getCountdown(
   }
   return null;
 }
+const getGoogleCalendarUrl = (program: Program) => {
+  if (!program.applicationDeadline) return "";
+
+  const endDateObj = new Date(program.applicationDeadline);
+  if (isNaN(endDateObj.getTime())) return "";
+
+  let startDateObj = program.applicationStart ? new Date(program.applicationStart) : null;
+  if (!startDateObj || isNaN(startDateObj.getTime())) {
+    startDateObj = new Date(endDateObj.getTime() - 60 * 60 * 1000); // Default to 1 hour before deadline
+  }
+
+  const pad = (n: number) => (n < 10 ? "0" + n : n);
+  const formatUTC = (d: Date) => 
+    `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
+
+  const startDate = formatUTC(startDateObj);
+  const endDate = formatUTC(endDateObj);
+
+  const text = encodeURIComponent(`${program.name} Application`);
+  const details = encodeURIComponent(`Apply here: ${program.website}`);
+  
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${startDate}/${endDate}&details=${details}`;
+};
+
+// ─── Program Card ─────────────────────────────────────────────
 function ProgramCard({ program }: { program: Program }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -728,14 +745,23 @@ function ProgramCard({ program }: { program: Program }) {
             {expanded ? "Less details" : "Full details"}
           </Button>
           <div className="flex gap-2">
-            <a
-              href={program.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 no-underline transition-colors"
-            >
-              <Globe className="w-3 h-3" /> Website{" "}
-              <ExternalLink className="w-3 h-3 opacity-60" />
+            {program.applicationDeadline ? (
+              <a 
+                href={getGoogleCalendarUrl(program)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer no-underline"
+              >
+                <CalendarPlus className="w-3 h-3" /> Add to Calendar
+              </a>
+            ) : (
+              <div className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-800">
+                <Calendar className="w-3 h-3" /> Deadline: TBA
+              </div>
+            )}
+            <a href={program.website} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 no-underline transition-colors">
+              <Globe className="w-3 h-3" /> Website <ExternalLink className="w-3 h-3 opacity-60" />
             </a>
             <a
               href={program.applyUrl}
@@ -827,10 +853,48 @@ function ProgramCard({ program }: { program: Program }) {
 
 // ─── Page ────────────────────────────────────────────────────────
 export default function ProgramTrackerPage() {
+  // Load saved filters from localStorage on mount, fall back to defaults
+  const getSavedFilters = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === "object") {
+        return {
+          status: STATUS_OPTIONS.includes(parsed.status) ? parsed.status : "All",
+          eligibility: ELIGIBILITY_OPTIONS.includes(parsed.eligibility) ? parsed.eligibility : "All",
+          stipend: STIPEND_OPTIONS.includes(parsed.stipend) ? parsed.stipend : "All",
+        };
+      }
+    }
+  } catch {
+    // ignore errors
+  }
+  return { status: "All", eligibility: "All", stipend: "All" };
+};
+
+  const savedFilters = getSavedFilters();
+
   const [search, setSearch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("All");
-  const [selectedEligibility, setSelectedEligibility] = useState("All");
-  const [selectedStipend, setSelectedStipend] = useState("All");
+  const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
+  const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
+  const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          status: selectedStatus,
+          eligibility: selectedEligibility,
+          stipend: selectedStipend,
+        })
+      );
+    } catch {
+      // ignore storage errors
+    }
+  }, [selectedStatus, selectedEligibility, selectedStipend]);
 
   const filtered = useMemo(() => {
     let list = [...PROGRAMS];

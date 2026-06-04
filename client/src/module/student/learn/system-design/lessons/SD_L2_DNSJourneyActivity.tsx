@@ -56,6 +56,7 @@ function DNSAnimation() {
 
   useEffect(() => {
     if (!playing) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (step >= STEPS.length - 1) { setPlaying(false); return; }
     const t = setTimeout(() => setStep((s) => s + 1), 1700);
     return () => clearTimeout(t);

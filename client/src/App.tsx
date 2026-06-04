@@ -5,6 +5,9 @@ import toast, { Toaster } from "./components/ui/toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
+import BackToTopButton from "./components/common/BackToTopButton";
+import ScrollToTop from "./components/common/ScrollToTop";
+const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
 function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
   return lazy(() =>
@@ -65,6 +68,7 @@ const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
 const PrivacyPage = lazyWithRetry(() => import("./module/legal/PrivacyPage"));
 const ShippingPage = lazyWithRetry(() => import("./module/legal/ShippingPage"));
 const ContactPage = lazyWithRetry(() => import("./module/legal/ContactPage"));
+const AboutPage = lazyWithRetry(() => import("./module/legal/AboutPage"));
 const RefundPage = lazyWithRetry(() => import("./module/legal/RefundPage"));
 
 // Student pages
@@ -154,8 +158,8 @@ const DataAnalyticsSectionPage = lazyWithRetry(() => import("./module/student/da
 const DataAnalyticsLessonDetailPage = lazyWithRetry(() => import("./module/student/data-analytics/DataAnalyticsLessonDetailPage"));
 
 // Recruiter auth pages
-const RecruiterLoginPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterLoginPage"));
-const RecruiterRegisterPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterRegisterPage"));
+// Redirected to unified auth pages
+
 
 // Recruiter pages
 const RecruiterLayout = lazyWithRetry(() => import("./module/recruiter/RecruiterLayout"));
@@ -306,9 +310,11 @@ function AuthExpiredRedirect() {
 function App() {
   return (
     <>
+      <ScrollToTop />
       <AuthExpiredRedirect />
       <Toaster />
       <ErrorBoundary>
+      <BackToTopButton />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           {/* Public routes */}
@@ -327,11 +333,15 @@ function App() {
           <Route path="/companies" element={<CompanyListOrRedirect />} />
           <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
           <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
-          <Route path="/ats-score" element={<PublicAtsPage />} />
-          <Route path="/grants" element={<GrantsPage />} />
+
+
+ <Route path="/ats-score" element={<PublicAtsPage />} />
+<Route path="/grants" element={<GrantsPage />} />
+
+
           <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
-          <Route path="/recruiter/login" element={<RecruiterLoginPage />} />
-          <Route path="/recruiter/register" element={<RecruiterRegisterPage />} />
+          <Route path="/recruiter/login" element={<Navigate to="/login?role=RECRUITER" replace />} />
+          <Route path="/recruiter/register" element={<Navigate to="/register?role=RECRUITER" replace />} />
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
           {/* Roadmaps (public + auth) */}
           <Route path="/roadmaps" element={<RoadmapsLandingPage />} />
@@ -342,12 +352,14 @@ function App() {
           <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
           <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
           <Route path="/blog" element={<BlogListPage />} />
+          <Route path="/contributors" element={<ContributorsPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
           {/* Legal Pages */}
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/shipping" element={<ShippingPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/refund" element={<RefundPage />} />
           {/* Learning Hub - all learning content under /learn */}
           <Route path="/learn" element={<LearnLayout />}>

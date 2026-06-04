@@ -2,7 +2,9 @@ import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const FROM = () => process.env.EMAIL_FROM || "InternHack <onboarding@resend.dev>";
+const TEST_FROM = "onboarding@resend.dev";
+const DEFAULT_TEST_TO = "delivered@resend.dev";
+const FROM = () => process.env.EMAIL_FROM || TEST_FROM;
 
 export interface EmailAttachment {
   filename: string;
@@ -14,20 +16,51 @@ export async function sendEmail(options: {
   to: string;
   subject: string;
   html: string;
+  text?: string;
   attachments?: EmailAttachment[];
-}): Promise<void> {
+}): Promise<boolean> {
   if (!resend) {
     console.warn(`[Email] RESEND_API_KEY not set — skipping email "${options.subject}" to ${options.to}`);
-    return;
+    
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`\n==================================================`);
+      console.log(`[Email Dev Fallback] To: ${options.to}`);
+      console.log(`[Email Dev Fallback] Subject: ${options.subject}`);
+
+      // Parse individual digits from styled OTP cells (e.g. <td>8</td>)
+      const cellMatches = [...options.html.matchAll(/>(\d)<\/td>/g)];
+      if (cellMatches.length === 6) {
+        const otpCode = cellMatches.map((m) => m[1]).join("");
+        console.log(`[Email Dev Fallback] OTP Code Found: ${otpCode}`);
+      } else {
+        const otpMatch = options.html.match(/\b\d{6}\b/);
+        if (otpMatch) {
+          console.log(`[Email Dev Fallback] OTP Code Found: ${otpMatch[0]}`);
+        }
+      }
+      console.log(`==================================================\n`);
+    }
+    return false;
   }
   console.log(`[Email] Sending "${options.subject}" to ${options.to}`);
   try {
+    const from = FROM();
+    const to =
+      from === TEST_FROM && process.env.NODE_ENV !== "production"
+        ? process.env.RESEND_TEST_TO || DEFAULT_TEST_TO
+        : options.to;
+    if (to !== options.to) {
+      console.warn(`[Email] Using test recipient ${to} for Resend sandbox send`);
+    }
     const payload: Parameters<typeof resend.emails.send>[0] = {
-      from: FROM(),
-      to: options.to,
+      from,
+      to,
       subject: options.subject,
       html: options.html,
     };
+    if (options.text) {
+      payload.text = options.text;
+    }
     if (options.attachments && options.attachments.length > 0) {
       payload.attachments = options.attachments.map((a) => ({
         filename: a.filename,
@@ -36,7 +69,12 @@ export async function sendEmail(options: {
       }));
     }
     const result = await resend.emails.send(payload);
+    if (result.error) {
+      console.error("[Email] Failed to send:", result.error);
+      throw new Error(JSON.stringify(result.error));
+    }
     console.log("[Email] Sent successfully:", JSON.stringify(result));
+    return true;
   } catch (err) {
     console.error("[Email] Failed to send:", err);
     throw err;

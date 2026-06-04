@@ -1,6 +1,10 @@
 import { prisma } from "../../database/db.js";
 import { slugify } from "../../utils/slug.utils.js";
-import type { Prisma, BadgeCategory } from "@prisma/client";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+import type { Prisma, BadgeCategory, badge } from "@prisma/client";
+
+const BADGES_CACHE_KEY = "badges:active";
+const BADGES_TTL = 300; // 5 minutes
 
 interface CreateBadgeInput {
   name: string;
@@ -53,7 +57,7 @@ export class BadgeService {
       slug = `${slug}-${Date.now()}`;
     }
 
-    return prisma.badge.create({
+    const created = await prisma.badge.create({
       data: {
         name: input.name,
         slug,
@@ -64,6 +68,8 @@ export class BadgeService {
         isActive: input.isActive ?? true,
       },
     });
+    await cacheDel(BADGES_CACHE_KEY);
+    return created;
   }
 
   async updateBadge(id: number, input: UpdateBadgeInput) {
@@ -86,14 +92,18 @@ export class BadgeService {
     }
     if (input.isActive !== undefined) data.isActive = input.isActive;
 
-    return prisma.badge.update({ where: { id }, data });
+    const updated = await prisma.badge.update({ where: { id }, data });
+    await cacheDel(BADGES_CACHE_KEY);
+    return updated;
   }
 
   async deleteBadge(id: number) {
     const badge = await prisma.badge.findUnique({ where: { id } });
     if (!badge) throw new Error("Badge not found");
 
-    return prisma.badge.delete({ where: { id } });
+    const deleted = await prisma.badge.delete({ where: { id } });
+    await cacheDel(BADGES_CACHE_KEY);
+    return deleted;
   }
 
   async listAllBadges(page: number, limit: number) {
@@ -123,125 +133,140 @@ export class BadgeService {
     trigger: string,
     context?: Record<string, unknown>,
   ): Promise<{ name: string; slug: string; category: string }[]> {
-    // 1. Get all active badges
-    const activeBadges = await prisma.badge.findMany({
-      where: { isActive: true },
-    });
+    // 1. Load active badges from cache (populated once, invalidated on admin CRUD)
+    let activeBadges = await cacheGet<badge[]>(BADGES_CACHE_KEY);
+    if (!activeBadges) {
+      activeBadges = await prisma.badge.findMany({ where: { isActive: true } });
+      await cacheSet(BADGES_CACHE_KEY, activeBadges, BADGES_TTL);
+    }
 
-    // 2. Get student's already-earned badge IDs
+    // 2. Load earned badge IDs for this student
     const earnedBadges = await prisma.studentBadge.findMany({
       where: { studentId },
       select: { badgeId: true },
     });
     const earnedIds = new Set(earnedBadges.map((b) => b.badgeId));
 
+    // 3. Filter to only uneearned badges for this trigger — no DB work if none match
+    const relevant = activeBadges.filter((b) => {
+      if (earnedIds.has(b.id)) return false;
+      const c = b.criteria as { type?: string } | null;
+      return c?.type === trigger;
+    });
+    if (relevant.length === 0) return [];
+
+    // 4. Pre-hoist all counts needed for this trigger (at most 2 queries, regardless of badge count)
+    type CriteriaCtx = {
+      verified?: number;
+      appCount?: number;
+      total?: number;
+      shareCount?: number;
+      solved?: number;
+      profileUser?: {
+        name: string | null;
+        bio: string | null;
+        college: string | null;
+        skills: string[];
+        linkedinUrl: string | null;
+        githubUrl: string | null;
+        profilePic: string | null;
+        contactNo: string | null;
+      } | null;
+    };
+    const ctx: CriteriaCtx = {};
+
+    switch (trigger) {
+      case "skill_test_pass":
+        ctx.verified = await prisma.verifiedSkill.count({ where: { studentId } });
+        break;
+      case "first_application":
+        ctx.appCount = await prisma.application.count({ where: { studentId } });
+        break;
+      case "job_apply": {
+        const [internal, external] = await Promise.all([
+          prisma.application.count({ where: { studentId } }),
+          prisma.externalJobApplication.count({ where: { studentId } }),
+        ]);
+        ctx.total = internal + external;
+        break;
+      }
+      case "interview_share":
+        ctx.shareCount = await prisma.interviewExperience.count({ where: { userId: studentId } });
+        break;
+      case "dsa_solve":
+        ctx.solved = await prisma.studentDsaProgress.count({ where: { studentId, solved: true } });
+        break;
+      case "profile_complete":
+        ctx.profileUser = await prisma.user.findUnique({
+          where: { id: studentId },
+          select: {
+            name: true,
+            bio: true,
+            college: true,
+            skills: true,
+            linkedinUrl: true,
+            githubUrl: true,
+            profilePic: true,
+            contactNo: true,
+          },
+        });
+        break;
+    }
+
+    // 5. Evaluate each badge using pre-fetched data — zero additional DB queries
+    const toAward: number[] = [];
     const newlyAwarded: { name: string; slug: string; category: string }[] = [];
 
-    for (const badge of activeBadges) {
-      // 3. Skip if already earned
-      if (earnedIds.has(badge.id)) continue;
-
-      const criteria = badge.criteria as { type?: string; params?: Record<string, unknown> } | null;
-      if (!criteria || !criteria.type) continue;
-
-      // Only process badges whose criteria type matches the trigger
-      if (criteria.type !== trigger) continue;
-
-      const params = criteria.params ?? {};
-
-      // 4. Check criteria
+    for (const b of relevant) {
+      const criteria = b.criteria as { type?: string; params?: Record<string, unknown> } | null;
+      const params = criteria?.params ?? {};
       let earned = false;
 
       switch (trigger) {
-        case "skill_test_pass": {
-          const requiredCount = (params["count"] as number) || 1;
-          const verifiedCount = await prisma.verifiedSkill.count({
-            where: { studentId },
-          });
-          earned = verifiedCount >= requiredCount;
+        case "skill_test_pass":
+          earned = (ctx.verified ?? 0) >= ((params["count"] as number) || 1);
           break;
-        }
-
-        case "first_application": {
-          const appCount = await prisma.application.count({
-            where: { studentId },
-          });
-          earned = appCount >= 1;
+        case "first_application":
+          earned = (ctx.appCount ?? 0) >= 1;
           break;
-        }
-
-        case "job_apply": {
-          const requiredCount = (params["count"] as number) || 1;
-          const [internal, external] = await Promise.all([
-            prisma.application.count({ where: { studentId } }),
-            prisma.externalJobApplication.count({ where: { studentId } }),
-          ]);
-          earned = internal + external >= requiredCount;
+        case "job_apply":
+          earned = (ctx.total ?? 0) >= ((params["count"] as number) || 1);
           break;
-        }
-
-        case "interview_share": {
-          const requiredCount = (params["count"] as number) || 1;
-          const shareCount = await prisma.interviewExperience.count({
-            where: { userId: studentId },
-          });
-          earned = shareCount >= requiredCount;
+        case "interview_share":
+          earned = (ctx.shareCount ?? 0) >= ((params["count"] as number) || 1);
           break;
-        }
-
-        case "dsa_solve": {
-          const requiredCount = (params["count"] as number) || 1;
-          const solvedCount = await prisma.studentDsaProgress.count({
-            where: { studentId, solved: true },
-          });
-          earned = solvedCount >= requiredCount;
+        case "dsa_solve":
+          earned = (ctx.solved ?? 0) >= ((params["count"] as number) || 1);
           break;
-        }
-
         case "profile_complete": {
-          const user = await prisma.user.findUnique({
-            where: { id: studentId },
-            select: {
-              name: true,
-              bio: true,
-              college: true,
-              skills: true,
-              linkedinUrl: true,
-              githubUrl: true,
-              profilePic: true,
-              contactNo: true,
-            },
-          });
-          if (user) {
+          const u = ctx.profileUser;
+          if (u) {
             earned =
-              !!user.name &&
-              !!user.bio &&
-              !!user.college &&
-              user.skills.length > 0 &&
-              !!user.linkedinUrl &&
-              !!user.githubUrl &&
-              !!user.profilePic &&
-              !!user.contactNo;
+              !!u.name &&
+              !!u.bio &&
+              !!u.college &&
+              u.skills.length > 0 &&
+              !!u.linkedinUrl &&
+              !!u.githubUrl &&
+              !!u.profilePic &&
+              !!u.contactNo;
           }
           break;
         }
       }
 
-      // 5. Award if earned
       if (earned) {
-        try {
-          await prisma.studentBadge.create({
-            data: { studentId, badgeId: badge.id },
-          });
-          newlyAwarded.push({
-            name: badge.name,
-            slug: badge.slug,
-            category: badge.category,
-          });
-        } catch {
-          // Unique constraint violation - already earned (race condition), skip
-        }
+        toAward.push(b.id);
+        newlyAwarded.push({ name: b.name, slug: b.slug, category: b.category });
       }
+    }
+
+    // 6. Batch-award all earned badges in a single query, skipping any race-condition duplicates
+    if (toAward.length > 0) {
+      await prisma.studentBadge.createMany({
+        data: toAward.map((badgeId) => ({ studentId, badgeId })),
+        skipDuplicates: true,
+      });
     }
 
     return newlyAwarded;

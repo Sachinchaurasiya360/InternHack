@@ -6,16 +6,16 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
-  Copy,
-  Check,
   ExternalLink,
   Lightbulb,
   Info,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { CodeBlock } from "../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/open-source-guide.json";
+import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource { title: string; url: string; type: string }
@@ -25,6 +25,7 @@ interface Step {
   id: string;
   title: string;
   description: string;
+  estimatedMinutes?: number;
   mentor_guidance: string;
   details: string[];
   commands: Command[];
@@ -45,34 +46,6 @@ function getCompleted(): Set<string> {
   }
 }
 
-// ─── Code Block ────────────────────────────────────────────────
-function CodeBlock({ code, label }: { code: string; label?: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{label ?? "Command"}</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={copy}
-          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-        >
-          {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? "Copied" : "Copy"}
-        </Button>
-      </div>
-      <pre className="p-4 overflow-x-auto bg-gray-950 text-gray-100 text-sm leading-relaxed">
-        <code>{code}</code>
-      </pre>
-    </div>
-  );
-}
 
 // ─── Page ──────────────────────────────────────────────────────
 export default function FirstPRSectionPage() {
@@ -87,17 +60,25 @@ export default function FirstPRSectionPage() {
     setCompleted((prev) => {
       const next = new Set(prev);
       if (!step) return next;
-      next.has(step.id) ? next.delete(step.id) : next.add(step.id);
+      if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
       return next;
     });
   }, [step]);
 
+  // ---> FIX: Define variables and call hook BEFORE the early return <---
+  const prev = stepIndex > 0 ? STEPS[stepIndex - 1] : null;
+  const next = stepIndex < STEPS.length - 1 ? STEPS[stepIndex + 1] : null;
+
+  useKeyboardNavigation({
+    prevPath: prev ? `/student/opensource/first-pr/${prev.id}` : null,
+    nextPath: next ? `/student/opensource/first-pr/${next.id}` : null,
+  });
+
+  // ---> The guard is now safely below all hook calls <---
   if (!step) return <Navigate to="/student/opensource/first-pr" replace />;
 
   const isDone = completed.has(step.id);
-  const prev = stepIndex > 0 ? STEPS[stepIndex - 1] : null;
-  const next = stepIndex < STEPS.length - 1 ? STEPS[stepIndex + 1] : null;
 
   return (
     <div className="relative pb-12">
@@ -129,6 +110,8 @@ export default function FirstPRSectionPage() {
               <h1 className="font-display text-xl font-bold text-gray-950 dark:text-white truncate">
                 {step.title}
               </h1>
+              {step.estimatedMinutes && (<span className="text-xs font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>)
+              }
               {isDone && (
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 mt-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
@@ -193,7 +176,7 @@ export default function FirstPRSectionPage() {
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white">Code Examples</h2>
             {step.commands.map((cmd, i) => (
-              <CodeBlock key={i} code={cmd.code} label={cmd.label} />
+              <CodeBlock key={`${step.id}-${cmd.label || i}`} code={cmd.code} label={cmd.label} language="bash" />
             ))}
           </motion.div>
         )}
@@ -286,41 +269,43 @@ export default function FirstPRSectionPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.35 }}
-          className="flex items-center justify-between pt-2"
+          className="flex items-center justify-between sticky bottom-0 sm:static bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10 shadow-[0_-4px_8px_rgba(0,0,0,0.05)] px-4 py-3 -mx-4"
         >
-          <Button
-            variant={isDone ? "ghost" : "mono"}
-            onClick={toggleComplete}
-            className={
-              isDone
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-xl"
-                : "rounded-xl"
-            }
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            {isDone ? "Completed" : "Mark as Complete"}
-          </Button>
-
-          {next ? (
+          <div className="flex items-center justify-between">
             <Button
-              variant="outline"
-              onClick={() => navigate(`/student/opensource/first-pr/${next.id}`)}
-              className="group text-gray-600 dark:text-gray-400 rounded-xl"
+              variant={isDone ? "ghost" : "mono"}
+              onClick={toggleComplete}
+              className={
+                isDone
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-xl"
+                  : "rounded-xl"
+              }
             >
-              Next Section
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <CheckCircle2 className="w-4 h-4" />
+              {isDone ? "Completed" : "Mark as Complete"}
             </Button>
-          ) : (
-            <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
-              <Link
-                to="/student/opensource/first-pr"
-                className="no-underline"
+
+            {next ? (
+              <Button
+                variant="outline"
+                onClick={() => navigate(`/student/opensource/first-pr/${next.id}`)}
+                className="group text-gray-600 dark:text-gray-400 rounded-xl"
               >
-                Back to Overview
+                Next Section
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </Button>
-          )}
+              </Button>
+            ) : (
+              <Button asChild variant="outline" className="group text-gray-600 dark:text-gray-400 rounded-xl">
+                <Link
+                  to="/student/opensource/first-pr"
+                  className="no-underline"
+                >
+                  Back to Overview
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </Button>
+            )}
+          </div>
         </motion.div>
       </div>
     </div>
