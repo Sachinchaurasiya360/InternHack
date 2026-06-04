@@ -254,6 +254,7 @@ export class RecruiterController {
       if (error instanceof Error) {
         if (error.message === "Application not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message.startsWith("Evaluation score")) return res.status(400).json({ message: error.message });
       }
       logger.error("Failed to evaluate submission", error);
       return res.status(500).json({ message: "Internal Server Error" });

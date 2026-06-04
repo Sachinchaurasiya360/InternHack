@@ -6,8 +6,15 @@ const mocks = vi.hoisted(() => ({
       findUnique: vi.fn(),
     },
     application: {
+      findUnique: vi.fn(),
       findMany: vi.fn(),
       count: vi.fn(),
+    },
+    round: {
+      findUnique: vi.fn(),
+    },
+    roundSubmission: {
+      update: vi.fn(),
     },
   },
   s3Utils: {
@@ -131,6 +138,73 @@ describe("RecruiterService - getApplications", () => {
         where: expect.objectContaining({
           jobId,
           status: "APPLIED",
+        }),
+      })
+    );
+  });
+});
+
+describe("RecruiterService - evaluateSubmission", () => {
+  const service = new RecruiterService();
+  const applicationId = 100;
+  const roundId = 200;
+  const recruiterId = 10;
+  const jobId = 300;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.prisma.application.findUnique.mockResolvedValue({
+      id: applicationId,
+      jobId,
+      job: { recruiterId },
+    });
+    mocks.prisma.round.findUnique.mockResolvedValue({
+      jobId,
+      evaluationCriteria: [
+        { id: "communication", criterion: "Communication", maxScore: 10 },
+        { id: "technical", criterion: "Technical", maxScore: 20 },
+      ],
+    });
+    mocks.prisma.roundSubmission.update.mockResolvedValue({
+      id: 1,
+      applicationId,
+      roundId,
+      status: "COMPLETED",
+    });
+  });
+
+  it("rejects evaluation scores above the criterion maxScore", async () => {
+    await expect(
+      service.evaluateSubmission(applicationId, roundId, recruiterId, {
+        communication: { score: 11 },
+      })
+    ).rejects.toThrow("Evaluation score for communication cannot exceed maxScore 10");
+
+    expect(mocks.prisma.roundSubmission.update).not.toHaveBeenCalled();
+  });
+
+  it("allows evaluation scores equal to the criterion maxScore", async () => {
+    await service.evaluateSubmission(
+      applicationId,
+      roundId,
+      recruiterId,
+      {
+        communication: { score: 10, comment: "Clear answers" },
+        technical: { score: 20 },
+      },
+      "Strong candidate"
+    );
+
+    expect(mocks.prisma.roundSubmission.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { applicationId_roundId: { applicationId, roundId } },
+        data: expect.objectContaining({
+          evaluationScores: {
+            communication: { score: 10, comment: "Clear answers" },
+            technical: { score: 20 },
+          },
+          recruiterNotes: "Strong candidate",
+          status: "COMPLETED",
         }),
       })
     );
