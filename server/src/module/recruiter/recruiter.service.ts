@@ -46,10 +46,10 @@ interface ApplicationFilter {
   search?: string | undefined;
 }
 
-
 type UpdateRoundData = {
   [K in keyof CreateRoundData]?: CreateRoundData[K] | undefined;
 };
+
 export class RecruiterService {
   // ==================== ROUND MANAGEMENT ====================
 
@@ -276,14 +276,17 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const previousStatus = application.status;
+    // Fix for #1111: Prevent duplicate status updates and emails
+    if (application.status === status) {
+      return application;
+    }
 
     const updated = await prisma.application.update({
       where: { id: applicationId },
       data: { status },
     });
 
-    if (previousStatus !== status && isEmailableStatus(status) && application.student.email) {
+    if (isEmailableStatus(status) && application.student.email) {
       const clientUrl = process.env["CLIENT_URL"] || "https://www.internhack.xyz";
       const html = applicationStatusEmailHtml({
         studentName: application.student.name,
@@ -392,10 +395,20 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+    // Fix for #1116: Gracefully catch malformed JSON data during evaluation
+    let parsedScores;
+    try {
+      parsedScores = JSON.parse(JSON.stringify(evaluationScores));
+    } catch (error) {
+      const err = new Error("Invalid JSON format in evaluation data");
+      (err as any).status = 422;
+      throw err;
+    }
+
     return prisma.roundSubmission.update({
       where: { applicationId_roundId: { applicationId, roundId } },
       data: {
-        evaluationScores: JSON.parse(JSON.stringify(evaluationScores)),
+        evaluationScores: parsedScores,
         recruiterNotes: recruiterNotes ?? null,
         evaluatedAt: new Date(),
         status: "COMPLETED",
