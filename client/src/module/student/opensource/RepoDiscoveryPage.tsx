@@ -15,6 +15,7 @@ import {
   Code2,
   Wand2,
   Flame,
+  Zap,
   ArrowRight,
   BookOpen,
   AlertCircle,
@@ -54,6 +55,7 @@ export default function RepoDiscoveryPage() {
   const sortKey = searchParams.get("sort") || "stars";
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
+  const newThisWeek = searchParams.get("newThisWeek") === "true";
 
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
@@ -187,7 +189,12 @@ export default function RepoDiscoveryPage() {
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
   }, [languagesData]);
 
-  const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
+  const repos = useMemo(() => {
+    const allRepos = data?.repos ?? [];
+    if (!newThisWeek) return allRepos;
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return allRepos.filter((r) => new Date(r.createdAt).getTime() > weekAgo);
+  }, [data?.repos, newThisWeek]);
   const pagination = data?.pagination;
 
   const stats = useMemo(() => {
@@ -403,6 +410,20 @@ export default function RepoDiscoveryPage() {
           >
             <Flame className="w-3 h-3" />
             Trending
+          </button>
+
+          {/* New this week toggle */}
+          <button
+            type="button"
+            onClick={() => updateFilter("newThisWeek", newThisWeek ? "" : "true")}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              newThisWeek
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+            }`}
+          >
+            <Zap className="w-3 h-3" />
+            New this week
           </button>
 
           {/* More filters toggle */}

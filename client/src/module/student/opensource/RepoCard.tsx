@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, GitFork, CircleDot, Flame, ArrowRight } from "lucide-react";
+import { Star, GitFork, CircleDot, Flame, ArrowRight, Zap } from "lucide-react";
 import type { OpenSourceRepo } from "../../../lib/types";
 import { LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
@@ -16,6 +16,7 @@ const MAX_STAGGER_INDEX = 8;
 export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: RepoCardProps) {
   const badge = difficultyBadge(repo.difficulty);
   const delay = Math.min(index, MAX_STAGGER_INDEX) * 0.04;
+  const isNew = Date.now() - new Date(repo.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000;
 
   return (
     <motion.div
@@ -34,6 +35,12 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
           <div className="absolute -top-2 right-4 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
             <Flame size={10} aria-hidden />
             trending
+          </div>
+        )}
+        {isNew && (
+          <div className="absolute -top-2 left-4 inline-flex items-center gap-1 rounded-md bg-lime-400 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-stone-950">
+            <Zap size={10} aria-hidden />
+            new
           </div>
         )}
 
