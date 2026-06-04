@@ -106,11 +106,12 @@ function mockCacheMiss() {
 
 function mockValidPdf(text = VALID_RESUME_TEXT) {
   vi.mocked(PDFParse).mockImplementation(
-    () =>
-      ({
+    function () {
+      return {
         getText: vi.fn().mockResolvedValue({ text }),
         destroy: vi.fn().mockResolvedValue(undefined),
-      }) as any,
+      } as any;
+    }
   );
 }
 
@@ -183,11 +184,12 @@ describe("AtsService", () => {
       mockUserOwnsResume();
       mockCacheMiss();
       vi.mocked(PDFParse).mockImplementation(
-        () =>
-          ({
+        function () {
+          return {
             getText: vi.fn().mockResolvedValue({ text: "too short" }),
             destroy: vi.fn().mockResolvedValue(undefined),
-          }) as any,
+          } as any;
+        }
       );
 
       await expect(
@@ -466,11 +468,12 @@ describe("AtsService", () => {
     it("throws when PDF text extraction yields insufficient content", async () => {
       mockUserOwnsResume();
       vi.mocked(PDFParse).mockImplementation(
-        () =>
-          ({
+        function () {
+          return {
             getText: vi.fn().mockResolvedValue({ text: "tiny" }),
             destroy: vi.fn().mockResolvedValue(undefined),
-          }) as any,
+          } as any;
+        }
       );
 
       await expect(
