@@ -68,7 +68,7 @@ export abstract class BaseSignalSource {
     else if (unit === "m" || unit === "million") multiplier = 1_000_000n;
     else if (unit === "b" || unit === "billion") multiplier = 1_000_000_000n;
 
-    return BigInt(Math.round(num)) * multiplier;
+    return BigInt(Math.round(num * Number(multiplier)));
   }
 
   /**
