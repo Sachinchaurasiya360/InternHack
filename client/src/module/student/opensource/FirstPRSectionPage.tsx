@@ -16,6 +16,7 @@ import { CodeBlock } from "../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/open-source-guide.json";
 import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
+import { ReadingProgressBar } from "../../../components/ReadingProgressBar";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource { title: string; url: string; type: string }
@@ -82,6 +83,7 @@ export default function FirstPRSectionPage() {
 
   return (
     <div className="relative pb-12">
+      <ReadingProgressBar />
       <SEO
         title={`${step.title} - First PR Guide`}
         description={step.description || `Learn ${step.title} in our step-by-step first pull request guide.`}
@@ -157,7 +159,7 @@ export default function FirstPRSectionPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6"
+            className="rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/10 p-6"
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white mb-4">Explanation</h2>
             <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
@@ -172,7 +174,7 @@ export default function FirstPRSectionPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15 }}
-            className="space-y-4"
+            className="rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/30 dark:bg-indigo-900/10 p-6 space-y-4"
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white">Code Examples</h2>
             {step.commands.map((cmd, i) => (
@@ -187,11 +189,11 @@ export default function FirstPRSectionPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="rounded-2xl border border-white/60 dark:border-gray-700/40 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl p-6 shadow-sm"
+            className="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10 p-6"
           >
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gray-100/80 dark:bg-gray-800/60 flex items-center justify-center backdrop-blur-sm">
-                <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
               <h3 className="text-sm font-bold text-gray-950 dark:text-white">Important Notes</h3>
             </div>
@@ -212,11 +214,11 @@ export default function FirstPRSectionPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.25 }}
-            className="rounded-2xl border border-white/60 dark:border-gray-700/40 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl p-6 shadow-sm"
+            className="rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10 p-6"
           >
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gray-100/80 dark:bg-gray-800/60 flex items-center justify-center backdrop-blur-sm">
-                <Lightbulb className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center ">
+                <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               </div>
               <h3 className="text-sm font-bold text-gray-950 dark:text-white">Pro Tips</h3>
             </div>
@@ -237,11 +239,11 @@ export default function FirstPRSectionPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
-            className="rounded-2xl border border-white/60 dark:border-gray-700/40 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl p-6 shadow-sm"
+            className="rounded-2xl border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-900/10 p-6"
           >
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gray-100/80 dark:bg-gray-800/60 flex items-center justify-center backdrop-blur-sm">
-                <ExternalLink className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <div className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                <ExternalLink className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
               <h3 className="text-sm font-bold text-gray-950 dark:text-white">Resources</h3>
             </div>
@@ -271,7 +273,7 @@ export default function FirstPRSectionPage() {
           transition={{ duration: 0.4, delay: 0.35 }}
           className="flex items-center justify-between sticky bottom-0 sm:static bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10 shadow-[0_-4px_8px_rgba(0,0,0,0.05)] px-4 py-3 -mx-4"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between w-full">
             <Button
               variant={isDone ? "ghost" : "mono"}
               onClick={toggleComplete}

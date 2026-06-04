@@ -15,6 +15,10 @@ export class OpensourceController {
   async getLanguages(req: Request, res: Response, next: NextFunction) {
     try {
       const languages = await service.getLanguages();
+
+      // cache for 1 hour, allow stale data for 24 hours while revalidating
+      res.setHeader( "Cache-Control", "public, max-age=3600, stale-while-revalidate=86400" );
+
       res.json({ languages });
     } catch (err) {
       next(err);

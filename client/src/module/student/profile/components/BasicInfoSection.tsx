@@ -63,7 +63,7 @@ export function BasicInfoSection({
             type="tel"
             value={contactNo}
             onChange={(e) => {
-              const val = e.target.value.replace(/[^\d\s+\-]/g, "");
+              const val = e.target.value.replace(/[^\d\s+-]/g, "");
               onChange("contactNo", val);
             }}
             className={fieldErrors.contactNo ? inputErrorClass : inputClass}

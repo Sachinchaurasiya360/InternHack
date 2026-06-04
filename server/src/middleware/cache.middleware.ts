@@ -8,7 +8,15 @@ export const cacheMiddleware = (ttl: number = 300, keyPrefix: string = "cache") 
     if (req.method !== "GET") {
       return next();
     }
-    const key = `${keyPrefix}:${req.originalUrl || req.url}`;
+
+    // Include user ID in cache key for authenticated requests to prevent
+    // data leakage between users with identical endpoints but different auth context
+    let key = keyPrefix;
+    if ((req as any).user && (req as any).user.id) {
+      key += `:user:${(req as any).user.id}`;
+    }
+    key += `:${req.originalUrl || req.url}`;
+
     const cachedResponse = appCache.get(key);
 
     if (cachedResponse !== undefined) {

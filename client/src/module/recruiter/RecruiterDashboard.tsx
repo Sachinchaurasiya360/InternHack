@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -16,9 +16,9 @@ import {
   CircleDashed,
   UserCheck,
   MinusCircle,
+  RefreshCw,
 } from "lucide-react";
 import api from "../../lib/axios";
-import { LoadingScreen } from "../../components/LoadingScreen";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { SEO } from "../../components/SEO";
 import { Button } from "../../components/ui/button";
@@ -45,15 +45,27 @@ function RecruiterDashboardInner() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api
-      .get("/recruiter/dashboard")
-      .then((res) => {
-        setData(res.data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+  const fetchDashboard = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/recruiter/dashboard");
+      setData(res.data);
+    } catch {
+      setData(prev => prev ?? null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
+
+  useEffect(() => {
+    const onFocus = () => fetchDashboard();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [fetchDashboard]);
 
   if (loading) return <DashboardSkeleton />;
 
@@ -121,6 +133,9 @@ function RecruiterDashboardInner() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Button variant="secondary" size="md" onClick={fetchDashboard} aria-label="Refresh dashboard">
+              <RefreshCw className="w-3.5 h-3.5" />
+            </Button>
             <Button asChild variant="secondary" size="md">
               <Link to="/recruiters/jobs" className="no-underline">
                 My jobs
@@ -319,7 +334,7 @@ function RecruiterDashboardInner() {
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
                       <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
-                        {renderStatusIcon(status)}
+                        {renderStatusIcon(app.status)}
                         {humanizeStatus(app.status)}
                       </span>
                       <span className="text-[11px] font-mono text-stone-400 tabular-nums">

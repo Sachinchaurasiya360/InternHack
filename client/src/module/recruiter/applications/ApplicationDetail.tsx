@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import toast from "../../../components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, Download, CheckCircle, XCircle, Clock, FileText, ShieldCheck } from "lucide-react";
@@ -16,20 +17,57 @@ export default function ApplicationDetail() {
   const [evaluatingRoundId, setEvaluatingRoundId] = useState<number | null>(null);
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
 
-  const fetchDetail = useCallback(() => {
-    api.get(`/recruiter/applications/${applicationId}`).then((res) => {
+  const fetchDetail = useCallback(async () => {
+    try {
+      const res = await api.get(
+        `/recruiter/applications/${applicationId}`
+      );
       setApplication(res.data.application);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    } catch (err: any) {
+      console.error(err);
+    }
   }, [applicationId]);
 
-  useEffect(() => { fetchDetail(); }, [fetchDetail]);
+  useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+
+        const res = await api.get(
+          `/recruiter/applications/${applicationId}`,
+          { signal: controller.signal }
+        );
+
+        if (isMounted) {
+          setApplication(res.data.application);
+        }
+      } catch (err: any) {
+        if (err.name !== "CanceledError" && err.name !== "AbortError") {
+          console.error(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [applicationId]);
 
   useEffect(() => {
     if (application?.student?.id) {
       api.get(`/skill-tests/verified/${application.student.id}`)
         .then((res) => setVerifiedSkills(res.data.verifiedSkills || []))
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [application?.student?.id]);
 
@@ -37,8 +75,9 @@ export default function ApplicationDetail() {
     try {
       await api.patch(`/recruiter/applications/${applicationId}/advance`);
       fetchDetail();
+      toast.success("Application advanced");
     } catch {
-      alert("Failed to advance");
+      toast.error("Failed to advance");
     }
   };
 
@@ -46,8 +85,9 @@ export default function ApplicationDetail() {
     try {
       await api.patch(`/recruiter/applications/${applicationId}/status`, { status });
       fetchDetail();
+      toast.success("Status updated");
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 

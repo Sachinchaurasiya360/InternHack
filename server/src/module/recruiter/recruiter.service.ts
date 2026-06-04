@@ -102,10 +102,10 @@ function validateEvaluationScores(
     }
   }
 }
-
 type UpdateRoundData = {
   [K in keyof CreateRoundData]?: CreateRoundData[K] | undefined;
 };
+
 export class RecruiterService {
   // ==================== ROUND MANAGEMENT ====================
 
@@ -351,14 +351,18 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const previousStatus = application.status;
+    // Fix for #1111: Prevent duplicate status updates and emails
+    if (application.status === status) {
+      const { job: _job, student: _student, ...current } = application;
+      return current;
+    }
 
     const updated = await prisma.application.update({
       where: { id: applicationId },
       data: { status },
     });
 
-    if (previousStatus !== status && isEmailableStatus(status) && application.student.email) {
+    if (isEmailableStatus(status) && application.student.email) {
       const clientUrl = process.env["CLIENT_URL"] || "https://www.internhack.xyz";
       const html = applicationStatusEmailHtml({
         studentName: application.student.name,
@@ -474,6 +478,16 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+// Fix for #1116: Gracefully catch malformed JSON data during evaluation
+    let parsedScores;
+    try {
+      parsedScores = JSON.parse(JSON.stringify(evaluationScores));
+    } catch (error) {
+      const err = new Error("Invalid JSON format in evaluation data");
+      (err as any).status = 422;
+      throw err;
+    }
+
     if (application.status === "WITHDRAWN") {
       throw new Error(
         "Withdrawn applications cannot participate in the hiring process"
@@ -487,12 +501,11 @@ export class RecruiterService {
     });
 
     if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
-    validateEvaluationScores(evaluationScores, round.evaluationCriteria);
-    
+    validateEvaluationScores(parsedScores, round.evaluationCriteria);
     return prisma.roundSubmission.update({
       where: { applicationId_roundId: { applicationId, roundId } },
       data: {
-        evaluationScores: JSON.parse(JSON.stringify(evaluationScores)),
+        evaluationScores: parsedScores,
         recruiterNotes: recruiterNotes ?? null,
         evaluatedAt: new Date(),
         status: "COMPLETED",
@@ -536,7 +549,7 @@ export class RecruiterService {
         student: { applications: { some: { job: { recruiterId } } } },
       },
       _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
+      orderBy: [{ _count: { id: "desc" } }, { skillName: "asc" }],
       take: 5,
     });
 
@@ -583,6 +596,9 @@ export class RecruiterService {
       statusCounts[s.status] = s._count.id;
     }
 
+    const hiredCount = statusCounts["HIRED"] || 0;
+    const conversionRate = totalApplications === 0 ? 0 : (hiredCount / totalApplications) * 100;
+
     const roundAnalytics = rounds.map((round) => {
       const completed = round.roundSubmissions.filter((s) => s.status === "COMPLETED").length;
       const inProgress = round.roundSubmissions.filter((s) => s.status === "IN_PROGRESS").length;
@@ -605,6 +621,8 @@ export class RecruiterService {
       totalApplications,
       statusBreakdown: statusCounts,
       roundAnalytics,
+      hiredCount,
+      conversionRate,
     };
   }
 
@@ -795,6 +813,7 @@ export class RecruiterService {
     });
     return count;
   }
+<<<<<<< HEAD
 
   async updateBulkApplicationStatus(applicationIds: number[], status: any) {
     return await prisma.application.updateMany({
@@ -809,3 +828,6 @@ export class RecruiterService {
     });
   }
 }
+=======
+}
+>>>>>>> a131e38609f5ee143e7e1ac5ca6df4115c8154d2
