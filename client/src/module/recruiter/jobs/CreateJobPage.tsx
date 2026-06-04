@@ -9,6 +9,7 @@ import { RoundsManager } from "../rounds/RoundsManager";
 import type { CustomFieldDefinition } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import toast from "../../../components/ui/toast";
 
 interface RoundInput {
   name: string;
@@ -57,6 +58,7 @@ export default function CreateJobPage() {
   const canAdvance = stepIdx === 0 ? basicsComplete : true;
 
   const handleSubmit = async () => {
+    if (loading) return;
     setError("");
     setLoading(true);
 
@@ -68,7 +70,7 @@ export default function CreateJobPage() {
         salary: form.salary,
         company: form.company,
         deadline: form.deadline ? new Date(form.deadline).toISOString() : undefined,
-        tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        tags: [...new Set(form.tags.split(",").map((t) => t.trim()).filter(Boolean))],
         customFields,
         status: "DRAFT",
       });
@@ -88,6 +90,7 @@ export default function CreateJobPage() {
         });
       }
 
+      toast.success("Job created successfully");
       navigate("/recruiters/jobs");
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string; errors?: { fieldErrors?: Record<string, string[]> } } } };
@@ -276,7 +279,7 @@ export default function CreateJobPage() {
                       className={inputClass()}
                     />
                   </Field>
-                  <Field label="Salary" htmlFor="salary">
+                  <Field label="Salary" htmlFor="salary" hint="e.g. 15k-25k / month or ₹10 LPA">
                     <input
                       id="salary"
                       type="text"
@@ -305,6 +308,7 @@ export default function CreateJobPage() {
                       type="date"
                       value={form.deadline}
                       onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+                      min={new Date().toISOString().split("T")[0]}
                       className={inputClass()}
                     />
                   </Field>

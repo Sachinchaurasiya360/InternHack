@@ -30,6 +30,7 @@ jobs:
               'level:',       // owned by difficulty.yml
               'type:',        // owned by type-labeler.yml
               'quality:',     // owned by quality-labeler.yml
+              'scope:',       // owned by scope-labeller.yml
               'gssoc:',       // owned by pr-auto-assign.yml
               'mentor:',      // managed manually by mentors
             ];
