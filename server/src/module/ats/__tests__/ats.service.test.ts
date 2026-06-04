@@ -91,6 +91,7 @@ const MOCK_ATS_ROW = {
   rawResponse: {},
   createdAt: new Date("2024-01-15T10:00:00Z"),
   updatedAt: new Date("2024-01-15T10:00:00Z"),
+  student: null,
 };
 
 // ─── Setup helpers ────────────────────────────────────────────────────────────
@@ -333,9 +334,9 @@ describe("AtsService", () => {
       vi.mocked(getProviderForService).mockReturnValue({
         generateText: vi.fn().mockResolvedValue({ text: outOfRangeJson }),
       } as any);
-      vi.mocked(prisma.atsScore.create).mockImplementation(
-        async (args) =>
-          ({ ...MOCK_ATS_ROW, overallScore: (args.data as any).overallScore }) as any,
+      (vi.mocked(prisma.atsScore.create) as any).mockImplementation(
+        async (args: any) =>
+          ({ ...MOCK_ATS_ROW, overallScore: args.data.overallScore }),
       );
 
       const result = await service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL });
@@ -354,9 +355,9 @@ describe("AtsService", () => {
       vi.mocked(getProviderForService).mockReturnValue({
         generateText: vi.fn().mockResolvedValue({ text: noCategoryJson }),
       } as any);
-      vi.mocked(prisma.atsScore.create).mockImplementation(
-        async (args) =>
-          ({ ...MOCK_ATS_ROW, categoryScores: (args.data as any).categoryScores }) as any,
+      (vi.mocked(prisma.atsScore.create) as any).mockImplementation(
+        async (args: any) =>
+          ({ ...MOCK_ATS_ROW, categoryScores: args.data.categoryScores }),
       );
 
       const result = await service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL });
@@ -381,9 +382,9 @@ describe("AtsService", () => {
       vi.mocked(getProviderForService).mockReturnValue({
         generateText: vi.fn().mockResolvedValue({ text: tooManyJson }),
       } as any);
-      vi.mocked(prisma.atsScore.create).mockImplementation(
-        async (args) =>
-          ({ ...MOCK_ATS_ROW, suggestions: (args.data as any).suggestions }) as any,
+      (vi.mocked(prisma.atsScore.create) as any).mockImplementation(
+        async (args: any) =>
+          ({ ...MOCK_ATS_ROW, suggestions: args.data.suggestions }),
       );
 
       const result = await service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL });

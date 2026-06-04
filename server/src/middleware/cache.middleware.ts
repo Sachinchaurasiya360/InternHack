@@ -12,14 +12,16 @@ export const appCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
  * - User-specific data: 5 minutes
  * - Rarely changing data (FAQs): 24 hours
  */
-export const cacheMiddleware = () => {
+export const cacheMiddleware = (ttl?: number, keyPrefix?: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (req.method !== "GET") {
       return next();
     }
 
-    // Get endpoint-specific cache configuration
-    const cacheConfig = getCacheConfig(req.originalUrl || req.url);
+    // Use explicit TTL/key if provided (backward-compat), otherwise use config
+    const cacheConfig = ttl !== undefined
+      ? { ttl, key: keyPrefix ?? "cache", private: false }
+      : getCacheConfig(req.originalUrl || req.url);
 
     // Don't cache private (user-specific) endpoints unless authenticated
     if (cacheConfig.private && !(req as any).user) {
@@ -44,7 +46,6 @@ export const cacheMiddleware = () => {
     const originalJson = res.json;
     res.json = function (data) {
       if (res.statusCode >= 200 && res.statusCode < 300 && !res.locals["skipCache"]) {
-        // Use endpoint-specific TTL from configuration
         appCache.set(key, data, cacheConfig.ttl);
       }
       res.setHeader("X-Cache", "MISS");
