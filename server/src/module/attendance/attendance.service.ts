@@ -129,6 +129,12 @@ export class AttendanceService {
     const date = new Date(data.date);
     date.setHours(0, 0, 0, 0);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date > today) {
+      throw new Error("Cannot regularize attendance for future dates");
+    }
+
     const checkIn = new Date(data.checkIn);
     const checkOut = new Date(data.checkOut);
     const workHours = (checkOut.getTime() - checkIn.getTime()) / 3600000;
