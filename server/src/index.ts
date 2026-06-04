@@ -87,6 +87,18 @@ for (const key of REQUIRED_ENV) {
   }
 }
 
+// ── Enforce Redis in production ──
+// Without REDIS_URL, rate limiters use per-process MemoryStore which is
+// trivially bypassable when multiple instances run behind a load balancer.
+if (process.env["NODE_ENV"] === "production" && !process.env["REDIS_URL"]) {
+  throw new Error(
+    "REDIS_URL is required in production. " +
+    "In-memory rate-limit stores are per-process and unsafe behind a load balancer. " +
+    "Set REDIS_URL or use NODE_ENV=development for local testing.",
+  );
+}
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

@@ -5,6 +5,7 @@ import { createLogger } from "../../utils/logger.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 import { clearCache } from "../../middleware/cache.middleware.js";
 import { cacheDelPattern } from "../../utils/cache.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 
 const logger = createLogger("AdminController");
 import {
@@ -1099,28 +1100,44 @@ export class AdminController {
         return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
       }
       const isTest = !!result.data.testEmail;
-      if (!isTest) {
-        let acquired = false;
-        await withAdvisoryLock("broadcast-email", async () => {
-          acquired = true;
-          const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
-          res.status(200).json({
-            success: true,
-            message: data.test ? "Test email sent" : `Broadcast complete: ${data.sent}/${data.recipients} sent, ${data.failed} failed`,
-            ...data,
-          });
-        });
-        if (!acquired) {
-          return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
-        }
-      } else {
+      // Test emails skip the distributed lock — they target a single address
+      if (isTest) {
         const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
         return res.status(200).json({
           success: true,
-          message: data.test ? "Test email sent" : `Broadcast complete: ${data.sent}/${data.recipients} sent, ${data.failed} failed`,
+          message: "Test email sent",
           ...data,
         });
       }
+
+      // Use a PostgreSQL advisory lock so only one instance can broadcast at a time.
+      // withAdvisoryLock silently returns if the lock is already held by another pod.
+      let broadcastResult: Awaited<ReturnType<typeof this.adminService.sendBroadcastEmail>> | null = null;
+      let lockAcquired = false;
+      let callbackError: unknown = null;
+
+      await withAdvisoryLock("admin-broadcast-email", async () => {
+        lockAcquired = true;
+        try {
+          broadcastResult = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user!.id });
+        } catch (err) {
+          callbackError = err;
+        }
+      });
+
+      if (!lockAcquired) {
+        return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
+      }
+
+      if (callbackError) {
+        throw callbackError;
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Broadcast complete: ${broadcastResult!.sent}/${broadcastResult!.recipients} sent, ${broadcastResult!.failed} failed`,
+        ...broadcastResult!,
+      });
     } catch (error) {
       logger.error("Failed to send broadcast email", error);
       if (!res.headersSent) {
