@@ -18,8 +18,9 @@ import {
 import {
   buildWeeklyPlan,
   getEnrollmentAnalyticsForUser,
-  enrollUser,
+    enrollUser,
   findDuplicateRoadmap,
+  getEnrollmentByRoadmapSlugForUser,
   getEnrollmentForUser,
   getRoadmapBySlug,
   getTopicBySlug,
@@ -259,6 +260,28 @@ export async function getMyEnrollments(req: Request, res: Response, next: NextFu
   try {
     const enrollments = await listEnrollmentsForUser(req.user!.id);
     res.json({ enrollments });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getMyEnrollmentByRoadmapSlug(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = roadmapSlugParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    const enrollment = await getEnrollmentByRoadmapSlugForUser({
+      userId: req.user!.id,
+      slug: params.data.slug,
+    });
+
+    res.json({
+      enrolled: Boolean(enrollment),
+      enrollment,
+    });
   } catch (err) {
     next(err);
   }
