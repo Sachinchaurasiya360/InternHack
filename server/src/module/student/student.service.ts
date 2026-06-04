@@ -414,6 +414,13 @@ Rules:
     ]);
     if (!application) throw new Error("Application not found");
     if (application.studentId !== studentId) throw new Error("Not authorized");
+
+    if (application.status === "WITHDRAWN") {
+      throw new Error(
+        "Withdrawn applications cannot participate in the hiring process"
+      );
+    }
+
     if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
 
     let submission;
