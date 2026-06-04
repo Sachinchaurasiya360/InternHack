@@ -134,7 +134,6 @@ export async function listPublishedRoadmaps(opts: {
     : { isPublished: true };
 
   // Build additional AND filters
-
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {

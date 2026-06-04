@@ -556,6 +556,29 @@ const STIPEND_OPTIONS = [
   "Low/None",
 ];
 
+type LocalCurrencyConfig = {
+  currency: string;
+  rate: number;
+  locale: string;
+};
+
+const LOCAL_CURRENCY_BY_REGION: Record<string, LocalCurrencyConfig> = {
+  IN: { currency: "INR", rate: 83.5, locale: "en-IN" },
+  NG: { currency: "NGN", rate: 1500, locale: "en-NG" },
+  ID: { currency: "IDR", rate: 16200, locale: "id-ID" },
+  BR: { currency: "BRL", rate: 5.2, locale: "pt-BR" },
+};
+
+const TIME_ZONE_REGION_HINTS: Record<string, keyof typeof LOCAL_CURRENCY_BY_REGION> = {
+  "Asia/Kolkata": "IN",
+  "Asia/Calcutta": "IN",
+  "Africa/Lagos": "NG",
+  "Asia/Jakarta": "ID",
+  "Asia/Makassar": "ID",
+  "Asia/Jayapura": "ID",
+  "America/Sao_Paulo": "BR",
+};
+
 const STATUS_STYLE: Record<string, string> = {
   Annual: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   Ongoing:
@@ -594,8 +617,7 @@ function getCountdown(
   }
   if (program.startDate) {
     const days = Math.ceil(
--     (new Date(program.deadline + "T23:59:59").getTime() - now) / 86400000
-+     (new Date(program.startDate + "T23:59:59").getTime() - now) / 86400000,
+      (new Date(program.startDate + "T23:59:59").getTime() - now) / 86400000,
     );
     if (days < 0) return null;
     return {
@@ -605,6 +627,45 @@ function getCountdown(
   }
   return null;
 }
+
+const getBrowserCurrencyConfig = (): LocalCurrencyConfig | null => {
+  if (typeof Intl === "undefined") return null;
+
+  const locale = typeof navigator !== "undefined" ? navigator.language : "";
+  const localeRegion = locale.match(/-([A-Z]{2})\b/i)?.[1]?.toUpperCase();
+  if (localeRegion && LOCAL_CURRENCY_BY_REGION[localeRegion]) {
+    return LOCAL_CURRENCY_BY_REGION[localeRegion];
+  }
+
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timeZoneRegion = TIME_ZONE_REGION_HINTS[timeZone];
+  return timeZoneRegion ? LOCAL_CURRENCY_BY_REGION[timeZoneRegion] : null;
+};
+
+const formatCompactCurrency = (amount: number, config: LocalCurrencyConfig) =>
+  new Intl.NumberFormat(config.locale, {
+    style: "currency",
+    currency: config.currency,
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(amount);
+
+const getLocalStipendEstimate = (stipend: string): string | null => {
+  const config = getBrowserCurrencyConfig();
+  if (!config) return null;
+
+  const amounts = [...stipend.matchAll(/\$([\d,]+(?:\.\d+)?)/g)]
+    .map((match) => Number(match[1].replace(/,/g, "")))
+    .filter((amount) => Number.isFinite(amount));
+
+  if (amounts.length === 0) return null;
+
+  const converted = amounts.map((amount) => formatCompactCurrency(amount * config.rate, config));
+  const suffix = stipend.match(/\/month|per term/i)?.[0] ?? "";
+  const spacedSuffix = suffix.startsWith("/") || !suffix ? suffix : ` ${suffix}`;
+
+  return `~${converted.join(" - ")}${spacedSuffix}`;
+};
 const getGoogleCalendarUrl = (program: Program) => {
   if (!program.applicationDeadline) return "";
 
@@ -632,6 +693,7 @@ const getGoogleCalendarUrl = (program: Program) => {
 // ─── Program Card ─────────────────────────────────────────────
 function ProgramCard({ program }: { program: Program }) {
   const [expanded, setExpanded] = useState(false);
+  const localStipendEstimate = program.stipendPaid ? getLocalStipendEstimate(program.stipend) : null;
 
   return (
     <div
@@ -666,7 +728,7 @@ function ProgramCard({ program }: { program: Program }) {
           </div>
           <div className="text-right shrink-0">
             {program.stipendPaid ? (
-              <div className="flex items-center gap-1 text-emerald-700">
+              <div className="flex items-center justify-end gap-1 text-emerald-700">
                 <DollarSign className="w-3.5 h-3.5" />
                 <span className="text-sm font-bold">
                   {program.stipend.split(" ")[0]}
@@ -678,9 +740,17 @@ function ProgramCard({ program }: { program: Program }) {
               </span>
             )}
             {program.stipendPaid && (
-              <p className="text-[10px] text-gray-400 mt-0.5">
-                {program.stipend}
-              </p>
+              <>
+                <p className="text-xs text-gray-400 mt-0.5">USD {program.stipend}</p>
+                {localStipendEstimate && (
+                  <p
+                    className="mt-0.5 max-w-32 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+                    title="Approximate local value. Amounts may vary based on exchange rates, project difficulty, and location."
+                  >
+                    {localStipendEstimate}
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -989,15 +1059,10 @@ export default function ProgramTrackerPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
-<<<<<<< HEAD
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search programs…"
-=======
-            type="text" value={search} onChange={(e) => setSearch(e.target.value)}
             placeholder="Search programs..."
->>>>>>> ce801f4 (fix: correct placeholder encoding)
             className="w-full pl-9 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
           />
         </div>
