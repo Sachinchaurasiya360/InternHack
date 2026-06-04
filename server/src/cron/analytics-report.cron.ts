@@ -24,12 +24,14 @@ export function startAnalyticsReportCron(schedule = "0 0 * * 0"): void {
   cronJob = cron.schedule(
     schedule,
     () => {
-      void withAdvisoryLock("learn-analytics-report", async () => {
+      withAdvisoryLock("learn-analytics-report", async () => {
         try {
           await runWeeklyAnalyticsReport();
         } catch (err) {
-          logger.error("Weekly analytics report failed:", err);
+          logger.error("Weekly analytics report aggregation failed:", err);
         }
+      }).catch((err) => {
+        logger.error("Advisory lock for analytics report failed:", err);
       });
     },
     { timezone: "Etc/UTC" }

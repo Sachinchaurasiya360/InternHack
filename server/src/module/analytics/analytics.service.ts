@@ -35,55 +35,85 @@ export class AnalyticsService {
   }
 
   private async getLessonAnalytics() {
-    // Aggregating lesson data
-    const stats = await prisma.contentView.groupBy({
-      by: ["contentId"],
-      where: { contentType: "LESSON" },
-      _avg: { timeSpentMs: true },
-      _count: { _all: true, completed: true },
-    });
+    const [totalStats, completedStats] = await Promise.all([
+      prisma.contentView.groupBy({
+        by: ["contentId"],
+        where: { contentType: "LESSON" },
+        _avg: { timeSpentMs: true },
+        _count: { _all: true },
+      }),
+      prisma.contentView.groupBy({
+        by: ["contentId"],
+        where: { contentType: "LESSON", completed: true },
+        _count: { _all: true },
+      }),
+    ]);
 
-    // Filtering completed counts manually if prisma doesn't support complex groupBy
-    // Actually, we can just do another query or map.
-    
-    // For drop-off steps, we'd need to know the sequence of lessons.
-    // This is a simplified version.
-    return stats.map(s => ({
-      lessonId: s.contentId,
-      avgTimeSpent: s._avg.timeSpentMs,
-      totalViews: s._count._all,
-      completionRate: s._count._all > 0 ? (s._count.completed / s._count._all) * 100 : 0,
-    }));
+    const completedMap = new Map(completedStats.map((s) => [s.contentId, s._count._all]));
+
+    return totalStats.map((s) => {
+      const completedCount = completedMap.get(s.contentId) || 0;
+      return {
+        lessonId: s.contentId,
+        avgTimeSpent: s._avg.timeSpentMs,
+        totalViews: s._count._all,
+        completionRate: s._count._all > 0 ? (completedCount / s._count._all) * 100 : 0,
+      };
+    });
   }
 
   private async getDsaAnalytics() {
-    const stats = await prisma.contentView.groupBy({
-      by: ["contentId"],
-      where: { contentType: "DSA" },
-      _avg: { timeSpentMs: true },
-      _count: { _all: true, completed: true },
-    });
+    const [totalStats, completedStats] = await Promise.all([
+      prisma.contentView.groupBy({
+        by: ["contentId"],
+        where: { contentType: "DSA" },
+        _avg: { timeSpentMs: true },
+        _count: { _all: true },
+      }),
+      prisma.contentView.groupBy({
+        by: ["contentId"],
+        where: { contentType: "DSA", completed: true },
+        _count: { _all: true },
+      }),
+    ]);
 
-    return stats.map(s => ({
-      problemId: s.contentId,
-      attemptCount: s._count._all,
-      solveRate: s._count._all > 0 ? (s._count.completed / s._count._all) * 100 : 0,
-      avgTimeToSolve: s._avg.timeSpentMs,
-    }));
+    const completedMap = new Map(completedStats.map((s) => [s.contentId, s._count._all]));
+
+    return totalStats.map((s) => {
+      const completedCount = completedMap.get(s.contentId) || 0;
+      return {
+        problemId: s.contentId,
+        attemptCount: s._count._all,
+        solveRate: s._count._all > 0 ? (completedCount / s._count._all) * 100 : 0,
+        avgTimeToSolve: s._avg.timeSpentMs,
+      };
+    });
   }
 
   private async getInterviewAnalytics() {
-    const stats = await prisma.contentView.groupBy({
-      by: ["contentId"],
-      where: { contentType: "INTERVIEW_QUESTION" },
-      _count: { _all: true, completed: true },
-    });
+    const [totalStats, completedStats] = await Promise.all([
+      prisma.contentView.groupBy({
+        by: ["contentId"],
+        where: { contentType: "INTERVIEW_QUESTION" },
+        _count: { _all: true },
+      }),
+      prisma.contentView.groupBy({
+        by: ["contentId"],
+        where: { contentType: "INTERVIEW_QUESTION", completed: true },
+        _count: { _all: true },
+      }),
+    ]);
 
-    return stats.map(s => ({
-      questionId: s.contentId,
-      viewCount: s._count._all,
-      completionRate: s._count._all > 0 ? (s._count.completed / s._count._all) * 100 : 0,
-    }));
+    const completedMap = new Map(completedStats.map((s) => [s.contentId, s._count._all]));
+
+    return totalStats.map((s) => {
+      const completedCount = completedMap.get(s.contentId) || 0;
+      return {
+        questionId: s.contentId,
+        viewCount: s._count._all,
+        completionRate: s._count._all > 0 ? (completedCount / s._count._all) * 100 : 0,
+      };
+    });
   }
 
   async highlightUnderperformingItems() {

@@ -16,7 +16,11 @@ export const trackContentView = async (req: Request, res: Response) => {
 
     res.status(200).json({ success: true });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    if (error.name === "ZodError") {
+      res.status(400).json({ message: "Validation failed", errors: error.errors });
+    } else {
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 };
 
