@@ -46,9 +46,9 @@ opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), a
     const approvedRepos =
       approvedUrls.length > 0
         ? await prisma.opensourceRepo.findMany({
-          where: { url: { in: approvedUrls } },
-          select: { id: true, url: true },
-        })
+            where: { url: { in: approvedUrls } },
+            select: { id: true, url: true },
+          })
         : [];
 
     const repoIdByUrl = new Map(approvedRepos.map((r) => [r.url, r.id]));
