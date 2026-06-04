@@ -51,11 +51,11 @@ function RecruiterDashboardInner() {
       const res = await api.get("/recruiter/dashboard");
       setData(res.data);
     } catch {
-      if (!data) setData(null);
+      setData(prev => prev ?? null);
     } finally {
       setLoading(false);
     }
-  }, [data]);
+  }, []);
 
   useEffect(() => {
     fetchDashboard();
@@ -334,7 +334,7 @@ function RecruiterDashboardInner() {
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
                       <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
-                        {renderStatusIcon(status)}
+                        {renderStatusIcon(app.status)}
                         {humanizeStatus(app.status)}
                       </span>
                       <span className="text-[11px] font-mono text-stone-400 tabular-nums">
