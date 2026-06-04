@@ -7,6 +7,7 @@ import { clearCache } from "../../middleware/cache.middleware.js";
 import { cacheDelPattern } from "../../utils/cache.js";
 import { withAdvisoryLock } from "../../utils/cron-lock.js";
 
+// Admin controller class to handle administrative operations
 const logger = createLogger("AdminController");
 import {
   adminLoginSchema,
