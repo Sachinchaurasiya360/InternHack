@@ -37,6 +37,10 @@ export interface Track {
   lessonCountKey?: string;
   /** Absolute path override. When present, the card links here instead of `/learn/${path}`. */
   to?: string;
+  tags?: string[];
+  difficulty?: "Beginner" | "Intermediate" | "Advanced" | string;
+  createdAt?: string;
+  enrolledStudents?: number;
 }
 
 export const TRACKS: Track[] = [
@@ -311,6 +315,7 @@ export const TRACKS: Track[] = [
     kind: "lesson",
     category: "web3",
     stat: "35 Projects",
+    difficulty: "Beginner", //mock testing
   },
 ];
 
