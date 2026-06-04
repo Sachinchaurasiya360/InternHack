@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Trash2, Users } from "lucide-react";
 import { SEO } from "../../components/SEO";
@@ -19,7 +19,7 @@ export default function AdminSubscribersPage() {
   const [page, setPage] = useState(1);
   const limit = 50;
 
-  const fetchSubscribers = () => {
+  const fetchSubscribers = useCallback(() => {
     setLoading(true);
     api
       .get(`/newsletter/subscribers?page=${page}&limit=${limit}`)
@@ -29,12 +29,10 @@ export default function AdminSubscribersPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchSubscribers();
   }, [page]);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchSubscribers(); }, [fetchSubscribers]);
 
   const handleDelete = async (id: number) => {
     try {

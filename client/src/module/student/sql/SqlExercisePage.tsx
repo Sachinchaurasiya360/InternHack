@@ -150,6 +150,7 @@ export default function SqlExercisePage() {
     setSolved(!!savedEntry?.solved);
 
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise?.id, section?.id, progress]);
 
   const handleRun = useCallback(async () => {

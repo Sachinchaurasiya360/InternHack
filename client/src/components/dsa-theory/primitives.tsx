@@ -113,6 +113,7 @@ export function InlineCode({ children }: ChildrenProps) {
  * Theme tokens for inline-styled elements (SVG charts, dynamic colors).
  * Prefer Tailwind classes wherever possible; use these only for runtime style props.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const THEME = {
   accent: "#a3e635", // lime-400
   accentSoft: "#ecfccb", // lime-100

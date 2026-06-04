@@ -1,4 +1,4 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsGovernment: Grant[] = [
   {
@@ -7,8 +7,8 @@ export const grantsGovernment: Grant[] = [
     organization: "Biotechnology Industry Research Assistance Council",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
-      "The Biotechnology Ignition Grant (BIG) supports biotech startups and entrepreneurs at the proof-of-concept stage. It funds innovative ideas in healthcare, agriculture, industrial biotech, and clean energy with equity-free grants up to ₹50 Lakhs over 18 months.",
-    fundingAmount: "Up to ₹50 Lakhs",
+      "The Biotechnology Ignition Grant (BIG) supports biotech startups and entrepreneurs at the proof-of-concept stage. It funds innovative ideas in healthcare, agriculture, industrial biotech, and clean energy with equity-free grants up to â‚¹50 Lakhs over 18 months.",
+    fundingAmount: "Up to â‚¹50 Lakhs",
     category: "Government",
     tags: ["Biotech", "Healthcare", "Agriculture", "India"],
     website: "https://birac.nic.in",
@@ -19,6 +19,7 @@ export const grantsGovernment: Grant[] = [
       "Applications reviewed quarterly by expert committee",
     ],
     status: "Active",
+    deadline: "2027-03-02",
     ecosystem: "India",
     highlights: [
       "Equity-free grant - no dilution",
@@ -33,20 +34,21 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
       "The Startup India Seed Fund Scheme (SISFS) provides financial assistance to startups for proof of concept, prototype development, product trials, market entry, and commercialization. It operates through selected incubators across India.",
-    fundingAmount: "Up to ₹50 Lakhs",
+    fundingAmount: "Up to â‚¹50 Lakhs",
     category: "Government",
     tags: ["Seed Fund", "Incubator", "Commercialization", "India"],
     website: "https://seedfund.startupindia.gov.in",
     eligibility: [
       "DPIIT-recognized startups not older than 2 years",
       "Must apply through an approved incubator",
-      "Grants up to ₹20 Lakhs for validation; loans up to ₹50 Lakhs for commercialization",
-      "Must not have received more than ₹10 Lakhs from any other central/state scheme",
+      "Grants up to â‚¹20 Lakhs for validation; loans up to â‚¹50 Lakhs for commercialization",
+      "Must not have received more than â‚¹10 Lakhs from any other central/state scheme",
     ],
     status: "Active",
+    deadline: "2027-03-07",
     ecosystem: "India",
     highlights: [
-      "₹945 Crore corpus supporting 3,600+ startups",
+      "â‚¹945 Crore corpus supporting 3,600+ startups",
       "Operates through 300+ approved incubators",
       "Both grant and convertible debenture options",
     ],
@@ -58,7 +60,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=D",
     description:
       "NIDHI-PRAYAS (Promoting and Accelerating Young and Aspiring Innovators and Startups) supports innovators to translate their ideas into prototypes. Located in Technology Business Incubators, it provides grants, mentorship, and access to fabrication labs.",
-    fundingAmount: "Up to ₹10 Lakhs",
+    fundingAmount: "Up to â‚¹10 Lakhs",
     category: "Government",
     tags: ["Prototyping", "Innovation", "DST", "India"],
     website: "https://nidhi.dst.gov.in/schemes-programmes/nidhiprayas/",
@@ -69,6 +71,7 @@ export const grantsGovernment: Grant[] = [
       "Ideas must have commercialization potential",
     ],
     status: "Active",
+    deadline: "2027-03-12",
     ecosystem: "India",
     highlights: [
       "9-month support program with mentoring",
@@ -83,7 +86,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
       "The Atal New India Challenge (ANIC) invites startups and MSMEs to create market-ready products addressing national challenges. It provides grants for product development in areas like healthcare, mobility, space, agriculture, and clean energy.",
-    fundingAmount: "Up to ₹1 Crore",
+    fundingAmount: "Up to â‚¹1 Crore",
     category: "Government",
     tags: ["Deep Tech", "National Challenges", "NITI Aayog", "India"],
     website: "https://aim.gov.in/atal-new-india-challenge.php",
@@ -94,6 +97,7 @@ export const grantsGovernment: Grant[] = [
       "12-18 month project timeline",
     ],
     status: "Active",
+    deadline: "2027-03-17",
     ecosystem: "India",
     highlights: [
       "Grant-based - no equity or repayment required",
@@ -108,7 +112,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
       "Technology Incubation and Development of Entrepreneurs (TIDE 2.0) by MeitY supports tech startups through financial grants and incubation. It focuses on IoT, AI, blockchain, robotics, and other emerging technologies across India.",
-    fundingAmount: "Up to ₹7 Crores",
+    fundingAmount: "Up to â‚¹7 Crores",
     category: "Government",
     tags: ["MeitY", "IoT", "AI", "Blockchain", "India"],
     website: "https://meity.gov.in",
@@ -119,6 +123,7 @@ export const grantsGovernment: Grant[] = [
       "Grants disbursed in milestones over 2-3 years",
     ],
     status: "Active",
+    deadline: "2027-03-22",
     ecosystem: "India",
     highlights: [
       "Supports 51 incubation centers across India",
@@ -133,7 +138,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
       "The SERB Core Research Grant (CRG) funds investigator-driven basic and applied research proposals in all areas of science and engineering. It supports projects for 3 years with grants covering equipment, consumables, travel, and manpower.",
-    fundingAmount: "Up to ₹50 Lakhs/year",
+    fundingAmount: "Up to â‚¹50 Lakhs/year",
     category: "Government",
     tags: ["Research", "Science", "Engineering", "SERB", "India"],
     website: "https://anrf.gov.in/page/english/research_grants",
@@ -144,6 +149,7 @@ export const grantsGovernment: Grant[] = [
       "3-year project duration with annual reviews",
     ],
     status: "Active",
+    deadline: "2027-03-27",
     ecosystem: "India",
     highlights: [
       "Open to all science and engineering disciplines",
@@ -158,7 +164,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
       "CSIR recognizes innovative ideas from school students and young researchers. Through its innovation programs and the CSIR-Tech Innovation Fund, it supports early-stage innovations with grants, mentorship, and commercialization assistance.",
-    fundingAmount: "Up to ₹10 Lakhs",
+    fundingAmount: "Up to â‚¹10 Lakhs",
     category: "Government",
     tags: ["CSIR", "Innovation", "Students", "Research", "India"],
     website: "https://www.csir.res.in/en/awards/csir-innovation-award-school-children-application",
@@ -169,6 +175,7 @@ export const grantsGovernment: Grant[] = [
       "Support for patent filing included",
     ],
     status: "Active",
+    deadline: "2027-04-01",
     ecosystem: "India",
     highlights: [
       "Patent filing and IP support provided",
@@ -183,7 +190,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=i",
     description:
       "iDEX engages startups and innovators to solve defence and aerospace challenges. Through the Defence Innovation Organisation (DIO), it provides grants for developing indigenous defence technologies across domains like AI, cybersecurity, and autonomous systems.",
-    fundingAmount: "Up to ₹1.5 Crore",
+    fundingAmount: "Up to â‚¹1.5 Crore",
     category: "Government",
     tags: ["Defence", "Aerospace", "Innovation", "India"],
     website: "https://idex.gov.in",
@@ -194,6 +201,7 @@ export const grantsGovernment: Grant[] = [
       "IP remains with the innovator",
     ],
     status: "Active",
+    deadline: "2027-04-06",
     ecosystem: "India",
     highlights: [
       "400+ startups engaged across 100+ challenges",
@@ -219,6 +227,7 @@ export const grantsGovernment: Grant[] = [
       "Open to startups, research institutions, and individuals",
     ],
     status: "Active",
+    deadline: "2027-04-11",
     ecosystem: "India",
     highlights: [
       "Direct connections to government procurement",
@@ -233,7 +242,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
       "MeitY Startup Hub is the nodal entity for MeitY's startup initiatives, managing programs like SAMRIDH and Digital India GENESIS. It provides equity-free grants, mentorship, and market access to tech startups across India.",
-    fundingAmount: "Up to ₹25 Lakhs",
+    fundingAmount: "Up to â‚¹25 Lakhs",
     category: "Government",
     tags: ["MeitY", "Digital India", "Tech Startups", "India"],
     website: "https://msh.meity.gov.in",
@@ -244,6 +253,7 @@ export const grantsGovernment: Grant[] = [
       "DPIIT recognition preferred",
     ],
     status: "Active",
+    deadline: "2027-04-16",
     ecosystem: "India",
     highlights: [
       "Part of Digital India initiative",
@@ -258,7 +268,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
       "Karnataka's IT startup policy offers subsidies, grants, and incentives to tech startups. It provides reimbursement of rent, patent costs, quality testing, marketing, and cloud hosting. Startups also get procurement preference in government tenders.",
-    fundingAmount: "Up to ₹50 Lakhs",
+    fundingAmount: "Up to â‚¹50 Lakhs",
     category: "Government",
     tags: ["Karnataka", "IT", "Subsidies", "India"],
     website: "https://www.missionstartupkarnataka.org/funding",
@@ -266,9 +276,10 @@ export const grantsGovernment: Grant[] = [
       "Startups registered in Karnataka with valid DPIIT recognition",
       "Must be operational within Karnataka's jurisdiction",
       "Less than 5 years old at time of application",
-      "Annual turnover below ₹10 Crore",
+      "Annual turnover below â‚¹10 Crore",
     ],
     status: "Active",
+    deadline: "2027-04-21",
     ecosystem: "India",
     highlights: [
       "Reimbursement of rent, patents, and marketing costs",
@@ -283,7 +294,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
       "Kerala Startup Mission is the nodal agency for startup activities in Kerala. It runs incubation programs, innovation grants, and seed funding through its network of incubators. It has supported 4,000+ startups since inception.",
-    fundingAmount: "Up to ₹30 Lakhs",
+    fundingAmount: "Up to â‚¹30 Lakhs",
     category: "Government",
     tags: ["Kerala", "Incubation", "Innovation", "India"],
     website: "https://startupmission.kerala.gov.in",
@@ -294,6 +305,7 @@ export const grantsGovernment: Grant[] = [
       "Open to student entrepreneurs through campus programs",
     ],
     status: "Active",
+    deadline: "2027-04-26",
     ecosystem: "India",
     highlights: [
       "4,000+ startups supported",
@@ -308,7 +320,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
       "The Student and Knowledge-driven Innovation Promotion Program (SKIPP) supports student entrepreneurs in West Bengal. It provides seed grants, mentorship, and incubation support for innovative ideas from college students.",
-    fundingAmount: "Up to ₹25 Lakhs",
+    fundingAmount: "Up to â‚¹25 Lakhs",
     category: "Government",
     tags: ["West Bengal", "Students", "Innovation", "India"],
     website: "https://msme.wb.gov.in",
@@ -319,6 +331,7 @@ export const grantsGovernment: Grant[] = [
       "Open to undergraduate and postgraduate students",
     ],
     status: "Active",
+    deadline: "2027-05-01",
     ecosystem: "India",
     highlights: [
       "Targeted at student entrepreneurs",
@@ -333,7 +346,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
       "T-Hub in Hyderabad is India's largest technology incubator. It provides funding, mentorship, corporate connections, and international market access to startups across healthcare, fintech, sustainability, and deep tech domains.",
-    fundingAmount: "Up to ₹25 Lakhs",
+    fundingAmount: "Up to â‚¹25 Lakhs",
     category: "Government",
     tags: ["Telangana", "Incubation", "Deep Tech", "India"],
     website: "https://t-hub.co",
@@ -344,6 +357,7 @@ export const grantsGovernment: Grant[] = [
       "Startups relocating to Hyderabad preferred",
     ],
     status: "Active",
+    deadline: "2027-05-06",
     ecosystem: "India",
     highlights: [
       "India's largest technology incubator",
@@ -358,7 +372,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
       "Maharashtra State Innovation Society (MSINS) runs Startup Yatra to discover grassroots innovators across Maharashtra. Selected startups receive grants, incubation, and government procurement opportunities through the Maharashtra Startup Policy.",
-    fundingAmount: "Up to ₹15 Lakhs",
+    fundingAmount: "Up to â‚¹15 Lakhs",
     category: "Government",
     tags: ["Maharashtra", "Grassroots", "Innovation", "India"],
     website: "https://msins.in",
@@ -369,6 +383,7 @@ export const grantsGovernment: Grant[] = [
       "Social impact startups receive additional preference",
     ],
     status: "Active",
+    deadline: "2027-05-11",
     ecosystem: "India",
     highlights: [
       "Covers all 36 districts of Maharashtra",
@@ -383,7 +398,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
       "iCreate is Gujarat's international centre for entrepreneurship and technology. It provides grants, residential incubation, prototyping labs, and market access to hardware and IoT startups. The program runs 6-month cohorts.",
-    fundingAmount: "Up to ₹10 Lakhs",
+    fundingAmount: "Up to â‚¹10 Lakhs",
     category: "Government",
     tags: ["Gujarat", "Hardware", "IoT", "Prototyping", "India"],
     website: "https://icreate.org.in",
@@ -394,6 +409,7 @@ export const grantsGovernment: Grant[] = [
       "Must have a working prototype or strong technical concept",
     ],
     status: "Active",
+    deadline: "2027-05-16",
     ecosystem: "India",
     highlights: [
       "Residential incubation with prototyping labs",
@@ -408,7 +424,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=T",
     description:
       "StartupTN, the nodal agency for Tamil Nadu's startup ecosystem, provides seed grants, mentorship, and market access. The state policy offers grants for prototyping, patent filing, and marketing to DPIIT-recognized startups.",
-    fundingAmount: "Up to ₹30 Lakhs",
+    fundingAmount: "Up to â‚¹30 Lakhs",
     category: "Government",
     tags: ["Tamil Nadu", "Seed Grant", "Patents", "India"],
     website: "https://startuptn.in",
@@ -416,13 +432,14 @@ export const grantsGovernment: Grant[] = [
       "DPIIT-recognized startups registered in Tamil Nadu",
       "Less than 5 years old",
       "Must be incubated at an approved Tamil Nadu incubator",
-      "Revenue below ₹25 Crore annually",
+      "Revenue below â‚¹25 Crore annually",
     ],
     status: "Active",
+    deadline: "2027-05-21",
     ecosystem: "India",
     highlights: [
-      "Patent cost reimbursement up to ₹10 Lakhs",
-      "Marketing support up to ₹5 Lakhs",
+      "Patent cost reimbursement up to â‚¹10 Lakhs",
+      "Marketing support up to â‚¹5 Lakhs",
       "Free co-working space at TIDEL parks",
     ],
   },
@@ -433,7 +450,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
       "iStart is Rajasthan's flagship startup initiative providing sustenance allowance, seed grants, and incubation support. It offers monthly stipends to founding teams and connects startups with government departments for pilot projects.",
-    fundingAmount: "Up to ₹25 Lakhs",
+    fundingAmount: "Up to â‚¹25 Lakhs",
     category: "Government",
     tags: ["Rajasthan", "iStart", "Stipend", "India"],
     website: "https://istart.rajasthan.gov.in",
@@ -444,9 +461,10 @@ export const grantsGovernment: Grant[] = [
       "Open to both product and service startups",
     ],
     status: "Active",
+    deadline: "2027-05-26",
     ecosystem: "India",
     highlights: [
-      "Monthly sustenance allowance of ₹20,000 per co-founder",
+      "Monthly sustenance allowance of â‚¹20,000 per co-founder",
       "Government pilot project opportunities",
       "18,000+ startups registered on iStart platform",
     ],
@@ -458,7 +476,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
       "Andhra Pradesh Innovation Society supports startups through grants, incubation, and innovation challenges. It runs sector-specific programs in agritech, healthtech, and edtech with funding support and government market access.",
-    fundingAmount: "Up to ₹15 Lakhs",
+    fundingAmount: "Up to â‚¹15 Lakhs",
     category: "Government",
     tags: ["Andhra Pradesh", "Agritech", "Healthtech", "India"],
     website: "https://apis.ap.gov.in",
@@ -469,6 +487,7 @@ export const grantsGovernment: Grant[] = [
       "Must participate in APIS innovation challenges",
     ],
     status: "Active",
+    deadline: "2027-05-31",
     ecosystem: "India",
     highlights: [
       "Sector-specific innovation challenges",
@@ -483,7 +502,7 @@ export const grantsGovernment: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=P",
     description:
       "Punjab's startup and innovation policy provides financial support through seed grants, infrastructure subsidies, and patent reimbursement. The scheme operates through Punjab Infotech and state-designated incubators.",
-    fundingAmount: "Up to ₹10 Lakhs",
+    fundingAmount: "Up to â‚¹10 Lakhs",
     category: "Government",
     tags: ["Punjab", "Seed Grant", "Infrastructure", "India"],
     website: "https://punjabinfotech.in",
@@ -494,9 +513,10 @@ export const grantsGovernment: Grant[] = [
       "Less than 5 years old at time of application",
     ],
     status: "Active",
+    deadline: "2027-06-05",
     ecosystem: "India",
     highlights: [
-      "Rent and infrastructure subsidy up to ₹5 Lakhs",
+      "Rent and infrastructure subsidy up to â‚¹5 Lakhs",
       "Patent filing reimbursement",
       "Access to Punjab's IT parks at subsidized rates",
     ],

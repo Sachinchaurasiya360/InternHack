@@ -317,8 +317,8 @@ function VisualizeTab() {
   const [inputStr, setInputStr] = useState("A>B, A>C, B>D, C>D, D>E, E>B, C>E");
   const [source, setSource] = useState("A");
   const parsed = useMemo(() => parseEdgeList(inputStr), [inputStr]);
-  const ids = parsed?.nodeIds ?? [];
-  const rawEdges = parsed?.edges ?? [];
+  const ids = useMemo(() => parsed?.nodeIds ?? [], [parsed?.nodeIds]);
+  const rawEdges = useMemo(() => parsed?.edges ?? [], [parsed?.edges]);
 
   const frames = useMemo(() => buildDFSFrames(ids, rawEdges, source), [ids, rawEdges, source]);
   const player = useStepPlayer(frames);

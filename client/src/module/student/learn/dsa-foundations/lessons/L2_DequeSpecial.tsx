@@ -253,10 +253,11 @@ function VisualizeTab() {
   const [arrStr, setArrStr] = useState("1, 3, -1, -3, 5, 3, 6, 7");
   const [k, setK] = useState(3);
 
-  const ops = parseOps(opsStr);
-  const arr = parseList(arrStr);
-
-  const frames = useMemo(() => mode === "deque" ? buildDeque(ops) : buildMonotonic(arr, k), [mode, opsStr, arrStr, k]);
+  const frames = useMemo(() => {
+    const ops = parseOps(opsStr);
+    const arr = parseList(arrStr);
+    return mode === "deque" ? buildDeque(ops) : buildMonotonic(arr, k);
+  }, [mode, opsStr, arrStr, k]);
   const player = useStepPlayer(frames);
   const frame = player.current;
   const pseudo = mode === "deque" ? PSEUDO_DEQUE : PSEUDO_MONO;
@@ -318,7 +319,7 @@ function VisualizeTab() {
               <label className="flex items-center gap-2 text-xs text-stone-500 font-medium">
                 Window size k:
                 <input type="number" value={k} onChange={(e) => setK(Math.max(1, Number(e.target.value) || 1))}
-                  min={1} max={arr.length}
+                  min={1} max={parseList(arrStr).length}
                   className="w-16 px-2 py-1 border border-stone-200 dark:border-white/10 rounded-md font-mono text-sm bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50" />
               </label>
             </>

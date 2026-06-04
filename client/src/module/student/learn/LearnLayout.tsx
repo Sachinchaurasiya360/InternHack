@@ -152,7 +152,7 @@ export default function LearnLayout() {
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 pt-28 pb-12">
+      <main className="max-w-6xl mx-auto px-6 pt-28 pb-12">
         <LearnBreadcrumb />
         <Outlet />
       </main>

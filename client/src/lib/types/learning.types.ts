@@ -88,6 +88,14 @@ export interface DsaProgress {
   };
 }
 
+export interface DsaSimilarProblem {
+  id: number;
+  title: string;
+  slug: string;
+  difficulty: string;
+  tags: string[];
+}
+
 export interface DsaCompany {
   name: string;
   count: number;
@@ -290,4 +298,5 @@ export interface AptitudeProgress {
   totalQuestions: number;
   totalAnswered: number;
   totalCorrect: number;
+  currentStreak: number;
 }

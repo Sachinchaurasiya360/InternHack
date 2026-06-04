@@ -3,6 +3,8 @@ import type { AdminService } from "./admin.service.js";
 import { setTokenCookie } from "../../utils/cookie.utils.js";
 import { createLogger } from "../../utils/logger.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
+import { clearCache } from "../../middleware/cache.middleware.js";
+import { cacheDelPattern } from "../../utils/cache.js";
 
 const logger = createLogger("AdminController");
 import {
@@ -265,6 +267,8 @@ export class AdminController {
       }
 
       const company = await this.adminService.createCompany(req.user.id, result.data);
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.status(201).json({ message: "Company created", company });
     } catch (err) {
       next(err);
@@ -283,6 +287,9 @@ export class AdminController {
       }
 
       const company = await this.adminService.updateCompany(id, result.data as Parameters<typeof this.adminService.updateCompany>[1]);
+      clearCache("companies:detail");
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.json({ message: "Company updated", company });
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
@@ -298,6 +305,9 @@ export class AdminController {
       if (isNaN(id)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       const company = await this.adminService.approveCompany(id);
+      clearCache("companies:detail");
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.json({ message: "Company approved", company });
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
@@ -313,6 +323,9 @@ export class AdminController {
       if (isNaN(id)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       await this.adminService.deleteCompany(id);
+      clearCache("companies:detail");
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.json({ message: "Company deleted" });
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
@@ -346,6 +359,10 @@ export class AdminController {
       }
 
       const review = await this.adminService.updateReviewStatus(id, result.data.status);
+      // Review approval updates avgRating/reviewCount on the company — bust detail and list caches
+      clearCache("companies:reviews");
+      clearCache("companies:detail");
+      void cacheDelPattern("companies:list:");
       res.json({ message: `Review ${result.data.status.toLowerCase()}`, review });
     } catch (err) {
       if (err instanceof Error && err.message === "Review not found") {

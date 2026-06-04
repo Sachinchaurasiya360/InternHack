@@ -295,6 +295,34 @@ Rules:
     return { success: true };
   }
 
+  async updateApplicationNotes(applicationId: number, studentId: number, notes: string) {
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      select: { id: true, studentId: true },
+    });
+    if (!application || application.studentId !== studentId) throw new Error("Application not found");
+
+    return prisma.application.update({
+      where: { id: applicationId },
+      data: { studentNotes: notes },
+      select: { studentNotes: true, updatedAt: true },
+    });
+  }
+
+  async updateExternalApplicationNotes(applicationId: number, studentId: number, notes: string) {
+    const application = await prisma.externalJobApplication.findUnique({
+      where: { id: applicationId },
+      select: { id: true, studentId: true },
+    });
+    if (!application || application.studentId !== studentId) throw new Error("External application not found");
+
+    return prisma.externalJobApplication.update({
+      where: { id: applicationId },
+      data: { studentNotes: notes },
+      select: { studentNotes: true, updatedAt: true },
+    });
+  }
+
   private async checkApplicationMilestone(studentId: number) {
     const [regular, external] = await Promise.all([
       prisma.application.count({ where: { studentId } }),
@@ -386,6 +414,13 @@ Rules:
     ]);
     if (!application) throw new Error("Application not found");
     if (application.studentId !== studentId) throw new Error("Not authorized");
+
+    if (application.status === "WITHDRAWN") {
+      throw new Error(
+        "Withdrawn applications cannot participate in the hiring process"
+      );
+    }
+
     if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
 
     let submission;

@@ -38,6 +38,12 @@ const LEVEL_STYLE: Record<string, string> = {
   Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
 
+const DIFF_STYLE: Record<string, string> = {
+  Beginner: "text-green-700 dark:text-green-400 border-green-200 dark:border-green-900/60 bg-green-50 dark:bg-green-900/20",
+  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-900/20",
+  Advanced: "text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-900/20",
+};
+
 function MetaChip({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider border rounded-md ${className || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
@@ -51,9 +57,13 @@ export default function InterviewLessonsPage() {
   const [showGate, setShowGate] = useState(false);
   const [progress, setProgress] = useState<InterviewProgress>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [diffFilter, setDiffFilter] = useState<
+    "all" | "Beginner" | "Intermediate" | "Advanced"
+  >("all");
 
   useEffect(() => {
   if (!isAuthenticated) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgress(getLocalProgress());
     return;
   }
@@ -108,9 +118,17 @@ export default function InterviewLessonsPage() {
       const sectionQuestions = questions.filter((q) => q.sectionId === section.id);
       const completed = sectionQuestions.filter((q) => progress[q.id]?.completed).length;
       const total = sectionQuestions.length;
-      return { ...section, completed, total };
+      const easy = sectionQuestions.filter((q) => q.difficulty === "Beginner").length;
+      const medium = sectionQuestions.filter((q) => q.difficulty === "Intermediate").length;
+      const hard = sectionQuestions.filter((q) => q.difficulty === "Advanced").length;
+      return { ...section, completed, total, easy, medium, hard };
     });
   }, [progress]);
+
+  const visibleSections = useMemo(() => {
+    if (diffFilter === "all") return sectionStats;
+    return sectionStats.filter((s) => s.level === diffFilter);
+  }, [sectionStats, diffFilter]);
 
   const totalCompleted = Object.values(progress as InterviewProgress).filter((p) => p.completed).length;
   const totalQuestions = questions.length;
@@ -236,13 +254,44 @@ export default function InterviewLessonsPage() {
             </h2>
           </div>
           <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block">
-            {sectionStats.length} sections
+            {visibleSections.length} sections
           </span>
         </div>
 
+        <div className="flex items-center gap-2 mb-6 flex-wrap">
+          {(["all", "Beginner", "Intermediate", "Advanced"] as const).map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => setDiffFilter(d)}
+              className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest
+                rounded-md border transition-all duration-200 cursor-pointer
+                ${diffFilter === d
+                  ? d === "all"
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 shadow-md scale-105"
+                    : `${DIFF_STYLE[d]} shadow-md scale-105`
+                  : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                }`}
+            >
+              {d === "all" ? "all levels" : d}
+            </button>
+          ))}
+        </div>
+
         {/* Section grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sectionStats.map((section, idx) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {visibleSections.length === 0 ? (
+            <div className="col-span-full py-20 text-center border border-dashed border-stone-200 dark:border-white/10 rounded-md">
+              <p className="text-sm text-stone-500 mb-2">No sections match this level.</p>
+              <button 
+                onClick={() => setDiffFilter("all")}
+                className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline"
+              >
+                Clear filter
+              </button>
+            </div>
+          ) : (
+            visibleSections.map((section, idx) => {
             const pct = section.total > 0 ? Math.round((section.completed / section.total) * 100) : 0;
             const basePath = "/learn/interview";
             const isComplete = pct === 100 && section.total > 0;
@@ -302,11 +351,35 @@ export default function InterviewLessonsPage() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-1.5 mb-4">
+                <div className="flex flex-wrap gap-1.5">
                   <MetaChip>
                     {isLocked ? `${section.total} questions` : `${section.completed} / ${section.total} done`}
                   </MetaChip>
                   <MetaChip className={LEVEL_STYLE[section.level]}>{section.level}</MetaChip>
+                </div>
+
+                <div className="flex items-center gap-1.5 mt-2 mb-4 flex-wrap">
+                  {section.easy > 0 && (
+                    <span className={`text-[9px] font-mono uppercase tracking-widest
+                      px-1.5 py-0.5 rounded border transition-all duration-300
+                      ${DIFF_STYLE["Beginner"]}`}>
+                      {section.easy} easy
+                    </span>
+                  )}
+                  {section.medium > 0 && (
+                    <span className={`text-[9px] font-mono uppercase tracking-widest
+                      px-1.5 py-0.5 rounded border transition-all duration-300
+                      ${DIFF_STYLE["Intermediate"]}`}>
+                      {section.medium} medium
+                    </span>
+                  )}
+                  {section.hard > 0 && (
+                    <span className={`text-[9px] font-mono uppercase tracking-widest
+                      px-1.5 py-0.5 rounded border transition-all duration-300
+                      ${DIFF_STYLE["Advanced"]}`}>
+                      {section.hard} hard
+                    </span>
+                  )}
                 </div>
 
                 <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
@@ -339,7 +412,8 @@ export default function InterviewLessonsPage() {
                 )}
               </motion.div>
             );
-          })}
+          })
+        )}
         </div>
       </div>
 

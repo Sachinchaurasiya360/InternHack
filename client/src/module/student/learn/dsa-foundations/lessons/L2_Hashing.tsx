@@ -280,9 +280,11 @@ function VisualizeTab() {
   const [keysStr, setKeysStr] = useState("23, 13, 18, 3, 8, 28");
   const [size, setSize] = useState(7);
 
-  const keys = parseKeys(keysStr);
   const frames = useMemo(
-    () => strategy === "chaining" ? buildChaining(keys, size) : buildProbing(keys, size),
+    () => {
+      const keys = parseKeys(keysStr);
+      return strategy === "chaining" ? buildChaining(keys, size) : buildProbing(keys, size);
+    },
     [strategy, keysStr, size],
   );
   const player = useStepPlayer(frames);

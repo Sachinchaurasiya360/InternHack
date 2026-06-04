@@ -34,13 +34,13 @@ function serializeProgress(progress: {
   };
 }
 
-async function runSerializable<T>(operation: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+async function runRepeatableRead<T>(operation: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
   const maxAttempts = 3;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
       return await prisma.$transaction(operation, {
-        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
       });
     } catch (error) {
       const canRetry =
@@ -75,7 +75,7 @@ export class LearnService {
     questionId: string,
     action: InterviewProgressAction,
   ): Promise<InterviewProgressDto> {
-    const progress = await runSerializable(async (tx) => {
+    const progress = await runRepeatableRead(async (tx) => {
       const existing = await tx.userInterviewProgress.findUnique({ where: { userId } });
       const completedIds = new Set(existing?.completedIds ?? []);
       const bookmarkedIds = new Set(existing?.bookmarkedIds ?? []);
@@ -122,7 +122,7 @@ export class LearnService {
     userId: number,
     input: BulkInterviewProgressInput,
   ): Promise<InterviewProgressDto> {
-    const progress = await runSerializable(async (tx) => {
+    const progress = await runRepeatableRead(async (tx) => {
       const existing = await tx.userInterviewProgress.findUnique({ where: { userId } });
       const completedIds = uniqueIds([...(existing?.completedIds ?? []), ...input.completedIds]);
       const bookmarkedIds = uniqueIds([...(existing?.bookmarkedIds ?? []), ...input.bookmarkedIds]);

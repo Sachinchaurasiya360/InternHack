@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
-import type { Prisma, UserRole, JobStatus } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type { UserRole, JobStatus } from "@prisma/client";
 
 export class AdminPlatformService {
   async getPlatformDashboard() {
@@ -190,42 +191,46 @@ export class AdminPlatformService {
     adminId: number,
     reason?: string,
   ) {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new Error("User not found");
     if (userId === adminId) throw new Error("Cannot modify your own status");
 
-    const updated = await prisma.user.update({
-      where: { id: userId },
-      data: { isActive },
-      select: { id: true, name: true, email: true, role: true, isActive: true },
-    });
-
-    return updated;
+    try {
+      return await prisma.user.update({
+        where: { id: userId },
+        data: { isActive },
+        select: { id: true, name: true, email: true, role: true, isActive: true },
+      });
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+        throw new Error("User not found");
+      }
+      throw err;
+    }
   }
 
   async deleteUser(userId: number, adminId: number) {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new Error("User not found");
     if (userId === adminId) throw new Error("Cannot delete yourself");
 
+    // Fetch user + their adminProfile in one round-trip
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { adminProfile: true },
+    });
+    if (!user) throw new Error("User not found");
+
     if (user.role === "ADMIN") {
-      const adminProfile = await prisma.adminProfile.findUnique({
-        where: { userId: adminId },
-      });
-      if (!adminProfile || adminProfile.tier !== "SUPER_ADMIN")
+      // Batch: fetch deleter's profile alongside a SUPER_ADMIN count when needed
+      const [deleterProfile, superAdminCount] = await Promise.all([
+        prisma.adminProfile.findUnique({ where: { userId: adminId } }),
+        user.adminProfile?.tier === "SUPER_ADMIN"
+          ? prisma.adminProfile.count({ where: { tier: "SUPER_ADMIN", isActive: true } })
+          : Promise.resolve(null),
+      ]);
+
+      if (!deleterProfile || deleterProfile.tier !== "SUPER_ADMIN")
         throw new Error("Only SUPER_ADMIN can delete admin users");
 
-      // Prevent deleting the last SUPER_ADMIN
-      const targetProfile = await prisma.adminProfile.findUnique({
-        where: { userId },
-      });
-      if (targetProfile?.tier === "SUPER_ADMIN") {
-        const superAdminCount = await prisma.adminProfile.count({
-          where: { tier: "SUPER_ADMIN", isActive: true },
-        });
-        if (superAdminCount <= 1)
-          throw new Error("Cannot delete the last SUPER_ADMIN");
-      }
+      if (superAdminCount !== null && superAdminCount <= 1)
+        throw new Error("Cannot delete the last SUPER_ADMIN");
     }
 
     await prisma.user.delete({ where: { id: userId } });
