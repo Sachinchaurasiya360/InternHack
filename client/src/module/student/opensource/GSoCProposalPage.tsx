@@ -67,6 +67,10 @@ export default function GSoCProposalPage() {
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
   const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+  const completedMinutes = STEPS
+    .filter((s) => completed.has(s.id))
+    .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
+  const remainingMinutes = totalEstimatedMinutes - completedMinutes;
   return (
     <div className="relative pb-12">
       <SEO
@@ -115,7 +119,7 @@ export default function GSoCProposalPage() {
           { icon: Award, value: totalSteps, label: "Steps", iconColor: "text-red-500" },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
-          { icon: Clock, value: `${totalEstimatedMinutes} min`, label: "Est. Time", iconColor: "text-indigo-500" },
+          { icon: Clock, value: allDone ? "Done!" : completed.size > 0 ? `${remainingMinutes} min left` : `${totalEstimatedMinutes} min total`, label: "Est. Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
