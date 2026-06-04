@@ -72,7 +72,7 @@ export default function TalentSearchPage() {
       const res = await api.get("/recruiter/saved-candidates/ids");
       return (res.data?.ids ?? []) as number[];
     },
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 5,
   });
 
   const savedSet = useMemo(() => new Set(savedIdsData ?? []), [savedIdsData]);
@@ -95,6 +95,7 @@ export default function TalentSearchPage() {
       return res.data as TalentSearchResponse;
     },
     placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
   });
 
   const applyFilters = useCallback(() => {
