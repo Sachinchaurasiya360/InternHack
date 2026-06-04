@@ -79,15 +79,15 @@ function SectionCard({ title, icon, color, children }: SectionCardProps) {
   const theme = colorMap[color];
 
   return (
-    <div className={`rounded-xl border bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm p-6 space-y-4 ${theme.wrapper}`}>
+    <div className={`bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-2xl p-6 space-y-4`}>
       <div className="flex items-center gap-3">
-        <div className={`p-2 rounded-lg [&>svg]:w-5 [&>svg]:h-5 ${theme.iconBg}`}>
+        <div className={`w-8 h-8 rounded-md flex items-center justify-center [&>svg]:w-4 [&>svg]:h-4 ${theme.iconBg}`}>
           {icon}
         </div>
-        <h2 className="text-xl font-bold text-gray-950 dark:text-white">{title}</h2>
+        <h2 className="text-xl font-bold text-stone-950 dark:text-white">{title}</h2>
       </div>
 
-      <div className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+      <div className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">
         {children}
       </div>
     </div>
@@ -148,18 +148,18 @@ export default function FirstPRSectionPage() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="mb-8 mt-6"
       >
-        <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-6 py-5 shadow-sm">
+        <div className="flex items-center justify-between bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-white/10 px-6 py-4">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
               <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">{step.step}</span>
             </div>
             <div className="min-w-0">
-              <h1 className="font-display text-2xl font-bold text-gray-950 dark:text-white truncate">
+              <h1 className="font-display text-2xl font-bold text-stone-950 dark:text-white truncate">
                 {step.title}
               </h1>
               <div className="flex items-center gap-3 mt-1.5">
                 {step.estimatedMinutes && (
-                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <span className="text-sm font-medium text-stone-500 dark:text-stone-400 flex items-center gap-1">
                     ⏱ {step.estimatedMinutes} min
                   </span>
                 )}
@@ -180,12 +180,12 @@ export default function FirstPRSectionPage() {
               mode="icon"
               onClick={() => prev && navigate(`/student/opensource/first-pr/${prev.id}`)}
               disabled={!prev}
-              className="bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="bg-stone-50 dark:bg-stone-800 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-700"
               title="Previous"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ChevronLeft className="w-5 h-5 text-stone-600 dark:text-stone-400" />
             </Button>
-            <span className="text-sm text-gray-500 dark:text-gray-400 px-2 font-medium tabular-nums hidden sm:inline-block">
+            <span className="text-sm text-stone-500 dark:text-stone-400 px-2 font-medium tabular-nums hidden sm:inline-block">
               {step.step} / {STEPS.length}
             </span>
             <Button
@@ -193,10 +193,10 @@ export default function FirstPRSectionPage() {
               mode="icon"
               onClick={() => next && navigate(`/student/opensource/first-pr/${next.id}`)}
               disabled={!next}
-              className="bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="bg-stone-50 dark:bg-stone-800 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-700"
               title="Next"
             >
-              <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ChevronRight className="w-5 h-5 text-stone-600 dark:text-stone-400" />
             </Button>
           </div>
         </div>
@@ -246,7 +246,7 @@ export default function FirstPRSectionPage() {
               <ul className="space-y-3">
                 {step.details.map((detail, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
                     <span>{detail}</span>
                   </li>
                 ))}
@@ -266,7 +266,7 @@ export default function FirstPRSectionPage() {
               <ul className="space-y-3">
                 {step.tips.map((tip, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
                     <span>{tip}</span>
                   </li>
                 ))}
@@ -286,7 +286,7 @@ export default function FirstPRSectionPage() {
               <ul className="space-y-3">
                 {step.resources.map((r, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
                     <a
                       href={r.url}
                       target="_blank"
@@ -305,7 +305,7 @@ export default function FirstPRSectionPage() {
       </div>
 
       {/* Sticky Footer */}
-      <div className="sticky bottom-0 mt-8 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 p-4 z-10 -mx-4 sm:mx-0 sm:rounded-2xl shadow-[0_-4px_15px_rgba(0,0,0,0.05)]">
+      <div className="sticky bottom-0 mt-8 py-4 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10 z-10">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <Button
             variant="outline"
