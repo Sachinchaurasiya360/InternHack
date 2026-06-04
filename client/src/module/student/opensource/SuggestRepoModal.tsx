@@ -143,12 +143,12 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
 
   const set =
     (key: keyof SuggestRepoForm) =>
-    (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >,
-    ) =>
-      setForm((f) => ({ ...f, [key]: e.target.value }));
+      (
+        e: React.ChangeEvent<
+          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >,
+      ) =>
+        setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -432,7 +432,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
                 {(mutation.error as { response?: { status?: number; data?: { message?: string } } })?.response?.status === 429
                   ? (mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message
                   : (mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-                    "Failed to submit. Please try again."}
+                  "Failed to submit. Please try again."}
               </p>
             )}
 
