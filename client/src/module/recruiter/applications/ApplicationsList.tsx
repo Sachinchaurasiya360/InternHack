@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, Search, Filter } from "lucide-react";
+import { ArrowLeft, Search, Filter, Loader2 } from "lucide-react";
 import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
@@ -17,6 +17,7 @@ export default function ApplicationsList() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounce search input
@@ -30,11 +31,6 @@ export default function ApplicationsList() {
       if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
     };
   }, [search]);
-
-  // Reset to page 1 when filter changes
-  useEffect(() => {
-    setPage(1);
-  }, [statusFilter]);
 
   const fetchApplications = () => {
     setLoading(true);
@@ -68,11 +64,19 @@ const handleStatusChange = async (appId: number, status: string) => {
 };
 
   const handleAdvance = async (appId: number) => {
+    if (advancingIds.has(appId)) return;
+    setAdvancingIds((current) => new Set(current).add(appId));
     try {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       fetchApplications();
     } catch {
       alert("Failed to advance application");
+    } finally {
+      setAdvancingIds((current) => {
+        const next = new Set(current);
+        next.delete(appId);
+        return next;
+      });
     }
   };
 
@@ -151,7 +155,10 @@ const handleStatusChange = async (appId: number, status: string) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                {applications.map((app, i) => (
+                {applications.map((app, i) => {
+                  const isAdvancing = advancingIds.has(app.id);
+
+                  return (
                   <motion.tr key={app.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
                     className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                     <td className="px-6 py-4">
@@ -190,8 +197,10 @@ const handleStatusChange = async (appId: number, status: string) => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleAdvance(app.id)}
-                          className="text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
-                          Advance
+                          disabled={isAdvancing}
+                          className={`inline-flex min-w-[86px] items-center justify-center gap-1.5 text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors ${isAdvancing ? "cursor-not-allowed opacity-70" : ""}`}>
+                          {isAdvancing && <Loader2 className="h-3 w-3 animate-spin" />}
+                          {isAdvancing ? "Advancing" : "Advance"}
                         </button>
                         <Link to={`/recruiters/applications/${app.id}`}
                           className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 no-underline">
@@ -200,7 +209,8 @@ const handleStatusChange = async (appId: number, status: string) => {
                       </div>
                     </td>
                   </motion.tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
