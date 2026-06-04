@@ -9,6 +9,7 @@ import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
+import { InlineCodeText } from "../../../../components/ui/InlineCodeText";
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -48,6 +49,10 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   });
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [dismissedHint, setDismissedHint] = useState(() => {
+    try { return localStorage.getItem("keyboard-nav-hint-dismissed") === "true"; }
+    catch { return false; }
+  });
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
@@ -80,6 +85,17 @@ useEffect(() => {
     prevPath: prev ? `${basePath}/${prev.id}` : null,
     nextPath: next ? `${basePath}/${next.id}` : null,
   });
+  useEffect(() => {
+    if (dismissedHint) return;
+    const handle = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        setDismissedHint(true);
+        try { localStorage.setItem("keyboard-nav-hint-dismissed", "true"); } catch { /* */ }
+      }
+    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, [dismissedHint]);
 
 if (!step) return <Navigate to={basePath} replace />;
 const submitFeedback = async (
@@ -170,6 +186,11 @@ const submitFeedback = async (
             <span className="text-xs text-stone-400 dark:text-stone-500 px-2 font-medium tabular-nums">
               {step.step} / {steps.length}
             </span>
+            {!dismissedHint && (
+              <span className="hidden sm:inline-flex text-[10px] font-mono text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">
+                ← → keys
+              </span>
+            )}
             <Button
               variant="ghost"
               mode="icon"
@@ -200,6 +221,9 @@ const submitFeedback = async (
             </div>
             <div className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
               {step.mentor_guidance}
+            <h2 className="text-lg font-bold text-gray-950 dark:text-white mb-4">Explanation</h2>
+            <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+              <InlineCodeText text={step.mentor_guidance} />
             </div>
           </motion.div>
         )}
@@ -241,6 +265,9 @@ const submitFeedback = async (
                 <li key={i} className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex items-start gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
                   {detail}
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
+                  <InlineCodeText text={detail} />
                 </li>
               ))}
             </ul>
@@ -265,6 +292,9 @@ const submitFeedback = async (
                 <li key={i} className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex items-start gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
                   {tip}
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
+                  <InlineCodeText text={tip} />
                 </li>
               ))}
             </ul>
@@ -288,6 +318,8 @@ const submitFeedback = async (
               {step.resources.map((r, i) => (
                 <li key={i} className="flex items-start gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 mt-2 shrink-0" />
+                <li key={i} className="flex">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
                   <a
                     href={r.url}
                     target="_blank"

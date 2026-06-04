@@ -87,6 +87,48 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
+html[data-theme-transition="running"]::view-transition-group(root) {
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html[data-theme-transition="running"]::view-transition-old(root),
+html[data-theme-transition="running"]::view-transition-new(root) {
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  mix-blend-mode: normal;
+}
+
+html[data-theme-transition="running"]::view-transition-old(root) {
+  animation-name: none;
+}
+
+html[data-theme-transition="running"]::view-transition-new(root) {
+  animation-name: theme-reveal;
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--theme-transition-x) var(--theme-transition-y));
+  }
+
+  to {
+    clip-path: circle(var(--theme-transition-radius) at var(--theme-transition-x) var(--theme-transition-y));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme-transition="running"]::view-transition-group(root),
+  html[data-theme-transition="running"]::view-transition-old(root),
+  html[data-theme-transition="running"]::view-transition-new(root) {
+    animation-duration: 1ms;
+  }
+
+  html[data-theme-transition="running"]::view-transition-new(root) {
+    animation-name: none;
+  }
+}
+
 html,
 body {
   scrollbar-width: thin;

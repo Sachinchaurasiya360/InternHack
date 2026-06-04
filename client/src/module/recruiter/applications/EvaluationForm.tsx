@@ -18,6 +18,15 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
+    const outOfRange = criteria.filter((c) => {
+      const s = scores[c.id]?.score ?? 0;
+      return s < 0 || s > c.maxScore;
+    });
+    if (outOfRange.length > 0) {
+      toast.error(`Scores out of range: ${outOfRange.map((c) => c.criterion).join(", ")}`);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       await api.put(`/recruiter/applications/${applicationId}/rounds/${roundId}/evaluate`, {
@@ -64,7 +73,8 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
               max={crit.maxScore}
               value={scores[crit.id]?.score || 0}
               onChange={(e) => setScores({ ...scores, [crit.id]: { ...scores[crit.id]!, score: Number(e.target.value) } })}
-              className="flex-1"
+              aria-valuetext={`${scores[crit.id]?.score || 0} out of ${crit.maxScore}`}
+              className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded appearance-none cursor-pointer accent-blue-600"
             />
             <span className="text-sm font-bold w-10 text-right dark:text-white">{scores[crit.id]?.score || 0}</span>
           </div>

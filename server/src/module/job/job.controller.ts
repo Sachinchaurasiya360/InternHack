@@ -24,6 +24,9 @@ export class JobController {
       clearCache("jobs:list");
       return res.status(201).json({ message: "Job created successfully", job });
     } catch (error) {
+      if (error instanceof Error && error.message === "Deadline must be in the future") {
+        return res.status(422).json({ message: error.message });
+      }
       logger.error("Failed to create job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }

@@ -33,6 +33,9 @@ type UpdateJobData = {
 
 export class JobService {
   async createJob(data: CreateJobData) {
+    if (data.deadline && new Date(data.deadline) < new Date(new Date().toDateString())) {
+      throw new Error("Deadline must be in the future");
+    }
     return prisma.job.create({
       data: {
         title: data.title,

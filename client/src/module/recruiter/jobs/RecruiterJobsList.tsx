@@ -14,6 +14,7 @@ import {
   Search as SearchIcon,
 } from "lucide-react";
 import api from "../../../lib/axios";
+import toast from "../../../components/ui/toast";
 import type { Job } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -49,8 +50,9 @@ export default function RecruiterJobsList() {
     try {
       await api.delete(`/jobs/${id}`);
       setJobs((prev) => prev.filter((j) => j.id !== id));
+      toast.success("Job deleted");
     } catch {
-      alert("Failed to delete job");
+      toast.error("Failed to delete job");
     }
   };
 
@@ -58,8 +60,9 @@ export default function RecruiterJobsList() {
     try {
       const { data } = await api.patch(`/jobs/${id}/status`, { status });
       setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, status: data.job.status } : j)));
+      toast.success("Job status updated");
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 
@@ -173,11 +176,10 @@ export default function RecruiterJobsList() {
                 <button
                   key={t.key}
                   onClick={() => setTab(t.key)}
-                  className={`relative pb-3 text-xs font-mono uppercase tracking-widest transition-colors cursor-pointer bg-transparent border-0 inline-flex items-center gap-2 ${
-                    active
-                      ? "text-stone-900 dark:text-stone-50"
-                      : "text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
-                  }`}
+                  className={`relative pb-3 text-xs font-mono uppercase tracking-widest transition-colors cursor-pointer bg-transparent border-0 inline-flex items-center gap-2 ${active
+                    ? "text-stone-900 dark:text-stone-50"
+                    : "text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
+                    }`}
                 >
                   {t.label}
                   <span className="text-[10px] text-stone-400 tabular-nums">{count}</span>
@@ -230,12 +232,13 @@ export default function RecruiterJobsList() {
           />
         ) : filteredJobs.length === 0 ? (
           <EmptyState
-            title="No matches"
+            title="No jobs match your search"
             message={
               search
                 ? `Nothing matches "${search}" in this view.`
                 : `No ${tab.toLowerCase()} jobs right now.`
             }
+            onClear={() => { setSearch(""); setTab("ALL"); }}
           />
         ) : (
           <ul className="space-y-3">
@@ -382,10 +385,12 @@ function EmptyState({
   title,
   message,
   cta = false,
+  onClear,
 }: {
   title: string;
   message: string;
   cta?: boolean;
+  onClear?: () => void;
 }) {
   return (
     <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-6 py-16 text-center">
@@ -401,6 +406,14 @@ function EmptyState({
             Post your first job
           </Link>
         </Button>
+      )}
+      {onClear && (
+        <button
+          onClick={onClear}
+          className="mt-2 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 underline underline-offset-4 transition-colors bg-transparent border-0 cursor-pointer"
+        >
+          Clear filters
+        </button>
       )}
     </div>
   );

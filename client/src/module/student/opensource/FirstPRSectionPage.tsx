@@ -209,6 +209,7 @@ export default function FirstPRSectionPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
+            className="rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/10 p-6"
           >
             <SectionCard title="Explanation" icon={<GraduationCap />} color="indigo">
               <div className="whitespace-pre-line text-[15px]">
@@ -224,6 +225,7 @@ export default function FirstPRSectionPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15 }}
+            className="rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/30 dark:bg-indigo-900/10 p-6 space-y-4"
           >
             <SectionCard title="Code Examples" icon={<Code />} color="indigo">
               <div className="space-y-4">
@@ -252,6 +254,22 @@ export default function FirstPRSectionPage() {
                 ))}
               </ul>
             </SectionCard>
+            className="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10 p-6"
+          >
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-sm font-bold text-gray-950 dark:text-white">Important Notes</h3>
+            </div>
+            <ul className="space-y-3">
+              {step.details.map((detail, i) => (
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
+                  {detail}
+                </li>
+              ))}
+            </ul>
           </motion.div>
         )}
 
@@ -272,6 +290,22 @@ export default function FirstPRSectionPage() {
                 ))}
               </ul>
             </SectionCard>
+            className="rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10 p-6"
+          >
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center ">
+                <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              </div>
+              <h3 className="text-sm font-bold text-gray-950 dark:text-white">Pro Tips</h3>
+            </div>
+            <ul className="space-y-3">
+              {step.tips.map((tip, i) => (
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
+                  {tip}
+                </li>
+              ))}
+            </ul>
           </motion.div>
         )}
 
@@ -300,6 +334,30 @@ export default function FirstPRSectionPage() {
                 ))}
               </ul>
             </SectionCard>
+            className="rounded-2xl border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-900/10 p-6"
+          >
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                <ExternalLink className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              </div>
+              <h3 className="text-sm font-bold text-gray-950 dark:text-white">Resources</h3>
+            </div>
+            <ul className="space-y-3">
+              {step.resources.map((r, i) => (
+                <li key={i} className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
+                  <a
+                    href={r.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white transition-colors inline-flex items-center gap-1.5 leading-relaxed"
+                  >
+                    {r.title}
+                    <ExternalLink className="w-3 h-3 shrink-0" />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </motion.div>
         )}
       </div>
@@ -324,6 +382,14 @@ export default function FirstPRSectionPage() {
           </Button>
 
           <div className="flex items-center gap-3">
+        {/* Mark as Complete + Next */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.35 }}
+          className="flex items-center justify-between sticky bottom-0 sm:static bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10 shadow-[0_-4px_8px_rgba(0,0,0,0.05)] px-4 py-3 -mx-4"
+        >
+          <div className="flex items-center justify-between w-full">
             <Button
               variant={isDone ? "ghost" : "primary"}
               onClick={toggleComplete}

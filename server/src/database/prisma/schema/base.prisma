@@ -19,6 +19,8 @@ model user {
   otpExpiresAt          DateTime?
   resetPasswordOtp      String?
   resetOtpExpiresAt     DateTime?
+  passwordResetAttempts Int                         @default(0)
+  passwordResetLockedUntil DateTime?
   contactNo             String?
   profilePic            String?
   coverImage            String?
@@ -455,8 +457,8 @@ model opensourceRepo {
   highlights  String[]       @default([])
   trending    Boolean        @default(false)
   lastUpdated DateTime       @default(now())
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 
   @@index([domain])
   @@index([difficulty])
@@ -1179,14 +1181,6 @@ enum SubscriptionStatus {
   CANCELLED
 }
 
-enum BadgeCategory {
-  CAREER
-  QUIZ
-  SKILL
-  CONTRIBUTION
-  MILESTONE
-}
-
 enum AIProviderType {
   GEMINI
   GROQ
@@ -1203,6 +1197,15 @@ enum AIServiceType {
   EMAIL_CHAT
   AI_ROADMAP_GENERATION
 }
+
+enum BadgeCategory {
+  CAREER
+  QUIZ
+  SKILL
+  CONTRIBUTION
+  MILESTONE
+}
+
 
 enum ScrapedJobStatus {
   ACTIVE
@@ -1433,4 +1436,3 @@ model guideFeedback {
   @@index([guideId])
   @@index([stepId])
   }
-

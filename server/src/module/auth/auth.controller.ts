@@ -254,7 +254,12 @@ export class AuthController {
       await this.authService.resetPassword(email, otp, newPassword);
       return res.json({ message: "Password reset successfully" });
     } catch (err: unknown) {
-      return res.status(400).json({ message: err instanceof Error ? err.message : "Password reset failed" });
+      const errorMessage = err instanceof Error ? err.message : "Password reset failed";
+      // Return 429 for lockout/rate-limit errors, 400 for other validation errors
+      const statusCode = errorMessage.includes("Too many failed attempts") || errorMessage.includes("locked for")
+        ? 429
+        : 400;
+      return res.status(statusCode).json({ message: errorMessage });
     }
   }
 }

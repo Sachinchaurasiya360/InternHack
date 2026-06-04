@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -10,9 +10,16 @@ import {
   ArrowRight,
   ArrowUpRight,
   PlusCircle,
+  CheckCircle2,
+  XCircle,
+  Clock3,
+  CircleDashed,
+  UserCheck,
+  MinusCircle,
+  RefreshCw,
 } from "lucide-react";
 import api from "../../lib/axios";
-import { LoadingScreen } from "../../components/LoadingScreen";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { SEO } from "../../components/SEO";
 import { Button } from "../../components/ui/button";
 import { useAuthStore } from "../../lib/auth.store";
@@ -33,22 +40,34 @@ interface DashboardData {
   }[];
 }
 
-export default function RecruiterDashboard() {
+function RecruiterDashboardInner() {
   const { user } = useAuthStore();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api
-      .get("/recruiter/dashboard")
-      .then((res) => {
-        setData(res.data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+  const fetchDashboard = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/recruiter/dashboard");
+      setData(res.data);
+    } catch {
+      setData(prev => prev ?? null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  if (loading) return <LoadingScreen />;
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
+
+  useEffect(() => {
+    const onFocus = () => fetchDashboard();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [fetchDashboard]);
+
+  if (loading) return <DashboardSkeleton />;
 
   if (!data) {
     return (
@@ -114,6 +133,9 @@ export default function RecruiterDashboard() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Button variant="secondary" size="md" onClick={fetchDashboard} aria-label="Refresh dashboard">
+              <RefreshCw className="w-3.5 h-3.5" />
+            </Button>
             <Button asChild variant="secondary" size="md">
               <Link to="/recruiters/jobs" className="no-underline">
                 My jobs
@@ -175,7 +197,7 @@ export default function RecruiterDashboard() {
                 {Object.entries(data.statusBreakdown).map(([status, count]) => (
                   <li key={status} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <span className={`h-1.5 w-1.5 shrink-0 ${getStatusDot(status)}`} />
+                      {renderStatusIcon(status)}
                       <span className="text-sm text-stone-700 dark:text-stone-300 truncate">
                         {humanizeStatus(status)}
                       </span>
@@ -312,7 +334,7 @@ export default function RecruiterDashboard() {
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
                       <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
-                        <span className={`h-1.5 w-1.5 ${getStatusDot(app.status)}`} />
+                        {renderStatusIcon(app.status)}
                         {humanizeStatus(app.status)}
                       </span>
                       <span className="text-[11px] font-mono text-stone-400 tabular-nums">
@@ -326,6 +348,75 @@ export default function RecruiterDashboard() {
             </ul>
           )}
         </motion.section>
+      </div>
+    </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="relative text-stone-900 dark:text-stone-50 animate-pulse">
+      <div className="relative max-w-6xl mx-auto">
+        <div className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-6 border-b border-stone-200 dark:border-white/10 pb-8">
+          <div className="space-y-3">
+            <div className="h-3 w-32 bg-stone-200 dark:bg-stone-800 rounded" />
+            <div className="h-8 w-64 bg-stone-200 dark:bg-stone-800 rounded" />
+            <div className="h-4 w-48 bg-stone-200 dark:bg-stone-800 rounded" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5 space-y-3">
+              <div className="h-3 w-20 bg-stone-200 dark:bg-stone-800 rounded" />
+              <div className="h-8 w-16 bg-stone-200 dark:bg-stone-800 rounded" />
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-12">
+          <div className="lg:col-span-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 space-y-4">
+            <div className="h-3 w-32 bg-stone-200 dark:bg-stone-800 rounded" />
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-1.5 w-1.5 bg-stone-200 dark:bg-stone-800 rounded-full" />
+                  <div className="h-3 w-24 bg-stone-200 dark:bg-stone-800 rounded" />
+                </div>
+                <div className="h-3 w-6 bg-stone-200 dark:bg-stone-800 rounded" />
+              </div>
+            ))}
+          </div>
+          <div className="lg:col-span-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 space-y-4">
+            <div className="h-3 w-32 bg-stone-200 dark:bg-stone-800 rounded" />
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="h-3 w-28 bg-stone-200 dark:bg-stone-800 rounded" />
+                  <div className="h-3 w-16 bg-stone-200 dark:bg-stone-800 rounded" />
+                </div>
+                <div className="h-1 bg-stone-200 dark:bg-stone-800 rounded-sm w-full" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-4 mb-12">
+          <div className="h-3 w-32 bg-stone-200 dark:bg-stone-800 rounded" />
+          <div className="h-5 w-40 bg-stone-200 dark:bg-stone-800 rounded" />
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center justify-between gap-4 px-5 py-4 border-l border-r border-b border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-stone-200 dark:bg-stone-800 rounded-md" />
+                <div className="space-y-1.5">
+                  <div className="h-3 w-32 bg-stone-200 dark:bg-stone-800 rounded" />
+                  <div className="h-2.5 w-20 bg-stone-200 dark:bg-stone-800 rounded" />
+                </div>
+              </div>
+              <div className="h-3 w-16 bg-stone-200 dark:bg-stone-800 rounded" />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -352,6 +443,14 @@ function formatDate(iso: string) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+export default function RecruiterDashboard() {
+  return (
+    <ErrorBoundary>
+      <RecruiterDashboardInner />
+    </ErrorBoundary>
+  );
+}
+
 function getStatusDot(status: string) {
   switch (status) {
     case "APPLIED":
@@ -369,4 +468,39 @@ function getStatusDot(status: string) {
     default:
       return "bg-stone-400";
   }
+}
+
+function getStatusIcon(status: string) {
+  switch (status) {
+    case "APPLIED":
+      return CircleDashed;
+
+    case "IN_PROGRESS":
+      return Clock3;
+
+    case "SHORTLISTED":
+      return UserCheck;
+
+    case "HIRED":
+      return CheckCircle2;
+
+    case "REJECTED":
+      return XCircle;
+
+    case "WITHDRAWN":
+      return MinusCircle;
+
+    default:
+      return CircleDashed;
+  }
+}
+
+function renderStatusIcon(status: string) {
+  const StatusIcon = getStatusIcon(status);
+  return (
+    <StatusIcon
+      className={`w-3.5 h-3.5 shrink-0 ${getStatusDot(status).replace("bg-", "text-")}`}
+      aria-hidden="true"
+    />
+  );
 }

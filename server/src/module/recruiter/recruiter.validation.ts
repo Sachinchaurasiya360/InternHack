@@ -1,11 +1,18 @@
 import { z } from "zod";
 
+// sanitization function
+const sanitizeText = (value: string) => value.replace(/<[^>]*>?/gm, "").trim();
+const MAX_EVALUATION_CRITERION_SCORE = 100;
+
 const customFieldDefinitionSchema = z.object({
   id: z.string(),
-  label: z.string(),
+  label: z
+    .string()
+    .transform((value) => sanitizeText(value))
+    .refine((value) => value.length > 0, { message: "Label is required" }),
   fieldType: z.enum(["TEXT", "TEXTAREA", "DROPDOWN", "MULTI_SELECT", "FILE_UPLOAD", "BOOLEAN", "NUMERIC", "DATE", "EMAIL", "URL"]),
   required: z.boolean(),
-  placeholder: z.string().optional(),
+  placeholder: z.string().optional().transform((value) => value ? sanitizeText(value) : value),
   options: z.array(z.string()).optional(),
   validation: z.object({
     min: z.number().optional(),
@@ -19,7 +26,10 @@ const customFieldDefinitionSchema = z.object({
 const evaluationCriterionSchema = z.object({
   id: z.string(),
   criterion: z.string(),
-  maxScore: z.number().positive(),
+  maxScore: z
+    .number()
+    .positive("Maximum score must be greater than 0")
+    .max(MAX_EVALUATION_CRITERION_SCORE, `Maximum score cannot exceed ${MAX_EVALUATION_CRITERION_SCORE}`),
   weight: z.number().positive().optional(),
 });
 
@@ -39,7 +49,14 @@ export const createRoundSchema = z.object({
   })).default([]),
   timeLimitSecs: z.number().int().positive().nullable().optional(),
   autoGrade: z.boolean().default(false),
-  activateAt: z.string().datetime().nullable().optional(),
+  activateAt: z
+  .string()
+  .datetime()
+  .refine((dateString) => new Date(dateString) > new Date(), {
+    message: "Activation date must be in the future",
+  })
+  .nullable()
+  .optional(),
 });
 
 export const updateRoundSchema = z.object({
@@ -57,7 +74,14 @@ export const updateRoundSchema = z.object({
   })).optional(),
   timeLimitSecs: z.number().int().positive().nullable().optional(),
   autoGrade: z.boolean().optional(),
-  activateAt: z.string().datetime().nullable().optional(),
+  activateAt: z
+  .string()
+  .datetime()
+  .refine((dateString) => new Date(dateString) > new Date(), {
+    message: "Activation date must be in the future",
+  })
+  .nullable()
+  .optional(),
 });
 
 export const reorderRoundsSchema = z.object({

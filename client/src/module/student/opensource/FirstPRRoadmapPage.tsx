@@ -47,6 +47,8 @@ export default function FirstPRRoadmapPage() {
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
   const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+  const currentStep =
+    STEPS.find((s) => !completed.has(s.id))?.id;
 
   const firstUncompletedIndex = useMemo(() => {
     const idx = STEPS.findIndex(s => !completed.has(s.id));
@@ -86,6 +88,7 @@ export default function FirstPRRoadmapPage() {
           Your First <span className="text-gradient-accent">Contribution</span>
         </h1>
         <p className="text-lg text-stone-500 dark:text-stone-500 max-w-xl mx-auto">
+        <p className="text-lg text-stone-500 dark:text-stone-400 max-w-xl mx-auto">
           A mentor-guided journey from zero to your first merged pull request
         </p>
       </motion.div>
@@ -109,6 +112,7 @@ export default function FirstPRRoadmapPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
             className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 p-5 text-center"
+            className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-white/10 p-5 text-center"
           >
             <stat.icon className={`w-6 h-6 ${stat.iconColor} mx-auto mb-3`} />
             <p className="font-display text-2xl font-bold text-stone-950 dark:text-white">{stat.value}</p>
@@ -124,12 +128,20 @@ export default function FirstPRRoadmapPage() {
           <span className="text-stone-700 dark:text-stone-300">{pct}%</span>
         </div>
         <div className="w-full h-1 bg-stone-100 dark:bg-stone-800 rounded-sm overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="mb-8"
+      > 
+        <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-800 rounded-sm overflow-hidden">
           <div
             className="h-full bg-lime-500 transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
       </div>
+      </motion.div>
 
       {/* Completion banner */}
       <AnimatePresence>
@@ -191,6 +203,7 @@ export default function FirstPRRoadmapPage() {
             statusText = "In Progress";
           }
 
+          const inProgress = currentStep === step.id;
           return (
             <motion.div
               key={step.id}
@@ -225,6 +238,74 @@ export default function FirstPRRoadmapPage() {
                   </div>
                   
                   <p className="line-clamp-2 text-sm text-stone-500 dark:text-stone-400 mb-2">
+                className={`group flex items-center gap-4 bg-white dark:bg-stone-900 px-5 py-5 rounded-2xl border transition-all duration-300 no-underline ${
+                  done
+                    ? "border-green-200 dark:border-green-800 hover:shadow-lg hover:shadow-green-100/50 dark:hover:shadow-green-900/20"
+                    : inProgress
+                    ? "border-indigo-200 dark:border-indigo-800"
+                    : "border-stone-200 dark:border-white/10 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50"
+                }`}
+              >
+                {/* Step number / check */}
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
+                  className="shrink-0"
+                >
+                  {done ? (
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <div
+  className={`w-6 h-6 rounded-full flex items-center justify-center ${
+    inProgress
+      ? "bg-indigo-100 dark:bg-indigo-900/30"
+      : "bg-stone-100 dark:bg-stone-800"
+  }`}
+>
+  <span
+    className={`text-xs font-bold ${
+      inProgress
+        ? "text-indigo-600 dark:text-indigo-400"
+        : "text-stone-500 dark:text-stone-400"
+    }`}
+  >
+    {step.step}
+  </span>
+</div>
+                  )}
+                </Button>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+  <h3
+    className={`text-sm font-bold ${
+      done
+        ? "text-stone-400 dark:text-stone-500 line-through"
+        : "text-stone-950 dark:text-white"
+    }`}
+  >
+    {step.title}
+  </h3>
+
+  <span
+    className={`text-xs px-2 py-0.5 rounded-lg font-medium ${
+      done
+        ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+        : inProgress
+        ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400"
+        : "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400"
+    }`}
+  >
+    {done ? "Completed" : inProgress ? "In Progress" : "Upcoming"}
+  </span>
+</div>
+                  {step.estimatedMinutes && (
+                    <p className="text-xs font-medium text-stone-500 dark:text-stone-400">~{step.estimatedMinutes} min</p>
+                  )}
+                  <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-2">
                     {step.description}
                   </p>
                   
