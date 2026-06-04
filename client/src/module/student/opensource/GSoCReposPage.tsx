@@ -626,7 +626,7 @@ export default function GSoCReposPage() {
               </span>
               <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
               <span>
-                <span className="text-lime-600 dark:text-lime-400">2016-2026</span> years
+                <span className="text-lime-600 dark:text-lime-400">2016-{new Date().getFullYear()}</span> years
               </span>
             </div>
           </div>
