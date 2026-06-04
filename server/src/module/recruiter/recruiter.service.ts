@@ -197,10 +197,19 @@ export class RecruiterService {
   }
 
   async reorderRounds(jobId: number, recruiterId: number, rounds: { roundId: number; orderIndex: number }[]) {
+    // 2. Empty array guard
+    if (!rounds?.length) return [];
+
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
     
+    // 3. Duplicate roundId validation
+    const uniqueIds = new Set(rounds.map((r) => r.roundId));
+    if (uniqueIds.size !== rounds.length) {
+      throw new Error("Duplicate round IDs in reorder payload");
+    }
+
     const existingRounds = await prisma.round.findMany({
       where: {
         id: { in: rounds.map((r) => r.roundId) },
@@ -213,21 +222,23 @@ export class RecruiterService {
       throw new Error("Invalid round IDs");
     }
 
-    // Use an atomic raw SQL update with CASE WHEN to avoid unique constraint violations
-    // during the reordering process. This ensures the database evaluates all changes 
-    // as a single mutation, preventing P2002 errors common in concurrent sequential updates.
+    // 1. Safe reordering with two-pass update strategy to avoid unique constraint violations
     await prisma.$transaction(async (tx) => {
-      const cases = rounds
-        .map((r) => `WHEN id = ${Number(r.roundId)} THEN ${Number(r.orderIndex)}`)
-        .join(" ");
-      const ids = rounds.map((r) => Number(r.roundId)).join(", ");
+      // First pass: move to temporary high indices to clear existing spots
+      for (const round of rounds) {
+        await tx.round.update({
+          where: { id: round.roundId, jobId },
+          data: { orderIndex: round.orderIndex + 10000 },
+        });
+      }
 
-      await tx.$executeRawUnsafe(`
-        UPDATE "round"
-        SET "orderIndex" = CASE ${cases} END
-        WHERE id IN (${ids})
-        AND "jobId" = ${Number(jobId)}
-      `);
+      // Second pass: set final indices
+      for (const round of rounds) {
+        await tx.round.update({
+          where: { id: round.roundId, jobId },
+          data: { orderIndex: round.orderIndex },
+        });
+      }
     });
 
     return prisma.round.findMany({
