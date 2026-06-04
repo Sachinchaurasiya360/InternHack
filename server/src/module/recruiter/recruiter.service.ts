@@ -197,14 +197,14 @@ export class RecruiterService {
   }
 
   async reorderRounds(jobId: number, recruiterId: number, rounds: { roundId: number; orderIndex: number }[]) {
-    // 2. Empty array guard
+    // Empty array guard
     if (!rounds?.length) return [];
 
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
     
-    // 3. Duplicate roundId validation
+    // Duplicate roundId validation
     const uniqueIds = new Set(rounds.map((r) => r.roundId));
     if (uniqueIds.size !== rounds.length) {
       throw new Error("Duplicate round IDs in reorder payload");
@@ -222,7 +222,7 @@ export class RecruiterService {
       throw new Error("Invalid round IDs");
     }
 
-    // 1. Safe reordering with two-pass update strategy to avoid unique constraint violations
+    // Safe reordering with two-pass update strategy to avoid unique constraint violations
     await prisma.$transaction(async (tx) => {
       // First pass: move to temporary high indices to clear existing spots
       for (const round of rounds) {
