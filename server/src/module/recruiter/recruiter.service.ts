@@ -278,7 +278,8 @@ export class RecruiterService {
 
     // Fix for #1111: Prevent duplicate status updates and emails
     if (application.status === status) {
-      return application;
+      const { job: _job, student: _student, ...current } = application;
+      return current;
     }
 
     const updated = await prisma.application.update({

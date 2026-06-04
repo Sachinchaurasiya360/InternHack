@@ -251,8 +251,15 @@ export class RecruiterController {
       return res.status(200).json({ message: "Submission evaluated successfully", submission });
     } catch (error) {
       if (error instanceof Error) {
+        // Fix for #1116: Catch our custom 422 JSON parse error from the service
+        const status = (error as Error & { status?: number }).status;
+        if (status === 422) return res.status(422).json({ message: error.message });
+
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "Withdrawn applications cannot participate in the hiring process") return res.status(400).json({ message: error.message });
+        if (error.message === "Round not found") return res.status(404).json({ message: error.message });
+        if (error.message.startsWith("Evaluation score for")) return res.status(400).json({ message: error.message });
       }
       logger.error("Failed to evaluate submission", error);
       return res.status(500).json({ message: "Internal Server Error" });
