@@ -51,7 +51,6 @@ import {
   ingestExternalJobSchema,
   broadcastEmailSchema,
 } from "./admin.validation.js";
-import { withAdvisoryLock } from "../../utils/cron-lock.js";
 
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}

@@ -45,6 +45,9 @@ type RepoRequestCardProps = {
   index: number;
   onApprove: (id: number, payload: ApprovePayload) => Promise<void>;
   onReject: (id: number) => Promise<void>;
+  selectedIds: number[];
+  onToggleSelect: (id: number) => void;
+  statusFilter: string;
 };
 
 const buildFormState = (req: RepoRequest): RepoRequestFormState => ({
@@ -54,12 +57,6 @@ const buildFormState = (req: RepoRequest): RepoRequestFormState => ({
   difficulty: req.difficulty,
   tags: req.tags ?? [],
 });
-
-const parseTags = (value: string) =>
-  value
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean);
 
 const statusBadge = (status: string) => {
   const map: Record<string, string> = {
@@ -101,20 +98,34 @@ const [page, setPage] = useState(1);
     }
   };
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+  // Fetch whenever filters or page changes
   useEffect(() => {
-  setPage(1);
-}, [statusFilter, domainFilter, difficultyFilter]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => {
-  fetchRequests();
-}, [statusFilter, domainFilter, difficultyFilter, page]);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => {
-  setSelectedIds([]);
-}, [statusFilter, domainFilter, difficultyFilter, page]);
+    fetchRequests();
+    // Selection is cleared when page or filters change because the list items change
+    setSelectedIds([]);
+  }, [statusFilter, domainFilter, difficultyFilter, page]);
 
+  // Reset page to 1 when filters change
+  const handleFilterChange = (setter: (v: string) => void, value: string) => {
+    setter(value);
+    setPage(1);
+  };
 
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const pendingOnPage = requests.filter((r) => r.status === "PENDING").map((r) => r.id);
+    const allSelected = pendingOnPage.every((id) => selectedIds.includes(id));
+    if (allSelected) {
+      setSelectedIds((prev) => prev.filter((id) => !pendingOnPage.includes(id)));
+    } else {
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...pendingOnPage])));
+    }
+  };
 
   const handleApprove = async (id: number, payload: ApprovePayload) => {
     try {
@@ -136,7 +147,29 @@ const [page, setPage] = useState(1);
     }
   };
 
+  const handleBulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await api.put("/opensource/requests/bulk", { ids: selectedIds, action: "approve" });
+      toast.success(`Successfully approved ${selectedIds.length} repositories`);
+      setSelectedIds([]);
+      fetchRequests();
+    } catch {
+      toast.error("Failed to approve selected requests");
+    }
+  };
 
+  const handleBulkReject = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await api.put("/opensource/requests/bulk", { ids: selectedIds, action: "reject" });
+      toast.success(`Successfully rejected ${selectedIds.length} requests`);
+      setSelectedIds([]);
+      fetchRequests();
+    } catch {
+      toast.error("Failed to reject selected requests");
+    }
+  };
 
   const statusTabs = ["PENDING", "APPROVED", "REJECTED"];
 
@@ -150,7 +183,7 @@ const [page, setPage] = useState(1);
       {/* Status Tabs */}
       <div className="flex gap-2 mb-6">
         {statusTabs.map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)}
+          <button key={s} onClick={() => handleFilterChange(setStatusFilter, s)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               statusFilter === s ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"
             }`}>
@@ -164,7 +197,7 @@ const [page, setPage] = useState(1);
 <div className="flex flex-wrap gap-3 mb-6">
   <select
     value={domainFilter}
-    onChange={(e) => setDomainFilter(e.target.value)}
+    onChange={(e) => handleFilterChange(setDomainFilter, e.target.value)}
     className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm"
   >
     <option value="">All Domains</option>
@@ -177,7 +210,7 @@ const [page, setPage] = useState(1);
 
   <select
     value={difficultyFilter}
-    onChange={(e) => setDifficultyFilter(e.target.value)}
+    onChange={(e) => handleFilterChange(setDifficultyFilter, e.target.value)}
     className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm"
   >
     <option value="">All Difficulties</option>
@@ -190,7 +223,23 @@ const [page, setPage] = useState(1);
 </div>
 
 
-
+      {statusFilter === "PENDING" && requests.length > 0 && (
+        <div className="flex items-center gap-3 mb-6 bg-gray-800/40 border border-gray-700 p-3 rounded-lg w-fit">
+          <input
+            type="checkbox"
+            id="selectAll"
+            className="w-4 h-4 rounded-sm border-gray-600 bg-gray-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 cursor-pointer"
+            checked={
+              requests.length > 0 &&
+              requests.filter((r) => r.status === "PENDING").map((r) => r.id).every((id) => selectedIds.includes(id))
+            }
+            onChange={handleSelectAll}
+          />
+          <label htmlFor="selectAll" className="text-sm text-gray-300 font-medium cursor-pointer select-none">
+            Select All on this page
+          </label>
+        </div>
+      )}
 
       {loading ? (
         <LoadingScreen />
@@ -208,6 +257,9 @@ const [page, setPage] = useState(1);
               index={i}
               onApprove={handleApprove}
               onReject={handleReject}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+              statusFilter={statusFilter}
             />
           ))}
 
@@ -221,7 +273,38 @@ const [page, setPage] = useState(1);
         </div>
       )}
 
-
+      {/* Bulk Action Toolbar */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-700 px-6 py-4 rounded-xl shadow-xl flex items-center gap-4 z-50 animate-in fade-in slide-in-from-bottom-4">
+          <span className="text-sm text-gray-300 font-semibold shrink-0 select-none">
+            {selectedIds.length} {selectedIds.length === 1 ? "request" : "requests"} selected
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              className="flex items-center gap-1 shrink-0"
+              onClick={handleBulkReject}
+            >
+              <X className="w-3.5 h-3.5" /> Reject Selected
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              className="flex items-center gap-1 shrink-0"
+              onClick={handleBulkApprove}
+            >
+              <Check className="w-3.5 h-3.5" /> Approve Selected
+            </Button>
+          </div>
+          <button
+            onClick={() => setSelectedIds([])}
+            className="text-xs text-gray-400 hover:text-white font-medium transition-colors cursor-pointer shrink-0 select-none"
+          >
+            Deselect
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -231,18 +314,21 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
   index,
   onApprove,
   onReject,
+  selectedIds,
+  onToggleSelect,
+  statusFilter,
 }: RepoRequestCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formState, setFormState] = useState<RepoRequestFormState>(() => buildFormState(req));
   const [adminNote, setAdminNote] = useState(req.adminNote ?? "");
+  const [tagsInput, setTagsInput] = useState(() => (req.tags ?? []).join(", "));
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormState(buildFormState(req));
+    setTagsInput((req.tags ?? []).join(", "));
     setAdminNote(req.adminNote ?? "");
     setIsEditing(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [req.id, req.updatedAt]);
+  }, [req]);
 
   const handleApproveClick = () => {
     const payload: ApprovePayload = {};
@@ -256,13 +342,14 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
       payload.description = formState.description.trim();
       payload.domain = formState.domain;
       payload.difficulty = formState.difficulty;
-      payload.tags = formState.tags;
+      payload.tags = tagsInput
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean);
     }
 
     void onApprove(req.id, payload);
   };
-
-  const tagsValue = formState.tags.join(", ");
 
   return (
     <motion.div
@@ -271,6 +358,16 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
       transition={{ delay: index * 0.03 }}
       className="bg-gray-800/50 border border-gray-700 rounded-xl p-5 flex gap-4"
     >
+      {statusFilter === "PENDING" && (
+        <div className="pt-1.5 select-none shrink-0">
+          <input
+            type="checkbox"
+            checked={selectedIds.includes(req.id)}
+            onChange={() => onToggleSelect(req.id)}
+            className="w-4 h-4 rounded-sm border-gray-600 bg-gray-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 cursor-pointer"
+          />
+        </div>
+      )}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-4 mb-3">
           <div className="flex-1 min-w-0">
@@ -354,10 +451,8 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
           <div className="grid gap-1">
             <label className="text-xs font-medium text-gray-500">Tags</label>
             <input
-              value={tagsValue}
-              onChange={(event) =>
-                setFormState((prev) => ({ ...prev, tags: parseTags(event.target.value) }))
-              }
+              value={tagsInput}
+              onChange={(e) => setTagsInput(e.target.value)}
               className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
               placeholder="Beginner friendly, hacktoberfest"
             />
