@@ -1205,7 +1205,6 @@ enum BadgeCategory {
   SKILL
   CONTRIBUTION
   MILESTONE
-  DSA_CODE_REVIEW
 }
 
 
