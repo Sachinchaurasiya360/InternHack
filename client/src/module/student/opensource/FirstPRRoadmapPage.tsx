@@ -232,7 +232,7 @@ export default function FirstPRRoadmapPage() {
   </h3>
 
   <span
-    className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+    className={`text-xs px-2 py-0.5 rounded-lg font-medium ${
       done
         ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
         : inProgress
