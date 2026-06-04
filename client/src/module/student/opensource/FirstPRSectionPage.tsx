@@ -16,6 +16,7 @@ import { CodeBlock } from "../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/open-source-guide.json";
 import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
+import { ReadingProgressBar } from "../../../components/ReadingProgressBar";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource { title: string; url: string; type: string }
@@ -82,6 +83,7 @@ export default function FirstPRSectionPage() {
 
   return (
     <div className="relative pb-12">
+      <ReadingProgressBar />
       <SEO
         title={`${step.title} - First PR Guide`}
         description={step.description || `Learn ${step.title} in our step-by-step first pull request guide.`}

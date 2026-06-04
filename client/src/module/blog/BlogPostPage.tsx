@@ -41,6 +41,7 @@ import { formatBlogDate } from "./utils/formatBlogDate";
 import { calculateReadingTime } from "./utils/calculateReadingTime";
 
 import type { BlogPost } from "../../lib/types";
+import { ReadingProgressBar } from "../../components/ReadingProgressBar";
 
 // ─────────────────────────────────────────────────────────────
 // HTML Escaping
@@ -260,6 +261,7 @@ export default function BlogPostPage() {
 
   return (
     <div className="font-sans min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
+      <ReadingProgressBar />
       {post && (
         <SEO
           title={post.title}

@@ -10,6 +10,7 @@ import { Button } from "../../../../components/ui/button";
 import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import { InlineCodeText } from "../../../../components/ui/InlineCodeText";
+import { ReadingProgressBar } from "../../../../components/ReadingProgressBar";
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -137,6 +138,7 @@ const submitFeedback = async (
 
   return (
     <div className="relative pb-12">
+      <ReadingProgressBar />
       <SEO
         title={`${step.title} - ${seoSuffix}`}
         description={step.description}
