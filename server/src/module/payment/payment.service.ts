@@ -2,6 +2,7 @@ import DodoPayments from "dodopayments";
 import { prisma } from "../../database/db.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { premiumConfirmationEmailHtml } from "../../utils/email-templates.js";
+import { invalidateUserTierCache } from "../../utils/premium.utils.js";
 
 // ── Product IDs (set in Dodo dashboard, referenced by env vars) ──
 const PRODUCT_IDS = {
@@ -196,6 +197,7 @@ export class PaymentService {
         subscriptionEndDate: endDate,
       },
     });
+    await invalidateUserTierCache(userId);
 
     // Send confirmation email
     const user = await prisma.user.findUnique({
@@ -222,6 +224,7 @@ export class PaymentService {
       where: { id: payment.userId },
       data: { subscriptionStatus: "CANCELLED" },
     });
+    await invalidateUserTierCache(payment.userId);
   }
 
   private async expireSubscription(subscriptionId: string) {
@@ -238,6 +241,7 @@ export class PaymentService {
         subscriptionPlan: "FREE",
       },
     });
+    await invalidateUserTierCache(payment.userId);
   }
 
   private async holdSubscription(subscriptionId: string) {
@@ -251,6 +255,7 @@ export class PaymentService {
       where: { id: payment.userId },
       data: { subscriptionStatus: "EXPIRED" },
     });
+    await invalidateUserTierCache(payment.userId);
   }
 
   private async renewSubscription(sub: { subscription_id: string; next_billing_date: string; metadata: Record<string, string> }) {
@@ -267,6 +272,7 @@ export class PaymentService {
         subscriptionEndDate: new Date(sub.next_billing_date),
       },
     });
+    await invalidateUserTierCache(payment.userId);
   }
 
   // ── Check checkout session status (for client polling) ─────────

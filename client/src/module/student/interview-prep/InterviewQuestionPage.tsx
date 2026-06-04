@@ -7,14 +7,13 @@ import {
   CheckCircle2,
   Star,
   Info,
-  Copy,
-  Check,
   ArrowUpRight,
   MessageSquare,
 } from "lucide-react";
 import { sections, questions } from "./data";
-import type { CodeExample } from "./data/types";
+
 import { SEO } from "../../../components/SEO";
+import { CodeBlock } from "../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
@@ -55,57 +54,6 @@ function MetaChip({ children, className = "" }: { children: React.ReactNode; cla
   );
 }
 
-function CodeBlock({ example }: { example: CodeExample }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(example.code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [example.code]);
-
-  return (
-    <div className="rounded-md border border-stone-200 dark:border-white/10 overflow-hidden bg-white dark:bg-stone-900">
-      <div className="flex items-center justify-between px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border-b border-stone-200 dark:border-white/10">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-          {example.title}
-        </span>
-        <button
-          onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 px-2 py-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-lime-600 dark:hover:text-lime-400 transition-colors bg-transparent border-0 cursor-pointer"
-        >
-          {copied ? (
-            <>
-              <Check className="w-3 h-3 text-lime-500" /> copied
-            </>
-          ) : (
-            <>
-              <Copy className="w-3 h-3" /> copy
-            </>
-          )}
-        </button>
-      </div>
-      <pre className="p-4 overflow-x-auto bg-stone-950 text-stone-100 text-sm leading-relaxed font-mono">
-        <code>{example.code}</code>
-      </pre>
-      {example.output && (
-        <div className="px-4 py-3 bg-stone-900 border-t border-stone-800">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1">
-            output
-          </span>
-          <pre className="text-sm text-lime-400 whitespace-pre-wrap font-mono">{example.output}</pre>
-        </div>
-      )}
-      {example.explanation && (
-        <div className="px-4 py-3 bg-stone-50 dark:bg-stone-900/50 border-t border-stone-200 dark:border-white/10">
-          <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
-            {example.explanation}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function SectionLabel({ icon, children, accent = "lime" }: { icon: React.ReactNode; children: React.ReactNode; accent?: "lime" | "blue" | "amber" | "violet" }) {
   const dotColor = {
@@ -225,6 +173,18 @@ export default function InterviewQuestionPage() {
     sectionSlug,
     sectionQuestions,
   ]);
+
+  const language = useMemo(() => {
+    if (!sectionSlug) return "javascript";
+    if (sectionSlug.includes("javascript") || sectionSlug.includes("nodejs") || sectionSlug.includes("system-design") || sectionSlug.includes("behavioral")) return "javascript";
+    if (sectionSlug.includes("react")) return "tsx";
+    if (sectionSlug.includes("typescript")) return "typescript";
+    if (sectionSlug.includes("python") || sectionSlug.includes("fastapi")) return "python";
+    if (sectionSlug.includes("sql")) return "sql";
+    if (sectionSlug.includes("html-css")) return "html";
+    if (sectionSlug.includes("git-devops")) return "bash";
+    return "javascript";
+  }, [sectionSlug]);
 
   if (section && !section.freeTier && !isAuthenticated) {
     return <Navigate to={basePath} replace />;
@@ -362,7 +322,7 @@ export default function InterviewQuestionPage() {
               <SectionLabel icon={null}>code examples</SectionLabel>
               <div className="space-y-4">
                 {codeExamples.map((example, i) => (
-                  <CodeBlock key={i} example={example} />
+                  <CodeBlock key={i} example={example} language={language} />
                 ))}
               </div>
             </motion.div>

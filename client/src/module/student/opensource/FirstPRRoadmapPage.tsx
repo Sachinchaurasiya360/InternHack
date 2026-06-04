@@ -16,6 +16,7 @@ interface Step {
   id: string;
   title: string;
   description: string;
+  estimatedMinutes?: number;
 }
 
 // ─── Data ──────────────────────────────────────────────────────
@@ -45,6 +46,7 @@ export default function FirstPRRoadmapPage() {
   const totalSteps = STEPS.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
+  const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
 
   return (
     <div className="relative pb-12">
@@ -94,6 +96,7 @@ export default function FirstPRRoadmapPage() {
           { icon: GitPullRequest, value: totalSteps, label: "Steps", iconColor: "text-indigo-500" },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
+          { icon: ArrowRight, value: `${totalEstimatedMinutes} min`, label: "Est. Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -120,8 +123,27 @@ export default function FirstPRRoadmapPage() {
           >
             <Trophy className="w-8 h-8 text-green-500 shrink-0" />
             <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">You're an open source contributor!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">You've completed all {totalSteps} steps. Time to find your next issue!</p>
+              <p className="text-base font-bold text-green-900 dark:text-green-300">You shipped your first PR!</p>
+              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">10 / 10 steps complete. Your open source journey has begun.</p>
+            <div className="flex gap-4 mt-3 flex-wrap items-center">
+                <Link
+                  to="/student/opensource"
+                  className="text-sm text-lime-700 dark:text-lime-400 underline font-medium"
+                >
+                  Discover repos to contribute to
+                </Link>
+                <button
+                  onClick={() => {
+                    if (window.confirm("Reset all steps?")) {
+                      setCompleted(new Set());
+                      try { localStorage.removeItem(STORAGE_KEY); } catch { /**/ }
+                    }
+                  }}
+                  className="text-sm text-lime-700 dark:text-lime-400 border border-lime-400 px-3 py-0.5 rounded-lg font-medium"
+                >
+                  Start over
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
@@ -158,7 +180,7 @@ export default function FirstPRRoadmapPage() {
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   ) : (
                     <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
+                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
                     </div>
                   )}
                 </Button>
@@ -172,6 +194,9 @@ export default function FirstPRRoadmapPage() {
                   }`}>
                     {step.title}
                   </h3>
+                  {step.estimatedMinutes && (
+                    <p className="text-xs font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</p>
+                  )}
                   <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
                     {step.description}
                   </p>

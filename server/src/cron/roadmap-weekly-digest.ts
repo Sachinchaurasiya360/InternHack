@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
 import { roadmapWeeklyDigestEmailHtml } from "../utils/email-templates.js";
+import { withAdvisoryLock } from "../utils/cron-lock.js";
 
 let cronJob: cron.ScheduledTask | null = null;
 
@@ -130,11 +131,24 @@ export function startWeeklyRoadmapDigestCron(schedule = "0 9 * * 1"): void {
   cronJob = cron.schedule(
     schedule,
     () => {
-      void sendWeeklyRoadmapDigests().catch((err) => {
-        console.error("[RoadmapDigest] Weekly digest failed:", err);
+      void withAdvisoryLock("roadmap-weekly-digest", async () => {
+        try {
+          await sendWeeklyRoadmapDigests();
+        } catch (err) {
+          console.error("[RoadmapDigest] Weekly digest failed:", err);
+        }
       });
     },
     { timezone: "Etc/UTC" },
   );
   console.log(`[RoadmapDigest] Weekly digest scheduled with cron "${schedule}"`);
+}
+
+/** Stop the weekly roadmap digest cron (used during graceful shutdown). */
+export function stopWeeklyRoadmapDigestCron(): void {
+  if (cronJob) {
+    cronJob.stop();
+    cronJob = null;
+    console.log("[RoadmapDigest] Weekly digest cron stopped");
+  }
 }

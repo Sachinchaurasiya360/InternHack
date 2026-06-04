@@ -97,6 +97,7 @@ export default function CompanyDetailPage() {
     queryKey: queryKeys.companies.detail(slug!),
     queryFn: () => api.get(`/companies/${slug}`).then((r) => r.data.company),
     enabled: !!slug,
+    staleTime: 15 * 60 * 1000,
   });
 
   const {
@@ -110,6 +111,7 @@ export default function CompanyDetailPage() {
     queryFn: () => api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data),
     enabled: !!slug,
     placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000,
   });
 
   const reviews = reviewsData?.reviews || [];

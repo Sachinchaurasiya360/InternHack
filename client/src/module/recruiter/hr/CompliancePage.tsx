@@ -93,7 +93,7 @@ export default function CompliancePage() {
     onSettled: () => setSaving(false),
   });
 
-  const baseList = tab === "documents" ? documents ?? [] : expiring ?? [];
+  const baseList = useMemo(() => tab === "documents" ? documents ?? [] : expiring ?? [], [tab, documents, expiring]);
   const isLoading = tab === "documents" ? loadingDocs : loadingExpiring;
 
   const filtered = useMemo(() => {
