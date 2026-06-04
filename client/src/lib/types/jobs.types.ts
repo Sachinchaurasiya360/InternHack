@@ -21,10 +21,18 @@ export interface CustomFieldDefinition {
   };
 }
 
+/** Scoring rubric for a single criterion within a hiring round */
 export interface EvaluationCriterion {
+  /** Unique identifier for this criterion entry */
   id: string;
+  /** Human-readable name of the criterion (e.g. "Communication Skills") */
   criterion: string;
+  /** Maximum possible score a candidate can receive for this criterion */
   maxScore: number;
+  /**
+   * Relative importance weight used to compute a weighted aggregate across criteria.
+   * When omitted all criteria are weighted equally.
+   */
   weight?: number;
 }
 

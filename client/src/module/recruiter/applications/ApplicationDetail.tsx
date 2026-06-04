@@ -54,6 +54,10 @@ export default function ApplicationDetail() {
   if (loading) return <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-500">Loading...</div>;
   if (!application) return <div className="text-center text-gray-500 dark:text-gray-500">Application not found</div>;
 
+  const studentName = application.student?.name || "Account deleted";
+  const studentEmail = application.student?.email || "";
+  const studentContact = application.student?.contactNo || "";
+
   return (
     <div className="max-w-4xl mx-auto">
       <SEO title="Application Detail" noIndex />
@@ -65,9 +69,10 @@ export default function ApplicationDetail() {
       <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">{application.student?.name}</h1>
-            <p className="text-gray-500 dark:text-gray-500">{application.student?.email}</p>
-            {application.student?.contactNo && <p className="text-sm text-gray-400 dark:text-gray-500">{application.student.contactNo}</p>}
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">{studentName}</h1>
+            {studentEmail && <p className="text-gray-500 dark:text-gray-500">{studentEmail}</p>}
+            {studentContact && <p className="text-sm text-gray-400 dark:text-gray-500">{studentContact}</p>}
+            {!application.student && <p className="text-xs text-gray-400 mt-1">This student account has been deleted.</p>}
           </div>
           <div className="flex items-center gap-2">
             <select value={application.status} onChange={(e) => handleStatusChange(e.target.value)}
@@ -96,7 +101,7 @@ export default function ApplicationDetail() {
           {application.student?.resumes && application.student.resumes.length > 0 && application.student.resumes.map((url, i) => (
             <a key={i} href={url.startsWith("http") ? url : `${SERVER_URL}${url}`} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline">
-              <Download className="w-4 h-4" /> Profile Resume {application.student!.resumes!.length > 1 ? i + 1 : ""}
+              <Download className="w-4 h-4" /> Profile Resume {application.student && application.student.resumes && application.student.resumes.length > 1 ? i + 1 : ""}
             </a>
           ))}
           {application.coverLetter && (
@@ -112,12 +117,12 @@ export default function ApplicationDetail() {
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold dark:text-white flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-green-500" /> Verified Skills
+              <ShieldCheck className="w-5 h-5 text-green-500 dark:text-green-400" /> Verified Skills
             </h2>
             {application.job?.tags && application.job.tags.length > 0 && (() => {
               const verifiedNames = new Set(verifiedSkills.map((v) => v.skillName.toLowerCase()));
-              const matched = application.job!.tags.filter((t) => verifiedNames.has(t.toLowerCase())).length;
-              const pct = Math.round((matched / application.job!.tags.length) * 100);
+              const matched = application.job.tags.filter((t) => verifiedNames.has(t.toLowerCase())).length;
+              const pct = Math.round((matched / application.job.tags.length) * 100);
               return (
                 <span className={`text-sm font-semibold px-3 py-1 rounded-full ${pct >= 70 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : pct >= 40 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"}`}>
                   {pct}% skill match
@@ -214,10 +219,10 @@ export default function ApplicationDetail() {
 
 function getStatusIcon(status: string) {
   switch (status) {
-    case "COMPLETED": return <CheckCircle className="w-4 h-4 text-green-500" />;
-    case "IN_PROGRESS": return <Clock className="w-4 h-4 text-yellow-500" />;
-    case "PENDING": return <Clock className="w-4 h-4 text-gray-400" />;
-    default: return <XCircle className="w-4 h-4 text-red-500" />;
+    case "COMPLETED": return <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />;
+    case "IN_PROGRESS": return <Clock className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />;
+    case "PENDING": return <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />;
+    default: return <XCircle className="w-4 h-4 text-red-500 dark:text-red-400" />;
   }
 }
 

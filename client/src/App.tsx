@@ -6,6 +6,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
 import BackToTopButton from "./components/common/BackToTopButton";
+import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
 function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
@@ -309,6 +310,7 @@ function AuthExpiredRedirect() {
 function App() {
   return (
     <>
+      <ScrollToTop />
       <AuthExpiredRedirect />
       <Toaster />
       <ErrorBoundary>

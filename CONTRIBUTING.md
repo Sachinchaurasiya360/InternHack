@@ -120,29 +120,25 @@ npx prisma db push
 ```bash
 cd server
 
-# Seed everything, users, DSA, aptitude, companies, badges, skill tests,
+# Seed everything: users, DSA, aptitude, companies, badges, skill tests,
 # hackathons, open-source repos, gov internships, and blog posts
 npm run seed
-
-# Or seed only an admin + recruiter account
-# (set ADMIN_EMAIL and ADMIN_PASSWORD in .env first)
-npm run seed:admin
 ```
 
-> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent, you can run it multiple times without creating duplicates. Default password for all seeded accounts is `Test@1234`.
+> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent — safe to run multiple times without creating duplicates.
 >
-> **Seeded accounts:**
+> **Seeded accounts** (password for all: `Test@1234`):
 >
-> | Email | Role | Plan | Notes |
-> |---|---|---|---|
-> | `admin@internhack.xyz` | Admin | Free | Super-admin with full dashboard access |
-> | `recruiter@internhack.xyz` | Recruiter | Free | Pre-linked to TechCorp, can post jobs |
-> | `aarav@example.com` | Student | Free | IIT Delhi, JavaScript/React/Node.js |
-> | `priya@example.com` | Student | Free | NIT Trichy, Python/Django/ML |
-> | `rohan@example.com` | Student | Free | BITS Pilani, Java/Spring Boot/AWS |
-> | `sneha@example.com` | Student | Free | IIIT Hyderabad, TypeScript/React/PostgreSQL |
-> | `arjun@example.com` | Student | Free | VIT Vellore, C++/DSA |
-> | `premium@example.com` | Student | **Monthly (Active)** | Use this account to test all premium/subscription-gated features (AI roadmaps, cover letter generation, mock interviews, etc.) |
+> | Email | Password | Role | Plan | Notes |
+> |---|---|---|---|---|
+> | `admin@internhack.xyz` | `Test@1234` | Admin | Free | Super-admin with full dashboard access |
+> | `recruiter@internhack.xyz` | `Test@1234` | Recruiter | Free | Hiring Manager at TechCorp — can post and manage jobs |
+> | `aarav@example.com` | `Test@1234` | Student | Free | IIT Delhi, JavaScript/React/Node.js |
+> | `priya@example.com` | `Test@1234` | Student | Free | NIT Trichy, Python/Django/ML |
+> | `rohan@example.com` | `Test@1234` | Student | Free | BITS Pilani, Java/Spring Boot/AWS |
+> | `sneha@example.com` | `Test@1234` | Student | Free | IIIT Hyderabad, TypeScript/React/PostgreSQL |
+> | `arjun@example.com` | `Test@1234` | Student | Free | VIT Vellore, C++/DSA |
+> | `premium@example.com` | `Test@1234` | Student | **Monthly (Active)** | Use this account to test all premium/subscription-gated features (AI roadmaps, cover letter generation, mock interviews, etc.) |
 
 ### Step 6: Start the dev servers
 
@@ -210,6 +206,7 @@ This repository includes optional AI assistant context files (`CLAUDE.md` and `.
 | `server/src/index.ts` | All API routes, middleware order, CORS setup |
 | `client/src/App.tsx` | All frontend routes and lazy-loaded pages |
 | `server/src/database/prisma/schema/base.prisma` | Core database models |
+| `docs/database-schema.md` | [Visual ER diagram](../docs/database-schema.md) of all models and their relationships |
 | `client/src/lib/types.ts` | Client-side TypeScript interfaces |
 | `.claude/REPO_MAP.md` | Detailed map of every module and file |
 
@@ -362,8 +359,13 @@ Fixes #
 ## Testing
 Explain how you tested it.
 
-## Screenshots
-(if applicable)
+## Screenshots / Video
+
+> **REQUIRED for any UI change.** PRs that modify visible UI (layout, components, styles, pages) will be rejected without this.
+
+<!-- Add a screenshot or screen recording below. Drag and drop images/GIFs here, or paste a video link. -->
+
+_No UI changes in this PR_ (delete this line if you are making UI changes)
 
 ## Checklist
 - [ ] Code follows project guidelines
@@ -371,7 +373,7 @@ Explain how you tested it.
 - [ ] Tested manually (include steps above)
 - [ ] No `.env`, credentials, or `node_modules` committed
 - [ ] Docs updated (if needed)
-- [ ] Screenshots added for UI changes (if applicable)
+- [ ] **Screenshot or video attached for every UI change** (PR will be rejected if missing)
 ```
 
 ### Review process

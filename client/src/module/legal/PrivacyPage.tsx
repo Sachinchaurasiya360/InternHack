@@ -14,7 +14,9 @@ import {
   RefreshCcw,
   Mail,
   ChevronRight,
+  ChevronDown,
 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface PolicySection {
   id: string;
@@ -132,6 +134,13 @@ const sections: PolicySection[] = [
 
 export default function PrivacyPage() {
   const [activeSection, setActiveSection] = useState<string>(sections[0].id);
+  const [openSection, setOpenSection] = useState<string | null>(
+  sections[0].id
+);
+
+const toggleSection = (id: string) => {
+  setOpenSection(openSection === id ? null : id);
+};
 
   const handleNavClick = (id: string) => {
     setActiveSection(id);
@@ -142,8 +151,8 @@ export default function PrivacyPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-linear-to-br from-white via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
-      <SEO
+    <div className="min-h-screen flex flex-col bg-white dark:bg-stone-950">
+    <SEO
         title="Privacy Policy"
         description="Privacy Policy for InternHack — how we collect, use, and protect your data."
       />
@@ -155,7 +164,7 @@ export default function PrivacyPage() {
 
           {/* Page Hero */}
           <div className="text-center mt-6 mb-14">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 mb-5">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-lime-100 dark:bg-lime-500/10 text-lime-600 dark:text-lime-400 mb-5">
               <ShieldCheck size={30} />
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
@@ -175,7 +184,7 @@ export default function PrivacyPage() {
 
             {/* Sticky Table of Contents */}
             <aside className="lg:w-64 shrink-0 w-full">
-              <div className="lg:sticky lg:top-28 rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg shadow-sm p-5">
+              <div className="lg:sticky lg:top-28 rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-stone-900 shadow-sm p-5">
                 <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">
                   On This Page
                 </p>
@@ -190,8 +199,8 @@ export default function PrivacyPage() {
                         onClick={() => handleNavClick(s.id)}
                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left text-sm transition-all duration-200 ${
                           isActive
-                            ? "bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 font-semibold"
-                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white"
+                            ? "bg-lime-100 dark:bg-lime-500/15 text-lime-700 dark:text-lime-400 font-semibold"
+                            : "text-gray-600 dark:text-gray-400 hover:bg-stone-100 dark:hover:bg-stone-800/60 hover:text-gray-900 dark:hover:text-white"
                         }`}
                       >
                         <Icon size={15} className="shrink-0" />
@@ -208,86 +217,128 @@ export default function PrivacyPage() {
               </div>
             </aside>
 
-            {/* Section Cards */}
-            <div className="flex-1 grid gap-6">
-              {sections.map((section, index) => {
-                const Icon = section.icon;
-                return (
-                  <div
-                    id={section.id}
-                    key={section.id}
-                    className="group rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 backdrop-blur-lg shadow-sm hover:shadow-xl transition-all duration-300 p-6 md:p-8 scroll-mt-32"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
-                        <Icon size={22} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                          {index + 1}. {section.title}
-                        </h2>
+          <div className="flex-1 space-y-4">
+  {sections.map((section, index) => {
+    const Icon = section.icon;
+    const isOpen = openSection === section.id;
 
-                        {section.content && (
-                          <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm md:text-base mb-3">
-                            {section.content}
-                          </p>
-                        )}
+    return (
+      <div
+        id={section.id}
+        key={section.id}
+        className="rounded-2xl border border-stone-200/70 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm overflow-hidden scroll-mt-32"
+      >
+        <button
+          onClick={() => toggleSection(section.id)}
+          aria-expanded={isOpen}
+          aria-controls={`content-${section.id}`}
+          id={`trigger-${section.id}`}
+          className="w-full flex items-center justify-between p-6 text-left hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-lime-100 dark:bg-lime-500/10 text-lime-600 dark:text-lime-400">
+              <Icon size={22} />
+            </div>
 
-                        {section.list && (
-                          <ul className="space-y-2 mt-2">
-                            {section.list.map((item, i) => (
-                              <li
-                                key={i}
-                                className="flex items-start gap-3 text-gray-600 dark:text-gray-300 text-sm md:text-base"
-                              >
-                                <span className="mt-2 h-2 w-2 rounded-full bg-indigo-500 shrink-0" />
-                                <span>
-                                  {item.label && (
-                                    <strong className="text-gray-800 dark:text-gray-100">
-                                      {item.label}:{" "}
-                                    </strong>
-                                  )}
-                                  {item.text}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+            <h2 className="text-lg md:text-xl font-semibold text-stone-900 dark:text-white">
+              {index + 1}. {section.title}
+            </h2>
+          </div>
 
-                        {section.contactNote && (
-                          <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                            To exercise these rights, contact us at{" "}
-                            <a
-                              href="mailto:mrsachinchaurasiya@gmail.com"
-                              className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
-                            >
-                              mrsachinchaurasiya@gmail.com
-                            </a>
-                            .
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+          <ChevronDown
+            size={20}
+            className={`transition-transform duration-300 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
 
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              id={`content-${section.id}`}
+              key="content"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{
+                height: "auto",
+                opacity: 1,
+              }}
+              exit={{
+                height: 0,
+                opacity: 0,
+              }}
+              transition={{
+                duration: 0.25,
+                ease: "easeInOut",
+              }}
+              className="overflow-hidden"
+            >
+              <div className="px-6 pb-6">
+                {section.content && (
+                  <p className="text-stone-600 dark:text-stone-300 leading-relaxed text-sm md:text-base mb-3">
+                    {section.content}
+                  </p>
+                )}
+
+                {section.list && (
+                  <ul className="space-y-2 mt-2">
+                    {section.list.map((item, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3 text-stone-600 dark:text-stone-300 text-sm md:text-base"
+                      >
+                        <span className="mt-2 h-2 w-2 rounded-full bg-lime-500 shrink-0" />
+
+                        <span>
+                          {item.label && (
+                            <strong className="text-stone-800 dark:text-stone-100">
+                              {item.label}:{" "}
+                            </strong>
+                          )}
+                          {item.text}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {section.contactNote && (
+                  <p className="mt-4 text-sm text-stone-600 dark:text-stone-400">
+                    To exercise these rights, contact us at{" "}
+                    <a
+                      href="mailto:mrsachinchaurasiya@gmail.com"
+                      className="text-lime-600 dark:text-lime-400 hover:underline font-medium"
+                    >
+                      mrsachinchaurasiya@gmail.com
+                    </a>
+                    .
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  })}
+
+  
               {/* Contact CTA Banner */}
-              <div className="mt-4 rounded-3xl overflow-hidden border border-indigo-200 dark:border-indigo-500/20 bg-linear-to-r from-indigo-600 to-purple-600 shadow-2xl">
-                <div className="p-8 md:p-10 text-center">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/20 mb-5">
-                    <Mail className="text-white" size={26} />
+             <div className="mt-4 rounded-3xl overflow-hidden border border-lime-400 bg-lime-400 shadow-2xl">
+               <div className="p-8 md:p-10 text-center">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-black/10 mb-5">
+                    <Mail className="text-gray-900" size={26} />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
                     Privacy Questions?
                   </h2>
-                  <p className="text-indigo-100 max-w-2xl mx-auto mb-6">
+                  <p className="text-gray-800 max-w-2xl mx-auto mb-6">
                     If you have any questions or concerns about this Privacy
                     Policy or your personal data, our team is here to help.
                   </p>
                   <a
                     href="mailto:mrsachinchaurasiya@gmail.com"
-                    className="inline-flex items-center gap-2 bg-white text-indigo-700 hover:bg-gray-100 transition px-6 py-3 rounded-xl font-semibold shadow-lg"
+                    className="inline-flex items-center gap-2 bg-white text-lime-700 hover:bg-gray-100 transition px-6 py-3 rounded-xl font-semibold shadow-lg"
                   >
                     <Mail size={18} />
                     Contact Support

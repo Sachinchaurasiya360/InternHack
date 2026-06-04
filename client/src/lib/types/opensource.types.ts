@@ -45,6 +45,7 @@ export interface RepoRequest {
   adminNote?: string | null;
   userId: number;
   user?: { id: number; name: string; email: string; profilePic?: string | null };
+  repoId?: number | null;
   createdAt: string;
   updatedAt: string;
 }
