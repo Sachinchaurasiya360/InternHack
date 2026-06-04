@@ -47,7 +47,9 @@ export default function ExamRunnerPage({ mode }: { mode: Mode }) {
   const [flagged, setFlagged] = useState<Set<string>>(new Set());
   const [submitted, setSubmitted] = useState(false);
   const [remaining, setRemaining] = useState(durationSec);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(
+    () => (typeof document !== "undefined" ? document.hidden : false),
+  );
   const [tabSwitches, setTabSwitches] = useState(0);
 
   useEffect(() => {
