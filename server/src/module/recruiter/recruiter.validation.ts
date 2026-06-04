@@ -45,7 +45,14 @@ export const createRoundSchema = z.object({
   })).default([]),
   timeLimitSecs: z.number().int().positive().nullable().optional(),
   autoGrade: z.boolean().default(false),
-  activateAt: z.coerce.date().min(new Date(), { message: "Activation date must be in the future" }).nullable().optional(),
+  activateAt: z
+  .string()
+  .datetime()
+  .refine((dateString) => new Date(dateString) > new Date(), {
+    message: "Activation date must be in the future",
+  })
+  .nullable()
+  .optional(),
 });
 
 export const updateRoundSchema = z.object({
@@ -63,7 +70,14 @@ export const updateRoundSchema = z.object({
   })).optional(),
   timeLimitSecs: z.number().int().positive().nullable().optional(),
   autoGrade: z.boolean().optional(),
-  activateAt: z.coerce.date().min(new Date(), { message: "Activation date must be in the future" }).nullable().optional(),
+  activateAt: z
+  .string()
+  .datetime()
+  .refine((dateString) => new Date(dateString) > new Date(), {
+    message: "Activation date must be in the future",
+  })
+  .nullable()
+  .optional(),
 });
 
 export const reorderRoundsSchema = z.object({
