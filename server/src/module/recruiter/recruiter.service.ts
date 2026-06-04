@@ -549,7 +549,7 @@ export class RecruiterService {
         student: { applications: { some: { job: { recruiterId } } } },
       },
       _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
+      orderBy: [{ _count: { id: "desc" } }, { skillName: "asc" }],
       take: 5,
     });
 
