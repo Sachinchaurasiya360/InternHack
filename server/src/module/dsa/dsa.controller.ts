@@ -299,4 +299,17 @@ export class DsaController {
       next(err);
     }
   }
+
+  async generateCodeReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const submissionId = parseInt(req.params.submissionId as string);
+      if (isNaN(submissionId)) { res.status(400).json({ message: "Invalid submission ID" }); return; }
+      const review = await this.dsaService.generateCodeReview(submissionId, userId);
+      res.json(review);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

@@ -181,6 +181,17 @@ export interface DsaExecutionResult {
   submissionId: number;
 }
 
+export interface DsaCodeReview {
+  timeComplexity: string;
+  spaceComplexity: string;
+  readability: {
+    score: number;
+    feedback: string;
+  };
+  edgeCases: string[];
+  suggestions: string[];
+}
+
 export interface DsaSubmissionSummary {
   id: number;
   language: DsaLanguage;
