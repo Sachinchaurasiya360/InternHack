@@ -50,6 +50,7 @@ import {
   ingestExternalJobSchema,
   broadcastEmailSchema,
 } from "./admin.validation.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -1090,8 +1091,6 @@ export class AdminController {
     }
   }
 
-  private broadcastInFlight = false;
-
   async sendBroadcastEmail(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -1100,23 +1099,33 @@ export class AdminController {
         return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
       }
       const isTest = !!result.data.testEmail;
-      if (!isTest && this.broadcastInFlight) {
-        return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
-      }
-      if (!isTest) this.broadcastInFlight = true;
-      try {
+      if (!isTest) {
+        let acquired = false;
+        await withAdvisoryLock("broadcast-email", async () => {
+          acquired = true;
+          const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
+          res.status(200).json({
+            success: true,
+            message: data.test ? "Test email sent" : `Broadcast complete: ${data.sent}/${data.recipients} sent, ${data.failed} failed`,
+            ...data,
+          });
+        });
+        if (!acquired) {
+          return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
+        }
+      } else {
         const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
         return res.status(200).json({
           success: true,
           message: data.test ? "Test email sent" : `Broadcast complete: ${data.sent}/${data.recipients} sent, ${data.failed} failed`,
           ...data,
         });
-      } finally {
-        if (!isTest) this.broadcastInFlight = false;
       }
     } catch (error) {
       logger.error("Failed to send broadcast email", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      if (!res.headersSent) {
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
     }
   }
 }
