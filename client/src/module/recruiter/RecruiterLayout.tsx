@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, startTransition, useEffect, useState } from "react";
 import { NavLink, Link, Outlet, useNavigate, useLocation } from "react-router";
 import { LayoutDashboard, Briefcase, Search, LogOut, ChevronsLeft, ChevronsRight, Users, User, Menu, X, ChevronDown, BarChart3, Building2, CalendarDays, Clock, Video, CheckSquare, Award, Wallet, Receipt, UserPlus, ShieldCheck, GitBranch, Key, UserCircle, Bookmark } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
@@ -52,7 +52,7 @@ export default function RecruiterLayout() {
   const [hrExpanded, setHrExpanded] = useState(() => localStorage.getItem("recruiter-hr-expanded") !== "false");
   const [imgError, setImgError] = useState(false);
 
-  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+  useEffect(() => { startTransition(() => setMobileOpen(false)); }, [location.pathname]);
 
   const isHRActive = location.pathname.startsWith("/recruiters/hr");
 
