@@ -17,8 +17,8 @@ describe("withAdvisoryLock", () => {
 
   it("should run the function if lock is acquired", async () => {
     vi.mocked(prisma.$queryRaw)
-      .mockResolvedValueOnce([{ locked: true }]) // acquire lock
-      .mockResolvedValueOnce([]); // release lock
+      .mockResolvedValueOnce([{ locked: true }])   // pg_try_advisory_lock
+      .mockResolvedValueOnce([{ pg_advisory_unlock: true }]); // pg_advisory_unlock
 
     await withAdvisoryLock("test-job", mockFn);
 

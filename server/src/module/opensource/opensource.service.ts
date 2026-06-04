@@ -34,7 +34,7 @@ export class OpensourceService {
       totalRepos,
       totalStars: starsAgg._sum.stars ?? 0,
       trendingCount,
-      languageCount: languageGroups.length,
+      languageCount: languageGroups.filter((g) => g.language && g.language.trim() !== "").length,
       domainBreakdown: domainGroups.map((g) => ({
         domain: g.domain || "Other",
         count: g._count._all,

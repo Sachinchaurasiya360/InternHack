@@ -2,7 +2,6 @@ import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import {
   approveRequestOverrideSchema,
-  bulkRepoRequestSchema,
   opensourceListQuerySchema,
   repoIdSchema,
   submitRepoRequestSchema,
@@ -32,81 +31,64 @@ function getMonthLabelUTC(date: Date): string {
   return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
 }
 
-// Public: list available languages
-opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
-
 // Public: global stats (cached every 5 min, independent of pagination/filters)
 opensourceRouter.get("/stats", (req, res, next) => controller.getGlobalStats(req, res, next));
 
-// Personalized repo recommendations for authenticated students
-opensourceRouter.get("/recommended", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
+// Public: list repos with optional filters
+opensourceRouter.get("/", async (req, res, next) => {
   try {
-    const userId = req.user!.id;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { skills: true, projects: true },
-    });
-
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
+    const parsed = opensourceListQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
       return;
     }
+    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = parsed.data;
 
-    const studentTechStack = user.skills || [];
-    const projects = (user.projects as any[]) || [];
-    const projectTech = projects.flatMap((p) => p.techStack || []);
-    const allStudentTech = [...new Set([...studentTechStack, ...projectTech])];
+    const where: Record<string, unknown> = {};
+    if (language) where["language"] = { equals: language, mode: "insensitive" };
+    if (difficulty) where["difficulty"] = difficulty;
+    if (domain) where["domain"] = domain;
+    if (search) {
+      // Prisma's scalar-list filters can't do case-insensitive substring match
+      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+      // subquery and merge the matching ids into the OR clause.
+      const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
+        SELECT id FROM "opensourceRepo"
+        WHERE EXISTS (
+          SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${search}%`}
+        )
+      `;
+      const tagMatchIds = tagMatches.map((r) => r.id);
 
-    if (allStudentTech.length === 0) {
-      const topRepos = await prisma.opensourceRepo.findMany({
-        take: 6,
-        orderBy: { stars: "desc" },
-      });
-      res.json({ repos: topRepos.map((r) => ({ ...r, matchedSkills: [] })) });
-      return;
+      where["OR"] = [
+        { name: { contains: search, mode: "insensitive" } },
+        { owner: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { language: { contains: search, mode: "insensitive" } },
+        ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
+      ];
     }
 
-    const recommendedRepos = await prisma.opensourceRepo.findMany({
-      where: {
-        OR: [
-          { techStack: { hasSome: allStudentTech } },
-          { language: { in: allStudentTech } },
-        ],
-      },
-      take: 6,
-      orderBy: { stars: "desc" },
+    const skip = (page - 1) * limit;
+    const [repos, total] = await Promise.all([
+      prisma.opensourceRepo.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { [sortBy]: sortOrder },
+      }),
+      prisma.opensourceRepo.count({ where }),
+    ]);
+
+    res.json({
+      repos,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     });
-
-    let results = recommendedRepos.map((repo) => {
-      const matchedSkills = repo.techStack.filter((skill) =>
-        allStudentTech.some((s) => s.toLowerCase() === skill.toLowerCase())
-      );
-      if (allStudentTech.some((s) => s.toLowerCase() === repo.language.toLowerCase())) {
-        if (!matchedSkills.includes(repo.language)) {
-          matchedSkills.push(repo.language);
-        }
-      }
-      return { ...repo, matchedSkills };
-    });
-
-    if (results.length < 6) {
-      const existingIds = results.map((r) => r.id);
-      const extra = await prisma.opensourceRepo.findMany({
-        where: { id: { notIn: existingIds } },
-        take: 6 - results.length,
-        orderBy: { stars: "desc" },
-      });
-      results = [...results, ...extra.map((r) => ({ ...r, matchedSkills: [] }))];
-    }
-
-    res.json({ repos: results });
   } catch (err) {
     next(err);
   }
 });
 
-// Public: list repos with optional filters
-opensourceRouter.get("/", (req, res, next) => controller.listRepos(req, res, next));
 // ─── Repo Requests (Student-authenticated) ───────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
@@ -126,23 +108,7 @@ opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), async
       res.status(409).json({ message: "This repository has already been submitted" });
       return;
     }
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    const requestCount = await prisma.repoRequest.count({
-      where: {
-        userId: req.user!.id,
-        createdAt: {
-          gte: twentyFourHoursAgo,
-        },
-      },
-    });
-
-    if (requestCount >= 5) {
-      res.status(429).json({
-        message: "You can submit at most 5 repo suggestions in the last 24 hours.",
-      });
-      return;
-    }
     const request = await prisma.repoRequest.create({
       data: { ...parsed.data, userId: req.user!.id },
       include: { user: { select: { name: true, email: true } } },
@@ -209,20 +175,7 @@ opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"),
       };
     });
 
-    const allApproved = await prisma.repoRequest.findMany({
-      where: { userId: req.user!.id, status: "APPROVED" },
-      select: { domain: true },
-    });
-
-    const domainCounts: Record<string, number> = {};
-    allApproved.forEach((r) => {
-      if (r.domain) domainCounts[r.domain] = (domainCounts[r.domain] || 0) + 1;
-    });
-    const domains = Object.entries(domainCounts)
-      .map(([domain, count]) => ({ domain, count }))
-      .sort((a, b) => b.count - a.count);
-
-    res.json({ trend, total: approvedRequests.length, domains });
+    res.json({ trend, total: approvedRequests.length });
   } catch (err) {
     next(err);
   }
@@ -335,102 +288,6 @@ opensourceRouter.put("/requests/:id/reject", authMiddleware, requireRole("ADMIN"
   }
 });
 
-// Bulk approve/reject repo requests (admin only)
-opensourceRouter.put("/requests/bulk", authMiddleware, requireRole("ADMIN"), async (req, res, next) => {
-  try {
-    const parsed = bulkRepoRequestSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ message: "Invalid request body", errors: parsed.error.flatten().fieldErrors });
-      return;
-    }
-    const { ids, action, adminNote } = parsed.data;
-
-    const existing = await prisma.repoRequest.findMany({
-      where: { id: { in: ids } },
-    });
-
-    const validIds = existing.filter((r) => r.status === "PENDING").map((r) => r.id);
-    const skippedCount = ids.length - validIds.length;
-
-    if (validIds.length === 0) {
-      res.status(400).json({ message: "No PENDING requests found among the provided IDs" });
-      return;
-    }
-
-    await prisma.$transaction(async (tx) => {
-      if (action === "approve") {
-        for (const id of validIds) {
-          const request = await tx.repoRequest.findUnique({
-            where: { id },
-            include: { user: { select: { id: true } } },
-          });
-          if (!request) continue;
-          await tx.repoRequest.update({ where: { id }, data: { status: "APPROVED", adminNote: adminNote ?? null } });
-          await tx.opensourceRepo.create({
-            data: {
-              name: request.name,
-              owner: request.owner,
-              description: request.description,
-              language: request.language,
-              url: request.url,
-              domain: request.domain,
-              difficulty: request.difficulty,
-              techStack: request.techStack,
-              tags: request.tags,
-            },
-          });
-        }
-      } else {
-        await tx.repoRequest.updateMany({
-          where: { id: { in: validIds } },
-          data: { status: "REJECTED", adminNote: adminNote ?? null },
-        });
-      }
-    });
-
-    res.json({
-      message: `Bulk ${action} completed`,
-      approved: action === "approve" ? validIds.length : 0,
-      rejected: action === "reject" ? validIds.length : 0,
-      skipped: skippedCount,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// Submit guide step feedback (thumbs up/down)
-opensourceRouter.post("/guide-feedback", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
-  try {
-    const { guideId, stepId, rating } = req.body;
-
-    if (!guideId || !stepId || !rating) {
-      res.status(400).json({ message: "Missing required fields" });
-      return;
-    }
-
-    if (rating !== "up" && rating !== "down") {
-      res.status(400).json({ message: "Invalid rating value" });
-      return;
-    }
-
-    const existing = await prisma.guideFeedback.findFirst({
-      where: { userId: req.user!.id, guideId, stepId },
-    });
-    if (existing) {
-      res.status(409).json({ message: "Already rated" });
-      return;
-    }
-
-    const feedback = await prisma.guideFeedback.create({
-      data: { guideId, stepId, rating, userId: req.user!.id },
-    });
-
-    res.status(201).json(feedback);
-  } catch (err) {
-    next(err);
-  }
-});
 // Public: get single repo (must be AFTER /requests/* routes)
 opensourceRouter.get("/:id", async (req, res, next) => {
   try {
