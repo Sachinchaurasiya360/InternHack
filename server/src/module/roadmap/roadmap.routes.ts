@@ -17,6 +17,8 @@ import {
   patchTopicProgress,
   postAiGenerate,
   postRecomputePace,
+  updateRoadmap,
+  
   postRegenerateSection,
 } from "./roadmap.controller.js";
 
@@ -33,6 +35,11 @@ roadmapRouter.patch(
   "/me/enrollments/:id/topics/:topicId",
   authMiddleware,
   patchTopicProgress,
+);
+roadmapRouter.patch(
+  "/:slug",
+  authMiddleware,
+  updateRoadmap
 );
 roadmapRouter.post(
   "/me/enrollments/:id/recompute-pace",

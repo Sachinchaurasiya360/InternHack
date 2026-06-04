@@ -31,6 +31,7 @@ import {
   Flame,
   ChevronRight,
   BookOpen,
+  Pencil,
   LayoutTemplate,
   GitCommit,
   Network,
@@ -496,6 +497,18 @@ export default function RoadmapCanvasPage() {
     });
   }, []);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showEditModal, setShowEditModal] =
+  useState(false);
+
+const [title, setTitle] = useState("");
+
+const [shortDescription, setShortDescription] =
+  useState("");
+
+const [level, setLevel] =
+  useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED">(
+    "BEGINNER"
+  );
   // Track previous percentComplete so we only fire the modal on the transition to 100
   const prevPercentRef = useRef<number | null>(null);
   const hasShownCompletionRef = useRef(false);
@@ -578,6 +591,15 @@ export default function RoadmapCanvasPage() {
 
     prevPercentRef.current = pct;
   }, [data]);
+  useEffect(() => {
+  if (!data) return;
+
+  setTitle(data.enrollment.roadmap.title);
+  setShortDescription(
+    data.enrollment.roadmap.shortDescription
+  );
+  setLevel(data.enrollment.roadmap.level);
+}, [data]);
 
   const progressByTopicId = useMemo(() => {
     if (!data)
@@ -608,6 +630,27 @@ export default function RoadmapCanvasPage() {
   const handleNodeClick = useCallback((topicId: number) => {
     setDrawerTopicId(topicId);
   }, []);
+  const handleUpdateRoadmap = async () => {
+  try {
+    await api.patch(`/roadmaps/${slug}`, {
+      title,
+      shortDescription,
+      level,
+    });
+
+    toast.success("Roadmap updated");
+
+    setShowEditModal(false);
+
+    const detail = await api.get<EnrollmentResponse>(
+      `/roadmaps/me/enrollments/${enrollmentId}`,
+    );
+
+    setData(detail.data);
+  } catch {
+    toast.error("Failed to update roadmap");
+  }
+};
 
   const allTopics = useMemo(() => {
     if (!data) return [];
@@ -1144,6 +1187,14 @@ export default function RoadmapCanvasPage() {
                 }
               />
             </div>
+            <button
+  type="button"
+  onClick={() => setShowEditModal(true)}
+  className="inline-flex items-center gap-1.5 px-3 py-2 bg-stone-800 text-stone-50 text-xs font-bold rounded-md hover:bg-stone-700 transition-colors"
+>
+  <Pencil className="w-3.5 h-3.5" />
+  Edit
+</button>
 
             <button
               type="button"
@@ -1482,6 +1533,125 @@ export default function RoadmapCanvasPage() {
             </>
           )}
         </AnimatePresence>
+        {showEditModal && (
+  <>
+    {/* Backdrop */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowEditModal(false)}
+      className="fixed inset-0 z-60 bg-stone-950/70 backdrop-blur-sm"
+    />
+
+    {/* Modal */}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, y: 20 }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 24,
+      }}
+      className="fixed inset-0 z-70 flex items-center justify-center p-4"
+    >
+      <div
+        className="w-full max-w-2xl rounded-2xl border border-stone-800 bg-stone-950 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-stone-800 px-6 py-5">
+          <h2 className="text-2xl font-bold text-stone-50">
+            Edit Roadmap Details
+          </h2>
+
+          <button
+            type="button"
+            onClick={() => setShowEditModal(false)}
+            className="rounded-md p-2 text-stone-500 hover:bg-stone-900 hover:text-stone-300"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="space-y-6 p-6">
+          {/* Title */}
+          <div>
+            <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.2em] text-stone-500">
+              Title
+            </label>
+
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none focus:border-lime-500"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.2em] text-stone-500">
+              Description
+            </label>
+
+            <textarea
+              rows={5}
+              value={shortDescription}
+              onChange={(e) =>
+                setShortDescription(e.target.value)
+              }
+              className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none resize-none focus:border-lime-500"
+            />
+          </div>
+
+          {/* Level */}
+          <div>
+            <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.2em] text-stone-500">
+              Level
+            </label>
+
+            <select
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none focus:border-lime-500"
+            >
+              <option value="BEGINNER">
+                Beginner
+              </option>
+
+              <option value="INTERMEDIATE">
+                Intermediate
+              </option>
+
+              <option value="ADVANCED">
+                Advanced
+              </option>
+            </select>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end gap-3 border-t border-stone-800 px-6 py-5">
+          <Button
+            variant="ghost"
+            onClick={() => setShowEditModal(false)}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={handleUpdateRoadmap}
+            className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+          >
+            Save Changes
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  </>
+)}
 
         {/* ─── Roadmap Completion Modal ─────────────────────────────────── */}
         {showCompletionModal && (
