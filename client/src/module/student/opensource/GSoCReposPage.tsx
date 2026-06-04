@@ -147,7 +147,9 @@ function FilterDropdown({
 }
 
 const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }) => {
-  const yearsRange = Array.from({ length: 10 }, (_, i) => 2016 + i);
+  // Show participation from 2016 to current year
+  const currentYear = new Date().getFullYear();
+  const yearsRange = Array.from({ length: currentYear - 2015 }, (_, i) => 2016 + i);
 
   return (
     <div className="mb-4 flex items-center gap-1" aria-label="GSoC Participation History (2016-2025)">
