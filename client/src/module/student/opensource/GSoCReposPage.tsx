@@ -152,7 +152,7 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
   const yearsRange = Array.from({ length: currentYear - 2015 }, (_, i) => 2016 + i);
 
   return (
-    <div className="mb-4 flex items-center gap-1" aria-label="GSoC Participation History (2016-2025)">
+    <div className="mb-4 flex items-center gap-1" aria-label={`GSoC Participation History (2016-${currentYear})`}>
       {yearsRange.map((year) => {
         const participated = participatedYears.includes(year);
         return (
