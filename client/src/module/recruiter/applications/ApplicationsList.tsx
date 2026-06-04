@@ -1,17 +1,17 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, Search, Filter, Loader2 } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
-  const [applications, setApplications] = useState<Application[]>([]);
+  const queryClient = useQueryClient();
   const [pagination, setPagination] = useState<Pagination | null>(null);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -32,43 +32,39 @@ export default function ApplicationsList() {
     };
   }, [search]);
 
-  const fetchApplications = () => {
-    setLoading(true);
-    const params = new URLSearchParams({ page: String(page), limit: "10" });
-    if (debouncedSearch) params.set("search", debouncedSearch);
-    if (statusFilter) params.set("status", statusFilter);
-
-    api.get(`/recruiter/jobs/${jobId}/applications?${params}`).then((res) => {
-      setApplications(res.data.applications);
+  const { data, isLoading } = useQuery({
+    queryKey: ["applications", jobId, page, statusFilter, debouncedSearch],
+    queryFn: async () => {
+      const params = new URLSearchParams({ page: String(page), limit: "10" });
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (statusFilter) params.set("status", statusFilter);
+      const res = await api.get(`/recruiter/jobs/${jobId}/applications?${params}`);
       setPagination(res.data.pagination);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+      return res.data.applications as Application[];
+    },
+  });
+
+  const applications = data ?? [];
+
+  const handleStatusChange = async (appId: number, status: string) => {
+    if (updatingId === appId) return;
+    setUpdatingId(appId);
+    try {
+      await api.patch(`/recruiter/applications/${appId}/status`, { status });
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    } catch {
+      alert("Failed to update status");
+    } finally {
+      setUpdatingId(null);
+    }
   };
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchApplications();
-  }, [jobId, page, statusFilter, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
-
-const handleStatusChange = async (appId: number, status: string) => {
-  if (updatingId === appId) return;
-  setUpdatingId(appId);
-  try {
-    await api.patch(`/recruiter/applications/${appId}/status`, { status });
-    fetchApplications();
-  } catch {
-    alert("Failed to update status");
-  } finally {
-    setUpdatingId(null);
-  }
-};
 
   const handleAdvance = async (appId: number) => {
     if (advancingIds.has(appId)) return;
     setAdvancingIds((current) => new Set(current).add(appId));
     try {
       await api.patch(`/recruiter/applications/${appId}/advance`);
-      fetchApplications();
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
     } catch {
       alert("Failed to advance application");
     } finally {
@@ -112,34 +108,30 @@ const handleStatusChange = async (appId: number, status: string) => {
         </div>
       </div>
 
-      {loading ? (
-  <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-    <div className="animate-pulse">
-      {[...Array(5)].map((_, i) => (
-        <div
-          key={i}
-          className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-800"
-        >
-          <div className="space-y-2">
-            <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            <div className="h-3 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          </div>
-
-          <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-
-          <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
-
-          <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
-
-          <div className="flex gap-2">
-            <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-            <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+      {isLoading ? (
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+          <div className="animate-pulse">
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-800"
+              >
+                <div className="space-y-2">
+                  <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-3 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                </div>
+                <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div className="flex gap-2">
+                  <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                  <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-) : applications.length === 0 ?  (
+      ) : applications.length === 0 ? (
         <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-gray-500 dark:text-gray-500">No applications found</div>
       ) : (
         <>
@@ -157,58 +149,57 @@ const handleStatusChange = async (appId: number, status: string) => {
               <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                 {applications.map((app, i) => {
                   const isAdvancing = advancingIds.has(app.id);
-
                   return (
-                  <motion.tr key={app.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <td className="px-6 py-4">
-                      <Link to={`/recruiters/applications/${app.id}`} className="no-underline">
-                        <p className="font-medium text-gray-900 dark:text-white">{app.student?.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-500">{app.student?.email}</p>
-                      </Link>
-                    </td>
-                   <td className="px-6 py-4">
-  <div className="relative inline-flex items-center">
-    <select
-      value={app.status}
-      disabled={updatingId === app.id}
-      onChange={(e) => handleStatusChange(app.id, e.target.value)}
-      className={`text-xs px-2.5 py-1 rounded-full font-medium border-0 ${getStatusColor(app.status)} ${updatingId === app.id ? "opacity-50 cursor-not-allowed" : ""}`}>
-      <option value="APPLIED">Applied</option>
-      <option value="IN_PROGRESS">In Progress</option>
-      <option value="SHORTLISTED">Shortlisted</option>
-      <option value="REJECTED">Rejected</option>
-      <option value="HIRED">Hired</option>
-    </select>
-    {updatingId === app.id && (
-      <svg className="animate-spin ml-1.5 h-3 w-3 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 12 0 12 12H4z" />
-      </svg>
-    )}
-  </div>
-</td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
-                      {app.roundSubmissions?.length || 0} completed
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
-                      {new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(app.createdAt))}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => handleAdvance(app.id)}
-                          disabled={isAdvancing}
-                          className={`inline-flex min-w-[86px] items-center justify-center gap-1.5 text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors ${isAdvancing ? "cursor-not-allowed opacity-70" : ""}`}>
-                          {isAdvancing && <Loader2 className="h-3 w-3 animate-spin" />}
-                          {isAdvancing ? "Advancing" : "Advance"}
-                        </button>
-                        <Link to={`/recruiters/applications/${app.id}`}
-                          className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 no-underline">
-                          View
+                    <motion.tr key={app.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                      <td className="px-6 py-4">
+                        <Link to={`/recruiters/applications/${app.id}`} className="no-underline">
+                          <p className="font-medium text-gray-900 dark:text-white">{app.student?.name}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-500">{app.student?.email}</p>
                         </Link>
-                      </div>
-                    </td>
-                  </motion.tr>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="relative inline-flex items-center">
+                          <select
+                            value={app.status}
+                            disabled={updatingId === app.id}
+                            onChange={(e) => handleStatusChange(app.id, e.target.value)}
+                            className={`text-xs px-2.5 py-1 rounded-full font-medium border-0 ${getStatusColor(app.status)} ${updatingId === app.id ? "opacity-50 cursor-not-allowed" : ""}`}>
+                            <option value="APPLIED">Applied</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="SHORTLISTED">Shortlisted</option>
+                            <option value="REJECTED">Rejected</option>
+                            <option value="HIRED">Hired</option>
+                          </select>
+                          {updatingId === app.id && (
+                            <svg className="animate-spin ml-1.5 h-3 w-3 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 12 0 12 12H4z" />
+                            </svg>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
+                        {app.roundSubmissions?.length || 0} completed
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
+                        {new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(app.createdAt))}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => handleAdvance(app.id)}
+                            disabled={isAdvancing}
+                            className={`inline-flex min-w-[86px] items-center justify-center gap-1.5 text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors ${isAdvancing ? "cursor-not-allowed opacity-70" : ""}`}>
+                            {isAdvancing && <Loader2 className="h-3 w-3 animate-spin" />}
+                            {isAdvancing ? "Advancing" : "Advance"}
+                          </button>
+                          <Link to={`/recruiters/applications/${app.id}`}
+                            className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 no-underline">
+                            View
+                          </Link>
+                        </div>
+                      </td>
+                    </motion.tr>
                   );
                 })}
               </tbody>
