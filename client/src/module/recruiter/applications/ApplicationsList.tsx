@@ -2,10 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, Search, Filter, Loader2 } from "lucide-react";
+import { ArrowLeft, Search, Filter, Upload } from "lucide-react";
 import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+
 
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
@@ -87,7 +88,15 @@ const handleStatusChange = async (appId: number, status: string) => {
         <ArrowLeft className="w-4 h-4" /> Back to Jobs
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Applications</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-between gap-4">
+        Applications
+        <Link
+          to={`/recruiters/jobs/${jobId}/import-candidates`}
+          className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
+        >
+          <Upload className="w-4 h-4" /> Import Candidates
+        </Link>
+      </h1>
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-6">
