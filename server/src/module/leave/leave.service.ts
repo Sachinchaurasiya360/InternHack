@@ -253,10 +253,14 @@ export class LeaveService {
   }
 
   async createHoliday(data: { name: string; date: string; isOptional?: boolean | undefined; location?: string | null | undefined; year: number }) {
+    const holidayDate = new Date(data.date);
+    if (holidayDate.getFullYear() !== data.year) {
+      throw new Error(`Holiday date year (${holidayDate.getFullYear()}) does not match specified year (${data.year})`);
+    }
     return prisma.holiday.create({
       data: {
         name: data.name,
-        date: new Date(data.date),
+        date: holidayDate,
         isOptional: data.isOptional ?? false,
         location: data.location ?? null,
         year: data.year,
