@@ -2,6 +2,7 @@ import { z } from "zod";
 
 // sanitization function
 const sanitizeText = (value: string) => value.replace(/<[^>]*>?/gm, "").trim();
+const MAX_EVALUATION_CRITERION_SCORE = 100;
 
 const customFieldDefinitionSchema = z.object({
   id: z.string(),
@@ -25,7 +26,10 @@ const customFieldDefinitionSchema = z.object({
 const evaluationCriterionSchema = z.object({
   id: z.string(),
   criterion: z.string(),
-  maxScore: z.number().positive(),
+  maxScore: z
+    .number()
+    .positive("Maximum score must be greater than 0")
+    .max(MAX_EVALUATION_CRITERION_SCORE, `Maximum score cannot exceed ${MAX_EVALUATION_CRITERION_SCORE}`),
   weight: z.number().positive().optional(),
 });
 
