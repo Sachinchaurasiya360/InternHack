@@ -333,7 +333,7 @@ export class DsaService {
     }));
   }
 
-  async reportProblem({userId, problemId, reason, message,}: { userId: number; problemId: number; reason: string; message?: string;}) {
+  async reportProblem({ userId, problemId, reason, message, }: { userId: number; problemId: number; reason: string; message?: string; }) {
     return prisma.dsaProblemReport.create({
       data: {
         userId,
@@ -958,11 +958,16 @@ Return ONLY a JSON array, no markdown fences:
     const prompt = this.buildCodeReviewPrompt(submission, problem);
     const response = await provider.generateText(prompt);
 
-    // 4. Log the request
-    logAIRequest("DSA_CODE_REVIEW", response, true, undefined, studentId);
-
-    // 5. Parse and validate
-    return this.parseCodeReviewResponse(response.text);
+    // 4. Parse and validate
+    try {
+      const parsed = this.parseCodeReviewResponse(response.text);
+      // 5. Log success
+      logAIRequest("DSA_CODE_REVIEW", response, true, undefined, studentId);
+      return parsed;
+    } catch (err) {
+      logAIRequest("DSA_CODE_REVIEW", response, false, err instanceof Error ? err.message : "Parse failed", studentId);
+      throw err;
+    }
   }
 
   private buildCodeReviewPrompt(
