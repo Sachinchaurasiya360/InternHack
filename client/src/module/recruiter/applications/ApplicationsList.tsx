@@ -6,6 +6,7 @@ import { ArrowLeft, Search, Filter, Loader2 } from "lucide-react";
 import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import toast from "@/components/ui/toast";
 
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
@@ -56,8 +57,9 @@ const handleStatusChange = async (appId: number, status: string) => {
   try {
     await api.patch(`/recruiter/applications/${appId}/status`, { status });
     fetchApplications();
+    toast.success("Status updated");
   } catch {
-    alert("Failed to update status");
+    toast.error("Failed to update status");
   } finally {
     setUpdatingId(null);
   }
@@ -69,8 +71,9 @@ const handleStatusChange = async (appId: number, status: string) => {
     try {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       fetchApplications();
+      toast.success("Application advanced");
     } catch {
-      alert("Failed to advance application");
+      toast.error("Failed to advance application");
     } finally {
       setAdvancingIds((current) => {
         const next = new Set(current);

@@ -17,6 +17,7 @@ import api from "../../../lib/axios";
 import type { Job } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import toast from "@/components/ui/toast";
 
 type StatusFilter = "ALL" | "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
 
@@ -49,8 +50,9 @@ export default function RecruiterJobsList() {
     try {
       await api.delete(`/jobs/${id}`);
       setJobs((prev) => prev.filter((j) => j.id !== id));
+      toast.success("Job deleted");
     } catch {
-      alert("Failed to delete job");
+      toast.error("Failed to delete job");
     }
   };
 
@@ -58,8 +60,9 @@ export default function RecruiterJobsList() {
     try {
       const { data } = await api.patch(`/jobs/${id}/status`, { status });
       setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, status: data.job.status } : j)));
+      toast.success("Job status updated");
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 

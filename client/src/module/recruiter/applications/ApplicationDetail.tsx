@@ -7,6 +7,7 @@ import api, { SERVER_URL } from "../../../lib/axios";
 import { EvaluationForm } from "./EvaluationForm";
 import type { Application, VerifiedSkill } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import toast from "@/components/ui/toast";
 
 export default function ApplicationDetail() {
   const { applicationId } = useParams();
@@ -37,8 +38,9 @@ export default function ApplicationDetail() {
     try {
       await api.patch(`/recruiter/applications/${applicationId}/advance`);
       fetchDetail();
+      toast.success("Application advanced");
     } catch {
-      alert("Failed to advance");
+      toast.error("Failed to advance");
     }
   };
 
@@ -46,8 +48,9 @@ export default function ApplicationDetail() {
     try {
       await api.patch(`/recruiter/applications/${applicationId}/status`, { status });
       fetchDetail();
+      toast.success("Status updated");
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 
