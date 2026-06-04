@@ -213,22 +213,21 @@ export class RecruiterService {
       throw new Error("Invalid round IDs");
     }
 
-    // Use a transaction with temporary high indices to avoid unique constraint conflicts
+    // Use an atomic raw SQL update with CASE WHEN to avoid unique constraint violations
+    // during the reordering process. This ensures the database evaluates all changes 
+    // as a single mutation, preventing P2002 errors common in concurrent sequential updates.
     await prisma.$transaction(async (tx) => {
-      // First, set all to temporary high values
-      for (const r of rounds) {
-        await tx.round.update({
-          where: { id: r.roundId },
-          data: { orderIndex: r.orderIndex + 10000 },
-        });
-      }
-      // Then set to final values
-      for (const r of rounds) {
-        await tx.round.update({
-          where: { id: r.roundId },
-          data: { orderIndex: r.orderIndex },
-        });
-      }
+      const cases = rounds
+        .map((r) => `WHEN id = ${Number(r.roundId)} THEN ${Number(r.orderIndex)}`)
+        .join(" ");
+      const ids = rounds.map((r) => Number(r.roundId)).join(", ");
+
+      await tx.$executeRawUnsafe(`
+        UPDATE "round"
+        SET "orderIndex" = CASE ${cases} END
+        WHERE id IN (${ids})
+        AND "jobId" = ${Number(jobId)}
+      `);
     });
 
     return prisma.round.findMany({
