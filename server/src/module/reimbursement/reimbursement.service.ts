@@ -90,6 +90,14 @@ export class ReimbursementService {
     return prisma.reimbursement.update({ where: { id }, data: { status: "REJECTED", approverNote: approverNote ?? null } });
   }
 
+  async financeApprove(id: number, approverNote?: string | undefined) {
+    const record = await prisma.reimbursement.findUnique({ where: { id } });
+    if (!record) throw new Error("Reimbursement not found");
+    if (record.status !== "MANAGER_APPROVED") throw new Error("Only manager approved reimbursements can be approved by finance");
+
+    return prisma.reimbursement.update({ where: { id }, data: { status: "FINANCE_APPROVED", approverNote: approverNote ?? null } });
+  }
+
   async markPaid(ids: number[]) {
     return prisma.reimbursement.updateMany({
       where: { id: { in: ids }, status: "FINANCE_APPROVED" },
