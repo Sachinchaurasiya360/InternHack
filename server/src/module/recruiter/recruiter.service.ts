@@ -276,14 +276,19 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const previousStatus = application.status;
+    // FIX: Early return if the status is exactly the same
+    // This completely bypasses the DB update and prevents the duplicate email spam
+    if (application.status === status) {
+      return application;
+    }
 
     const updated = await prisma.application.update({
       where: { id: applicationId },
       data: { status },
     });
 
-    if (previousStatus !== status && isEmailableStatus(status) && application.student.email) {
+    // We no longer need `previousStatus !== status` here because the early return guarantees they are different
+    if (isEmailableStatus(status) && application.student.email) {
       const clientUrl = process.env["CLIENT_URL"] || "https://www.internhack.xyz";
       const html = applicationStatusEmailHtml({
         studentName: application.student.name,
