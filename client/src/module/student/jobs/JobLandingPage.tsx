@@ -37,6 +37,12 @@ export default function JobLandingPage() {
   const jobs = data?.jobs ?? [];
   const meta = data?.meta;
 
+  // Split the title so we can animate only the final word (Acceptance Criteria #2)
+  const titleText = (meta?.title ?? "Find your next role.").trim();
+  const words = titleText ? titleText.split(/\s+/) : ["Find", "your", "next", "role."];
+  const lastWord = words.pop() ?? "role.";
+  const restOfTitle = words.join(" ");
+
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
       {meta && (
@@ -61,10 +67,22 @@ export default function JobLandingPage() {
           <ArrowLeft className="w-4 h-4" /> All Jobs
         </Link>
 
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          {meta?.title || "Jobs"}
+        {/* Standardized Heading */}
+        <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none mb-2">
+          {restOfTitle && `${restOfTitle} `}
+          <span className="relative inline-block align-baseline">
+            <span className="relative z-10">{lastWord}</span>
+            <motion.span
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+              aria-hidden
+              className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
+            />
+          </span>
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
+        
+        <p className="text-gray-600 dark:text-gray-400 mb-8 mt-4">
           {meta
             ? `${meta.totalJobs} open position${meta.totalJobs !== 1 ? "s" : ""}`
             : "Loading..."}

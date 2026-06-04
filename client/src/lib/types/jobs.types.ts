@@ -1,6 +1,12 @@
 import type { UserRole, User } from "./user.types";
 
-export type JobStatus = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
+export const JobStatus = {
+  DRAFT: "DRAFT",
+  PUBLISHED: "PUBLISHED",
+  CLOSED: "CLOSED",
+  ARCHIVED: "ARCHIVED",
+} as const;
+export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus];
 export type ApplicationStatus = "APPLIED" | "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED" | "WITHDRAWN";
 export type RoundStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
 export type FieldType = "TEXT" | "TEXTAREA" | "DROPDOWN" | "MULTI_SELECT" | "FILE_UPLOAD" | "BOOLEAN" | "NUMERIC" | "DATE" | "EMAIL" | "URL";
