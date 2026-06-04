@@ -16,20 +16,57 @@ export default function ApplicationDetail() {
   const [evaluatingRoundId, setEvaluatingRoundId] = useState<number | null>(null);
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
 
-  const fetchDetail = useCallback(() => {
-    api.get(`/recruiter/applications/${applicationId}`).then((res) => {
+  const fetchDetail = useCallback(async () => {
+    try {
+      const res = await api.get(
+        `/recruiter/applications/${applicationId}`
+      );
       setApplication(res.data.application);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    } catch (err: any) {
+      console.error(err);
+    }
   }, [applicationId]);
 
-  useEffect(() => { fetchDetail(); }, [fetchDetail]);
+  useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+
+        const res = await api.get(
+          `/recruiter/applications/${applicationId}`,
+          { signal: controller.signal }
+        );
+
+        if (isMounted) {
+          setApplication(res.data.application);
+        }
+      } catch (err: any) {
+        if (err.name !== "CanceledError" && err.name !== "AbortError") {
+          console.error(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [applicationId]);
 
   useEffect(() => {
     if (application?.student?.id) {
       api.get(`/skill-tests/verified/${application.student.id}`)
         .then((res) => setVerifiedSkills(res.data.verifiedSkills || []))
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [application?.student?.id]);
 
