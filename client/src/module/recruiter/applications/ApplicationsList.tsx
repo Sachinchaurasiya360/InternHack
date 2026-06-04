@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import toast from "../../../components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
@@ -52,8 +53,9 @@ export default function ApplicationsList() {
     try {
       await api.patch(`/recruiter/applications/${appId}/status`, { status });
       queryClient.invalidateQueries({ queryKey: ["applications"] });
+      toast.success("Status updated");
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     } finally {
       setUpdatingId(null);
     }
@@ -65,8 +67,9 @@ export default function ApplicationsList() {
     try {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       queryClient.invalidateQueries({ queryKey: ["applications"] });
+      toast.success("Application advanced");
     } catch {
-      alert("Failed to advance application");
+      toast.error("Failed to advance application");
     } finally {
       setAdvancingIds((current) => {
         const next = new Set(current);
