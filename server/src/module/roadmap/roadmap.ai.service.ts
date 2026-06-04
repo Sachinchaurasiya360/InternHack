@@ -4,6 +4,12 @@ import { logAIRequest } from "../../lib/ai-request-logger.js";
 import { slugify } from "../../utils/slug.utils.js";
 import type { AiGenerateInput } from "./roadmap.validation.js";
 import {
+  isSemanticCacheEnabled,
+  buildCacheKey,
+  searchAndEmbed,
+  storeInCache,
+} from "../../lib/semantic-cache.js";
+import {
   buildRoadmapPrompt,
   buildSectionPrompt,
   type RegenerateSectionPromptInput,
@@ -81,6 +87,25 @@ export async function generateAiRoadmap(
   input: AiGenerateInput,
   userId: number,
 ): Promise<GeneratedRoadmap> {
+  // ── Semantic cache check ──
+  let cacheEmbedding: number[] | undefined;
+  if (isSemanticCacheEnabled()) {
+    const cacheText = buildCacheKey(input);
+    try {
+      const { result: cachedResult, embedding } = await searchAndEmbed(cacheText);
+      cacheEmbedding = embedding;
+      if (cachedResult) {
+        const validated = aiRoadmapSchema.safeParse(cachedResult);
+        if (validated.success) {
+          logAIRequest("AI_ROADMAP_GENERATION", { text: "", latencyMs: 0, inputTokens: 0, outputTokens: 0 }, true, undefined, userId);
+          return validated.data;
+        }
+      }
+    } catch (err) {
+      console.warn("[AiRoadmap] Semantic cache lookup failed, proceeding to Gemini:", err);
+    }
+  }
+
   const provider = new GeminiProvider("gemini-2.5-flash-lite");
   const prompt = buildRoadmapPrompt(input);
 
@@ -103,6 +128,13 @@ export async function generateAiRoadmap(
       if (!result.success) {
         console.error(`[AiRoadmap] Validation failed (attempt ${attempt + 1})`, result.error.flatten());
         throw new Error("AI returned an incomplete roadmap."); // retryable
+      }
+
+      // ── Store in semantic cache (non-blocking) ──
+      if (isSemanticCacheEnabled() && cacheEmbedding) {
+        storeInCache(cacheEmbedding, result.data).catch((err) =>
+          console.warn("[AiRoadmap] Failed to store in cache:", err)
+        );
       }
 
       return result.data;

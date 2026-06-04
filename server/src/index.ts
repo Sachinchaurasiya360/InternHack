@@ -75,6 +75,7 @@ import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cro
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
+import { initSemanticCache } from "./lib/semantic-cache.js";
 
 const logger = createLogger("Index");
 
@@ -334,6 +335,9 @@ const server = app.listen(PORT, async () => {
 
   // Load AI service provider configs into memory
   await initServiceProviders().catch((err) => logger.error("Failed to init AI providers:", err));
+
+  // Initialize semantic cache (Qdrant) if enabled
+  await initSemanticCache().catch((err) => logger.error("Failed to init semantic cache:", err));
 
   // Start the job scraper cron (every 6 hours)
   const cronSchedule = process.env["SCRAPER_CRON"] || "0 */6 * * *";
