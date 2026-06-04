@@ -112,3 +112,8 @@ export const talentSearchSchema = z.object({
 export const saveCandidateSchema = z.object({
   notes: z.string().max(500).optional(),
 });
+
+export const bulkUpdateStatusSchema = z.object({
+  applicationIds: z.array(z.number()).min(1, "At least one application ID is required"),
+  status: z.enum(["APPLIED", "IN_PROGRESS", "SHORTLISTED", "REJECTED", "HIRED"]),
+});

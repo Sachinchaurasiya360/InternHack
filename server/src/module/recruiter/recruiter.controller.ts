@@ -369,4 +369,26 @@ export class RecruiterController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+  
+  async bulkUpdateStatus(req: any, res: any) {
+    try {
+      const { applicationIds, status } = req.body;
+
+      if (!applicationIds || !Array.isArray(applicationIds)) {
+        return res.status(400).json({ success: false, message: "Invalid candidate selection" });
+      }
+
+      // Delegate database updates to the service layer
+      const result = await this.recruiterService.updateBulkApplicationStatus(applicationIds, status);
+
+      return res.status(200).json({
+        success: true,
+        message: `Successfully updated statuses`,
+        count: result.count
+      });
+    } catch (error) {
+      console.error("Bulk status error:", error);
+      return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  }
 }

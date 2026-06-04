@@ -795,4 +795,17 @@ export class RecruiterService {
     });
     return count;
   }
+
+  async updateBulkApplicationStatus(applicationIds: number[], status: any) {
+    return await prisma.application.updateMany({
+      where: {
+        id: {
+          in: applicationIds,
+        },
+      },
+      data: {
+        status,
+      },
+    });
+  }
 }

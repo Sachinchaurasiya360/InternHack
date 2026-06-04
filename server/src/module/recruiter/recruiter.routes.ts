@@ -24,6 +24,7 @@ recruiterRouter.get("/jobs/:jobId/applications", (req, res) => recruiterControll
 recruiterRouter.get("/applications/:applicationId", (req, res) => recruiterController.getApplicationDetail(req, res));
 recruiterRouter.patch("/applications/:applicationId/status", (req, res) => recruiterController.updateApplicationStatus(req, res));
 recruiterRouter.patch("/applications/:applicationId/advance", (req, res) => recruiterController.advanceApplication(req, res));
+recruiterRouter.patch("/applications/bulk-status", (req, res) => recruiterController.bulkUpdateStatus(req, res));
 
 // Evaluation
 recruiterRouter.get("/applications/:applicationId/rounds/:roundId", (req, res) => recruiterController.getSubmission(req, res));

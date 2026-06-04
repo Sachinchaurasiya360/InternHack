@@ -18,6 +18,8 @@ export default function ApplicationsList() {
   const [page, setPage] = useState(1);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
+  const [selectedApplicationIds, setSelectedApplicationIds] = useState<number[]>([]);
+  const [bulkUpdating, setBulkUpdating] = useState(false);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounce search input
@@ -48,6 +50,7 @@ export default function ApplicationsList() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchApplications();
+    setSelectedApplicationIds([]);
   }, [jobId, page, statusFilter, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
 const handleStatusChange = async (appId: number, status: string) => {
@@ -77,6 +80,23 @@ const handleStatusChange = async (appId: number, status: string) => {
         next.delete(appId);
         return next;
       });
+    }
+  };
+
+  const handleBulkStatusChange = async (status: string) => {
+    if (selectedApplicationIds.length === 0 || bulkUpdating) return;
+    setBulkUpdating(true);
+    try {
+      await api.patch("/recruiter/applications/bulk-status", {
+        applicationIds: selectedApplicationIds,
+        status,
+      });
+      fetchApplications();
+      setSelectedApplicationIds([]);
+    } catch {
+      alert("Failed to update statuses in bulk");
+    } finally {
+      setBulkUpdating(false);
     }
   };
 
@@ -142,11 +162,26 @@ const handleStatusChange = async (appId: number, status: string) => {
 ) : applications.length === 0 ?  (
         <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-gray-500 dark:text-gray-500">No applications found</div>
       ) : (
-        <>
+<>
           <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
+                  {/* HEADER CHECKBOX COLUMN */}
+                  <th scope="col" className="w-12 px-6 py-3 text-left">
+                    <input
+                      type="checkbox"
+                      className="rounded border-gray-300 dark:border-gray-600 text-black dark:text-white focus:ring-black/20 dark:focus:ring-white/20 cursor-pointer"
+                      checked={applications.length > 0 && selectedApplicationIds.length === applications.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedApplicationIds(applications.map((app) => app.id));
+                        } else {
+                          setSelectedApplicationIds([]);
+                        }
+                      }}
+                    />
+                  </th>
                   <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Candidate</th>
                   <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Status</th>
                   <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Rounds</th>
@@ -161,6 +196,21 @@ const handleStatusChange = async (appId: number, status: string) => {
                   return (
                   <motion.tr key={app.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
                     className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    {/* ROW CHECKBOX COLUMN */}
+                    <td className="w-12 px-6 py-4">
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 dark:border-gray-600 text-black dark:text-white focus:ring-black/20 dark:focus:ring-white/20 cursor-pointer"
+                        checked={selectedApplicationIds.includes(app.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedApplicationIds((prev) => [...prev, app.id]);
+                          } else {
+                            setSelectedApplicationIds((prev) => prev.filter((id) => id !== app.id));
+                          }
+                        }}
+                      />
+                    </td>
                     <td className="px-6 py-4">
                       <Link to={`/recruiters/applications/${app.id}`} className="no-underline">
                         <p className="font-medium text-gray-900 dark:text-white">{app.student?.name}</p>
