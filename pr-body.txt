@@ -1,5 +1,0 @@
-﻿## Changes
-- Added dark mode styling to the range/slider input in EvaluationForm — previously used only lex-1 with no track styling, making it invisible in dark mode browsers
-- Now uses g-gray-200 dark:bg-gray-700 track with ccent-blue-600 thumb
-
-Closes #1181
