@@ -14,18 +14,20 @@ import {
   Search as SearchIcon,
 } from "lucide-react";
 import api from "../../../lib/axios";
+import toast from "../../../components/ui/toast";
+import { JobStatus } from "../../../lib/types";
 import type { Job } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 
-type StatusFilter = "ALL" | "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
+type StatusFilter = "ALL" | JobStatus;
 
 const STATUS_TABS: { key: StatusFilter; label: string }[] = [
   { key: "ALL", label: "all" },
-  { key: "PUBLISHED", label: "published" },
-  { key: "DRAFT", label: "draft" },
-  { key: "CLOSED", label: "closed" },
-  { key: "ARCHIVED", label: "archived" },
+  ...Object.values(JobStatus).map((status) => ({
+    key: status as StatusFilter,
+    label: status.toLowerCase(),
+  })),
 ];
 
 export default function RecruiterJobsList() {
@@ -49,8 +51,9 @@ export default function RecruiterJobsList() {
     try {
       await api.delete(`/jobs/${id}`);
       setJobs((prev) => prev.filter((j) => j.id !== id));
+      toast.success("Job deleted");
     } catch {
-      alert("Failed to delete job");
+      toast.error("Failed to delete job");
     }
   };
 
@@ -58,15 +61,22 @@ export default function RecruiterJobsList() {
     try {
       const { data } = await api.patch(`/jobs/${id}/status`, { status });
       setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, status: data.job.status } : j)));
+      toast.success("Job status updated");
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 
   const counts = useMemo(() => {
-    const base = { ALL: jobs.length, DRAFT: 0, PUBLISHED: 0, CLOSED: 0, ARCHIVED: 0 } as Record<StatusFilter, number>;
+    const base = { ALL: jobs.length } as Record<StatusFilter, number>;
+    for (const status of Object.values(JobStatus)) {
+      base[status] = 0;
+    }
     for (const j of jobs) {
-      if (j.status in base) base[j.status as StatusFilter]++;
+      const status = j.status as StatusFilter;
+      if (status in base) {
+        base[status]++;
+      }
     }
     return base;
   }, [jobs]);

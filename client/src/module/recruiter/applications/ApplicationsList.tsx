@@ -1,36 +1,30 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
+import toast from "../../../components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, Search, Filter, Loader2 } from "lucide-react";
+import { ArrowLeft, Search, Filter, Loader2, Upload } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
   const queryClient = useQueryClient();
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
-  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Debounce search input
+  // Reset to page 1 when search or filter changes
   useEffect(() => {
-    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-    searchTimerRef.current = setTimeout(() => {
-      setDebouncedSearch(search);
-      setPage(1);
-    }, 400);
-    return () => {
-      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-    };
-  }, [search]);
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["applications", jobId, page, statusFilter, debouncedSearch],
@@ -52,8 +46,9 @@ export default function ApplicationsList() {
     try {
       await api.patch(`/recruiter/applications/${appId}/status`, { status });
       queryClient.invalidateQueries({ queryKey: ["applications"] });
+      toast.success("Status updated");
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     } finally {
       setUpdatingId(null);
     }
@@ -65,8 +60,9 @@ export default function ApplicationsList() {
     try {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       queryClient.invalidateQueries({ queryKey: ["applications"] });
+      toast.success("Application advanced");
     } catch {
-      alert("Failed to advance application");
+      toast.error("Failed to advance application");
     } finally {
       setAdvancingIds((current) => {
         const next = new Set(current);
@@ -83,7 +79,15 @@ export default function ApplicationsList() {
         <ArrowLeft className="w-4 h-4" /> Back to Jobs
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Applications</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-between gap-4">
+        Applications
+        <Link
+          to={`/recruiters/jobs/${jobId}/import-candidates`}
+          className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
+        >
+          <Upload className="w-4 h-4" /> Import Candidates
+        </Link>
+      </h1>
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-6">
@@ -189,7 +193,7 @@ export default function ApplicationsList() {
                         <div className="flex items-center gap-2">
                           <button onClick={() => handleAdvance(app.id)}
                             disabled={isAdvancing}
-                            className={`inline-flex min-w-[86px] items-center justify-center gap-1.5 text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors ${isAdvancing ? "cursor-not-allowed opacity-70" : ""}`}>
+                            className={`inline-flex min-w-21.5 items-center justify-center gap-1.5 text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors ${isAdvancing ? "cursor-not-allowed opacity-70" : ""}`}>
                             {isAdvancing && <Loader2 className="h-3 w-3 animate-spin" />}
                             {isAdvancing ? "Advancing" : "Advance"}
                           </button>
@@ -210,9 +214,11 @@ export default function ApplicationsList() {
           {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-6">
               <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
+                aria-label="Go to previous page"
                 className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Prev</button>
               <span className="text-sm text-gray-500 dark:text-gray-500">Page {page} of {pagination.totalPages}</span>
               <button onClick={() => setPage(Math.min(pagination.totalPages, page + 1))} disabled={page === pagination.totalPages}
+                aria-label={`Go to next page, page ${page + 1}`}
                 className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Next</button>
             </div>
           )}

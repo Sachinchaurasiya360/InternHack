@@ -22,6 +22,8 @@ interface Program {
   status: "Annual" | "Ongoing" | "Batch";
   region: string;
   website: string;
+  deadline?: string;
+  startDate?: string;
   applyUrl: string;
   color: string;
   bgColor: string;
@@ -38,9 +40,12 @@ const PROGRAMS: Program[] = [
     id: 1,
     name: "Google Summer of Code",
     short: "GSoC",
-    description: "The world's largest open source mentorship program. Students work 12–22 weeks on a coding project for an accepted organization, guided by expert mentors.",
-    fullDescription: "Google Summer of Code (GSoC) is a global, online mentoring program focused on introducing new contributors to open source software development. GSoC contributors work with an open source organization on a 12+ week programming project under the guidance of mentors. Since 2005, more than 20,000 contributors have participated.",
-    eligibility: "18+ years old, enrolled in an accredited institution or recently graduated within 1 year",
+    description:
+      "The world's largest open source mentorship program. Students work 12–22 weeks on a coding project for an accepted organization, guided by expert mentors.",
+    fullDescription:
+      "Google Summer of Code (GSoC) is a global, online mentoring program focused on introducing new contributors to open source software development. GSoC contributors work with an open source organization on a 12+ week programming project under the guidance of mentors. Since 2005, more than 20,000 contributors have participated.",
+    eligibility:
+      "18+ years old, enrolled in an accredited institution or recently graduated within 1 year",
     eligibilityType: "Students",
     stipend: "$1,500 – $6,600",
     stipendPaid: true,
@@ -50,6 +55,7 @@ const PROGRAMS: Program[] = [
     region: "Global",
     website: "https://summerofcode.withgoogle.com",
     applyUrl: "https://summerofcode.withgoogle.com/how-it-works",
+    deadline: "2026-04-08",
     color: "text-red-700",
     bgColor: "bg-red-50 border-red-200",
     tags: ["google", "coding", "mentorship", "paid"],
@@ -83,8 +89,10 @@ const PROGRAMS: Program[] = [
     id: 2,
     name: "LFX Mentorship",
     short: "LFX",
-    description: "Linux Foundation's mentorship program connecting contributors to CNCF, Hyperledger, and other LF projects. Three cohorts per year with competitive stipends.",
-    fullDescription: "LFX Mentorship (formerly Community Bridge) is a platform that connects aspiring open source developers with mentors in 100+ Linux Foundation projects. It runs three cohorts annually (Spring, Summer, Fall) across CNCF, Hyperledger, OpenMainframe, and more.",
+    description:
+      "Linux Foundation's mentorship program connecting contributors to CNCF, Hyperledger, and other LF projects. Three cohorts per year with competitive stipends.",
+    fullDescription:
+      "LFX Mentorship (formerly Community Bridge) is a platform that connects aspiring open source developers with mentors in 100+ Linux Foundation projects. It runs three cohorts annually (Spring, Summer, Fall) across CNCF, Hyperledger, OpenMainframe, and more.",
     eligibility: "Open to anyone 18+ years old globally",
     eligibilityType: "Students",
     stipend: "$3,000 – $6,600 per term",
@@ -127,8 +135,10 @@ const PROGRAMS: Program[] = [
     id: 3,
     name: "MLH Fellowship",
     short: "MLH Fellowship",
-    description: "A 12-week remote internship alternative where participants contribute to open source projects used by real companies, earning a stipend and career coaching.",
-    fullDescription: "The MLH Fellowship is a remote internship alternative for software engineers. Fellows contribute to open source projects that are used by companies around the world, guided by mentors from top tech companies. It runs in Spring, Summer, and Fall batches.",
+    description:
+      "A 12-week remote internship alternative where participants contribute to open source projects used by real companies, earning a stipend and career coaching.",
+    fullDescription:
+      "The MLH Fellowship is a remote internship alternative for software engineers. Fellows contribute to open source projects that are used by companies around the world, guided by mentors from top tech companies. It runs in Spring, Summer, and Fall batches.",
     eligibility: "University students and recent graduates globally",
     eligibilityType: "Students",
     stipend: "$5,000 – $6,000",
@@ -152,7 +162,10 @@ const PROGRAMS: Program[] = [
     timeline: [
       { phase: "Applications Open", dates: "2–3 months before batch start" },
       { phase: "Technical Interview", dates: "Rolling after submission" },
-      { phase: "Fellowship Start", dates: "Jan (Spring) / Jun (Summer) / Sep (Fall)" },
+      {
+        phase: "Fellowship Start",
+        dates: "Jan (Spring) / Jun (Summer) / Sep (Fall)",
+      },
       { phase: "Open Source Contributions", dates: "Weeks 1–12" },
       { phase: "Graduation & Demo Day", dates: "End of batch" },
     ],
@@ -168,9 +181,12 @@ const PROGRAMS: Program[] = [
     id: 4,
     name: "Outreachy",
     short: "Outreachy",
-    description: "Paid, remote internships in open source and open science for people subject to systemic bias in the tech industry. One of the highest stipends available.",
-    fullDescription: "Outreachy provides internships in open source and open science for people who face under-representation, systemic bias, or discrimination in the technology industry. Two cohorts run per year (May–Aug and Dec–Mar). Participants must be in an eligible country and meet demographic requirements.",
-    eligibility: "People subject to discrimination in tech - women, non-binary, LGBTQ+, racial/ethnic minorities, and others in eligible countries",
+    description:
+      "Paid, remote internships in open source and open science for people subject to systemic bias in the tech industry. One of the highest stipends available.",
+    fullDescription:
+      "Outreachy provides internships in open source and open science for people who face under-representation, systemic bias, or discrimination in the technology industry. Two cohorts run per year (May–Aug and Dec–Mar). Participants must be in an eligible country and meet demographic requirements.",
+    eligibility:
+      "People subject to discrimination in tech - women, non-binary, LGBTQ+, racial/ethnic minorities, and others in eligible countries",
     eligibilityType: "Diversity-focused",
     stipend: "$7,000",
     stipendPaid: true,
@@ -180,6 +196,8 @@ const PROGRAMS: Program[] = [
     region: "Global (eligible countries)",
     website: "https://outreachy.org",
     applyUrl: "https://www.outreachy.org/apply",
+    deadline: "2026-08-22",
+    startDate: "2026-05-20",
     color: "text-teal-700",
     bgColor: "bg-teal-50 border-teal-200",
     tags: ["diversity", "inclusion", "paid", "remote"],
@@ -191,9 +209,18 @@ const PROGRAMS: Program[] = [
       "No previous Outreachy internship",
     ],
     timeline: [
-      { phase: "Initial Application", dates: "Jan (for May cohort) / Aug (for Dec cohort)" },
-      { phase: "Contribution Period", dates: "Feb–Mar (for May) / Sep–Oct (for Dec)" },
-      { phase: "Intern Selections Announced", dates: "Mar (for May) / Oct (for Dec)" },
+      {
+        phase: "Initial Application",
+        dates: "Jan (for May cohort) / Aug (for Dec cohort)",
+      },
+      {
+        phase: "Contribution Period",
+        dates: "Feb–Mar (for May) / Sep–Oct (for Dec)",
+      },
+      {
+        phase: "Intern Selections Announced",
+        dates: "Mar (for May) / Oct (for Dec)",
+      },
       { phase: "Internship", dates: "May–Aug or Dec–Mar" },
     ],
     howToApply: [
@@ -210,8 +237,10 @@ const PROGRAMS: Program[] = [
     id: 5,
     name: "Hacktoberfest",
     short: "Hacktoberfest",
-    description: "DigitalOcean's annual October celebration of open source. Complete 4 PRs/MRs during October to earn a digital badge and swag from sponsors.",
-    fullDescription: "Hacktoberfest is a month-long celebration of open source software run by DigitalOcean every October. Participants who submit 4 qualifying pull requests to any participating GitHub or GitLab repositories earn a digital badge and may qualify for limited-edition physical swag.",
+    description:
+      "DigitalOcean's annual October celebration of open source. Complete 4 PRs/MRs during October to earn a digital badge and swag from sponsors.",
+    fullDescription:
+      "Hacktoberfest is a month-long celebration of open source software run by DigitalOcean every October. Participants who submit 4 qualifying pull requests to any participating GitHub or GitLab repositories earn a digital badge and may qualify for limited-edition physical swag.",
     eligibility: "Anyone globally, 18+ or with parental consent",
     eligibilityType: "Open to All",
     stipend: "Digital badge + limited swag",
@@ -222,6 +251,7 @@ const PROGRAMS: Program[] = [
     region: "Global",
     website: "https://hacktoberfest.com",
     applyUrl: "https://hacktoberfest.com",
+    startDate: "2026-10-01",
     color: "text-orange-700",
     bgColor: "bg-orange-50 border-orange-200",
     tags: ["beginner-friendly", "open-source", "october", "swag"],
@@ -249,8 +279,10 @@ const PROGRAMS: Program[] = [
     id: 6,
     name: "GirlScript Summer of Code",
     short: "GSSoC",
-    description: "India's largest open source program, inspired by GSoC. Runs March–May connecting Indian students with mentors from 100+ open source projects.",
-    fullDescription: "GirlScript Summer of Code (GSSoC) is a 3-month open source program conducted by the GirlScript Foundation. It is primarily focused on Indian students and aims to help them get started with contributing to open source. Top contributors receive certificates, swag, and job referrals.",
+    description:
+      "India's largest open source program, inspired by GSoC. Runs March–May connecting Indian students with mentors from 100+ open source projects.",
+    fullDescription:
+      "GirlScript Summer of Code (GSSoC) is a 3-month open source program conducted by the GirlScript Foundation. It is primarily focused on Indian students and aims to help them get started with contributing to open source. Top contributors receive certificates, swag, and job referrals.",
     eligibility: "Open to all - primarily Indian students but anyone can join",
     eligibilityType: "Open to All",
     stipend: "Certificates + swag + job referrals for top contributors",
@@ -261,6 +293,7 @@ const PROGRAMS: Program[] = [
     region: "India (open globally)",
     website: "https://gssoc.girlscript.tech",
     applyUrl: "https://gssoc.girlscript.tech",
+    deadline: "2026-05-31",
     color: "text-pink-700",
     bgColor: "bg-pink-50 border-pink-200",
     tags: ["india", "beginner-friendly", "certificates", "gssoc"],
@@ -289,8 +322,10 @@ const PROGRAMS: Program[] = [
     id: 7,
     name: "Season of Docs",
     short: "GSoD",
-    description: "Google's program pairing technical writers with open source orgs to improve documentation. Organizations receive funds to pay writers directly.",
-    fullDescription: "Google Season of Docs gives technical writers an opportunity to gain experience in open source, while giving open source projects improved documentation and the resources to improve processes. Organizations apply for grant money to pay technical writers.",
+    description:
+      "Google's program pairing technical writers with open source orgs to improve documentation. Organizations receive funds to pay writers directly.",
+    fullDescription:
+      "Google Season of Docs gives technical writers an opportunity to gain experience in open source, while giving open source projects improved documentation and the resources to improve processes. Organizations apply for grant money to pay technical writers.",
     eligibility: "Experienced technical writers (freelance or otherwise)",
     eligibilityType: "Open to All",
     stipend: "$5,000 – $15,000 (org-dependent)",
@@ -300,7 +335,8 @@ const PROGRAMS: Program[] = [
     status: "Annual",
     region: "Global",
     website: "https://developers.google.com/season-of-docs",
-    applyUrl: "https://developers.google.com/season-of-docs/docs/tech-writer-guide",
+    applyUrl:
+      "https://developers.google.com/season-of-docs/docs/tech-writer-guide",
     color: "text-amber-700",
     bgColor: "bg-amber-50 border-amber-200",
     tags: ["documentation", "technical-writing", "google", "paid"],
@@ -329,8 +365,10 @@ const PROGRAMS: Program[] = [
     id: 8,
     name: "Hyperledger Mentorship",
     short: "Hyperledger",
-    description: "Linux Foundation's blockchain project offers mentorships for contributors to Hyperledger Fabric, Besu, Aries, and other enterprise blockchain frameworks.",
-    fullDescription: "Hyperledger Mentorship is part of LFX Mentorship focused specifically on Hyperledger projects. Mentees contribute to enterprise blockchain projects like Fabric, Besu, Aries, and Firefly while earning a stipend and gaining deep expertise in distributed ledger technology.",
+    description:
+      "Linux Foundation's blockchain project offers mentorships for contributors to Hyperledger Fabric, Besu, Aries, and other enterprise blockchain frameworks.",
+    fullDescription:
+      "Hyperledger Mentorship is part of LFX Mentorship focused specifically on Hyperledger projects. Mentees contribute to enterprise blockchain projects like Fabric, Besu, Aries, and Firefly while earning a stipend and gaining deep expertise in distributed ledger technology.",
     eligibility: "Students and developers 18+ with some programming experience",
     eligibilityType: "Students",
     stipend: "$3,000 – $6,600",
@@ -364,8 +402,10 @@ const PROGRAMS: Program[] = [
     id: 9,
     name: "MLH Localhost",
     short: "MLH Localhost",
-    description: "Hands-on technical workshops by Major League Hacking helping students learn new technologies through building. Free to attend, no stipend.",
-    fullDescription: "MLH Localhost is a series of free technical workshops focused on helping students learn new technologies by building projects. Topics span Git, APIs, ML, security, and more. Hosted in partnership with GitHub, Google, and other tech companies.",
+    description:
+      "Hands-on technical workshops by Major League Hacking helping students learn new technologies through building. Free to attend, no stipend.",
+    fullDescription:
+      "MLH Localhost is a series of free technical workshops focused on helping students learn new technologies by building projects. Topics span Git, APIs, ML, security, and more. Hosted in partnership with GitHub, Google, and other tech companies.",
     eligibility: "Students globally",
     eligibilityType: "Students",
     stipend: "Free learning + digital certificates",
@@ -379,17 +419,27 @@ const PROGRAMS: Program[] = [
     color: "text-violet-700",
     bgColor: "bg-violet-50 border-violet-200",
     tags: ["workshops", "learning", "free", "beginner"],
-    requirements: ["Student or recent graduate", "Register for individual events"],
+    requirements: [
+      "Student or recent graduate",
+      "Register for individual events",
+    ],
     timeline: [{ phase: "Events Run", dates: "Year-round" }],
-    howToApply: ["Browse upcoming events at mlh.io/events", "Register for free", "Attend and build along"],
+    howToApply: [
+      "Browse upcoming events at mlh.io/events",
+      "Register for free",
+      "Attend and build along",
+    ],
   },
   {
     id: 10,
     name: "Rails Girls Summer of Code",
     short: "RGSoC",
-    description: "A fellowship program for women and non-binary coders contributing to open source Ruby on Rails projects with coaching support and a monthly stipend.",
-    fullDescription: "Rails Girls Summer of Code is a fellowship program that awards teams of two students a monthly stipend to work on open source Ruby on Rails projects. Participants also receive coaching from local tech companies. The program aims to increase diversity in open source.",
-    eligibility: "Women, non-binary people, and transgender individuals who can code",
+    description:
+      "A fellowship program for women and non-binary coders contributing to open source Ruby on Rails projects with coaching support and a monthly stipend.",
+    fullDescription:
+      "Rails Girls Summer of Code is a fellowship program that awards teams of two students a monthly stipend to work on open source Ruby on Rails projects. Participants also receive coaching from local tech companies. The program aims to increase diversity in open source.",
+    eligibility:
+      "Women, non-binary people, and transgender individuals who can code",
     eligibilityType: "Diversity-focused",
     stipend: "$1,500/month (3 months)",
     stipendPaid: true,
@@ -425,8 +475,10 @@ const PROGRAMS: Program[] = [
     id: 11,
     name: "Open Mainframe Project Mentorship",
     short: "OMP",
-    description: "LFX-hosted mentorship for mainframe and enterprise-scale computing. Projects use z/OS, COBOL, Java on IBM Z systems.",
-    fullDescription: "The Open Mainframe Project Mentorship is hosted via LFX Mentorship and focuses on bringing new contributors to mainframe technologies including z/OS, Linux on Z, Zowe, and COBOL modernization projects.",
+    description:
+      "LFX-hosted mentorship for mainframe and enterprise-scale computing. Projects use z/OS, COBOL, Java on IBM Z systems.",
+    fullDescription:
+      "The Open Mainframe Project Mentorship is hosted via LFX Mentorship and focuses on bringing new contributors to mainframe technologies including z/OS, Linux on Z, Zowe, and COBOL modernization projects.",
     eligibility: "Students 18+ interested in enterprise/mainframe computing",
     eligibilityType: "Students",
     stipend: "$3,000 – $6,600",
@@ -440,16 +492,24 @@ const PROGRAMS: Program[] = [
     color: "text-slate-700",
     bgColor: "bg-slate-50 border-slate-200",
     tags: ["mainframe", "enterprise", "cobol", "java", "lfx"],
-    requirements: ["Basic Java or Python", "Curiosity about enterprise computing"],
+    requirements: [
+      "Basic Java or Python",
+      "Curiosity about enterprise computing",
+    ],
     timeline: [{ phase: "Via LFX Mentorship cycles", dates: "Jan, May, Sep" }],
-    howToApply: ["Search Open Mainframe on LFX Mentorship", "Apply to a listed project"],
+    howToApply: [
+      "Search Open Mainframe on LFX Mentorship",
+      "Apply to a listed project",
+    ],
   },
   {
     id: 12,
     name: "Kubernetes Release Team Shadow",
     short: "K8s Shadow",
-    description: "Shadow members in the Kubernetes release team, contributing to one of the most critical CI/CD cycles in cloud native software. Unpaid but extremely prestigious.",
-    fullDescription: "The Kubernetes Release Team Shadow Program allows contributors to shadow members of the Kubernetes release team. Shadows assist with documentation, communication, CI signal, and release notes across each 3-month Kubernetes release cycle.",
+    description:
+      "Shadow members in the Kubernetes release team, contributing to one of the most critical CI/CD cycles in cloud native software. Unpaid but extremely prestigious.",
+    fullDescription:
+      "The Kubernetes Release Team Shadow Program allows contributors to shadow members of the Kubernetes release team. Shadows assist with documentation, communication, CI signal, and release notes across each 3-month Kubernetes release cycle.",
     eligibility: "Kubernetes contributors with some prior contribution history",
     eligibilityType: "Open to All",
     stipend: "Unpaid - strong resume credential",
@@ -459,7 +519,8 @@ const PROGRAMS: Program[] = [
     status: "Ongoing",
     region: "Global (remote)",
     website: "https://github.com/kubernetes/sig-release",
-    applyUrl: "https://github.com/kubernetes/sig-release/tree/master/release-team",
+    applyUrl:
+      "https://github.com/kubernetes/sig-release/tree/master/release-team",
     color: "text-sky-700",
     bgColor: "bg-sky-50 border-sky-200",
     tags: ["kubernetes", "cloud-native", "prestigious", "go", "devops"],
@@ -487,20 +548,124 @@ const STORAGE_KEY = "program_tracker_filters";
 
 const ELIGIBILITY_OPTIONS = ["All", "Students", "Open to All", "Diversity-focused"];
 const STATUS_OPTIONS = ["All", "Annual", "Ongoing", "Batch"];
-const STIPEND_OPTIONS = ["All", "Paid", "High ($5k+)", "Medium ($1k–5k)", "Low/None"];
+const STIPEND_OPTIONS = [
+  "All",
+  "Paid",
+  "High ($5k+)",
+  "Medium ($1k–5k)",
+  "Low/None",
+];
+
+type LocalCurrencyConfig = {
+  currency: string;
+  rate: number;
+  locale: string;
+};
+
+const LOCAL_CURRENCY_BY_REGION: Record<string, LocalCurrencyConfig> = {
+  IN: { currency: "INR", rate: 83.5, locale: "en-IN" },
+  NG: { currency: "NGN", rate: 1500, locale: "en-NG" },
+  ID: { currency: "IDR", rate: 16200, locale: "id-ID" },
+  BR: { currency: "BRL", rate: 5.2, locale: "pt-BR" },
+};
+
+const TIME_ZONE_REGION_HINTS: Record<string, keyof typeof LOCAL_CURRENCY_BY_REGION> = {
+  "Asia/Kolkata": "IN",
+  "Asia/Calcutta": "IN",
+  "Africa/Lagos": "NG",
+  "Asia/Jakarta": "ID",
+  "Asia/Makassar": "ID",
+  "Asia/Jayapura": "ID",
+  "America/Sao_Paulo": "BR",
+};
 
 const STATUS_STYLE: Record<string, string> = {
   Annual: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  Ongoing: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  Batch: "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  Ongoing:
+    "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  Batch:
+    "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
 };
 
 const ELIGIBILITY_STYLE: Record<string, string> = {
-  "Students": "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  "Open to All": "bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
-  "Diversity-focused": "bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
+  Students:
+    "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  "Open to All":
+    "bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
+  "Diversity-focused":
+    "bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
 };
 
+function getCountdown(
+  program: Program,
+): { text: string; className: string } | null {
+  const now = Date.now();
+  if (program.deadline) {
+    const days = Math.ceil(
+      (new Date(program.deadline + "T23:59:59").getTime() - now) / 86400000,
+    );
+    if (days < 0) return null;
+    if (days <= 7)
+      return {
+        text: `${days} days left!`,
+        className: "text-red-500 font-semibold",
+      };
+    return {
+      text: `Closes in ${days} days`,
+      className: "text-lime-600 font-medium",
+    };
+  }
+  if (program.startDate) {
+    const days = Math.ceil(
+      (new Date(program.startDate + "T23:59:59").getTime() - now) / 86400000,
+    );
+    if (days < 0) return null;
+    return {
+      text: `Opens in ${days} days`,
+      className: "text-amber-500 font-medium",
+    };
+  }
+  return null;
+}
+
+const getBrowserCurrencyConfig = (): LocalCurrencyConfig | null => {
+  if (typeof Intl === "undefined") return null;
+
+  const locale = typeof navigator !== "undefined" ? navigator.language : "";
+  const localeRegion = locale.match(/-([A-Z]{2})\b/i)?.[1]?.toUpperCase();
+  if (localeRegion && LOCAL_CURRENCY_BY_REGION[localeRegion]) {
+    return LOCAL_CURRENCY_BY_REGION[localeRegion];
+  }
+
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timeZoneRegion = TIME_ZONE_REGION_HINTS[timeZone];
+  return timeZoneRegion ? LOCAL_CURRENCY_BY_REGION[timeZoneRegion] : null;
+};
+
+const formatCompactCurrency = (amount: number, config: LocalCurrencyConfig) =>
+  new Intl.NumberFormat(config.locale, {
+    style: "currency",
+    currency: config.currency,
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(amount);
+
+const getLocalStipendEstimate = (stipend: string): string | null => {
+  const config = getBrowserCurrencyConfig();
+  if (!config) return null;
+
+  const amounts = [...stipend.matchAll(/\$([\d,]+(?:\.\d+)?)/g)]
+    .map((match) => Number(match[1].replace(/,/g, "")))
+    .filter((amount) => Number.isFinite(amount));
+
+  if (amounts.length === 0) return null;
+
+  const converted = amounts.map((amount) => formatCompactCurrency(amount * config.rate, config));
+  const suffix = stipend.match(/\/month|per term/i)?.[0] ?? "";
+  const spacedSuffix = suffix.startsWith("/") || !suffix ? suffix : ` ${suffix}`;
+
+  return `~${converted.join(" - ")}${spacedSuffix}`;
+};
 const getGoogleCalendarUrl = (program: Program) => {
   if (!program.applicationDeadline) return "";
 
@@ -528,23 +693,34 @@ const getGoogleCalendarUrl = (program: Program) => {
 // ─── Program Card ─────────────────────────────────────────────
 function ProgramCard({ program }: { program: Program }) {
   const [expanded, setExpanded] = useState(false);
+  const localStipendEstimate = program.stipendPaid ? getLocalStipendEstimate(program.stipend) : null;
 
   return (
-    <div className={`bg-white dark:bg-gray-900 rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${program.bgColor}`}>
+    <div
+      className={`bg-white dark:bg-gray-900 rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${program.bgColor}`}
+    >
       {/* Header */}
       <div className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}>
+            <div
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}
+            >
               {program.short}
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight">{program.name}</h3>
+              <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight">
+                {program.name}
+              </h3>
               <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${STATUS_STYLE[program.status]}`}>
+                <span
+                  className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${STATUS_STYLE[program.status]}`}
+                >
                   {program.status}
                 </span>
-                <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${ELIGIBILITY_STYLE[program.eligibilityType]}`}>
+                <span
+                  className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${ELIGIBILITY_STYLE[program.eligibilityType]}`}
+                >
                   {program.eligibilityType}
                 </span>
               </div>
@@ -552,20 +728,36 @@ function ProgramCard({ program }: { program: Program }) {
           </div>
           <div className="text-right shrink-0">
             {program.stipendPaid ? (
-              <div className="flex items-center gap-1 text-emerald-700">
+              <div className="flex items-center justify-end gap-1 text-emerald-700">
                 <DollarSign className="w-3.5 h-3.5" />
-                <span className="text-sm font-bold">{program.stipend.split(" ")[0]}</span>
+                <span className="text-sm font-bold">
+                  {program.stipend.split(" ")[0]}
+                </span>
               </div>
             ) : (
-              <span className="text-xs text-gray-400 font-medium">No stipend</span>
+              <span className="text-xs text-gray-400 font-medium">
+                No stipend
+              </span>
             )}
             {program.stipendPaid && (
-              <p className="text-[10px] text-gray-400 mt-0.5">{program.stipend}</p>
+              <>
+                <p className="text-xs text-gray-400 mt-0.5">USD {program.stipend}</p>
+                {localStipendEstimate && (
+                  <p
+                    className="mt-0.5 max-w-32 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+                    title="Approximate local value. Amounts may vary based on exchange rates, project difficulty, and location."
+                  >
+                    {localStipendEstimate}
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>
 
-        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mt-3">{program.description}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mt-3">
+          {program.description}
+        </p>
 
         {/* Key info row */}
         <div className="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
@@ -579,17 +771,35 @@ function ProgramCard({ program }: { program: Program }) {
           </span>
           <span className="flex items-center gap-1">
             <Users className="w-3.5 h-3.5 text-gray-400" />
-            {program.eligibility.length > 50 ? program.eligibility.slice(0, 50) + "ÔÇª" : program.eligibility}
+            {program.eligibility.length > 50
+              ? program.eligibility.slice(0, 50) + "…"
+              : program.eligibility}
           </span>
         </div>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1 mt-3">
           {program.tags.slice(0, 4).map((t) => (
-            <span key={t} className="px-2 py-0.5 bg-gray-50 dark:bg-gray-800 text-gray-500 text-[10px] rounded-full border border-gray-100 dark:border-gray-700">#{t}</span>
+            <span
+              key={t}
+              className="px-2 py-0.5 bg-gray-50 dark:bg-gray-800 text-gray-500 text-[10px] rounded-full border border-gray-100 dark:border-gray-700"
+            >
+              #{t}
+            </span>
           ))}
         </div>
-
+        {/* Countdown */}
+        {(() => {
+          const cd = getCountdown(program);
+          return cd ? (
+            <div
+              className={`flex items-center gap-1 mt-2 text-xs ${cd.className}`}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              {cd.text}
+            </div>
+          ) : null;
+        })()}
         {/* Expand / CTA row */}
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
           <Button
@@ -598,7 +808,11 @@ function ProgramCard({ program }: { program: Program }) {
             onClick={() => setExpanded(!expanded)}
             className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
           >
-            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            {expanded ? (
+              <ChevronUp className="w-3.5 h-3.5" />
+            ) : (
+              <ChevronDown className="w-3.5 h-3.5" />
+            )}
             {expanded ? "Less details" : "Full details"}
           </Button>
           <div className="flex gap-2">
@@ -620,8 +834,12 @@ function ProgramCard({ program }: { program: Program }) {
               className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 no-underline transition-colors">
               <Globe className="w-3 h-3" /> Website <ExternalLink className="w-3 h-3 opacity-60" />
             </a>
-            <a href={program.applyUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white dark:text-gray-950 bg-gray-950 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg no-underline transition-colors">
+            <a
+              href={program.applyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white dark:text-gray-950 bg-gray-950 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg no-underline transition-colors"
+            >
               Apply <ExternalLink className="w-3 h-3 opacity-70" />
             </a>
           </div>
@@ -641,10 +859,15 @@ function ProgramCard({ program }: { program: Program }) {
             <div className="p-5 bg-gray-50 dark:bg-gray-950 grid md:grid-cols-3 gap-6">
               {/* Requirements */}
               <div>
-                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">Requirements</h4>
+                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
+                  Requirements
+                </h4>
                 <ul className="space-y-2">
                   {program.requirements.map((r, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400"
+                    >
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                       {r}
                     </li>
@@ -654,13 +877,17 @@ function ProgramCard({ program }: { program: Program }) {
 
               {/* Timeline */}
               <div>
-                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">Timeline</h4>
+                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
+                  Timeline
+                </h4>
                 <div className="space-y-2">
                   {program.timeline.map((t, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-1.5 shrink-0" />
                       <div>
-                        <p className="text-xs font-medium text-gray-900 dark:text-white">{t.phase}</p>
+                        <p className="text-xs font-medium text-gray-900 dark:text-white">
+                          {t.phase}
+                        </p>
                         <p className="text-[10px] text-gray-500">{t.dates}</p>
                       </div>
                     </div>
@@ -670,11 +897,18 @@ function ProgramCard({ program }: { program: Program }) {
 
               {/* How to Apply */}
               <div>
-                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">How to Apply</h4>
+                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
+                  How to Apply
+                </h4>
                 <ol className="space-y-2">
                   {program.howToApply.map((step, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
-                      <span className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400"
+                    >
+                      <span className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                        {i + 1}
+                      </span>
                       {step}
                     </li>
                   ))}
@@ -701,13 +935,14 @@ export default function ProgramTrackerPage() {
           status: STATUS_OPTIONS.includes(parsed.status) ? parsed.status : "All",
           eligibility: ELIGIBILITY_OPTIONS.includes(parsed.eligibility) ? parsed.eligibility : "All",
           stipend: STIPEND_OPTIONS.includes(parsed.stipend) ? parsed.stipend : "All",
+          sortBy: ["default", "deadline"].includes(parsed.sortBy) ? parsed.sortBy : "default",
         };
       }
     }
   } catch {
     // ignore errors
   }
-  return { status: "All", eligibility: "All", stipend: "All" };
+  return { status: "All", eligibility: "All", stipend: "All", sortBy: "default" };
 };
 
   const savedFilters = getSavedFilters();
@@ -716,6 +951,7 @@ export default function ProgramTrackerPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
   const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
   const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
+  const [sortBy, setSortBy] = useState<string>(savedFilters.sortBy);
 
   // Save filters to localStorage whenever they change
   useEffect(() => {
@@ -726,29 +962,43 @@ export default function ProgramTrackerPage() {
           status: selectedStatus,
           eligibility: selectedEligibility,
           stipend: selectedStipend,
+          sortBy: sortBy,
         })
       );
     } catch {
       // ignore storage errors
     }
-  }, [selectedStatus, selectedEligibility, selectedStipend]);
+  }, [selectedStatus, selectedEligibility, selectedStipend, sortBy]);
 
   const filtered = useMemo(() => {
     let list = [...PROGRAMS];
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
-        (p) => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.tags.some((t) => t.toLowerCase().includes(q))
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.tags.some((t) => t.toLowerCase().includes(q)),
       );
     }
-    if (selectedStatus !== "All") list = list.filter((p) => p.status === selectedStatus);
-    if (selectedEligibility !== "All") list = list.filter((p) => p.eligibilityType === selectedEligibility);
+    if (selectedStatus !== "All")
+      list = list.filter((p) => p.status === selectedStatus);
+    if (selectedEligibility !== "All")
+      list = list.filter((p) => p.eligibilityType === selectedEligibility);
     if (selectedStipend === "Paid") list = list.filter((p) => p.stipendPaid);
     if (selectedStipend === "High ($5k+)") list = list.filter((p) => p.stipendRange === "High");
     if (selectedStipend === "Medium ($1k–5k)") list = list.filter((p) => p.stipendRange === "Medium");
     if (selectedStipend === "Low/None") list = list.filter((p) => p.stipendRange === "Low/None");
+
+    if (sortBy === "deadline") {
+      list.sort((a, b) => {
+        const dateA = a.applicationDeadline ? new Date(a.applicationDeadline).getTime() : Infinity;
+        const dateB = b.applicationDeadline ? new Date(b.applicationDeadline).getTime() : Infinity;
+        return dateA - dateB;
+      });
+    }
     return list;
-  }, [search, selectedStatus, selectedEligibility, selectedStipend]);
+  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy]);
 
   const totalStipend = PROGRAMS.filter((p) => p.stipendPaid).length;
   const highStipend = PROGRAMS.filter((p) => p.stipendRange === "High").length;
@@ -764,22 +1014,39 @@ export default function ProgramTrackerPage() {
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Open Source Program Tracker</h1>
-              <p className="text-sm text-emerald-700">Track deadlines, stipends, and how to apply for every major program</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Open Source Program Tracker
+              </h1>
+              <p className="text-sm text-emerald-700">
+                Track deadlines, stipends, and how to apply for every major
+                program
+              </p>
             </div>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mb-6 leading-relaxed">
-            All major open source programs in one place - with deadlines, stipends, eligibility, and step-by-step application guides. Set reminders and apply before windows close.
+            All major open source programs in one place - with deadlines,
+            stipends, eligibility, and step-by-step application guides. Set
+            reminders and apply before windows close.
           </p>
           <div className="flex flex-wrap gap-3">
             {[
               { label: "Programs Listed", value: PROGRAMS.length },
               { label: "Paid Programs", value: totalStipend },
               { label: "High Stipend ($5k+)", value: highStipend },
-              { label: "Diversity Programs", value: PROGRAMS.filter((p) => p.eligibilityType === "Diversity-focused").length },
+              {
+                label: "Diversity Programs",
+                value: PROGRAMS.filter(
+                  (p) => p.eligibilityType === "Diversity-focused",
+                ).length,
+              },
             ].map((s) => (
-              <div key={s.label} className="bg-white/70 dark:bg-gray-900/70 rounded-xl px-4 py-2 border border-emerald-100 dark:border-emerald-800">
-                <p className="text-lg font-bold text-gray-900 dark:text-white leading-none">{s.value}</p>
+              <div
+                key={s.label}
+                className="bg-white/70 dark:bg-gray-900/70 rounded-xl px-4 py-2 border border-emerald-100 dark:border-emerald-800"
+              >
+                <p className="text-lg font-bold text-gray-900 dark:text-white leading-none">
+                  {s.value}
+                </p>
                 <p className="text-[11px] text-gray-500 mt-0.5">{s.label}</p>
               </div>
             ))}
@@ -792,40 +1059,74 @@ export default function ProgramTrackerPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
-            type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search programsÔÇª"
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search programs..."
             className="w-full pl-9 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
           />
         </div>
         <div className="flex flex-wrap gap-2">
           {[
-            { label: "Status", value: selectedStatus, options: STATUS_OPTIONS, set: setSelectedStatus },
-            { label: "Eligibility", value: selectedEligibility, options: ELIGIBILITY_OPTIONS, set: setSelectedEligibility },
-            { label: "Stipend", value: selectedStipend, options: STIPEND_OPTIONS, set: setSelectedStipend },
+            {
+              label: "Status",
+              value: selectedStatus,
+              options: STATUS_OPTIONS,
+              set: setSelectedStatus,
+            },
+            {
+              label: "Eligibility",
+              value: selectedEligibility,
+              options: ELIGIBILITY_OPTIONS,
+              set: setSelectedEligibility,
+            },
+            {
+              label: "Stipend",
+              value: selectedStipend,
+              options: STIPEND_OPTIONS,
+              set: setSelectedStipend,
+            },
           ].map(({ label, value, options, set }) => (
             <div key={label} className="relative group">
               <Button variant="outline" size="sm">
                 <Filter className="w-3 h-3" />
                 <span className="text-gray-400">{label}:</span>
-                <span className="font-semibold text-gray-900 dark:text-white">{value}</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {value}
+                </span>
                 <ChevronDown className="w-3 h-3 opacity-50" />
               </Button>
               <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[170px] max-h-[200px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:block">
                 {options.map((opt) => (
-                  <Button key={opt} variant="ghost" size="sm" onClick={() => set(opt)}
-                    className={`w-full justify-start ${value === opt ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}`}>
+                  <Button
+                    key={opt}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => set(opt)}
+                    className={`w-full justify-start ${value === opt ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}`}
+                  >
                     {opt}
                   </Button>
                 ))}
               </div>
             </div>
           ))}
-          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search) && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortBy((prev) => (prev === "deadline" ? "default" : "deadline"))}
+            className={sortBy === "deadline" ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}
+          >
+            <Calendar className="w-3.5 h-3.5 mr-1.5" />
+            Sort by deadline
+          </Button>
+          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default") && (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); }}
-              className="text-gray-500">
+              onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); }}
+              className="text-gray-500"
+            >
               <X className="w-3.5 h-3.5" /> Clear
             </Button>
           )}
@@ -833,19 +1134,30 @@ export default function ProgramTrackerPage() {
       </div>
 
       <p className="text-sm text-gray-400 mb-5">
-        Showing <span className="font-semibold text-gray-900 dark:text-white">{filtered.length}</span> of {PROGRAMS.length} programs
+        Showing{" "}
+        <span className="font-semibold text-gray-900 dark:text-white">
+          {filtered.length}
+        </span>{" "}
+        of {PROGRAMS.length} programs
       </p>
 
       {/* List */}
       {filtered.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 dark:bg-gray-950 rounded-2xl">
           <GraduationCap className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-          <p className="text-sm text-gray-500 font-medium">No programs match your filters</p>
+          <p className="text-sm text-gray-500 font-medium">
+            No programs match your filters
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
           {filtered.map((program) => (
-            <motion.div key={program.id} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div
+              key={program.id}
+              layout
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
               <ProgramCard program={program} />
             </motion.div>
           ))}
@@ -857,9 +1169,14 @@ export default function ProgramTrackerPage() {
         <div className="flex items-start gap-3">
           <GraduationCap className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-300">Apply to multiple programs simultaneously</p>
+            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-300">
+              Apply to multiple programs simultaneously
+            </p>
             <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1 leading-relaxed">
-              GSoC and Outreachy application windows often overlap with GSSoC and Hacktoberfest. Diversify your applications - each program has different evaluation criteria and your contributions to one project can strengthen proposals in others.
+              GSoC and Outreachy application windows often overlap with GSSoC
+              and Hacktoberfest. Diversify your applications - each program has
+              different evaluation criteria and your contributions to one
+              project can strengthen proposals in others.
             </p>
           </div>
         </div>

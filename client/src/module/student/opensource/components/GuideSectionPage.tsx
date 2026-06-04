@@ -9,6 +9,8 @@ import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
+import { InlineCodeText } from "../../../../components/ui/InlineCodeText";
+import { ReadingProgressBar } from "../../../../components/ReadingProgressBar";
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -46,7 +48,12 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
-
+  const [rating, setRating] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [dismissedHint, setDismissedHint] = useState(() => {
+    try { return localStorage.getItem("keyboard-nav-hint-dismissed") === "true"; }
+    catch { return false; }
+  });
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
@@ -66,6 +73,17 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
     prevPath: prev ? `${basePath}/${prev.id}` : null,
     nextPath: next ? `${basePath}/${next.id}` : null,
   });
+  useEffect(() => {
+    if (dismissedHint) return;
+    const handle = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        setDismissedHint(true);
+        try { localStorage.setItem("keyboard-nav-hint-dismissed", "true"); } catch { /* */ }
+      }
+    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, [dismissedHint]);
 
 if (!step) return <Navigate to={basePath} replace />;
 
@@ -73,6 +91,7 @@ if (!step) return <Navigate to={basePath} replace />;
 
   return (
     <div className="relative pb-12">
+      <ReadingProgressBar />
       <SEO
         title={`${step.title} - ${seoSuffix}`}
         description={step.description}
@@ -122,6 +141,11 @@ if (!step) return <Navigate to={basePath} replace />;
             <span className="text-xs text-gray-400 dark:text-gray-500 px-2 font-medium tabular-nums">
               {step.step} / {steps.length}
             </span>
+            {!dismissedHint && (
+              <span className="hidden sm:inline-flex text-[10px] font-mono text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">
+                ← → keys
+              </span>
+            )}
             <Button
               variant="ghost"
               mode="icon"
@@ -146,7 +170,7 @@ if (!step) return <Navigate to={basePath} replace />;
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white mb-4">Explanation</h2>
             <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-              {step.mentor_guidance}
+              <InlineCodeText text={step.mentor_guidance} />
             </div>
           </motion.div>
         )}
@@ -180,9 +204,9 @@ if (!step) return <Navigate to={basePath} replace />;
             </div>
             <ul className="space-y-3">
               {step.details.map((detail, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
-                  {detail}
+                  <InlineCodeText text={detail} />
                 </li>
               ))}
             </ul>
@@ -204,9 +228,9 @@ if (!step) return <Navigate to={basePath} replace />;
             </div>
             <ul className="space-y-3">
               {step.tips.map((tip, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
-                  {tip}
+                  <InlineCodeText text={tip} />
                 </li>
               ))}
             </ul>
@@ -228,7 +252,7 @@ if (!step) return <Navigate to={basePath} replace />;
             </div>
             <ul className="space-y-3">
               {step.resources.map((r, i) => (
-                <li key={i} className="flex items-start gap-2.5">
+                <li key={i} className="flex">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
                   <a
                     href={r.url}

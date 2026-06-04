@@ -11,9 +11,6 @@ import {
   X,
   ChevronDown,
   TrendingUp,
-  Share2,
-  Check,
-  Bookmark,
   Filter,
   Code2,
   Wand2,
@@ -23,8 +20,13 @@ import {
   AlertCircle,
   BarChart3,
   Plus,
+  Share2,
+  Check,
+  Copy,
+  Bookmark,
 } from "lucide-react";
 import api from "../../../lib/axios";
+import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 import { queryKeys } from "../../../lib/query-keys";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -38,9 +40,7 @@ import { GuidanceCards } from "./GuidanceCards";
 import { SuggestRepoModal } from "./SuggestRepoModal";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
-
-const ghostBtnCls =
-  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/15 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+import { Button } from "../../../components/ui/button";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -72,6 +72,30 @@ const STATUS_STYLE: Record<string, string> = {
   REJECTED: "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
 };
 
+// skill language map
+const SKILL_LANGUAGE_MAP: Record<string, string[]> = {
+  react: ["JavaScript", "TypeScript"],
+  nextjs: ["JavaScript", "TypeScript"],
+  javascript: ["JavaScript"],
+  typescript: ["TypeScript"],
+  nodejs: ["JavaScript", "TypeScript"],
+  express: ["JavaScript", "TypeScript"],
+  python: ["Python"],
+  django: ["Python"],
+  flask: ["Python"],
+  fastapi: ["Python"],
+  java: ["Java"],
+  spring: ["Java"],
+  golang: ["Go"],
+  go: ["Go"],
+  cpp: ["C++"],
+  cplusplus: ["C++"],
+  c: ["C"],
+  rust: ["Rust"],
+  php: ["PHP"],
+  laravel: ["PHP"],
+};
+
 export default function RepoDiscoveryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -79,7 +103,7 @@ export default function RepoDiscoveryPage() {
   const search = searchParams.get("q") || "";
   const selectedDomain = searchParams.get("domain") || "ALL";
   const selectedDifficulty = searchParams.get("difficulty") || "ALL";
-  const selectedLanguage = searchParams.get("language") || "ALL";
+  const selectedLanguage = searchParams.getAll("language") || "ALL";
   const sortKey = searchParams.get("sort") || "stars";
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
@@ -87,6 +111,11 @@ export default function RepoDiscoveryPage() {
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
   const searchRef = useRef<HTMLInputElement>(null);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -106,7 +135,7 @@ export default function RepoDiscoveryPage() {
     return () => clearTimeout(timer);
   }, [inputValue, search, setSearchParams]);
 
-  // Keyboard shortcut to focus search
+  // Keyboard shortcut & click outside bindings
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
@@ -114,21 +143,54 @@ export default function RepoDiscoveryPage() {
         e.preventDefault();
         searchRef.current?.focus();
       }
+      if (e.key === "Escape") {
+        setSortOpen(false);
+      }
     };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
+        setSortOpen(false);
+      }
+    };
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
-  // Local UI states
-  const [showFilters, setShowFilters] = useState(false);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [showAllSubmissions, setShowAllSubmissions] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const [bookmarks, setBookmarks] = useState<number[]>(() => getBookmarks());
   const [showSaved, setShowSaved] = useState(false);
-  const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
+  const { copied: copiedCloneUrl, copy: copyCloneUrl } = useCopyToClipboard();
   const { user } = useAuthStore();
-  
+
+  const languageMode = searchParams.get("languageMode") || "manual";
+
+  const inferredLanguages = useMemo(() => {
+    if (!user?.skills?.length) return [];
+
+    const normalizedSkills = user.skills.map((skill) =>
+      skill.toLowerCase().replace(/[^a-z]/g, "")
+    );
+
+    const langs = new Set<string>();
+
+    normalizedSkills.forEach((skill) => {
+      const mapped = SKILL_LANGUAGE_MAP[skill];
+      if (mapped) {
+        mapped.forEach((lang) => langs.add(lang));
+      }
+    });
+
+    return Array.from(langs);
+  }, [user]);
+
   const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
@@ -201,14 +263,22 @@ export default function RepoDiscoveryPage() {
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
-    if (selectedLanguage !== "ALL") params.language = selectedLanguage;
+    
+    if (languageMode === "auto") {
+      if (inferredLanguages.length > 0) {
+        params.language = inferredLanguages[0]; 
+      }
+    } else if (selectedLanguage.length > 0) {
+      params.language = selectedLanguage[0];
+    }
+    
     if (trendingOnly) params.trending = "true";
 
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
 
     return params;
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, sortKey, trendingOnly, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -298,7 +368,7 @@ export default function RepoDiscoveryPage() {
   const activeFilters =
     (selectedDomain !== "ALL" ? 1 : 0) +
     (selectedDifficulty !== "ALL" ? 1 : 0) +
-    (selectedLanguage !== "ALL" ? 1 : 0);
+    (selectedLanguage.length > 0 ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -522,7 +592,7 @@ export default function RepoDiscoveryPage() {
         {/* Guidance Cards */}
         <GuidanceCards />
 
-        {/* Recently Viewed */}
+        {/* Recently viewed & recommended */}
         <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
 
         {user?.role === "STUDENT" && (
@@ -578,6 +648,39 @@ export default function RepoDiscoveryPage() {
             Trending
           </button>
 
+          {inferredLanguages.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchParams((prev) => {
+                  const params = new URLSearchParams(prev);
+                  const isActive = languageMode === "auto";
+
+                  if (isActive) {
+                    params.delete("languageMode");
+                    params.delete("language");
+                  } else {
+                    params.set("languageMode", "auto");
+                    params.delete("language");
+                    inferredLanguages.forEach((lang) => {
+                      params.append("language", lang);
+                    });
+                  }
+
+                  params.set("page", "1");
+                  return params;
+                }, { replace: true });
+              }}
+              className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
+                languageMode === "auto"
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                  : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              }`}
+            >
+              My Languages
+            </button>
+          )}
+
           {/* More filters toggle */}
           <button
             type="button"
@@ -599,28 +702,53 @@ export default function RepoDiscoveryPage() {
           </button>
 
           {/* Sort dropdown */}
-          <div className="relative group">
-            <button type="button" className={ghostBtnCls}>
+          <div className="relative" ref={sortDropdownRef}>
+            <Button 
+              type="button" 
+              variant="ghost"
+              size="sm"
+              onClick={() => setSortOpen(!sortOpen)}
+              aria-haspopup="listbox"
+              aria-expanded={sortOpen}
+            >
               <TrendingUp className="w-3 h-3" />
               {SORT_OPTIONS.find((s) => s.key === sortKey)?.label ?? "Sort"}
-              <ChevronDown className="w-3 h-3" />
-            </button>
-            <div className="absolute right-0 top-full z-20 mt-1 hidden min-w-44 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
-              {SORT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => updateFilter("sort", opt.key)}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
-                    sortKey === opt.key
-                      ? "bg-stone-900 dark:bg-stone-50 text-lime-400"
-                      : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
-                  }`}
+              <ChevronDown className={`w-3 h-3 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
+            </Button>
+            <AnimatePresence>
+              {sortOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl origin-top"
+                  role="listbox"
                 >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+                  {SORT_OPTIONS.map((opt) => (
+                    <Button
+                      key={opt.key}
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      role="option"
+                      aria-selected={sortKey === opt.key}
+                      onClick={() => {
+                        updateFilter("sort", opt.key);
+                        setSortOpen(false);
+                      }}
+                      className={`w-full justify-start text-left px-2.5 py-1.5 rounded-md text-xs font-normal transition-colors cursor-pointer ${
+                        sortKey === opt.key
+                          ? "bg-stone-900 dark:bg-stone-50 text-lime-400 hover:bg-stone-900 dark:hover:bg-stone-50 hover:text-lime-400"
+                          : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      {opt.label}
+                    </Button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -648,15 +776,29 @@ export default function RepoDiscoveryPage() {
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     language
                   </label>
+
                   <select
                     value={selectedLanguage}
-                    onChange={(e) => updateFilter("language", e.target.value)}
-                    className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
+                    disabled={languageMode === "auto"}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSearchParams((prev) => {
+                        const params = new URLSearchParams(prev);
+                        params.delete("language");
+
+                        if (value !== "ALL") {
+                          params.append("language", value);
+                        }
+
+                        params.set("page", "1");
+                        return params;
+                      }, { replace: true });
+                    }}
+                    className={`px-3 ${languageMode === "auto" ? "opacity-50 cursor-not-allowed" : ""} py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25`}
                   >
                     <option value="ALL">All Languages</option>
                     {languages.map((lang) => (
@@ -694,7 +836,7 @@ export default function RepoDiscoveryPage() {
                 <span className="text-stone-900 dark:text-stone-50">{pagination.total}</span>
                 {" "}repositor{pagination.total !== 1 ? "ies" : "y"}
                 {selectedDomain !== "ALL" && <> / <span className="text-stone-900 dark:text-stone-50">{REPO_DOMAINS.find((d) => d.key === selectedDomain)?.label}</span></>}
-                {selectedLanguage !== "ALL" && <> / <span className="text-stone-900 dark:text-stone-50">{selectedLanguage}</span></>}
+                {selectedLanguage.length > 0 && <> / <span className="text-stone-900 dark:text-stone-50">{selectedLanguage.join(", ")}</span></>}
                 {search && <> / matching "<span className="text-stone-900 dark:text-stone-50">{search}</span>"</>}
               </>
             ) : (
@@ -967,16 +1109,39 @@ export default function RepoDiscoveryPage() {
                   </div>
                 </div>
 
-                {/* View on GitHub */}
-                <a
-                  href={selectedRepo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center justify-center gap-2 w-full py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 text-sm font-bold transition-colors no-underline"
-                >
-                  View on GitHub
-                  <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </a>
+                {/* Quick actions */}
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href={selectedRepo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-center gap-2 py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 text-sm font-bold transition-colors no-underline"
+                  >
+                    Open on GitHub
+                    <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => copyCloneUrl(`${selectedRepo.url}.git`)}
+                    className={`flex items-center justify-center gap-2 py-3 rounded-md text-sm font-bold transition-colors cursor-pointer ${
+                      copiedCloneUrl
+                        ? "bg-green-500 text-white"
+                        : "bg-stone-100 dark:bg-white/10 hover:bg-stone-200 dark:hover:bg-white/20 text-stone-700 dark:text-stone-300"
+                    }`}
+                  >
+                    {copiedCloneUrl ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        Copy Clone URL
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

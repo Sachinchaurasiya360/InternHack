@@ -75,14 +75,23 @@ export default function AdminRepoRequestsPage() {
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("PENDING");
-  const [page, setPage] = useState(1);
+const [domainFilter, setDomainFilter] = useState("");
+const [difficultyFilter, setDifficultyFilter] = useState("");
+const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const fetchRequests = async () => {
     setLoading(true);
     try {
       const res = await api.get("/opensource/requests/all", {
-        params: { status: statusFilter, page, limit: 20 },
-      });
+  params: {
+    status: statusFilter,
+    domain: domainFilter,
+    difficulty: difficultyFilter,
+    page,
+    limit: 20,
+  },
+});
       setRequests(res.data.requests);
       setPagination(res.data.pagination);
     } catch {
@@ -93,9 +102,17 @@ export default function AdminRepoRequestsPage() {
   };
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { setPage(1); }, [statusFilter]);
+  useEffect(() => {
+  setPage(1);
+}, [statusFilter, domainFilter, difficultyFilter]);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => { fetchRequests(); }, [statusFilter, page]);
+  useEffect(() => {
+  fetchRequests();
+}, [statusFilter, domainFilter, difficultyFilter, page]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+  setSelectedIds([]);
+}, [statusFilter, domainFilter, difficultyFilter, page]);
 
 
 
@@ -144,6 +161,34 @@ export default function AdminRepoRequestsPage() {
           </button>
         ))}
       </div>
+<div className="flex flex-wrap gap-3 mb-6">
+  <select
+    value={domainFilter}
+    onChange={(e) => setDomainFilter(e.target.value)}
+    className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm"
+  >
+    <option value="">All Domains</option>
+    {DOMAIN_OPTIONS.map((domain) => (
+      <option key={domain} value={domain}>
+        {domain}
+      </option>
+    ))}
+  </select>
+
+  <select
+    value={difficultyFilter}
+    onChange={(e) => setDifficultyFilter(e.target.value)}
+    className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm"
+  >
+    <option value="">All Difficulties</option>
+    {DIFFICULTY_OPTIONS.map((difficulty) => (
+      <option key={difficulty} value={difficulty}>
+        {difficulty}
+      </option>
+    ))}
+  </select>
+</div>
+
 
 
 

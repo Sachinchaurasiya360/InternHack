@@ -71,6 +71,11 @@ export const aiGenerateSchema = z.object({
 });
 export type AiGenerateInput = z.infer<typeof aiGenerateSchema>;
 
+export const updateRoadmapSchema = z.object({
+  title: z.string().min(3).max(100).optional(),
+  shortDescription: z.string().min(20).max(500).optional(),
+  level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
+});
 // ── Section regeneration ──────────────────────────────────────────────────
 export const regenerateSectionParams = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid roadmap slug"),
