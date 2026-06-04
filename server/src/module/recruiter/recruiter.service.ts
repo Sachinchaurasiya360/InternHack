@@ -235,7 +235,8 @@ export class RecruiterService {
           student: { select: { id: true, name: true, email: true, profilePic: true, resumes: true } },
           roundSubmissions: {
             include: { round: { select: { id: true, name: true, orderIndex: true } } },
-            orderBy: { round: { orderIndex: "asc" } },
+            orderBy: { createdAt: "desc" },
+            take: 5,
           },
         },
       }),
