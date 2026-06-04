@@ -6,7 +6,7 @@
     "title": "OWASP Top 10 Overview",
     "difficulty": "Intermediate",
     "type": "Theory",
-    "concepts": ["OWASP", "Vulnerabilities", "Injection", "Broke Access Control", "XSS"],
+    "concepts": ["OWASP", "Vulnerabilities", "Injection", "Broken Access Control", "XSS"],
     "content": {
       "question": "What is the OWASP Top 10 and why is it important?",
       "answer": "The **OWASP Top 10** is a standard awareness document for developers and web application security. It represents a broad consensus about the most critical security risks to web applications."

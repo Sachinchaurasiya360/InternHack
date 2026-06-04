@@ -760,7 +760,7 @@
     "type": "Experience",
     "concepts": [
       "Performance",
-      "Bach processing"
+      "Batch processing"
     ],
     "content": {
       "question": "How do you optimize inserting 1 million rows?",

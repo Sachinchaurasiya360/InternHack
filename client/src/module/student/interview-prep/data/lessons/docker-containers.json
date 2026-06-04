@@ -65,7 +65,7 @@
     "orderIndex": 2,
     "title": "Multi-stage Builds",
     "difficulty": "Intermediate",
-    "type": "Optimization",
+    "type": "Concept",
     "concepts": ["Optimization", "Storage", "Build Pipeline"],
     "content": {
       "question": "What are multi-stage builds and why should you use them?",
@@ -365,7 +365,7 @@
     "orderIndex": 12,
     "title": ".dockerignore",
     "difficulty": "Beginner",
-    "type": "Optimization",
+    "type": "Concept",
     "concepts": ["Dockerfile", "Build Context", "Optimization"],
     "content": {
       "question": "What is a .dockerignore file and why is it important for build performance?",

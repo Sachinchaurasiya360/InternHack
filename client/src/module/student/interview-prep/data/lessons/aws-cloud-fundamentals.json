@@ -409,7 +409,7 @@
     "title": "Trusted Advisor",
     "difficulty": "Beginner",
     "type": "Concept",
-    "concepts": ["Optimisation", "Best Practices"],
+    "concepts": ["Optimization", "Best Practices"],
     "content": {
       "question": "What does AWS Trusted Advisor do?",
       "answer": "It provides real-time guidance to help you provision your resources following AWS best practices across cost, performance, security, and fault tolerance."
