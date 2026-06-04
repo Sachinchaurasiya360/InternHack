@@ -473,6 +473,13 @@ export class RecruiterService {
 
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
+
+    if (application.status === "WITHDRAWN") {
+      throw new Error(
+        "Withdrawn applications cannot participate in the hiring process"
+      );
+    }
+    
     // checking round ownership
     const round = await prisma.round.findUnique({
       where: { id: roundId },
