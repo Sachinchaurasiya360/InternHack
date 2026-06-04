@@ -14,7 +14,6 @@ import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
   const queryClient = useQueryClient();
-  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
   const [statusFilter, setStatusFilter] = useState("");
@@ -32,15 +31,18 @@ export default function ApplicationsList() {
     queryKey: ["applications", jobId, page, statusFilter, debouncedSearch],
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), limit: "10" });
-      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
       if (statusFilter) params.set("status", statusFilter);
       const res = await api.get(`/recruiter/jobs/${jobId}/applications?${params}`);
-      setPagination(res.data.pagination);
-      return res.data.applications as Application[];
+      return {
+        applications: res.data.applications as Application[],
+        pagination: res.data.pagination as Pagination,
+      };
     },
   });
 
-  const applications = data ?? [];
+  const applications = data?.applications ?? [];
+  const pagination = data?.pagination ?? null;
 
   const handleStatusChange = async (appId: number, status: string) => {
     if (updatingId === appId) return;
