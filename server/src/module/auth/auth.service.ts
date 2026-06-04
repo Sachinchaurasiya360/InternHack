@@ -669,9 +669,15 @@ export class AuthService {
     const hashedOtp = await hashPassword(otp);
     const resetOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
+    // Reset attempt counter and unlock on new OTP request
     await prisma.user.update({
       where: { id: user.id },
-      data: { resetPasswordOtp: hashedOtp, resetOtpExpiresAt },
+      data: {
+        resetPasswordOtp: hashedOtp,
+        resetOtpExpiresAt,
+        passwordResetAttempts: 0,
+        passwordResetLockedUntil: null,
+      },
     });
 
     await sendEmail({
@@ -682,9 +688,22 @@ export class AuthService {
   }
 
   async resetPassword(email: string, otp: string, newPassword: string) {
+    const MAX_RESET_ATTEMPTS = 3;
+    const LOCKOUT_DURATION_MS = 30 * 60 * 1000; // 30 minutes
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new Error("Invalid or expired reset code");
+    }
+
+    // Check if account is temporarily locked due to too many failed attempts
+    if (user.passwordResetLockedUntil && new Date() < user.passwordResetLockedUntil) {
+      const remainingMinutes = Math.ceil(
+        (user.passwordResetLockedUntil.getTime() - Date.now()) / 60000
+      );
+      throw new Error(
+        `Too many failed attempts. Please try again in ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`
+      );
     }
 
     if (!user.resetPasswordOtp || !user.resetOtpExpiresAt) {
@@ -697,17 +716,45 @@ export class AuthService {
 
     const isValid = await comparePassword(otp, user.resetPasswordOtp);
     if (!isValid) {
-      throw new Error("Invalid or expired reset code");
+      const updatedAttempts = user.passwordResetAttempts + 1;
+
+      // Lock account if max attempts exceeded
+      if (updatedAttempts >= MAX_RESET_ATTEMPTS) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            passwordResetAttempts: updatedAttempts,
+            passwordResetLockedUntil: new Date(Date.now() + LOCKOUT_DURATION_MS),
+          },
+        });
+        throw new Error(
+          `Too many failed attempts. Account locked for 30 minutes for security`
+        );
+      }
+
+      // Increment attempt counter
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordResetAttempts: updatedAttempts },
+      });
+
+      const attemptsRemaining = MAX_RESET_ATTEMPTS - updatedAttempts;
+      throw new Error(
+        `Invalid reset code. ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? "s" : ""} remaining`
+      );
     }
 
     const hashedPassword = await hashPassword(newPassword);
 
+    // Password reset successful - clear attempts and lockout
     await prisma.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,
         resetPasswordOtp: null,
         resetOtpExpiresAt: null,
+        passwordResetAttempts: 0,
+        passwordResetLockedUntil: null,
         tokenVersion: { increment: 1 },
       },
     });
