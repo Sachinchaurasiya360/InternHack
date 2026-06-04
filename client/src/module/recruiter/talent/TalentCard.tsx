@@ -123,6 +123,7 @@ export default function TalentCard({ student, index = 0, saved = false }: Talent
             <img
               src={student.profilePic}
               alt={student.name}
+              loading="lazy"
               className="w-11 h-11 rounded-md object-cover shrink-0 border border-stone-200 dark:border-white/10"
               onError={(e) => {
                 e.currentTarget.style.display = "none";

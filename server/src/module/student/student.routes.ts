@@ -23,7 +23,7 @@ studentRouter.get("/applications/:applicationId/calendar.ics", (req, res) => stu
 studentRouter.delete("/applications/:applicationId", (req, res) => studentController.withdrawApplication(req, res));
 
 // External job applications
-studentRouter.post("/external-jobs/:adminJobId/apply", (req, res) => studentController.applyToExternalJob(req, res));
+studentRouter.post("/external-jobs/:adminJobId/apply", usageLimit("JOB_APPLICATION"), (req, res) => studentController.applyToExternalJob(req, res));
 studentRouter.get("/external-jobs/:adminJobId/status", (req, res) => studentController.getExternalApplicationStatus(req, res));
 studentRouter.patch("/external-applications/:applicationId/notes", (req, res) => studentController.updateExternalApplicationNotes(req, res));
 studentRouter.delete("/external-applications/:applicationId", (req, res) => studentController.deleteExternalApplication(req, res));
@@ -37,4 +37,3 @@ studentRouter.put("/applications/:applicationId/rounds/:roundId/submit", (req, r
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));
 studentRouter.post("/mock-interview/book", (req, res, next) => studentController.bookMockInterview(req, res, next));
 studentRouter.post("/mock-interview/feedback", (req, res) => studentController.generateMockInterviewFeedback(req, res));
-

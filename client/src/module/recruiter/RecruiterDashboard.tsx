@@ -18,7 +18,6 @@ import {
   MinusCircle,
 } from "lucide-react";
 import api from "../../lib/axios";
-import { LoadingScreen } from "../../components/LoadingScreen";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { SEO } from "../../components/SEO";
 import { Button } from "../../components/ui/button";
