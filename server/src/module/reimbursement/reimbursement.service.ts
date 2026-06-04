@@ -11,6 +11,9 @@ interface ReimbursementQuery {
 
 export class ReimbursementService {
   async create(data: { employeeId: number; category: string; amount: number; currency: string; description: string; receiptUrls: string[] }) {
+    if (data.amount <= 0) {
+      throw new Error("Amount must be greater than zero");
+    }
     return prisma.reimbursement.create({
       data,
       include: { employee: { select: { id: true, firstName: true, lastName: true, employeeCode: true } } },
@@ -60,7 +63,12 @@ export class ReimbursementService {
 
     const updateData: Record<string, unknown> = {};
     if (data.category !== undefined) updateData.category = data.category;
-    if (data.amount !== undefined) updateData.amount = data.amount;
+    if (data.amount !== undefined) {
+      if (data.amount <= 0) {
+        throw new Error("Amount must be greater than zero");
+      }
+      updateData.amount = data.amount;
+    }
     if (data.description !== undefined) updateData.description = data.description;
     if (data.receiptUrls !== undefined) updateData.receiptUrls = data.receiptUrls;
     return prisma.reimbursement.update({ where: { id }, data: updateData });
