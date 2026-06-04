@@ -171,10 +171,6 @@ export class AuthService {
     });
 
     const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: { profileSlug: slug },
-    });
     (user as any).profileSlug = slug;
 
     // Send OTP email (fire-and-forget, don't block registration)
@@ -286,10 +282,7 @@ export class AuthService {
       });
 
       const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: { profileSlug: slug }
-      });
+      user.profileSlug = slug;
 
       // Send welcome email (fire-and-forget) – temporarily disabled
       // sendEmail({
@@ -312,6 +305,7 @@ export class AuthService {
     return {
       user: {
         id: user.id,
+        profileSlug: user.profileSlug,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -528,6 +522,9 @@ export class AuthService {
     // Bust cached profile so next GET /auth/me returns fresh data
     await cacheDel(`profile:me:${userId}`);
     await cacheDel(`profile:public:${userId}`);
+    if (user.profileSlug) {
+      await cacheDel(`profile:public:${user.profileSlug}`);
+    }
 
     return user;
   }
@@ -555,7 +552,7 @@ export class AuthService {
       select: selectOptions,
     });
 
-    if (!user && !isNaN(Number(identifier))) {
+    if (!user && /^\d+$/.test(identifier)) {
       user = await prisma.user.findUnique({
         where: { id: Number(identifier) },
         select: selectOptions,

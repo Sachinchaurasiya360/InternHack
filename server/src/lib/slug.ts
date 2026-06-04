@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 export function generateProfileSlug(name: string, id: number): string {
   const base = name
@@ -17,10 +17,22 @@ export async function createUniqueProfileSlug(
   prisma: PrismaClient
 ): Promise<string> {
   const base = generateProfileSlug(name, id);
-  const existing = await prisma.user.findUnique({
-    where: { profileSlug: base }
-  });
-  if (!existing) return base;
-  // fallback: name-id
-  return `${base}-${id}`;
+  
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: { profileSlug: base },
+    });
+    return base;
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      const fallback = `${base}-${id}`;
+      await prisma.user.update({
+        where: { id },
+        data: { profileSlug: fallback },
+      });
+      return fallback;
+    }
+    throw err;
+  }
 }

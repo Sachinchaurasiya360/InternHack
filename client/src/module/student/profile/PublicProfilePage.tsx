@@ -17,6 +17,7 @@ import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/t
 
 interface PublicProfile {
   id: number;
+  profileSlug?: string | null;
   name: string;
   email: string;
   profilePic?: string;
