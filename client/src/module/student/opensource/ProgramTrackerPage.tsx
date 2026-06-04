@@ -612,10 +612,20 @@ function getCountdown(
       (new Date(program.deadline + "T23:59:59").getTime() - now) / 86400000,
     );
     if (days < 0) return null;
-    if (days <= 7)
+    if (days < 3)
       return {
         text: `${days} days left!`,
         className: "text-red-500 font-semibold",
+      };
+    if (days < 7)
+      return {
+        text: `${days} days left`,
+        className: "text-amber-500 font-semibold",
+      };
+    if (days < 30)
+      return {
+        text: `${days} days remaining`,
+        className: "text-blue-500 font-medium",
       };
     return {
       text: `Closes in ${days} days`,
@@ -633,6 +643,20 @@ function getCountdown(
     };
   }
   return null;
+}
+
+function getUrgency(
+  program: Program,
+): { level: "closed" | "critical" | "urgent" | "normal" | "none"; days: number } | null {
+  if (!program.deadline) return null;
+  const days = Math.ceil(
+    (new Date(program.deadline + "T23:59:59").getTime() - Date.now()) / 86400000,
+  );
+  if (days < 0) return { level: "closed", days };
+  if (days < 3) return { level: "critical", days };
+  if (days < 7) return { level: "urgent", days };
+  if (days < 30) return { level: "normal", days };
+  return { level: "none", days };
 }
 
 const getBrowserCurrencyConfig = (): LocalCurrencyConfig | null => {
@@ -701,20 +725,31 @@ const getGoogleCalendarUrl = (program: Program) => {
 function ProgramCard({ program }: { program: Program }) {
   const [expanded, setExpanded] = useState(false);
   const localStipendEstimate = program.stipendPaid ? getLocalStipendEstimate(program.stipend) : null;
+  const urgency = getUrgency(program);
 
   return (
     <div
       className={`bg-white dark:bg-gray-900 rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${program.bgColor}`}
     >
+      {urgency?.level === "critical" && (
+        <div className="bg-red-500 text-white text-center text-xs font-bold py-1.5 px-4 animate-pulse">
+          CLOSING SOON
+        </div>
+      )}
       {/* Header */}
       <div className="p-5">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <div
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}
-            >
-              {program.short}
-            </div>
+            <div className="flex items-center gap-3 min-w-0">
+              {urgency?.level === "closed" && (
+                <span className="px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 bg-gray-500 text-white">
+                  Closed
+                </span>
+              )}
+              <div
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}
+              >
+                {program.short}
+              </div>
             <div className="min-w-0">
               <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight">
                 {program.name}
