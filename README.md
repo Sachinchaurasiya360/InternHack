@@ -15,6 +15,22 @@
 
 Live at **[internhack.xyz](https://www.internhack.xyz)**
 
+## Table of Contents
+
+- [About InternHack](#about-internhack)
+- [AI Assistant Context Files](#ai-assistant-context-files)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [API Overview](#api-overview)
+- [Production Build](#production-build)
+- [Contributing](#contributing)
+- [Contributors](#contributors)
+- [Project Support](#project-support)
+- [License](#license)
+
 ---
 
 ## AI Assistant Context Files
