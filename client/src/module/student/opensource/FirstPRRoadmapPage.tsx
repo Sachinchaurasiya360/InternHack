@@ -4,6 +4,7 @@ import { CheckCircle2, GitPullRequest, ArrowRight, Trophy } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import {
@@ -23,10 +24,9 @@ interface Step {
 
 // ─── Data ──────────────────────────────────────────────────────
 const STEPS: Step[] = guideData.openSourceRoadmap as Step[];
-const STORAGE_KEY = "first-pr-roadmap-completed";
-
 // ─── Page ──────────────────────────────────────────────────────
 export default function FirstPRRoadmapPage() {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
 
@@ -87,6 +87,12 @@ export default function FirstPRRoadmapPage() {
     (sum, step) => sum + (step.estimatedMinutes || 0),
     0,
   );
+  const currentStep = STEPS.find((s) => !completed.has(s.id));
+  const completedMinutes = STEPS.filter((s) => completed.has(s.id)).reduce(
+    (sum, s) => sum + (s.estimatedMinutes || 0),
+    0,
+  );
+  const remainingMinutes = totalEstimatedMinutes - completedMinutes;
 
   if (isLoading) {
     return (
@@ -208,7 +214,11 @@ export default function FirstPRRoadmapPage() {
           },
           {
             icon: ArrowRight,
-            value: `${totalEstimatedMinutes} min`,
+            value: allDone
+              ? "Done!"
+              : completed.size > 0
+                ? `${remainingMinutes} min left`
+                : `${totalEstimatedMinutes} min total`,
             label: "Est. Time",
             iconColor: "text-indigo-500",
           },
@@ -259,16 +269,7 @@ export default function FirstPRRoadmapPage() {
                   Discover repos to contribute to
                 </Link>
                 <button
-                  onClick={() => {
-                    if (window.confirm("Reset all steps?")) {
-                      setCompleted(new Set());
-                      try {
-                        localStorage.removeItem(STORAGE_KEY);
-                      } catch {
-                        /**/
-                      }
-                    }
-                  }}
+                  onClick={() => setShowResetConfirm(true)}
                   className="text-sm text-lime-700 dark:text-lime-400 border border-lime-400 px-3 py-0.5 rounded-lg font-medium"
                 >
                   Start over
@@ -279,10 +280,27 @@ export default function FirstPRRoadmapPage() {
         )}
       </AnimatePresence>
 
+      <ConfirmDialog
+        open={showResetConfirm}
+        onOpenChange={setShowResetConfirm}
+        title="Reset progress?"
+        description="This will clear all completed steps. Your server-side progress will be reset."
+        confirmLabel="Reset"
+        variant="danger"
+        onConfirm={() => {
+          const toReset = Array.from(completed);
+          setCompleted(new Set());
+          toReset.forEach((id) => {
+            void patchFirstPRProgress(id, false).catch(() => {});
+          });
+        }}
+      />
+
       {/* Section Cards */}
       <div className="space-y-3">
         {STEPS.map((step, i) => {
           const done = completed.has(step.id);
+          const inProgress = !done && currentStep?.id === step.id;
           return (
             <motion.div
               key={step.id}
@@ -313,8 +331,20 @@ export default function FirstPRRoadmapPage() {
                   {done ? (
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   ) : (
-                    <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                    <div
+                      className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                        inProgress
+                          ? "bg-indigo-100 dark:bg-indigo-900/40 ring-2 ring-indigo-400/60"
+                          : "bg-gray-100 dark:bg-gray-800"
+                      }`}
+                    >
+                      <span
+                        className={`text-xs font-bold ${
+                          inProgress
+                            ? "text-indigo-600 dark:text-indigo-400"
+                            : "text-gray-500 dark:text-gray-400"
+                        }`}
+                      >
                         {step.step}
                       </span>
                     </div>
@@ -323,15 +353,32 @@ export default function FirstPRRoadmapPage() {
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <h3
-                    className={`text-sm font-bold mb-0.5 ${
-                      done
-                        ? "text-gray-400 dark:text-gray-500 line-through"
-                        : "text-gray-950 dark:text-white"
-                    }`}
-                  >
-                    {step.title}
-                  </h3>
+                  <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                    <h3
+                      className={`text-sm font-bold ${
+                        done
+                          ? "text-gray-400 dark:text-gray-500 line-through"
+                          : "text-gray-950 dark:text-white"
+                      }`}
+                    >
+                      {step.title}
+                    </h3>
+                    {done && (
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                        Completed
+                      </span>
+                    )}
+                    {inProgress && (
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400">
+                        In Progress
+                      </span>
+                    )}
+                    {!done && !inProgress && (
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                        Upcoming
+                      </span>
+                    )}
+                  </div>
                   {step.estimatedMinutes && (
                     <p className="text-xs font-mono text-gray-400 dark:text-gray-500">
                       ~{step.estimatedMinutes} min

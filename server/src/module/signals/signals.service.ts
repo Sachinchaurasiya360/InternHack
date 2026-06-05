@@ -249,7 +249,7 @@ export class SignalsService {
         } else {
           ops.push(
             prisma.fundingSignal.create({
-              data: { ...data, source, sourceId: s.sourceId, status: "ACTIVE" },
+              data: { ...data, source, sourceId: s.sourceId, status: "ACTIVE", lastSeenAt: new Date() },
             }),
           );
           created++;
@@ -386,6 +386,7 @@ export class SignalsService {
         careersUrl: input.careersUrl ?? null,
         hiringSignal: input.hiringSignal ?? false,
         status: "ACTIVE",
+        lastSeenAt: new Date(),
       },
     });
     return { ...row, amountUsd: row.amountUsd?.toString() ?? null };

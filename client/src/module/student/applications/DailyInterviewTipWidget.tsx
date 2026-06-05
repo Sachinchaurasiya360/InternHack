@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronRight, Lightbulb } from "lucide-react";
 import {QUESTIONS} from "./questions/interviewQuestions";
@@ -57,9 +57,11 @@ export default function DailyInterviewTipWidget() {
   useEffect(() => {
     if (filteredQuestions.length === 0) return;
 
-    setCurrentIndex(Math.floor(Math.random() * filteredQuestions.length));
-    setExpanded(false);
-  }, [categoryFilter]);
+    startTransition(() => {
+      setCurrentIndex(Math.floor(Math.random() * filteredQuestions.length));
+      setExpanded(false);
+    });
+  }, [categoryFilter, filteredQuestions.length]);
 
   return (
     <motion.div

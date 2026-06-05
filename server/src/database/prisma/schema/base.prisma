@@ -19,6 +19,8 @@ model user {
   otpExpiresAt          DateTime?
   resetPasswordOtp      String?
   resetOtpExpiresAt     DateTime?
+  passwordResetAttempts Int                         @default(0)
+  passwordResetLockedUntil DateTime?
   contactNo             String?
   profilePic            String?
   coverImage            String?
@@ -999,6 +1001,34 @@ model savedCandidate {
   @@index([studentId])
 }
 
+model aiServiceConfig {
+  id          Int            @id @default(autoincrement())
+  service     AIServiceType  @unique
+  provider    AIProviderType @default(GEMINI)
+  modelName   String         @default("gemini-2.5-flash-lite")
+  updatedAt   DateTime       @updatedAt
+  requestLogs aiRequestLog[]
+}
+
+model aiRequestLog {
+  id              Int             @id @default(autoincrement())
+  serviceConfigId Int
+  service         AIServiceType
+  providerName    AIProviderType
+  modelName       String
+  latencyMs       Int
+  inputTokens     Int?
+  outputTokens    Int?
+  success         Boolean         @default(true)
+  errorMessage    String?
+  userId          Int?
+  createdAt       DateTime        @default(now())
+  serviceConfig   aiServiceConfig @relation(fields: [serviceConfigId], references: [id], onDelete: Cascade)
+
+  @@index([providerName, createdAt])
+  @@index([service, createdAt])
+  @@index([createdAt])
+}
 
 model adminJob {
   id           Int                      @id @default(autoincrement())
@@ -1162,6 +1192,23 @@ enum SubscriptionStatus {
   ACTIVE
   EXPIRED
   CANCELLED
+}
+
+enum AIProviderType {
+  GEMINI
+  GROQ
+  OPENROUTER
+  CODESTRAL
+  CLAUDE
+}
+
+enum AIServiceType {
+  ATS_SCORE
+  COVER_LETTER
+  RESUME_GEN
+  LATEX_CHAT
+  EMAIL_CHAT
+  AI_ROADMAP_GENERATION
 }
 
 enum BadgeCategory {
@@ -1402,4 +1449,3 @@ model guideFeedback {
   @@index([guideId])
   @@index([stepId])
   }
-

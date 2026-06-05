@@ -161,10 +161,10 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 dark:text-stone-400 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors"
             >
               {theme === "dark" ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4" />
-              )}
+  <Sun className="w-4 h-4" />
+) : (
+  <Moon className="w-4 h-4" />
+)}
             </button>
 
             {isAuthenticated ? (
