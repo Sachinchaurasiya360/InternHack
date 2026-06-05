@@ -30,7 +30,7 @@ export async function initSemanticCache(): Promise<void> {
     return;
   }
 
-  collectionName = process.env["QDRANT_COLLECTION_NAME"] ?? SEMANTIC_CACHE_CONFIG.defaultCollectionName;
+  collectionName = process.env["QDRANT_COLLECTION_NAME"]?.trim() || SEMANTIC_CACHE_CONFIG.defaultCollectionName;
 
   try {
     if (!process.env["QDRANT_API_KEY"]) {
@@ -92,7 +92,13 @@ export async function searchAndEmbed(text: string): Promise<SearchAndEmbedResult
     return { result: null, embedding: [] };
   }
 
-  const embedding = await generateEmbedding(text);
+  let embedding: number[];
+  try {
+    embedding = await generateEmbedding(text);
+  } catch (err) {
+    logger.error("Embedding generation failed — treating as cache miss", err);
+    return { result: null, embedding: [] };
+  }
 
   try {
     const cutoff = new Date(

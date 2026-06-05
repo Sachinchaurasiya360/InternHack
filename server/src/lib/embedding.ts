@@ -2,7 +2,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const EMBEDDING_VECTOR_SIZE = 768;
 
-const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]!);
+const apiKey = process.env["GEMINI_API_KEY"];
+if (!apiKey) {
+  throw new Error("GEMINI_API_KEY is not set - embedding generation will fail");
+}
+const genAI = new GoogleGenerativeAI(apiKey);
 
 export async function generateEmbedding(text: string): Promise<number[]> {
   const model = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
