@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createInterviewSchema = z.object({
   applicationId: z.number().int().positive(),
   type: z.enum(["PHONE", "VIDEO", "IN_PERSON", "PANEL", "TECHNICAL", "HR"]).default("VIDEO"),
-  scheduledAt: z.string().datetime(),
+  scheduledAt: z.string().datetime().refine((val) => new Date(val) > new Date(), { message: "Interview must be scheduled in the future" }),
   durationMinutes: z.number().int().positive().default(60),
   meetingLink: z.string().url().optional(),
   location: z.string().max(200).optional(),
