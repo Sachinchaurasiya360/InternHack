@@ -129,6 +129,14 @@ export class PayrollService {
   // ── Contractor Payments ──
 
   async createContractorPayment(data: { employeeId: number; invoiceNumber?: string | undefined; amount: number; currency?: string | undefined; description: string; periodStart: string; periodEnd: string; invoiceUrl?: string | undefined }) {
+    if (data.amount <= 0) {
+      throw new Error("Amount must be greater than zero");
+    }
+    const periodStart = new Date(data.periodStart);
+    const periodEnd = new Date(data.periodEnd);
+    if (periodEnd < periodStart) {
+      throw new Error("Period end date cannot be before period start date");
+    }
     return prisma.contractorPayment.create({
       data: {
         employeeId: data.employeeId,
@@ -136,8 +144,8 @@ export class PayrollService {
         amount: data.amount,
         currency: data.currency ?? "INR",
         description: data.description,
-        periodStart: new Date(data.periodStart),
-        periodEnd: new Date(data.periodEnd),
+        periodStart,
+        periodEnd,
         invoiceUrl: data.invoiceUrl ?? null,
       },
       include: { employee: { select: { id: true, firstName: true, lastName: true, employeeCode: true } } },
