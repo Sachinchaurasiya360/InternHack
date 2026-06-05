@@ -435,7 +435,7 @@ export default function StudentProfilePage() {
   };
 
   const handleCopyProfileUrl = async () => {
-    const url = `${window.location.origin}/student/profile/public/${user?.id}`;
+    const url = `${window.location.origin}/student/profile/public/${user?.profileSlug ?? user?.id}`;
     try {
       await navigator.clipboard.writeText(url);
       setProfileUrlCopied(true);
