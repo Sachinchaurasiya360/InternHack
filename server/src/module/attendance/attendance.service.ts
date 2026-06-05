@@ -48,11 +48,9 @@ export class AttendanceService {
   }
 
   async checkOut(employeeId: number, notes?: string | undefined) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const record = await prisma.attendanceRecord.findUnique({
-      where: { employeeId_date: { employeeId, date: today } },
+    const record = await prisma.attendanceRecord.findFirst({
+      where: { employeeId, checkOut: null },
+      orderBy: { date: "desc" },
     });
 
     if (!record) throw new Error("No check-in found for today");

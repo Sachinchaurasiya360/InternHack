@@ -182,7 +182,6 @@ export interface RoadmapEnrollmentListItem {
     tags?: string[];
     isAiGenerated?: boolean;
     ownerUserId?: number | null;
-    ownerUserId: number | null;
   };
   createdAt: string;
 }

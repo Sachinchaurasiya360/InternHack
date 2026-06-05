@@ -17,6 +17,7 @@ import {
   type WeakArea,
 } from "./components/RecommendationCard";
 import api from "../../../lib/axios";
+import { Button } from "../../../components/ui/button";
 
 const CATEGORY_DESCRIPTION: Record<TrackCategory, string> = {
   practice: "Curated questions, animated lessons, and roadmaps to ace placements.",
@@ -28,6 +29,9 @@ const CATEGORY_DESCRIPTION: Record<TrackCategory, string> = {
 
 export default function LearnHubPage() {
   const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState<TrackCategory | "All">("All");
+  const [activeDifficulty, setActiveDifficulty] = useState("All");
+  const [sortBy, setSortBy] = useState("popular");
 
   const { data: recData, isLoading: loadingRecs } = useQuery<{ weakAreas: WeakArea[] }>({
     queryKey: ["learn-recommendations"],
@@ -37,26 +41,50 @@ export default function LearnHubPage() {
   });
   const weakAreas = recData?.weakAreas ?? [];
 
-  const grouped = useMemo(() => {
+const grouped = useMemo(() => {
+    let filtered = TRACKS;
+
     const needle = search.trim().toLowerCase();
-    const filtered = needle
-      ? TRACKS.filter(
-          (t) =>
-            t.title.toLowerCase().includes(needle) ||
-            t.description.toLowerCase().includes(needle),
-        )
-      : TRACKS;
+    if (needle) {
+      filtered = filtered.filter(
+        (t) =>
+          t.title.toLowerCase().includes(needle) ||
+          t.description.toLowerCase().includes(needle) ||
+          t.tags?.some((tag) => tag.toLowerCase().includes(needle))
+      );
+    }
+
+    if (activeCategory !== "All") {
+      filtered = filtered.filter((t) => t.category === activeCategory);
+    }
+
+    if (activeDifficulty !== "All") {
+      filtered = filtered.filter(
+        (t) => t.difficulty?.toLowerCase() === activeDifficulty.toLowerCase()
+      );
+    }
+
+    filtered = [...filtered].sort((a, b) => {
+      if (sortBy === "alphabetical") {
+        return a.title.localeCompare(b.title);
+      } else if (sortBy === "recent") {
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      } else {
+        return (b.enrolledStudents || 0) - (a.enrolledStudents || 0);
+      }
+    });
 
     const byCategory = new Map<TrackCategory, typeof TRACKS>();
     for (const t of filtered) {
       if (!byCategory.has(t.category)) byCategory.set(t.category, []);
       byCategory.get(t.category)!.push(t);
     }
+    
     return CATEGORY_ORDER.map((cat) => ({
       category: cat,
       tracks: byCategory.get(cat) ?? [],
     })).filter((g) => g.tracks.length > 0);
-  }, [search]);
+  }, [search, activeCategory, activeDifficulty, sortBy]);
 
   const totalTracks = TRACKS.length;
   const totalShown = grouped.reduce((sum, g) => sum + g.tracks.length, 0);
@@ -160,12 +188,12 @@ export default function LearnHubPage() {
         </motion.section>
       )}
 
-      {/* Search */}
+      {/* Search & Filters */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mb-12"
+        className="mb-12 space-y-4"
       >
         <div className="relative">
           <Search
@@ -174,14 +202,67 @@ export default function LearnHubPage() {
           />
           <input
             type="text"
-            placeholder="Search tracks..."
+            placeholder="Search tracks, skills, or keywords..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="Search learning tracks"
             className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
           />
         </div>
-        {search && (
+
+        {/* Filter Controls Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            
+            {/* Category Tabs */}
+            <div className="flex flex-wrap items-center gap-1 bg-stone-100 dark:bg-stone-800 p-1 rounded-md">
+              <Button
+                onClick={() => setActiveCategory("All")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${activeCategory === "All" ? "bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-white" : "bg-transparent border-transparent text-stone-500 hover:bg-transparent hover:text-stone-700 dark:hover:text-stone-300"}`}
+              >
+                All
+              </Button>
+              {CATEGORY_ORDER.map((cat) => (
+                <Button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md capitalize transition-all ${activeCategory === cat ? "bg-white dark:bg-stone-700 shadow-sm text-stone-900 dark:text-white" : "bg-transparent border-transparent text-stone-500 hover:bg-transparent hover:text-stone-700 dark:hover:text-stone-300"}`}
+                >
+                  {CATEGORY_LABEL[cat] || cat}
+                </Button>
+              ))}
+            </div>
+
+            {/* Difficulty Chips */}
+            <div className="flex items-center gap-2">
+              {["All", "Beginner", "Intermediate", "Advanced"].map((level) => (
+              <Button
+                key={level}
+                onClick={() => setActiveDifficulty(level)}
+                className={`px-3 py-1 text-xs font-medium rounded-md border transition-colors ${activeDifficulty === level ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-900 dark:border-stone-100" : "bg-transparent text-stone-500 border-stone-300 dark:border-stone-700 hover:border-stone-400"}`}
+              >
+                {level}
+              </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Sort By</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="text-sm bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:border-lime-400 cursor-pointer"
+            >
+              <option value="popular">Most Popular</option>
+              <option value="alphabetical">Alphabetical</option>
+              <option value="recent">Recently Added</option>
+            </select>
+          </div>
+        </div>
+
+        {(search || activeCategory !== "All" || activeDifficulty !== "All") && (
           <p className="mt-2 text-xs font-mono uppercase tracking-widest text-stone-500">
             {totalShown} match{totalShown === 1 ? "" : "es"}
           </p>

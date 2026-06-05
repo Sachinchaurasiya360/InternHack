@@ -134,7 +134,6 @@ export async function listPublishedRoadmaps(opts: {
     : { isPublished: true };
 
   // Build additional AND filters
-
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
@@ -349,6 +348,30 @@ export async function getEnrollmentForUser(args: {
     },
   });
   return enrollment;
+}
+
+export async function getEnrollmentByRoadmapSlugForUser(args: {
+  userId: number;
+  slug: string;
+}) {
+  return prisma.roadmapEnrollment.findFirst({
+    where: {
+      userId: args.userId,
+      roadmap: {
+        slug: args.slug,
+      },
+    },
+    select: {
+      id: true,
+      status: true,
+      roadmap: {
+        select: {
+          id: true,
+          slug: true,
+        },
+      },
+    },
+  });
 }
 
 export async function deleteEnrollment(args: {

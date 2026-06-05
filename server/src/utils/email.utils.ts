@@ -99,7 +99,16 @@ export async function sendEmailBatch(
   }
   if (emails.length > 100) throw new Error("Resend batch supports max 100 emails per call");
 
-  const payload = emails.map((e) => ({ from: FROM(), to: e.to, subject: e.subject, html: e.html }));
+  const from = FROM();
+  const isSandboxDev = from === TEST_FROM && process.env.NODE_ENV !== "production";
+  const testTo = process.env.RESEND_TEST_TO || DEFAULT_TEST_TO;
+
+  const payload = emails.map((e) => ({
+    from,
+    to: isSandboxDev ? testTo : e.to,
+    subject: e.subject,
+    html: e.html,
+  }));
   const maxRetries = opts.maxRetries ?? 4;
 
   const parseRetryAfter = (err: unknown): number | null => {
