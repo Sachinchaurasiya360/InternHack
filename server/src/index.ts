@@ -158,6 +158,10 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Vary", "Origin");
   }
+  
+  // Expose headers to the browser client
+  res.setHeader("Access-Control-Expose-Headers", "x-request-id");
+
   if (req.method === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization,X-API-Key");
