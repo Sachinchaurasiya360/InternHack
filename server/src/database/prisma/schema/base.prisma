@@ -94,6 +94,7 @@ model user {
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
   recommendation            userRecommendation?          @relation("UserRecommendation")
   hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
+  contentViews              contentView[]                @relation("UserContentViews")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -1449,3 +1450,24 @@ model guideFeedback {
   @@index([guideId])
   @@index([stepId])
   }
+
+enum ContentType {
+  LESSON
+  DSA
+  INTERVIEW_QUESTION
+}
+
+model contentView {
+  id          Int         @id @default(autoincrement())
+  userId      Int?
+  user        user?       @relation("UserContentViews", fields: [userId], references: [id], onDelete: SetNull)
+  contentType ContentType
+  contentId   String
+  timeSpentMs Int
+  completed   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+
+  @@index([contentType, contentId])
+  @@index([userId])
+  @@index([createdAt])
+}
