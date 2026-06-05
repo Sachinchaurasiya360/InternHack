@@ -180,9 +180,7 @@ export class AuthService {
       html: otpEmailHtml(user.name, otp),
     }).catch((err) => console.error("Failed to send OTP email:", err));
 
-    const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: 0 });
-
-    return { user: { ...user, profileSlug: slug }, token };
+    return { user: { ...user, profileSlug: slug } };
   }
 
   async googleAuth(data: GoogleAuthInput) {
