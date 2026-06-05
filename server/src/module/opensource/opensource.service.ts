@@ -25,23 +25,24 @@ export class OpensourceService {
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
 
-    if (search) {
+    const trimmedSearch = search?.trim();
+    if (trimmedSearch) {
       // Prisma's scalar-list filters can't do case-insensitive substring match
       // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
       // subquery and merge the matching ids into the OR clause.
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
-          SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${search}%`}
+          SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${trimmedSearch}%`}
         )
       `;
       const tagMatchIds = tagMatches.map((r) => r.id);
 
       where["OR"] = [
-        { name: { contains: search, mode: "insensitive" } },
-        { owner: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { language: { contains: search, mode: "insensitive" } },
+        { name: { contains: trimmedSearch, mode: "insensitive" } },
+        { owner: { contains: trimmedSearch, mode: "insensitive" } },
+        { description: { contains: trimmedSearch, mode: "insensitive" } },
+        { language: { contains: trimmedSearch, mode: "insensitive" } },
         ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
       ];
     }
@@ -111,10 +112,11 @@ export class OpensourceService {
 
     const where: any = {};
 
-    if (search) {
+    const gsocTrimmedSearch = search?.trim();
+    if (gsocTrimmedSearch) {
       where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
+        { name: { contains: gsocTrimmedSearch, mode: "insensitive" } },
+        { description: { contains: gsocTrimmedSearch, mode: "insensitive" } },
       ];
     }
 
