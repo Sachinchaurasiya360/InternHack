@@ -186,8 +186,10 @@ app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads"), { dotfiles: "deny", index: false }));
 
 // ── Request ID tracing ──
-app.use((req, _res, next) => {
-  req.headers["x-request-id"] ??= crypto.randomUUID();
+app.use((req, res, next) => {
+  const requestId = req.headers["x-request-id"] ?? crypto.randomUUID();
+  req.headers["x-request-id"] = requestId;
+  res.setHeader("x-request-id", requestId);
   next();
 });
 
