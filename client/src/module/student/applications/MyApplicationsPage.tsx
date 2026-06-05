@@ -234,6 +234,13 @@ const STATUS_ORDER: Record<string, number> = {
   REJECTED: 4,
   WITHDRAWN: 5,
 };
+const EXTERNAL_STATUS = "APPLIED";
+const EXTERNAL_VISIBLE_FILTERS = ["ALL", "APPLIED", "IN_PROGRESS"] as const;
+type ExternalVisibleFilter = (typeof EXTERNAL_VISIBLE_FILTERS)[number];
+
+function isExternalVisibleFilter(filter: string): filter is ExternalVisibleFilter {
+  return (EXTERNAL_VISIBLE_FILTERS as readonly string[]).includes(filter);
+}
 
 function sortApplications(
   apps: Application[],
@@ -259,6 +266,7 @@ export default function MyApplicationsPage() {
   const [page, setPage] = useState(1);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
+  const [activeFilter, setActiveFilter] = useState("ALL");
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 200);
@@ -268,7 +276,7 @@ export default function MyApplicationsPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, activeFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -288,9 +296,10 @@ export default function MyApplicationsPage() {
         (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
     return sortApplications(base, sortOption);
-  }, [applications, debouncedSearch, sortOption]);
+ }, [applications, debouncedSearch, sortOption, activeFilter]);
 
  const filteredExternal = useMemo(() => {
+  if (!isExternalVisibleFilter(activeFilter)) return [];
   const base = !debouncedSearch.trim()
     ? externalApplications
     : externalApplications.filter(
@@ -304,7 +313,7 @@ export default function MyApplicationsPage() {
     if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
     return 0;
   });
-}, [externalApplications, debouncedSearch, sortOption]);
+}, [externalApplications, debouncedSearch, sortOption, activeFilter]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;

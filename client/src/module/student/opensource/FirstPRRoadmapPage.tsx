@@ -132,7 +132,7 @@ export default function FirstPRRoadmapPage() {
                 >
                   Discover repos to contribute to
                 </Link>
-                <button
+                <Button
                   onClick={() => {
                     if (window.confirm("Reset all steps?")) {
                       setCompleted(new Set());
@@ -142,7 +142,7 @@ export default function FirstPRRoadmapPage() {
                   className="text-sm text-lime-700 dark:text-lime-400 border border-lime-400 px-3 py-0.5 rounded-lg font-medium"
                 >
                   Start over
-                </button>
+                </Button>
               </div>
             </div>
           </motion.div>
