@@ -875,6 +875,14 @@ export class AuthService {
       for (const [key, entry] of githubStatsCache) {
         if (entry.expiresAt <= now) githubStatsCache.delete(key);
       }
+      while (githubStatsCache.size > 200) {
+        const oldestKey = githubStatsCache.keys().next().value;
+        if (oldestKey !== undefined) {
+          githubStatsCache.delete(oldestKey);
+        } else {
+          break;
+        }
+      }
     }
 
     return data;
