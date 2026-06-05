@@ -36,9 +36,12 @@ interface CoachState {
 
   /** Reset advice state (keeps panel open) */
   clearAdvice: () => void;
+
+  /** Comprehensive fetch action with integrated error handling */
+  fetchSuggestion: (payload: CoachSuggestPayload) => Promise<void>;
 }
 
-export const useCoachStore = create<CoachState>((set) => ({
+export const useCoachStore = create<CoachState>((set, get) => ({
   isOpen: false,
   isLoading: false,
   advice: "",
@@ -52,7 +55,7 @@ export const useCoachStore = create<CoachState>((set) => ({
 
   triggerCoach: (payload) =>
     set((state) => {
-      // Guard: Don't trigger if already loading same trigger or has pending payload
+      // Guard: Don't trigger if already loading or has pending payload
       if (state.isLoading || state.pendingPayload) return state;
 
       return {
@@ -70,4 +73,22 @@ export const useCoachStore = create<CoachState>((set) => ({
   setError: (error) => set({ error, isLoading: false }),
   consumePayload: () => set({ pendingPayload: null }),
   clearAdvice: () => set({ advice: "", error: null, currentTrigger: null }),
+
+  fetchSuggestion: async (payload) => {
+    const { setAdvice, setError, setLoading } = get();
+    setLoading(true);
+    setError(null);
+    try {
+      // Import dynamically or use the one from api.ts
+      const { fetchCoachSuggestion } = await import("../api/coach.api");
+      const result = await fetchCoachSuggestion(payload);
+      setAdvice(result);
+    } catch (err: any) {
+      console.error("[coach] fetch failed:", err);
+      const msg = err.response?.data?.message || "Failed to get coaching advice. Please check your connection.";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  },
 }));

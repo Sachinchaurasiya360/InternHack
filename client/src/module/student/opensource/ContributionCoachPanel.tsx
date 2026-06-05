@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { useCoachStore } from "./stores/coach.store";
 import {
-  fetchCoachSuggestion,
   saveCoachAdvice,
   fetchSavedAdvice,
   deleteCoachAdvice,
@@ -229,11 +228,9 @@ export default function ContributionCoachPanel() {
     currentTrigger,
     pendingPayload,
     close,
-    setAdvice,
-    setError,
-    setLoading,
     consumePayload,
     clearAdvice,
+    fetchSuggestion,
   } = useCoachStore();
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -250,29 +247,14 @@ export default function ContributionCoachPanel() {
     consumePayload();
     isFetchingBus.current = true;
 
-    let cancelled = false;
-    (async () => {
-      try {
-        const result = await fetchCoachSuggestion(payload);
-        if (!cancelled) {
-          setAdvice(result);
-        }
-      } catch {
-        if (!cancelled) {
-          setError("Failed to get coaching advice. Please try again.");
-        }
-      } finally {
-        if (!cancelled) {
-          isFetchingBus.current = false;
-        }
-      }
-    })();
+    void fetchSuggestion(payload).finally(() => {
+      isFetchingBus.current = false;
+    });
 
     return () => {
-      cancelled = true;
       isFetchingBus.current = false;
     };
-  }, [pendingPayload, consumePayload, setAdvice, setError]);
+  }, [pendingPayload, consumePayload, fetchSuggestion]);
 
   // Auto-scroll as advice arrives
   useEffect(() => {
@@ -300,19 +282,11 @@ export default function ContributionCoachPanel() {
   const handleRetry = () => {
     if (!currentTrigger) return;
     clearAdvice();
-    setLoading(true);
     const payload = {
       trigger: currentTrigger,
-      context: {},
+      context: {}, // Note: Context might be thin on retry unless we persist it
     };
-    (async () => {
-      try {
-        const result = await fetchCoachSuggestion(payload);
-        setAdvice(result);
-      } catch {
-        setError("Failed to get coaching advice. Please try again.");
-      }
-    })();
+    void fetchSuggestion(payload);
   };
 
   const triggerLabel: Record<string, string> = {
