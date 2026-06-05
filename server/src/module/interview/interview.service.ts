@@ -134,6 +134,10 @@ export class InterviewService {
       throw new Error("Cannot add feedback to a cancelled or no-show interview");
     }
 
+    if (feedback.rating < 1 || feedback.rating > 5) {
+      throw new Error("Rating must be between 1 and 5");
+    }
+
     const existingFeedback = (interview.feedback as Record<string, unknown>[]) ?? [];
     // Replace existing feedback from same interviewer or append
     const filtered = existingFeedback.filter((f) => (f as { interviewerId?: number }).interviewerId !== feedback.interviewerId);
