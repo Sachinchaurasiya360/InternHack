@@ -1,3 +1,4 @@
+import { prisma } from "../../database/db.js";
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";

@@ -661,14 +661,14 @@ export class RecruiterService {
     if (filter.jobStatus) {
       where.jobStatus = filter.jobStatus;
     }
-
-    const skip = (filter.page - 1) * filter.limit;
+    const safeLimit = Math.min(filter.limit, 50);
+    const skip = (filter.page - 1) * safeLimit;
 
     const [students, total] = await Promise.all([
       prisma.user.findMany({
         where,
         skip,
-        take: filter.limit,
+        take: safeLimit,
         orderBy: { createdAt: "desc" },
         select: {
           id: true,
@@ -732,7 +732,7 @@ export class RecruiterService {
       students: results,
       pagination: {
         page: filter.page,
-        limit: filter.limit,
+        limit: safeLimit,
         total,
         totalPages: Math.ceil(total / filter.limit),
       },
@@ -835,4 +835,4 @@ export class RecruiterService {
     });
   }
 }
-
+
