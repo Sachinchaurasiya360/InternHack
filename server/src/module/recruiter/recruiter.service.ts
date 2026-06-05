@@ -197,10 +197,19 @@ export class RecruiterService {
   }
 
   async reorderRounds(jobId: number, recruiterId: number, rounds: { roundId: number; orderIndex: number }[]) {
+    // Empty array guard
+    if (!rounds?.length) return [];
+
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
     
+    // Duplicate roundId validation
+    const uniqueIds = new Set(rounds.map((r) => r.roundId));
+    if (uniqueIds.size !== rounds.length) {
+      throw new Error("Duplicate round IDs in reorder payload");
+    }
+
     const existingRounds = await prisma.round.findMany({
       where: {
         id: { in: rounds.map((r) => r.roundId) },
@@ -213,20 +222,21 @@ export class RecruiterService {
       throw new Error("Invalid round IDs");
     }
 
-    // Use a transaction with temporary high indices to avoid unique constraint conflicts
+    // Safe reordering with two-pass update strategy to avoid unique constraint violations
     await prisma.$transaction(async (tx) => {
-      // First, set all to temporary high values
-      for (const r of rounds) {
+      // First pass: move to temporary high indices to clear existing spots
+      for (const round of rounds) {
         await tx.round.update({
-          where: { id: r.roundId },
-          data: { orderIndex: r.orderIndex + 10000 },
+          where: { id: round.roundId, jobId },
+          data: { orderIndex: round.orderIndex + 10000 },
         });
       }
-      // Then set to final values
-      for (const r of rounds) {
+
+      // Second pass: set final indices
+      for (const round of rounds) {
         await tx.round.update({
-          where: { id: r.roundId },
-          data: { orderIndex: r.orderIndex },
+          where: { id: round.roundId, jobId },
+          data: { orderIndex: round.orderIndex },
         });
       }
     });
