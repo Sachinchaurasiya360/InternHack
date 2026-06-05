@@ -3,7 +3,7 @@ import { z } from "zod";
 export const gsocListQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(20),
-  search: z.string().optional(),
+  search: z.string().max(100).optional(),
   category: z.string().optional(),
   technology: z.string().optional(),
   year: z.coerce.number().int().min(2005).max(2030).optional(),
