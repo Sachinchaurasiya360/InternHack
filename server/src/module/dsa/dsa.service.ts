@@ -1055,7 +1055,7 @@ Rules:
         const cleaned = objMatch[0].replace(/,\s*([\]}])/g, "$1");
         parsed = JSON.parse(cleaned);
       } else {
-        throw new Error("Failed to parse AI code review response");
+        parsed = {};
       }
     }
 
