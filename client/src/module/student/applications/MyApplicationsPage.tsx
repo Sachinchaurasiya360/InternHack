@@ -256,6 +256,7 @@ export default function MyApplicationsPage() {
   const [page, setPage] = useState(1);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
+  const [statusFilter, setStatusFilter] = useState("ALL");
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 200);
@@ -263,9 +264,8 @@ export default function MyApplicationsPage() {
   }, [search]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPage(1);
-  }, [debouncedSearch]);
+  setPage(1);
+}, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -280,13 +280,21 @@ export default function MyApplicationsPage() {
   const externalApplications = useMemo(() => data?.externalApplications ?? [], [data]);
 
   const filtered = useMemo(() => {
-    const base = !debouncedSearch.trim()
-      ? applications
-      : applications.filter(
-        (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+  const base = !debouncedSearch.trim()
+    ? applications
+    : applications.filter(
+        (a) =>
+          a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
-    return sortApplications(base, sortOption);
-  }, [applications, debouncedSearch, sortOption]);
+
+  const statusFiltered =
+    statusFilter === "ALL"
+      ? base
+      : base.filter((a) => a.status === statusFilter);
+
+  return sortApplications(statusFiltered, sortOption);
+}, [applications, debouncedSearch, sortOption, statusFilter]);
 
  const filteredExternal = useMemo(() => {
   const base = !debouncedSearch.trim()
@@ -455,7 +463,36 @@ export default function MyApplicationsPage() {
           <option value="status">Status</option>
         </select>
       </div>
+
+      <div className="mb-5 flex flex-wrap gap-2">
+  {[
+    "ALL",
+    "APPLIED",
+    "IN_PROGRESS",
+    "SHORTLISTED",
+    "HIRED",
+    "REJECTED",
+    "WITHDRAWN",
+  ].map((status) => (
+    <button
+      key={status}
+      onClick={() => {
+        setStatusFilter(status);
+        setPage(1);
+      }}
+      className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
+        statusFilter === status
+          ? "bg-lime-400 text-stone-900 border-lime-400"
+          : "border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+      }`}
+    >
+      {status.replace("_", " ")}
+    </button>
+  ))}
+</div>
       {/* Search */}
+
+      
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
