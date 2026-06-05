@@ -28,7 +28,7 @@ export abstract class BaseSignalSource {
   abstract readonly source: string;
   abstract readonly displayName: string;
 
-  abstract fetch(): Promise<SourceResult>;
+  abstract fetch(signal?: AbortSignal): Promise<SourceResult>;
 
   protected stripHtml(html: string): string {
     return html
