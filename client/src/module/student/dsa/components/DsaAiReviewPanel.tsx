@@ -1,4 +1,4 @@
-import { Sparkles, Clock, HardDrive, Eye, AlertTriangle, Lightbulb, RefreshCw } from "lucide-react";
+import { Sparkles, Clock, HardDrive, Eye, AlertTriangle, Lightbulb, RefreshCw, Loader2 } from "lucide-react";
 import type { DsaCodeReview } from "../../../../lib/types";
 import { Button } from "../../../../components/ui/button";
 
@@ -35,7 +35,7 @@ export function DsaAiReviewPanel({ review, isLoading, error, onRequestReview, ha
   if (isLoading) {
     return (
       <div className="p-6 flex flex-col items-center justify-center gap-3 text-stone-400">
-        <div className="w-8 h-8 border-2 border-lime-500 border-t-transparent rounded-full animate-spin" />
+        <Loader2 className="w-8 h-8 text-lime-500 animate-spin" />
         <p className="text-sm font-medium">Analyzing your code...</p>
         <p className="text-xs text-stone-500">This may take a few seconds</p>
       </div>

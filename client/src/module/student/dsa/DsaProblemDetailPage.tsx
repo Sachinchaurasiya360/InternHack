@@ -260,6 +260,8 @@ export default function DsaProblemDetailPage() {
     },
   });
 
+  useEffect(() => { aiReviewMutation.reset(); }, [problem?.id, aiReviewMutation]);
+
   const handleRun = useCallback(() => {
     if (!problem || !user || !isPremium) return;
     executeMutation.mutate({ problemId: problem.id, lang: language, code: codeMap[language] });

@@ -974,6 +974,11 @@ Return ONLY a JSON array, no markdown fences:
       const parsed = this.parseCodeReviewResponse(response.text);
       // 5. Log success
       logAIRequest("DSA_CODE_REVIEW", response, true, undefined, studentId);
+      
+      await prisma.usageLog.create({
+        data: { userId: studentId, action: "CODE_RUN" },
+      });
+
       return parsed;
     } catch (err) {
       logAIRequest("DSA_CODE_REVIEW", response, false, err instanceof Error ? err.message : "Parse failed", studentId);
