@@ -80,7 +80,7 @@ export const updateProfileSchema = z.object({
   bio: z.string().max(500).optional(),
   college: z.string().optional(),
   graduationYear: z.coerce.number().int().min(1990).max(2040).optional().nullable(),
-  skills: z.array(z.string()).max(20).optional(),
+  skills: z.array(z.string().max(50, "Skill name too long")).max(20).optional(),
   location: z.string().optional(),
   linkedinUrl: z.string().url().or(z.literal("")).optional(),
   githubUrl: z.string().url().or(z.literal("")).optional(),
