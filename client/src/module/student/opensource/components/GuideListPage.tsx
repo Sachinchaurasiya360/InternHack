@@ -19,6 +19,7 @@ interface Props {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
+  ogImage?: string;
   icon: LucideIcon;
   iconColor: string;         // e.g. "text-emerald-500"
 }
@@ -26,6 +27,7 @@ interface Props {
 export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
+  ogImage,
 }: Props) {
   const [completed, setCompleted] = useState<Set<string>>(() => {
     try {
@@ -62,6 +64,7 @@ export default function GuideListPage({
         description={seoDescription}
         keywords={seoKeywords}
         canonicalUrl={canonicalUrl(basePath)}
+        ogImage={ogImage}
       />
 
       {/* Atmospheric background */}

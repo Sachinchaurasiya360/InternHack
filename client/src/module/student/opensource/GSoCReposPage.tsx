@@ -592,6 +592,7 @@ export default function GSoCReposPage() {
         description="Browse Google Summer of Code organizations, past projects, technologies, topics, and contributor links."
         keywords="GSoC, Google Summer of Code, open source organizations, student open source"
         canonicalUrl={canonicalUrl("/student/opensource/gsoc")}
+        ogImage="/og/og-gsoc.png"
       />
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
