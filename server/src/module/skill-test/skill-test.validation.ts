@@ -20,7 +20,7 @@ export const submitTestSchema = z.object({
       faceViolations: z.array(z.object({
         type: z.enum(["NO_FACE", "MULTIPLE_FACES"]),
         timestamp: z.string(),
-        duration: z.number().optional(),
+        duration: z.number().nonnegative().optional(),
       })).default([]),
       warnings: z.array(z.any()).default([]),
       terminated: z.boolean().default(false),
