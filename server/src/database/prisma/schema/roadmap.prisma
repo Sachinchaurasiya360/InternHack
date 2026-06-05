@@ -17,6 +17,7 @@ model roadmap {
   isPublished      Boolean             @default(false)
   isPremium        Boolean             @default(false)
   isAiGenerated    Boolean             @default(false)
+  isPubliclyShared Boolean             @default(false)
   topicCount       Int                 @default(0)
   outcomes         String[]            @default([])
   prerequisites    String[]            @default([])
