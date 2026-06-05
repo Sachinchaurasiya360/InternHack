@@ -19,6 +19,7 @@ import { JobStatus } from "../../../lib/types";
 import type { Job } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 
 type StatusFilter = "ALL" | JobStatus;
 
@@ -35,6 +36,8 @@ export default function RecruiterJobsList() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<StatusFilter>("ALL");
   const [search, setSearch] = useState("");
+  const [jobToDelete, setJobToDelete] = useState<Job | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     api
@@ -46,14 +49,18 @@ export default function RecruiterJobsList() {
       .catch(() => setLoading(false));
   }, []);
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Delete this job? This cannot be undone.")) return;
+  const handleDelete = async () => {
+    if (!jobToDelete) return;
+    setIsDeleting(true);
     try {
-      await api.delete(`/jobs/${id}`);
-      setJobs((prev) => prev.filter((j) => j.id !== id));
+      await api.delete(`/jobs/${jobToDelete.id}`);
+      setJobs((prev) => prev.filter((j) => j.id !== jobToDelete.id));
       toast.success("Job deleted");
+      setJobToDelete(null);
     } catch {
       toast.error("Failed to delete job");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -103,6 +110,25 @@ export default function RecruiterJobsList() {
   return (
     <div className="relative text-stone-900 dark:text-stone-50">
       <SEO title="My Job Listings" noIndex />
+
+      <ConfirmDialog
+        open={jobToDelete !== null}
+        title="Delete Job?"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        confirmVariant="danger"
+        loading={isDeleting}
+        onCancel={() => setJobToDelete(null)}
+        onConfirm={handleDelete}
+      >
+        {jobToDelete && (
+          <div className="space-y-4">
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+              Are you sure you want to delete <strong className="font-semibold text-stone-900 dark:text-white">{jobToDelete.title}</strong>? This action is irreversible.
+            </p>
+          </div>
+        )}
+      </ConfirmDialog>
 
       <div
         aria-hidden
@@ -349,7 +375,7 @@ export default function RecruiterJobsList() {
                       label="Edit"
                     />
                     <button
-                      onClick={() => handleDelete(job.id)}
+                      onClick={() => setJobToDelete(job)}
                       title="Delete"
                       aria-label="Delete"
                       className="p-2 rounded-md text-stone-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-0 bg-transparent cursor-pointer"
