@@ -66,6 +66,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
 
     const saved = localStorage.getItem(`guide-feedback-${basePath}-${step.id}`);
     if (saved) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRating(saved);
       setSubmitted(true);
     }

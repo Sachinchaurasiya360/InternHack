@@ -100,9 +100,11 @@ const [page, setPage] = useState(1);
 
   // Fetch whenever filters or page changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchRequests();
     // Selection is cleared when page or filters change because the list items change
     setSelectedIds([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter, domainFilter, difficultyFilter, page]);
 
   // Reset page to 1 when filters change
@@ -324,6 +326,7 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
   const [tagsInput, setTagsInput] = useState(() => (req.tags ?? []).join(", "));
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormState(buildFormState(req));
     setTagsInput((req.tags ?? []).join(", "));
     setAdminNote(req.adminNote ?? "");

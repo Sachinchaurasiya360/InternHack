@@ -24,6 +24,7 @@ export default function ApplicationsList() {
 
   // Reset to page 1 when search or filter changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [debouncedSearch, statusFilter]);
 

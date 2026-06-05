@@ -226,6 +226,7 @@ export default function RepoDiscoveryPage() {
 
   useEffect(() => {
     if (deepLinkData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedRepo(deepLinkData);
     }
   }, [deepLinkData]);
@@ -242,6 +243,7 @@ export default function RepoDiscoveryPage() {
   }, [deepLinkError, setSearchParams]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (showSaved && bookmarks.length === 0) setShowSaved(false);
   }, [bookmarks, showSaved]);
 

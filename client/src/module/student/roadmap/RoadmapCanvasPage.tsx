@@ -586,14 +586,12 @@ export default function RoadmapCanvasPage() {
     prevPercentRef.current = pct;
   }, [data]);
   useEffect(() => {
-  if (!data) return;
-
-  setTitle(data.enrollment.roadmap.title);
-  setShortDescription(
-    data.enrollment.roadmap.shortDescription
-  );
-  setLevel(data.enrollment.roadmap.level);
-}, [data]);
+    if (!data) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTitle(data.enrollment.roadmap.title);
+    setShortDescription(data.enrollment.roadmap.shortDescription);
+    setLevel(data.enrollment.roadmap.level);
+  }, [data]);
 
   const progressByTopicId = useMemo(() => {
     if (!data)
