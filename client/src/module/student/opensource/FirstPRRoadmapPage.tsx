@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, GitPullRequest, ArrowRight,
@@ -25,6 +26,7 @@ const STORAGE_KEY = "first-pr-roadmap-completed";
 
 // ─── Page ──────────────────────────────────────────────────────
 export default function FirstPRRoadmapPage() {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [completed, setCompleted] = useState<Set<string>>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -153,16 +155,24 @@ export default function FirstPRRoadmapPage() {
                   Discover repos to contribute to
                 </Link>
                 <button
-                  onClick={() => {
-                    if (window.confirm("Reset all steps?")) {
-                      setCompleted(new Set());
-                      try { localStorage.removeItem(STORAGE_KEY); } catch { /**/ }
-                    }
-                  }}
+                  onClick={() => setShowResetConfirm(true)}
                   className="text-sm text-lime-700 dark:text-lime-400 border border-lime-400 px-3 py-0.5 rounded-lg font-medium"
                 >
                   Start over
                 </button>
+                <ConfirmDialog
+                  open={showResetConfirm}
+                  title="Reset all steps?"
+                  description="This will remove your progress and reset all completed steps."
+                  confirmLabel="Reset"
+                  cancelLabel="Cancel"
+                  onConfirm={() => {
+                    setCompleted(new Set());
+                    try { localStorage.removeItem(STORAGE_KEY); } catch { /**/ }
+                    setShowResetConfirm(false);
+                  }}
+                  onCancel={() => setShowResetConfirm(false)}
+                />
               </div>
             </div>
           </motion.div>
