@@ -34,7 +34,8 @@ const WISHLIST_KEY = "gsoc_wishlist";
 function useWishlist() {
   const [wishlist, setWishlist] = useState<number[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem(WISHLIST_KEY) ?? "[]");
+      const parsed = JSON.parse(localStorage.getItem(WISHLIST_KEY) ?? "[]");
+      return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
     }
@@ -226,7 +227,7 @@ function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => v
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
 
   return (
-    <button type="button" onClick={onClick} className={cardBase}>
+    <div role="button" tabIndex={0} onClick={onClick} onKeyDown={(e) => e.key === "Enter" && onClick()} className={cardBase}>
       <div className="mb-3 flex items-start gap-3">
         <OrgMark org={org} />
         <div className="min-w-0 flex-1">
@@ -292,7 +293,7 @@ function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => v
         </span>
         <ArrowUpRight className="h-4 w-4 text-stone-400 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-lime-500" />
       </div>
-    </button>
+    </div>
   );
 }
 
