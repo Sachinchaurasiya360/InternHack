@@ -1,16 +1,14 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
 import crypto from "crypto";
-import { generateEmbedding } from "../module/job-index/job-index.enrichment.js";
 import { createLogger } from "../utils/logger.js";
 import type { AiGenerateInput } from "../module/roadmap/roadmap.validation.js";
+import { generateEmbedding } from "./embedding.js";
+import { SEMANTIC_CACHE_CONFIG } from "../config/semantic-cache.config.js";
 
 const logger = createLogger("SemanticCache");
 
-const VECTOR_SIZE = 768;
-const SIMILARITY_THRESHOLD = 0.95;
-
 let client: QdrantClient | null = null;
-let collectionName = "ai_prompt_cache";
+let collectionName: string = SEMANTIC_CACHE_CONFIG.defaultCollectionName;
 
 // ── Feature flag ──────────────────────────────────────────────────────────
 
@@ -32,7 +30,7 @@ export async function initSemanticCache(): Promise<void> {
     return;
   }
 
-  collectionName = process.env["QDRANT_COLLECTION_NAME"] ?? "ai_prompt_cache";
+  collectionName = process.env["QDRANT_COLLECTION_NAME"] ?? SEMANTIC_CACHE_CONFIG.defaultCollectionName;
 
   try {
     client = new QdrantClient({
@@ -46,7 +44,7 @@ export async function initSemanticCache(): Promise<void> {
 
     if (!exists) {
       await client.createCollection(collectionName, {
-        vectors: { size: VECTOR_SIZE, distance: "Cosine" },
+        vectors: { size: SEMANTIC_CACHE_CONFIG.vectorSize, distance: "Cosine" },
       });
       logger.info(`Created Qdrant collection "${collectionName}"`);
     }
@@ -87,17 +85,17 @@ export interface SearchAndEmbedResult {
  * Always returns the embedding so it can be reused for storing on a cache miss.
  */
 export async function searchAndEmbed(text: string): Promise<SearchAndEmbedResult> {
-  const embedding = await generateEmbedding(text);
-
   if (!client) {
-    return { result: null, embedding };
+    return { result: null, embedding: [] };
   }
+
+  const embedding = await generateEmbedding(text);
 
   try {
     const hits = await client.search(collectionName, {
       vector: embedding,
       limit: 1,
-      score_threshold: SIMILARITY_THRESHOLD,
+      score_threshold: SEMANTIC_CACHE_CONFIG.similarityThreshold,
     });
 
     if (hits.length > 0 && hits[0]) {

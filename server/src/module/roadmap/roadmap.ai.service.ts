@@ -92,7 +92,7 @@ export async function generateAiRoadmap(
 ): Promise<GeneratedRoadmap> {
   // ── Semantic cache check ──
   let cacheEmbedding: number[] | undefined;
-  if (isSemanticCacheEnabled()) {
+  if (isSemanticCacheEnabled() && !input.forceCreate) {
     const cacheText = buildCacheKey(input);
     try {
       const { result: cachedResult, embedding } = await searchAndEmbed(cacheText);
