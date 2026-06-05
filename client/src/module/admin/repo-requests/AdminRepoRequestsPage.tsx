@@ -58,12 +58,6 @@ const buildFormState = (req: RepoRequest): RepoRequestFormState => ({
   tags: req.tags ?? [],
 });
 
-const parseTags = (value: string) =>
-  value
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean);
-
 const statusBadge = (status: string) => {
   const map: Record<string, string> = {
     PENDING: "bg-amber-900/40 text-amber-400",
@@ -104,18 +98,20 @@ const [page, setPage] = useState(1);
     }
   };
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+  // Fetch whenever filters or page changes
   useEffect(() => {
-  setPage(1);
-}, [statusFilter, domainFilter, difficultyFilter]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => {
-  fetchRequests();
-}, [statusFilter, domainFilter, difficultyFilter, page]);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => {
-  setSelectedIds([]);
-}, [statusFilter, domainFilter, difficultyFilter, page]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchRequests();
+    // Selection is cleared when page or filters change because the list items change
+    setSelectedIds([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter, domainFilter, difficultyFilter, page]);
+
+  // Reset page to 1 when filters change
+  const handleFilterChange = (setter: (v: string) => void, value: string) => {
+    setter(value);
+    setPage(1);
+  };
 
   const toggleSelect = (id: number) => {
     setSelectedIds((prev) =>
@@ -189,7 +185,7 @@ const [page, setPage] = useState(1);
       {/* Status Tabs */}
       <div className="flex gap-2 mb-6">
         {statusTabs.map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)}
+          <button key={s} onClick={() => handleFilterChange(setStatusFilter, s)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               statusFilter === s ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"
             }`}>
@@ -203,7 +199,7 @@ const [page, setPage] = useState(1);
 <div className="flex flex-wrap gap-3 mb-6">
   <select
     value={domainFilter}
-    onChange={(e) => setDomainFilter(e.target.value)}
+    onChange={(e) => handleFilterChange(setDomainFilter, e.target.value)}
     className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm"
   >
     <option value="">All Domains</option>
@@ -216,7 +212,7 @@ const [page, setPage] = useState(1);
 
   <select
     value={difficultyFilter}
-    onChange={(e) => setDifficultyFilter(e.target.value)}
+    onChange={(e) => handleFilterChange(setDifficultyFilter, e.target.value)}
     className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm"
   >
     <option value="">All Difficulties</option>
@@ -327,14 +323,15 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
   const [isEditing, setIsEditing] = useState(false);
   const [formState, setFormState] = useState<RepoRequestFormState>(() => buildFormState(req));
   const [adminNote, setAdminNote] = useState(req.adminNote ?? "");
+  const [tagsInput, setTagsInput] = useState(() => (req.tags ?? []).join(", "));
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormState(buildFormState(req));
+    setTagsInput((req.tags ?? []).join(", "));
     setAdminNote(req.adminNote ?? "");
     setIsEditing(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [req.id, req.updatedAt]);
+  }, [req]);
 
   const handleApproveClick = () => {
     const payload: ApprovePayload = {};
@@ -348,13 +345,14 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
       payload.description = formState.description.trim();
       payload.domain = formState.domain;
       payload.difficulty = formState.difficulty;
-      payload.tags = formState.tags;
+      payload.tags = tagsInput
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean);
     }
 
     void onApprove(req.id, payload);
   };
-
-  const tagsValue = formState.tags.join(", ");
 
   return (
     <motion.div
@@ -456,10 +454,8 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
           <div className="grid gap-1">
             <label className="text-xs font-medium text-gray-500">Tags</label>
             <input
-              value={tagsValue}
-              onChange={(event) =>
-                setFormState((prev) => ({ ...prev, tags: parseTags(event.target.value) }))
-              }
+              value={tagsInput}
+              onChange={(e) => setTagsInput(e.target.value)}
               className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
               placeholder="Beginner friendly, hacktoberfest"
             />

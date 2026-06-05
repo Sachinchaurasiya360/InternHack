@@ -70,7 +70,7 @@ export class OnboardingService {
     if (!checklist) throw new Error("Onboarding checklist not found");
 
     const items = JSON.parse(checklist.items as string) as OnboardingItem[];
-    if (itemIndex >= items.length) throw new Error("Invalid item index");
+    if (itemIndex < 0 || itemIndex >= items.length) throw new Error("Invalid item index");
 
     items[itemIndex]!.completed = completed;
     items[itemIndex]!.completedAt = completed ? new Date().toISOString() : undefined;

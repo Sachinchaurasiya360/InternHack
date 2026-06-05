@@ -338,6 +338,10 @@ export class JobService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+    if (data.deadline && new Date(data.deadline) < new Date(new Date().toDateString())) {
+      throw new Error("Deadline must be in the future");
+    }
+
     return prisma.job.update({
       where: { id },
       data: {

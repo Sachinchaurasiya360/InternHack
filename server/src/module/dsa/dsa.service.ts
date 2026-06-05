@@ -790,6 +790,17 @@ Return ONLY a JSON array, no markdown fences:
       data: { userId: studentId, action: "CODE_RUN" },
     });
 
+    // Track engagement — fire-and-forget, never blocks the submission response
+    void prisma.contentView.create({
+      data: {
+        userId: studentId,
+        contentType: "DSA",
+        contentId: String(problemId),
+        timeSpentMs: maxTime,
+        completed: allPassed,
+      },
+    }).catch(() => { /* swallow — analytics must never break submissions */ });
+
     return { passed: passedCount, total: testCases.length, allPassed, results, submissionId: submission.id };
   }
 
