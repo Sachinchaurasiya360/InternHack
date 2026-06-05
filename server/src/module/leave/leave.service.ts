@@ -22,6 +22,13 @@ export class LeaveService {
       throw new Error("End date cannot be before start date");
     }
 
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    if (data.totalDays <= 0 || data.totalDays > diffDays) {
+      throw new Error(`Invalid totalDays: ${data.totalDays}. It cannot exceed the calendar day difference of ${diffDays} days.`);
+    }
+
+
     // Check balance
     const year = new Date(data.startDate).getFullYear();
     const balance = await prisma.leaveBalance.findUnique({
