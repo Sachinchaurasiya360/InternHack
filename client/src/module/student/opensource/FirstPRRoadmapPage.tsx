@@ -12,6 +12,7 @@ import {
   patchFirstPRProgress,
 } from "./api/opensource.api";
 import guideData from "./data/open-source-guide.json";
+import { markGuideProgressTouched } from "./guide-progress";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -66,6 +67,7 @@ export default function FirstPRRoadmapPage() {
         else next.delete(id);
         return next;
       });
+      markGuideProgressTouched("first-pr-roadmap-completed", id);
 
       void patchFirstPRProgress(id, nextCompleted).catch(() => {
         setCompleted((prev) => {

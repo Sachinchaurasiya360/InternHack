@@ -6,6 +6,7 @@ import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
+import { markGuideProgressTouched } from "../guide-progress";
 
 interface Step { step: number; id: string; title: string; description: string ; estimatedMinutes?: number; }
 
@@ -39,6 +40,7 @@ export default function GuideListPage({
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
+      markGuideProgressTouched(storageKey, id);
       return next;
     });
   }, [storageKey]);

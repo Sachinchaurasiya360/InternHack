@@ -10,6 +10,7 @@ import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
+import { markGuideProgressTouched } from "./guide-progress";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -59,6 +60,7 @@ export default function GSoCProposalPage() {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
+      markGuideProgressTouched(STORAGE_KEY, id);
       return next;
     });
   }, []);

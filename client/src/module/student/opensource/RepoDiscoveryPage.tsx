@@ -42,6 +42,7 @@ import { SuggestRepoModal } from "./SuggestRepoModal";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
+import { ContinueGuideBanner } from "./ContinueGuideBanner";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -410,6 +411,8 @@ export default function RepoDiscoveryPage() {
       )}
 
       <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8">
+        <ContinueGuideBanner />
+
         {/* Editorial header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">

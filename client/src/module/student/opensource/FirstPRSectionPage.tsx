@@ -21,6 +21,7 @@ import {
 import guideData from "./data/open-source-guide.json";
 import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
 import { ReadingProgressBar } from "../../../components/ReadingProgressBar";
+import { markGuideProgressTouched } from "./guide-progress";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource {
@@ -108,6 +109,7 @@ export default function FirstPRSectionPage() {
       else next.add(step.id);
       return next;
     });
+    markGuideProgressTouched("first-pr-roadmap-completed", step.id);
 
     void patchFirstPRProgress(step.id, !isCurrentlyCompleted).catch(() => {
       setCompleted((prev) => {
