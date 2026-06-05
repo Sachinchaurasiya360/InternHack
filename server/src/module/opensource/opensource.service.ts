@@ -78,18 +78,12 @@ export class OpensourceService {
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
-<<<<<<< HEAD
+const trimmedSearch = search?.trim();
 
-    const trimmedSearch = search?.trim();
-
-    if (trimmedSearch) {
-=======
-    const trimmedSearch = search?.trim();
-    if (trimmedSearch) {
-      // Prisma's scalar-list filters can't do case-insensitive substring match
-      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-      // subquery and merge the matching ids into the OR clause.
->>>>>>> upstream/main
+if (trimmedSearch) {
+  // Prisma's scalar-list filters can't do case-insensitive substring match
+  // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+  // subquery and merge the matching ids into the OR clause.
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
@@ -98,20 +92,11 @@ export class OpensourceService {
       `;
     
       const tagMatchIds = tagMatches.map((r) => r.id);
-<<<<<<< HEAD
-    
-      where["OR"] = [
-        { name: { contains: trimmedSearch, mode: "insensitive" } },
-        { owner: { contains: trimmedSearch, mode: "insensitive" } },
-        { description: { contains: trimmedSearch, mode: "insensitive" } },
-        { language: { contains: trimmedSearch, mode: "insensitive" } },
-=======
-      where["OR"] = [
-        { name: { contains: trimmedSearch, mode: "insensitive" } },
-        { owner: { contains: trimmedSearch, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { language: { contains: search, mode: "insensitive" } },
->>>>>>> upstream/main
+where["OR"] = [
+  { name: { contains: trimmedSearch, mode: "insensitive" } },
+  { owner: { contains: trimmedSearch, mode: "insensitive" } },
+  { description: { contains: trimmedSearch, mode: "insensitive" } },
+  { language: { contains: trimmedSearch, mode: "insensitive" } },
         ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
       ];
     }
