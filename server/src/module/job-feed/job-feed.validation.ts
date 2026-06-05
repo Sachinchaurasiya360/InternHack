@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const updatePreferencesSchema = z.object({
-  desiredRoles: z.array(z.string()).optional(),
-  desiredSkills: z.array(z.string()).optional(),
-  desiredLocations: z.array(z.string()).optional(),
+  desiredRoles: z.array(z.string().max(100)).max(20).optional(),
+  desiredSkills: z.array(z.string().max(100)).max(20).optional(),
+  desiredLocations: z.array(z.string().max(100)).max(20).optional(),
   minSalary: z.number().int().positive().nullable().optional(),
   workMode: z.array(z.enum(["REMOTE", "HYBRID", "ONSITE"])).optional(),
   experienceLevel: z.array(z.enum(["INTERN", "ENTRY", "MID", "SENIOR"])).optional(),
