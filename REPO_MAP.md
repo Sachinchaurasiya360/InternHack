@@ -1,32 +1,52 @@
-# InternHack, Repo Map (Quick Reference)
+# InternHack, Repo Map - A quick reference guide for contributors to understand the project structure and locate important files easily.
 
 > Read this before any editing task. It tells you where things live so you don't need to explore the whole repo.
 
 ---
+# Project Overview
+
+InternHack is a full-stack AI-powered career platform that helps students with:
+
+- Job discovery
+- Resume analysis
+- Mock interviews
+- Skill development
+- Recruiter hiring workflows
+
+The project uses:
+- React + Vite frontend
+- Express + TypeScript backend
+- PostgreSQL database
+- Prisma ORM
+- Google Gemini AI integration
 
 ## Stack
 
-| Layer | Tech |
-|---|---|
-| Frontend | React 18, Vite 7, TailwindCSS 4, React Router 7, Framer Motion |
-| Backend | Express 5, TypeScript 5, Prisma 7, Node Cron |
-| Database | PostgreSQL (via Prisma + `@prisma/adapter-pg`) |
-| Auth | JWT + Google OAuth, email verification (Resend) |
-| AI | Google Gemini (`gemini-2.5-flash-lite`), ATS scoring, cover letters, LaTeX chat, resume generation |
-| Storage | AWS S3 (with local fallback to `server/uploads/`) |
-| Payments | Dodo Payment (subscription plans) |
-| State | Zustand (auth, theme, layout) + React Query (server state) |
-| Proctoring | MediaPipe face detection + browser event monitoring |
-
+|| Layer | Technology |
+|-------|-------------|
+| **Frontend** | React 18, Vite 7, TailwindCSS 4 |
+| **Backend** | Express 5, TypeScript 5 |
+| **Database** | PostgreSQL + Prisma |
+| **AI** | Google Gemini |
+| **Authentication** | JWT + Google OAuth |
+| **Storage** | AWS S3 |
+| **State Management** | Zustand + React Query |
 ---
 
 ## Top-Level Structure
 
 ```
+# Top-Level Project Structure
+
+```bash
 InternHack/
-├── client/          # React + Vite frontend
-├── server/          # Express + TypeScript backend
-└── .claude/         # Claude config & this file
+├── client/        # Frontend application
+├── server/        # Backend API server
+├── .github/       # GitHub workflows & templates
+├── README.md      # Main documentation
+├── CONTRIBUTING.md
+├── REPO_MAP.md
+└── skills.md
 ```
 
 ---
@@ -37,50 +57,57 @@ InternHack/
 
 | File | Purpose |
 |---|---|
-| `src/index.ts` | Express app init, route registration, CORS, cron startup |
-| `src/database/db.ts` | Prisma client singleton (PrismaPg adapter) |
-| `src/database/prisma/schema.prisma` | All Prisma models & enums |
-| `src/database/prisma.config.ts` | Prisma config (schema path, DB url from env) |
-| `src/database/prisma/migrations/` | Migration SQL files |
+| `src/index.ts` | Starts the Express server, routes, CORS, and cron jobs |
+| `src/database/db.ts` | Prisma database client setup |
+| `src/database/prisma/schema.prisma` | Database models and enums |
+| `src/database/prisma.config.ts` | Prisma configuration and DB connection |
+| `src/database/prisma/migrations/` | Database migration files |
 
-**Run migrations from:** `server/src/database/` (not server root), uses `prisma.config.ts`
+**Run migrations from:** `server/src/database/`
+
+---
 
 ### Seed Scripts, `src/database/`
 
 | File | Purpose |
 |---|---|
-| `seed.ts` | General seed runner |
-| `seed-admin.ts` | Seeds Super Admin account |
-| `seed-jobs.ts` | Seeds 20 published job listings |
-| `seed-colleges.ts` | Fetches AICTE college data from GitHub (state-wise JSON) |
-| `seed-exams.ts` | Seeds entrance exams (JEE, NEET, CAT, etc.) |
-| `seed-pune-companies.ts` | Seeds 49 Pune tech companies |
-| `seed-gsoc.ts` | Fetches 520+ GSoC organizations from API |
-| `seed-aptitude.ts` | Seeds aptitude categories, topics, and questions |
-| `seed-badges.ts` | Seeds badge definitions |
-| `seed-dsa.ts` | Seeds DSA topics and problems |
-| `seed-opensource.ts` | Seeds open source repo records (InternHack repo only) |
-| `seed-skill-tests.ts` | Seeds skill test definitions and questions |
-| `seed-hackathons.ts` | Seeds hackathon records |
-| `seed-internships.ts` | Seeds government/public-sector internships |
-| `seed-professors.ts` | Seeds professor/mentor records (reads XLSX) |
-| `seed-yc.ts` | Fetches YC companies from yc-oss API, seeds via raw pg |
+| `seed.ts` | Main seed runner |
+| `seed-admin.ts` | Creates Super Admin account |
+| `seed-jobs.ts` | Adds sample job listings |
+| `seed-colleges.ts` | Imports AICTE college data |
+| `seed-exams.ts` | Adds exam records (JEE, NEET, CAT, etc.) |
+| `seed-pune-companies.ts` | Adds Pune tech company data |
+| `seed-gsoc.ts` | Imports GSoC organization data |
+| `seed-aptitude.ts` | Adds aptitude topics and questions |
+| `seed-badges.ts` | Adds badge definitions |
+| `seed-dsa.ts` | Adds DSA topics and problems |
+| `seed-opensource.ts` | Adds open-source repository data |
+| `seed-skill-tests.ts` | Adds skill test questions |
+| `seed-hackathons.ts` | Adds hackathon records |
+| `seed-internships.ts` | Adds internship opportunities |
+| `seed-professors.ts` | Imports professor/mentor records |
+| `seed-yc.ts` | Imports Y Combinator startup data |
+
+---
 
 ### Middleware, `src/middleware/`
 
-| File | Exports |
+| File | Purpose |
 |---|---|
-| `auth.middleware.ts` | `authMiddleware()`, `optionalAuthMiddleware()` |
-| `role.middleware.ts` | `requireRole(role)` |
-| `error.middleware.ts` | Global error handler |
-| `upload.middleware.ts` | `uploadSingle()`, `uploadResume()`, `uploadImage()` |
-| `usage-limit.middleware.ts` | `usageLimit(action)`, checks daily limits by plan tier, 429 on exceed |
+| `auth.middleware.ts` | Handles authentication and optional user login checks |
+| `role.middleware.ts` | Restricts access based on user roles |
+| `error.middleware.ts` | Global error handling middleware |
+| `upload.middleware.ts` | Handles file, resume, and image uploads |
+| `usage-limit.middleware.ts` | Checks daily usage limits based on user plan |
+
+---
 
 ### Config, `src/config/`
 
 | File | Purpose |
 |---|---|
-| `usage-limits.ts` | `DAILY_LIMITS` per action per tier (FREE/PREMIUM), `getPlanTier()` |
+| `usage-limits.ts` | Defines daily usage limits for FREE and PREMIUM users |
+
 
 ### Modules, `src/module/<name>/`
 
@@ -88,35 +115,39 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 
 | Module | Route Prefix | Key Responsibility |
 |---|---|---|
-| `auth` | `/api/auth` | Register, login, Google OAuth, email verify, password reset, profile CRUD |
-| `job` | `/api/jobs` | Job CRUD, status changes (public read, recruiter write) |
-| `recruiter` | `/api/recruiter` | Rounds mgmt, application review, evaluation, analytics |
-| `student` | `/api/student` | Apply, track applications, submit round responses |
-| `ats` | `/api/ats` | AI resume scoring, cover letters, AI LaTeX chat, JD optimization, resume generation |
-| `latex` | `/api/latex` | Compile LaTeX to PDF (local pdflatex → online API fallback), supporting files |
-| `company` | `/api/companies` | Company directory, reviews, contacts, contributions |
-| `scraper` | `/api/scraped-jobs` | External job aggregation, cron-based scraping |
-| `signals` | `/api/signals` | Funding signals ingest, surfaces hiring intent from YC Launches, TechCrunch Venture, and HN hiring threads. Cron every 6h (offset 30m from scraper). |
+| `auth` | `/api/auth` | User registration, login, Google OAuth, email verification, password reset, and profile management |
+| `job` | `/api/jobs` | Job creation, updates, publishing, and management |
+| `recruiter` | `/api/recruiter` | Hiring rounds, candidate review, evaluations, and recruiter analytics |
+| `student` | `/api/student` | Job applications, application tracking, and interview responses |
+| `ats` | `/api/ats` | AI resume scoring, cover letter generation, resume optimization, and AI resume tools |
+| `latex` | `/api/latex` | Resume PDF generation using LaTeX |
+| `company` | `/api/companies` | Company profiles, reviews, contacts, and contributions |
+| `scraper` | `/api/scraped-jobs` | External job scraping and job aggregation |
+| `signals` | `/api/signals` | Hiring signals, funding updates, and recruitment trends from external platforms |
+
+---
 
 > **Note:** There is no `college` module. `seed-colleges.ts` loads AICTE data, but no CRUD module, routes, or client pages exist. College is only referenced as a string field on student profiles.
-| `admin` | `/api/admin` | Full platform management, users, jobs, companies, colleges, repos, DSA, aptitude, skill-tests, hackathons, blog, badges |
-| `upload` | `/api/upload` | S3 uploads with local fallback |
-| `newsletter` | `/api/newsletter` | Email subscription management |
-| `badge` | `/api/badges` | Badge definitions, award logic, student earned badges |
-| `skill-test` | `/api/skill-tests` | Proctored skill tests, browse, take, submit, verify |
-| `payment` | `/api/payments` | Razorpay order creation & payment verification, subscription updates |
-| `yc` | `/api/yc` | YC company directory with on-demand Cheerio scraping of founders |
-| `blog` | `/api/blog` | Blog posts, public read, admin CRUD + publish/feature |
-| `gsoc` | `/api/gsoc` | GSoC organization directory with filtering |
-| `opensource` | `/api/opensource` | Open source repo directory with filtering + repo request/approval flow |
-| `aptitude` | `/api/aptitude` | Aptitude quiz system, categories, topics, companies, progress |
-| `dsa` | `/api/dsa` | DSA problem tracker, topics, bookmarks, notes, patterns, companies |
-| `hackathon` | `/api/hackathons` | Hackathon listings (public read) |
-| `internship` | `/api/internships` | Government/public-sector internship listings |
-| `campus-drive` | `/api/campus-drives` | Campus placement drive management (recruiter CRUD, student browse) |
-| `sql` | `/api/sql` | SQL exercise progress persistence |
-| `professor` | `/api/professors` | Professor/mentor directory |
-| `email-campaign` | `/api/email-campaigns` | Email outreach campaigns to IIT professors with templates & tracking |
+| `admin` | `/api/admin` | Platform management including users, jobs, companies, colleges, blogs, badges, and learning content |
+| `upload` | `/api/upload` | File uploads using AWS S3 with local storage fallback |
+| `newsletter` | `/api/newsletter` | Newsletter subscription and email management |
+| `badge` | `/api/badges` | Badge creation, award system, and earned badges tracking |
+| `skill-test` | `/api/skill-tests` | Skill assessments, test submissions, and verification |
+| `payment` | `/api/payments` | Payment processing, order creation, and subscription updates |
+| `yc` | `/api/yc` | Y Combinator startup directory and founder data scraping |
+| `blog` | `/api/blog` | Blog management with public access and admin controls |
+| `gsoc` | `/api/gsoc` | GSoC organization directory with filtering support |
+| `opensource` | `/api/opensource` | Open-source repository listings and contribution workflows |
+| `aptitude` | `/api/aptitude` | Aptitude quizzes, topics, company-based questions, and progress tracking |
+| `dsa` | `/api/dsa` | DSA problem tracking, notes, bookmarks, and topic management |
+| `hackathon` | `/api/hackathons` | Public hackathon listings and records |
+| `internship` | `/api/internships` | Internship opportunities from government and public-sector sources |
+| `campus-drive` | `/api/campus-drives` | Campus placement drive management for recruiters and students |
+| `sql` | `/api/sql` | SQL practice progress tracking |
+| `professor` | `/api/professors` | Professor and mentor directory |
+| `email-campaign` | `/api/email-campaigns` | Email outreach campaigns with templates and tracking support |
+
+---campaigns` | Email outreach campaigns to IIT professors with templates & tracking |
 
 ### ATS Sub-Module Detail, `src/module/ats/`
 
@@ -295,6 +326,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 **Open Source, `opensource/`**
 | File | Purpose |
 |---|---|
+
 | `OpenSourceLandingPage.tsx` | Open source hub |
 | `RepoDiscoveryPage.tsx` | Browse repos with filters + "Suggest a Repository" modal |
 | `GSoCReposPage.tsx` | Browse GSoC orgs from DB |
@@ -444,17 +476,38 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 ## Auth Flow
 
 ```
-JWT in Authorization: Bearer <token>
-                       ↓
-              authMiddleware (required)
-         optionalAuthMiddleware (public routes)
-                       ↓
-              requireRole(STUDENT | RECRUITER | ADMIN)
+### Authentication Flow
+
+```text
+JWT Token → Authorization Header (Bearer Token)
+        ↓
+authMiddleware() → Protected Routes
+optionalAuthMiddleware() → Public Routes
+        ↓
+requireRole(STUDENT | RECRUITER | ADMIN)
 ```
 
-Token stored in localStorage via Zustand auth store. Axios auto-injects it. 401 triggers auto-logout.
+- JWT tokens are stored in localStorage using the Zustand auth store.
+- Axios automatically adds the token to API requests.
+- Invalid or expired tokens return 401 Unauthorized and trigger automatic logout.
 
-**Recruiter email enforcement:** Recruiters must use company email (Gmail, Yahoo, Outlook etc. blocked). Validated in Zod schema (`auth.validation.ts`), Google OAuth flow (`auth.service.ts`), and client-side (`RegisterPage.tsx`). Blocklist: `PERSONAL_EMAIL_DOMAINS` exported from `auth.validation.ts`.
+**Recruiter email enforcement:** 
+Recruiters must register using a valid company email address.
+
+Personal email providers such as:
+
+- Gmail
+- Yahoo
+- Outlook
+- Hotmail
+
+are blocked during recruiter registration.
+
+Validation is implemented in:
+
+auth.validation.ts
+auth.service.ts
+RegisterPage.tsx
 
 ---
 

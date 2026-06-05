@@ -1,5 +1,6 @@
 import cron from "node-cron";
 import { prisma } from "../../database/db.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 import type { BaseScraper } from "./scrapers/base.scraper.js";
 import type { ScrapedJobData } from "./scrapers/base.scraper.js";
 import { ArbeitnowScraper } from "./scrapers/arbeitnow.scraper.js";
@@ -36,7 +37,9 @@ export class ScraperService {
     }
 
     this.cronJob = cron.schedule(schedule, () => {
-      void this.runAllScrapers();
+      void withAdvisoryLock("external-job-scraper", async () => {
+        await this.runAllScrapers();
+      });
     });
 
     console.log(`[Scraper] Cron scheduled: ${schedule}`);
@@ -258,15 +261,23 @@ export class ScraperService {
     // Restrict adzuna rows to the IT category. Older rows (pre-tech-only
     // scraper) tagged with "Sales Jobs", "HR Jobs", etc. are excluded here
     // so users only see tech roles even before the 48h expiry sweep clears
-    // them. Other sources (linkedin, arbeitnow) are tech-focused already.
-    const conditions: Prisma.scrapedJobWhereInput[] = [
-      {
-        OR: [
-          { source: { not: "adzuna" } },
-          { tags: { hasSome: ["IT Jobs"] } },
-        ],
-      },
-    ];
+    // them. Other sources (linkedin, arbeitnow) are tech-focused already.  
+  const conditions: Prisma.scrapedJobWhereInput[] = [
+  {
+    OR: [
+      { title: { contains: "developer", mode: "insensitive" } },
+      { title: { contains: "engineer", mode: "insensitive" } },
+      { title: { contains: "software", mode: "insensitive" } },
+      { title: { contains: "frontend", mode: "insensitive" } },
+      { title: { contains: "backend", mode: "insensitive" } },
+      { title: { contains: "full stack", mode: "insensitive" } },
+      { title: { contains: "python", mode: "insensitive" } },
+      { title: { contains: "java", mode: "insensitive" } },
+      { title: { contains: "react", mode: "insensitive" } }, 
+    ],
+  },
+];
+   
 
     if (query.search) {
       conditions.push({
@@ -291,12 +302,31 @@ export class ScraperService {
       where.source = query.source;
     }
 
-    if (query.tags) {
-      const tagList = query.tags.split(",").map((t) => t.trim()).filter(Boolean);
-      if (tagList.length > 0) {
-        where.tags = { hasSome: tagList };
-      }
-    }
+  if (query.tags) {
+  const tagList = query.tags
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  if (tagList.length > 0) {
+    conditions.push({
+      OR: tagList.flatMap((tag) => [
+        {
+          title: {
+            contains: tag,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: tag,
+            mode: "insensitive",
+          },
+        },
+      ]),
+    });
+  }
+}
 
     const skip = (query.page - 1) * query.limit;
 

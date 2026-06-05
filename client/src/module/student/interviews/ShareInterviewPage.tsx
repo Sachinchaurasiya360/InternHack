@@ -91,6 +91,7 @@ export default function ShareInterviewPage() {
   // Company search with debounce (optional — for pre-linking)
   useEffect(() => {
     if (!companyName.trim() || selectedCompany?.name === companyName) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCompanyResults([]);
       return;
     }

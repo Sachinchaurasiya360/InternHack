@@ -48,11 +48,9 @@ export class AttendanceService {
   }
 
   async checkOut(employeeId: number, notes?: string | undefined) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const record = await prisma.attendanceRecord.findUnique({
-      where: { employeeId_date: { employeeId, date: today } },
+    const record = await prisma.attendanceRecord.findFirst({
+      where: { employeeId, checkOut: null },
+      orderBy: { date: "desc" },
     });
 
     if (!record) throw new Error("No check-in found for today");
@@ -129,8 +127,17 @@ export class AttendanceService {
     const date = new Date(data.date);
     date.setHours(0, 0, 0, 0);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date > today) {
+      throw new Error("Cannot regularize attendance for future dates");
+    }
+
     const checkIn = new Date(data.checkIn);
     const checkOut = new Date(data.checkOut);
+    if (checkOut <= checkIn) {
+      throw new Error("Check-out time must be after check-in time");
+    }
     const workHours = (checkOut.getTime() - checkIn.getTime()) / 3600000;
 
     return prisma.attendanceRecord.upsert({

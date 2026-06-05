@@ -29,6 +29,7 @@ interface Step {
   id: string;
   title: string;
   description: string;
+  estimatedMinutes?: number;
   level: string;
   mentor_guidance: string;
   details: string[];
@@ -85,7 +86,7 @@ export default function GSoCProposalStepPage() {
     setCompleted((prev) => {
       const next = new Set(prev);
       if (!step) return next;
-      next.has(step.id) ? next.delete(step.id) : next.add(step.id);
+      if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
       return next;
     });
@@ -127,6 +128,9 @@ export default function GSoCProposalStepPage() {
                 <span className="text-xs font-bold text-gray-600 dark:text-gray-400">{step.step}</span>
               </div>
               <h1 className="text-xl font-bold text-gray-950 dark:text-white">{step.title}</h1>
+              {step.estimatedMinutes && (
+                <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>
+              )}
             </div>
             <Button
               variant="outline"

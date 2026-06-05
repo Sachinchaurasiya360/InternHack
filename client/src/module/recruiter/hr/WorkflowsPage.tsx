@@ -23,14 +23,13 @@ import type {
 } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { labelize, labelClass } from "./hr-utils";
 
 type Tab = "definitions" | "instances";
 
 const inputClass =
   "w-full px-3 py-2 rounded-md bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors";
 
-const labelClass =
-  "block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5";
 
 const STATUS_DOT: Record<WorkflowStatus, string> = {
   ACTIVE: "bg-lime-400",
@@ -45,10 +44,6 @@ const STATUS_TEXT: Record<WorkflowStatus, string> = {
   COMPLETED: "text-blue-600 dark:text-blue-400",
   CANCELLED: "text-stone-500",
 };
-
-function labelize(value: string): string {
-  return value.replace(/_/g, " ").toLowerCase();
-}
 
 function stepCount(steps: unknown): number {
   return Array.isArray(steps) ? steps.length : 0;
@@ -83,7 +78,7 @@ export default function WorkflowsPage() {
     },
   });
 
-  const instances = instancesData?.instances ?? [];
+  const instances = useMemo(() => instancesData?.instances ?? [], [instancesData]);
 
   const createMutation = useMutation({
     mutationFn: async () => {

@@ -111,6 +111,20 @@ async function seedUsers() {
       bio: "Competitive programmer and algorithm enthusiast",
       location: "Pune",
     },
+    {
+      name: "Neha Kapoor",
+      email: "premium@example.com",
+      password,
+      role: "STUDENT" as const,
+      isVerified: true,
+      college: "IIT Bombay",
+      graduationYear: 2025,
+      skills: ["React", "TypeScript", "System Design", "Node.js"],
+      bio: "Full-stack developer. Premium account for testing subscription-gated features.",
+      location: "Mumbai",
+      subscriptionPlan: "MONTHLY" as const,
+      subscriptionStatus: "ACTIVE" as const,
+    },
   ];
 
   let created = 0;
@@ -296,6 +310,13 @@ async function seedCompanies() {
     { name: "CyberShield Security", slug: "cybershield-security", description: "Cybersecurity firm offering threat detection, penetration testing, and compliance services.", industry: "Cybersecurity", size: "MEDIUM" as const, city: "Delhi", state: "Delhi", website: "https://cybershield.example.com", technologies: ["Python", "Go", "Rust", "Elasticsearch"], hiringStatus: true, foundedYear: 2018 },
     { name: "EduTech Pro", slug: "edutech-pro", description: "EdTech startup building adaptive learning platforms for K-12 and higher education.", industry: "Education Technology", size: "STARTUP" as const, city: "Bangalore", state: "Karnataka", website: "https://edutechpro.example.com", technologies: ["React", "Node.js", "MongoDB", "AI/ML"], hiringStatus: true, foundedYear: 2022 },
     { name: "HealthBridge Systems", slug: "healthbridge-systems", description: "Healthcare IT company building EHR systems and telemedicine platforms.", industry: "Healthcare IT", size: "LARGE" as const, city: "Noida", state: "Uttar Pradesh", website: "https://healthbridge.example.com", technologies: ["Java", "Spring Boot", "Angular", "PostgreSQL"], hiringStatus: true, foundedYear: 2012 },
+    // extra testcases added to match seedInterviewExperiences()
+    { name: "Google", slug: "google", description: "Global technology company specializing in internet services, cloud computing, AI, and digital advertising products.", industry: "Technology", size: "ENTERPRISE" as const, city: "Bangalore", state: "Karnataka", website: "https://google.com", technologies: ["Go", "C++", "Python", "Kubernetes", "TensorFlow"], hiringStatus: true, foundedYear: 1998 },
+    { name: "Microsoft", slug: "microsoft", description: "Multinational technology corporation developing software, cloud computing platforms, and AI-powered productivity solutions.", industry: "Technology", size: "ENTERPRISE" as const, city: "Hyderabad", state: "Telangana", website: "https://microsoft.com", technologies: ["C#", ".NET", "Azure", "TypeScript", "React"], hiringStatus: true, foundedYear: 1975 },
+    { name: "Amazon", slug: "amazon", description: "Global e-commerce and cloud computing company known for AWS, logistics innovation, and scalable distributed systems.", industry: "E-Commerce", size: "ENTERPRISE" as const, city: "Hyderabad", state: "Telangana", website: "https://amazon.com", technologies: ["Java", "AWS", "DynamoDB", "React", "Node.js"], hiringStatus: true, foundedYear: 1994 },
+    { name: "Flipkart", slug: "flipkart", description: "Indian e-commerce giant providing online shopping, digital payments, and supply chain technology solutions.", industry: "E-Commerce", size: "LARGE" as const, city: "Bangalore", state: "Karnataka", website: "https://flipkart.com", technologies: ["Java", "Spring Boot", "React", "Kafka", "Redis"], hiringStatus: true, foundedYear: 2007 },
+    { name: "Adobe", slug: "adobe", description: "Software company known for creative tools, digital media products, and experience cloud solutions.", industry: "Software", size: "LARGE" as const, city: "Noida", state: "Uttar Pradesh", website: "https://adobe.com", technologies: ["Java", "C++", "React", "Adobe Experience Cloud", "Python"], hiringStatus: true, foundedYear: 1982 },
+    { name: "Atlassian", slug: "atlassian", description: "Enterprise software company building collaboration and productivity tools like Jira, Confluence, and Trello.", industry: "Software", size: "LARGE" as const, city: "Bangalore", state: "Karnataka", website: "https://atlassian.com", technologies: ["Java", "Kotlin", "React", "AWS", "PostgreSQL"], hiringStatus: true, foundedYear: 2002 },
   ];
 
   let count = 0;
@@ -448,6 +469,7 @@ async function seedOpensourceRepos() {
     { name: "flutter", owner: "flutter", description: "Google's UI toolkit for building natively compiled applications.", language: "Dart", techStack: ["Dart", "Skia", "C++"], difficulty: "INTERMEDIATE" as const, domain: "MOBILE" as const, stars: 163000, forks: 27000, openIssues: 12000, url: "https://github.com/flutter/flutter", tags: ["mobile", "cross-platform", "ui"] },
     { name: "prisma", owner: "prisma", description: "Next-generation ORM for Node.js and TypeScript.", language: "TypeScript", techStack: ["TypeScript", "Rust", "PostgreSQL"], difficulty: "BEGINNER" as const, domain: "WEB" as const, stars: 39000, forks: 1500, openIssues: 3000, url: "https://github.com/prisma/prisma", tags: ["orm", "database", "typescript"] },
     { name: "scikit-learn", owner: "scikit-learn", description: "Machine learning in Python.", language: "Python", techStack: ["Python", "NumPy", "Cython"], difficulty: "INTERMEDIATE" as const, domain: "AI" as const, stars: 59000, forks: 25000, openIssues: 2300, url: "https://github.com/scikit-learn/scikit-learn", tags: ["ml", "data-science", "python"] },
+    { name: "pandas", owner: "pandas-dev", description: "Flexible and powerful data analysis / manipulation library for Python.", language: "Python", techStack: ["Python", "Cython", "NumPy"], difficulty: "INTERMEDIATE" as const, domain: "DATA" as const, stars: 40000, forks: 16000, openIssues: 3000, url: "https://github.com/pandas-dev/pandas", tags: ["data-analysis", "pandas", "python"] },
   ];
 
   let count = 0;
@@ -466,12 +488,12 @@ async function seedOpensourceRepos() {
 // ─── 9. Government Internships ────────────────────────────────────────
 async function seedGovInternships() {
   const internships = [
-    { name: "ISRO Space Science Internship", category: "Research", timeline: "May - July (10 weeks)", organizer: "ISRO", domain: "Space Science & Engineering", stipend: "₹10,000/month", eligibility: "B.Tech/M.Tech students in relevant branches", reality: "Hands-on research experience at ISRO centres. Competitive selection." },
-    { name: "DRDO Summer Internship", category: "Research", timeline: "June - August (8 weeks)", organizer: "DRDO", domain: "Defence Technology", stipend: "₹10,000-15,000/month", eligibility: "Engineering students with 7.0+ CGPA", reality: "Lab-based research in defence technologies. NDAs required." },
-    { name: "NITI Aayog Internship", category: "Policy", timeline: "Rolling (6-8 weeks)", organizer: "NITI Aayog", domain: "Public Policy & Economics", stipend: "Unpaid", eligibility: "Graduate/Postgraduate students", reality: "Policy research and report writing. Certificate provided." },
-    { name: "Indian Academy of Sciences (IASc) SRFP", category: "Research", timeline: "May - July (8 weeks)", organizer: "Indian Academy of Sciences", domain: "Science & Engineering", stipend: "₹5,000/month + travel", eligibility: "2nd/3rd year B.Sc/B.E students", reality: "Research under top faculty at premier institutions." },
-    { name: "SEBI Legal Internship", category: "Legal", timeline: "Rolling (4 weeks)", organizer: "SEBI", domain: "Securities & Finance Law", stipend: "Unpaid (certificate provided)", eligibility: "Law students (3rd year onwards)", reality: "Exposure to securities regulation. Limited seats." },
-    { name: "Ministry of Electronics and IT (MeitY)", category: "Technology", timeline: "Summer (8 weeks)", organizer: "MeitY", domain: "Digital Governance & IT", stipend: "₹10,000/month", eligibility: "B.Tech/MCA students", reality: "Work on e-governance projects and digital India initiatives." },
+    { name: "ISRO Space Science Internship", category: "Research", timeline: "May - July (10 weeks)", organizer: "ISRO", domain: "Space Science & Engineering", stipend: "₹10,000/month", eligibility: "B.Tech/M.Tech students in relevant branches", reality: "Hands-on research experience at ISRO centres. Competitive selection.", applyUrl: "https://www.isro.gov.in/InternshipAndProjects.html" },
+    { name: "DRDO Summer Internship", category: "Research", timeline: "June - August (8 weeks)", organizer: "DRDO", domain: "Defence Technology", stipend: "₹10,000-15,000/month", eligibility: "Engineering students with 7.0+ CGPA", reality: "Lab-based research in defence technologies. NDAs required.", applyUrl: "https://drdo.gov.in/drdo/en/search/node?keys=Internship" },
+    { name: "NITI Aayog Internship", category: "Policy", timeline: "Rolling (6-8 weeks)", organizer: "NITI Aayog", domain: "Public Policy & Economics", stipend: "Unpaid", eligibility: "Graduate/Postgraduate students", reality: "Policy research and report writing. Certificate provided.", applyUrl: "https://niti.gov.in/internship" },
+    { name: "Indian Academy of Sciences (IASc) SRFP", category: "Research", timeline: "May - July (8 weeks)", organizer: "Indian Academy of Sciences", domain: "Science & Engineering", stipend: "₹5,000/month + travel", eligibility: "2nd/3rd year B.Sc/B.E students", reality: "Research under top faculty at premier institutions.", applyUrl: "https://www.ias.ac.in" },
+    { name: "SEBI Legal Internship", category: "Legal", timeline: "Rolling (4 weeks)", organizer: "SEBI", domain: "Securities & Finance Law", stipend: "Unpaid (certificate provided)", eligibility: "Law students (3rd year onwards)", reality: "Exposure to securities regulation. Limited seats.", applyUrl: "https://www.sebi.gov.in/sebiweb/other/OtherAction.do?doLegalIntership2022=yes" },
+    { name: "Ministry of Electronics and IT (MeitY)", category: "Technology", timeline: "Summer (8 weeks)", organizer: "MeitY", domain: "Digital Governance & IT", stipend: "₹10,000/month", eligibility: "B.Tech/MCA students", reality: "Work on e-governance projects and digital India initiatives.", applyUrl: "https://intern.meity.gov.in" },
   ];
 
   let count = 0;
@@ -1046,13 +1068,31 @@ async function seedInterviewExperiences() {
   let count = 0;
   for (const e of experiences) {
     const existing = await prisma.interviewExperience.findFirst({
-      where: { companyName: e.companyName, role: e.role, userId: student.id },
+      where: {
+  companyId: companyMap[e.companyName]!,
+  role: e.role,
+  userId: student.id,
+},
     });
     if (!existing) {
       await prisma.interviewExperience.create({
         data: {
-          ...e,
-          companyId: companyMap[e.companyName] ?? null,
+          role: e.role,
+          experienceYears: e.experienceYears,
+          interviewYear: e.interviewYear,
+          interviewMonth: e.interviewMonth,
+          source: e.source,
+          difficulty: e.difficulty,
+          outcome: e.outcome,
+          offered: e.offered,
+          ctcLpa: e.ctcLpa,
+          totalRounds: e.totalRounds,
+          overallRating: e.overallRating,
+          tips: e.tips,
+          status: e.status,
+          upvotes: e.upvotes,
+          views: e.views,
+          companyId: companyMap[e.companyName]!,
           userId: student.id,
           rounds: e.rounds,
           prepResources: e.prepResources,
@@ -1342,6 +1382,65 @@ async function seedBlogPosts() {
   log("Blog Posts", count);
 }
 
+async function seedGsocOrgs() {
+  const orgs = [
+    {
+      name: "Apache Software Foundation",
+      slug: "apache",
+      url: "https://apache.org",
+      description: "The Apache Software Foundation provides support for the Apache community of open-source software projects.",
+      category: "Software Foundation",
+      technologies: ["Java", "Python", "C++", "Scala"],
+      yearsParticipated: [2021, 2022, 2023, 2024],
+      totalProjects: 100,
+      projectsData: [
+        { year: 2024, title: "Apache Kafka Stream Processing", studentName: "Rahul Sharma" },
+        { year: 2024, title: "Apache Flink Optimization", studentName: "Priya Patel" },
+        { year: 2023, title: "Apache Spark ML Pipeline", studentName: "Arjun Singh" },
+        { year: 2023, title: "Apache Cassandra Driver", studentName: "Sneha Kumar" },
+        { year: 2022, title: "Apache Hadoop YARN", studentName: "Vikram Nair" },
+        { year: 2021, title: "Apache Beam Runner", studentName: "Ananya Roy" },
+      ],
+      ideasUrl: "https://community.apache.org/gsoc.html",
+      guideUrl: "https://community.apache.org/gsoc/guide.html",
+    },
+    {
+      name: "Python Software Foundation",
+      slug: "python",
+      url: "https://python.org",
+      description: "The Python Software Foundation (PSF) is a non-profit organization devoted to the Python programming language.",
+      category: "Programming Languages",
+      technologies: ["Python", "C", "Rust"],
+      yearsParticipated: [2021, 2022, 2023, 2024],
+      totalProjects: 80,
+      projectsData: [
+        { year: 2024, title: "CPython Memory Profiler", studentName: "Amit Kumar" },
+        { year: 2024, title: "PyPI Security Enhancements", studentName: "Sanya Gupta" },
+        { year: 2023, title: "Django Async Support", studentName: "Rohan Joshi" },
+        { year: 2023, title: "Numpy BLAS Integration", studentName: "Ishita Rao" },
+        { year: 2022, title: "Pandas Performance Tuning", studentName: "Karan Singh" },
+      ],
+      ideasUrl: "https://wiki.python.org/moin/SummerOfCode/2024",
+      guideUrl: "https://wiki.python.org/moin/SummerOfCode/ContributorGuide",
+    },
+  ];
+
+  let count = 0;
+  for (const org of orgs) {
+    const existing = await prisma.gsocOrganization.findUnique({ where: { slug: org.slug } });
+    if (!existing) {
+      await prisma.gsocOrganization.create({ data: org });
+      count++;
+    } else {
+      await prisma.gsocOrganization.update({
+        where: { slug: org.slug },
+        data: org,
+      });
+    }
+  }
+  log("GSoC Organizations", count);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────
 async function main() {
   console.log("\n🌱 Seeding InternHack database...\n");
@@ -1361,7 +1460,7 @@ async function main() {
   await seedYCCompanies();
   await seedProfessors();
   await seedBlogPosts();
-
+  await seedGsocOrgs();
   console.log("\n✅ Seed complete!\n");
 }
 

@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
+import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -170,11 +171,10 @@ function FilterDropdown({
               key={opt}
               type="button"
               onClick={() => onChange(opt)}
-              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${
-                active
-                  ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
-                  : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
-              }`}
+              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${active
+                ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
+                : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
+                }`}
             >
               <span className="truncate">{opt}</span>
               {active && <span className="h-1 w-1 bg-lime-400" />}
@@ -197,6 +197,32 @@ function GSoCOrgCard({
   wishlisted: boolean;
   onWishlistToggle: (e: React.MouseEvent) => void;
 }) {
+const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }) => {
+  // Show participation from 2016 to current year
+  const currentYear = new Date().getFullYear();
+  const yearsRange = Array.from({ length: currentYear - 2015 }, (_, i) => 2016 + i);
+
+  return (
+    <div className="mb-4 flex items-center gap-1" aria-label={`GSoC Participation History (2016-${currentYear})`}>
+      {yearsRange.map((year) => {
+        const participated = participatedYears.includes(year);
+        return (
+          <div
+            key={year}
+            title={participated ? `${year}: Participated` : `${year}: Did not participate`}
+            className={`h-1.5 w-1.5 rounded-sm transition-transform duration-200 hover:scale-125 cursor-help ${
+              participated
+                ? "bg-lime-500"
+                : "bg-stone-200 dark:bg-stone-700"
+            }`}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => void }) {
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
 
   return (
@@ -258,6 +284,7 @@ function GSoCOrgCard({
           {wishlisted ? "wishlisted" : "wishlist"}
         </span>
       </button>
+      <ParticipationBar participatedYears={org.yearsParticipated} />
 
       <div className="mt-auto flex items-center justify-between border-t border-stone-100 pt-3 dark:border-white/5">
         <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
@@ -412,11 +439,10 @@ function GSoCOrgModal({
                       key={year}
                       type="button"
                       onClick={() => setSelectedYear(String(year))}
-                      className={`rounded-md border px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
-                        active
-                          ? "border-lime-400 bg-lime-400 text-stone-950"
-                          : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
-                      }`}
+                      className={`rounded-md border px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${active
+                        ? "border-lime-400 bg-lime-400 text-stone-950"
+                        : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
+                        }`}
                     >
                       {year} (
                       {org.projectsData?.[String(year)]?.num_projects || 0})
@@ -572,11 +598,23 @@ function GSoCOrgModal({
 }
 
 export default function GSoCReposPage() {
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedTech, setSelectedTech] = useState("All");
-  const [selectedYear, setSelectedYear] = useState("All");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // 1. Initialize state strictly from URL params
+  const initialQ = searchParams.get("q") || "";
+  const selectedCategory = searchParams.get("category") || "All";
+  const selectedTech = searchParams.get("tech") || "All";
+  const selectedYear = searchParams.get("year") || "All";
+
+  const [search, setSearch] = useState(initialQ);
+
+  // FIX 1: Depend ONLY on initialQ, not searchParams. 
+  // This prevents wiping out half-typed text when other filters change.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSearch(initialQ);
+  }, [initialQ]);
+
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(
@@ -585,17 +623,50 @@ export default function GSoCReposPage() {
   const { wishlist, toggle, has } = useWishlist();
   const [showWishlist, setShowWishlist] = useState(false);
 
+  
+  // ---> CHANGED TO useRef TO FIX STALE CLOSURES <---
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const limit = 18;
 
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  // FIX 2: Functional updater.
+  // This ensures that delayed debounced calls always use the freshest URL state.
+  const updateFilter = (key: string, value: string) => {
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        if (value && value !== "All") {
+          newParams.set(key, value);
+        } else {
+          newParams.delete(key);
+        }
+        return newParams;
+      },
+      { replace: true }
+    );
+    setPage(1);
+  };
+
+  // ---> UPDATED TO USE timerRef <---
   const handleSearch = (value: string) => {
     setSearch(value);
-    if (timer) clearTimeout(timer);
-    setTimer(
-      setTimeout(() => {
-        setDebouncedSearch(value);
-        setPage(1);
-      }, 400),
-    );
+    if (timerRef.current) clearTimeout(timerRef.current);
+    
+    timerRef.current = setTimeout(() => {
+      updateFilter("q", value);
+    }, 400);
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setSearchParams({}, { replace: true });
+    setPage(1);
   };
 
   const { data: stats } = useQuery<GSoCStats>({
@@ -604,8 +675,9 @@ export default function GSoCReposPage() {
     staleTime: Infinity,
   });
 
+  // 3. Pass current URL state directly to the API query
   const params: Record<string, string | number> = { page, limit };
-  if (debouncedSearch) params.search = debouncedSearch;
+  if (initialQ) params.search = initialQ;
   if (selectedCategory !== "All") params.category = selectedCategory;
   if (selectedTech !== "All") params.technology = selectedTech;
   if (selectedYear !== "All") params.year = parseInt(selectedYear, 10);
@@ -643,8 +715,8 @@ export default function GSoCReposPage() {
     enabled: !!selectedOrg,
     staleTime: 1000 * 60 * 60,
   });
-  const githubRepos: { title: string; url: string }[] =
-    reposData?.githubRepos ?? [];
+
+  const githubRepos: { title: string; url: string }[] = reposData?.githubRepos ?? [];
   const gsocPageUrl: string | null = reposData?.gsocPageUrl ?? null;
   const categoryOptions = [
     "All",
@@ -660,19 +732,7 @@ export default function GSoCReposPage() {
   ];
 
   const hasFilters =
-    Boolean(debouncedSearch) ||
-    selectedCategory !== "All" ||
-    selectedTech !== "All" ||
-    selectedYear !== "All";
-
-  const clearFilters = () => {
-    setSearch("");
-    setDebouncedSearch("");
-    setSelectedCategory("All");
-    setSelectedTech("All");
-    setSelectedYear("All");
-    setPage(1);
-  };
+    Boolean(initialQ) || selectedCategory !== "All" || selectedTech !== "All" || selectedYear !== "All";
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -722,10 +782,7 @@ export default function GSoCReposPage() {
               </span>
               <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
               <span>
-                <span className="text-lime-600 dark:text-lime-400">
-                  2016-2026
-                </span>{" "}
-                years
+                <span className="text-lime-600 dark:text-lime-400">2016-{new Date().getFullYear()}</span> years
               </span>
             </div>
           </div>
@@ -747,30 +804,21 @@ export default function GSoCReposPage() {
             label="category"
             value={selectedCategory}
             options={categoryOptions}
-            onChange={(value) => {
-              setSelectedCategory(value);
-              setPage(1);
-            }}
+            onChange={(value) => updateFilter("category", value)}
           />
           <FilterDropdown
             icon={<Calendar className="h-3.5 w-3.5" />}
             label="year"
             value={selectedYear}
             options={yearOptions}
-            onChange={(value) => {
-              setSelectedYear(value);
-              setPage(1);
-            }}
+            onChange={(value) => updateFilter("year", value)}
           />
           <FilterDropdown
             icon={<Code2 className="h-3.5 w-3.5" />}
             label="tech"
             value={selectedTech}
             options={techOptions}
-            onChange={(value) => {
-              setSelectedTech(value);
-              setPage(1);
-            }}
+            onChange={(value) => updateFilter("tech", value)}
           />
           {hasFilters && (
             <button
