@@ -300,3 +300,23 @@ export interface AptitudeProgress {
   totalCorrect: number;
   currentStreak: number;
 }
+
+export interface AptitudeWeakAreaTopic {
+  topicId: number;
+  topicName: string;
+  topicSlug: string;
+  categoryName: string;
+  categorySlug: string;
+  answered: number;
+  correct: number;
+  accuracy: number;
+  isWeak: boolean;
+}
+
+export interface AptitudeWeakAreas {
+  totalAnswered: number;
+  minimumAnswered: number;
+  isReady: boolean;
+  topics: AptitudeWeakAreaTopic[];
+  focusRecommendations: AptitudeWeakAreaTopic[];
+}
