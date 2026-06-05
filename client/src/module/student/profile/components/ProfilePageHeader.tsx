@@ -12,12 +12,18 @@ export function ProfilePageHeader({ profileCompletion, saving, onSave }: Profile
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSave = async () => {
-    await onSave();
-    setShowSuccess(true);
+    try {
+      await onSave();
+      setShowSuccess(true);
 
-    setTimeout(() => {
-      setShowSuccess(false);
-    }, 3000);
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    } catch (error) {
+      console.error("Save failed:", error);
+    }
   };
 
   return (
