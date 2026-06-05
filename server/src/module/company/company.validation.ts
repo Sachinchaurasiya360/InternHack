@@ -39,7 +39,9 @@ export const contributeCompanySchema = z.object({
 });
 
 export const suggestEditSchema = z.object({
-  changes: z.record(z.string(), z.unknown()),
+  changes: z.record(z.string(), z.unknown()).refine((val) => Object.keys(val).length > 0, {
+    message: "At least one change is required",
+  }),
   reason: z.string().min(1).max(1000),
 });
 
