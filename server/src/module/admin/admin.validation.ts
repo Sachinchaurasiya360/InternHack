@@ -251,7 +251,7 @@ export const hackathonQuerySchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
-export const createHackathonSchema = z.object({
+const hackathonBaseSchema = z.object({
   name: z.string().min(1).max(300),
   organizer: z.string().min(1).max(200),
   logo: z.string().optional().or(z.literal("")),
@@ -268,15 +268,23 @@ export const createHackathonSchema = z.object({
   status: z.enum(["upcoming", "ongoing", "past"]).default("upcoming"),
   ecosystem: z.string().max(200),
   highlights: z.array(z.string()).default([]),
-}).refine(
+});
+
+export const createHackathonSchema = hackathonBaseSchema.refine(
   (data) => new Date(data.startDate) <= new Date(data.endDate),
-  {
-    message: "End date cannot be before start date",
-    path: ["endDate"],
-  }
+  { message: "End date cannot be before start date", path: ["endDate"] }
 );
 
-export const updateHackathonSchema = createHackathonSchema.partial();
+// partial() must be called on the base schema before refinement (Zod v4)
+export const updateHackathonSchema = hackathonBaseSchema.partial().refine(
+  (data) => {
+    if (data.startDate && data.endDate) {
+      return new Date(data.startDate) <= new Date(data.endDate);
+    }
+    return true;
+  },
+  { message: "End date cannot be before start date", path: ["endDate"] }
+);
 
 // ==================== ADMIN EXTERNAL JOBS ====================
 
