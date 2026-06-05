@@ -100,7 +100,6 @@ export async function generateAiRoadmap(
       if (cachedResult) {
         const validated = aiRoadmapSchema.safeParse(cachedResult);
         if (validated.success) {
-          logAIRequest("AI_ROADMAP_GENERATION", { text: "", latencyMs: 0, inputTokens: 0, outputTokens: 0 }, true, undefined, userId);
           return validated.data;
         }
       }

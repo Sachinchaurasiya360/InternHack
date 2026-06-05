@@ -33,6 +33,9 @@ export async function initSemanticCache(): Promise<void> {
   collectionName = process.env["QDRANT_COLLECTION_NAME"] ?? SEMANTIC_CACHE_CONFIG.defaultCollectionName;
 
   try {
+    if (!process.env["QDRANT_API_KEY"]) {
+      logger.warn("QDRANT_API_KEY is not set — requests to Qdrant Cloud will likely return 401");
+    }
     client = new QdrantClient({
       url,
       apiKey: process.env["QDRANT_API_KEY"] || undefined,
@@ -92,10 +95,22 @@ export async function searchAndEmbed(text: string): Promise<SearchAndEmbedResult
   const embedding = await generateEmbedding(text);
 
   try {
+    const cutoff = new Date(
+      Date.now() - SEMANTIC_CACHE_CONFIG.ttlDays * 24 * 60 * 60 * 1000
+    ).toISOString();
+
     const hits = await client.search(collectionName, {
       vector: embedding,
       limit: 1,
       score_threshold: SEMANTIC_CACHE_CONFIG.similarityThreshold,
+      filter: {
+        must: [
+          {
+            key: "createdAt",
+            range: { gte: cutoff },
+          },
+        ],
+      },
     });
 
     if (hits.length > 0 && hits[0]) {
