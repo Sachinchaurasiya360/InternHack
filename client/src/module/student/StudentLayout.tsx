@@ -19,7 +19,7 @@ export default function StudentLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex flex-col">
       <SEO title="Student Dashboard" noIndex />
       {/* Navbar hidden on mobile (mobile top bar is in StudentSidebar) */}
       <div className="hidden lg:block">
@@ -28,11 +28,13 @@ export default function StudentLayout() {
       {sidebar}
       <main
         aria-label="Student main content"
-        className={`pt-16 lg:pt-24 px-4 pb-8 sm:px-6 lg:px-8 transition-all duration-300 overflow-auto ${
+        className={`flex-1 min-h-0 pt-16 lg:pt-24 px-4 pb-8 sm:px-6 lg:px-8 transition-all duration-300 overflow-hidden ${
           collapsed ? "lg:ml-18" : "lg:ml-64"
         }`}
       >
-        <Outlet />
+        <div className="h-full overflow-y-auto">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
