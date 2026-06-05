@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import toast from "../../../components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate } from "react-router";
+import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
   Download,
@@ -23,12 +24,42 @@ function useResumeStatus(url: string | null | undefined) {
   );
 
   useEffect(() => {
-    if (!url) return;
-    const fullUrl = url.startsWith("http") ? url : `${SERVER_URL}${url}`;
-    fetch(fullUrl, { method: "HEAD" })
-      .then((res) => setStatus(res.ok ? "ok" : "unavailable"))
-      .catch(() => setStatus("unavailable"));
-  }, [url]);
+  if (!url) {
+    setStatus("unavailable"); // Or whatever your default empty state is
+    return;
+  }
+
+  // 1. Instantly reset status to "checking" when URL changes to prevent stale UI
+  setStatus("checking");
+
+  const controller = new AbortController();
+  const { signal } = controller;
+
+  const checkLink = async () => {
+    try {
+      const fullUrl = url.startsWith("http") ? url : `${SERVER_URL}${url}`;
+      
+      const res = await fetch(fullUrl, { 
+        method: "HEAD",
+        signal // 2. Attach the abort signal to the fetch request
+      });
+
+      setStatus(res.ok ? "ok" : "unavailable");
+    } catch (err: any) {
+      // 3. Ignore errors caused by intentional aborts
+      if (err.name !== "AbortError") {
+        setStatus("unavailable");
+      }
+    }
+  };
+
+  checkLink();
+
+  // 4. Cleanup function cancels the request if the URL changes or component unmounts
+  return () => {
+    controller.abort();
+  };
+}, [url]);
 
   return status;
 }
@@ -171,12 +202,12 @@ const fetchDetail = useCallback(async (signal) => {
   return (
     <div className="max-w-4xl mx-auto">
       <SEO title="Application Detail" noIndex />
-      <button
+      <Button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4"
       >
         <ArrowLeft className="w-4 h-4" /> Back
-      </button>
+      </Button>
 
       {/* Header */}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
@@ -213,12 +244,12 @@ const fetchDetail = useCallback(async (signal) => {
               <option value="REJECTED">Rejected</option>
               <option value="HIRED">Hired</option>
             </select>
-            <button
+            <Button
               onClick={handleAdvance}
               className="px-4 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200"
             >
               Advance
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -363,7 +394,7 @@ const fetchDetail = useCallback(async (signal) => {
                       Submitted {new Date(sub.submittedAt).toLocaleDateString()}
                     </span>
                   )}
-                  <button
+                  <Button
                     onClick={() =>
                       setEvaluatingRoundId(
                         evaluatingRoundId === sub.roundId ? null : sub.roundId,
@@ -372,7 +403,7 @@ const fetchDetail = useCallback(async (signal) => {
                     className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-300"
                   >
                     {evaluatingRoundId === sub.roundId ? "Close" : "Evaluate"}
-                  </button>
+                  </Button>
                 </div>
               </div>
 
