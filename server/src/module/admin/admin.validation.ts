@@ -268,7 +268,13 @@ export const createHackathonSchema = z.object({
   status: z.enum(["upcoming", "ongoing", "past"]).default("upcoming"),
   ecosystem: z.string().max(200),
   highlights: z.array(z.string()).default([]),
-});
+}).refine(
+  (data) => new Date(data.startDate) <= new Date(data.endDate),
+  {
+    message: "End date cannot be before start date",
+    path: ["endDate"],
+  }
+);
 
 export const updateHackathonSchema = createHackathonSchema.partial();
 
