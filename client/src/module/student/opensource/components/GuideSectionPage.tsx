@@ -9,8 +9,7 @@ import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
-import { InlineCodeText } from "../../../../components/ui/InlineCodeText";
-import { ReadingProgressBar } from "../../../../components/ReadingProgressBar";
+import api from "../../../../lib/axios";
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -50,10 +49,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   });
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [dismissedHint, setDismissedHint] = useState(() => {
-    try { return localStorage.getItem("keyboard-nav-hint-dismissed") === "true"; }
-    catch { return false; }
-  });
+
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
@@ -65,20 +61,17 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
     });
   }, [step, storageKey]);
 
-  
-useEffect(() => {
-  if (!step) return;
+  useEffect(() => {
+    if (!step) return;
 
-  const saved = localStorage.getItem(
-    `guide-feedback-${basePath}-${step.id}`
-  );
+    const saved = localStorage.getItem(`guide-feedback-${basePath}-${step.id}`);
+    if (saved) {
+      setRating(saved);
+      setSubmitted(true);
+    }
+  }, [step, basePath]);
 
-  if (saved) {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setRating(saved);
-    setSubmitted(true);
-  }
-}, [step, basePath]);
+
 
   const prev = stepIndex > 0 ? steps[stepIndex - 1] : null;
   const next = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
@@ -86,59 +79,34 @@ useEffect(() => {
     prevPath: prev ? `${basePath}/${prev.id}` : null,
     nextPath: next ? `${basePath}/${next.id}` : null,
   });
-  useEffect(() => {
-    if (dismissedHint) return;
-    const handle = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-        setDismissedHint(true);
-        try { localStorage.setItem("keyboard-nav-hint-dismissed", "true"); } catch { /* */ }
-      }
-    };
-    window.addEventListener("keydown", handle);
-    return () => window.removeEventListener("keydown", handle);
-  }, [dismissedHint]);
 
 if (!step) return <Navigate to={basePath} replace />;
-const submitFeedback = async (
-  value: "up" | "down"
-) => {
-  if (!step || submitted) return;
 
-  try {
-    await fetch("/api/opensource/guide-feedback", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+  const submitFeedback = async (value: "up" | "down") => {
+    if (!step || submitted) return;
+
+    try {
+      await api.post("/opensource/guide-feedback", {
         guideId: basePath,
         stepId: step.id,
         rating: value,
-      }),
-    });
+      });
 
-    localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`,
-      value
-    );
+      localStorage.setItem(`guide-feedback-${basePath}-${step.id}`, value);
+      setRating(value);
+      setSubmitted(true);
+    } catch {
+      // Fallback to local only if server fails
+      localStorage.setItem(`guide-feedback-${basePath}-${step.id}`, value);
+      setRating(value);
+      setSubmitted(true);
+    }
+  };
 
-    setRating(value);
-    setSubmitted(true);
-  } catch {
-    localStorage.setItem(
-      `guide-feedback-${basePath}-${step.id}`,
-      value
-    );
-
-    setRating(value);
-    setSubmitted(true);
-  }
-};
   const isDone = completed.has(step.id);
 
   return (
     <div className="relative pb-12">
-      <ReadingProgressBar />
       <SEO
         title={`${step.title} - ${seoSuffix}`}
         description={step.description}
@@ -188,11 +156,6 @@ const submitFeedback = async (
             <span className="text-xs text-gray-400 dark:text-gray-500 px-2 font-medium tabular-nums">
               {step.step} / {steps.length}
             </span>
-            {!dismissedHint && (
-              <span className="hidden sm:inline-flex text-[10px] font-mono text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">
-                ← → keys
-              </span>
-            )}
             <Button
               variant="ghost"
               mode="icon"
@@ -217,7 +180,7 @@ const submitFeedback = async (
           >
             <h2 className="text-lg font-bold text-gray-950 dark:text-white mb-4">Explanation</h2>
             <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-              <InlineCodeText text={step.mentor_guidance} />
+              {step.mentor_guidance}
             </div>
           </motion.div>
         )}
@@ -251,9 +214,9 @@ const submitFeedback = async (
             </div>
             <ul className="space-y-3">
               {step.details.map((detail, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc">
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
-                  <InlineCodeText text={detail} />
+                  {detail}
                 </li>
               ))}
             </ul>
@@ -275,9 +238,9 @@ const submitFeedback = async (
             </div>
             <ul className="space-y-3">
               {step.tips.map((tip, i) => (
-                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc">
+                <li key={i} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex items-start gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
-                  <InlineCodeText text={tip} />
+                  {tip}
                 </li>
               ))}
             </ul>
@@ -299,7 +262,7 @@ const submitFeedback = async (
             </div>
             <ul className="space-y-3">
               {step.resources.map((r, i) => (
-                <li key={i} className="flex">
+                <li key={i} className="flex items-start gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-gray-500 mt-2 shrink-0" />
                   <a
                     href={r.url}
@@ -315,35 +278,37 @@ const submitFeedback = async (
             </ul>
           </motion.div>
         )}
-<div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-  <p className="text-sm font-medium mb-3">
-    Was this step helpful?
-  </p>
 
-  <div className="flex gap-2">
-    <Button
-      onClick={() => submitFeedback("up")}
-      disabled={submitted}
-      variant={rating === "up" ? "mono" : "outline"}
-    >
-      👍 Thumbs Up
-    </Button>
+        {/* Feedback Widget */}
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+          <p className="text-sm font-medium mb-3 text-gray-900 dark:text-gray-100">
+            Was this step helpful?
+          </p>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => submitFeedback("up")}
+              disabled={submitted}
+              variant={rating === "up" ? "mono" : "outline"}
+              size="sm"
+            >
+              👍 Thumbs Up
+            </Button>
+            <Button
+              onClick={() => submitFeedback("down")}
+              disabled={submitted}
+              variant={rating === "down" ? "mono" : "outline"}
+              size="sm"
+            >
+              👎 Thumbs Down
+            </Button>
+          </div>
+          {submitted && (
+            <p className="text-green-600 dark:text-green-400 text-sm mt-2">
+              Thanks for your feedback!
+            </p>
+          )}
+        </div>
 
-    <Button
-      onClick={() => submitFeedback("down")}
-      disabled={submitted}
-      variant={rating === "down" ? "mono" : "outline"}
-    >
-      👎 Thumbs Down
-    </Button>
-  </div>
-
-  {submitted && (
-    <p className="text-green-600 text-sm mt-2">
-      Thanks for your feedback!
-    </p>
-  )}
-</div>
         {/* Mark as Complete + Next */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}

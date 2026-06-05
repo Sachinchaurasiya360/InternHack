@@ -23,6 +23,7 @@ import {
   Share2,
   Check,
   Copy,
+  Bookmark,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
@@ -42,6 +43,29 @@ import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 
+const BOOKMARK_KEY = "oss_bookmarks";
+
+const getBookmarks = (): number[] => {
+  try {
+    const saved = localStorage.getItem(BOOKMARK_KEY);
+    if (!saved) return [];
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed) && parsed.every((id) => typeof id === "number")) {
+      return parsed;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+};
+
+const saveBookmarks = (ids: number[]) => {
+  try {
+    localStorage.setItem(BOOKMARK_KEY, JSON.stringify(ids));
+  } catch (error) {
+    console.warn("Failed to save bookmarks to localStorage", error);
+  }
+};
 
 const STATUS_STYLE: Record<string, string> = {
   PENDING: "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
@@ -90,7 +114,6 @@ export default function RepoDiscoveryPage() {
   const searchRef = useRef<HTMLInputElement>(null);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
 
-
   const [showFilters, setShowFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
@@ -113,7 +136,7 @@ export default function RepoDiscoveryPage() {
     return () => clearTimeout(timer);
   }, [inputValue, search, setSearchParams]);
 
-  // Keyboard shortcut to focus search
+  // Keyboard shortcut & click outside bindings
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
@@ -143,6 +166,8 @@ export default function RepoDiscoveryPage() {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [showAllSubmissions, setShowAllSubmissions] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
+  const [bookmarks, setBookmarks] = useState<number[]>(() => getBookmarks());
+  const [showSaved, setShowSaved] = useState(false);
   const { copied: copiedCloneUrl, copy: copyCloneUrl } = useCopyToClipboard();
   const { user } = useAuthStore();
 
@@ -166,6 +191,7 @@ export default function RepoDiscoveryPage() {
 
     return Array.from(langs);
   }, [user]);
+
   const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
@@ -200,7 +226,6 @@ export default function RepoDiscoveryPage() {
 
   useEffect(() => {
     if (deepLinkData) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedRepo(deepLinkData);
     }
   }, [deepLinkData]);
@@ -216,6 +241,18 @@ export default function RepoDiscoveryPage() {
     }
   }, [deepLinkError, setSearchParams]);
 
+  useEffect(() => {
+    if (showSaved && bookmarks.length === 0) setShowSaved(false);
+  }, [bookmarks, showSaved]);
+
+  const toggleBookmark = (id: number) => {
+    setBookmarks((prev) => {
+      const next = prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id];
+      saveBookmarks(next);
+      return next;
+    });
+  };
+
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopiedShareUrl(true);
@@ -228,12 +265,14 @@ export default function RepoDiscoveryPage() {
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
-    if (languageMode === "auto"){
+    
+    if (languageMode === "auto") {
       if (inferredLanguages.length > 0) {
         params.language = inferredLanguages[0]; 
+      }
+    } else if (selectedLanguage.length > 0) {
+      params.language = selectedLanguage[0];
     }
-    }
-    else if (selectedLanguage.length > 0) params.language = selectedLanguage[0];
     
     if (trendingOnly) params.trending = "true";
 
@@ -277,15 +316,23 @@ export default function RepoDiscoveryPage() {
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
   }, [languagesData]);
 
-  const isMyLanguagesActive = useMemo(() => {
-    if (!inferredLanguages.length) return false;
-    if (selectedLanguage.length !== inferredLanguages.length) return false;
-
-    return inferredLanguages.every((l) => selectedLanguage.includes(l));
-  }, [inferredLanguages, selectedLanguage]);
+  const { data: bookmarkedData, isLoading: isLoadingBookmarks } = useQuery({
+    queryKey: ["opensource-bookmarked", bookmarks],
+    queryFn: () =>
+      api
+        .get("/opensource", { params: { ids: bookmarks.join(","), limit: 100 } })
+        .then((r) => r.data.repos as OpenSourceRepo[]),
+    enabled: showSaved && bookmarks.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
 
   const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
+
+  const displayedRepos = useMemo(() => {
+    if (showSaved) return bookmarkedData || [];
+    return repos;
+  }, [repos, showSaved, bookmarkedData]);
 
   const stats = useMemo(() => {
     if (!pagination) return null;
@@ -298,23 +345,6 @@ export default function RepoDiscoveryPage() {
       languages: [...new Set(repos.map((r) => r.language))].length,
     };
   }, [repos, pagination]);
-
-  const applyLanguages = (langs: string[]) => {
-  setSearchParams((prev) => {
-    const params = new URLSearchParams(prev);
-
-    params.delete("language");
-
-    langs.forEach((lang) => {
-      params.append("language", lang);
-    });
-
-    params.set("page", "1");
-
-    return params;
-  }, { replace: true });
-  
-};
 
   const updateFilter = (key: string, value: string | number) => {
     setSearchParams(
@@ -484,7 +514,6 @@ export default function RepoDiscoveryPage() {
               </div>
             </div>
 
-            {/* Loading skeleton */}
             {isMyRequestsLoading && (
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
@@ -496,7 +525,6 @@ export default function RepoDiscoveryPage() {
               </div>
             )}
 
-            {/* Error state */}
             {!isMyRequestsLoading && isMyRequestsError && (
               <div className="flex items-center justify-between py-2 px-1">
                 <p className="text-sm text-red-500">Failed to load submissions</p>
@@ -510,14 +538,12 @@ export default function RepoDiscoveryPage() {
               </div>
             )}
 
-            {/* Empty state */}
             {!isMyRequestsLoading && !isMyRequestsError && myRequests?.length === 0 && (
               <p className="text-sm text-stone-400 dark:text-stone-500 py-2">
                 You haven't suggested any repos yet.
               </p>
             )}
 
-            {/* Submissions list */}
             {!isMyRequestsLoading && !isMyRequestsError && myRequests && myRequests.length > 0 && (
               <div className="space-y-2">
                 {(showAllSubmissions ? myRequests : myRequests.slice(0, 3)).map(
@@ -596,6 +622,20 @@ export default function RepoDiscoveryPage() {
             );
           })}
 
+          {/* Saved toggle */}
+          <button
+            type="button"
+            onClick={() => setShowSaved((v) => !v)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              showSaved
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
+            }`}
+          >
+            <Bookmark className="w-3 h-3" />
+            Saved {bookmarks.length > 0 && `(${bookmarks.length})`}
+          </button>
+
           {/* Trending toggle */}
           <button
             type="button"
@@ -612,37 +652,35 @@ export default function RepoDiscoveryPage() {
 
           {inferredLanguages.length > 0 && (
             <button
-            type="button"
-            onClick={() => {
-              setSearchParams((prev) => {
-                const params = new URLSearchParams(prev);
+              type="button"
+              onClick={() => {
+                setSearchParams((prev) => {
+                  const params = new URLSearchParams(prev);
+                  const isActive = languageMode === "auto";
 
-                const isActive = languageMode === "auto";
+                  if (isActive) {
+                    params.delete("languageMode");
+                    params.delete("language");
+                  } else {
+                    params.set("languageMode", "auto");
+                    params.delete("language");
+                    inferredLanguages.forEach((lang) => {
+                      params.append("language", lang);
+                    });
+                  }
 
-                if (isActive) {
-                  params.delete("languageMode");
-                  params.delete("language");
-                } else {
-                  params.set("languageMode", "auto");
-
-                  params.delete("language");
-                  inferredLanguages.forEach((lang) => {
-                    params.append("language", lang);
-                  });
-                }
-
-                params.set("page", "1");
-                return params;
-              }, { replace: true });
-            }}
-            className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
-              languageMode === "auto"
-                ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-            }`}
-          >
-            My Languages
-          </button>
+                  params.set("page", "1");
+                  return params;
+                }, { replace: true });
+              }}
+              className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
+                languageMode === "auto"
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                  : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              }`}
+            >
+              My Languages
+            </button>
           )}
 
           {/* More filters toggle */}
@@ -750,10 +788,8 @@ export default function RepoDiscoveryPage() {
                     disabled={languageMode === "auto"}
                     onChange={(e) => {
                       const value = e.target.value;
-
                       setSearchParams((prev) => {
                         const params = new URLSearchParams(prev);
-
                         params.delete("language");
 
                         if (value !== "ALL") {
@@ -761,7 +797,6 @@ export default function RepoDiscoveryPage() {
                         }
 
                         params.set("page", "1");
-
                         return params;
                       }, { replace: true });
                     }}
@@ -833,7 +868,7 @@ export default function RepoDiscoveryPage() {
         )}
 
         {/* Empty */}
-        {!isLoading && !isError && repos.length === 0 && (
+        {!isLoading && !isLoadingBookmarks && !isError && displayedRepos.length === 0 && (
           <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
             <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
               <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
@@ -844,12 +879,18 @@ export default function RepoDiscoveryPage() {
         )}
 
         {/* Cards grid */}
-
-        {!isLoading && !isError && repos.length > 0 && (
+        {!isLoading && !isError && displayedRepos.length > 0 && (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
-              {repos.map((repo, i) => (
-                <RepoCard key={repo.id} repo={repo} index={i} onSelect={handleOpenRepo} />
+              {displayedRepos.map((repo, i) => (
+                <RepoCard
+                  key={repo.id}
+                  repo={repo}
+                  index={i}
+                  onSelect={handleOpenRepo}
+                  bookmarked={bookmarks.includes(repo.id)}
+                  onToggleBookmark={() => toggleBookmark(repo.id)}
+                />
               ))}
             </AnimatePresence>
           </div>
