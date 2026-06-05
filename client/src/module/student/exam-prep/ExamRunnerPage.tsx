@@ -87,7 +87,7 @@ export default function ExamRunnerPage({ mode }: { mode: Mode }) {
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [submitted, questions.length]);
+  }, [submitted, questions.length, paused]);
 
   if (!exam) return <Navigate to="/learn/exam-prep" replace />;
   if (!questions.length) {

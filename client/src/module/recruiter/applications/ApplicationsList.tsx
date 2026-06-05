@@ -9,20 +9,22 @@ import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { useDebounce } from "../../../hooks/useDebounce";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
   const queryClient = useQueryClient();
-  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
+  const [pendingAdvanceApp, setPendingAdvanceApp] = useState<Application | null>(null);
 
   // Reset to page 1 when search or filter changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [debouncedSearch, statusFilter]);
 
@@ -30,15 +32,18 @@ export default function ApplicationsList() {
     queryKey: ["applications", jobId, page, statusFilter, debouncedSearch],
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), limit: "10" });
-      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
       if (statusFilter) params.set("status", statusFilter);
       const res = await api.get(`/recruiter/jobs/${jobId}/applications?${params}`);
-      setPagination(res.data.pagination);
-      return res.data.applications as Application[];
+      return {
+        applications: res.data.applications as Application[],
+        pagination: res.data.pagination as Pagination,
+      };
     },
   });
 
-  const applications = data ?? [];
+  const applications = data?.applications ?? [];
+  const pagination = data?.pagination ?? null;
 
   const handleStatusChange = async (appId: number, status: string) => {
     if (updatingId === appId) return;
@@ -61,6 +66,7 @@ export default function ApplicationsList() {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       toast.success("Application advanced");
+      setPendingAdvanceApp(null);
     } catch {
       toast.error("Failed to advance application");
     } finally {
@@ -75,6 +81,31 @@ export default function ApplicationsList() {
   return (
     <div>
       <SEO title="Applications" noIndex />
+      <ConfirmDialog
+        open={pendingAdvanceApp !== null}
+        title="Advance Candidate?"
+        confirmLabel="Confirm Advance"
+        cancelLabel="Cancel"
+        confirmVariant="primary"
+        loading={pendingAdvanceApp ? advancingIds.has(pendingAdvanceApp.id) : false}
+        onCancel={() => setPendingAdvanceApp(null)}
+        onConfirm={() => {
+          if (pendingAdvanceApp && !advancingIds.has(pendingAdvanceApp.id)) {
+            handleAdvance(pendingAdvanceApp.id);
+          }
+        }}
+      >
+        {pendingAdvanceApp && (
+          <div className="space-y-4">
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+              Are you sure you want to advance <strong className="font-semibold text-stone-900 dark:text-white">{pendingAdvanceApp.student?.name}</strong> to the next hiring stage?
+            </p>
+            <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 p-2.5 rounded-lg border border-amber-200/30 dark:border-amber-900/30 leading-normal">
+              Warning: Advancing this candidate will update their hiring stage and create a new round submission.
+            </p>
+          </div>
+        )}
+      </ConfirmDialog>
       <Link to="/recruiters/jobs" className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 no-underline">
         <ArrowLeft className="w-4 h-4" /> Back to Jobs
       </Link>
@@ -93,9 +124,14 @@ export default function ApplicationsList() {
       <div className="flex items-center gap-3 mb-6">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search applicants"
             className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
-            placeholder="Search by name or email..." />
+            placeholder="Search by name or email..."
+          />
         </div>
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -191,7 +227,7 @@ export default function ApplicationsList() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <button onClick={() => handleAdvance(app.id)}
+                          <button onClick={() => setPendingAdvanceApp(app)}
                             disabled={isAdvancing}
                             className={`inline-flex min-w-21.5 items-center justify-center gap-1.5 text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors ${isAdvancing ? "cursor-not-allowed opacity-70" : ""}`}>
                             {isAdvancing && <Loader2 className="h-3 w-3 animate-spin" />}

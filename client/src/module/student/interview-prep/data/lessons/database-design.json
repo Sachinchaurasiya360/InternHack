@@ -1,0 +1,850 @@
+[
+  {
+    "id": "db-normalization-forms",
+    "sectionId": "database-design",
+    "orderIndex": 0,
+    "title": "Database Normalization",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "1NF",
+      "2NF",
+      "3NF",
+      "Redundancy",
+      "Anomalies"
+    ],
+    "content": {
+      "question": "Explain the first three Normal Forms (1NF, 2NF, 3NF).",
+      "answer": "- **1NF**: Atomic values, no repeating groups.\n- **2NF**: In 1NF and all non-key attributes fully dependent on the primary key.\n- **3NF**: In 2NF and no transitive dependencies (non-key attributes depend only on the primary key).\n\n**Goal**: Reduce data redundancy and prevent update/delete anomalies."
+    }
+  },
+  {
+    "id": "db-acid-properties",
+    "sectionId": "database-design",
+    "orderIndex": 1,
+    "title": "ACID Properties",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "Atomicity",
+      "Consistency",
+      "Isolation",
+      "Durability",
+      "Transactions"
+    ],
+    "content": {
+      "question": "What are the ACID properties in a database?",
+      "answer": "- **Atomicity**: All or nothing. \n- **Consistency**: Valid state to valid state.\n- **Isolation**: Concurrent transactions don't interfere.\n- **Durability**: Success persists even if system fails."
+    }
+  },
+  {
+    "id": "db-indexing-types",
+    "sectionId": "database-design",
+    "orderIndex": 2,
+    "title": "Indexing Deep Dive",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": [
+      "B-Tree",
+      "Hash Index",
+      "Clustered Index",
+      "Non-clustered Index",
+      "Performance"
+    ],
+    "content": {
+      "question": "What is the difference between a Clustered and a Non-Clustered index?",
+      "answer": "A **Clustered Index** determines the physical order of data in the table (one per table). A **Non-Clustered Index** is a separate structure with pointers to the data rows."
+    }
+  },
+  {
+    "id": "db-nosql-cap-theorem",
+    "sectionId": "database-design",
+    "orderIndex": 3,
+    "title": "CAP Theorem",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "Consistency",
+      "Availability",
+      "Partition Tolerance",
+      "Distributed Systems"
+    ],
+    "content": {
+      "question": "Explain the CAP Theorem.",
+      "answer": "In a distributed system, you can only guarantee two out of three: **Consistency**, **Availability**, and **Partition Tolerance**. Since partitions are inevitable in networks, you usually choose between CP or AP."
+    }
+  },
+  {
+    "id": "db-sql-vs-nosql-choice",
+    "sectionId": "database-design",
+    "orderIndex": 4,
+    "title": "SQL vs. NoSQL",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "Relational",
+      "Document",
+      "Key-Value",
+      "Graph",
+      "Schema"
+    ],
+    "content": {
+      "question": "When should you choose a NoSQL database over SQL?",
+      "answer": "NoSQL is better for large-scale data, high-speed ingestion, flexible schemas (unstructured data), and horizontal scaling. SQL is better for complex queries, strict data integrity, and complex relationships."
+    }
+  },
+  {
+    "id": "db-transaction-isolation-levels",
+    "sectionId": "database-design",
+    "orderIndex": 5,
+    "title": "Isolation Levels",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "Read Uncommitted",
+      "Read Committed",
+      "Repeatable Read",
+      "Serializable",
+      "Dirty Read",
+      "Phantom Read"
+    ],
+    "content": {
+      "question": "Describe the 4 standard isolation levels and the problems they solve.",
+      "answer": "1. Read Uncommitted (none). 2. Read Committed (prevents Dirty Reads). 3. Repeatable Read (prevents Non-Repeatable Reads). 4. Serializable (prevents Phantom Reads)."
+    }
+  },
+  {
+    "id": "db-sharding-patterns",
+    "sectionId": "database-design",
+    "orderIndex": 6,
+    "title": "Database Sharding",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": [
+      "Horizontal Scaling",
+      "Partitioning",
+      "Shard Key"
+    ],
+    "content": {
+      "question": "What is database sharding?",
+      "answer": "A type of horizontal partitioning that splits a large dataset across multiple independent databases (shards), usually based on a 'shard key' like `user_id`."
+    }
+  },
+  {
+    "id": "db-replication-master-slave",
+    "sectionId": "database-design",
+    "orderIndex": 7,
+    "title": "Replication Strategies",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "Master-Slave",
+      "Multi-Master",
+      "Synchronous",
+      "Asynchronous"
+    ],
+    "content": {
+      "question": "Compare synchronous vs. asynchronous replication.",
+      "answer": "Synchronous waits for acknowledgment from the replica before committing (high data safety, high latency). Asynchronous commits immediately and sends data to replica later (low latency, risk of data loss)."
+    }
+  },
+  {
+    "id": "db-foreign-key-constraints",
+    "sectionId": "database-design",
+    "orderIndex": 8,
+    "title": "Referential Integrity",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": [
+      "Foreign Key",
+      "Cascading",
+      "Integrity"
+    ],
+    "content": {
+      "question": "What is a Foreign Key and what are 'on delete cascade' actions?",
+      "answer": "A Foreign Key links two tables. 'ON DELETE CASCADE' means if a parent row is deleted, all associated child rows are automatically deleted to maintain integrity."
+    }
+  },
+  {
+    "id": "db-composite-primary-key",
+    "sectionId": "database-design",
+    "orderIndex": 9,
+    "title": "Composite Keys",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": [
+      "Primary Key",
+      "Composite Key"
+    ],
+    "content": {
+      "question": "What is a Composite Primary Key?",
+      "answer": "A primary key that consists of two or more columns to uniquely identify a row (e.g., `order_id` and `product_id` in an `order_items` table)."
+    }
+  },
+  {
+    "id": "db-stored-procedures-pros-cons",
+    "sectionId": "database-design",
+    "orderIndex": 10,
+    "title": "Stored Procedures",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "Business Logic",
+      "Performance",
+      "Security"
+    ],
+    "content": {
+      "question": "What are the pros and cons of using Stored Procedures?",
+      "answer": "Pros: Reduced network traffic, centralized logic, security. Cons: Hard to version control, vendor lock-in, puts load on the DB instead of compute layer."
+    }
+  },
+  {
+    "id": "db-denormalization-use-case",
+    "sectionId": "database-design",
+    "orderIndex": 11,
+    "title": "Denormalization",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "Performance",
+      "Read-heavy",
+      "Redundancy"
+    ],
+    "content": {
+      "question": "When is denormalization a good idea?",
+      "answer": "In read-heavy applications where complex joins are causing performance issues. It purposefully adds redundancy to speed up data retrieval."
+    }
+  },
+  {
+    "id": "db-view-vs-materialized-view",
+    "sectionId": "database-design",
+    "orderIndex": 12,
+    "title": "Views vs. Materialized Views",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "Virtual Table",
+      "Caching",
+      "Performance"
+    ],
+    "content": {
+      "question": "Difference between a View and a Materialized View?",
+      "answer": "A **View** is a virtual table that runs its query every time it is accessed. A **Materialized View** pre-computes and stores the result physically, requiring periodic refreshes."
+    }
+  },
+  {
+    "id": "db-optimistic-vs-pessimistic-locking",
+    "sectionId": "database-design",
+    "orderIndex": 13,
+    "title": "Concurrency Control",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": [
+      "Locking",
+      "Versioning",
+      "Conflicts"
+    ],
+    "content": {
+      "question": "Optimistic vs. Pessimistic locking?",
+      "answer": "**Optimistic**: Assume no conflict, check version at commit. Better for low contention. **Pessimistic**: Lock the row immediately. Better for high contention."
+    }
+  },
+  {
+    "id": "db-btree-vs-hash-indexing",
+    "sectionId": "database-design",
+    "orderIndex": 14,
+    "title": "B-Tree vs Hash Index",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "Indexing",
+      "Efficiency"
+    ],
+    "content": {
+      "question": "Why is B-Tree the default index over Hash Index?",
+      "answer": "B-Trees support range queries (e.g., `WHERE age > 18`) and sorting. Hash indexes only support exact equality matches (`WHERE id = 5`)."
+    }
+  },
+  {
+    "id": "db-deadlock-prevention",
+    "sectionId": "database-design",
+    "orderIndex": 15,
+    "title": "Deadlock Prevention",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": [
+      "Deadlock",
+      "Wait-for-graph",
+      "Transaction Ordering"
+    ],
+    "content": {
+      "question": "How do you prevent database deadlocks?",
+      "answer": "Access tables in a consistent order across all transactions, keep transactions short, and use lower isolation levels if appropriate."
+    }
+  },
+  {
+    "id": "db-surrogate-vs-natural-key",
+    "sectionId": "database-design",
+    "orderIndex": 16,
+    "title": "Surrogate vs. Natural Keys",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": [
+      "Primary Key",
+      "UUID",
+      "Business ID"
+    ],
+    "content": {
+      "question": "What is a Surrogate Key?",
+      "answer": "A system-generated unique ID (like an Auto-incrementing integer or UUID) that has no business meaning, as opposed to a Natural Key like an SSN."
+    }
+  },
+  {
+    "id": "db-columnar-storage-olap",
+    "sectionId": "database-design",
+    "orderIndex": 17,
+    "title": "Columnar Storage",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": [
+      "OLAP",
+      "Big Data",
+      "Compression"
+    ],
+    "content": {
+      "question": "Why is columnar storage better for analytics?",
+      "answer": "It allows reading only the columns needed for a query, resulting in much less I/O and better compression for repetitive data values."
+    }
+  },
+  {
+    "id": "db-eventual-vs-strong-consistency",
+    "sectionId": "database-design",
+    "orderIndex": 18,
+    "title": "Consistency Models",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "CAP",
+      "Distributed DB",
+      "Latency"
+    ],
+    "content": {
+      "question": "What is Eventual Consistency?",
+      "answer": "A consistency model used in distributed systems where, after an update, all replicas will eventually show the same value if no new updates are made."
+    }
+  },
+  {
+    "id": "db-etl-vs-elt",
+    "sectionId": "database-design",
+    "orderIndex": 19,
+    "title": "ETL vs. ELT",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "Data Pipeline",
+      "Data Lake",
+      "Data Warehouse"
+    ],
+    "content": {
+      "question": "Extract-Transform-Load (ETL) vs Extract-Load-Transform (ELT).",
+      "answer": "ETL transforms data before loading it into the target. ELT (modern) loads raw data first and uses the power of the target system (like Snowflake/Redshift) to transform it."
+    }
+  },
+  {
+    "id": "db-soft-delete-pattern",
+    "sectionId": "database-design",
+    "orderIndex": 20,
+    "title": "Soft Delete",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": [
+      "Data Retention",
+      "Application Logic"
+    ],
+    "content": {
+      "question": "What is a Soft Delete?",
+      "answer": "Flagging a row as 'deleted' (e.g., setting `is_deleted = true`) rather than physically removing it from the database. Allows for easy data recovery."
+    }
+  },
+  {
+    "id": "db-indexing-overhead",
+    "sectionId": "database-design",
+    "orderIndex": 21,
+    "title": "Index Overhead",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": [
+      "Performance",
+      "Write Speed"
+    ],
+    "content": {
+      "question": "Why shouldn't you index every single column in a table?",
+      "answer": "Every index slows down WRITE operations (Insert/Update/Delete) because the database must update the index structure every time the data changes."
+    }
+  },
+  {
+    "id": "db-unique-constraint-vs-index",
+    "sectionId": "database-design",
+    "orderIndex": 22,
+    "title": "Unique Constraints",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": [
+      "Integrity",
+      "Indexing"
+    ],
+    "content": {
+      "question": "Is a Unique Constraint the same as a Unique Index?",
+      "answer": "Functional identical. A unique constraint ensures no duplicates; the database typically implements this internally using a unique index to check for violators quickly."
+    }
+  },
+  {
+    "id": "db-trigger-use-cases",
+    "sectionId": "database-design",
+    "orderIndex": 23,
+    "title": "Database Triggers",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "Automation",
+      "Audit Logs"
+    ],
+    "content": {
+      "question": "What are database triggers?",
+      "answer": "Procedures that are automatically executed in response to certain events (INSERT, UPDATE, DELETE) on a particular table."
+    }
+  },
+  {
+    "id": "db-partitioning-horizontal-vs-vertical",
+    "sectionId": "database-design",
+    "orderIndex": 24,
+    "title": "Horizontal vs Vertical Partitioning",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "Scaling",
+      "Manageability"
+    ],
+    "content": {
+      "question": "What is Vertical Partitioning?",
+      "answer": "Splitting a table into multiple tables with fewer columns (e.g., moving large 'blob' columns to a separate table that is less frequently accessed)."
+    }
+  },
+  {
+    "id": "db-uuid-vs-int-primary-key",
+    "sectionId": "database-design",
+    "orderIndex": 25,
+    "title": "UUID as Primary Key",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "Distributed IDs",
+      "Performance"
+    ],
+    "content": {
+      "question": "What are the drawbacks of using UUIDs as primary keys?",
+      "answer": "They take 16 bytes (vs 4/8 for INT), they are random (which hurts insert performance in clustered indexes), and they are harder to read/debug."
+    }
+  },
+  {
+    "id": "db-fan-out-problem",
+    "sectionId": "database-design",
+    "orderIndex": 26,
+    "title": "Fan-out Problem",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": [
+      "Social Media",
+      "Architecture"
+    ],
+    "content": {
+      "question": "What is the 'Fan-out' problem in database design?",
+      "answer": "When a single action (like a celebrity posting a tweet) requires delivering a message or updating thousands/millions of individual rows or user feeds."
+    }
+  },
+  {
+    "id": "db-write-ahead-logging-wal",
+    "sectionId": "database-design",
+    "orderIndex": 27,
+    "title": "Write-Ahead Logging (WAL)",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "Durability",
+      "Recovery"
+    ],
+    "content": {
+      "question": "How does WAL ensure durability?",
+      "answer": "By logging every change to a persistent file (the log) BEFORE the changes are applied to the actual data files. If the system crashes, the log is used to replay the changes."
+    }
+  },
+  {
+    "id": "db-read-replicas-vs-caching",
+    "sectionId": "database-design",
+    "orderIndex": 28,
+    "title": "Read Replicas vs. Caching",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "Scaling",
+      "Performance"
+    ],
+    "content": {
+      "question": "When should you use a Read Replica instead of Redis?",
+      "answer": "Use Read Replicas for scaling complex SQL queries that can't be easily cached. Use Redis for frequent, simple key-value lookups or highly redundant data."
+    }
+  },
+  {
+    "id": "db-full-text-search-vs-like",
+    "sectionId": "database-design",
+    "orderIndex": 29,
+    "title": "Full-Text Search",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": [
+      "Search",
+      "Performance"
+    ],
+    "content": {
+      "question": "Why is 'LIKE %keyword%' slow?",
+      "answer": "Leading wildcards prevent the database from using standard B-Tree indexes, forcing a full table scan. Full-Text Search (FTS) indexes are built specifically for these queries."
+    }
+  },
+  {
+    "id": "db-checkpointing",
+    "sectionId": "database-design",
+    "orderIndex": 30,
+    "title": "Checkpointing",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "WAL",
+      "Recovery Time"
+    ],
+    "content": {
+      "question": "What is the purpose of Checkpointing in a database?",
+      "answer": "To flush 'dirty' (modified) data from memory to disk, ensuring the data files are up-to-date and reducing the amount of WAL log that needs to be replayed during recovery."
+    }
+  },
+  {
+    "id": "db-star-vs-snowflake-schema",
+    "sectionId": "database-design",
+    "orderIndex": 31,
+    "title": "Star vs. Snowflake",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "DW",
+      "Facts",
+      "Dimensions"
+    ],
+    "content": {
+      "question": "Star Schema vs Snowflake Schema.",
+      "answer": "Star: Simple, denormalized dimensions for performance. Snowflake: Normalized dimensions for storage efficiency and data integrity (looks like a snowflake with branches)."
+    }
+  },
+  {
+    "id": "db-polymorphic-associations",
+    "sectionId": "database-design",
+    "orderIndex": 32,
+    "title": "Polymorphic Associations",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "Schema Design",
+      "Relationships"
+    ],
+    "content": {
+      "question": "What is a Polymorphic Association?",
+      "answer": "When a model can belong to more than one other model on a single association (e.g., a `Comment` table that can belong to both `Post` and `Video`)."
+    }
+  },
+  {
+    "id": "db-database-migration-best-practices",
+    "sectionId": "database-design",
+    "orderIndex": 33,
+    "title": "Schema Migrations",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": [
+      "Version Control",
+      "Production"
+    ],
+    "content": {
+      "question": "How do you handle schema changes in production?",
+      "answer": "Use migration scripts (versioned SQL files), test in staging first, and try to make changes backwards compatible (e.g., add column, migrate data, THEN delete old column)."
+    }
+  },
+  {
+    "id": "db-json-b-data-type",
+    "sectionId": "database-design",
+    "orderIndex": 34,
+    "title": "JSONB in SQL",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "PostgreSQL",
+      "Flexible Schema"
+    ],
+    "content": {
+      "question": "What is JSONB and why use it in Postgres?",
+      "answer": "JSONB stores JSON in a binary format that can be indexed. It's great for storing semi-structured data while keeping the power of an ACID-compliant relational DB."
+    }
+  },
+  {
+    "id": "db-upsert-operation",
+    "sectionId": "database-design",
+    "orderIndex": 35,
+    "title": "UPSERT",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": [
+      "Insert",
+      "Update",
+      "Conflicts"
+    ],
+    "content": {
+      "question": "What is an UPSERT?",
+      "answer": "An operation that either Inserts a row or, if a unique key conflict occurs, Updates the existing row instead (e.g., `INSERT ... ON CONFLICT DO UPDATE`)."
+    }
+  },
+  {
+    "id": "db-foreign-key-performance",
+    "sectionId": "database-design",
+    "orderIndex": 36,
+    "title": "FK Performance",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "Indexing",
+      "Integrity"
+    ],
+    "content": {
+      "question": "Should you always index Foreign Key columns?",
+      "answer": "Yes. Most joins and cascading deletes rely on these columns. Without an index, joining tables or deleting parent rows can become extremely slow."
+    }
+  },
+  {
+    "id": "db-data-redundancy-bad",
+    "sectionId": "database-design",
+    "orderIndex": 37,
+    "title": "Redundancy Risks",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": [
+      "Data Integrity"
+    ],
+    "content": {
+      "question": "Why is data redundancy bad in a relational database?",
+      "answer": "It leads to 'Update Anomalies' where you update a value in one place but forget to update the duplicate in another, leading to inconsistent state."
+    }
+  },
+  {
+    "id": "db-graph-database-use-case",
+    "sectionId": "database-design",
+    "orderIndex": 38,
+    "title": "Graph Databases",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "Neo4j",
+      "Relationships"
+    ],
+    "content": {
+      "question": "When would you use a Graph Database (like Neo4j)?",
+      "answer": "When the relationships between data points are the most important part of the data (e.g., social networks, recommendation engines, fraud detection)."
+    }
+  },
+  {
+    "id": "db-secondary-indexes-nosql",
+    "sectionId": "database-design",
+    "orderIndex": 39,
+    "title": "NoSQL Secondary Indexes",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": [
+      "DynamoDB",
+      "GSI",
+      "LSI"
+    ],
+    "content": {
+      "question": "What is a Global Secondary Index (GSI) in DynamoDB?",
+      "answer": "An index with a partition key and sort key that can be different from those on the base table, allowing you to query the same data in multiple ways."
+    }
+  },
+  {
+    "id": "db-primary-key-natural",
+    "sectionId": "database-design",
+    "orderIndex": 40,
+    "title": "Natural Primary Key",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "Data Integrity"
+    ],
+    "content": {
+      "question": "What is a Natural Key?",
+      "answer": "A key that uses existing data from the business domain (e.g., an ISBN for a book) to uniquely identify a row."
+    }
+  },
+  {
+    "id": "db-covering-index",
+    "sectionId": "database-design",
+    "orderIndex": 41,
+    "title": "Covering Index",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": [
+      "Performance",
+      "Indexing"
+    ],
+    "content": {
+      "question": "What is a Covering Index?",
+      "answer": "An index that contains all the columns needed for a query. The database can find the answer entirely within the index leaf nodes without fetching the actual rows from the table!"
+    }
+  },
+  {
+    "id": "db-select-star-evil",
+    "sectionId": "database-design",
+    "orderIndex": 42,
+    "title": "SELECT *",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": [
+      "Performance",
+      "I/O"
+    ],
+    "content": {
+      "question": "Why is 'SELECT *' usually considered bad practice?",
+      "answer": "It fetches more data than needed, increases network traffic, prevents the use of covering indexes, and can break your app if new columns are added to the table."
+    }
+  },
+  {
+    "id": "db-query-execution-plan",
+    "sectionId": "database-design",
+    "orderIndex": 43,
+    "title": "Execution Plans",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": [
+      "Explain",
+      "Query Tuning"
+    ],
+    "content": {
+      "question": "What is an Execution Plan?",
+      "answer": "A report generated by the database engine showing how it intends to execute a query (order of joins, indexes used, etc.). Use `EXPLAIN ANALYZE` in SQL to see it."
+    }
+  },
+  {
+    "id": "db-data-skew-sharding",
+    "sectionId": "database-design",
+    "orderIndex": 44,
+    "title": "Data Skew",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "Sharding",
+      "Hot Spots"
+    ],
+    "content": {
+      "question": "What is Data Skew in sharded databases?",
+      "answer": "When the distribution of data across shards is uneven (e.g., one shard has 90% of the data), leading to 'hot spots' and performance bottlenecks."
+    }
+  },
+  {
+    "id": "db-bulk-insert-performance",
+    "sectionId": "database-design",
+    "orderIndex": 45,
+    "title": "Bulk Inserts",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": [
+      "Performance",
+      "Batch processing"
+    ],
+    "content": {
+      "question": "How do you optimize inserting 1 million rows?",
+      "answer": "Use a single transaction, disable indexes/constraints temporarily (then rebuild), or use a specialized bulk loading tool (like `COPY` in Postgres)."
+    }
+  },
+  {
+    "id": "db-phantom-read-explanation",
+    "sectionId": "database-design",
+    "orderIndex": 46,
+    "title": "Phantom Reads",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "Isolation Levels"
+    ],
+    "content": {
+      "question": "What is a Phantom Read?",
+      "answer": "When a transaction reads a set of rows, then another transaction INSERTS a new row that fits the criteria, so when the first transaction reads again, it sees a 'phantom' row."
+    }
+  },
+  {
+    "id": "db-data-archiving-strategy",
+    "sectionId": "database-design",
+    "orderIndex": 47,
+    "title": "Data Archiving",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "Maintenance",
+      "Storage Cost"
+    ],
+    "content": {
+      "question": "How do you handle extremely large tables that are years old?",
+      "answer": "Implement data archiving: move old, rarely accessed data to a separate 'history' table or a cold storage layer (like S3) to keep the main table fast."
+    }
+  },
+  {
+    "id": "db-vector-database-intro",
+    "sectionId": "database-design",
+    "orderIndex": 48,
+    "title": "Vector Databases",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "AI",
+      "Embeddings",
+      "Search"
+    ],
+    "content": {
+      "question": "What is a Vector Database (like Pinecone)?",
+      "answer": "A database designed to store and search through high-dimensional vectors (embeddings). Used for AI tasks like similarity search and RAG."
+    }
+  },
+  {
+    "id": "db-lock-escalation",
+    "sectionId": "database-design",
+    "orderIndex": 49,
+    "title": "Lock Escalation",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "Memory",
+      "Locking"
+    ],
+    "content": {
+      "question": "What is Lock Escalation?",
+      "answer": "When a database converts many fine-grained locks (like row locks) into a single coarse-grained lock (like a table lock) to save memory."
+    }
+  },
+  {
+    "id": "db-immutable-data-pattern",
+    "sectionId": "database-design",
+    "orderIndex": 50,
+    "title": "Immutable Data",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": [
+      "Event Sourcing",
+      "Audit"
+    ],
+    "content": {
+      "question": "What is an 'Append-Only' or Immutable data pattern?",
+      "answer": "Instead of updating rows, you always insert a new row with the latest state and a timestamp. Provides a perfect audit tail and historical snapshots."
+    }
+  }
+]

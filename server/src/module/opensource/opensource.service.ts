@@ -1,15 +1,61 @@
 import { prisma } from "../../database/db.js";
 import { fetchGithubStats } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
-import { repoRequestSubmittedHtml, repoRequestApprovedHtml } from "../../utils/email-templates.js";
+import {
+  repoRequestSubmittedHtml,
+  repoRequestApprovedHtml,
+} from "../../utils/email-templates.js";
+
+const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
+let statsCache: {
+  data: {
+    totalRepos: number;
+    totalStars: number;
+    trendingCount: number;
+    languageCount: number;
+    domainBreakdown: { domain: string; count: number }[];
+  } | null;
+  expiresAt: number;
+} = { data: null, expiresAt: 0 };
 
 export class OpensourceService {
+  async getGlobalStats() {
+    if (statsCache.data && Date.now() < statsCache.expiresAt) {
+      return statsCache.data;
+    }
+
+    const [totalRepos, trendingCount, starsAgg, languageGroups, domainGroups] = await Promise.all([
+      prisma.opensourceRepo.count(),
+      prisma.opensourceRepo.count({ where: { trending: true } }),
+      prisma.opensourceRepo.aggregate({ _sum: { stars: true } }),
+      prisma.opensourceRepo.groupBy({ by: ["language"] }),
+      prisma.opensourceRepo.groupBy({
+        by: ["domain"],
+        _count: { _all: true },
+        orderBy: { _count: { domain: "desc" } },
+      }),
+    ]);
+
+    const data = {
+      totalRepos,
+      totalStars: starsAgg._sum.stars ?? 0,
+      trendingCount,
+      languageCount: languageGroups.filter((g) => g.language && g.language.trim() !== "").length,
+      domainBreakdown: domainGroups.map((g) => ({
+        domain: g.domain || "Other",
+        count: g._count._all,
+      })),
+    };
+
+    statsCache = { data, expiresAt: Date.now() + STATS_TTL_MS };
+    return data;
+  }
+
   async getLanguages() {
     const rows = await prisma.opensourceRepo.findMany({
       select: { language: true },
       distinct: ["language"],
     });
-
     return rows
       .map((r) => r.language)
       .filter((l): l is string => Boolean(l && l.trim() !== ""))
@@ -17,17 +63,33 @@ export class OpensourceService {
   }
 
   async listRepos(query: any) {
-    const { page, limit, search, language, difficulty, domain, sortBy, sortOrder } = query;
+    const {
+      page,
+      limit,
+      search,
+      language,
+      difficulty,
+      domain,
+      sortBy,
+      sortOrder,
+    } = query;
     const skip = (page - 1) * limit;
-
     const where: Record<string, any> = {};
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
+<<<<<<< HEAD
 
     const trimmedSearch = search?.trim();
 
     if (trimmedSearch) {
+=======
+    const trimmedSearch = search?.trim();
+    if (trimmedSearch) {
+      // Prisma's scalar-list filters can't do case-insensitive substring match
+      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+      // subquery and merge the matching ids into the OR clause.
+>>>>>>> upstream/main
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
@@ -36,12 +98,20 @@ export class OpensourceService {
       `;
     
       const tagMatchIds = tagMatches.map((r) => r.id);
+<<<<<<< HEAD
     
       where["OR"] = [
         { name: { contains: trimmedSearch, mode: "insensitive" } },
         { owner: { contains: trimmedSearch, mode: "insensitive" } },
         { description: { contains: trimmedSearch, mode: "insensitive" } },
         { language: { contains: trimmedSearch, mode: "insensitive" } },
+=======
+      where["OR"] = [
+        { name: { contains: trimmedSearch, mode: "insensitive" } },
+        { owner: { contains: trimmedSearch, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { language: { contains: search, mode: "insensitive" } },
+>>>>>>> upstream/main
         ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
       ];
     }
@@ -63,10 +133,11 @@ export class OpensourceService {
   }
 
   async getRepoById(id: number) {
-    const repo = (await prisma.opensourceRepo.findUnique({ where: { id } })) as any;
+    const repo = (await prisma.opensourceRepo.findUnique({
+      where: { id },
+    })) as any;
     if (!repo) return null;
 
-    // Start: Background stats update (non-blocking)
     const SIX_HOURS = 6 * 60 * 60 * 1000;
     const isStale =
       !repo.githubStatsUpdatedAt ||
@@ -74,17 +145,15 @@ export class OpensourceService {
 
     if (isStale && repo.url?.includes("github.com")) {
       this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-        console.error(`[github] background update failed for ${id}:`, err)
+        console.error(`[github] background update failed for ${id}:`, err),
       );
     }
-
     return repo;
   }
 
   private async updateGithubStats(id: number, url: string, name: string) {
     const stats = await fetchGithubStats(url);
     if (!stats) return;
-
     await prisma.opensourceRepo.update({
       where: { id },
       data: {
@@ -108,7 +177,6 @@ export class OpensourceService {
   }) {
     const { page, limit, search, category, tech, year } = query;
     const skip = (page - 1) * limit;
-
     const where: any = {};
 
     const trimmedSearch = search?.trim();
@@ -119,15 +187,12 @@ export class OpensourceService {
         { description: { contains: trimmedSearch, mode: "insensitive" } },
       ];
     }
-
     if (category) {
       where.category = { contains: category, mode: "insensitive" };
     }
-
     if (tech) {
       where.technologies = { has: tech };
     }
-
     if (year) {
       where.yearsParticipated = { has: year };
     }
@@ -157,21 +222,24 @@ export class OpensourceService {
     if (existing) {
       throw new Error("This repository has already been submitted");
     }
-
     const request = await prisma.repoRequest.create({
       data: { ...data, userId },
       include: { user: { select: { name: true, email: true } } },
     });
 
-    // Send confirmation email
     try {
       await sendEmail({
         to: request.user.email,
         subject: "Repo Request Received, InternHack",
-        html: repoRequestSubmittedHtml(request.user.name, request.name, request.owner),
+        html: repoRequestSubmittedHtml(
+          request.user.name,
+          request.name,
+          request.owner,
+        ),
       });
-    } catch { /* email failure is non-blocking */ }
-
+    } catch {
+      /* email failure is non-blocking */
+    }
     return request;
   }
 
@@ -182,24 +250,31 @@ export class OpensourceService {
     });
   }
 
-  async getAllRepoRequests(query: { status?: string; page: number; limit: number; skip: number }) {
+  async getAllRepoRequests(query: {
+    status?: string;
+    page: number;
+    limit: number;
+    skip: number;
+  }) {
     const { status, page, limit, skip } = query;
     const where: Record<string, any> = {};
     if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
       where.status = status;
     }
-
     const [requests, total] = await Promise.all([
       prisma.repoRequest.findMany({
         where,
-        include: { user: { select: { id: true, name: true, email: true, profilePic: true } } },
+        include: {
+          user: {
+            select: { id: true, name: true, email: true, profilePic: true },
+          },
+        },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
       }),
       prisma.repoRequest.count({ where }),
     ]);
-
     return {
       requests,
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
@@ -211,11 +286,9 @@ export class OpensourceService {
       where: { id },
       include: { user: { select: { name: true, email: true } } },
     });
-
     if (!request) throw new Error("Request not found");
     if (request.status !== "PENDING") throw new Error("Request is not pending");
 
-    // Create the actual repo from the request
     const repo = await prisma.opensourceRepo.create({
       data: {
         name: overrides.name ?? request.name,
@@ -230,26 +303,28 @@ export class OpensourceService {
       },
     });
 
-    // Update request status
     await prisma.repoRequest.update({
       where: { id },
       data: { status: "APPROVED", adminNote: overrides.adminNote ?? null },
     });
 
-    // Send approval email
     try {
       await sendEmail({
         to: request.user.email,
         subject: "Your Repo Has Been Approved, InternHack",
-        html: repoRequestApprovedHtml(request.user.name, overrides.name ?? request.name, request.owner),
+        html: repoRequestApprovedHtml(
+          request.user.name,
+          overrides.name ?? request.name,
+          request.owner,
+        ),
       });
-    } catch { /* email failure is non-blocking */ }
+    } catch {
+      /* email failure is non-blocking */
+    }
 
-    // Fetch stats on approval
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-      console.error("[github] approval stats fetch failed:", err)
+      console.error("[github] approval stats fetch failed:", err),
     );
-
     return repo;
   }
 
@@ -257,7 +332,6 @@ export class OpensourceService {
     const request = await prisma.repoRequest.findUnique({ where: { id } });
     if (!request) throw new Error("Request not found");
     if (request.status !== "PENDING") throw new Error("Request is not pending");
-
     return prisma.repoRequest.update({
       where: { id },
       data: { status: "REJECTED", adminNote: adminNote || null },
@@ -266,10 +340,11 @@ export class OpensourceService {
 
   async getStudentContributionTrend(userId: number) {
     const now = new Date();
-    const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const currentMonthStart = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+    );
     const startMonth = this.addMonthsUTC(currentMonthStart, -5);
     const endMonth = this.addMonthsUTC(currentMonthStart, 1);
-
     const approvedRequests = await prisma.repoRequest.findMany({
       where: {
         userId,
@@ -294,12 +369,13 @@ export class OpensourceService {
         count: countsByMonth.get(monthKey) ?? 0,
       };
     });
-
     return { trend, total: approvedRequests.length };
   }
 
   private addMonthsUTC(date: Date, months: number): Date {
-    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1));
+    return new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1),
+    );
   }
 
   private getMonthKeyUTC(date: Date): string {
@@ -309,6 +385,47 @@ export class OpensourceService {
   }
 
   private getMonthLabelUTC(date: Date): string {
-    return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      year: "numeric",
+      timeZone: "UTC",
+    }).format(date);
+  }
+
+  async getFirstPrProgress(userId: number): Promise<string[]> {
+    const progress = await prisma.studentFirstPrProgress.findUnique({
+      where: { userId },
+      select: { completedStepIds: true },
+    });
+    return progress?.completedStepIds ?? [];
+  }
+
+  async patchFirstPrProgress(
+    userId: number,
+    stepId: string,
+    completed: boolean,
+  ): Promise<string[]> {
+    const existing = await prisma.studentFirstPrProgress.findUnique({
+      where: { userId },
+      select: { completedStepIds: true },
+    });
+    const completedStepIds = new Set(existing?.completedStepIds ?? []);
+    if (completed) {
+      completedStepIds.add(stepId);
+    } else {
+      completedStepIds.delete(stepId);
+    }
+    const progress = await prisma.studentFirstPrProgress.upsert({
+      where: { userId },
+      create: {
+        userId,
+        completedStepIds: Array.from(completedStepIds),
+      },
+      update: {
+        completedStepIds: Array.from(completedStepIds),
+      },
+      select: { completedStepIds: true },
+    });
+    return progress.completedStepIds;
   }
 }

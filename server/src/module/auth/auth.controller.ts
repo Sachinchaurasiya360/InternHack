@@ -144,12 +144,12 @@ export class AuthController {
         return res.status(403).json({ message: "Not authorized" });
       }
 
-      const id = Number(req.params["id"]);
-      if (!id || isNaN(id)) {
-        return res.status(400).json({ message: "Invalid user ID" });
+      const identifier = (req.params["identifier"] || req.params["id"]) as string;
+      if (!identifier) {
+        return res.status(400).json({ message: "Invalid user identifier" });
       }
 
-      const profile = await this.authService.getPublicProfile(id);
+      const profile = await this.authService.getPublicProfile(identifier);
       return res.status(200).json({ profile });
     } catch (error) {
       if (error instanceof Error && error.message === "User not found") {

@@ -10,7 +10,6 @@ import api from "../../../lib/axios";
 // Optional: phone, skills, linkedinUrl, portfolioUrl, coverLetter
 
 const REQUIRED_HEADERS = ["email", "name"] as const;
-const OPTIONAL_HEADERS = ["phone", "skills", "linkedinUrl", "portfolioUrl", "coverLetter"] as const;
 
 interface CsvRow {
   email: string;
