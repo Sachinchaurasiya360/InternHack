@@ -7,7 +7,7 @@ export const createEmployeeSchema = z.object({
   lastName: z.string().min(1, "Last name is required").max(100),
   email: z.string().email("Valid email is required"),
   phone: z.string().max(20).optional(),
-  dateOfBirth: z.string().datetime().optional(),
+  dateOfBirth: z.string().datetime().refine((val) => new Date(val) < new Date(), { message: "Date of birth must be in the past" }).optional(),
   gender: z.string().max(20).optional(),
   bloodGroup: z.string().max(10).optional(),
   departmentId: z.number().int().positive("Department is required"),
