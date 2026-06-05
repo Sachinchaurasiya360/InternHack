@@ -80,10 +80,20 @@ export class BadgeService {
     if (input.name !== undefined) {
       data.name = input.name;
       if (!input.slug) {
-        data.slug = slugify(input.name);
+        let slug = slugify(input.name);
+        const existing = await prisma.badge.findFirst({ where: { slug, id: { not: id } } });
+        if (existing) slug = `${slug}-${Date.now()}`;
+        data.slug = slug;
       }
     }
-    if (input.slug !== undefined) data.slug = input.slug;
+    if (input.slug !== undefined) {
+      const existing = await prisma.badge.findFirst({ where: { slug: input.slug, id: { not: id } } });
+      if (existing) {
+        data.slug = `${input.slug}-${Date.now()}`;
+      } else {
+        data.slug = input.slug;
+      }
+    }
     if (input.description !== undefined) data.description = input.description;
     if (input.iconUrl !== undefined) data.iconUrl = input.iconUrl || null;
     if (input.category !== undefined) data.category = input.category;
