@@ -22,6 +22,8 @@ model user {
   resetOtpExpiresAt     DateTime?
   passwordResetAttempts Int                         @default(0)
   passwordResetLockedUntil DateTime?
+  verificationAttempts  Int                         @default(0)
+  verificationLockedUntil DateTime?
   contactNo             String?
   profilePic            String?
   coverImage            String?
