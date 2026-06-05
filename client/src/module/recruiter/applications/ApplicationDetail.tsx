@@ -23,7 +23,7 @@ export default function ApplicationDetail() {
         `/recruiter/applications/${applicationId}`
       );
       setApplication(res.data.application);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
     }
   }, [applicationId]);
@@ -44,7 +44,7 @@ export default function ApplicationDetail() {
         if (isMounted) {
           setApplication(res.data.application);
         }
-      } catch (err: any) {
+      } catch (err) {
         if (err.name !== "CanceledError" && err.name !== "AbortError") {
           console.error(err);
         }

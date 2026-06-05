@@ -497,17 +497,11 @@ export default function RoadmapCanvasPage() {
     });
   }, []);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [showEditModal, setShowEditModal] =
-  useState(false);
-
-const [title, setTitle] = useState("");
-
-const [shortDescription, setShortDescription] =
-  useState("");
-
-const [level, setLevel] =
-  useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED">(
-    "BEGINNER"
+   const [showEditModal, setShowEditModal] = useState(false);
+  const [title, setTitle] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
+  const [level, setLevel] = useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED">(
+    "BEGINNER",
   );
   // Track previous percentComplete so we only fire the modal on the transition to 100
   const prevPercentRef = useRef<number | null>(null);
@@ -592,14 +586,12 @@ const [level, setLevel] =
     prevPercentRef.current = pct;
   }, [data]);
   useEffect(() => {
-  if (!data) return;
-
-  setTitle(data.enrollment.roadmap.title);
-  setShortDescription(
-    data.enrollment.roadmap.shortDescription
-  );
-  setLevel(data.enrollment.roadmap.level);
-}, [data]);
+    if (!data) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTitle(data.enrollment.roadmap.title);
+    setShortDescription(data.enrollment.roadmap.shortDescription);
+    setLevel(data.enrollment.roadmap.level);
+  }, [data]);
 
   const progressByTopicId = useMemo(() => {
     if (!data)
@@ -1187,14 +1179,14 @@ const [level, setLevel] =
                 }
               />
             </div>
-            <button
-  type="button"
-  onClick={() => setShowEditModal(true)}
-  className="inline-flex items-center gap-1.5 px-3 py-2 bg-stone-800 text-stone-50 text-xs font-bold rounded-md hover:bg-stone-700 transition-colors"
->
-  <Pencil className="w-3.5 h-3.5" />
-  Edit
-</button>
+                        <button
+              type="button"
+              onClick={() => setShowEditModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-stone-800 text-stone-50 text-xs font-bold rounded-md hover:bg-stone-700 transition-colors"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              Edit
+            </button>
 
             <button
               type="button"
@@ -1533,8 +1525,8 @@ const [level, setLevel] =
             </>
           )}
         </AnimatePresence>
-        {showEditModal && (
-  <>
+                {showEditModal && (
+          <>
     {/* Backdrop */}
     <motion.div
       initial={{ opacity: 0 }}
@@ -1614,7 +1606,11 @@ const [level, setLevel] =
 
             <select
               value={level}
-              onChange={(e) => setLevel(e.target.value)}
+                           onChange={(e) =>
+                setLevel(
+                  e.target.value as "BEGINNER" | "INTERMEDIATE" | "ADVANCED",
+                )
+              }
               className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none focus:border-lime-500"
             >
               <option value="BEGINNER">

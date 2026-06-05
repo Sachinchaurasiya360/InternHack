@@ -130,6 +130,20 @@ export default function InterviewQuestionPage() {
     return () => clearTimeout(timeout);
   }, [isAuthenticated, questionId]);
 
+  // Analytics: fire-and-forget view ping (1 s after mount to avoid bounce noise)
+  useEffect(() => {
+    if (!questionId) return;
+    const t = setTimeout(() => {
+      api.post("/analytics/track", {
+        contentType: "INTERVIEW_QUESTION",
+        contentId: questionId,
+        timeSpentMs: 0,
+        completed: false,
+      }).catch(() => {});
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [questionId]);
+
   const handleToggleComplete = useCallback(async () => {
     if (!questionId || !isAuthenticated) return;
 
@@ -147,6 +161,16 @@ export default function InterviewQuestionPage() {
         updatedProgress.completedIds.includes(questionId);
 
       setCompleted(isNowCompleted);
+
+      // Analytics: track completion state change — fire-and-forget
+      if (isNowCompleted) {
+        api.post("/analytics/track", {
+          contentType: "INTERVIEW_QUESTION",
+          contentId: questionId,
+          timeSpentMs: 0,
+          completed: true,
+        }).catch(() => {});
+      }
 
       if (
         isNowCompleted &&

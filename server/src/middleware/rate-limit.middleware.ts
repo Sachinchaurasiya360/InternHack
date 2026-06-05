@@ -21,3 +21,17 @@ export const aiRoadmapLimiter = rateLimit({
     message: "Too many AI roadmap generation requests. Please try again later."
   },
 });
+
+export const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRateLimitStore("contact"),
+  keyGenerator: (req) => {
+    return req.ip || "unknown_ip";
+  },
+  message: {
+    message: "Too many contact submissions. Please try again later."
+  },
+});

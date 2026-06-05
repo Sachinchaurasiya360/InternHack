@@ -1,4 +1,4 @@
-﻿import crypto from "crypto";
+import crypto from "crypto";
 import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
@@ -12,6 +12,7 @@ const PROFILE_TTL = 300;
 
 const badgeService = new BadgeService();
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
+import { createUniqueProfileSlug } from "../../lib/slug.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
 import type { UserRole } from "@prisma/client";
@@ -169,6 +170,9 @@ export class AuthService {
       data: { verificationOtp: hashedOtp, otpExpiresAt },
     });
 
+    const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
+    (user as any).profileSlug = slug;
+
     // Send OTP email (fire-and-forget, don't block registration)
     sendEmail({
       to: user.email,
@@ -275,7 +279,10 @@ export class AuthService {
         },
       });
 
-      // Send welcome email (fire-and-forget) â€” temporarily disabled
+      const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
+      user.profileSlug = slug;
+
+      // Send welcome email (fire-and-forget) – temporarily disabled
       // sendEmail({
       //   to: user.email,
       //   subject: "Welcome to InternHack!",
@@ -296,6 +303,7 @@ export class AuthService {
     return {
       user: {
         id: user.id,
+        profileSlug: user.profileSlug,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -361,6 +369,7 @@ export class AuthService {
     return {
       user: {
         id: user.id,
+        profileSlug: user.profileSlug,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -382,6 +391,7 @@ export class AuthService {
     name: true,
     email: true,
     role: true,
+    profileSlug: true,
     isVerified: true,
     contactNo: true,
     profilePic: true,
@@ -510,31 +520,44 @@ export class AuthService {
     // Bust cached profile so next GET /auth/me returns fresh data
     await cacheDel(`profile:me:${userId}`);
     await cacheDel(`profile:public:${userId}`);
+    if (user.profileSlug) {
+      await cacheDel(`profile:public:${user.profileSlug}`);
+    }
 
     return user;
   }
 
-  async getPublicProfile(userId: number) {
-    const cacheKey = `profile:public:${userId}`;
+  async getPublicProfile(identifier: string) {
+    const cacheKey = `profile:public:${identifier}`;
     const cached = await cacheGet(cacheKey);
     if (cached) return cached as never;
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId, role: "STUDENT", isProfilePublic: true },
-      select: {
-        ...this.profileSelect,
-        verifiedSkills: {
-          select: { skillName: true, score: true, verifiedAt: true },
-        },
-        atsScores: {
-          select: { overallScore: true },
-          orderBy: { overallScore: "desc" },
-          take: 1,
-        },
+    const selectOptions = {
+      ...this.profileSelect,
+      verifiedSkills: {
+        select: { skillName: true, score: true, verifiedAt: true },
       },
+      atsScores: {
+        select: { overallScore: true },
+        orderBy: { overallScore: "desc" as const },
+        take: 1,
+      },
+    };
+
+    let user: any;
+    user = await prisma.user.findUnique({
+      where: { profileSlug: identifier },
+      select: selectOptions,
     });
 
-    if (!user) {
+    if (!user && /^\d+$/.test(identifier)) {
+      user = await prisma.user.findUnique({
+        where: { id: Number(identifier) },
+        select: selectOptions,
+      });
+    }
+
+    if (!user || user.role !== "STUDENT" || !user.isProfilePublic) {
       throw new Error("User not found");
     }
 
@@ -588,6 +611,7 @@ export class AuthService {
       },
       select: {
         id: true,
+        profileSlug: true,
         name: true,
         email: true,
         role: true,
@@ -872,6 +896,14 @@ export class AuthService {
       const now = Date.now();
       for (const [key, entry] of githubStatsCache) {
         if (entry.expiresAt <= now) githubStatsCache.delete(key);
+      }
+      while (githubStatsCache.size > 200) {
+        const oldestKey = githubStatsCache.keys().next().value;
+        if (oldestKey !== undefined) {
+          githubStatsCache.delete(oldestKey);
+        } else {
+          break;
+        }
       }
     }
 

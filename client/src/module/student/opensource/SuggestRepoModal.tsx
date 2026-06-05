@@ -276,9 +276,13 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
                 aria-invalid={!!urlError}
                 aria-describedby={urlError ? "suggest-url-error" : undefined}
               />
-              {urlError && (
+              {urlError ? (
                 <p id="suggest-url-error" className="mt-1 text-xs text-red-500">
                   {urlError}
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-gray-400">
+                  Format: https://github.com/owner/repo — we'll auto-fill the rest
                 </p>
               )}
             </div>

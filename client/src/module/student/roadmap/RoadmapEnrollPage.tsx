@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { useNavigate, useParams, Link } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
@@ -9,7 +9,6 @@ import {
   Target,
   ChevronLeft,
   ChevronRight,
-  Map as MapIcon,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -23,7 +22,6 @@ import type {
   EnrollmentGoal,
   ExperienceLevel,
   Roadmap,
-  RoadmapEnrollmentListItem,
 } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
