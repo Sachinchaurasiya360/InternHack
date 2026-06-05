@@ -334,17 +334,31 @@ export default function RepoDiscoveryPage() {
     return repos;
   }, [repos, showSaved, bookmarkedData]);
 
-  const stats = useMemo(() => {
-    if (!pagination) return null;
-    const totalStars = repos.reduce((s, r) => s + r.stars, 0);
-    const trendingCount = repos.filter((r) => r.trending).length;
-    return {
-      totalRepos: pagination.total,
-      totalStars: formatCount(totalStars),
-      trendingCount,
-      languages: [...new Set(repos.map((r) => r.language))].length,
-    };
-  }, [repos, pagination]);
+  // Global stats fetched independently so the header strip stays accurate
+  // regardless of active filters or page (replaces the old useMemo approach).
+  const { data: globalStats } = useQuery({
+    queryKey: queryKeys.opensource.stats(),
+    queryFn: () =>
+      api
+        .get<{
+          totalRepos: number;
+          totalStars: number;
+          trendingCount: number;
+          languageCount: number;
+          domainBreakdown: { domain: string; count: number }[];
+        }>("/opensource/stats")
+        .then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const stats = globalStats
+    ? {
+        totalRepos: globalStats.totalRepos,
+        totalStars: formatCount(globalStats.totalStars),
+        trendingCount: globalStats.trendingCount,
+        languages: globalStats.languageCount,
+      }
+    : null;
 
   const updateFilter = (key: string, value: string | number) => {
     setSearchParams(

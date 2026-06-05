@@ -13,6 +13,15 @@ import { parsePagination } from "../../utils/pagination.utils.js";
 const service = new OpensourceService();
 
 export class OpensourceController {
+  async getGlobalStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const stats = await service.getGlobalStats();
+      res.json(stats);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getLanguages(req: Request, res: Response, next: NextFunction) {
     try {
       const languages = await service.getLanguages();
