@@ -16,6 +16,12 @@ export class LeaveService {
     const employee = await prisma.employee.findUnique({ where: { id: employeeId } });
     if (!employee) throw new Error("Employee not found");
 
+    const start = new Date(data.startDate);
+    const end = new Date(data.endDate);
+    if (end < start) {
+      throw new Error("End date cannot be before start date");
+    }
+
     // Check balance
     const year = new Date(data.startDate).getFullYear();
     const balance = await prisma.leaveBalance.findUnique({
