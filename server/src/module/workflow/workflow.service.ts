@@ -25,7 +25,7 @@ export class WorkflowService {
         name: data.name,
         description: data.description ?? null,
         triggerEvent: data.triggerEvent,
-        steps: JSON.stringify(data.steps),
+        steps: data.steps as any,
         isActive: data.isActive,
       },
     });
@@ -46,7 +46,7 @@ export class WorkflowService {
     if (!definition) throw new Error("Workflow definition not found");
 
     const updateData: Record<string, unknown> = { ...data };
-    if (data.steps) updateData.steps = JSON.stringify(data.steps);
+    if (data.steps) updateData.steps = data.steps as any;
 
     return prisma.workflowDefinition.update({ where: { id }, data: updateData });
   }
@@ -75,7 +75,7 @@ export class WorkflowService {
         entityId,
         currentStep: 0,
         status: "ACTIVE",
-        stepHistory: JSON.stringify([]),
+        stepHistory: [],
       },
       include: { definition: { select: { name: true, steps: true } } },
     });
@@ -129,8 +129,8 @@ export class WorkflowService {
       validatedPerformedBy = performedBy;
     }
 
-    const steps = JSON.parse(instance.definition.steps as string) as unknown[];
-    const history = JSON.parse(instance.stepHistory as string) as StepHistoryEntry[];
+    const steps = instance.definition.steps as unknown[];
+    const history = instance.stepHistory as unknown as StepHistoryEntry[];
 
     history.push({
       step: instance.currentStep,
@@ -148,7 +148,7 @@ export class WorkflowService {
       data: {
         currentStep: isComplete ? instance.currentStep : nextStep,
         status: action === "REJECT" ? "CANCELLED" : isComplete ? "COMPLETED" : "ACTIVE",
-        stepHistory: JSON.stringify(history),
+        stepHistory: history as any,
       },
     });
   }
