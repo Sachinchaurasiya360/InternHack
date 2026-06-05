@@ -7,6 +7,7 @@ import { queryKeys } from "../../../../lib/query-keys";
 import type { DsaTopicDetail } from "../../../../lib/types";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { Callout } from "../../../../components/dsa-theory/primitives";
+import { DIFF_COLOR } from "../../../../lib/difficulty-colors";
 
 interface PracticeTabProps {
   topicSlug: string;
@@ -15,12 +16,6 @@ interface PracticeTabProps {
 }
 
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
-
-const DIFF_COLOR: Record<string, string> = {
-  Easy: "text-emerald-600 dark:text-emerald-400",
-  Medium: "text-amber-600 dark:text-amber-400",
-  Hard: "text-rose-600 dark:text-rose-400",
-};
 
 const DIFF_DOT: Record<string, string> = {
   Easy: "bg-emerald-500",

@@ -390,4 +390,5 @@ function ButtonArrow({ icon: Icon = ChevronDown, className, ...props }: ButtonAr
   return <Icon data-slot="button-arrow" className={cn('ms-auto -me-1', className)} {...props} />;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { Button, ButtonArrow, buttonVariants };

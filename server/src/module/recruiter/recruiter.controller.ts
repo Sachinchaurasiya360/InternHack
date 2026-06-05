@@ -119,6 +119,7 @@ export class RecruiterController {
       if (error instanceof Error) {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "Invalid round IDs") return res.status(400).json({ message: error.message });
       }
       logger.error("Failed to reorder rounds", error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -199,9 +200,9 @@ export class RecruiterController {
       return res.status(200).json({ message: "Application advanced to next round", application });
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message === "Application not found") return res.status(404).json({ message: error.message });
+        if (error.message === "Application not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
-        if (error.message === "No rounds defined for this job") return res.status(400).json({ message: error.message });
+        if (error.message === "No rounds are configured for this job. Please add at least one round before advancing applicants.") return res.status(422).json({ message: error.message });
       }
       logger.error("Failed to advance application", error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -251,8 +252,14 @@ export class RecruiterController {
       return res.status(200).json({ message: "Submission evaluated successfully", submission });
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message === "Application not found") return res.status(404).json({ message: error.message });
+// Fix for #1116: Catch our custom 422 JSON parse error from the service
+        const status = (error as Error & { status?: number }).status;
+        if (status === 422) return res.status(422).json({ message: error.message });
+
+        if (error.message === "Application not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "Withdrawn applications cannot participate in the hiring process") return res.status(400).json({ message: error.message });
+        if (error.message.startsWith("Evaluation score")) return res.status(400).json({ message: error.message });
       }
       logger.error("Failed to evaluate submission", error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -359,7 +366,8 @@ export class RecruiterController {
       const studentId = parseInt(String(req.params["studentId"]), 10);
       if (isNaN(studentId)) return res.status(400).json({ message: "Invalid student ID" });
 
-      await this.recruiterService.unsaveCandidate(req.user.id, studentId);
+      const count = await this.recruiterService.unsaveCandidate(req.user.id, studentId);
+      if (count === 0) return res.status(404).json({ message: "Candidate not found in saved list" });
       return res.status(200).json({ message: "Candidate removed" });
     } catch (error) {
       logger.error("Failed to unsave candidate", error);

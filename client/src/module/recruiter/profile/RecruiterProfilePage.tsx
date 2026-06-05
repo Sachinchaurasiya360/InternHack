@@ -15,6 +15,7 @@ import {
   AlignLeft,
 } from "lucide-react";
 import api from "../../../lib/axios";
+import { uploadDirectToS3 } from "../../../utils/upload";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
@@ -100,11 +101,22 @@ export default function RecruiterProfilePage() {
   const handleProfilePicSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // 1. Size Restriction
     if (file.size > MAX_IMAGE_SIZE) {
       toast.error("Image must be under 2 MB");
       if (picInputRef.current) picInputRef.current.value = "";
       return;
     }
+
+    // 2. Format Restriction (No webp allowed)
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only JPG and PNG formats are allowed");
+      if (picInputRef.current) picInputRef.current.value = "";
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => setCropSrc(reader.result as string);
     reader.readAsDataURL(file);
@@ -115,16 +127,24 @@ export default function RecruiterProfilePage() {
     setCropSrc(null);
     setUploadingPic(true);
     try {
-      const fd = new FormData();
-      fd.append("file", blob, "cropped.jpg");
-      const res = await api.post("/upload/profile-pic", fd, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const file = new File([blob], "cropped.jpg", { type: blob.type || "image/jpeg" });
+      const res = await uploadDirectToS3({
+        file,
+        folder: "profile-pics",
+        endpoint: "/profile-pic",
       });
-      const u = res.data.user;
-      setForm((prev) => ({ ...prev, profilePic: u.profilePic ?? "" }));
-      setUser({ ...user!, profilePic: u.profilePic ?? "" });
+
+      const u = res.user || res;
+      let imagePath = u.profilePic || u.fileUrl || u.url || "";
+      if (imagePath && !imagePath.startsWith("http")) {
+        imagePath = `${api.defaults.baseURL?.replace("/api", "") || "http://localhost:3000"}/${imagePath.replace(/^\//, "")}`;
+      }
+
+      setForm((prev) => ({ ...prev, profilePic: imagePath }));
+      setUser({ ...user!, profilePic: imagePath });
       toast.success("Profile picture updated!");
-    } catch {
+    } catch (error) {
+      console.error("Upload rendering error:", error);
       toast.error("Failed to upload profile picture");
     } finally {
       setUploadingPic(false);
@@ -291,7 +311,7 @@ export default function RecruiterProfilePage() {
             <input
               ref={picInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept=".jpg, .jpeg, .png"
               onChange={handleProfilePicSelect}
               className="hidden"
             />
@@ -404,7 +424,7 @@ export default function RecruiterProfilePage() {
         <textarea
           value={form.bio}
           onChange={(e) => handleChange("bio", e.target.value)}
-          className="w-full px-3 py-2.5 text-sm bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder:text-stone-400 focus:outline-none focus:border-lime-400 min-h-32 resize-none"
+          className="w-full px-3 py-2.5 text-sm bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder:text-stone-400 focus:outline-none focus:border-lime-400 min-h-32 resize-none"
           placeholder="Tell candidates a bit about yourself and your company…"
           maxLength={500}
         />

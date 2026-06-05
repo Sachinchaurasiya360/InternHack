@@ -245,8 +245,10 @@ function TwoSumTraceViz({ frame, nums, target }: { frame: TraceFrame; nums: numb
 
 function VisualizeTab() {
   const [inputStr, setInputStr] = useState("2,7,11,15 | 9");
-  const parsed = parseNumsTarget(inputStr) ?? { nums: [2, 7, 11, 15], target: 9 };
-  const frames = useMemo(() => buildTwoSumFrames(parsed.nums, parsed.target), [parsed]);
+  const frames = useMemo(() => {
+    const parsed = parseNumsTarget(inputStr) ?? { nums: [2, 7, 11, 15], target: 9 };
+    return buildTwoSumFrames(parsed.nums, parsed.target);
+  }, [inputStr]);
   const player = useStepPlayer(frames);
   const frame = player.current;
 
@@ -273,7 +275,7 @@ function VisualizeTab() {
       variables={<VariablesPanel vars={frame?.vars ?? {}} flashKeys={frame?.flashKey ? [frame.flashKey] : []} />}
     >
       {frame ? (
-        <TwoSumTraceViz frame={frame} nums={parsed.nums} target={parsed.target} />
+        <TwoSumTraceViz frame={frame} nums={(parseNumsTarget(inputStr) ?? { nums: [2, 7, 11, 15], target: 9 }).nums} target={(parseNumsTarget(inputStr) ?? { nums: [2, 7, 11, 15], target: 9 }).target} />
       ) : (
         <Callout>Press play to step through the algorithm.</Callout>
       )}
@@ -305,7 +307,8 @@ function PatternTrainer() {
   const [revealedApproach, setRevealedApproach] = useState(false);
 
   const problem = PROBLEMS[problemIdx];
-  const correctSet = new Set<Pattern>(problem.correctPatterns.filter((p) => PALETTE_IDS.has(p)));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const correctSet = useMemo(() => new Set<Pattern>(problem.correctPatterns.filter((p) => PALETTE_IDS.has(p))), [problemIdx]);
 
   function toggle(p: Pattern) {
     if (submitted) return;

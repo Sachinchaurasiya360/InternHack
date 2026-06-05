@@ -134,8 +134,8 @@ export class AptitudeService {
 
     await prisma.studentAptitudeProgress.upsert({
       where: { studentId_questionId: { studentId, questionId } },
-      create: { studentId, questionId, answered: true, correct: isCorrect },
-      update: { answered: true, correct: isCorrect },
+      create: { studentId, questionId, answered: true, correct: isCorrect , lastPracticedAt: new Date()},
+      update: { answered: true, correct: isCorrect, lastPracticedAt: new Date() },
     });
 
     // Fire-and-forget milestone check
@@ -250,13 +250,38 @@ export class AptitudeService {
     const total = await prisma.aptitudeQuestion.count();
     const progress = await prisma.studentAptitudeProgress.findMany({
       where: { studentId },
-      select: { correct: true },
+      select: { correct: true , lastPracticedAt: true},
     });
+    
+        // Calculate current streak from aptitude practice history (UTC-based to avoid timezone/DST issues)
+        const todayUTC = new Date();
+        todayUTC.setUTCHours(0, 0, 0, 0);
+        const yesterdayUTC = todayUTC.getTime() - 86400000;
+
+        const dates = [...new Set(progress.map((p) => {
+          const d = new Date(p.lastPracticedAt);
+          d.setUTCHours(0, 0, 0, 0);
+          return d.getTime();
+        }))].sort((a, b) => b - a);
+
+        let currentStreak = 0;
+        // Allow streak to start from today or yesterday (so user doesn't lose streak if they haven't practiced yet today)
+        let expected = dates[0] === todayUTC.getTime() ? todayUTC.getTime() : yesterdayUTC;
+
+        for (const dateMs of dates) {
+          if (dateMs === expected) {
+            currentStreak++;
+            expected -= 86400000;
+          } else if (dateMs < expected) {
+            break;
+          }
+        }    
 
     return {
       totalQuestions: total,
       totalAnswered: progress.length,
       totalCorrect: progress.filter((p) => p.correct).length,
+      currentStreak,
     };
   }
 }

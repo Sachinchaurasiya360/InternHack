@@ -100,7 +100,7 @@ export class BlogController {
 
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params["id"] || "", 10);
+      const id = parseInt((req.params["id"] as string) || "", 10);
       if (isNaN(id)) {
         res.status(400).json({ message: "Valid post ID is required" });
         return;
@@ -144,7 +144,7 @@ export class BlogController {
         return;
       }
 
-      const id = parseInt(req.params["id"] || "", 10);
+      const id = parseInt((req.params["id"] as string) || "", 10);
       if (isNaN(id)) {
         res.status(400).json({ message: "Valid post ID is required" });
         return;
@@ -179,7 +179,7 @@ export class BlogController {
         return;
       }
 
-      const id = parseInt(req.params["id"] || "", 10);
+      const id = parseInt((req.params["id"] as string) || "", 10);
       if (isNaN(id)) {
         res.status(400).json({ message: "Valid post ID is required" });
         return;
@@ -208,7 +208,7 @@ export class BlogController {
         return;
       }
 
-      const id = parseInt(req.params["id"] || "", 10);
+      const id = parseInt((req.params["id"] as string) || "", 10);
       if (isNaN(id)) {
         res.status(400).json({ message: "Valid post ID is required" });
         return;
@@ -237,7 +237,7 @@ export class BlogController {
         return;
       }
 
-      const id = parseInt(req.params["id"] || "", 10);
+      const id = parseInt((req.params["id"] as string) || "", 10);
       if (isNaN(id)) {
         res.status(400).json({ message: "Valid post ID is required" });
         return;

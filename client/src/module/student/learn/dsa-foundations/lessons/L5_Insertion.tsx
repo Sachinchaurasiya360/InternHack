@@ -285,7 +285,7 @@ function FloatingKey({ frame }: { frame: Frame | undefined }) {
 
 function VisualizeTab() {
   const [inputStr, setInputStr] = useState("5, 2, 4, 6, 1, 3");
-  const parsed = parseArr(inputStr) ?? [5, 2, 4, 6, 1, 3];
+  const parsed = useMemo(() => parseArr(inputStr) ?? [5, 2, 4, 6, 1, 3], [inputStr]);
 
   const frames = useMemo(() => buildFrames(parsed), [parsed]);
   const player = useStepPlayer(frames);

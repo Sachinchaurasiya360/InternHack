@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import toast from "../../../components/ui/toast";
+import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate } from "react-router";
 import {
   ArrowLeft,
@@ -73,18 +75,49 @@ export default function ApplicationDetail() {
   );
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
 
-  const fetchDetail = () => {
-    api
-      .get(`/recruiter/applications/${applicationId}`)
-      .then((res) => {
-        setApplication(res.data.application);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  };
+const fetchDetail = useCallback(async (signal) => {
+    try {
+      const res = await api.get(
+        `/recruiter/applications/${applicationId}`,
+        { signal }
+      );
+      return res.data.application;
+    } catch (err) {
+      if (err.name !== "CanceledError" && err.name !== "AbortError") {
+        console.error(err);
+      }
+      throw err;
+    }
+  }, [applicationId]);
 
   useEffect(() => {
-    fetchDetail();
+    const controller = new AbortController();
+    let isMounted = true;
+
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const applicationData = await fetchDetail(controller.signal);
+        
+        if (isMounted) {
+          setApplication(applicationData);
+        }
+      } catch (err) {
+        // Errors are already logged in fetchDetail, handled here to prevent crashes
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [applicationId, fetchDetail]);
   }, [applicationId]);
 
   useEffect(() => {
@@ -92,7 +125,7 @@ export default function ApplicationDetail() {
       api
         .get(`/skill-tests/verified/${application.student.id}`)
         .then((res) => setVerifiedSkills(res.data.verifiedSkills || []))
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [application?.student?.id]);
 
@@ -100,8 +133,9 @@ export default function ApplicationDetail() {
     try {
       await api.patch(`/recruiter/applications/${applicationId}/advance`);
       fetchDetail();
+      toast.success("Application advanced");
     } catch {
-      alert("Failed to advance");
+      toast.error("Failed to advance");
     }
   };
 
@@ -111,8 +145,9 @@ export default function ApplicationDetail() {
         status,
       });
       fetchDetail();
+      toast.success("Status updated");
     } catch {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 
@@ -129,6 +164,10 @@ export default function ApplicationDetail() {
       </div>
     );
 
+  const studentName = application.student?.name || "Account deleted";
+  const studentEmail = application.student?.email || "";
+  const studentContact = application.student?.contactNo || "";
+
   return (
     <div className="max-w-4xl mx-auto">
       <SEO title="Application Detail" noIndex />
@@ -143,17 +182,24 @@ export default function ApplicationDetail() {
       <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              {application.student?.name}
-            </h1>
-            <p className="text-gray-500 dark:text-gray-500">
-              {application.student?.email}
-            </p>
-            {application.student?.contactNo && (
-              <p className="text-sm text-gray-400 dark:text-gray-500">
-                {application.student.contactNo}
-              </p>
-            )}
+<h1 className="text-xl font-bold text-gray-900 dark:text-white">
+  {studentName}
+</h1>
+{studentEmail && (
+  <p className="text-gray-500 dark:text-gray-500">
+    {studentEmail}
+  </p>
+)}
+{studentContact && (
+  <p className="text-sm text-gray-400 dark:text-gray-500">
+    {studentContact}
+  </p>
+)}
+{!application.student && (
+  <p className="text-xs text-gray-400 mt-1">
+    This student account has been deleted.
+  </p>
+)}
           </div>
           <div className="flex items-center gap-2">
             <select
@@ -184,15 +230,24 @@ export default function ApplicationDetail() {
               label="Application Resume"
             />
           )}
-          {application.student?.resumes &&
-            application.student.resumes.length > 0 &&
-            application.student.resumes.map((url, i) => (
-              <ResumeLink
-                key={i}
-                url={url}
-                label={`Profile Resume${application.student!.resumes!.length > 1 ? ` ${i + 1}` : ""}`}
-              />
-            ))}
+{application.student?.resumes &&
+  application.student.resumes.length > 0 &&
+  application.student.resumes.map((url, i) => {
+    // 1. Keep main's URL formatting logic so broken relative paths don't happen
+    const absoluteUrl = url.startsWith("http") ? url : `${SERVER_URL}${url}`;
+    
+    // 2. Keep main's cleaner, non-null-asserted label logic
+    const totalResumes = application.student?.resumes?.length || 0;
+    const label = `Profile Resume${totalResumes > 1 ? ` ${i + 1}` : ""}`;
+
+    return (
+      <ResumeLink
+        key={i}
+        url={absoluteUrl}
+        label={label}
+      />
+    );
+  })}
           {application.coverLetter && (
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500">
               <FileText className="w-4 h-4" /> Cover letter attached
@@ -206,28 +261,34 @@ export default function ApplicationDetail() {
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold dark:text-white flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-green-500" /> Verified Skills
+              <ShieldCheck className="w-5 h-5 text-green-500 dark:text-green-400" /> Verified Skills
             </h2>
-            {application.job?.tags &&
-              application.job.tags.length > 0 &&
-              (() => {
-                const verifiedNames = new Set(
-                  verifiedSkills.map((v) => v.skillName.toLowerCase()),
-                );
-                const matched = application.job!.tags.filter((t) =>
-                  verifiedNames.has(t.toLowerCase()),
-                ).length;
-                const pct = Math.round(
-                  (matched / application.job!.tags.length) * 100,
-                );
-                return (
-                  <span
-                    className={`text-sm font-semibold px-3 py-1 rounded-full ${pct >= 70 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : pct >= 40 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"}`}
-                  >
-                    {pct}% skill match
-                  </span>
-                );
-              })()}
+{application.job?.tags &&
+  application.job.tags.length > 0 &&
+  (() => {
+    const verifiedNames = new Set(
+      verifiedSkills.map((v) => v.skillName.toLowerCase())
+    );
+    const matched = application.job.tags.filter((t) =>
+      verifiedNames.has(t.toLowerCase())
+    ).length;
+    const pct = Math.round(
+      (matched / application.job.tags.length) * 100
+    );
+    return (
+      <span
+        className={`text-sm font-semibold px-3 py-1 rounded-full ${
+          pct >= 70
+            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+            : pct >= 40
+            ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+            : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+        }`}
+      >
+        {pct}% skill match
+      </span>
+    );
+  })()}
           </div>
           <div className="flex flex-wrap gap-2">
             {verifiedSkills.map((vs) => (
@@ -364,31 +425,16 @@ export default function ApplicationDetail() {
 
 function getStatusIcon(status: string) {
   switch (status) {
-    case "COMPLETED":
-      return <CheckCircle className="w-4 h-4 text-green-500" />;
+case "COMPLETED":
+      return <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />;
     case "IN_PROGRESS":
-      return <Clock className="w-4 h-4 text-yellow-500" />;
+      return <Clock className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />;
     case "PENDING":
-      return <Clock className="w-4 h-4 text-gray-400" />;
+      return <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />;
     default:
-      return <XCircle className="w-4 h-4 text-red-500" />;
+      return <XCircle className="w-4 h-4 text-red-500 dark:text-red-400" />;
   }
 }
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "APPLIED":
-      return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
-    case "IN_PROGRESS":
-      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
-    case "SHORTLISTED":
-      return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
-    case "REJECTED":
-      return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
-    case "HIRED":
-      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
-    default:
-      return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
   }
 }
 

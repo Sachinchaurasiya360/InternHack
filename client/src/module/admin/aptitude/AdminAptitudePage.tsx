@@ -114,9 +114,8 @@ export default function AdminAptitudePage() {
       .catch(() => setLoading(false));
   }, [search]);
 
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
   const fetchQuestions = useCallback((topicId: number, page: number = 1) => {
     setQuestionsLoading(true);

@@ -342,7 +342,7 @@ function KosarajuGraph({
 function KosarajuVisualizer() {
   const ids = KOSARAJU_IDS;
   const edges = KOSARAJU_EDGES;
-  const frames = useMemo(() => buildKosarajuFrames(ids, edges), []);
+  const frames = useMemo(() => buildKosarajuFrames(ids, edges), [ids, edges]);
   const player = useStepPlayer(frames);
   const frame = player.current;
 
@@ -643,7 +643,7 @@ function FWMatrix({ frame }: { frame: FWFrame }) {
 function FloydWarshallVisualizer() {
   const ids = FW_IDS;
   const edges = FW_EDGES;
-  const frames = useMemo(() => buildFWFrames(ids, edges), []);
+  const frames = useMemo(() => buildFWFrames(ids, edges), [ids, edges]);
   const player = useStepPlayer(frames, 600);
   const frame = player.current;
 
