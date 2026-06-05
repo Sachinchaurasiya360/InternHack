@@ -47,6 +47,10 @@ export default function GuideListPage({
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
   const totalEstimatedTime = steps.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+  const completedMinutes = steps
+    .filter((s) => completed.has(s.id))
+    .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
+  const remainingMinutes = totalEstimatedTime - completedMinutes;
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
@@ -99,7 +103,7 @@ export default function GuideListPage({
           { icon: Icon, value: totalSteps, label: "Sections", iconColor },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
-          { icon: ArrowRight, value: `${totalEstimatedTime} min`, label: "Estimated Time", iconColor: "text-indigo-500" },
+          { icon: ArrowRight, value: allDone ? "Done!" : completed.size > 0 ? `${remainingMinutes} min left` : `${totalEstimatedTime} min total`, label: "Est. Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
