@@ -71,10 +71,8 @@ export class CoverLetterController {
         targetWords:    result.data.targetWords ?? 300,
       }).catch(() => {});
 
-      await prisma.usageLog.create({ data: { userId: req.user.id, action: "COVER_LETTER" as UsageAction } });
-
       const usage = req.usageInfo
-        ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit }
+        ? { used: req.usageInfo.used, limit: req.usageInfo.limit }
         : undefined;
 
       res.json({ message: "Cover letter generated successfully", coverLetter, usage });

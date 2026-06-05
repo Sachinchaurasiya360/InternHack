@@ -71,10 +71,8 @@ export class ResumeGenController {
   },
 });
 
-      await prisma.usageLog.create({ data: { userId: req.user.id, action: "GENERATE_RESUME" as UsageAction } });
-
       const usage = req.usageInfo
-        ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit }
+        ? { used: req.usageInfo.used, limit: req.usageInfo.limit }
         : undefined;
 
       res.json({ message: "Resume generated successfully", latex, usage });

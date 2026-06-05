@@ -14,41 +14,63 @@ export function usageLimit(action: UsageAction) {
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);
 
-      // Run both DB calls in parallel - they are fully independent.
-      const [user, used] = await Promise.all([
-        prisma.user.findUnique({
-          where: { id: req.user.id },
-          select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
-        }),
-        prisma.usageLog.count({
+      // Atomically check the limit AND create the usage log inside a
+      // single transaction so concurrent requests cannot both pass.
+      const result = await prisma.$transaction(async (tx) => {
+        // Lock the user row so concurrent requests for the same user
+        // are serialised (prevents the race where two requests both
+        // read the same count before either writes).
+        const rows = await tx.$queryRawUnsafe<
+          { id: string; subscriptionPlan: string; subscriptionStatus: string | null; subscriptionEndDate: Date | null }[]
+        >(
+          `SELECT id, "subscriptionPlan", "subscriptionStatus", "subscriptionEndDate" FROM "User" WHERE id = $1 FOR UPDATE`,
+          req.user.id,
+        );
+        const user = rows?.[0];
+
+        if (!user) {
+          return { kind: "no-user" as const };
+        }
+
+        const used = await tx.usageLog.count({
           where: {
             userId: req.user.id,
             action,
             createdAt: { gte: startOfDay },
           },
-        }),
-      ]);
-
-      if (!user) {
-        res.status(401).json({ message: "User not found" });
-        return;
-      }
-
-      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
-      const limit = DAILY_LIMITS[action][tier];
-
-      if (used >= limit) {
-        res.status(429).json({
-          message: tier === "FREE"
-            ? "Daily limit reached. Upgrade to Premium for higher limits."
-            : "Daily limit reached. Try again tomorrow.",
-          usage: { used, limit, action, tier },
         });
-        return;
-      }
 
-      (req as any).usageInfo = { used, limit, action, tier };
-      next();
+        const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
+        const limit = DAILY_LIMITS[action][tier];
+
+        if (used >= limit) {
+          return { kind: "over-limit" as const, used, limit, action, tier };
+        }
+
+        // Pre-reserve the slot inside the same transaction — the
+        // controller will skip its own create call when it sees this flag.
+        await tx.usageLog.create({ data: { userId: req.user.id, action } });
+
+        return { kind: "ok" as const, used: used + 1, limit, action, tier };
+      });
+
+      switch (result.kind) {
+        case "no-user":
+          res.status(401).json({ message: "User not found" });
+          return;
+        case "over-limit":
+          res.status(429).json({
+            message: result.tier === "FREE"
+              ? "Daily limit reached. Upgrade to Premium for higher limits."
+              : "Daily limit reached. Try again tomorrow.",
+            usage: { used: result.used, limit: result.limit, action: result.action, tier: result.tier },
+          });
+          return;
+        case "ok":
+          (req as any).usageInfo = { used: result.used, limit: result.limit, action: result.action, tier: result.tier };
+          (req as any).usageLogCreated = true;
+          next();
+      }
     } catch (err) {
       next(err);
     }

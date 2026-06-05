@@ -64,10 +64,9 @@ describe("StudentService.applyToExternalJob", () => {
     mocks.prisma.$transaction.mockImplementation(async (callback) => callback(mocks.tx));
   });
 
-  it("creates the application and usage log in one transaction", async () => {
+  it("creates the application in a transaction", async () => {
     mocks.prisma.adminJob.findUnique.mockResolvedValue(activeJob);
     mocks.tx.externalJobApplication.create.mockResolvedValue(createdApplication);
-    mocks.tx.usageLog.create.mockResolvedValue({ id: 401 });
 
     await expect(service.applyToExternalJob(44, 23)).resolves.toEqual(createdApplication);
 
@@ -80,19 +79,23 @@ describe("StudentService.applyToExternalJob", () => {
         },
       },
     });
-    expect(mocks.tx.usageLog.create).toHaveBeenCalledWith({
-      data: { userId: 44, action: "JOB_APPLICATION" },
-    });
     expect(mocks.prisma.externalJobApplication.create).not.toHaveBeenCalled();
-    expect(mocks.prisma.usageLog.create).not.toHaveBeenCalled();
   });
 
-  it("does not run post-commit work when usage logging fails", async () => {
+  it("runs post-commit work after successful create", async () => {
     mocks.prisma.adminJob.findUnique.mockResolvedValue(activeJob);
     mocks.tx.externalJobApplication.create.mockResolvedValue(createdApplication);
-    mocks.tx.usageLog.create.mockRejectedValue(new Error("Usage log unavailable"));
 
-    await expect(service.applyToExternalJob(44, 23)).rejects.toThrow("Usage log unavailable");
+    await service.applyToExternalJob(44, 23);
+    expect(mocks.badgeService.checkAndAwardBadges).toHaveBeenCalled();
+    expect(checkApplicationMilestoneSpy).toHaveBeenCalled();
+  });
+
+  it("does not run post-commit work when application fails", async () => {
+    mocks.prisma.adminJob.findUnique.mockResolvedValue(activeJob);
+    mocks.tx.externalJobApplication.create.mockRejectedValue(new Error("DB error"));
+
+    await expect(service.applyToExternalJob(44, 23)).rejects.toThrow("DB error");
     expect(mocks.badgeService.checkAndAwardBadges).not.toHaveBeenCalled();
     expect(checkApplicationMilestoneSpy).not.toHaveBeenCalled();
   });
