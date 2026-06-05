@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -78,7 +78,7 @@ export default function RepoDiscoveryPage() {
   const search = searchParams.get("q") || "";
   const selectedDomain = searchParams.get("domain") || "ALL";
   const selectedDifficulty = searchParams.get("difficulty") || "ALL";
-  const selectedLanguage = searchParams.getAll("language") || "ALL";
+  const selectedLanguage = searchParams.getAll("language");
   const sortKey = searchParams.get("sort") || "stars";
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
@@ -163,7 +163,7 @@ export default function RepoDiscoveryPage() {
     }, { replace: true });
   };
 
-  const handleCloseRepo = () => {
+  const handleCloseRepo = useCallback(() => {
     setSelectedRepo(null);
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
@@ -171,7 +171,7 @@ export default function RepoDiscoveryPage() {
       return params;
     }, { replace: true });
     setCopiedShareUrl(false);
-  };
+  }, [setSearchParams]);
 
   // Deep-link support: load a repo from URL on first render
   const initialRepoId = searchParams.get("repo");
@@ -260,13 +260,6 @@ export default function RepoDiscoveryPage() {
   const languages = useMemo(() => {
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
   }, [languagesData]);
-
-  const isMyLanguagesActive = useMemo(() => {
-    if (!inferredLanguages.length) return false;
-    if (selectedLanguage.length !== inferredLanguages.length) return false;
-
-    return inferredLanguages.every((l) => selectedLanguage.includes(l));
-  }, [inferredLanguages, selectedLanguage]);
 
   const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
@@ -360,7 +353,7 @@ export default function RepoDiscoveryPage() {
       // Restore focus to the card that opened the modal
       previousFocusRef.current?.focus();
     };
-  }, [selectedRepo]);
+  }, [selectedRepo, handleCloseRepo]);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -530,13 +523,13 @@ export default function RepoDiscoveryPage() {
             {!isMyRequestsLoading && isMyRequestsError && (
               <div className="flex items-center justify-between py-2 px-1">
                 <p className="text-sm text-red-500">Failed to load submissions</p>
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => refetchMyRequests()}
-                  className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent"
                 >
                   Retry ↻
-                </button>
+                </Button>
               </div>
             )}
 
@@ -580,15 +573,16 @@ export default function RepoDiscoveryPage() {
                 )}
 
                 {myRequests.length > 3 && (
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setShowAllSubmissions((v) => !v)}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
+                    className="mt-1"
                   >
                     {showAllSubmissions
                       ? "Show less ↑"
                       : `Show all ${myRequests.length} →`}
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
@@ -743,11 +737,12 @@ export default function RepoDiscoveryPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
+                  <label htmlFor="language-filter" className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     language
                   </label>
                   <select
-                    value={selectedLanguage}
+                    id="language-filter"
+                    value={selectedLanguage[0] || "ALL"}
                     disabled={languageMode === "auto"}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -833,7 +828,6 @@ export default function RepoDiscoveryPage() {
             <p className="text-sm text-stone-500 dark:text-stone-400">There was an error fetching the list. Please try again later.</p>
           </div>
         )}
-
         {/* Empty */}
         {!isLoading && !isError && repos.length === 0 && (
           <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">

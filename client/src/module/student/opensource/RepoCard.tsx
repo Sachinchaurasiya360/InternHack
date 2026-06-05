@@ -19,6 +19,7 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
 
   return (
     <motion.div
+      role="listitem"
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -27,7 +28,6 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
       className="h-full"
     >
       <button
-        role="listitem"
         aria-label={`${repo.name} by ${repo.owner}, ${repo.difficulty} difficulty, ${repo.stars} stars, ${repo.openIssues} open issues`}
         onClick={() => onSelect(repo)}
         className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"

@@ -2,29 +2,29 @@ import { useState, useCallback, useEffect } from "react";
 import { Copy, Check } from "lucide-react";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 
-// @ts-ignore - react-syntax-highlighter lacks types for deep esm imports
+// @ts-expect-error - react-syntax-highlighter lacks types for deep esm imports
 import markup from "react-syntax-highlighter/dist/esm/languages/prism/markup";
-// @ts-ignore
+// @ts-expect-error
 import css from "react-syntax-highlighter/dist/esm/languages/prism/css";
-// @ts-ignore
+// @ts-expect-error
 import javascript from "react-syntax-highlighter/dist/esm/languages/prism/javascript";
-// @ts-ignore
+// @ts-expect-error
 import typescript from "react-syntax-highlighter/dist/esm/languages/prism/typescript";
-// @ts-ignore
+// @ts-expect-error
 import jsx from "react-syntax-highlighter/dist/esm/languages/prism/jsx";
-// @ts-ignore
+// @ts-expect-error
 import tsx from "react-syntax-highlighter/dist/esm/languages/prism/tsx";
-// @ts-ignore
+// @ts-expect-error
 import python from "react-syntax-highlighter/dist/esm/languages/prism/python";
-// @ts-ignore
+// @ts-expect-error
 import bash from "react-syntax-highlighter/dist/esm/languages/prism/bash";
-// @ts-ignore
+// @ts-expect-error
 import solidity from "react-syntax-highlighter/dist/esm/languages/prism/solidity";
-// @ts-ignore
+// @ts-expect-error
 import json from "react-syntax-highlighter/dist/esm/languages/prism/json";
-// @ts-ignore
+// @ts-expect-error
 import sql from "react-syntax-highlighter/dist/esm/languages/prism/sql";
-// @ts-ignore
+// @ts-expect-error
 import { vscDarkPlus, prism } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { useThemeStore } from "../../lib/theme.store";

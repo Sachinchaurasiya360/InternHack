@@ -76,6 +76,9 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRating(saved);
       setSubmitted(true);
+    } else {
+      setRating(null);
+      setSubmitted(false);
     }
   }, [step, basePath]);
 
@@ -193,7 +196,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
               {step.step} / {steps.length}
             </span>
             {!dismissedHint && (
-              <span className="hidden sm:inline-flex text-[10px] font-mono text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">
+              <span className="hidden sm:inline-flex text-xs font-mono text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">
                 ← → keys
               </span>
             )}
@@ -330,14 +333,14 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
             <Button
               onClick={() => submitFeedback("up")}
               disabled={submitted}
-              variant={rating === "up" ? "mono" : "outline"}
+              variant={rating === "up" ? "mono" : "secondary"}
             >
               👍 Thumbs Up
             </Button>
             <Button
               onClick={() => submitFeedback("down")}
               disabled={submitted}
-              variant={rating === "down" ? "mono" : "outline"}
+              variant={rating === "down" ? "mono" : "secondary"}
             >
               👎 Thumbs Down
             </Button>
