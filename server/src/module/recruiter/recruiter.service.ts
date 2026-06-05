@@ -197,18 +197,9 @@ export class RecruiterService {
   }
 
   async reorderRounds(jobId: number, recruiterId: number, rounds: { roundId: number; orderIndex: number }[]) {
-    // Empty array guard
-    if (!rounds?.length) return [];
-
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
-    
-    // Duplicate roundId validation
-    const uniqueIds = new Set(rounds.map((r) => r.roundId));
-    if (uniqueIds.size !== rounds.length) {
-      throw new Error("Duplicate round IDs in reorder payload");
-    }
 
     const existingRounds = await prisma.round.findMany({
       where: {
@@ -222,21 +213,20 @@ export class RecruiterService {
       throw new Error("Invalid round IDs");
     }
 
-    // Safe reordering with two-pass update strategy to avoid unique constraint violations
+    // Use a transaction with temporary high indices to avoid unique constraint conflicts
     await prisma.$transaction(async (tx) => {
-      // First pass: move to temporary high indices to clear existing spots
-      for (const round of rounds) {
+      // First, set all to temporary high values
+      for (const r of rounds) {
         await tx.round.update({
-          where: { id: round.roundId, jobId },
-          data: { orderIndex: round.orderIndex + 10000 },
+          where: { id: r.roundId },
+          data: { orderIndex: r.orderIndex + 10000 },
         });
       }
-
-      // Second pass: set final indices
-      for (const round of rounds) {
+      // Then set to final values
+      for (const r of rounds) {
         await tx.round.update({
-          where: { id: round.roundId, jobId },
-          data: { orderIndex: round.orderIndex },
+          where: { id: r.roundId },
+          data: { orderIndex: r.orderIndex },
         });
       }
     });
@@ -298,7 +288,7 @@ export class RecruiterService {
       if (app.student) for (const u of app.student.resumes) allUrls.add(u);
     }
     const urlArr = [...allUrls];
-    const signedArr = await Promise.all( urlArr.map((u) => (isValidS3Url(u) ? signUrl(u) : Promise.resolve(u))),);
+    const signedArr = await Promise.all(urlArr.map((u) => (isValidS3Url(u) ? signUrl(u) : Promise.resolve(u))),);
     const signedMap = new Map(urlArr.map((u, i) => [u, signedArr[i]!]));
 
     const signed = applications.map((app) => ({
@@ -338,14 +328,15 @@ export class RecruiterService {
 
     return {
       ...application,
-      resumeUrl: application.resumeUrl && isValidS3Url(application.resumeUrl)? await signUrl(application.resumeUrl) : application.resumeUrl,
-      student: application.student? { ...application.student, resumes: await Promise.all(
-        application.student.resumes.map((u) =>
-          isValidS3Url(u) ? signUrl(u) : Promise.resolve(u),
+      resumeUrl: application.resumeUrl && isValidS3Url(application.resumeUrl) ? await signUrl(application.resumeUrl) : application.resumeUrl,
+      student: application.student ? {
+        ...application.student, resumes: await Promise.all(
+          application.student.resumes.map((u) =>
+            isValidS3Url(u) ? signUrl(u) : Promise.resolve(u),
+          ),
         ),
-      ),
-    }
-  : application.student,
+      }
+        : application.student,
     };
   }
 
@@ -367,9 +358,8 @@ export class RecruiterService {
       return current;
     }
 
-    const updated = await prisma.application.update({
-      where: { id: applicationId },
-      data: { status },
+    const updated = await prisma.$transaction(async (tx) => {
+      return this._updateApplicationStatus(tx, applicationId, status, recruiterId);
     });
 
     if (isEmailableStatus(status) && application.student.email) {
@@ -428,10 +418,7 @@ export class RecruiterService {
       const nextIndex = currentIndex + 1;
       if (nextIndex >= rounds.length) {
         // All rounds completed
-        return tx.application.update({
-          where: { id: applicationId },
-          data: { status: "SHORTLISTED" },
-        });
+        return this._updateApplicationStatus(tx, applicationId, "SHORTLISTED", recruiterId);
       }
 
       const nextRound = rounds[nextIndex];
@@ -444,9 +431,8 @@ export class RecruiterService {
         create: { applicationId, roundId: nextRound.id, status: "IN_PROGRESS" },
       });
 
-      return tx.application.update({
-        where: { id: applicationId },
-        data: { currentRoundId: nextRound.id, status: "IN_PROGRESS" },
+      return this._updateApplicationStatus(tx, applicationId, "IN_PROGRESS", recruiterId, {
+        currentRoundId: nextRound.id,
       });
     });
   }
@@ -559,7 +545,7 @@ export class RecruiterService {
         student: { applications: { some: { job: { recruiterId } } } },
       },
       _count: { id: true },
-      orderBy: [{ _count: { id: "desc" } }, { skillName: "asc" }],
+      orderBy: { _count: { id: "desc" } },
       take: 5,
     });
 
@@ -606,9 +592,6 @@ export class RecruiterService {
       statusCounts[s.status] = s._count.id;
     }
 
-    const hiredCount = statusCounts["HIRED"] || 0;
-    const conversionRate = totalApplications === 0 ? 0 : (hiredCount / totalApplications) * 100;
-
     const roundAnalytics = rounds.map((round) => {
       const completed = round.roundSubmissions.filter((s) => s.status === "COMPLETED").length;
       const inProgress = round.roundSubmissions.filter((s) => s.status === "IN_PROGRESS").length;
@@ -631,8 +614,6 @@ export class RecruiterService {
       totalApplications,
       statusBreakdown: statusCounts,
       roundAnalytics,
-      hiredCount,
-      conversionRate,
     };
   }
 
@@ -823,4 +804,35 @@ export class RecruiterService {
     });
     return count;
   }
+  private async _updateApplicationStatus(
+    tx: Prisma.TransactionClient,
+    applicationId: number,
+    newStatus: ApplicationStatus,
+    recruiterId: number,
+    additionalData: Prisma.applicationUpdateInput = {}
+  ) {
+    const current = await tx.application.findUnique({
+      where: { id: applicationId },
+      select: { status: true },
+    });
+
+    if (!current) throw new Error("Application not found");
+
+    if (current.status !== newStatus) {
+      await tx.applicationStatusHistory.create({
+        data: {
+          applicationId,
+          fromStatus: current.status,
+          toStatus: newStatus,
+          changedBy: recruiterId,
+        },
+      });
+    }
+
+    return tx.application.update({
+      where: { id: applicationId },
+      data: { ...additionalData, status: newStatus },
+    });
+  }
 }
+
