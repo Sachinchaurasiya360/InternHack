@@ -9,6 +9,7 @@ datasource db {
 model user {
   id                    Int                         @id @default(autoincrement())
   name                  String
+  profileSlug           String?                     @unique
   email                 String                      @unique
   password              String
   role                  UserRole                    @default(STUDENT)
@@ -95,6 +96,7 @@ model user {
   recommendation            userRecommendation?          @relation("UserRecommendation")
   hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
   contentViews              contentView[]                @relation("UserContentViews")
+  statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -198,8 +200,9 @@ model application {
   updatedAt          DateTime          @updatedAt
   job                job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   student            user              @relation("StudentApplications", fields: [studentId], references: [id], onDelete: Cascade)
-  interviews         interview[]       @relation("ApplicationInterviews")
+  interviews         interview[]                  @relation("ApplicationInterviews")
   roundSubmissions   roundSubmission[]
+  statusHistory      applicationStatusHistory[]
 
   @@unique([jobId, studentId])
   @@index([jobId])
@@ -207,6 +210,19 @@ model application {
   @@index([status])
   @@index([createdAt])
   @@index([jobId, status])
+}
+
+model applicationStatusHistory {
+  id            Int               @id @default(autoincrement())
+  applicationId Int
+  fromStatus    ApplicationStatus
+  toStatus      ApplicationStatus
+  changedBy     Int?
+  changedAt     DateTime          @default(now())
+  application   application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  changer       user?             @relation("ChangerStatusHistory", fields: [changedBy], references: [id], onDelete: SetNull)
+
+  @@index([applicationId])
 }
 
 model roundSubmission {
@@ -1470,4 +1486,50 @@ model contentView {
   @@index([contentType, contentId])
   @@index([userId])
   @@index([createdAt])
+}
+
+model aiServiceConfig {
+  id          Int            @id @default(autoincrement())
+  service     AIServiceType  @unique
+  provider    AIProviderType @default(GEMINI)
+  modelName   String         @default("gemini-2.5-flash-lite")
+  updatedAt   DateTime       @updatedAt
+  requestLogs aiRequestLog[]
+}
+
+model aiRequestLog {
+  id              Int             @id @default(autoincrement())
+  serviceConfigId Int
+  service         AIServiceType
+  providerName    AIProviderType
+  modelName       String
+  latencyMs       Int
+  inputTokens     Int?
+  outputTokens    Int?
+  success         Boolean         @default(true)
+  errorMessage    String?
+  userId          Int?
+  createdAt       DateTime        @default(now())
+  serviceConfig   aiServiceConfig @relation(fields: [serviceConfigId], references: [id], onDelete: Cascade)
+
+  @@index([providerName, createdAt])
+  @@index([service, createdAt])
+  @@index([createdAt])
+}
+
+enum AIProviderType {
+  GEMINI
+  GROQ
+  OPENROUTER
+  CODESTRAL
+  CLAUDE
+}
+
+enum AIServiceType {
+  ATS_SCORE
+  COVER_LETTER
+  RESUME_GEN
+  LATEX_CHAT
+  EMAIL_CHAT
+  AI_ROADMAP_GENERATION
 }
