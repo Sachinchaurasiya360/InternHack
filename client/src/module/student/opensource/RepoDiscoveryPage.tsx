@@ -29,6 +29,7 @@ import api from "../../../lib/axios";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 import { queryKeys } from "../../../lib/query-keys";
 import { SEO } from "../../../components/SEO";
+import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import type { OpenSourceRepo, Pagination, RepoRequest } from "../../../lib/types";
@@ -231,6 +232,7 @@ export default function RepoDiscoveryPage() {
 
   useEffect(() => {
     if (deepLinkError) {
+      toast.error("Could not load the linked repository. It may not exist or has been removed.");
       setSearchParams((prev) => {
         const params = new URLSearchParams(prev);
         params.delete("repo");

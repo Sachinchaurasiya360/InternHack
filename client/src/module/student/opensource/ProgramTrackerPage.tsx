@@ -6,6 +6,13 @@ import {
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 
+function nextDate(month: number, day: number, hour = 23, minute = 59): string {
+  const now = new Date();
+  const d = new Date(Date.UTC(now.getFullYear(), month - 1, day, hour, minute, 0));
+  if (d <= now) d.setUTCFullYear(d.getUTCFullYear() + 1);
+  return d.toISOString();
+}
+
 // ─── Data ──────────────────────────────────────────────────────
 interface Program {
   id: number;
@@ -83,7 +90,7 @@ const PROGRAMS: Program[] = [
       "Write a detailed proposal (problem statement, timeline, milestones)",
       "Submit via the GSoC portal before the deadline",
     ],
-    applicationDeadline: "2026-04-19T23:59:00Z",
+    applicationDeadline: nextDate(4, 19),
   },
   {
     id: 2,
@@ -129,7 +136,7 @@ const PROGRAMS: Program[] = [
       "Complete any take-home tasks if requested",
       "Wait for mentor selection notification",
     ],
-    applicationDeadline: "2026-05-15T23:59:00Z",
+    applicationDeadline: nextDate(5, 15),
   },
   {
     id: 3,
@@ -230,8 +237,8 @@ const PROGRAMS: Program[] = [
       "Make contributions to 1–2 projects during the contribution period",
       "Submit a final application with your contribution summary",
     ],
-    applicationStart: "2026-02-06T16:00:00Z",
-    applicationDeadline: "2026-02-13T16:00:00Z",
+    applicationStart: nextDate(2, 6, 16, 0),
+    applicationDeadline: nextDate(2, 13, 16, 0),
   },
   {
     id: 5,
