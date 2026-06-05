@@ -231,7 +231,7 @@ export default function InterviewSectionPage() {
                     key={level}
                     variant="ghost" 
                     onClick={() => setActiveDifficulty(level)}
-                    className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md transition-all cursor-pointer ${
+                    className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md transition-all cursor-pointer ${
                       activeDifficulty === level
                         ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm"
                         : "bg-transparent border-transparent shadow-none text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800"
