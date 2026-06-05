@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Mail, Globe, Clock3, Bug, Loader2, Send, CheckCircle, AlertCircle, User, Tag, MessageSquare } from "lucide-react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
@@ -44,7 +45,17 @@ export default function ContactPage() {
         {/* Header */}
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
-            Contact Us
+            Contact{" "}
+            <span className="relative inline-block">
+              <span className="relative z-10">Us</span>
+              <motion.span
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+                aria-hidden
+                className="absolute bottom-1 left-0 right-0 h-3 bg-lime-400 origin-left -z-0"
+              />
+            </span>
           </h1>
           <p className="text-base text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
             We'd love to hear from you. Reach out for support, feedback,
@@ -65,7 +76,7 @@ export default function ContactPage() {
                 <input
                   id="name" name="name" value={formData.name} onChange={handleChange} required
                   placeholder="Your name"
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
                 />
               </div>
             </div>
@@ -78,7 +89,7 @@ export default function ContactPage() {
                 <input
                   id="email" name="email" type="email" value={formData.email} onChange={handleChange} required
                   placeholder="you@example.com"
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
                 />
               </div>
             </div>
@@ -92,7 +103,7 @@ export default function ContactPage() {
               <input
                 id="subject" name="subject" value={formData.subject} onChange={handleChange} required
                 placeholder="What's this about?"
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
               />
             </div>
           </div>
@@ -105,7 +116,7 @@ export default function ContactPage() {
               <textarea
                 id="message" name="message" rows={5} value={formData.message} onChange={handleChange} required
                 placeholder="Tell us what's on your mind..."
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500 resize-y"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500 resize-y"
               />
             </div>
           </div>
