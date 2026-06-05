@@ -11,6 +11,12 @@ export const createReviewSchema = z.object({
     achieved: z.string().optional(),
     weight: z.number().min(0).max(100).optional(),
   })).default([]),
+}).refine((data) => {
+  const sum = data.goals.reduce((acc, curr) => acc + (curr.weight ?? 0), 0);
+  return sum <= 100;
+}, {
+  message: "Total goals weight cannot exceed 100%",
+  path: ["goals"],
 });
 
 export const updateReviewSchema = z.object({
