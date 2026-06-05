@@ -123,9 +123,14 @@ export default function ApplicationsList() {
       <div className="flex items-center gap-3 mb-6">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search applicants"
             className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
-            placeholder="Search by name or email..." />
+            placeholder="Search by name or email..."
+          />
         </div>
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-gray-400 dark:text-gray-500" />
