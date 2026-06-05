@@ -183,6 +183,7 @@ model round {
   roundSubmissions    roundSubmission[]
 
   @@unique([jobId, orderIndex])
+  @@unique([jobId, name])
   @@index([jobId])
 }
 
