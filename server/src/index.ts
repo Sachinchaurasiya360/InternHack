@@ -17,6 +17,7 @@ import { scraperRouter, scraperController } from "./module/scraper/scraper.route
 import { signalsRouter, signalsController } from "./module/signals/signals.routes.js";
 import { interviewExperienceRouter } from "./module/interview-experience/interview-experience.routes.js";
 import { atsRouter } from "./module/ats/ats.routes.js";
+import { resumeRouter } from "./module/resume/resume.routes.js";
 import { companyRouter } from "./module/company/company.routes.js";
 import { adminRouter } from "./module/admin/admin.routes.js";
 import { AdminService } from "./module/admin/admin.service.js";
@@ -240,6 +241,7 @@ app.use("/api/scraped-jobs", scraperRouter);
 app.use("/api/signals", signalsRouter);
 app.use("/api/interviews", interviewExperienceRouter);
 app.use("/api/ats", atsRouter);
+app.use("/api/resume", resumeRouter);
 app.use("/api/companies", companyRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/newsletter", newsletterRouter);
