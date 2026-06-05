@@ -22,8 +22,10 @@ interface ActivityResponse {
 const formatActivityDate = (date: string) => {
   const [year, month, day] = date.split("-").map(Number);
   return new Date(year, (month ?? 1) - 1, day ?? 1).toLocaleDateString(undefined, {
-    month: "long",
+    weekday: "short",
+    month: "short",
     day: "numeric",
+    year: "numeric",
   });
 };
 
@@ -59,12 +61,8 @@ export const OssContributionHeatmap = React.memo(function OssContributionHeatmap
   const heatmapData = useMemo(() => {
     if (!data || data.length === 0) return null;
 
-    // Sort ascending
     const sorted = [...data].sort((a, b) => a.date.localeCompare(b.date));
 
-    if (!compact) return sorted;
-
-    // For compact mode, filter to last 3 months
     if (compact) {
       const threeMonthsAgo = new Date();
       threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
@@ -73,12 +71,11 @@ export const OssContributionHeatmap = React.memo(function OssContributionHeatmap
       return filtered.length > 0 ? filtered : sorted;
     }
 
-    // Filter by selected year
     const yearStr = selectedYear.toString();
     return sorted.filter(d => d.date.startsWith(yearStr));
   }, [data, compact, selectedYear]);
 
-  // Ensure the calendar has every single day of the year/period
+  // Fill every day in the range so the calendar renders a complete grid
   const calendarData = useMemo(() => {
     let startDate: Date;
     let endDate: Date;
@@ -89,26 +86,20 @@ export const OssContributionHeatmap = React.memo(function OssContributionHeatmap
       startDate.setMonth(startDate.getMonth() - 3);
     } else {
       const currentYear = new Date().getFullYear();
-      startDate = new Date(selectedYear, 0, 1); // Jan 1st
-      if (selectedYear === currentYear) {
-        endDate = new Date(); // Today
-      } else {
-        endDate = new Date(selectedYear, 11, 31); // Dec 31st
-      }
+      startDate = new Date(selectedYear, 0, 1);
+      endDate = selectedYear === currentYear ? new Date() : new Date(selectedYear, 11, 31);
     }
 
-    // Generate all days in range
     const allDays: ActivityResponse[] = [];
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       allDays.push({
         date: d.toISOString().split("T")[0]!,
         count: 0,
         level: 0,
-        details: { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 }
+        details: { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 },
       });
     }
 
-    // Merge with actual data
     if (heatmapData) {
       const dataMap = new Map(heatmapData.map(d => [d.date, d]));
       return allDays.map(day => dataMap.get(day.date) || day);
@@ -117,16 +108,17 @@ export const OssContributionHeatmap = React.memo(function OssContributionHeatmap
     return allDays;
   }, [heatmapData, compact, selectedYear]);
 
+  // ── Loading skeleton ──────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className={`rounded-2xl border p-6 ${isDark ? "bg-stone-900 border-white/10" : "bg-white border-stone-200"}`}>
-        <div className="h-32 flex items-center justify-center">
-          <div className="flex gap-1">
-            {[...Array(5)].map((_, i) => (
+      <div className={`rounded-md border p-3 ${isDark ? "bg-[#0d1117] border-[#30363d]" : "bg-white border-[#d0d7de]"}`}>
+        <div className="h-[120px] flex items-center justify-center">
+          <div className="flex gap-[3px]">
+            {[...Array(7)].map((_, i) => (
               <div
                 key={i}
-                className={`w-2 h-2 rounded-sm animate-pulse ${isDark ? "bg-stone-800" : "bg-stone-200"}`}
-                style={{ animationDelay: `${i * 100}ms` }}
+                className={`w-[10px] h-[10px] rounded-sm animate-pulse ${isDark ? "bg-[#161b22]" : "bg-[#ebedf0]"}`}
+                style={{ animationDelay: `${i * 80}ms` }}
               />
             ))}
           </div>
@@ -137,63 +129,68 @@ export const OssContributionHeatmap = React.memo(function OssContributionHeatmap
 
   if (isError) {
     return (
-      <div className={`rounded-2xl border p-6 text-center ${isDark ? "bg-stone-900 border-white/10" : "bg-white border-stone-200"}`}>
-        <p className={`text-sm ${isDark ? "text-stone-500" : "text-stone-400"}`}>Could not load activity data.</p>
+      <div className={`rounded-md border p-3 text-center ${isDark ? "bg-[#0d1117] border-[#30363d]" : "bg-white border-[#d0d7de]"}`}>
+        <p className={`text-xs ${isDark ? "text-[#8b949e]" : "text-[#57606a]"}`}>Could not load activity data.</p>
       </div>
     );
   }
 
   const totalActivity = heatmapData?.reduce((sum, d) => sum + d.count, 0) ?? 0;
+  const periodLabel = compact ? "the last 3 months" : String(selectedYear);
 
   return (
-    <div className={`rounded-2xl border ${isDark ? "bg-stone-900 border-white/10" : "bg-white border-stone-200"} p-5 shadow-sm`}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <h3 className={`text-sm font-semibold ${isDark ? "text-stone-50" : "text-stone-900"}`}>
-            {compact ? "Recent Contributions" : "Open Source Activity"}
-          </h3>
-          <p className={`text-xs mt-0.5 ${isDark ? "text-stone-400" : "text-stone-500"}`}>
-            {totalActivity > 0
-              ? `${totalActivity} total activities in ${compact ? "the past 3 months" : selectedYear}`
-              : `No activity recorded in ${compact ? "the past 3 months" : selectedYear}`}
-          </p>
-        </div>
+    <div className={`rounded-md border ${isDark ? "bg-[#0d1117] border-[#30363d]" : "bg-white border-[#d0d7de]"}`}>
+      {/* Header — GitHub style: "X contributions in …" with year tabs */}
+      <div className={`flex items-center justify-between px-4 py-3 border-b ${isDark ? "border-[#30363d]" : "border-[#d0d7de]"}`}>
+        <h2 className={`text-sm font-normal ${isDark ? "text-[#e6edf3]" : "text-[#1f2328]"}`}>
+          <span className="font-semibold">{totalActivity.toLocaleString()}</span>{" "}
+          {totalActivity === 1 ? "contribution" : "contributions"} in {periodLabel}
+        </h2>
+
         {!compact && availableYears.length > 1 && (
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium border focus:outline-none transition-colors cursor-pointer ${
-              isDark 
-                ? "bg-stone-800 border-white/10 text-stone-300 hover:border-white/20" 
-                : "bg-stone-100 border-stone-200 text-stone-700 hover:border-stone-300"
-            }`}
-          >
+          <div className="flex gap-1">
             {availableYears.map(year => (
-              <option key={year} value={year}>{year}</option>
+              <button
+                key={year}
+                type="button"
+                onClick={() => setSelectedYear(year)}
+                className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
+                  year === selectedYear
+                    ? isDark
+                      ? "bg-[#1f6feb] text-white"
+                      : "bg-[#0969da] text-white"
+                    : isDark
+                      ? "text-[#8b949e] hover:text-[#e6edf3]"
+                      : "text-[#57606a] hover:text-[#1f2328]"
+                }`}
+              >
+                {year}
+              </button>
             ))}
-          </select>
+          </div>
         )}
       </div>
 
-      {/* Calendar */}
-      <div className="w-full overflow-x-auto">
+      {/* Calendar grid */}
+      <div className="px-4 py-3 overflow-x-auto">
         <ActivityCalendar
           data={calendarData}
           theme={{
-            light: ["#f5f5f4", "#d9f99d", "#84cc16", "#4d7c0f", "#3f6212"],
-            dark: ["#292524", "#d9f99d", "#84cc16", "#4d7c0f", "#3f6212"],
+            light: ["#ebedf0", "#9be9a7", "#40c463", "#30a14e", "#216e39"],
+            dark: ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"],
           }}
           colorScheme={isDark ? "dark" : "light"}
-          blockSize={compact ? 11 : 13}
-          blockMargin={compact ? 3 : 4}
+          blockSize={compact ? 10 : 11}
+          blockMargin={compact ? 2 : 3}
           blockRadius={2}
-          fontSize={11}
+          fontSize={10}
           showMonthLabels={true}
+          hideTotalCount
+          hideColorLegend
           labels={{
             months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-            totalCount: "{{count}} activities in {{year}}",
+            totalCount: "{{count}} contributions in {{year}}",
             legend: { less: "Less", more: "More" },
           }}
           renderBlock={(block, activity) => {
@@ -202,16 +199,17 @@ export const OssContributionHeatmap = React.memo(function OssContributionHeatmap
             const total = act.count;
             const details = act.details || { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
             const dateStr = formatActivityDate(act.date);
-            let tooltipContent = total > 0
-              ? `${dateStr} — ${total} activit${total === 1 ? "y" : "ies"}`
-              : `${dateStr} — No activity`;
 
+            let tooltipContent: string;
             if (total > 0) {
               const parts: string[] = [];
               if (details.guideSteps) parts.push(`${details.guideSteps} guide step${details.guideSteps > 1 ? "s" : ""}`);
               if (details.repoSuggestions) parts.push(`${details.repoSuggestions} repo suggestion${details.repoSuggestions > 1 ? "s" : ""}`);
               if (details.prsMerged) parts.push(`${details.prsMerged} PR${details.prsMerged > 1 ? "s" : ""} merged`);
-              if (parts.length > 0) tooltipContent += ` (${parts.join(", ")})`;
+              tooltipContent = `${total} contribution${total !== 1 ? "s" : ""} on ${dateStr}`;
+              if (parts.length > 0) tooltipContent += `\n${parts.join(" · ")}`;
+            } else {
+              tooltipContent = `No contributions on ${dateStr}`;
             }
 
             return React.cloneElement(block, {
@@ -222,13 +220,37 @@ export const OssContributionHeatmap = React.memo(function OssContributionHeatmap
                   id={tooltipId}
                   place="top"
                   variant={isDark ? "dark" : "light"}
-                  className="!text-xs !rounded-lg !py-1.5 !px-2.5 !opacity-100 z-50"
+                  className="!text-[11px] !leading-snug !rounded-md !py-1.5 !px-2.5 !opacity-100 !z-50 whitespace-pre-line"
+                  style={{
+                    backgroundColor: isDark ? "#1c2128" : "#24292f",
+                    color: isDark ? "#e6edf3" : "#ffffff",
+                    border: isDark ? "1px solid #30363d" : "none",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.14)",
+                  }}
                 />
               ),
             });
           }}
         />
       </div>
+
+      {/* Footer — Less/More legend (GitHub style) */}
+      <div className={`flex items-center justify-end gap-1.5 px-4 pb-3 pt-0`}>
+        <span className={`text-[10px] ${isDark ? "text-[#8b949e]" : "text-[#57606a]"}`}>Less</span>
+        {(isDark
+          ? ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"]
+          : ["#ebedf0", "#9be9a7", "#40c463", "#30a14e", "#216e39"]
+        ).map((color, i) => (
+          <div
+            key={i}
+            className="w-[10px] h-[10px] rounded-sm"
+            style={{ backgroundColor: color }}
+          />
+        ))}
+        <span className={`text-[10px] ${isDark ? "text-[#8b949e]" : "text-[#57606a]"}`}>More</span>
+      </div>
     </div>
   );
 });
+
+export default OssContributionHeatmap;
