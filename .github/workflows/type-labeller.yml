@@ -14,14 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Path-based labeling (Stacking)
-        uses: actions/labeler@8558fd74291d67161a8a71d18e815d9c05aaec3e
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: .github/labeler-rules.yml
-          sync-labels: false # Protect manual mentor/admin tier overrides
-
-      - name: Keyword-based labeling
+      - name: Detect and apply type labels
         uses: actions/github-script@v7
         with:
           script: |
@@ -35,6 +28,19 @@ jobs:
             };
 
             // ── Label definitions ──────────────────────────────────────────
+            const typeLabels = [
+              'type:bug',
+              'type:feature',
+              'type:docs',
+              'type:testing',
+              'type:security',
+              'type:performance',
+              'type:design',
+              'type:refactor',
+              'type:devops',
+              'type:accessibility'
+            ];
+
             const labelMeta = {
               'type:bug':           { color: 'd73a4a', description: 'Something is broken or incorrect' },
               'type:feature':       { color: '0075ca', description: 'New feature or enhancement' },
@@ -48,6 +54,7 @@ jobs:
               'type:accessibility': { color: 'bfd4f2', description: 'Accessibility improvements' }
             };
 
+            // ── Keyword rules (title + branch) ─────────────────────────────
             const keywordRules = [
               {
                 label: 'type:bug',
@@ -58,8 +65,32 @@ jobs:
                 keywords: ['feat', 'feature', 'add', 'new', 'implement', 'enhance', 'improvement', 'support']
               },
               {
+                label: 'type:docs',
+                keywords: ['doc', 'docs', 'documentation', 'readme', 'changelog', 'wiki', 'comment', 'guide']
+              },
+              {
+                label: 'type:testing',
+                keywords: ['test', 'tests', 'spec', 'e2e', 'unit', 'integration', 'coverage', 'jest', 'cypress']
+              },
+              {
+                label: 'type:security',
+                keywords: ['security', 'auth', 'vuln', 'vulnerability', 'cve', 'sanitize', 'escape', 'xss', 'csrf', 'permission', 'token', 'secret']
+              },
+              {
+                label: 'type:performance',
+                keywords: ['perf', 'performance', 'speed', 'optimize', 'optim', 'cache', 'lazy', 'memo', 'slow', 'fast', 'bundle', 'compress']
+              },
+              {
+                label: 'type:design',
+                keywords: ['design', 'style', 'styles', 'css', 'ui', 'ux', 'layout', 'theme', 'color', 'responsive', 'animation', 'font', 'icon']
+              },
+              {
                 label: 'type:refactor',
                 keywords: ['refactor', 'cleanup', 'clean', 'restructure', 'reorganize', 'rename', 'move', 'simplify', 'extract']
+              },
+              {
+                label: 'type:devops',
+                keywords: ['ci', 'cd', 'pipeline', 'workflow', 'action', 'deploy', 'docker', 'infra', 'helm', 'config', 'env', 'build', 'release', 'devops', 'github-actions']
               },
               {
                 label: 'type:accessibility',
@@ -67,22 +98,59 @@ jobs:
               }
             ];
 
-            async function ensureLabelsExist(labels) {
-              for (const name of labels) {
-                if (labelMeta[name]) {
-                  try {
-                    await github.rest.issues.getLabel({ ...repo, name });
-                  } catch (err) {
-                    if (err.status !== 404) throw err;
-                    await github.rest.issues.createLabel({
-                      ...repo,
-                      name,
-                      color: labelMeta[name].color,
-                      description: labelMeta[name].description
-                    });
-                  }
+            // ── File path rules ────────────────────────────────────────────
+            const fileRules = [
+              {
+                label: 'type:docs',
+                patterns: [/\.md$/i, /\.mdx$/i, /^docs\//i, /readme/i, /changelog/i, /^wiki\//i]
+              },
+              {
+                label: 'type:testing',
+                patterns: [/\.test\.(js|jsx|ts|tsx)$/i, /\.spec\.(js|jsx|ts|tsx)$/i, /\/__tests__\//i, /\/tests?\//i, /cypress\//i, /jest\.config/i]
+              },
+              {
+                label: 'type:devops',
+                patterns: [/^\.github\/workflows\//i, /^\.github\/actions\//i, /dockerfile/i, /docker-compose/i, /\.yaml$/i, /\.yml$/i, /^infra\//i, /^helm\//i]
+              },
+              {
+                label: 'type:design',
+                patterns: [/\.css$/i, /\.scss$/i, /\.sass$/i, /\.less$/i, /tailwind\.config/i, /theme\.(js|ts)/i, /style(s)?\.(js|ts)/i]
+              },
+              {
+                label: 'type:security',
+                patterns: [/auth\.(js|ts|jsx|tsx)/i, /middleware\/auth/i, /jwt/i, /token/i, /\.env/i]
+              },
+              {
+                label: 'type:performance',
+                patterns: [/lazy/i, /memo/i, /cache/i, /bundle/i, /optimize/i, /webpack/i, /vite\.config/i]
+              }
+            ];
+
+            // ── Helpers ────────────────────────────────────────────────────
+            async function ensureTypeLabelsExist() {
+              for (const [name, meta] of Object.entries(labelMeta)) {
+                try {
+                  await github.rest.issues.getLabel({ ...repo, name });
+                } catch (err) {
+                  if (err.status !== 404) throw err;
+                  await github.rest.issues.createLabel({
+                    ...repo,
+                    name,
+                    color: meta.color,
+                    description: meta.description
+                  });
+                  console.log(`Created missing label: ${name}`);
                 }
               }
+            }
+
+            async function getChangedFiles() {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                ...repo,
+                pull_number: prNumber,
+                per_page: 100
+              });
+              return files.map(f => f.filename);
             }
 
             async function getCurrentLabels() {
@@ -93,25 +161,53 @@ jobs:
               return issue.labels.map(l => (typeof l === 'string' ? l : l.name));
             }
 
-            const combinedText = `${prTitle} ${branchName}`;
-            const detectedLabels = new Set();
-            for (const rule of keywordRules) {
-              if (rule.keywords.some(kw => combinedText.includes(kw))) {
-                detectedLabels.add(rule.label);
+            function detectFromText(text, rules) {
+              const matched = new Set();
+              for (const rule of rules) {
+                if (rule.keywords.some(kw => text.includes(kw))) {
+                  matched.add(rule.label);
+                }
               }
+              return matched;
             }
 
-            if (detectedLabels.size > 0) {
-              await ensureLabelsExist([...detectedLabels]);
-              const currentLabels = await getCurrentLabels();
-              const labelsToAdd = [...detectedLabels].filter(l => !currentLabels.includes(l));
-              
-              if (labelsToAdd.length > 0) {
-                await github.rest.issues.addLabels({
-                  ...repo,
-                  issue_number: prNumber,
-                  labels: labelsToAdd
-                });
-                console.log(`Added keyword-based labels: ${labelsToAdd.join(', ')}`);
+            function detectFromFiles(filenames, rules) {
+              const matched = new Set();
+              for (const rule of rules) {
+                if (filenames.some(f => rule.patterns.some(p => p.test(f)))) {
+                  matched.add(rule.label);
+                }
               }
+              return matched;
+            }
+
+            // ── Main ───────────────────────────────────────────────────────
+            const combinedText = `${prTitle} ${branchName}`;
+            const changedFiles = await getChangedFiles();
+
+            const detectedLabels = new Set([
+              ...detectFromText(combinedText, keywordRules),
+              ...detectFromFiles(changedFiles, fileRules)
+            ]);
+
+            console.log(`PR #${prNumber} | Title: "${pr.title}" | Branch: "${pr.head.ref}"`);
+            console.log(`Files changed: ${changedFiles.length}`);
+            console.log(`Detected type labels: ${[...detectedLabels].join(', ') || 'none'}`);
+
+            await ensureTypeLabelsExist();
+
+            const currentLabels = await getCurrentLabels();
+
+            // Append-only mode: never remove existing type labels so mentor/manual labels persist.
+            // This also allows multi-type stacking for point bonuses.
+            const labelsToAdd = [...detectedLabels].filter(l => !currentLabels.includes(l));
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                ...repo,
+                issue_number: prNumber,
+                labels: labelsToAdd
+              });
+              console.log(`Added type labels: ${labelsToAdd.join(', ')}`);
+            } else {
+              console.log('No new type labels to add — all detected labels already present.');
             }

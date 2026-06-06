@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createEmployeeSchema = z.object({
+const employeeSchema = z.object({
   userId: z.number().int().positive().nullable().optional(),
   employeeCode: z.string().min(1, "Employee code is required").max(20),
   firstName: z.string().min(1, "First name is required").max(100),
@@ -43,7 +43,15 @@ export const createEmployeeSchema = z.object({
   }).optional(),
 });
 
-export const updateEmployeeSchema = createEmployeeSchema.partial().omit({ employeeCode: true });
+export const createEmployeeSchema = employeeSchema.refine(
+  (data) => data.dateOfBirth === undefined || new Date(data.dateOfBirth) < new Date(),
+  { message: "dateOfBirth must be in the past", path: ["dateOfBirth"] }
+);
+
+export const updateEmployeeSchema = employeeSchema.partial().omit({ employeeCode: true }).refine(
+  (data) => data.dateOfBirth === undefined || new Date(data.dateOfBirth) < new Date(),
+  { message: "dateOfBirth must be in the past", path: ["dateOfBirth"] }
+);
 
 export const updateStatusSchema = z.object({
   status: z.enum(["ONBOARDING", "ACTIVE", "ON_LEAVE", "ON_PROBATION", "NOTICE_PERIOD", "EXITED", "ALUMNI"]),

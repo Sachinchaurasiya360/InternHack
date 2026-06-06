@@ -19,13 +19,18 @@ export const payrollQuerySchema = z.object({
   employeeId: z.coerce.number().int().positive().optional(),
 });
 
-export const contractorPaymentSchema = z.object({
-  employeeId: z.number().int().positive(),
-  invoiceNumber: z.string().max(50).optional(),
-  amount: z.number().positive(),
-  currency: z.string().max(10).default("INR"),
-  description: z.string().min(1).max(500),
-  periodStart: z.string().datetime(),
-  periodEnd: z.string().datetime(),
-  invoiceUrl: z.string().url().optional(),
-});
+export const contractorPaymentSchema = z
+  .object({
+    employeeId: z.number().int().positive(),
+    invoiceNumber: z.string().max(50).optional(),
+    amount: z.number().positive(),
+    currency: z.string().max(10).default("INR"),
+    description: z.string().min(1).max(500),
+    periodStart: z.string().datetime(),
+    periodEnd: z.string().datetime(),
+    invoiceUrl: z.string().url().optional(),
+  })
+  .refine((data) => new Date(data.periodEnd) > new Date(data.periodStart), {
+    message: "periodEnd must be after periodStart",
+    path: ["periodEnd"],
+  });
