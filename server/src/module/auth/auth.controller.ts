@@ -144,12 +144,12 @@ export class AuthController {
         return res.status(403).json({ message: "Not authorized" });
       }
 
-      const id = Number(req.params["id"]);
-      if (!id || isNaN(id)) {
-        return res.status(400).json({ message: "Invalid user ID" });
+      const identifier = (req.params["identifier"] || req.params["id"]) as string;
+      if (!identifier) {
+        return res.status(400).json({ message: "Invalid user identifier" });
       }
 
-      const profile = await this.authService.getPublicProfile(id);
+      const profile = await this.authService.getPublicProfile(identifier);
       return res.status(200).json({ profile });
     } catch (error) {
       if (error instanceof Error && error.message === "User not found") {
@@ -254,7 +254,12 @@ export class AuthController {
       await this.authService.resetPassword(email, otp, newPassword);
       return res.json({ message: "Password reset successfully" });
     } catch (err: unknown) {
-      return res.status(400).json({ message: err instanceof Error ? err.message : "Password reset failed" });
+      const errorMessage = err instanceof Error ? err.message : "Password reset failed";
+      // Return 429 for lockout/rate-limit errors, 400 for other validation errors
+      const statusCode = errorMessage.includes("Too many failed attempts") || errorMessage.includes("locked for")
+        ? 429
+        : 400;
+      return res.status(statusCode).json({ message: errorMessage });
     }
   }
 }

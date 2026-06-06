@@ -253,25 +253,19 @@ export default function OpenSourceLandingPage() {
           </motion.div>
 
           {/* Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.12 }}
-            className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-none text-stone-900 dark:text-stone-50"
-          >
-            Discover &amp;
-            <br />
+          <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Discover and{" "}
             <span className="relative inline-block align-baseline">
-              <span className="relative z-10">Contribute.</span>
+              <span className="relative z-10">contribute.</span>
               <motion.span
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 0.7, delay: 0.9, ease: "easeOut" }}
+                transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
                 aria-hidden
-                className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
               />
             </span>
-          </motion.h1>
+          </h1>
 
           {/* Body */}
           <motion.p

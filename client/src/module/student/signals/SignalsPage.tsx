@@ -147,7 +147,8 @@ export default function SignalsPage() {
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="pb-16"
+      // FIX: Added max-w-6xl mx-auto px-4 sm:px-8 to align with the rest of the site
+      className="max-w-6xl mx-auto px-4 sm:px-8 py-8 pb-16"
     >
       <SEO title={copy.seoTitle} noIndex />
 
@@ -164,7 +165,7 @@ export default function SignalsPage() {
                   animate={{ scaleX: 1 }}
                   transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
                   aria-hidden
-                  className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                  className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
                 />
               </span>
             </>
@@ -178,7 +179,7 @@ export default function SignalsPage() {
                   animate={{ scaleX: 1 }}
                   transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
                   aria-hidden
-                  className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                  className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
                 />
               </span>
             </>
@@ -192,7 +193,7 @@ export default function SignalsPage() {
                   animate={{ scaleX: 1 }}
                   transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
                   aria-hidden
-                  className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                  className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
                 />
               </span>
             </>

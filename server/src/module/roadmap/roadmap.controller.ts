@@ -14,12 +14,14 @@ import {
   roadmapSlugParam,
   topicSlugParam,
   updateProgressSchema,
+  updateRoadmapSchema,
 } from "./roadmap.validation.js";
 import {
   buildWeeklyPlan,
   getEnrollmentAnalyticsForUser,
-  enrollUser,
+    enrollUser,
   findDuplicateRoadmap,
+  getEnrollmentByRoadmapSlugForUser,
   getEnrollmentForUser,
   getRoadmapBySlug,
   getTopicBySlug,
@@ -54,7 +56,7 @@ export async function getRoadmaps(req: Request, res: Response, next: NextFunctio
       validationError(res, parsed.error.flatten().fieldErrors);
       return;
     }
-    const data = await listPublishedRoadmaps(parsed.data);
+    const data = await listPublishedRoadmaps({ ...parsed.data, userId: req.user?.id });
     res.json(data);
   } catch (err) {
     next(err);
@@ -264,6 +266,28 @@ export async function getMyEnrollments(req: Request, res: Response, next: NextFu
   }
 }
 
+export async function getMyEnrollmentByRoadmapSlug(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = roadmapSlugParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    const enrollment = await getEnrollmentByRoadmapSlugForUser({
+      userId: req.user!.id,
+      slug: params.data.slug,
+    });
+
+    res.json({
+      enrolled: Boolean(enrollment),
+      enrollment,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getMyEnrollment(req: Request, res: Response, next: NextFunction) {
   try {
     const params = enrollmentIdParam.safeParse(req.params);
@@ -365,6 +389,62 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
       return;
     }
     next(err);
+  }
+}
+export async function updateRoadmap(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const slug = Array.isArray(req.params.slug)
+      ? req.params.slug[0]
+      : req.params.slug;
+
+    if (!slug) {
+      return res.status(400).json({
+        message: "Slug is required",
+      });
+    }
+
+    const result =
+      updateRoadmapSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        errors: result.error.flatten(),
+      });
+    }
+
+    const roadmap =
+      await prisma.roadmap.findUnique({
+        where: { slug },
+      });
+
+    if (!roadmap) {
+      return res.status(404).json({
+        message: "Roadmap not found",
+      });
+    }
+
+    const user = req.user;
+    if (!user || roadmap.ownerUserId !== user.id) {
+      return res.status(403).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const updatedRoadmap =
+      await prisma.roadmap.update({
+        where: { slug },
+        data: result.data,
+      });
+
+    return res.json({
+      roadmap: updatedRoadmap,
+    });
+  } catch (error) {
+    next(error);
   }
 }
 

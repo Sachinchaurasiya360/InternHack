@@ -62,6 +62,7 @@ import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
 import { recommendationRouter } from "./module/recommendation/recommendation.routes.js";
 import { learnRouter } from "./module/learn/learn.routes.js";
+import analyticsRouter from "./module/analytics/analytics.routes.js";
 import { healthRouter } from "./module/health/health.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
@@ -72,6 +73,7 @@ import { startAIPipelineCrons, stopAIPipelineCrons } from "./cron/internhack-ai.
 import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
+import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
@@ -86,6 +88,18 @@ for (const key of REQUIRED_ENV) {
     throw new Error(`Missing required environment variable: ${key}`);
   }
 }
+
+// ── Enforce Redis in production ──
+// Without REDIS_URL, rate limiters use per-process MemoryStore which is
+// trivially bypassable when multiple instances run behind a load balancer.
+if (process.env["NODE_ENV"] === "production" && !process.env["REDIS_URL"]) {
+  throw new Error(
+    "REDIS_URL is required in production. " +
+    "In-memory rate-limit stores are per-process and unsafe behind a load balancer. " +
+    "Set REDIS_URL or use NODE_ENV=development for local testing.",
+  );
+}
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -114,7 +128,7 @@ app.use(
         scriptSrc: ["'self'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
-        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com"],
+        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com", "https://intern-hack-prod-bucket.s3.ap-south-1.amazonaws.com"],
         frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com", "blob:"],
         fontSrc: ["'self'", "https:", "data:"],
       },
@@ -267,6 +281,7 @@ app.use("/api/hr/analytics", hrAnalyticsRouter);
 app.use("/api/email-inbound", emailInboundRouter);
 app.use("/api/milestones", milestoneRouter);
 app.use("/api/roadmaps", roadmapRouter);
+app.use("/api/analytics", analyticsRouter);
 app.use("/api/learn", learnRouter);
 
 // Contact form (public, no auth)
@@ -387,6 +402,14 @@ const server = app.listen(PORT, async () => {
   } else {
     logger.info("Weekly digest cron disabled on this process");
   }
+
+  // Start the weekly analytics report cron (every Sunday at midnight)
+  startAnalyticsReportCron();
+  shutdownManager.register({
+    name: "Analytics Report Cron",
+    priority: 10,
+    fn: () => stopAnalyticsReportCron(),
+  });
 
   // Register Redis disconnect
   if (redis) {

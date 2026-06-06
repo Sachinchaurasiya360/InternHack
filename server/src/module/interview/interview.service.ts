@@ -130,6 +130,14 @@ export class InterviewService {
   async addFeedback(recruiterId: number, id: number, feedback: { interviewerId: number; rating: number; strengths?: string | undefined; weaknesses?: string | undefined; notes?: string | undefined; recommendation: string }) {
     const interview = await this.getById(recruiterId, id);
 
+    if (interview.status === "CANCELLED" || interview.status === "NO_SHOW") {
+      throw new Error("Cannot add feedback to a cancelled or no-show interview");
+    }
+
+    if (feedback.rating < 1 || feedback.rating > 5) {
+      throw new Error("Rating must be between 1 and 5");
+    }
+
     const existingFeedback = (interview.feedback as Record<string, unknown>[]) ?? [];
     // Replace existing feedback from same interviewer or append
     const filtered = existingFeedback.filter((f) => (f as { interviewerId?: number }).interviewerId !== feedback.interviewerId);

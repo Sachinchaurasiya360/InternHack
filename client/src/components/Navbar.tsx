@@ -8,7 +8,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import { useAuthStore } from "../lib/auth.store";
 import { useThemeStore } from "../lib/theme.store";
@@ -46,6 +46,15 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  const handleThemeToggle = (event: MouseEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+
+    toggleTheme({
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    });
   };
 
   const dashboardLink =
@@ -147,15 +156,15 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
 
           <div className="hidden lg:flex items-center gap-2">
             <button
-              onClick={toggleTheme}
+              onClick={handleThemeToggle}
               aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
               className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 dark:text-stone-400 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors"
             >
               {theme === "dark" ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4" />
-              )}
+  <Sun className="w-4 h-4" />
+) : (
+  <Moon className="w-4 h-4" />
+)}
             </button>
 
             {isAuthenticated ? (
@@ -242,7 +251,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
 
           <div className="flex lg:hidden items-center gap-2">
             <button
-              onClick={toggleTheme}
+              onClick={handleThemeToggle}
               aria-label={
                 theme === "dark"
                   ? "Switch to light mode"

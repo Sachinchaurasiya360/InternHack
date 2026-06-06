@@ -6,6 +6,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
 import BackToTopButton from "./components/common/BackToTopButton";
+import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
 function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
@@ -168,6 +169,7 @@ const CreateJobPage = lazyWithRetry(() => import("./module/recruiter/jobs/Create
 const EditJobPage = lazyWithRetry(() => import("./module/recruiter/jobs/EditJobPage"));
 const ApplicationsList = lazyWithRetry(() => import("./module/recruiter/applications/ApplicationsList"));
 const ApplicationDetail = lazyWithRetry(() => import("./module/recruiter/applications/ApplicationDetail"));
+const CandidateImportPage = lazyWithRetry(() => import("./module/recruiter/applications/CandidateImportPage"));
 const JobAnalyticsPage = lazyWithRetry(() => import("./module/recruiter/analytics/JobAnalyticsPage"));
 const TalentSearchPage = lazyWithRetry(() => import("./module/recruiter/talent/TalentSearchPage"));
 const SavedCandidatesPage = lazyWithRetry(() => import("./module/recruiter/talent/SavedCandidatesPage"));
@@ -309,6 +311,7 @@ function AuthExpiredRedirect() {
 function App() {
   return (
     <>
+      <ScrollToTop />
       <AuthExpiredRedirect />
       <Toaster />
       <ErrorBoundary>
@@ -517,12 +520,13 @@ function App() {
             <Route path="jobs/create" element={<CreateJobPage />} />
             <Route path="jobs/:id/edit" element={<EditJobPage />} />
             <Route path="jobs/:id/applications" element={<ApplicationsList />} />
+            <Route path="jobs/:id/import-candidates" element={<CandidateImportPage />} />
             <Route path="jobs/:id/analytics" element={<JobAnalyticsPage />} />
             <Route path="applications/:applicationId" element={<ApplicationDetail />} />
             <Route path="talent-search" element={<TalentSearchPage />} />
             <Route path="saved" element={<SavedCandidatesPage />} />
             <Route path="profile" element={<RecruiterProfilePage />} />
-            <Route path="profile/:id" element={<PublicProfilePage />} />
+            <Route path="profile/:identifier" element={<PublicProfilePage />} />
             {/* HR Management */}
             <Route path="hr" element={<HRDashboardPage />} />
             <Route path="hr/employees" element={<EmployeesPage />} />
@@ -571,7 +575,7 @@ function App() {
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
-            <Route path="profile/:id" element={<PublicProfilePage />} />
+            <Route path="profile/:identifier" element={<PublicProfilePage />} />
           </Route>
 
           {/* 404 catch-all */}

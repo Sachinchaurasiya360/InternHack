@@ -9,6 +9,7 @@ datasource db {
 model user {
   id                    Int                         @id @default(autoincrement())
   name                  String
+  profileSlug           String?                     @unique
   email                 String                      @unique
   password              String
   role                  UserRole                    @default(STUDENT)
@@ -19,6 +20,8 @@ model user {
   otpExpiresAt          DateTime?
   resetPasswordOtp      String?
   resetOtpExpiresAt     DateTime?
+  passwordResetAttempts Int                         @default(0)
+  passwordResetLockedUntil DateTime?
   contactNo             String?
   profilePic            String?
   coverImage            String?
@@ -81,6 +84,7 @@ model user {
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
   guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
+  firstPrProgress       studentFirstPrProgress[]    @relation("StudentFirstPrProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
   roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
@@ -91,6 +95,8 @@ model user {
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
   recommendation            userRecommendation?          @relation("UserRecommendation")
   hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
+  contentViews              contentView[]                @relation("UserContentViews")
+  statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -107,6 +113,18 @@ model userInterviewProgress {
   updatedAt     DateTime  @updatedAt
 
   user user @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model studentFirstPrProgress {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @unique
+  completedStepIds   String[] @default([])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user user @relation("StudentFirstPrProgress", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -182,8 +200,9 @@ model application {
   updatedAt          DateTime          @updatedAt
   job                job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   student            user              @relation("StudentApplications", fields: [studentId], references: [id], onDelete: Cascade)
-  interviews         interview[]       @relation("ApplicationInterviews")
+  interviews         interview[]                  @relation("ApplicationInterviews")
   roundSubmissions   roundSubmission[]
+  statusHistory      applicationStatusHistory[]
 
   @@unique([jobId, studentId])
   @@index([jobId])
@@ -191,6 +210,19 @@ model application {
   @@index([status])
   @@index([createdAt])
   @@index([jobId, status])
+}
+
+model applicationStatusHistory {
+  id            Int               @id @default(autoincrement())
+  applicationId Int
+  fromStatus    ApplicationStatus
+  toStatus      ApplicationStatus
+  changedBy     Int?
+  changedAt     DateTime          @default(now())
+  application   application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  changer       user?             @relation("ChangerStatusHistory", fields: [changedBy], references: [id], onDelete: SetNull)
+
+  @@index([applicationId])
 }
 
 model roundSubmission {
@@ -455,8 +487,8 @@ model opensourceRepo {
   highlights  String[]       @default([])
   trending    Boolean        @default(false)
   lastUpdated DateTime       @default(now())
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 
   @@index([domain])
   @@index([difficulty])
@@ -1179,14 +1211,6 @@ enum SubscriptionStatus {
   CANCELLED
 }
 
-enum BadgeCategory {
-  CAREER
-  QUIZ
-  SKILL
-  CONTRIBUTION
-  MILESTONE
-}
-
 enum AIProviderType {
   GEMINI
   GROQ
@@ -1203,6 +1227,15 @@ enum AIServiceType {
   EMAIL_CHAT
   AI_ROADMAP_GENERATION
 }
+
+enum BadgeCategory {
+  CAREER
+  QUIZ
+  SKILL
+  CONTRIBUTION
+  MILESTONE
+}
+
 
 enum ScrapedJobStatus {
   ACTIVE
@@ -1433,4 +1466,25 @@ model guideFeedback {
   @@index([guideId])
   @@index([stepId])
   }
+
+enum ContentType {
+  LESSON
+  DSA
+  INTERVIEW_QUESTION
+}
+
+model contentView {
+  id          Int         @id @default(autoincrement())
+  userId      Int?
+  user        user?       @relation("UserContentViews", fields: [userId], references: [id], onDelete: SetNull)
+  contentType ContentType
+  contentId   String
+  timeSpentMs Int
+  completed   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+
+  @@index([contentType, contentId])
+  @@index([userId])
+  @@index([createdAt])
+}
 

@@ -20,7 +20,7 @@ if (url) {
   redis.on("connect", () => console.log("[Redis] Connected"));
   redis.on("error", (err: Error) => console.error("[Redis] Connection error:", err.message));
 } else {
-  console.log("[Redis] REDIS_URL not set — using in-memory rate-limit stores");
+  console.warn("[Redis] ⚠ REDIS_URL not set — rate limiting will use per-process in-memory stores. This means rate limits are NOT shared across server instances behind a load balancer.");
 }
 
 export { redis };

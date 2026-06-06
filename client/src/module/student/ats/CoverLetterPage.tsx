@@ -1101,16 +1101,9 @@ useEffect(() => {
                       setIsModified(updatedValue !== originalCoverLetter);
                     }}
                   />
-                  <div className="mt-3 pt-3 border-t border-stone-100 dark:border-white/5 flex items-center justify-between gap-4">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 tabular-nums">
-                      {wordCount} words · {charCount} chars
-                    </span>
-                    {isModified && (
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-amber-600 dark:text-amber-400">
-                        unsaved edits
-                      </span>
-                    )}
-                  </div>
+                  <p className="mt-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+  {wordCount} words · {charCount} characters
+</p>
                 </div>
               </motion.div>
             )
