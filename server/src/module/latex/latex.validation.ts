@@ -17,10 +17,10 @@ export const compileLatexSchema = z.object({
   supportingFiles: z.array(supportingFileSchema).max(5).optional().default([]),
 }).refine(
   (data) => {
-    const filenames = (data.supportingFiles ?? []).map(f => f.filename);
-    return new Set(filenames).size === filenames.length;
+    const names = data.supportingFiles.map((f) => f.filename);
+    return new Set(names).size === names.length;
   },
-  { message: "Duplicate filenames in supporting files are not allowed", path: ["supportingFiles"] }
+  { message: "Supporting file names must be unique", path: ["supportingFiles"] }
 );
 
 export type CompileLatexInput = z.infer<typeof compileLatexSchema>;
