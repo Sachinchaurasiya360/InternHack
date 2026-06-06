@@ -121,6 +121,12 @@ export class RecruiterService {
     const round = await prisma.round.findUnique({ where: { id: roundId } });
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
 
+    // Reset currentRoundId for applications referencing this round
+    await prisma.application.updateMany({
+      where: { jobId, currentRoundId: roundId },
+      data: { currentRoundId: null },
+    });
+
     await prisma.round.delete({ where: { id: roundId } });
 
     // Re-index remaining rounds

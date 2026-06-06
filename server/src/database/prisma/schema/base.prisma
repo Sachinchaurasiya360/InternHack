@@ -155,8 +155,9 @@ model round {
   activateAt          DateTime?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
-  job                 job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  roundSubmissions    roundSubmission[]
+  job                        job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  roundSubmissions           roundSubmission[]
+  currentRoundApplications   application[]      @relation("ApplicationCurrentRound")
 
   @@unique([jobId, orderIndex])
   @@index([jobId])
@@ -167,7 +168,7 @@ model application {
   jobId              Int
   studentId          Int
   status             ApplicationStatus @default(APPLIED)
-  currentRoundId     Int?
+  currentRoundId     Int?              @relation("ApplicationCurrentRound", fields: [currentRoundId], references: [id], onDelete: SetNull)
   customFieldAnswers Json              @default("{}")
   resumeUrl          String?
   coverLetter        String?
