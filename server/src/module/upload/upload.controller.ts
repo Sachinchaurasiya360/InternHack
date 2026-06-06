@@ -9,6 +9,7 @@ import { createLogger } from "../../utils/logger.js";
 const logger = createLogger("UploadController");
 
 const MAX_RESUMES = 2;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB — must match s3.utils.ts UPLOAD_POLICIES
 
 /**
  * Server-side allowlist of permitted MIME types for presigned URL generation.
@@ -177,6 +178,9 @@ export class UploadController {
       const { fileUrl, originalName, size, mimeType } = req.body;
       if (!isValidS3FileUrl(fileUrl)) {
         return res.status(400).json({ message: "Invalid fileUrl origin" });
+      }
+      if (typeof size === "number" && size > MAX_FILE_SIZE) {
+        return res.status(400).json({ message: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB limit` });
       }
 
       const userId = req.user.id;
