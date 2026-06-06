@@ -3,7 +3,7 @@ import { z } from "zod";
 export const ycListQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(24),
-  search: z.string().max(100).optional(),
+  search: z.string().max(200).optional(),
   batch: z.string().max(100).optional(),
   industry: z.string().max(100).optional(),
   status: z.string().max(100).optional(),

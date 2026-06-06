@@ -8,7 +8,10 @@ export const createComplianceDocSchema = z.object({
   expiryDate: z.string().datetime().optional(),
   isRequired: z.boolean().default(true),
   assignedTo: z.array(z.number().int().positive()).default([]),
-});
+}).refine((data) => {
+  if (!data.expiryDate) return true;
+  return new Date(data.expiryDate) > new Date();
+}, { message: "Expiry date must be in the future" });
 
 export const updateComplianceDocSchema = z.object({
   name: z.string().min(1).max(200).optional(),
@@ -18,7 +21,10 @@ export const updateComplianceDocSchema = z.object({
   expiryDate: z.string().datetime().nullable().optional(),
   isRequired: z.boolean().optional(),
   assignedTo: z.array(z.number().int().positive()).optional(),
-});
+}).refine((data) => {
+  if (!data.expiryDate) return true;
+  return new Date(data.expiryDate) > new Date();
+}, { message: "Expiry date must be in the future" });
 
 export const complianceQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
