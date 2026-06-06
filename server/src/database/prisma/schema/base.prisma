@@ -1017,7 +1017,7 @@ model savedCandidate {
   student     user     @relation("StudentSavedByRecruiters", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([recruiterId, studentId])
-  @@index([recruiterId])
+  @@index([recruiterId, studentId])
   @@index([studentId])
 }
 
