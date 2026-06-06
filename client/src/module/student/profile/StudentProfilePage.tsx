@@ -725,8 +725,8 @@ export default function StudentProfilePage() {
           {/* Coding activity */}
           <motion.div custom={9} variants={fadeInUp} initial="hidden" animate="visible">
             <ContributionGraphs
-              githubUsername={form.githubUrl ? form.githubUrl.split("github.com/").pop()?.replace(/\/$/, "") : undefined}
-              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("leetcode.com/").pop()?.replace(/^\/?u\//, "").replace(/\/$/, "") : undefined}
+              githubUsername={form.githubUrl ? form.githubUrl.split("/").filter(Boolean).pop() : undefined}
+              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("/").filter(Boolean).pop() : undefined}
               showPrompts
             />
           </motion.div>

@@ -70,9 +70,9 @@ export const bulkRepoRequestSchema = z.object({
 export const gsocOrgsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(100).optional().default(20),
-  search: z.string().optional(),
-  category: z.string().optional(),
-  technology: z.string().optional(),
+  search: z.string().min(1).max(200).optional(),
+  category: z.string().min(1).max(100).optional(),
+  technology: z.string().min(1).max(100).optional(),
   year: z.coerce.number().int().optional(),
 });
 

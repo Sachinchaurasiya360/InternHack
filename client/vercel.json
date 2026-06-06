@@ -15,7 +15,7 @@
       "source": "/sitemap.xml",
       "destination": "https://api.internhack.xyz/sitemap.xml"
     },
-    { "source": "/((?!sitemap\\.xml|robots\\.txt|llms\\.txt|manifest\\.webmanifest|favicon\\.png|og-image\\.png|.*\\.(?:js|css|woff2?|ttf|otf|png|jpg|jpeg|webp|avif|svg|ico|map|json|txt|xml)).*)", "destination": "/index.html" }
+    { "source": "/((?!sitemap\\.xml|robots\\.txt|llms\\.txt|manifest\\.webmanifest|favicon\\.png|og-image\\.png|og-image-dark\\.png|.*\\.(?:js|css|woff2?|ttf|otf|png|jpg|jpeg|webp|avif|svg|ico|map|json|txt|xml)).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

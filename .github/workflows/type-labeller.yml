@@ -198,18 +198,8 @@ jobs:
 
             const currentLabels = await getCurrentLabels();
 
-            const staleTypeLabels = currentLabels.filter(
-              l => typeLabels.includes(l) && !detectedLabels.has(l)
-            );
-            for (const label of staleTypeLabels) {
-              await github.rest.issues.removeLabel({
-                ...repo,
-                issue_number: prNumber,
-                name: label
-              });
-              console.log(`Removed stale type label: ${label}`);
-            }
-
+            // Append-only mode: never remove existing type labels so mentor/manual labels persist.
+            // This also allows multi-type stacking for point bonuses.
             const labelsToAdd = [...detectedLabels].filter(l => !currentLabels.includes(l));
             if (labelsToAdd.length > 0) {
               await github.rest.issues.addLabels({
