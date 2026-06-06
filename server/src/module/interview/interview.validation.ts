@@ -1,26 +1,39 @@
 import { z } from "zod";
 
-export const createInterviewSchema = z.object({
-  applicationId: z.number().int().positive(),
-  type: z.enum(["PHONE", "VIDEO", "IN_PERSON", "PANEL", "TECHNICAL", "HR"]).default("VIDEO"),
-  scheduledAt: z.string().datetime(),
-  durationMinutes: z.number().int().positive().default(60),
-  meetingLink: z.string().url().optional(),
-  location: z.string().max(200).optional(),
-  interviewerIds: z.array(z.number().int().positive()).default([]),
-  candidateNotes: z.string().max(1000).optional(),
-});
+export const createInterviewSchema = z
+  .object({
+    applicationId: z.number().int().positive(),
+    type: z.enum(["PHONE", "VIDEO", "IN_PERSON", "PANEL", "TECHNICAL", "HR"]).default("VIDEO"),
+    scheduledAt: z.string().datetime(),
+    durationMinutes: z.number().int().positive().default(60),
+    meetingLink: z.string().url().optional(),
+    location: z.string().max(200).optional(),
+    interviewerIds: z.array(z.number().int().positive()).default([]),
+    candidateNotes: z.string().max(1000).optional(),
+  })
+  .refine((data) => new Date(data.scheduledAt) > new Date(), {
+    message: "Scheduled time must be in the future",
+    path: ["scheduledAt"],
+  });
 
-export const updateInterviewSchema = z.object({
-  scheduledAt: z.string().datetime().optional(),
-  durationMinutes: z.number().int().positive().optional(),
-  meetingLink: z.string().url().optional(),
-  location: z.string().max(200).optional(),
-  status: z.enum(["SCHEDULED", "CONFIRMED", "COMPLETED", "CANCELLED", "NO_SHOW", "RESCHEDULED"]).optional(),
-  interviewerIds: z.array(z.number().int().positive()).optional(),
-  candidateNotes: z.string().max(1000).optional(),
-  cancelReason: z.string().max(500).optional(),
-});
+export const updateInterviewSchema = z
+  .object({
+    scheduledAt: z.string().datetime().optional(),
+    durationMinutes: z.number().int().positive().optional(),
+    meetingLink: z.string().url().optional(),
+    location: z.string().max(200).optional(),
+    status: z.enum(["SCHEDULED", "CONFIRMED", "COMPLETED", "CANCELLED", "NO_SHOW", "RESCHEDULED"]).optional(),
+    interviewerIds: z.array(z.number().int().positive()).optional(),
+    candidateNotes: z.string().max(1000).optional(),
+    cancelReason: z.string().max(500).optional(),
+  })
+  .refine(
+    (data) => data.scheduledAt === undefined || new Date(data.scheduledAt) > new Date(),
+    {
+      message: "Scheduled time must be in the future",
+      path: ["scheduledAt"],
+    }
+  );
 
 export const interviewFeedbackSchema = z.object({
   interviewerId: z.number().int().positive(),

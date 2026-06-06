@@ -1,13 +1,31 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Save, Loader2 } from "lucide-react";
 
 interface ProfilePageHeaderProps {
   profileCompletion: number;
   saving: boolean;
-  onSave: () => void;
+  onSave: () => Promise<void>;
 }
 
 export function ProfilePageHeader({ profileCompletion, saving, onSave }: ProfilePageHeaderProps) {
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const handleSave = async () => {
+    try {
+      await onSave();
+      setShowSuccess(true);
+
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    } catch (error) {
+      console.error("Save failed:", error);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -33,13 +51,19 @@ export function ProfilePageHeader({ profileCompletion, saving, onSave }: Profile
         </span>
         <button
           type="button"
-          onClick={onSave}
+          onClick={handleSave}
           disabled={saving}
-          className="group inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+          className="group inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-950 rounded-md"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? "Saving..." : "Save changes"}
         </button>
+
+        {showSuccess && (
+          <span className="text-green-500 text-sm font-medium">
+            Profile updated successfully!
+          </span>
+        )}
       </div>
     </motion.div>
   );

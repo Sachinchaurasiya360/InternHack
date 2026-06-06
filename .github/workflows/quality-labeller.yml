@@ -176,26 +176,21 @@ jobs:
             await ensureQualityLabelsExist();
 
             const currentLabels = await getCurrentLabels();
+            const hasAnyQualityLabel = currentLabels.some(l => qualityLabels.includes(l));
 
-            const staleQualityLabels = currentLabels.filter(
-              l => qualityLabels.includes(l) && l !== targetLabel
-            );
-            for (const label of staleQualityLabels) {
-              await github.rest.issues.removeLabel({
-                ...repo,
-                issue_number: prNumber,
-                name: label
-              });
-              console.log(`Removed stale quality label: ${label}`);
-            }
-
-            if (targetLabel && !currentLabels.includes(targetLabel)) {
+            // Append-only mode: do not remove or overwrite existing quality labels.
+            // If a quality label already exists (manual or historical), preserve it.
+            if (targetLabel && !currentLabels.includes(targetLabel) && !hasAnyQualityLabel) {
               await github.rest.issues.addLabels({
                 ...repo,
                 issue_number: prNumber,
                 labels: [targetLabel]
               });
               console.log(`Applied quality label: ${targetLabel}`);
+            } else if (targetLabel && !currentLabels.includes(targetLabel) && hasAnyQualityLabel) {
+              console.log('Existing quality label detected — skipping auto-overwrite to preserve manual/historical labels.');
+            } else if (!targetLabel) {
+              console.log('PR quality score is below threshold — no quality label applied.');
             } else {
               console.log(`Quality label already correct: ${targetLabel} — skipping.`);
             }
