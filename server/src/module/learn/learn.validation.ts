@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const questionIdSchema = z.string().trim().min(1).max(160).regex(/^[a-zA-Z0-9-]+$/, 'Invalid question ID format');
+export const questionIdSchema = z.string().trim().min(1).max(160).regex(/^[a-zA-Z0-9-]+$/, 'Invalid question ID format');
 const idArraySchema = z.array(questionIdSchema).max(1000);
 
 export const interviewProgressActionSchema = z.object({

@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type { LearnService } from "./learn.service.js";
-import { bulkInterviewProgressSchema, interviewProgressActionSchema } from "./learn.validation.js";
+import { bulkInterviewProgressSchema, interviewProgressActionSchema, questionIdSchema } from "./learn.validation.js";
 
 export class LearnController {
   constructor(private readonly learnService: LearnService) {}
@@ -20,10 +20,12 @@ export class LearnController {
   async updateInterviewProgress(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
-      const rawQuestionId = req.params["questionId"];
-      const questionId = Array.isArray(rawQuestionId) ? rawQuestionId[0]?.trim() : rawQuestionId?.trim();
-      if (!questionId) return res.status(400).json({ message: "Question ID is required" });
-      if (questionId.length > 160) return res.status(400).json({ message: "Question ID is too long" });
+      const rawQuestionId = Array.isArray(req.params["questionId"]) ? req.params["questionId"][0] : req.params["questionId"];
+      const paramResult = questionIdSchema.safeParse(rawQuestionId?.trim());
+      if (!paramResult.success) {
+        return res.status(400).json({ message: "Invalid question ID", errors: paramResult.error.flatten() });
+      }
+      const questionId = paramResult.data;
 
       const result = interviewProgressActionSchema.safeParse(req.body);
       if (!result.success) {
