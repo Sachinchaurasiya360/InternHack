@@ -145,3 +145,23 @@ export async function fetchHiringSignal(forceRefresh = false): Promise<HiringSig
   );
   return data;
 }
+
+export interface DeveloperGrowthResult {
+  growthScore: number;
+  growthRank: string;
+  trend: { month: string; score: number }[];
+  milestones: { title: string; date: string; category: string; description: string }[];
+  monthlyReport: {
+    summary: string;
+    achievements: string[];
+    focusAreas: string[];
+  };
+  lastUpdated: string;
+}
+
+export async function fetchDeveloperGrowth(forceRefresh = false): Promise<DeveloperGrowthResult> {
+  const { data } = await api.get<DeveloperGrowthResult>(
+    `/student/growth${forceRefresh ? "?refresh=true" : ""}`
+  );
+  return data;
+}
