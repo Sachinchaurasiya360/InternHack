@@ -66,20 +66,23 @@ export const updateJobStatusSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]),
 });
 
-export const jobQuerySchema = z
-  .object({
-    page: z.coerce.number().int().positive().default(1),
-    limit: z.coerce.number().int().positive().max(100).default(10),
-    search: z.string().optional(),
-    location: z.string().optional(),
-    company: z.string().optional(),
-    status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]).optional(),
-    tags: z.string().optional(),
-    includeExpired: coerceBoolean.default(false),
-    salaryMin: z.coerce.number().int().nonnegative().optional(),
-    salaryMax: z.coerce.number().int().nonnegative().optional(),
-  })
-  .refine(
-    (data) => data.salaryMin === undefined || data.salaryMax === undefined || data.salaryMin <= data.salaryMax,
-    { message: "salaryMin must not exceed salaryMax", path: ["salaryMin"] }
-  );
+export const jobQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(10),
+  search: z.string().optional(),
+  location: z.string().optional(),
+  company: z.string().optional(),
+  status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]).optional(),
+  tags: z.string().optional(),
+  includeExpired: coerceBoolean.default(false),
+  salaryMin: z.coerce.number().int().nonnegative().optional(),
+  salaryMax: z.coerce.number().int().nonnegative().optional(),
+}).refine((data) => {
+  if (data.salaryMin !== undefined && data.salaryMax !== undefined) {
+    return data.salaryMin <= data.salaryMax;
+  }
+  return true;
+}, {
+  message: "Minimum salary cannot be greater than maximum salary",
+  path: ["salaryMin"],
+});
