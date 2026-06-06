@@ -3,8 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
   Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter,
+  Check, BarChart3,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
+import { useProgramComparison } from "./hooks/useProgramComparison";
+import { ProgramCompareDrawer } from "./components/ProgramCompareDrawer";
 
 // ─── Data ──────────────────────────────────────────────────────
 interface Program {
@@ -497,7 +500,17 @@ const ELIGIBILITY_STYLE: Record<string, string> = {
 };
 
 // ─── Program Card ─────────────────────────────────────────────
-function ProgramCard({ program }: { program: Program }) {
+function ProgramCard({
+  program,
+  isSelected,
+  onToggleCompare,
+  limitReached,
+}: {
+  program: Program;
+  isSelected: boolean;
+  onToggleCompare: (id: string) => void;
+  limitReached: boolean;
+}) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -506,6 +519,20 @@ function ProgramCard({ program }: { program: Program }) {
       <div className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
+            {/* Compare Checkbox */}
+            <button
+              onClick={() => onToggleCompare(String(program.id))}
+              disabled={limitReached && !isSelected}
+              className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors cursor-pointer ${
+                isSelected
+                  ? "bg-emerald-500 border-emerald-500 text-white"
+                  : "border-gray-300 dark:border-gray-600 hover:border-emerald-400 dark:hover:border-emerald-400"
+              } ${limitReached && !isSelected ? "opacity-50 cursor-not-allowed" : ""}`}
+              title={limitReached && !isSelected ? "Max 4 programs" : "Compare"}
+            >
+              {isSelected && <Check className="w-4 h-4" />}
+            </button>
+
             <div className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}>
               {program.short}
             </div>
@@ -673,6 +700,11 @@ export default function ProgramTrackerPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
   const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
   const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Comparison state management
+  const { compareList, toggleCompare, clearAll, isSelected, limitReached, removeProgram } =
+    useProgramComparison();
 
   // Save filters to localStorage whenever they change
   useEffect(() => {
@@ -709,6 +741,9 @@ export default function ProgramTrackerPage() {
 
   const totalStipend = PROGRAMS.filter((p) => p.stipendPaid).length;
   const highStipend = PROGRAMS.filter((p) => p.stipendRange === "High").length;
+
+  // Get programs for drawer
+  const selectedPrograms = PROGRAMS.filter((p) => compareList.includes(String(p.id)));
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -803,7 +838,12 @@ export default function ProgramTrackerPage() {
         <div className="space-y-4">
           {filtered.map((program) => (
             <motion.div key={program.id} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-              <ProgramCard program={program} />
+              <ProgramCard
+                program={program}
+                isSelected={isSelected(String(program.id))}
+                onToggleCompare={(id) => toggleCompare(id)}
+                limitReached={limitReached}
+              />
             </motion.div>
           ))}
         </div>
@@ -821,6 +861,54 @@ export default function ProgramTrackerPage() {
           </div>
         </div>
       </div>
+
+      {/* Floating Comparison Bar */}
+      <AnimatePresence>
+        {compareList.length >= 2 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-auto z-40"
+          >
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                  <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    Comparing {compareList.length} program{compareList.length !== 1 ? "s" : ""}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Max 4 programs
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setDrawerOpen(true)}
+                  className="whitespace-nowrap"
+                >
+                  <BarChart3 className="w-3.5 h-3.5" />
+                  View Comparison
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Comparison Drawer */}
+      <ProgramCompareDrawer
+        programs={selectedPrograms}
+        onRemove={removeProgram}
+        onClose={() => setDrawerOpen(false)}
+        isOpen={drawerOpen}
+      />
     </div>
   );
 }
