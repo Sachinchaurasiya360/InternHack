@@ -351,6 +351,7 @@ export default function RepoDiscoveryPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
 
