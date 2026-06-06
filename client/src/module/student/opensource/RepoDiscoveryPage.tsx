@@ -353,10 +353,10 @@ export default function RepoDiscoveryPage() {
 
   const pagination = data?.pagination;
 
-  const displayedRepos = useMemo(() => {
+  const displayedRepos = (() => {
     if (showSaved) return bookmarkedData || [];
     return data?.repos ?? [];
-  }, [data, showSaved, bookmarkedData]);
+  })();
 
   // Global stats fetched independently so the header strip stays accurate
   // regardless of active filters or page (replaces the old useMemo approach).
