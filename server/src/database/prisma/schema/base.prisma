@@ -473,26 +473,28 @@ model payment {
 }
 
 model opensourceRepo {
-  id          Int            @id @default(autoincrement())
-  name        String
-  owner       String
-  description String
-  language    String
-  techStack   String[]       @default([])
-  difficulty  RepoDifficulty @default(BEGINNER)
-  domain      RepoDomain     @default(WEB)
-  issueTypes  String[]       @default([])
-  stars       Int            @default(0)
-  forks       Int            @default(0)
-  openIssues  Int            @default(0)
-  url         String
-  logo        String?
-  tags        String[]       @default([])
-  highlights  String[]       @default([])
-  trending    Boolean        @default(false)
-  lastUpdated DateTime       @default(now())
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
+  id                      Int            @id @default(autoincrement())
+  name                    String
+  owner                   String
+  description             String
+  language                String
+  techStack               String[]       @default([])
+  difficulty              RepoDifficulty @default(BEGINNER)
+  domain                  RepoDomain     @default(WEB)
+  issueTypes              String[]       @default([])
+  stars                   Int            @default(0)
+  forks                   Int            @default(0)
+  openIssues              Int            @default(0)
+  url                     String
+  logo                    String?
+  tags                    String[]       @default([])
+  highlights              String[]       @default([])
+  trending                Boolean        @default(false)
+  lastUpdated             DateTime       @default(now())
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  goodFirstIssuesCount    Int            @default(0)
+  goodFirstIssuesUpdatedAt DateTime?
 
   @@index([domain])
   @@index([difficulty])
