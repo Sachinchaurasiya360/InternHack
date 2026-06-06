@@ -186,9 +186,13 @@ opensourceRouter.put("/requests/:id/reject", authMiddleware, requireRole("ADMIN"
   controller.rejectRepoRequest(req, res, next),
 );
 
+// ─── Good First Issues per Repo ────────────────────────────────
+
+  opensourceRouter.get("/:id/good-first-issues", (req, res, next) => controller.getGoodFirstIssues(req, res, next));
+
 // ─── Public: Single Repo ───────────────────────────────────────
 
-// Must be AFTER all /requests/* and /first-pr/* routes.
+// Must be AFTER all /requests/*, /first-pr/*, and /:id/* routes
 // /:owner/:name routes must appear BEFORE /:id so two-segment paths resolve correctly.
 opensourceRouter.get("/:owner/:name/issues", (req, res, next) =>
   controller.getRepoGoodFirstIssues(req, res, next),

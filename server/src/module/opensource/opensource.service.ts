@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
-import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
+import { fetchGithubStats, fetchGoodFirstIssues, fetchGithubGoodFirstIssues } from "../../lib/github.js";
+import type { GoodFirstIssue } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
   repoRequestSubmittedHtml,
@@ -8,6 +9,15 @@ import {
 import { UserService } from "../user/user.service.js";
 
 const userService = new UserService();
+
+interface GFICacheEntry {
+  issues: GoodFirstIssue[];
+  count: number;
+  expiresAt: number;
+}
+
+const gfiCache = new Map<number, GFICacheEntry>();
+const GFI_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 let statsCache: {
@@ -78,6 +88,7 @@ export class OpensourceService {
       trending,
       hacktoberfest,
       ids,
+      hasGoodFirstIssues,
     } = query;
     const skip = (page - 1) * limit;
     const where: Record<string, any> = {};
@@ -96,12 +107,9 @@ export class OpensourceService {
         .filter((id: number) => !Number.isNaN(id));
       if (idList.length > 0) where["id"] = { in: idList };
     }
-const trimmedSearch = search?.trim();
-
-if (trimmedSearch) {
-  // Prisma's scalar-list filters can't do case-insensitive substring match
-  // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-  // subquery and merge the matching ids into the OR clause.
+    if (hasGoodFirstIssues === "true") where["goodFirstIssuesCount"] = { gt: 0 };
+    const trimmedSearch = search?.trim();
+    if (trimmedSearch) {
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
@@ -472,28 +480,66 @@ where["OR"] = [
       {
         id: 4,
         label: "Complete",
-        description: "Hacktoberfest goal reached",
+
+        description: "Hacktoberfest completed!",
       },
     ];
 
+    const edges = nodeDefs.slice(0, -1).map((node, i) => ({
+      from: node.id,
+      to: nodeDefs[i + 1].id,
+    }));
+
     return {
+      total: goal,
       completed,
-      goal,
-      percent: Math.round((completed / goal) * 100),
-      nodes: nodeDefs.map((node) => ({
-        ...node,
-        completed: approvedInOctober >= node.id,
-      })),
-      stats: {
-        approvedContributions: approvedInOctober,
-        repoSuggestions: repoSuggestionsInOctober,
-        firstPrStepsCompleted: completedSteps,
-        firstPrTotalSteps: OpensourceService.FIRST_PR_TOTAL_STEPS,
-      },
+      nodes: nodeDefs,
+      edges,
     };
   }
 
-  async getStudentContributionTrend(userId: number, startDate?: string, endDate?: string) {
+  async getGoodFirstIssues(id: number): Promise<{
+    issues: GoodFirstIssue[];
+    count: number;
+    cachedAt: string | null;
+  } | null> {
+    const repo = await prisma.opensourceRepo.findUnique({
+      where: { id },
+      select: { id: true, owner: true, name: true, url: true, goodFirstIssuesCount: true, goodFirstIssuesUpdatedAt: true },
+    });
+    if (!repo) return null;
+
+    if (!repo.url?.includes("github.com")) {
+      return { issues: [], count: 0, cachedAt: null };
+    }
+
+    const cached = gfiCache.get(id);
+    if (cached && Date.now() < cached.expiresAt) {
+      return { issues: cached.issues, count: cached.count, cachedAt: repo.goodFirstIssuesUpdatedAt?.toISOString() ?? null };
+    }
+
+    const result = await fetchGoodFirstIssues(repo.owner, repo.name);
+    if (!result) {
+      if (cached) {
+        return { issues: cached.issues, count: cached.count, cachedAt: repo.goodFirstIssuesUpdatedAt?.toISOString() ?? null };
+      }
+      return { issues: [], count: 0, cachedAt: null };
+    }
+
+    gfiCache.set(id, { issues: result.issues, count: result.count, expiresAt: Date.now() + GFI_CACHE_TTL_MS });
+
+    await prisma.opensourceRepo.update({
+      where: { id },
+      data: {
+        goodFirstIssuesCount: result.count,
+        goodFirstIssuesUpdatedAt: new Date(),
+      },
+    }).catch((err) => console.error(`[github] failed to persist GFI count for ${id}:`, err));
+
+    return { issues: result.issues, count: result.count, cachedAt: new Date().toISOString() };
+  }
+
+  async getStudentContributionTrend(userId: number) {
     const now = new Date();
     const currentMonthStart = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),

@@ -26,6 +26,7 @@ export interface OpenSourceRepo {
   updatedAt: string;
   healthScore: number;
   matchedSkills?: string[];
+  goodFirstIssuesCount: number;
 }
 
 // Repo Requests
@@ -114,6 +115,16 @@ export interface GSoCOrganization {
   mailingList?: string;
   ideasUrl?: string;
   guideUrl?: string;
+}
+
+export interface GoodFirstIssue {
+  id: number;
+  number: number;
+  title: string;
+  html_url: string;
+  comments: number;
+  created_at: string;
+  labels: { name: string; color: string }[];
 }
 
 export interface GSoCStats {

@@ -35,7 +35,7 @@ import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import type { OpenSourceRepo, Pagination, RepoRequest } from "../../../lib/types";
+import type { OpenSourceRepo, Pagination, RepoRequest, GoodFirstIssue } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
@@ -117,9 +117,7 @@ export default function RepoDiscoveryPage() {
   const sortKey = searchParams.get("sort") || "stars";
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
-  const hacktoberfestOnly = searchParams.get("hacktoberfest") === "true";
-  const highlyActiveOnly = searchParams.get("highlyActive") === "true";
-  const showHacktoberfestFilter = true;
+  const gfiOnly = searchParams.get("gfi") === "true";
 
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
@@ -310,14 +308,13 @@ export default function RepoDiscoveryPage() {
     }
 
     if (trendingOnly) params.trending = "true";
-    if (hacktoberfestOnly) params.hacktoberfest = "true";
-    if (highlyActiveOnly) params.highlyActive = "true";
+    if (gfiOnly) params.hasGoodFirstIssues = "true";
 
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
 
     return params;
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, hacktoberfestOnly, highlyActiveOnly, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, gfiOnly, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -680,6 +677,20 @@ export default function RepoDiscoveryPage() {
           >
             <Bookmark className="w-3 h-3" />
             Saved {bookmarks.length > 0 && `(${bookmarks.length})`}
+          </button>
+
+          {/* GFI toggle */}
+          <button
+            type="button"
+            onClick={() => updateFilter("gfi", gfiOnly ? "" : "true")}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              gfiOnly
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+            }`}
+          >
+            <CircleDot className="w-3 h-3" />
+            Has GFI
           </button>
 
           {/* Trending toggle */}
@@ -1182,6 +1193,9 @@ export default function RepoDiscoveryPage() {
                   </div>
                 </div>
 
+                {/* Good First Issues */}
+                <GoodFirstIssuesSection repoId={selectedRepo.id} />
+
                 {/* Quick actions */}
                 <div className="grid grid-cols-2 gap-2">
                   <a
@@ -1223,7 +1237,8 @@ export default function RepoDiscoveryPage() {
   );
 }
 
-function RecommendedSection({
+<<<<<<< HEAD
+function RecommendedSection({ 
   onSelect,
   bookmarks,
   onToggleBookmark
@@ -1232,6 +1247,106 @@ function RecommendedSection({
   bookmarks: number[];
   onToggleBookmark: (id: number) => void;
 }) {
+=======
+function GoodFirstIssuesSection({ repoId }: { repoId: number }) {
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.opensource.goodFirstIssues(repoId),
+    queryFn: () =>
+      api.get<{ issues: GoodFirstIssue[]; count: number }>(`/opensource/${repoId}/good-first-issues`).then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return (
+    <div>
+      <div className="flex items-center gap-1.5 mb-2">
+        <div className="h-1 w-1 bg-lime-400"></div>
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
+          <CircleDot className="w-3 h-3" />
+          good first issues
+          {data && !isLoading && (
+            <span className="ml-1 px-1.5 py-0.5 rounded bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-400 text-[9px] font-bold">
+              {data.count}
+            </span>
+          )}
+        </p>
+      </div>
+      {isLoading && (
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-12 bg-stone-100 dark:bg-white/5 rounded-md animate-pulse" />
+          ))}
+        </div>
+      )}
+      {!isLoading && data && data.issues.length === 0 && (
+        <div className="flex items-center gap-2 py-3 px-3 rounded-md bg-stone-50 dark:bg-white/[0.03] border border-stone-200 dark:border-white/5">
+          <AlertCircle className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0" />
+          <p className="text-sm text-stone-500 dark:text-stone-400">No open good first issues right now.</p>
+        </div>
+      )}
+      {!isLoading && data && data.issues.length > 0 && (
+        <div className="space-y-1.5">
+          {data.issues.map((issue) => {
+            const daysOpen = Math.floor(
+              (Date.now() - new Date(issue.created_at).getTime()) / (1000 * 60 * 60 * 24),
+            );
+            return (
+              <a
+                key={issue.id}
+                href={issue.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block no-underline group"
+              >
+                <div className="flex items-start gap-2 py-2 px-3 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-[11px] font-mono text-stone-400 dark:text-stone-500 shrink-0">
+                        #{issue.number}
+                      </span>
+                      <span className="text-sm font-medium text-stone-900 dark:text-stone-50 truncate group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
+                        {issue.title}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-[11px] text-stone-500 dark:text-stone-400">
+                      <span>{daysOpen}d ago</span>
+                      <span className="flex items-center gap-1">
+                        <CircleDot className="w-3 h-3" />
+                        {issue.comments}
+                      </span>
+                    </div>
+                    {issue.labels.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {issue.labels.map((label) => (
+                          <span
+                            key={label.name}
+                            className="inline-block px-1.5 py-0.5 rounded text-[10px] font-medium"
+                            style={{
+                              backgroundColor: `#${label.color}22`,
+                              color: `#${label.color}`,
+                            }}
+                          >
+                            {label.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <ExternalLink className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500 shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      )}
+      {!isLoading && !data && (
+        <p className="text-sm text-stone-400 dark:text-stone-500">Could not load issues.</p>
+      )}
+    </div>
+  );
+}
+
+function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
+>>>>>>> 4076eb26 (chore: restore package files to upstream/main)
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.opensource.list({ recommended: "true" }),
     queryFn: async () => {
