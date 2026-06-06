@@ -20,7 +20,10 @@ export const updateInterviewSchema = z.object({
   interviewerIds: z.array(z.number().int().positive()).optional(),
   candidateNotes: z.string().max(1000).optional(),
   cancelReason: z.string().max(500).optional(),
-});
+}).refine(
+  (data) => !data.scheduledAt || new Date(data.scheduledAt) > new Date(),
+  { message: "Scheduled time cannot be in the past", path: ["scheduledAt"] }
+);
 
 export const interviewFeedbackSchema = z.object({
   interviewerId: z.number().int().positive(),
