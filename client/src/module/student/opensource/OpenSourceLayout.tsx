@@ -21,6 +21,7 @@ const SEGMENT_NAMES: Record<string, string> = {
   "hiring-signal": "Hiring Signal",
   growth: "Developer Growth",
   coach: "AI Coach",
+  "project-recommendations": "Project Recommendations",
 };
 
 const LOWERCASE_WORDS = new Set(["and", "or", "the", "in", "on", "at", "to", "for", "of", "with", "a", "an"]);

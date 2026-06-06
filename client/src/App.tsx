@@ -506,6 +506,7 @@ function App() {
               <Route path="hiring-signal" element={<HiringSignalPage />} />
               <Route path="growth" element={<DeveloperGrowthPage />} />
               <Route path="coach" element={<AiCoachPage />} />
+              <Route path="project-recommendations" element={<ProjectRecommendationsPage />} />
               <Route path="contributions" element={<ContributionsDashboardPage />} />
               <Route path="read-codebase" element={<ReadCodebasePage />} />
               <Route path="read-codebase/:sectionSlug" element={<ReadCodebaseSectionPage />} />
