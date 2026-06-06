@@ -20,16 +20,16 @@ import { SEO } from "../../../components/SEO";
 
 function useResumeStatus(url: string | null | undefined) {
   const [status, setStatus] = useState<"checking" | "ok" | "unavailable">(
-    "checking",
+    () => (url ? "checking" : "unavailable"),
   );
 
   useEffect(() => {
   if (!url) {
-    setStatus("unavailable"); // Or whatever your default empty state is
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStatus("unavailable");
     return;
   }
 
-  // 1. Instantly reset status to "checking" when URL changes to prevent stale UI
   setStatus("checking");
 
   const controller = new AbortController();
@@ -38,16 +38,10 @@ function useResumeStatus(url: string | null | undefined) {
   const checkLink = async () => {
     try {
       const fullUrl = url.startsWith("http") ? url : `${SERVER_URL}${url}`;
-      
-      const res = await fetch(fullUrl, { 
-        method: "HEAD",
-        signal // 2. Attach the abort signal to the fetch request
-      });
-
+      const res = await fetch(fullUrl, { method: "HEAD", signal });
       setStatus(res.ok ? "ok" : "unavailable");
-    } catch (err: any) {
-      // 3. Ignore errors caused by intentional aborts
-      if (err.name !== "AbortError") {
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
         setStatus("unavailable");
       }
     }
@@ -133,8 +127,8 @@ const fetchDetail = useCallback(async (signal) => {
         if (isMounted) {
           setApplication(applicationData);
         }
-      } catch (err) {
-        // Errors are already logged in fetchDetail, handled here to prevent crashes
+      } catch {
+        // errors already logged in fetchDetail
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -149,7 +143,6 @@ const fetchDetail = useCallback(async (signal) => {
       controller.abort();
     };
   }, [applicationId, fetchDetail]);
-  }, [applicationId]);
 
   useEffect(() => {
     if (application?.student?.id) {
@@ -464,8 +457,6 @@ case "COMPLETED":
       return <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />;
     default:
       return <XCircle className="w-4 h-4 text-red-500 dark:text-red-400" />;
-  }
-}
   }
 }
 

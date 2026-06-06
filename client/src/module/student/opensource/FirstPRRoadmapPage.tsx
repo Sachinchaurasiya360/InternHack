@@ -94,7 +94,7 @@ export default function FirstPRRoadmapPage() {
         toast.error("Failed to update progress. Please try again.");
       });
     },
-    [completed],
+    [completed, triggerCoach, user],
   );
 
   const totalSteps = STEPS.length;
