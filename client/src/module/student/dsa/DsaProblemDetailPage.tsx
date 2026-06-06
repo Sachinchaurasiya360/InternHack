@@ -1090,32 +1090,39 @@ export default function DsaProblemDetailPage() {
               value={`I'm stuck on ${problem.title} — ${window.location.href} — my approach: `}
             />
             <div className="flex justify-end gap-2 mt-3">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowHelpModal(false)}
-                className="px-3 py-2 text-xs font-mono uppercase border border-stone-300 dark:border-white/10 rounded-md"
               >
                 Close
-              </button>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    `I'm stuck on ${problem.title} — ${window.location.href} — my approach: `,
-                  );
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(
+                      `I'm stuck on ${problem.title} — ${window.location.href} — my approach: `,
+                    );
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  } catch {
+                    toast.error("Failed to copy");
+                  }
                 }}
-                className="px-3 py-2 text-xs font-mono uppercase border border-stone-300 dark:border-white/10 rounded-md inline-flex items-center gap-1.5"
               >
                 <Copy className="w-3 h-3" /> {copied ? "Copied!" : "Copy"}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={() =>
                   window.open("https://discord.gg/internhack", "_blank")
                 }
-                className="px-3 py-2 text-xs font-mono uppercase bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md"
               >
                 Post in Discord
-              </button>
+              </Button>
             </div>
             {/* Community tab placeholder — P1042 */}
           </div>
