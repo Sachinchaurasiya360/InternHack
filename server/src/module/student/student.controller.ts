@@ -337,6 +337,59 @@ export class StudentController {
     }
   }
 
+  async getSavedJobs(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const jobs = await this.studentService.getSavedJobs(req.user.id);
+      return res.status(200).json({ jobs });
+    } catch (error) {
+      logger.error("Failed to get saved jobs", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async saveJob(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const jobId = parseInt(String(req.params["jobId"]), 10);
+      if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
+      await this.studentService.saveJob(jobId, req.user.id);
+      return res.status(200).json({ message: "Job saved" });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Job not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      logger.error("Failed to save job", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async unsaveJob(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const jobId = parseInt(String(req.params["jobId"]), 10);
+      if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
+      await this.studentService.unsaveJob(jobId, req.user.id);
+      return res.status(200).json({ message: "Job unsaved" });
+    } catch (error) {
+      logger.error("Failed to unsave job", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async isJobSaved(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const jobId = parseInt(String(req.params["jobId"]), 10);
+      if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
+      const saved = await this.studentService.isJobSaved(jobId, req.user.id);
+      return res.status(200).json({ saved });
+    } catch (error) {
+      logger.error("Failed to check job saved status", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   async downloadCalendarEvent(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });

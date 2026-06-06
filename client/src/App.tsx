@@ -33,6 +33,7 @@ const ForgotPasswordPage = lazyWithRetry(() => import("./module/auth/ForgotPassw
 const JobBrowsePage = lazyWithRetry(() => import("./module/student/jobs/JobBrowsePage"));
 const JobDetailPage = lazyWithRetry(() => import("./module/student/jobs/JobDetailPage"));
 const JobLandingPage = lazyWithRetry(() => import("./module/student/jobs/JobLandingPage"));
+const SavedJobsPage = lazyWithRetry(() => import("./module/student/jobs/SavedJobsPage"));
 const ScrapedJobsPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobsPage"));
 const ScrapedJobDetailPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobDetailPage"));
 const CompanyListPage = lazyWithRetry(() => import("./module/student/companies/CompanyListPage"));
@@ -464,6 +465,7 @@ function App() {
           <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
             <Route index element={<Navigate to="applications" replace />} />
             <Route path="jobs" element={<JobBrowsePage />} />
+            <Route path="jobs/saved" element={<SavedJobsPage />} />
             <Route path="jobs/:id" element={<JobDetailPage />} />
             <Route path="jobs/:id/apply" element={<ApplyPage />} />
             <Route path="internships" element={<GovInternshipsPage />} />
