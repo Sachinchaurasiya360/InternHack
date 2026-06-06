@@ -78,6 +78,7 @@ export default function GSoCProposalPage() {
         description="Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure."
         keywords="GSoC proposal guide, Google Summer of Code, GSoC tips, open source proposal, GSoC application"
         canonicalUrl={canonicalUrl("/student/opensource/gsoc-proposal")}
+        ogImage="/og/og-gsoc-proposal.png"
       />
 
       {/* Atmospheric background */}

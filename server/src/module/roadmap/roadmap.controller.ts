@@ -1058,4 +1058,46 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
     next(err);
   }
 }
+// ─── Share ────────────────────────────────────────────────────────────────────
+export async function toggleShare(req: Request, res: Response, next: NextFunction) {
+  try {
+    const parsed = roadmapSlugParam.safeParse(req.params);
+    if (!parsed.success) {
+      validationError(res, parsed.error.flatten().fieldErrors);
+      return;
+    }
 
+    const slug = parsed.data.slug;
+    const userId = req.user!.id;
+
+    const roadmap = await prisma.roadmap.findFirst({
+      where: { slug, ownerUserId: userId },
+    });
+
+    if (!roadmap) {
+      res.status(403).json({ message: "Not authorized or roadmap not found" });
+      return;
+    }
+
+    if (!roadmap.isAiGenerated) {
+      res.status(400).json({ message: "Only AI-generated roadmaps can be shared" });
+      return;
+    }
+
+    const updated = await prisma.roadmap.update({
+      where: { slug },
+      data: { isPubliclyShared: !roadmap.isPubliclyShared },
+    });
+
+    // Bust cache so share state is immediately reflected
+    clearCache(`roadmap:/api/roadmaps/${slug}`);
+
+    res.json({
+      success: true,
+      isPubliclyShared: updated.isPubliclyShared,
+      shareUrl: `https://internhack.xyz/roadmaps/${slug}`,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
