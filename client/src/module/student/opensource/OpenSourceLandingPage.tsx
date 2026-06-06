@@ -1,4 +1,4 @@
-﻿import { useRef } from "react";
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -292,7 +292,7 @@ export default function OpenSourceLandingPage() {
               {isAuthenticated ? "Explore Repos" : "Start free"}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
-            <Link to={isAuthenticated ? "/student/opensource" : "/register"} className="no-underline">
+            <Link to={isAuthenticated ? "/student/opensource/contributions" : "/register"} className="no-underline">
               <button className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-stone-900 dark:text-stone-100 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
                 <GitBranch className="w-4 h-4" />
                 {isAuthenticated ? "My Dashboard" : "Create Account"}
@@ -584,7 +584,7 @@ export default function OpenSourceLandingPage() {
                     {isAuthenticated ? "Explore Repositories" : "Get Started — It's Free"}
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </button>
-                  <Link to={isAuthenticated ? "/student/opensource" : "/register"} className="no-underline">
+                  <Link to={isAuthenticated ? "/student/opensource/contributions" : "/register"} className="no-underline">
                     <button className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-white bg-transparent border border-white/20 hover:bg-white/5 transition-colors cursor-pointer">
                       {isAuthenticated ? "My Dashboard" : "Create Account"}
                     </button>

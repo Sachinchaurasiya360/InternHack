@@ -103,6 +103,7 @@ const CommTemplatesSectionPage = lazyWithRetry(() => import("./module/student/op
 const CICDGuidePage = lazyWithRetry(() => import("./module/student/opensource/CICDGuidePage"));
 const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/CICDGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
+const ContributionsDashboardPage = lazyWithRetry(() => import("./module/student/opensource/ContributionsDashboardPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
@@ -484,6 +485,7 @@ function App() {
             <Route path="companies/add" element={<AddCompanyPage />} />
             <Route path="grants" element={<GrantsPage />} />
             <Route path="grants/tracker" element={<GrantTrackerPage />} />
+            <Route path="open-source/contributions" element={<ContributionsDashboardPage />} />
             <Route path="opensource" element={<OpenSourceLayout />}>
               <Route index element={<RepoDiscoveryPage />} />
               <Route path="gsoc" element={<GSoCReposPage />} />
@@ -493,6 +495,7 @@ function App() {
               <Route path="gsoc-proposal" element={<GSoCProposalPage />} />
               <Route path="gsoc-proposal/:sectionSlug" element={<GSoCProposalStepPage />} />
               <Route path="analytics" element={<OpenSourceAnalyticsPage />} />
+              <Route path="contributions" element={<ContributionsDashboardPage />} />
               <Route path="read-codebase" element={<ReadCodebasePage />} />
               <Route path="read-codebase/:sectionSlug" element={<ReadCodebaseSectionPage />} />
               <Route path="git-guide" element={<GitCheatsheetPage />} />

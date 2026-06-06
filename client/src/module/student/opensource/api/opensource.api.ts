@@ -39,3 +39,39 @@ export async function patchFirstPRProgress(stepId: string, completed: boolean): 
   const { data } = await api.patch<FirstPRProgressResponse>("/opensource/first-pr/progress", body);
   return getCompletedStepIds(data);
 }
+
+export interface RepositoryContribution {
+  id: number;
+  name: string;
+  url: string;
+}
+
+export interface StudentBadgeData {
+  id: number;
+  studentId: number;
+  badgeId: number;
+  earnedAt: string;
+  badge: {
+    id: number;
+    name: string;
+    slug: string;
+    description: string;
+    iconUrl: string | null;
+    category: string;
+  };
+}
+
+export interface ContributionsDashboardResponse {
+  totalPRs: number;
+  mergedPRs: number;
+  openPRs: number;
+  issuesSolved: number;
+  repositoriesContributed: RepositoryContribution[];
+  firstPrProgress: string[];
+  badges: StudentBadgeData[];
+}
+
+export async function fetchContributionsDashboard(): Promise<ContributionsDashboardResponse> {
+  const { data } = await api.get<ContributionsDashboardResponse>("/student/open-source/contributions");
+  return data;
+}

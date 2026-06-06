@@ -15,6 +15,7 @@ const SEGMENT_NAMES: Record<string, string> = {
   cicd: "CI/CD",
   programs: "Programs",
   analytics: "Analytics",
+  contributions: "Contributions",
 };
 
 const LOWERCASE_WORDS = new Set(["and", "or", "the", "in", "on", "at", "to", "for", "of", "with", "a", "an"]);
