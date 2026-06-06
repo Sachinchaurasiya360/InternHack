@@ -240,8 +240,8 @@ export class JobService {
       where: { id },
       include: {
         recruiter: { select: { id: true, name: true, company: true, designation: true } },
-        rounds: { orderBy: { orderIndex: "asc" } },
-        _count: { select: { applications: true } },
+        rounds: { where: { isArchived: false }, orderBy: { orderIndex: "asc" } },
+        _count: { select: { applications: true, rounds: { where: { isArchived: false } } } },
       },
     });
   }
@@ -279,7 +279,7 @@ export class JobService {
       orderBy: { createdAt: "desc" },
       include: {
         recruiter: { select: { id: true, name: true, company: true } },
-        _count: { select: { applications: true, rounds: true } },
+        _count: { select: { applications: true, rounds: { where: { isArchived: false } } } },
       },
     });
   }
@@ -307,7 +307,8 @@ export class JobService {
         take: query.limit,
         orderBy: { createdAt: "desc" },
         include: {
-          _count: { select: { applications: true, rounds: true } },
+          rounds: { where: { isArchived: false }, orderBy: { orderIndex: "asc" } },
+          _count: { select: { applications: true, rounds: { where: { isArchived: false } } } },
         },
       }),
       prisma.job.count({ where }),

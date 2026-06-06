@@ -92,7 +92,7 @@ export class RecruiterController {
       if (isNaN(jobId) || isNaN(roundId)) return res.status(400).json({ message: "Invalid ID" });
 
       await this.recruiterService.deleteRound(jobId, roundId, req.user.id);
-      return res.status(200).json({ message: "Round deleted successfully" });
+      return res.status(200).json({ message: "Round archived successfully" });
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === "Job not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });

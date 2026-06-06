@@ -81,7 +81,7 @@ export class RecruiterService {
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
     return prisma.round.findMany({
-      where: { jobId },
+      where: { jobId, isArchived: false },
       orderBy: { orderIndex: "asc" },
       include: {
         _count: { select: { roundSubmissions: true } },
@@ -121,23 +121,10 @@ export class RecruiterService {
     const round = await prisma.round.findUnique({ where: { id: roundId } });
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
 
-    await prisma.round.delete({ where: { id: roundId } });
-
-    // Re-index remaining rounds
-    const remainingRounds = await prisma.round.findMany({
-      where: { jobId },
-      orderBy: { orderIndex: "asc" },
+    await prisma.round.update({
+      where: { id: roundId },
+      data: { isArchived: true },
     });
-
-    for (let i = 0; i < remainingRounds.length; i++) {
-      const r = remainingRounds[i]!;
-      if (r.orderIndex !== i) {
-        await prisma.round.update({
-          where: { id: r.id },
-          data: { orderIndex: i },
-        });
-      }
-    }
   }
 
   async reorderRounds(jobId: number, recruiterId: number, rounds: { roundId: number; orderIndex: number }[]) {
@@ -322,7 +309,8 @@ export class RecruiterService {
         orderBy: { orderIndex: "asc" },
       });
 
-      if (rounds.length === 0) throw new Error("No rounds defined for this job");
+      const activeRounds = rounds.filter((round) => !round.isArchived);
+      if (activeRounds.length === 0) throw new Error("No rounds defined for this job");
 
       // Find current round index
       let currentIndex = -1;
@@ -330,16 +318,14 @@ export class RecruiterService {
         currentIndex = rounds.findIndex((r) => r.id === application.currentRoundId);
       }
 
-      const nextIndex = currentIndex + 1;
-      if (nextIndex >= rounds.length) {
+      const nextRound = rounds.slice(currentIndex + 1).find((round) => !round.isArchived);
+      if (!nextRound) {
         // All rounds completed
         return tx.application.update({
           where: { id: applicationId },
           data: { status: "SHORTLISTED" },
         });
       }
-
-      const nextRound = rounds[nextIndex]!;
 
       // Create submission record for next round if not exists
       await tx.roundSubmission.upsert({

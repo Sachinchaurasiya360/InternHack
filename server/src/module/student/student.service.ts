@@ -40,7 +40,7 @@ export class StudentService {
   async applyToJob(jobId: number, studentId: number, data: ApplyData) {
     const job = await prisma.job.findUnique({
       where: { id: jobId },
-      include: { rounds: { orderBy: { orderIndex: "asc" }, take: 1 } },
+      include: { rounds: { where: { isArchived: false }, orderBy: { orderIndex: "asc" }, take: 1 } },
     });
 
     if (!job) throw new Error("Job not found");
@@ -355,7 +355,7 @@ Rules:
       include: {
         job: {
           include: {
-            rounds: { orderBy: { orderIndex: "asc" } },
+            rounds: { where: { isArchived: false }, orderBy: { orderIndex: "asc" } },
           },
         },
         roundSubmissions: {

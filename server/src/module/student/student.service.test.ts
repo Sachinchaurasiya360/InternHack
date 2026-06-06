@@ -69,7 +69,7 @@ describe("StudentService", () => {
       expect(result).toEqual(createdApplication);
       expect(mocks.prisma.job.findUnique).toHaveBeenCalledWith({
         where: { id: 12 },
-        include: { rounds: { orderBy: { orderIndex: "asc" }, take: 1 } },
+        include: { rounds: { where: { isArchived: false }, orderBy: { orderIndex: "asc" }, take: 1 } },
       });
       expect(mocks.prisma.application.create).toHaveBeenCalledWith({
         data: {

@@ -152,6 +152,7 @@ model round {
   name                String
   description         String?
   orderIndex          Int
+  isArchived          Boolean           @default(false)
   instructions        String?
   customFields        Json              @default("[]")
   evaluationCriteria  Json              @default("[]")
@@ -164,8 +165,9 @@ model round {
   job                 job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   roundSubmissions    roundSubmission[]
 
-  @@unique([jobId, orderIndex])
+  @@unique([jobId, orderIndex, isArchived])
   @@index([jobId])
+  @@index([jobId, isArchived])
 }
 
 model application {

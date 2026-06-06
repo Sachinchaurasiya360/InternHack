@@ -42,6 +42,7 @@ export interface Round {
   name: string;
   description?: string;
   orderIndex: number;
+  isArchived: boolean;
   instructions?: string;
   customFields: CustomFieldDefinition[];
   evaluationCriteria: EvaluationCriterion[];
