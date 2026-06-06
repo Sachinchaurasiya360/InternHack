@@ -1,5 +1,6 @@
 import { Router } from "express";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import { createRateLimitStore } from "../../utils/rate-limit-store.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
@@ -16,15 +17,18 @@ const chatBurstLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  store: createRateLimitStore("chat-burst"),
   keyGenerator: (req) => {
     const userId = (req as any).user?.id;
-    return userId ? `u:${userId}` : `ip:${req.ip}`;
+    return userId ? `u:${userId}` : `ip:${ipKeyGenerator(req.ip || "unknown_ip")}`;
   },
   message: { message: "You're sending messages too quickly. Please wait a moment and try again." },
 });
 
-router.post("/chat",             chatBurstLimiter, usageLimit("AI_JOB_CHAT"), jobAgentController.chat);
-router.get("/conversation",      jobAgentController.getConversation);
-router.delete("/conversation",   jobAgentController.resetConversation);
+router.post("/chat",           chatBurstLimiter, usageLimit("AI_JOB_CHAT"), jobAgentController.chat);
+router.post("/chat/stream",    chatBurstLimiter, usageLimit("AI_JOB_CHAT"), jobAgentController.chatStream);
+router.post("/email-jobs",     jobAgentController.emailJobs);
+router.get("/conversation",    jobAgentController.getConversation);
+router.delete("/conversation", jobAgentController.resetConversation);
 
 export { router as jobAgentRouter };

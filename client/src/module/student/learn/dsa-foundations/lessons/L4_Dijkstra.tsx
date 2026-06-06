@@ -255,9 +255,9 @@ function PQPanel({ items }: { items: { id: string; d: number }[] }) {
 function VisualizeTab() {
   const [inputStr, setInputStr] = useState("A-B:4, A-C:2, B-C:1, B-D:5, C-D:8, C-E:10, D-E:2");
   const [source, setSource] = useState("A");
-  const parsed = parseWeighted(inputStr);
-  const ids = parsed?.ids ?? [];
-  const edges = parsed?.edges ?? [];
+  const parsed = useMemo(() => parseWeighted(inputStr), [inputStr]);
+  const ids = useMemo(() => parsed?.ids ?? [], [parsed?.ids]);
+  const edges = useMemo(() => parsed?.edges ?? [], [parsed?.edges]);
 
   const frames = useMemo(() => buildDijkstraFrames(ids, edges, source), [ids, edges, source]);
   const player = useStepPlayer(frames);

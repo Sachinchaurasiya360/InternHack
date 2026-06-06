@@ -14,6 +14,7 @@ export default function CommTemplatesPage() {
       seoTitle="Open Source Communication Templates"
       seoDescription="Copy-paste templates for claiming issues, writing PR descriptions, responding to code reviews, filing bug reports, and proposing features in open source projects."
       seoKeywords="open source communication, PR description template, bug report template, issue comment, code review response"
+      ogImage="/og/og-communication.png"
       icon={MessageSquare}
       iconColor="text-violet-500"
     />

@@ -419,7 +419,7 @@ function VisualizeTab() {
   const [v, setV] = useState("J");
 
   const parsed = useMemo(() => parseTree(treeStr), [treeStr]);
-  const ids = parsed ? Object.keys(parsed.nodes) : [];
+  const ids = useMemo(() => parsed ? Object.keys(parsed.nodes) : [], [parsed]);
   const table = useMemo(() => parsed ? buildLifting(parsed.rootId, parsed.nodes) : null, [parsed]);
 
   const frames = useMemo((): LCAFrame[] => {

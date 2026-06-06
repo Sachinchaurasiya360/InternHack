@@ -363,7 +363,7 @@ function parseArr(s: string): number[] | null {
 function VisualizeTab() {
   const [algo, setAlgo] = useState<"bubble" | "selection">("bubble");
   const [inputStr, setInputStr] = useState("5, 2, 8, 1, 9, 3");
-  const parsed = parseArr(inputStr) ?? [5, 2, 8, 1, 9, 3];
+  const parsed = useMemo(() => parseArr(inputStr) ?? [5, 2, 8, 1, 9, 3], [inputStr]);
 
   const frames = useMemo(
     () => (algo === "bubble" ? buildBubbleFrames(parsed) : buildSelectionFrames(parsed)),

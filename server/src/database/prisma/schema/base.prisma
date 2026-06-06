@@ -9,6 +9,7 @@ datasource db {
 model user {
   id                    Int                         @id @default(autoincrement())
   name                  String
+  profileSlug           String?                     @unique
   email                 String                      @unique
   password              String
   role                  UserRole                    @default(STUDENT)
@@ -19,6 +20,10 @@ model user {
   otpExpiresAt          DateTime?
   resetPasswordOtp      String?
   resetOtpExpiresAt     DateTime?
+  passwordResetAttempts Int                         @default(0)
+  passwordResetLockedUntil DateTime?
+  verificationAttempts  Int                         @default(0)
+  verificationLockedUntil DateTime?
   contactNo             String?
   profilePic            String?
   coverImage            String?
@@ -43,8 +48,8 @@ model user {
   projects              Json                        @default("[]")
   achievements          Json                        @default("[]")
   leetcodeUrl           String?
+  unsubscribeDigest     Boolean                     @default(false)
   tokenVersion          Int                         @default(0)
-  adminActivityLogs     adminActivityLog[]          @relation("AdminActivityLogs")
   adminProfile          adminProfile?               @relation("AdminProfile")
   applications          application[]               @relation("StudentApplications")
   atsScores             atsScore[]                  @relation("StudentAtsScores")
@@ -55,6 +60,7 @@ model user {
   contributions         companyContribution[]       @relation("UserContributions")
   companyReviews        companyReview[]             @relation("UserReviews")
   dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
+  dsaProblemReports     dsaProblemReport[]          
   emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
   employeeProfile       employee?                   @relation("EmployeeUser")
   postedJobs            job[]                       @relation("RecruiterJobs")
@@ -74,19 +80,56 @@ model user {
   jobPreference         userJobPreference?          @relation("UserJobPreferences")
   jobMatches            jobMatch[]                  @relation("UserJobMatches")
   agentConversations    jobAgentConversation[]      @relation("UserAgentConversations")
+  jobAgentEmailLogs     jobAgentEmailLog[]          @relation("UserJobAgentEmailLogs")
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  guideFeedbacks        guideFeedback[]
+  interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
+  firstPrProgress       studentFirstPrProgress[]    @relation("StudentFirstPrProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
   roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
-  generatedCoverLetters generatedCoverLetter[]      @relation("StudentCoverLetters")
-
+  generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
+  leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
+  generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
+  recommendation            userRecommendation?          @relation("UserRecommendation")
+  hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
+  contentViews              contentView[]                @relation("UserContentViews")
+  statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
+  coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
+}
+
+model userInterviewProgress {
+  id            Int       @id @default(autoincrement())
+  userId        Int       @unique
+  completedIds  String[]  @default([])
+  bookmarkedIds String[]  @default([])
+  lastVisitedId String?
+  lastVisitedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user user @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model studentFirstPrProgress {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @unique
+  completedStepIds   String[] @default([])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user user @relation("StudentFirstPrProgress", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model adminProfile {
@@ -97,22 +140,6 @@ model adminProfile {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      user      @relation("AdminProfile", fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model adminActivityLog {
-  id         Int      @id @default(autoincrement())
-  adminId    Int
-  action     String
-  targetType String
-  targetId   Int
-  details    Json     @default("{}")
-  ipAddress  String?
-  createdAt  DateTime @default(now())
-  admin      user     @relation("AdminActivityLogs", fields: [adminId], references: [id], onDelete: Cascade)
-
-  @@index([adminId])
-  @@index([targetType, targetId])
-  @@index([createdAt])
 }
 
 model job {
@@ -160,6 +187,7 @@ model round {
   currentRoundApplications   application[]      @relation("ApplicationCurrentRound")
 
   @@unique([jobId, orderIndex])
+  @@unique([jobId, name])
   @@index([jobId])
 }
 
@@ -172,19 +200,34 @@ model application {
   customFieldAnswers Json              @default("{}")
   resumeUrl          String?
   coverLetter        String?
+  studentNotes       String?           @db.Text
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   job                job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   student            user              @relation("StudentApplications", fields: [studentId], references: [id], onDelete: Cascade)
-  interviews         interview[]       @relation("ApplicationInterviews")
+  interviews         interview[]                  @relation("ApplicationInterviews")
   roundSubmissions   roundSubmission[]
+  statusHistory      applicationStatusHistory[]
 
   @@unique([jobId, studentId])
   @@index([jobId])
+  @@index([jobId, status])
   @@index([studentId])
   @@index([status])
   @@index([createdAt])
-  @@index([jobId, status])
+}
+
+model applicationStatusHistory {
+  id            Int               @id @default(autoincrement())
+  applicationId Int
+  fromStatus    ApplicationStatus
+  toStatus      ApplicationStatus
+  changedBy     Int?
+  changedAt     DateTime          @default(now())
+  application   application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  changer       user?             @relation("ChangerStatusHistory", fields: [changedBy], references: [id], onDelete: SetNull)
+
+  @@index([applicationId])
 }
 
 model roundSubmission {
@@ -449,8 +492,8 @@ model opensourceRepo {
   highlights  String[]       @default([])
   trending    Boolean        @default(false)
   lastUpdated DateTime       @default(now())
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 
   @@index([domain])
   @@index([difficulty])
@@ -531,8 +574,8 @@ model gsocOrganization {
 }
 
 model ycCompany {
-  id              Int       @id @default(autoincrement())
-  ycId            Int       @unique
+  id              Int      @id @default(autoincrement())
+  ycId            Int      @unique
   name            String
   slug            String
   oneLiner        String?
@@ -546,19 +589,19 @@ model ycCompany {
   teamSize        Int?
   industry        String?
   subindustry     String?
-  tags            String[]  @default([])
-  industries      String[]  @default([])
-  regions         String[]  @default([])
+  tags            String[] @default([])
+  industries      String[] @default([])
+  regions         String[] @default([])
   stage           String?
-  isHiring        Boolean   @default(false)
-  topCompany      Boolean   @default(false)
+  isHiring        Boolean  @default(false)
+  topCompany      Boolean  @default(false)
   ycUrl           String?
   launchedAt      DateTime?
   founders        Json?
   socialLinks     Json?
   scrapedAt       DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([batchShort])
   @@index([industry])
@@ -566,6 +609,20 @@ model ycCompany {
   @@index([isHiring])
   @@index([topCompany])
   @@index([name])
+}
+
+model leetcodeImportLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  username   String?
+  source     String   @default("LEETCODE_USERNAME")
+  matched    Int      @default(0)
+  imported   Int      @default(0)
+  importedAt DateTime @default(now())
+  user       user     @relation("UserLeetcodeImports", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([importedAt])
 }
 
 model dsaTopic {
@@ -584,6 +641,7 @@ model dsaProblem {
   difficulty       String
   leetcodeId       Int?
   leetcodeUrl      String?
+  leetcodeSlug     String?              @unique
   gfgUrl           String?
   articleUrl       String?
   videoUrl         String?
@@ -606,15 +664,28 @@ model dsaProblem {
   progress         studentDsaProgress[]
   testCases        dsaTestCase[]
   submissions      dsaSubmission[]
+  reports          dsaProblemReport[]
 
   @@index([difficulty])
   @@index([leetcodeId])
+}
+
+model dsaProblemReport {
+  id         Int        @id @default(autoincrement())
+  reason     String
+  message    String?
+  createdAt  DateTime   @default(now())
+  userId     Int
+  user       user       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId  Int
+  problem    dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 }
 
 model studentDsaProgress {
   id        Int        @id @default(autoincrement())
   studentId Int
   problemId Int
+  source    String     @default("INTERNAL")
   solved    Boolean    @default(true)
   notes     String?
   solvedAt  DateTime   @default(now())
@@ -733,6 +804,7 @@ model studentAptitudeProgress {
   answered   Boolean          @default(false)
   correct    Boolean          @default(false)
   createdAt  DateTime         @default(now())
+  lastPracticedAt DateTime @default(now())
   question   aptitudeQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
   student    user             @relation("StudentAptitudeProgress", fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -819,31 +891,63 @@ model usageLog {
   @@index([userId, action, createdAt])
 }
 
+model jobAgentEmailLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  jobIds    Int[]    @default([])
+  context   String?
+  sentCount Int
+  createdAt DateTime @default(now())
+  user      user     @relation("UserJobAgentEmailLogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
 model hackathon {
-  id           Int      @id @default(autoincrement())
-  name         String
-  organizer    String
-  logo         String?
-  description  String
-  prizePool    String
-  startDate    String
-  endDate      String
-  location     String
-  locationType String
-  website      String?
-  tags         String[] @default([])
-  tracks       String[] @default([])
-  eligibility  String?
-  status       String   @default("upcoming")
-  ecosystem    String
-  highlights   String[] @default([])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             Int                      @id @default(autoincrement())
+  name           String
+  organizer      String
+  logo           String?
+  description    String
+  prizePool      String
+  startDate      String
+  endDate        String
+  location       String
+  locationType   String
+  website        String?
+  tags           String[]                 @default([])
+  tracks         String[]                 @default([])
+  eligibility    String?
+  status         String                   @default("upcoming")
+  ecosystem      String
+  highlights     String[]                 @default([])
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  participations hackathonParticipation[]
 
   @@index([status])
   @@index([ecosystem])
 }
 
+enum HackathonParticipationStatus {
+  INTERESTED
+  PARTICIPATING
+}
+
+model hackathonParticipation {
+  id          Int                          @id @default(autoincrement())
+  userId      Int
+  hackathonId Int
+  status      HackathonParticipationStatus @default(INTERESTED)
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @updatedAt
+  user        user                         @relation("UserHackathonParticipations", fields: [userId], references: [id], onDelete: Cascade)
+  hackathon   hackathon                    @relation(fields: [hackathonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, hackathonId])
+  @@index([userId])
+  @@index([hackathonId])
+}
 model iitProfessor {
   id             Int      @id @default(autoincrement())
   collegeName    String
@@ -869,6 +973,7 @@ model govInternship {
   stipend     String
   eligibility String
   reality     String
+  applyUrl    String?
   createdAt   DateTime @default(now())
 
   @@index([category])
@@ -914,7 +1019,7 @@ model savedCandidate {
   student     user     @relation("StudentSavedByRecruiters", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([recruiterId, studentId])
-  @@index([recruiterId])
+  @@index([recruiterId, studentId])
   @@index([studentId])
 }
 
@@ -970,6 +1075,8 @@ model externalJobApplication {
   id         Int      @id @default(autoincrement())
   studentId  Int
   adminJobId Int
+  studentNotes String?  @db.Text
+  updatedAt    DateTime @default(now()) @updatedAt
   createdAt  DateTime @default(now())
   student    user     @relation("StudentExternalApplications", fields: [studentId], references: [id], onDelete: Cascade)
   adminJob   adminJob @relation("AdminJobApplications", fields: [adminJobId], references: [id], onDelete: Cascade)
@@ -1109,14 +1216,6 @@ enum SubscriptionStatus {
   CANCELLED
 }
 
-enum BadgeCategory {
-  CAREER
-  QUIZ
-  SKILL
-  CONTRIBUTION
-  MILESTONE
-}
-
 enum AIProviderType {
   GEMINI
   GROQ
@@ -1133,6 +1232,15 @@ enum AIServiceType {
   EMAIL_CHAT
   AI_ROADMAP_GENERATION
 }
+
+enum BadgeCategory {
+  CAREER
+  QUIZ
+  SKILL
+  CONTRIBUTION
+  MILESTONE
+}
+
 
 enum ScrapedJobStatus {
   ACTIVE
@@ -1205,6 +1313,7 @@ enum UsageAction {
   MOCK_INTERVIEW
   AI_JOB_CHAT
   CODE_RUN
+  GITHUB_STATS
 }
 
 enum EmailCampaignStatus {
@@ -1220,6 +1329,17 @@ enum EmailLogStatus {
   PENDING
   SENT
   FAILED
+}
+
+model contactSubmission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 model errorLog {
@@ -1303,6 +1423,17 @@ model interviewExperienceUpvote {
   @@index([experienceId])
 }
 
+model userRecommendation {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  weakAreas       Json     @default("[]")
+  lastRefreshedAt DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            user     @relation("UserRecommendation", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 enum InterviewSource {
   ON_CAMPUS
   OFF_CAMPUS
@@ -1325,3 +1456,53 @@ enum InterviewOutcome {
   PENDING
   GHOSTED
 }
+
+model guideFeedback {
+  id        Int      @id @default(autoincrement())
+  guideId   String
+  stepId    String
+  userId    Int
+  rating    String
+  createdAt DateTime @default(now())
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideId, stepId])
+  @@index([guideId])
+  @@index([stepId])
+  }
+
+enum ContentType {
+  LESSON
+  DSA
+  INTERVIEW_QUESTION
+}
+
+model contentView {
+  id          Int         @id @default(autoincrement())
+  userId      Int?
+  user        user?       @relation("UserContentViews", fields: [userId], references: [id], onDelete: SetNull)
+  contentType ContentType
+  contentId   String
+  timeSpentMs Int
+  completed   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+
+  @@index([contentType, contentId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model coachAdvice {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  trigger   String
+  title     String   @default("Coach suggestion")
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  user      user     @relation("UserCoachAdvice", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Building2, Loader2, Plus, X } from "lucide-react";
 import toast from "@/components/ui/toast";
+import { uploadDirectToS3 } from "@/utils/upload";
 import api from "../../../lib/axios";
 import { Button } from "../../../components/ui/button";
 
@@ -51,12 +52,11 @@ export default function AddCompanyPage() {
       let logoUrl: string | undefined;
 
       if (logoFile) {
-        const formData = new FormData();
-        formData.append("file", logoFile);
-        const uploadRes = await api.post("/upload/resume", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        const uploadRes = await uploadDirectToS3({
+          file: logoFile,
+          folder: "company-logos",
         });
-        logoUrl = uploadRes.data.file.url;
+        logoUrl = uploadRes.fileUrl;
       }
 
       const body: Record<string, unknown> = {

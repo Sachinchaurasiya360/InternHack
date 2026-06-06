@@ -347,7 +347,7 @@ function VisualizeTab() {
   const [inputStr, setInputStr] = useState("7, 2, 1, 8, 6, 3, 5, 4");
   const [strategy, setStrategy] = useState<PivotStrategy>("last");
 
-  const parsed = parseArr(inputStr) ?? [7, 2, 1, 8, 6, 3, 5, 4];
+  const parsed = useMemo(() => parseArr(inputStr) ?? [7, 2, 1, 8, 6, 3, 5, 4], [inputStr]);
   const frames = useMemo(() => buildFrames(parsed, strategy), [parsed, strategy]);
   const player = useStepPlayer(frames);
   const frame = player.current;

@@ -306,8 +306,8 @@ function VisualizeTab() {
   const [arg, setArg] = useState("2");
   const [val, setVal] = useState("99");
 
-  const values = parseList(listStr);
   const frames = useMemo(() => {
+    const values = parseList(listStr);
     if (op === "head") return buildHead(values, Number(val) || 0);
     if (op === "delete") return buildDelete(values, Math.max(0, Number(arg) || 0));
     return buildInsert(values, Math.max(0, Number(arg) || 0), Number(val) || 0);

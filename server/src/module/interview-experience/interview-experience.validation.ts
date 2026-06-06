@@ -27,7 +27,7 @@ const createExperienceBaseSchema = z.object({
   companyName: z.string().trim().min(1).max(200).optional(),
   role: z.string().trim().min(2).max(120),
   experienceYears: z.coerce.number().int().min(0).max(30).optional(),
-  interviewYear: z.coerce.number().int().min(2000).max(2100).optional(),
+  interviewYear: z.coerce.number().int().min(2000).max(new Date().getFullYear()).optional(),
   interviewMonth: z.coerce.number().int().min(1).max(12).optional(),
   source: z.enum(["ON_CAMPUS", "OFF_CAMPUS", "REFERRAL", "LINKEDIN", "PORTAL", "OTHER"]).default("ON_CAMPUS"),
   difficulty: z.enum(["EASY", "MEDIUM", "HARD"]).default("MEDIUM"),

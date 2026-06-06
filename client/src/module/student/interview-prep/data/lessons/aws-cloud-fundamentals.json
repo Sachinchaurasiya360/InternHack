@@ -1,0 +1,665 @@
+[
+  {
+    "id": "aws-regions-vs-az",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 0,
+    "title": "Regions vs. Availability Zones",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Region", "Availability Zone", "Latency", "High Availability", "DR"],
+    "content": {
+      "question": "What is the difference between an AWS Region and an Availability Zone (AZ)?",
+      "answer": "- **Region**: A physical location in the world where AWS has multiple data centers. Regions are geographically isolated. \n- **Availability Zone (AZ)**: One or more discrete data centers within a Region. Each AZ has redundant power and networking.\n\n**Best Practice**: Deploy applications across at least two AZs within a single Region to achieve high availability."
+    }
+  },
+  {
+    "id": "aws-iam-roles-vs-policies",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 1,
+    "title": "IAM Roles vs. Policies",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["IAM", "Role", "Policy", "Least Privilege", "Trust Relationship"],
+    "content": {
+      "question": "Explain the difference between an IAM Role, an IAM User, and an IAM Policy.",
+      "answer": "- **IAM User**: A persistent identity created for a person or service.\n- **IAM Policy**: A JSON document that defines permissions.\n- **IAM Role**: An identity that is 'assumed' by anyone who needs it (like an EC2 instance), providing temporary credentials."
+    }
+  },
+  {
+    "id": "aws-ec2-instance-types",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 2,
+    "title": "EC2 Essentials",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Compute", "Virtual Machines", "Instance Types", "Pricing Models"],
+    "content": {
+      "question": "What are the different EC2 pricing models and when should you use each?",
+      "answer": "1. **On-Demand**: Unpredictable workloads. 2. **Reserved Instances/Savings Plans**: Steady-state (1-3 yr). 3. **Spot Instances**: Spare capacity (up to 90% off, can be terminated). 4. **Dedicated Hosts**: Physical servers for compliance."
+    }
+  },
+  {
+    "id": "aws-s3-storage-classes",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 3,
+    "title": "S3 Storage Classes",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["S3", "Storage Classes", "Lifecycle Policies", "Cost Optimization"],
+    "content": {
+      "question": "Compare S3 Standard, S3 IA, and Glacier.",
+      "answer": "Standard is for regular data. Standard-IA (Infrequent Access) is for rarely used data with instant access. Glacier is for long-term archiving with retrieval times from minutes to hours."
+    }
+  },
+  {
+    "id": "aws-vpc-components",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 4,
+    "title": "VPC Fundamentals",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["VPC", "Subnet", "Route Table", "Internet Gateway", "NAT Gateway"],
+    "content": {
+      "question": "What are the components needed for a private EC2 to access the internet?",
+      "answer": "A NAT Gateway in a public subnet, an Internet Gateway attached to the VPC, and a route in the private subnet's route table pointing to the NAT Gateway."
+    }
+  },
+  {
+    "id": "aws-security-group-vs-nacl",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 5,
+    "title": "Security Groups vs. NACLs",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Security Group", "NACL", "Stateful", "Stateless", "Firewall"],
+    "content": {
+      "question": "What is the difference between a Security Group and a Network ACL (NACL)?",
+      "answer": "Security Groups are stateful and work at the instance level. NACLs are stateless and work at the subnet level."
+    }
+  },
+  {
+    "id": "aws-rds-vs-dynamodb",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 6,
+    "title": "RDS vs. DynamoDB",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["RDS", "DynamoDB", "SQL vs NoSQL", "Scaling", "Serverless"],
+    "content": {
+      "question": "When would you choose RDS over DynamoDB?",
+      "answer": "Choose RDS for complex relationships, joins, and SQL compliance. Choose DynamoDB for high-scale NoSQL, predictable performance, and serverless architecture."
+    }
+  },
+  {
+    "id": "aws-lambda-serverless",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 7,
+    "title": "Lambda & Serverless",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Lambda", "Event-driven", "Cold Start", "Scaling"],
+    "content": {
+      "question": "What is AWS Lambda and what are its limits?",
+      "answer": "Serverless compute that runs code in response to events. Max execution time is 15 minutes, memory up to 10GB, and prone to 'cold starts' if not used frequently."
+    }
+  },
+  {
+    "id": "aws-elb-types",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 8,
+    "title": "ELB: ALB vs. NLB",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["ALB", "NLB", "Layer 7", "Layer 4", "Target Group"],
+    "content": {
+      "question": "What is the difference between an Application Load Balancer (ALB) and a Network Load Balancer (NLB)?",
+      "answer": "ALB operates at Layer 7 (HTTP) and supports path-based routing. NLB operates at Layer 4 (TCP) for high performance and static IPs."
+    }
+  },
+  {
+    "id": "aws-route53-routing-policies",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 9,
+    "title": "Route 53 Policies",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["DNS", "Route 53", "Latency-based", "Failover", "Geolocation"],
+    "content": {
+      "question": "Explain 3 different Route 53 routing policies.",
+      "answer": "1. Latency-aware: Best performance. 2. Failover: Active-Passive DR. 3. Weighted: Canary deployments/split traffic."
+    }
+  },
+  {
+    "id": "aws-shared-responsibility",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 10,
+    "title": "Shared Responsibility Model",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Security", "Compliance"],
+    "content": {
+      "question": "What is the AWS Shared Responsibility Model?",
+      "answer": "AWS is responsible for security 'of' the cloud (infrastructure, hardware). The customer is responsible for security 'in' the cloud (data, OS configuration, IAM)."
+    }
+  },
+  {
+    "id": "aws-aurora-benefits",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 11,
+    "title": "Amazon Aurora",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["RDS", "Aurora", "Performance", "High Availability"],
+    "content": {
+      "question": "What are the advantages of Amazon Aurora over standard RDS MySQL/Postgres?",
+      "answer": "Aurora is up to 5x faster, provides automated storage scaling, and replicates data across 3 AZs for higher durability."
+    }
+  },
+  {
+    "id": "aws-redshift-use-case",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 12,
+    "title": "Amazon Redshift",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Data Warehouse", "Analytics", "OLAP"],
+    "content": {
+      "question": "What is Amazon Redshift used for?",
+      "answer": "It is a fast, fully managed data warehouse for large-scale data analytics (OLAP) using standard SQL."
+    }
+  },
+  {
+    "id": "aws-cloudwatch-alarms",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 13,
+    "title": "CloudWatch Alarms",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Monitoring", "Alerting"],
+    "content": {
+      "question": "How do CloudWatch Alarms work?",
+      "answer": "You set a metric and a threshold; if the metric crosses the threshold for a period, an action is triggered (like sending an SNS notification or stopping an instance)."
+    }
+  },
+  {
+    "id": "aws-cloudtrail-auditing",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 14,
+    "title": "CloudTrail Auditing",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Security", "Audit", "Governance"],
+    "content": {
+      "question": "Why is CloudTrail important for security?",
+      "answer": "It logs every API action in your account, allowing you to see 'Who made this change?' for troubleshooting and security audits."
+    }
+  },
+  {
+    "id": "aws-iam-best-practices",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 15,
+    "title": "IAM Best Practices",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["IAM", "Security"],
+    "content": {
+      "question": "Name three IAM best practices.",
+      "answer": "1. Use MFA for all accounts. 2. Follow least privilege. 3. Use Roles instead of long-lived access keys."
+    }
+  },
+  {
+    "id": "aws-s3-versioning",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 16,
+    "title": "S3 Versioning",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["S3", "Data Protection"],
+    "content": {
+      "question": "What is S3 Versioning?",
+      "answer": "It keeps multiple versions of an object in the same bucket, allowing you to recover from accidental deletions or overwrites."
+    }
+  },
+  {
+    "id": "aws-ebs-volume-types",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 17,
+    "title": "EBS Volume Types",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["EBS", "Storage", "SSD", "HDD"],
+    "content": {
+      "question": "List the main EBS volume types.",
+      "answer": "gp3/gp2 (General Purpose SSD), io2/io1 (Provisioned IOPS SSD), st1 (Throughput Optimized HDD), and sc1 (Cold HDD)."
+    }
+  },
+  {
+    "id": "aws-efs-vs-ebs",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 18,
+    "title": "EFS vs. EBS",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Storage", "Shared FS"],
+    "content": {
+      "question": "What is the difference between EBS and EFS?",
+      "answer": "EBS is a block store attached to one EC2. EFS is a shared file system (NFS) that can be mounted on thousands of EC2s simultaneously."
+    }
+  },
+  {
+    "id": "aws-glue-etl",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 19,
+    "title": "AWS Glue",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["ETL", "Data Integration"],
+    "content": {
+      "question": "What is AWS Glue?",
+      "answer": "A fully managed ETL (Extract, Transform, Load) service that makes it easy to categorize, clean, and enrich data for analytics."
+    }
+  },
+  {
+    "id": "aws-athena-serverless-queries",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 20,
+    "title": "Amazon Athena",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Query", "S3", "Serverless SQL"],
+    "content": {
+      "question": "What is Amazon Athena?",
+      "answer": "An interactive query service that makes it easy to analyze data in Amazon S3 using standard SQL. It is serverless."
+    }
+  },
+  {
+    "id": "aws-fargate-vs-ecs",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 21,
+    "title": "Fargate vs. ECS",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Containers", "Serverless Containers"],
+    "content": {
+      "question": "What is AWS Fargate?",
+      "answer": "A serverless compute engine for containers. It works with ECS or EKS so you don't have to manage EC2 instances for your container clusters."
+    }
+  },
+  {
+    "id": "aws-kinesis-data-streams",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 22,
+    "title": "Amazon Kinesis",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Streaming", "Real-time"],
+    "content": {
+      "question": "What is Amazon Kinesis used for?",
+      "answer": "Collecting, processing, and analyzing real-time, streaming data so you can respond in real-time."
+    }
+  },
+  {
+    "id": "aws-api-gateway-role",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 23,
+    "title": "API Gateway",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["API", "REST", "Serverless"],
+    "content": {
+      "question": "What is Amazon API Gateway?",
+      "answer": "A managed service for developers to create, publish, maintain, and secure APIs at any scale."
+    }
+  },
+  {
+    "id": "aws-sqs-dead-letter-queue",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 24,
+    "title": "SQS DLQ",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["SQS", "Fault Tolerance"],
+    "content": {
+      "question": "What is a Dead Letter Queue (DLQ) in SQS?",
+      "answer": "A queue where messages are sent if they cannot be processed successfully after a certain number of attempts."
+    }
+  },
+  {
+    "id": "aws-secrets-manager",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 25,
+    "title": "Secrets Manager",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Security", "Secrets"],
+    "content": {
+      "question": "Why use Secrets Manager over Parameter Store for passwords?",
+      "answer": "Secrets Manager supports automatic rotation of secrets (like RDS passwords) and has built-in integration with higher security standards."
+    }
+  },
+  {
+    "id": "aws-waf-protection",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 26,
+    "title": "AWS WAF",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Security", "Firewall", "Layer 7"],
+    "content": {
+      "question": "What is AWS WAF?",
+      "answer": "A web application firewall that helps protect web applications against common web exploits like SQL injection and cross-site scripting (XSS)."
+    }
+  },
+  {
+    "id": "aws-shield-ddos",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 27,
+    "title": "AWS Shield",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["DDoS", "Security"],
+    "content": {
+      "question": "What is AWS Shield?",
+      "answer": "A managed Distributed Denial of Service (DDoS) protection service that safeguards applications running on AWS."
+    }
+  },
+  {
+    "id": "aws-cloudformation-drift",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 28,
+    "title": "CloudFormation Drift",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["IaC", "Compliance"],
+    "content": {
+      "question": "What is CloudFormation Drift Detection?",
+      "answer": "It identifies resources within a stack that have been manually changed outside of CloudFormation."
+    }
+  },
+  {
+    "id": "aws-organizations-billing",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 29,
+    "title": "AWS Organizations",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Management", "Billing"],
+    "content": {
+      "question": "What is AWS Organizations?",
+      "answer": "It allows you to centrally manage and govern multiple AWS accounts, including consolidated billing and Service Control Policies (SCPs)."
+    }
+  },
+  {
+    "id": "aws-budget-alerts",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 30,
+    "title": "AWS Budgets",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["FinOps", "Cost Management"],
+    "content": {
+      "question": "How do AWS Budgets help manage costs?",
+      "answer": "You can set custom budgets and receive alerts when your costs or usage exceed (or are forecasted to exceed) your budgeted amount."
+    }
+  },
+  {
+    "id": "aws-trusted-advisor",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 31,
+    "title": "Trusted Advisor",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Optimization", "Best Practices"],
+    "content": {
+      "question": "What does AWS Trusted Advisor do?",
+      "answer": "It provides real-time guidance to help you provision your resources following AWS best practices across cost, performance, security, and fault tolerance."
+    }
+  },
+  {
+    "id": "aws-guardduty-threat-detection",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 32,
+    "title": "AWS GuardDuty",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Security", "Threat Detection"],
+    "content": {
+      "question": "What is AWS GuardDuty?",
+      "answer": "A threat detection service that continuously monitors for malicious activity and unauthorized behavior to protect your AWS accounts and workloads."
+    }
+  },
+  {
+    "id": "aws-macie-data-privacy",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 33,
+    "title": "Amazon Macie",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Sensitive Data", "Privacy"],
+    "content": {
+      "question": "What is Amazon Macie?",
+      "answer": "A data security and data privacy service that uses machine learning and pattern matching to discover and protect sensitive data in Amazon S3."
+    }
+  },
+  {
+    "id": "aws-step-functions-orchestration",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 34,
+    "title": "AWS Step Functions",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Workflows", "Serverless Orchestration"],
+    "content": {
+      "question": "What are AWS Step Functions?",
+      "answer": "A serverless function orchestrator that makes it easy to sequence AWS Lambda functions and multiple AWS services into business-critical applications."
+    }
+  },
+  {
+    "id": "aws-cloudfront-oai",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 35,
+    "title": "CloudFront OAI",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Security", "S3", "CloudFront"],
+    "content": {
+      "question": "What is an Origin Access Identity (OAI)?",
+      "answer": "It is used to restrict access to an S3 bucket so that users can only access the files through CloudFront, not directly via S3 URLs."
+    }
+  },
+  {
+    "id": "aws-eks-vs-ecs",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 36,
+    "title": "EKS vs. ECS",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Kubernetes", "Containers"],
+    "content": {
+      "question": "What is the difference between Amazon ECS and Amazon EKS?",
+      "answer": "ECS is AWS's proprietary container orchestrator. EKS is managed Kubernetes. Choose EKS if you already use K8s or want open-source portability."
+    }
+  },
+  {
+    "id": "aws-direct-connect",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 37,
+    "title": "AWS Direct Connect",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Networking", "Hybrid Cloud"],
+    "content": {
+      "question": "What is AWS Direct Connect?",
+      "answer": "A cloud service solution that makes it easy to establish a dedicated network connection from your premises to AWS for more consistent network performance."
+    }
+  },
+  {
+    "id": "aws-transit-gateway",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 38,
+    "title": "AWS Transit Gateway",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Networking", "VPC Peering"],
+    "content": {
+      "question": "What is AWS Transit Gateway?",
+      "answer": "A service that enables customers to connect their VPCs and their on-premises networks to a single gateway, acting as a hub."
+    }
+  },
+  {
+    "id": "aws-global-accelerator",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 39,
+    "title": "Global Accelerator",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Networking", "Performance"],
+    "content": {
+      "question": "What is AWS Global Accelerator?",
+      "answer": "A service that improves the availability and performance of your applications with local or global users by using the AWS global network infrastructure."
+    }
+  },
+  {
+    "id": "aws-elastic-beanstalk",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 40,
+    "title": "Elastic Beanstalk",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["PaaS", "Automation"],
+    "content": {
+      "question": "What is AWS Elastic Beanstalk?",
+      "answer": "An easy-to-use service for deploying and scaling web applications and services developed with Java, .NET, PHP, Node.js, Python, Ruby, Go, and Docker."
+    }
+  },
+  {
+    "id": "aws-lightsail-vps",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 41,
+    "title": "AWS Lightsail",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["VPS", "Simple Setup"],
+    "content": {
+      "question": "What is AWS Lightsail?",
+      "answer": "A low-cost, simplified service for launching virtual private servers (VPS) with pre-configured software like WordPress or LAMP stacks."
+    }
+  },
+  {
+    "id": "aws-aurora-serverless",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 42,
+    "title": "Aurora Serverless",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["SQL", "Serverless DB"],
+    "content": {
+      "question": "What is Aurora Serverless?",
+      "answer": "An on-demand, auto-scaling configuration for Aurora that automatically starts up, shuts down, and scales capacity up or down based on your application's needs."
+    }
+  },
+  {
+    "id": "aws-dynamodb-streams",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 43,
+    "title": "DynamoDB Streams",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["NoSQL", "Event-driven"],
+    "content": {
+      "question": "What are DynamoDB Streams?",
+      "answer": "A time-ordered sequence of item-level changes in a DynamoDB table. It can trigger AWS Lambda functions for real-time processing of database updates."
+    }
+  },
+  {
+    "id": "aws-sqs-visibility-timeout",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 44,
+    "title": "SQS Visibility Timeout",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Messaging", "Timeout"],
+    "content": {
+      "question": "Explain SQS Visibility Timeout.",
+      "answer": "The period of time during which SQS prevents other consumers from receiving and processing a message that another consumer is currently handling."
+    }
+  },
+  {
+    "id": "aws-sns-fifo",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 45,
+    "title": "SNS FIFO Topics",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Messaging", "Ordering"],
+    "content": {
+      "question": "What is an SNS FIFO topic?",
+      "answer": "A topic that ensures strict message ordering and exactly-once delivery, designed to integrate with SQS FIFO queues."
+    }
+  },
+  {
+    "id": "aws-storage-gateway",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 46,
+    "title": "Storage Gateway",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Hybrid Storage", "On-prem"],
+    "content": {
+      "question": "What is AWS Storage Gateway?",
+      "answer": "A hybrid cloud storage service that gives your on-premises applications access to virtually unlimited cloud storage."
+    }
+  },
+  {
+    "id": "aws-snowball-data-migration",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 47,
+    "title": "AWS Snowball",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Data Migration", "Offline Migration"],
+    "content": {
+      "question": "What is AWS Snowball?",
+      "answer": "A physical data transport device used to move large amounts of data (terabytes/petabytes) into and out of AWS without relying on the internet."
+    }
+  },
+  {
+    "id": "aws-config-compliance",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 48,
+    "title": "AWS Config",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Governance", "Monitoring", "Compliance"],
+    "content": {
+      "question": "What is AWS Config?",
+      "answer": "A service that enables you to assess, audit, and evaluate the configurations of your AWS resources for compliance and security."
+    }
+  },
+  {
+    "id": "aws-inspector-security",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 49,
+    "title": "Amazon Inspector",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Security", "Scanning"],
+    "content": {
+      "question": "What is Amazon Inspector?",
+      "answer": "An automated security assessment service that helps improve the security and compliance of applications deployed on AWS by checking for vulnerabilities and deviations from best practices."
+    }
+  },
+  {
+    "id": "aws-app-runner",
+    "sectionId": "aws-cloud-fundamentals",
+    "orderIndex": 50,
+    "title": "AWS App Runner",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Containers", "PaaS"],
+    "content": {
+      "question": "What is AWS App Runner?",
+      "answer": "A fully managed service that makes it easy for developers to quickly deploy containerized web applications and APIs, at scale and with no prior infrastructure experience required."
+    }
+  }
+]

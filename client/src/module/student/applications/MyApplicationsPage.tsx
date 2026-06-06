@@ -1,31 +1,17 @@
-
+import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { Application } from "../../../lib/types";
+import type { Application, ExternalApplication } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { ApplicationNotes } from "./ApplicationNotes";
 import toast from "@/components/ui/toast";
-interface ExternalApplication {
-  id: number;
-  studentId: number;
-  adminJobId: number;
-  createdAt: string;
-  adminJob: {
-    id: number;
-    slug: string | null;
-    company: string | null;
-    role: string | null;
-    location: string | null;
-    salary: string | null;
-    tags: string[];
-    applyLink: string | null;
-  };
-}
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -148,14 +134,22 @@ const ApplicationCard = React.memo(function ApplicationCard({
           </Link>
         </div>
       </div>
+
+      <ApplicationNotes
+        applicationId={app.id}
+        kind="internal"
+        notes={app.studentNotes}
+      />
     </div>
   );
 });
 
 const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
   app,
+  onRemove,
 }: {
   app: ExternalApplication;
+  onRemove: (id: number) => void;
 }) {
   return (
     <div className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
@@ -199,77 +193,83 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
             year: "numeric",
           })}
         </span>
-        {app.adminJob.applyLink && (
-          <a
-            href={app.adminJob.applyLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 no-underline transition-colors"
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onRemove(app.id)}
+            className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors bg-transparent border-0 cursor-pointer px-2 py-1"
           >
-            View posting <ExternalLink className="w-3 h-3" />
-          </a>
-        )}
+            <Trash2 className="w-3 h-3" /> Remove
+          </button>
+          {app.adminJob.applyLink && (
+            <a
+              href={app.adminJob.applyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 no-underline transition-colors"
+            >
+              View posting <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+        </div>
       </div>
+
+      <ApplicationNotes
+        applicationId={app.id}
+        kind="external"
+        notes={app.studentNotes}
+      />
     </div>
   );
 });
 
 const PAGE_SIZE = 10;
-function WithdrawModal({
-  open,
-  onCancel,
-  onConfirm,
-}: {
-  open: boolean;
-  onCancel: () => void;
-  onConfirm: () => void;
-}) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 max-w-sm w-full mx-4 space-y-4">
-        <h3 className="text-base font-bold text-stone-900 dark:text-stone-50">
-          Withdraw Application?
-        </h3>
-        <p className="text-sm text-stone-500">
-          Are you sure you want to withdraw this application? This action cannot be undone.
-        </p>
-        <div className="flex gap-3">
-          <button
-            onClick={onCancel}
-            className="flex-1 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 hover:border-stone-400 transition-colors bg-transparent cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="flex-1 px-4 py-2 rounded-md text-xs font-mono uppercase tracking-widest text-white bg-red-500 hover:bg-red-600 transition-colors cursor-pointer border-0"
-          >
-            Withdraw
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+const STATUS_ORDER: Record<string, number> = {
+  APPLIED: 0,
+  IN_PROGRESS: 1,
+  SHORTLISTED: 2,
+  HIRED: 3,
+  REJECTED: 4,
+  WITHDRAWN: 5,
+};
+
+const STATUS_TABS = ["ALL", "APPLIED", "IN_PROGRESS", "SHORTLISTED", "HIRED", "REJECTED", "WITHDRAWN"] as const;
+type StatusFilter = typeof STATUS_TABS[number];
+
+function sortApplications(
+  apps: Application[],
+  option: "newest" | "oldest" | "company" | "status"
+): Application[] {
+  return [...apps].sort((a, b) => {
+    if (option === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (option === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (option === "company") return (a.job?.company ?? "").localeCompare(b.job?.company ?? "");
+    if (option === "status") return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
+    return 0;
+  });
 }
 
-
+type PendingDelete =
+  | { kind: "internal"; id: number }
+  | { kind: "external"; id: number };
 
 export default function MyApplicationsPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-   const [page, setPage] = useState(1);
-  const [withdrawId, setWithdrawId] = useState<number | null>(null);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 200);
     return () => clearTimeout(t);
   }, [search]);
 
   useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  setPage(1);
+}, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -277,76 +277,140 @@ export default function MyApplicationsPage() {
       api.get("/student/applications").then(
         (res) => res.data as { applications: Application[]; externalApplications: ExternalApplication[] }
       ),
+    staleTime: 2 * 60 * 1000,
   });
 
-  const applications = data?.applications ?? [];
-  const externalApplications = data?.externalApplications ?? [];
+  const applications = useMemo(() => data?.applications ?? [], [data]);
+  const externalApplications = useMemo(() => data?.externalApplications ?? [], [data]);
 
   const filtered = useMemo(() => {
-    if (!debouncedSearch.trim()) return applications;
-    const q = debouncedSearch.toLowerCase();
-    return applications.filter(
-      (a) => a.job?.title?.toLowerCase().includes(q) || a.job?.company?.toLowerCase().includes(q)
-    );
-  }, [applications, debouncedSearch]);
+    let base = !debouncedSearch.trim()
+      ? applications
+      : applications.filter(
+        (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+      );
+
+    if (statusFilter !== "ALL") {
+      base = base.filter(a => a.status === statusFilter);
+    }
+
+    return sortApplications(base, sortOption);
+  }, [applications, debouncedSearch, sortOption, statusFilter]);
 
   const filteredExternal = useMemo(() => {
-    if (!debouncedSearch.trim()) return externalApplications;
-    const q = debouncedSearch.toLowerCase();
-    return externalApplications.filter(
-      (a) =>
-        a.adminJob.role?.toLowerCase().includes(q) ||
-        a.adminJob.company?.toLowerCase().includes(q)
-    );
-  }, [externalApplications, debouncedSearch]);
+    let base = !debouncedSearch.trim()
+      ? externalApplications
+      : externalApplications.filter(
+        (a) =>
+          a.adminJob.role?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+      );
+
+    if (statusFilter !== "ALL") {
+      base = base.filter((a: any) => a.status === statusFilter); // external applications don't have status, so this will empty them unless we add dummy status or handle it
+    }
+
+    return [...base].sort((a, b) => {
+      if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
+      return 0;
+    });
+  }, [externalApplications, debouncedSearch, sortOption, statusFilter]);
 
   const totalAll = applications.length + externalApplications.length;
+  const totalFiltered = filtered.length + filteredExternal.length;
 
-  const handleWithdraw = useCallback(
-    async (id: number) => {
-      setWithdrawId(id);
-      setShowWithdrawModal(true);
+  const deleteMutation = useMutation({
+    mutationFn: async (item: PendingDelete) => {
+      if (item.kind === "internal") {
+        await api.delete(`/student/applications/${item.id}`);
+      } else {
+        await api.delete(`/student/external-applications/${item.id}`);
+      }
+      return item;
     },
-    []
-  );
+    onSuccess: (item) => {
+      if (item.kind === "internal") {
+        queryClient.setQueryData<{
+          applications: Application[];
+          externalApplications: ExternalApplication[];
+        }>(queryKeys.applications.mine(), (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            applications: old.applications.map((a) =>
+              a.id === item.id ? { ...a, status: "WITHDRAWN" as const } : a
+            ),
+          };
+        });
+        toast.success("Application withdrawn successfully");
+      } else {
+        queryClient.setQueryData<{
+          applications: Application[];
+          externalApplications: ExternalApplication[];
+        }>(queryKeys.applications.mine(), (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            externalApplications: old.externalApplications.filter((a) => a.id !== item.id),
+          };
+        });
+        toast.success("Application removed");
+      }
+      queryClient.invalidateQueries({ queryKey: queryKeys.applications.mine() });
+    },
+    onError: (_err, item) => {
+      toast.error(
+        item.kind === "internal"
+          ? "Failed to withdraw application"
+          : "Failed to remove application"
+      );
+    },
+  });
 
-  const confirmWithdraw = useCallback(async () => {
-  if (!withdrawId) return;
-  const idToWithdraw = withdrawId;
-  setShowWithdrawModal(false);
-  setWithdrawId(null);
-  try {
-    await api.delete(`/student/applications/${idToWithdraw}`);
-    queryClient.setQueryData<{
-      applications: Application[];
-      externalApplications: ExternalApplication[];
-    }>(queryKeys.applications.mine(), (old) => {
-      if (!old) return old;
-      return {
-        ...old,
-        applications: old.applications.map((a) =>
-          a.id === idToWithdraw ? { ...a, status: "WITHDRAWN" as const } : a
-        ),
-      };
-    });
-    toast.success("Application withdrawn successfully");
-  } catch {
-    toast.error("Failed to withdraw application");
-  }
-}, [withdrawId, queryClient]);
+  const handleWithdraw = useCallback((id: number) => {
+    setPendingDelete({ kind: "internal", id });
+  }, []);
+
+  const handleRemoveExternal = useCallback((id: number) => {
+    setPendingDelete({ kind: "external", id });
+  }, []);
+
+  const confirmDelete = useCallback(() => {
+    if (!pendingDelete) return;
+    const item = pendingDelete;
+    setPendingDelete(null);
+    deleteMutation.mutate(item);
+  }, [pendingDelete, deleteMutation]);
+
+  const cancelDelete = useCallback(() => setPendingDelete(null), []);
+
+  const isInternalDelete = pendingDelete?.kind === "internal";
+  const confirmTitle = isInternalDelete
+    ? "Withdraw application?"
+    : "Remove tracked application?";
+  const confirmDescription = isInternalDelete
+    ? "The recruiter will see this change. This action cannot be undone."
+    : "This only removes it from your list. The job posting won't be affected.";
+  const confirmLabel = isInternalDelete ? "Withdraw" : "Remove";
+
   if (isLoading) return <LoadingScreen />;
 
- 
-
   const hasSearch = search.trim().length > 0;
+  const isFiltered = hasSearch || statusFilter !== "ALL";
 
   return (
     <div className="relative pb-16">
       <SEO title="My Applications" noIndex />
-      <WithdrawModal
-        open={showWithdrawModal}
-        onCancel={() => setShowWithdrawModal(false)}
-        onConfirm={confirmWithdraw}
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title={confirmTitle}
+        description={confirmDescription}
+        confirmLabel={confirmLabel}
+        cancelLabel="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
       />
 
       {/* Header */}
@@ -376,15 +440,85 @@ export default function MyApplicationsPage() {
         </div>
         {totalAll > 0 && (
           <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-            total{" "}
+            {isFiltered ? "showing" : "total"}{" "}
             <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-              {totalAll}
+              {isFiltered ? totalFiltered : totalAll}
             </span>
+            {isFiltered && (
+              <span className="ml-1">of {totalAll}</span>
+            )}
           </div>
         )}
       </motion.div>
 
+      {/* Status Filter Tabs */}
+      <div className="flex flex-wrap gap-2 mb-8">
+        {STATUS_TABS.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => {
+              setStatusFilter(tab);
+              setPage(1);
+            }}
+            className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-all ${
+              statusFilter === tab
+                ? "bg-lime-400 text-stone-900 border-lime-400"
+                : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 dark:hover:border-white/30"
+            }`}
+          >
+            {tab.replace("_", " ")}
+          </button>
+        ))}
+      </div>
+
+      {/* Sort */}
+      <div className="mb-4 flex items-center gap-2">
+        <label htmlFor="sort" className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          Sort by
+        </label>
+        <select
+          id="sort"
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value as typeof sortOption)}
+          className="text-xs font-mono bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-2 py-1.5 text-stone-900 dark:text-stone-50 focus:outline-none focus:border-lime-400 transition-colors cursor-pointer"
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="company">Company A–Z</option>
+          <option value="status">Status</option>
+        </select>
+      </div>
+
+      <div className="mb-5 flex flex-wrap gap-2">
+  {[
+    "ALL",
+    "APPLIED",
+    "IN_PROGRESS",
+    "SHORTLISTED",
+    "HIRED",
+    "REJECTED",
+    "WITHDRAWN",
+  ].map((status) => (
+    <button
+      key={status}
+      onClick={() => {
+        setStatusFilter(status);
+        setPage(1);
+      }}
+      className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
+        statusFilter === status
+          ? "bg-lime-400 text-stone-900 border-lime-400"
+          : "border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+      }`}
+    >
+      {status.replace("_", " ")}
+    </button>
+  ))}
+</div>
       {/* Search */}
+
+      
+      <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
         <input
@@ -396,13 +530,16 @@ export default function MyApplicationsPage() {
         />
       </div>
 
-      {hasSearch && (
+      {isFiltered && (
         <div className="mb-6">
           <button
-            onClick={() => setSearch("")}
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("ALL");
+            }}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
           >
-            <X className="w-3 h-3" /> clear search
+            <X className="w-3 h-3" /> clear all filters
           </button>
         </div>
       )}
@@ -429,12 +566,15 @@ export default function MyApplicationsPage() {
       ) : filtered.length === 0 && filteredExternal.length === 0 ? (
         <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
           <Search className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-          <p className="text-sm text-stone-500">No applications match your search.</p>
+          <p className="text-sm text-stone-500">No applications match your current filters.</p>
           <button
-            onClick={() => setSearch("")}
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("ALL");
+            }}
             className="mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 bg-transparent border-0 cursor-pointer"
           >
-            Clear search
+            Clear all filters
           </button>
         </div>
       ) : (
@@ -443,9 +583,9 @@ export default function MyApplicationsPage() {
             | { kind: "internal"; app: Application }
             | { kind: "external"; app: ExternalApplication }
           > = [
-            ...filtered.map((app) => ({ kind: "internal" as const, app })),
-            ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
-          ];
+              ...filtered.map((app) => ({ kind: "internal" as const, app })),
+              ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
+            ];
           const totalResults = combined.length;
           const totalPages = Math.max(1, Math.ceil(totalResults / PAGE_SIZE));
           const safePage = Math.min(page, totalPages);
@@ -465,7 +605,7 @@ export default function MyApplicationsPage() {
                     {item.kind === "internal" ? (
                       <ApplicationCard app={item.app} onWithdraw={handleWithdraw} />
                     ) : (
-                      <ExternalApplicationCard app={item.app} />
+                      <ExternalApplicationCard app={item.app} onRemove={handleRemoveExternal} />
                     )}
                   </motion.div>
                 ))}

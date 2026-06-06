@@ -147,7 +147,7 @@ function RankingDemo() {
   const [k1, setK1] = useState(1.5);
   const [b, setB] = useState(0.75);
 
-  const docs = useMemo(buildStats, []);
+  const docs = useMemo(() => buildStats(), []);
   const idf = useMemo(() => buildIdf(docs), [docs]);
   const avgLen = useMemo(() => docs.reduce((s, d) => s + d.len, 0) / docs.length, [docs]);
   const queryTerms = tokenize(query);

@@ -5,6 +5,7 @@ import {
   signalCreateSchema,
   signalUpdateSchema,
 } from "./signals.validation.js";
+import { clearCache } from "../../middleware/cache.middleware.js";
 
 const service = new SignalsService();
 
@@ -61,6 +62,8 @@ export class SignalsController {
   async trigger(_req: Request, res: Response, next: NextFunction) {
     try {
       const { results } = await service.ingestAll();
+      clearCache("signals:list");
+      clearCache("signals:stats");
       res.json({ message: "Ingest completed", results });
     } catch (err) {
       next(err);
@@ -76,6 +79,8 @@ export class SignalsController {
         return;
       }
       const signal = await service.createManual(parsed.data);
+      clearCache("signals:list");
+      clearCache("signals:stats");
       res.status(201).json({ signal });
     } catch (err) {
       next(err);
@@ -96,6 +101,8 @@ export class SignalsController {
         return;
       }
       const signal = await service.updateSignal(id, parsed.data);
+      clearCache("signals:list");
+      clearCache("signals:detail");
       res.json({ signal });
     } catch (err) {
       next(err);
@@ -111,6 +118,9 @@ export class SignalsController {
         return;
       }
       await service.deleteSignal(id);
+      clearCache("signals:list");
+      clearCache("signals:detail");
+      clearCache("signals:stats");
       res.json({ message: "Signal deleted" });
     } catch (err) {
       next(err);
@@ -121,6 +131,8 @@ export class SignalsController {
   async cleanup(_req: Request, res: Response, next: NextFunction) {
     try {
       const { removed } = await service.cleanupNoise();
+      clearCache("signals:list");
+      clearCache("signals:stats");
       res.json({ message: "Cleanup complete", removed });
     } catch (err) {
       next(err);
