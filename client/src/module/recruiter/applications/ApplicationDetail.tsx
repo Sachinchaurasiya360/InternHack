@@ -149,7 +149,6 @@ const fetchDetail = useCallback(async (signal) => {
       controller.abort();
     };
   }, [applicationId, fetchDetail]);
-  }, [applicationId]);
 
   useEffect(() => {
     if (application?.student?.id) {
