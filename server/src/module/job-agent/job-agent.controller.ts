@@ -16,9 +16,6 @@ export class JobAgentController {
       }
       const result = await jobAgentService.chat(req.user.id, parsed.data.message);
 
-      await prisma.usageLog.create({
-        data: { userId: req.user.id, action: "AI_JOB_CHAT" as UsageAction },
-      });
 
       res.json(result);
     } catch (err) { next(err); }
@@ -62,10 +59,6 @@ export class JobAgentController {
           abortController.signal,
         );
 
-        // Log usage once per request (not per token)
-        await prisma.usageLog.create({
-          data: { userId: req.user.id, action: "AI_JOB_CHAT" as UsageAction },
-        });
 
         send("done", {});
       } catch (err) {
