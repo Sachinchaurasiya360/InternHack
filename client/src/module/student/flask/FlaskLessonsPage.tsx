@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star, Lock } from "lucide-react";
 import { sections, lessons } from "./data";
-import { getReadingTime, countCodeBlocks, hasExercises } from "../../../utils/lessonMetadata";
+import { getReadingMinutes } from "../../../utils/lessonMetadata";
 import type { FlaskProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
@@ -72,7 +72,7 @@ export default function FlaskLessonsPage() {
 
   const totalCompleted = Object.values(progress).filter((p) => p.completed).length;
   const totalLessons = lessons.length;
-    const totalTrackMinutes = Math.ceil(lessons.reduce((acc, l) => acc + (l.content?.explanation?.trim().split(/\s+/).length || 0), 0) / 200);
+    const totalTrackMinutes = lessons.reduce((acc, l) => acc + getReadingMinutes(l.content?.explanation || ""), 0);
     const totalTrackHours = (totalTrackMinutes / 60).toFixed(1);
   const overallPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
 
@@ -238,7 +238,7 @@ export default function FlaskLessonsPage() {
                     <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
                     <span className={LEVEL_COLOR[section.level]}>{section.level.toLowerCase()}</span>
                     <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                    <span>🕐 {Math.ceil(lessons.filter(l => l.sectionId === section.id).reduce((acc, l) => acc + (l.content?.explanation?.trim().split(/\s+/).length || 0), 0) / 200)} min</span>
+                    <span>🕐 {lessons.filter(l => l.sectionId === section.id).reduce((acc, l) => acc + getReadingMinutes(l.content?.explanation || ""), 0)} min</span>
                   </div>
                 </div>
 
