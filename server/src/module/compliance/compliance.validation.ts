@@ -5,7 +5,7 @@ export const createComplianceDocSchema = z.object({
   category: z.string().min(1).max(100),
   description: z.string().max(1000).optional(),
   documentUrl: z.string().url().optional(),
-  expiryDate: z.string().datetime().optional(),
+  expiryDate: z.string().datetime().refine((val) => new Date(val) > new Date(), { message: "Expiry date must be in the future" }).optional(),
   isRequired: z.boolean().default(true),
   assignedTo: z.array(z.number().int().positive()).default([]),
 }).refine((data) => {
@@ -18,7 +18,7 @@ export const updateComplianceDocSchema = z.object({
   category: z.string().min(1).max(100).optional(),
   description: z.string().max(1000).optional(),
   documentUrl: z.string().url().optional(),
-  expiryDate: z.string().datetime().nullable().optional(),
+  expiryDate: z.string().datetime().nullable().refine((val) => val === null || new Date(val) > new Date(), { message: "Expiry date must be in the future" }).optional(),
   isRequired: z.boolean().optional(),
   assignedTo: z.array(z.number().int().positive()).optional(),
 }).refine((data) => {
