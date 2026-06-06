@@ -1,4 +1,5 @@
 import { Router } from "express";
+import contributionsRouter from "./contributions.routes.js";
 import { StudentController } from "./student.controller.js";
 import { StudentService } from "./student.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
@@ -12,6 +13,8 @@ export const studentRouter = Router();
 
 // All routes require authentication and STUDENT role
 studentRouter.use(authMiddleware, requireRole("STUDENT"));
+// Open Source Contributions Dashboard
+studentRouter.use('/open-source/contributions', contributionsRouter);
 
 // Applications
 studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, res, next) => studentController.applyToJob(req, res, next));
