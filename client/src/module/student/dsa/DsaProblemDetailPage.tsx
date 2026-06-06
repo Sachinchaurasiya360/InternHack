@@ -19,6 +19,7 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { AiHintPanel } from "./components/AiHintPanel";
+import { sanitizeHtml } from "../../../lib/sanitize";
 import { DsaCodeEditor } from "./components/DsaCodeEditor";
 import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
@@ -464,7 +465,7 @@ export default function DsaProblemDetailPage() {
                   <div className="mt-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
                     <div
                       className="prose dark:prose-invert max-w-none text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-wrap"
-                      dangerouslySetInnerHTML={{ __html: formatDescription(problem.description) }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatDescription(problem.description)) }}
                     />
                   </div>
                 </div>
@@ -484,7 +485,7 @@ export default function DsaProblemDetailPage() {
                   <div className="mt-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
                     <div
                       className="text-sm text-stone-700 dark:text-stone-300 whitespace-pre-wrap leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: formatDescription(problem.constraints) }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatDescription(problem.constraints)) }}
                     />
                   </div>
                 </div>
@@ -528,7 +529,7 @@ export default function DsaProblemDetailPage() {
                             >
                               <div
                                 className="px-4 pb-4 pl-11 text-sm text-stone-700 dark:text-stone-300 leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: cleanHint(hint) }}
+                                dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanHint(hint)) }}
                               />
                             </motion.div>
                           )}

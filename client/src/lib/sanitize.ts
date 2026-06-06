@@ -18,3 +18,4 @@ export function sanitizeHtml(html: string): string {
     .replace(/<\/?font[^>]*>/gi, "")
     .replace(/<img\b[^>]*\/?>/gi, "");
 }
+}

@@ -17,6 +17,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { sanitizeHtml } from "../../../lib/sanitize";
 import { Button } from "../../../components/ui/button";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
@@ -552,7 +553,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                             {i + 1}.
                           </span>
                         )}
-                        <span dangerouslySetInnerHTML={{ __html: cleanHint(hint) }} />
+                        <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanHint(hint)) }} />
                       </div>
                     ))}
                   </div>
