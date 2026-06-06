@@ -79,7 +79,7 @@ export const exercisesAdvancedReview: SqlExercise[] = [
       "Stop recursion with WHERE n < 5.",
     ],
     concepts: ["recursive CTE", "WITH RECURSIVE", "UNION ALL"],
-    dataset: "world",
+    dataset: "utility",
   },
   {
     id: "advanced-sql-review-5",

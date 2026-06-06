@@ -169,7 +169,7 @@ export const sections: SqlSection[] = [
     title: "Advanced SQL Review",
     description:
       "Practice mixed interview-style SQL cases using window functions, CTEs, joins, NULL handling, string cleanup, and query plans.",
-    dataset: "world",
+    dataset: "mixed",
     orderIndex: 17,
   },
 ];
