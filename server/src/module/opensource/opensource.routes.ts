@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
@@ -21,24 +21,6 @@ opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(r
 // Get GSoC organizations
 opensourceRouter.get("/gsoc/orgs", (req, res, next) => controller.getGsocOrgs(req, res, next));
 
-// ─── Student Progress Tracking ─────────────────────────────────
-// NOTE: must be before /:id to avoid route conflicts
-
-opensourceRouter.get(
-  "/first-pr/progress",
-  authMiddleware,
-  requireRole("STUDENT"),
-  (req, res, next) => controller.getFirstPrProgress(req, res, next),
-);
-
-opensourceRouter.patch(
-  "/first-pr/progress",
-  authMiddleware,
-  requireRole("STUDENT"),
-  (req, res, next) => controller.patchFirstPrProgress(req, res, next),
-);
-
-// ─── Repo Requests (Student-authenticated) ─────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
 opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
@@ -81,6 +63,13 @@ opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"),
   controller.getStudentContributionTrend(req, res, next),
 );
 
+opensourceRouter.get("/first-pr/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.getFirstPrProgress(req, res, next),
+);
+
+opensourceRouter.patch("/first-pr/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.patchFirstPrProgress(req, res, next),
+);
 // ─── Admin: Manage Repo Requests ───────────────────────────────
 
 opensourceRouter.get("/requests/all", authMiddleware, requireRole("ADMIN"), (req, res, next) =>

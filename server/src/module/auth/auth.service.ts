@@ -180,9 +180,7 @@ export class AuthService {
       html: otpEmailHtml(user.name, otp),
     }).catch((err) => console.error("Failed to send OTP email:", err));
 
-    const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: 0 });
-
-    return { user: { ...user, profileSlug: slug }, token };
+    return { user: { ...user, profileSlug: slug } };
   }
 
   async googleAuth(data: GoogleAuthInput) {
@@ -346,7 +344,7 @@ export class AuthService {
 
       await prisma.user.update({
         where: { id: user.id },
-        data: { verificationOtp: hashedOtp, otpExpiresAt },
+        data: { verificationOtp: hashedOtp, otpExpiresAt, verificationAttempts: 0, verificationLockedUntil: null },
       });
 
       sendEmail({
@@ -582,6 +580,9 @@ export class AuthService {
   }
 
   async verifyEmail(email: string, otp: string) {
+    const MAX_VERIFICATION_ATTEMPTS = 5;
+    const LOCKOUT_DURATION_MS = 30 * 60 * 1000; // 30 minutes
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new Error("User not found");
@@ -589,6 +590,15 @@ export class AuthService {
 
     if (user.isVerified) {
       throw new Error("Email is already verified");
+    }
+
+    if (user.verificationLockedUntil && new Date() < user.verificationLockedUntil) {
+      const remainingMinutes = Math.ceil(
+        (user.verificationLockedUntil.getTime() - Date.now()) / 60000
+      );
+      throw new Error(
+        `Too many failed attempts. Please try again in ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`
+      );
     }
 
     if (!user.verificationOtp || !user.otpExpiresAt) {
@@ -601,7 +611,26 @@ export class AuthService {
 
     const isValid = await comparePassword(otp, user.verificationOtp);
     if (!isValid) {
-      throw new Error("Invalid verification code");
+      const updatedAttempts = user.verificationAttempts + 1;
+
+      if (updatedAttempts >= MAX_VERIFICATION_ATTEMPTS) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            verificationAttempts: updatedAttempts,
+            verificationLockedUntil: new Date(Date.now() + LOCKOUT_DURATION_MS),
+          },
+        });
+        throw new Error("Too many failed attempts. Account locked for 30 minutes for security");
+      }
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { verificationAttempts: updatedAttempts },
+      });
+
+      const attemptsRemaining = MAX_VERIFICATION_ATTEMPTS - updatedAttempts;
+      throw new Error(`Invalid verification code. ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? "s" : ""} remaining`);
     }
 
     const updated = await prisma.user.update({
@@ -610,6 +639,8 @@ export class AuthService {
         isVerified: true,
         verificationOtp: null,
         otpExpiresAt: null,
+        verificationAttempts: 0,
+        verificationLockedUntil: null,
       },
       select: {
         id: true,
@@ -672,14 +703,16 @@ export class AuthService {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { verificationOtp: hashedOtp, otpExpiresAt },
+      data: { verificationOtp: hashedOtp, otpExpiresAt, verificationAttempts: 0, verificationLockedUntil: null },
     });
 
-    await sendEmail({
+    sendEmail({
       to: user.email,
       subject: "Verify your InternHack account",
       html: otpEmailHtml(user.name, otp),
-    });
+    }).catch((err) => console.error("Failed to send OTP email:", err));
+
+    return { message: "OTP sent successfully" };
   }
 
   async forgotPassword(email: string) {
