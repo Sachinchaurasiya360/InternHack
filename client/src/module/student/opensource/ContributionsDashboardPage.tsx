@@ -11,6 +11,7 @@ import {
   Sparkles,
   Heart,
   Github,
+  Briefcase,
 } from "lucide-react";
 import { fetchContributionsDashboard } from "./api/opensource.api";
 import { queryKeys } from "../../../lib/query-keys";
@@ -114,6 +115,12 @@ export default function ContributionsDashboardPage() {
               <Link to="/student/opensource/readiness">
                 <Sparkles className="w-4 h-4 mr-1.5" />
                 Internship Readiness Score
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" className="border-white/20 text-white hover:bg-white/5 bg-transparent border">
+              <Link to="/student/opensource/hiring-signal">
+                <Briefcase className="w-4 h-4 mr-1.5" />
+                Hiring Signal Score
               </Link>
             </Button>
           </div>

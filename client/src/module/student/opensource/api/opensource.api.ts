@@ -119,3 +119,29 @@ export async function fetchInternshipReadiness(forceRefresh = false): Promise<In
   );
   return data;
 }
+
+export interface HiringSignalResult {
+  hiringScore: number;
+  hiringRank: string;
+  categoryScores: {
+    technicalDepth: number;
+    projectPortfolio: number;
+    documentationQuality: number;
+    contributionActivity: number;
+  };
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: {
+    area: string;
+    text: string;
+    priority: "High" | "Medium" | "Low";
+  }[];
+  lastUpdated: string;
+}
+
+export async function fetchHiringSignal(forceRefresh = false): Promise<HiringSignalResult> {
+  const { data } = await api.get<HiringSignalResult>(
+    `/student/hiring-signal${forceRefresh ? "?refresh=true" : ""}`
+  );
+  return data;
+}
