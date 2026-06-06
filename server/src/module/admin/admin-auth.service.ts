@@ -50,6 +50,14 @@ export class AdminAuthService {
     };
   }
 
+  /**
+   * Creates a new admin user and their corresponding admin profile atomically.
+   *
+   * @param data - The administrative user's data including name, email, password, and access tier.
+   * @param creatorId - The user ID of the super admin authorizing this creation.
+   * @returns An object containing the created user and admin profile details.
+   * @throws Error if the creator is not a SUPER_ADMIN, or if the email is already registered.
+   */
   async createAdmin(
     data: { name: string; email: string; password: string; tier: AdminTier },
     creatorId: number,
@@ -73,11 +81,15 @@ export class AdminAuthService {
         email: data.email,
         password: hashedPassword,
         role: "ADMIN",
+        adminProfile: {
+          create: {
+            tier: data.tier
+          }
+        }
       },
-    });
-
-    const adminProfile = await prisma.adminProfile.create({
-      data: { userId: user.id, tier: data.tier },
+      include: {
+        adminProfile: true
+      }
     });
 
     return {
@@ -87,7 +99,7 @@ export class AdminAuthService {
         email: user.email,
         role: user.role,
       },
-      adminProfile: { tier: adminProfile.tier },
+      adminProfile: { tier: user.adminProfile!.tier },
     };
   }
 }
