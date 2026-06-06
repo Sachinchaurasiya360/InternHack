@@ -102,8 +102,10 @@ export class CoverLetterController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
+      const id = Number(req.params["id"]);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid cover letter ID" });
       const letter = await this.coverLetterService.getOne(
-        Number(req.params["id"]),
+        id,
         req.user.id
       );
       if (!letter) {
@@ -122,8 +124,10 @@ export class CoverLetterController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
+      const id = Number(req.params["id"]);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid cover letter ID" });
       await this.coverLetterService.deleteOne(
-        Number(req.params["id"]),
+        id,
         req.user.id
       );
       res.json({ success: true });
