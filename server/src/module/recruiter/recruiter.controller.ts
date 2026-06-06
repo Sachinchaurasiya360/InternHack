@@ -183,6 +183,7 @@ export class RecruiterController {
       return res.status(200).json({ message: "Application status updated", application });
     } catch (error) {
       if (error instanceof Error) {
+        if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
