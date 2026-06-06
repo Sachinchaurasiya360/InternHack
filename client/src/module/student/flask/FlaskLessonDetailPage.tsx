@@ -23,6 +23,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { getReadingTime, countCodeBlocks, hasExercises } from "../../../utils/lessonMetadata";
 
 const FREE_LIMIT = 5;
 
@@ -323,6 +324,12 @@ export default function FlaskLessonDetailPage() {
               </div>
               <div className="flex items-center gap-3 flex-wrap text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                 <span className={DIFF_COLOR[lesson.difficulty]}>/ {lesson.difficulty.toLowerCase()}</span>
+                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                <span>🕐 {getReadingTime(lesson.content.explanation)}</span>
+                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                <span>{hasExercises(lesson) ? "✅" : "❌"} exercises</span>
+                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                <span>💻 {countCodeBlocks(lesson)} examples</span>
                 {completed && (
                   <>
                     <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
