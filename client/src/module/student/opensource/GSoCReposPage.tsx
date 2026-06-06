@@ -188,7 +188,7 @@ function FilterDropdown({
   );
 }
 
-const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }) => {
+function ParticipationBar({ participatedYears }: { participatedYears: number[] }) {
   const currentYear = new Date().getFullYear();
   const yearsRange = Array.from({ length: currentYear - 2015 }, (_, i) => 2016 + i);
 
@@ -200,7 +200,7 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
           <div
             key={year}
             title={participated ? `${year}: Participated` : `${year}: Did not participate`}
-            className={`h-1.5 w-1.5 rounded-sm transition-transform duration-200 hover:scale-125 cursor-help ${
+            className={`h-1.5 w-1.5 cursor-help rounded-sm transition-transform duration-200 hover:scale-125 ${
               participated
                 ? "bg-lime-500"
                 : "bg-stone-200 dark:bg-stone-700"
@@ -210,7 +210,7 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
       })}
     </div>
   );
-};
+}
 
 function GSoCOrgCard({
   org,

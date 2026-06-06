@@ -48,6 +48,7 @@ import { markLearningPathMilestone } from "./learning-paths.data";
 import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
 
 const BOOKMARK_KEY = "oss_bookmarks";
+const EMPTY_OPEN_SOURCE_REPOS: OpenSourceRepo[] = [];
 
 const getBookmarks = (): number[] => {
   try {
@@ -367,8 +368,12 @@ export default function RepoDiscoveryPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const repos = data?.repos ?? EMPTY_OPEN_SOURCE_REPOS;
   const pagination = data?.pagination;
-  const displayedRepos = showSaved ? (bookmarkedData ?? []) : (data?.repos ?? []);
+
+  const displayedRepos = showSaved
+    ? bookmarkedData ?? EMPTY_OPEN_SOURCE_REPOS
+    : repos;
 
   // Global stats fetched independently so the header strip stays accurate
   // regardless of active filters or page (replaces the old useMemo approach).
