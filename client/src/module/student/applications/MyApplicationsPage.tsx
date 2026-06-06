@@ -267,9 +267,9 @@ export default function MyApplicationsPage() {
   }, [search]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPage(1);
-  }, [debouncedSearch]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  setPage(1);
+}, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -488,7 +488,36 @@ export default function MyApplicationsPage() {
           <option value="status">Status</option>
         </select>
       </div>
+
+      <div className="mb-5 flex flex-wrap gap-2">
+  {[
+    "ALL",
+    "APPLIED",
+    "IN_PROGRESS",
+    "SHORTLISTED",
+    "HIRED",
+    "REJECTED",
+    "WITHDRAWN",
+  ].map((status) => (
+    <button
+      key={status}
+      onClick={() => {
+        setStatusFilter(status);
+        setPage(1);
+      }}
+      className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
+        statusFilter === status
+          ? "bg-lime-400 text-stone-900 border-lime-400"
+          : "border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+      }`}
+    >
+      {status.replace("_", " ")}
+    </button>
+  ))}
+</div>
       {/* Search */}
+
+      
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />

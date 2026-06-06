@@ -5,6 +5,8 @@ import {
   Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
+import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 
 function nextDate(month: number, day: number, hour = 23, minute = 59): string {
   const now = new Date();
@@ -1012,6 +1014,13 @@ export default function ProgramTrackerPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
+      <SEO
+        title="Open Source Program Tracker - Deadlines & Stipends"
+        description="Track deadlines, eligibility, and stipends for GSoC, LFX, MLH Fellowship, Outreachy, and 20+ other open source programs."
+        keywords="GSoC tracker, LFX mentorship, open source internships, Outreachy deadline, paid open source"
+        canonicalUrl={canonicalUrl("/student/opensource/programs")}
+        ogImage="/og/og-programs.png"
+      />
       {/* Hero */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
         <div className="absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl from-emerald-200/30 to-transparent rounded-bl-full pointer-events-none" />
