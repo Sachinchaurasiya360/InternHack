@@ -44,6 +44,8 @@ import type {
   GSoCStats,
   OpenSourceContributionTrendResponse,
 } from "../../../lib/types";
+import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
+import { HacktoberfestTracker } from "./HacktoberfestTracker";
 
 // ─── Theme ──────────────────────────────────────────────────────
 const CHART_COLORS = [
@@ -235,6 +237,7 @@ export default function OpenSourceAnalyticsPage() {
     markLearningPathMilestone("leaderboard");
   }, []);
 
+  const showHacktoberfestTracker = isHacktoberfestMode();
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [filterYear, setFilterYear] = useState<string>("ALL");
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
@@ -418,8 +421,8 @@ export default function OpenSourceAnalyticsPage() {
     return <LoadingScreen />;
   }
 
-  // Empty state: student has zero contributions
-  if (!trendIsLoading && !trendIsError && contributionTotal === 0) {
+  // Empty state: student has zero contributions (skip during Hacktoberfest mode so tracker is visible)
+  if (!showHacktoberfestTracker && !trendIsLoading && !trendIsError && contributionTotal === 0) {
     return (
       <div className="pb-16">
         <SEO title="Open Source Analytics" noIndex />
@@ -471,6 +474,8 @@ export default function OpenSourceAnalyticsPage() {
             back to repos
           </Link>
         </div>
+
+        {showHacktoberfestTracker && <HacktoberfestTracker />}
 
         {/* ── Contribution Heatmap ─────────────────────────────── */}
         <div className="mb-8">

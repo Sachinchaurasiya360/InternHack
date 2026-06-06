@@ -262,6 +262,19 @@ export class OpensourceController {
     }
   }
 
+  async getHacktoberfestProgress(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const result = await service.getHacktoberfestProgress(req.user!.id);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getFirstPrProgress(req: Request, res: Response, next: NextFunction) {
     try {
       const completedStepIds = await service.getFirstPrProgress(req.user!.id);

@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
@@ -65,6 +65,10 @@ opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), a
 
 opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.getStudentContributionTrend(req, res, next),
+);
+
+opensourceRouter.get("/analytics/hacktoberfest", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.getHacktoberfestProgress(req, res, next),
 );
 
 // Get open source activity
