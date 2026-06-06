@@ -113,6 +113,7 @@ const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPl
 const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewPage"));
 const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
+const BuildChallengesPage = lazyWithRetry(() => import("./module/student/learn/challenges/BuildChallengesPage"));
 const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
 const ExamDetailPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamDetailPage"));
 const ExamMockPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamRunnerPage").then((m) => ({ default: m.ExamMockPage })));
@@ -365,6 +366,7 @@ function App() {
           {/* Learning Hub - all learning content under /learn */}
           <Route path="/learn" element={<LearnLayout />}>
             <Route index element={<LearnHubPage />} />
+            <Route path="challenges" element={<BuildChallengesPage />} />
             <Route path="javascript" element={<JsLessonsPage />} />
             <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
             <Route path="javascript/:sectionSlug/:lessonId" element={<JsLessonDetailPage />} />

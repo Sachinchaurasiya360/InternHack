@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { Search, ArrowUpRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
@@ -187,6 +188,34 @@ const grouped = useMemo(() => {
           </div>
         </motion.section>
       )}
+
+      {/* Build Challenges callout */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-6"
+      >
+        <Link
+          to="/learn/challenges"
+          className="group flex items-center justify-between bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-5 py-4 hover:border-lime-400 dark:hover:border-lime-400 transition-colors no-underline"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-md bg-lime-100 dark:bg-lime-900/20 border border-lime-300 dark:border-lime-800 flex items-center justify-center shrink-0">
+              <span className="text-sm font-bold text-lime-700 dark:text-lime-400">5</span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
+                Build Challenges
+              </p>
+              <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
+                5 hands-on projects to test your skills — from portfolio sites to smart contracts
+              </p>
+            </div>
+          </div>
+          <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </Link>
+      </motion.div>
 
       {/* Search & Filters */}
       <motion.div
