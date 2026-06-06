@@ -305,13 +305,23 @@ app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", in
 
 // ── Public platform stats with in-memory cache (30 min TTL) ──
 let statsCache: { data: unknown; expiresAt: number } | null = null;
+let isRefreshingStats = false;
 const STATS_TTL = 30 * 60 * 1000;
 
 app.get("/api/stats", async (_req, res) => {
   try {
+    // Return cache if it's still fresh
     if (statsCache && statsCache.expiresAt > Date.now()) {
       return res.json(statsCache.data);
     }
+
+    // Stale-while-revalidate pattern: if someone is already fetching, 
+    // serve the stale cache to prevent a database stampede.
+    if (isRefreshingStats && statsCache) {
+      return res.json(statsCache.data);
+    }
+
+    isRefreshingStats = true;
 
     const [users, jobs, companies] = await Promise.all([
       prisma.user.count({ where: { role: "STUDENT" } }),
@@ -321,9 +331,11 @@ app.get("/api/stats", async (_req, res) => {
 
     const data = { users, jobs, companies };
     statsCache = { data, expiresAt: Date.now() + STATS_TTL };
+    isRefreshingStats = false;
     return res.json(data);
   } catch {
-    return res.json({ users: 0, jobs: 0, companies: 0 });
+    isRefreshingStats = false;
+    return res.json(statsCache ? statsCache.data : { users: 0, jobs: 0, companies: 0 });
   }
 });
 
