@@ -35,7 +35,7 @@ export const createRoleSchema = z.object({
 export const updateRoleSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   description: z.string().max(500).optional(),
-  permissions: z.array(z.string()).optional(),
+  permissions: z.array(z.string()).min(1, "At least one permission is required when updating permissions").optional(),
 });
 
 export const assignRoleSchema = z.object({

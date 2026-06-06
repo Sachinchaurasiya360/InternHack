@@ -1,31 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 const STORAGE_KEY = "bookmarkedBlogs";
 
 export function useBookmarks() {
-  const [bookmarks, setBookmarks] = useState<number[]>([]);
-
-  useEffect(() => {
+  const [bookmarks, setBookmarks] = useState<number[]>(() => {
     try {
-      const stored =
-        localStorage.getItem(STORAGE_KEY);
-
-      if (!stored) return;
-
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return [];
       const raw: unknown = JSON.parse(stored);
-      const parsed = Array.isArray(raw)
+      return Array.isArray(raw)
         ? raw.filter((x): x is number => typeof x === "number")
         : [];
-
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBookmarks(parsed);
-    } catch (error) {
-      console.error(
-        "Failed to load bookmarks:",
-        error
-      );
+    } catch {
+      return [];
     }
-  }, []);
+  });
 
   const saveBookmarks = (
     updated: number[]

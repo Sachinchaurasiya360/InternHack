@@ -114,6 +114,13 @@ export class RecruiterService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+    const existing = await prisma.round.findFirst({
+      where: { jobId, name: data.name },
+    });
+    if (existing) {
+      throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { statusCode: 409 });
+    }
+
     return prisma.round.create({
       data: {
         jobId,
@@ -152,6 +159,15 @@ export class RecruiterService {
 
     const round = await prisma.round.findUnique({ where: { id: roundId } });
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
+
+    if (data.name !== undefined && data.name !== round.name) {
+      const existing = await prisma.round.findFirst({
+        where: { jobId, name: data.name, id: { not: roundId } },
+      });
+      if (existing) {
+        throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { statusCode: 409 });
+      }
+    }
 
     return prisma.round.update({
       where: { id: roundId },
