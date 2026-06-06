@@ -21,6 +21,7 @@ export interface AchievementItem {
 
 export interface User {
   id: number;
+  profileSlug?: string | null;
   name: string;
   email: string;
   role: UserRole;

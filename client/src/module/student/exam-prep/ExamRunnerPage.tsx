@@ -47,6 +47,27 @@ export default function ExamRunnerPage({ mode }: { mode: Mode }) {
   const [flagged, setFlagged] = useState<Set<string>>(new Set());
   const [submitted, setSubmitted] = useState(false);
   const [remaining, setRemaining] = useState(durationSec);
+  const [paused, setPaused] = useState(
+    () => (typeof document !== "undefined" ? document.hidden : false),
+  );
+  const [tabSwitches, setTabSwitches] = useState(0);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setPaused(true);
+        setTabSwitches((prev) => prev + 1);
+      } else {
+        setPaused(false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -54,7 +75,7 @@ export default function ExamRunnerPage({ mode }: { mode: Mode }) {
   }, [durationSec]);
 
   useEffect(() => {
-    if (submitted || !questions.length) return;
+    if (submitted || !questions.length || paused) return;
     const t = setInterval(() => {
       setRemaining((r) => {
         if (r <= 1) {
@@ -66,7 +87,7 @@ export default function ExamRunnerPage({ mode }: { mode: Mode }) {
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [submitted, questions.length]);
+  }, [submitted, questions.length, paused]);
 
   if (!exam) return <Navigate to="/learn/exam-prep" replace />;
   if (!questions.length) {
@@ -271,6 +292,11 @@ export default function ExamRunnerPage({ mode }: { mode: Mode }) {
         <div className="h-1 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mt-3">
           <motion.div className="h-full bg-indigo-500" animate={{ width: `${pct}%` }} />
         </div>
+        {tabSwitches > 0 && (
+          <div className="mt-3 text-xs text-amber-600 dark:text-amber-400 font-medium">
+            Tab switch detected ({tabSwitches}/3). In real exams this may disqualify you.
+          </div>
+        )}
       </div>
 
       <AnimatePresence mode="wait">

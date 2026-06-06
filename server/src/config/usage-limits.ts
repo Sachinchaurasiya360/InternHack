@@ -21,8 +21,7 @@ export function getPlanTier(
   if (
     (subscriptionPlan === "MONTHLY" || subscriptionPlan === "YEARLY") &&
     subscriptionStatus === "ACTIVE" &&
-    subscriptionEndDate != null &&
-    subscriptionEndDate > new Date()
+    (subscriptionEndDate === null || subscriptionEndDate === undefined || subscriptionEndDate > new Date())
   ) {
     return "PREMIUM";
   }

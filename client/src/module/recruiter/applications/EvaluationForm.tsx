@@ -74,7 +74,7 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
               value={scores[crit.id]?.score || 0}
               onChange={(e) => setScores({ ...scores, [crit.id]: { ...scores[crit.id]!, score: Number(e.target.value) } })}
               aria-valuetext={`${scores[crit.id]?.score || 0} out of ${crit.maxScore}`}
-              className="flex-1"
+              className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded appearance-none cursor-pointer accent-blue-600"
             />
             <span className="text-sm font-bold w-10 text-right dark:text-white">{scores[crit.id]?.score || 0}</span>
           </div>

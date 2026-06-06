@@ -58,12 +58,6 @@ const buildFormState = (req: RepoRequest): RepoRequestFormState => ({
   tags: req.tags ?? [],
 });
 
-const parseTags = (value: string) =>
-  value
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean);
-
 const statusBadge = (status: string) => {
   const map: Record<string, string> = {
     PENDING: "bg-amber-900/40 text-amber-400",
@@ -78,15 +72,23 @@ export default function AdminRepoRequestsPage() {
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("PENDING");
-  const [page, setPage] = useState(1);
+const [domainFilter, setDomainFilter] = useState("");
+const [difficultyFilter, setDifficultyFilter] = useState("");
+const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const fetchRequests = async () => {
     setLoading(true);
     try {
       const res = await api.get("/opensource/requests/all", {
-        params: { status: statusFilter, page, limit: 20 },
-      });
+  params: {
+    status: statusFilter,
+    domain: domainFilter,
+    difficulty: difficultyFilter,
+    page,
+    limit: 20,
+  },
+});
       setRequests(res.data.requests);
       setPagination(res.data.pagination);
     } catch {
@@ -96,12 +98,20 @@ export default function AdminRepoRequestsPage() {
     }
   };
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { setPage(1); }, [statusFilter]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
-  useEffect(() => { fetchRequests(); }, [statusFilter, page]);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { setSelectedIds([]); }, [statusFilter, page]);
+  // Fetch whenever filters or page changes
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchRequests();
+    // Selection is cleared when page or filters change because the list items change
+    setSelectedIds([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter, domainFilter, difficultyFilter, page]);
+
+  // Reset page to 1 when filters change
+  const handleFilterChange = (setter: (v: string) => void, value: string) => {
+    setter(value);
+    setPage(1);
+  };
 
   const toggleSelect = (id: number) => {
     setSelectedIds((prev) =>
@@ -175,7 +185,7 @@ export default function AdminRepoRequestsPage() {
       {/* Status Tabs */}
       <div className="flex gap-2 mb-6">
         {statusTabs.map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)}
+          <button key={s} onClick={() => handleFilterChange(setStatusFilter, s)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               statusFilter === s ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700"
             }`}>
@@ -186,6 +196,34 @@ export default function AdminRepoRequestsPage() {
           </button>
         ))}
       </div>
+<div className="flex flex-wrap gap-3 mb-6">
+  <select
+    value={domainFilter}
+    onChange={(e) => handleFilterChange(setDomainFilter, e.target.value)}
+    className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm"
+  >
+    <option value="">All Domains</option>
+    {DOMAIN_OPTIONS.map((domain) => (
+      <option key={domain} value={domain}>
+        {domain}
+      </option>
+    ))}
+  </select>
+
+  <select
+    value={difficultyFilter}
+    onChange={(e) => handleFilterChange(setDifficultyFilter, e.target.value)}
+    className="px-3 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm"
+  >
+    <option value="">All Difficulties</option>
+    {DIFFICULTY_OPTIONS.map((difficulty) => (
+      <option key={difficulty} value={difficulty}>
+        {difficulty}
+      </option>
+    ))}
+  </select>
+</div>
+
 
       {statusFilter === "PENDING" && requests.length > 0 && (
         <div className="flex items-center gap-3 mb-6 bg-gray-800/40 border border-gray-700 p-3 rounded-lg w-fit">
@@ -285,14 +323,15 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
   const [isEditing, setIsEditing] = useState(false);
   const [formState, setFormState] = useState<RepoRequestFormState>(() => buildFormState(req));
   const [adminNote, setAdminNote] = useState(req.adminNote ?? "");
+  const [tagsInput, setTagsInput] = useState(() => (req.tags ?? []).join(", "));
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormState(buildFormState(req));
+    setTagsInput((req.tags ?? []).join(", "));
     setAdminNote(req.adminNote ?? "");
     setIsEditing(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [req.id, req.updatedAt]);
+  }, [req]);
 
   const handleApproveClick = () => {
     const payload: ApprovePayload = {};
@@ -306,13 +345,14 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
       payload.description = formState.description.trim();
       payload.domain = formState.domain;
       payload.difficulty = formState.difficulty;
-      payload.tags = formState.tags;
+      payload.tags = tagsInput
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean);
     }
 
     void onApprove(req.id, payload);
   };
-
-  const tagsValue = formState.tags.join(", ");
 
   return (
     <motion.div
@@ -414,10 +454,8 @@ const RepoRequestCard = React.memo(function RepoRequestCard({
           <div className="grid gap-1">
             <label className="text-xs font-medium text-gray-500">Tags</label>
             <input
-              value={tagsValue}
-              onChange={(event) =>
-                setFormState((prev) => ({ ...prev, tags: parseTags(event.target.value) }))
-              }
+              value={tagsInput}
+              onChange={(e) => setTagsInput(e.target.value)}
               className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
               placeholder="Beginner friendly, hacktoberfest"
             />

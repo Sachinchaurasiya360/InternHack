@@ -112,7 +112,7 @@ const valuePool: Record<string, string[]> = {
 
 function generate(
   base: Question[],
-  templates: any,
+  templates: { question: string[]; answer: string[]; tips: string[] },
   category: string,
   target = 30
 ): Question[] {

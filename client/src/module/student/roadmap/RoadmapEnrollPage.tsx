@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { useNavigate, useParams, Link } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
@@ -9,7 +9,6 @@ import {
   Target,
   ChevronLeft,
   ChevronRight,
-  Map as MapIcon,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -23,7 +22,6 @@ import type {
   EnrollmentGoal,
   ExperienceLevel,
   Roadmap,
-  RoadmapEnrollmentListItem,
 } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
@@ -90,26 +88,27 @@ export default function RoadmapEnrollPage() {
     enabled: !!slug,
     staleTime: 15 * 60 * 1000,
   });
-
-  const { data: enrollmentsData } = useQuery({
-    queryKey: queryKeys.roadmaps.enrollments(),
-    queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
-    staleTime: 5 * 60 * 1000,
-  });
+const { data: enrollmentStatusData } = useQuery({
+  queryKey: ["roadmaps", slug, "enrollment"],
+  queryFn: () =>
+    api
+      .get<{ enrolled: boolean; enrollment: { id: number } | null }>(
+        `/roadmaps/${slug}/enrollment`,
+      )
+      .then((res) => res.data),
+  enabled: !!slug,
+  staleTime: 5 * 60 * 1000,
+});
 
   const roadmap = roadmapData?.roadmap || null;
-  const enrollments = enrollmentsData?.enrollments || [];
+ const isEnrolled = enrollmentStatusData?.enrolled ?? false;
   const loading = roadmapLoading;
 
-  useEffect(() => {
-    if (enrollmentsData) {
-      const existing = enrollmentsData.enrollments.find((e) => e.roadmap.slug === slug);
-      if (existing) {
-        // Already enrolled, jump them to the canvas instead of letting them re-enroll
-        navigate(`/learn/roadmaps/${slug}`, { replace: true });
-      }
-    }
-  }, [enrollmentsData, slug, navigate]);
+ useEffect(() => {
+  if (isEnrolled) {
+    navigate(`/learn/roadmaps/${slug}`, { replace: true });
+  }
+}, [isEnrolled, slug, navigate]);
 
   const targetWeeks = useMemo(() => {
     if (!roadmap) return 0;
@@ -195,28 +194,6 @@ export default function RoadmapEnrollPage() {
         <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-200 h-150 bg-linear-to-br from-lime-100 via-transparent to-stone-100 dark:from-lime-900/20 dark:via-transparent dark:to-stone-900/30 rounded-full blur-3xl opacity-60" />
         </div>
-
-        {/* Existing enrollments link */}
-        {enrollments.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mb-6 mt-2"
-          >
-            <Link
-              to="/student/roadmaps"
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-lime-400 dark:hover:border-lime-600 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-50 transition-colors no-underline"
-            >
-              <MapIcon className="w-3.5 h-3.5 text-lime-500" />
-              {enrollments.length} active
-              <span className="text-stone-300 dark:text-stone-700">/</span>
-              view my roadmaps
-              <ChevronRight className="w-3 h-3" />
-            </Link>
-          </motion.div>
-        )}
-
         {/* Roadmap eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}

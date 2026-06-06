@@ -22,4 +22,5 @@ reimbursementRouter.get("/", requirePermission("PAYROLL_VIEW", "PAYROLL_MANAGE")
 reimbursementRouter.get("/:id", requirePermission("PAYROLL_VIEW", "PAYROLL_MANAGE"), (req, res) => reimbursementController.getById(req, res));
 reimbursementRouter.patch("/:id/approve", requirePermission("PAYROLL_MANAGE", "HR_ADMIN"), (req, res) => reimbursementController.approve(req, res));
 reimbursementRouter.patch("/:id/reject", requirePermission("PAYROLL_MANAGE", "HR_ADMIN"), (req, res) => reimbursementController.reject(req, res));
+reimbursementRouter.patch("/:id/finance-approve", requirePermission("PAYROLL_MANAGE", "HR_ADMIN"), (req, res) => reimbursementController.financeApprove(req, res));
 reimbursementRouter.patch("/mark-paid", requirePermission("PAYROLL_MANAGE", "HR_ADMIN"), (req, res) => reimbursementController.markPaid(req, res));

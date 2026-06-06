@@ -7,6 +7,7 @@ import {
   downloadPdf,
   enroll,
   getMyEnrollmentAnalytics,
+  getMyEnrollmentByRoadmapSlug,
   getMyEnrollment,
   deleteMyEnrollment,
   getMyEnrollments,
@@ -16,6 +17,8 @@ import {
   patchTopicProgress,
   postAiGenerate,
   postRecomputePace,
+  updateRoadmap,
+  
   postRegenerateSection,
 } from "./roadmap.controller.js";
 
@@ -33,6 +36,11 @@ roadmapRouter.patch(
   authMiddleware,
   patchTopicProgress,
 );
+roadmapRouter.patch(
+  "/:slug",
+  authMiddleware,
+  updateRoadmap
+);
 roadmapRouter.post(
   "/me/enrollments/:id/recompute-pace",
   authMiddleware,
@@ -40,6 +48,7 @@ roadmapRouter.post(
 );
 
 roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
+roadmapRouter.get("/:slug/enrollment", authMiddleware, getMyEnrollmentByRoadmapSlug);
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);

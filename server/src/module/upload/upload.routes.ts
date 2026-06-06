@@ -21,7 +21,7 @@ const presignedUrlRateLimit = rateLimit({
   store: createRateLimitStore("upload"),
 });
 
-import { validateBody, presignRequestSchema } from "./upload.validation.js";
+import { validateBody, presignRequestSchema, uploadProfilePicSchema, uploadCoverImageSchema, uploadResumeSchema } from "./upload.validation.js";
 
 const presignedUsageLimit = (req: any, res: any, next: any) => {
   if (req.body && req.body.folder === "resumes") {
@@ -39,9 +39,24 @@ uploadRouter.post(
   (req, res) => uploadController.getPresignedUrl(req, res)
 );
 
-// UPDATED: Profile-specific endpoints (No more multer middleware!)
-// These now expect a JSON body like: { "fileUrl": "https://..." }
-uploadRouter.post("/profile-pic", (req, res) => uploadController.uploadProfilePic(req, res));
-uploadRouter.post("/cover-image", (req, res) => uploadController.uploadCoverImage(req, res));
-uploadRouter.post("/profile-resume", usageLimit("GENERATE_RESUME"), (req, res) => uploadController.uploadProfileResume(req, res));
+// UPDATED: Profile-specific endpoints with S3 URL validation
+// These expect a JSON body like: { "fileUrl": "https://authorized-bucket.s3..." }
+uploadRouter.post(
+  "/profile-pic",
+  validateBody(uploadProfilePicSchema),
+  (req, res) => uploadController.uploadProfilePic(req, res)
+);
+
+uploadRouter.post(
+  "/cover-image",
+  validateBody(uploadCoverImageSchema),
+  (req, res) => uploadController.uploadCoverImage(req, res)
+);
+
+uploadRouter.post(
+  "/profile-resume",
+  validateBody(uploadResumeSchema),
+  usageLimit("GENERATE_RESUME"),
+  (req, res) => uploadController.uploadProfileResume(req, res)
+);
 uploadRouter.delete("/profile-resume", (req, res) => uploadController.deleteProfileResume(req, res));
