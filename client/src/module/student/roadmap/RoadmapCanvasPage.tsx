@@ -425,7 +425,7 @@ export default function RoadmapCanvasPage() {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 768 : false,
   );
-  const [isTouchDevice, setIsTouchDevice] = useState(() =>
+  const [isTouchDevice] = useState(() =>
     typeof window !== "undefined"
       ? "ontouchstart" in window || navigator.maxTouchPoints > 0
       : false,

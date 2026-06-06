@@ -187,19 +187,7 @@ function FilterDropdown({
   );
 }
 
-function GSoCOrgCard({
-  org,
-  onClick,
-  wishlisted,
-  onWishlistToggle,
-}: {
-  org: GSoCOrganization;
-  onClick: () => void;
-  wishlisted: boolean;
-  onWishlistToggle: (e: React.MouseEvent) => void;
-}) {
 const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }) => {
-  // Show participation from 2016 to current year
   const currentYear = new Date().getFullYear();
   const yearsRange = Array.from({ length: currentYear - 2015 }, (_, i) => 2016 + i);
 
@@ -223,7 +211,17 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
   );
 };
 
-function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => void }) {
+function GSoCOrgCard({
+  org,
+  onClick,
+  wishlisted,
+  onWishlistToggle,
+}: {
+  org: GSoCOrganization;
+  onClick: () => void;
+  wishlisted: boolean;
+  onWishlistToggle: (e: React.MouseEvent) => void;
+}) {
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
 
   return (
@@ -618,9 +616,6 @@ export default function GSoCReposPage() {
 
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
-  const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
   const { wishlist, toggle, has } = useWishlist();
   const [showWishlist, setShowWishlist] = useState(false);
 
