@@ -32,9 +32,18 @@ import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import type { OpenSourceRepo, Pagination, RepoRequest } from "../../../lib/types";
+import type {
+  OpenSourceRepo,
+  Pagination,
+  RepoRequest,
+} from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
-import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
+import {
+  REPO_DOMAINS,
+  DIFFICULTY_OPTIONS,
+  SORT_OPTIONS,
+  LANGUAGE_COLORS,
+} from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
@@ -69,9 +78,12 @@ const saveBookmarks = (ids: number[]) => {
 };
 
 const STATUS_STYLE: Record<string, string> = {
-  PENDING: "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
-  APPROVED: "bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-800",
-  REJECTED: "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
+  PENDING:
+    "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
+  APPROVED:
+    "bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-800",
+  REJECTED:
+    "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
 };
 
 // skill language map
@@ -131,7 +143,7 @@ export default function RepoDiscoveryPage() {
             newParams.set("page", "1");
             return newParams;
           },
-          { replace: true }
+          { replace: true },
         );
       }
     }, 400);
@@ -142,7 +154,12 @@ export default function RepoDiscoveryPage() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
-      if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") {
+      if (
+        e.key === "/" &&
+        tag !== "INPUT" &&
+        tag !== "TEXTAREA" &&
+        tag !== "SELECT"
+      ) {
         e.preventDefault();
         searchRef.current?.focus();
       }
@@ -152,7 +169,10 @@ export default function RepoDiscoveryPage() {
     };
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
+      if (
+        sortDropdownRef.current &&
+        !sortDropdownRef.current.contains(e.target as Node)
+      ) {
         setSortOpen(false);
       }
     };
@@ -179,7 +199,7 @@ export default function RepoDiscoveryPage() {
     if (!user?.skills?.length) return [];
 
     const normalizedSkills = user.skills.map((skill) =>
-      skill.toLowerCase().replace(/[^a-z]/g, "")
+      skill.toLowerCase().replace(/[^a-z]/g, ""),
     );
 
     const langs = new Set<string>();
@@ -199,20 +219,26 @@ export default function RepoDiscoveryPage() {
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     addRepo(repo);
     setSelectedRepo(repo);
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
-      params.set("repo", String(repo.id));
-      return params;
-    }, { replace: true });
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        params.set("repo", String(repo.id));
+        return params;
+      },
+      { replace: true },
+    );
   };
 
   const handleCloseRepo = () => {
     setSelectedRepo(null);
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
-      params.delete("repo");
-      return params;
-    }, { replace: true });
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        params.delete("repo");
+        return params;
+      },
+      { replace: true },
+    );
     setCopiedShareUrl(false);
   };
 
@@ -220,7 +246,8 @@ export default function RepoDiscoveryPage() {
   const initialRepoId = searchParams.get("repo");
   const { data: deepLinkData, isError: deepLinkError } = useQuery({
     queryKey: ["repo-deep-link", initialRepoId],
-    queryFn: () => api.get(`/opensource/${initialRepoId}`).then((res) => res.data.repo),
+    queryFn: () =>
+      api.get(`/opensource/${initialRepoId}`).then((res) => res.data.repo),
     enabled: !!initialRepoId && !selectedRepo,
     staleTime: 10 * 60 * 1000,
     retry: false,
@@ -235,12 +262,17 @@ export default function RepoDiscoveryPage() {
 
   useEffect(() => {
     if (deepLinkError) {
-      toast.error("Could not load the linked repository. It may not exist or has been removed.");
-      setSearchParams((prev) => {
-        const params = new URLSearchParams(prev);
-        params.delete("repo");
-        return params;
-      }, { replace: true });
+      toast.error(
+        "Could not load the linked repository. It may not exist or has been removed.",
+      );
+      setSearchParams(
+        (prev) => {
+          const params = new URLSearchParams(prev);
+          params.delete("repo");
+          return params;
+        },
+        { replace: true },
+      );
     }
   }, [deepLinkError, setSearchParams]);
 
@@ -285,32 +317,50 @@ export default function RepoDiscoveryPage() {
   };
 
   const queryParams = useMemo(() => {
-    const params: Record<string, string | number> = { page, limit: 12, sort: sortKey, sortOrder: "desc" };
+    const params: Record<string, string | number> = {
+      page,
+      limit: 12,
+      sort: sortKey,
+      sortOrder: "desc",
+    };
 
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
-    
+
     if (languageMode === "auto") {
       if (inferredLanguages.length > 0) {
-        params.language = inferredLanguages[0]; 
+        params.language = inferredLanguages[0];
       }
     } else if (selectedLanguage.length > 0) {
       params.language = selectedLanguage[0];
     }
-    
+
     if (trendingOnly) params.trending = "true";
 
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
 
     return params;
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, page]);
+  }, [
+    search,
+    selectedDomain,
+    selectedDifficulty,
+    selectedLanguage,
+    languageMode,
+    inferredLanguages,
+    sortKey,
+    trendingOnly,
+    page,
+  ]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
     queryFn: async () => {
-      const res = await api.get<{ repos: OpenSourceRepo[]; pagination: Pagination }>("/opensource", { params: queryParams });
+      const res = await api.get<{
+        repos: OpenSourceRepo[];
+        pagination: Pagination;
+      }>("/opensource", { params: queryParams });
       return res.data;
     },
     placeholderData: (prev) => prev,
@@ -319,7 +369,10 @@ export default function RepoDiscoveryPage() {
 
   const { data: languagesData } = useQuery({
     queryKey: ["opensource-languages"],
-    queryFn: () => api.get("/opensource/languages").then((r) => r.data.languages as string[]),
+    queryFn: () =>
+      api
+        .get("/opensource/languages")
+        .then((r) => r.data.languages as string[]),
     staleTime: 10 * 60 * 1000,
   });
 
@@ -330,7 +383,10 @@ export default function RepoDiscoveryPage() {
     refetch: refetchMyRequests,
   } = useQuery({
     queryKey: queryKeys.opensource.myRequests(),
-    queryFn: () => api.get("/opensource/requests/mine").then((r) => r.data.requests as RepoRequest[]),
+    queryFn: () =>
+      api
+        .get("/opensource/requests/mine")
+        .then((r) => r.data.requests as RepoRequest[]),
     enabled: !!user,
     staleTime: 2 * 60 * 1000,
   });
@@ -345,7 +401,9 @@ export default function RepoDiscoveryPage() {
     queryKey: ["opensource-bookmarked", bookmarks],
     queryFn: () =>
       api
-        .get("/opensource", { params: { ids: bookmarks.join(","), limit: 100 } })
+        .get("/opensource", {
+          params: { ids: bookmarks.join(","), limit: 100 },
+        })
         .then((r) => r.data.repos as OpenSourceRepo[]),
     enabled: showSaved && bookmarks.length > 0,
     staleTime: 5 * 60 * 1000,
@@ -354,10 +412,7 @@ export default function RepoDiscoveryPage() {
   const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
 
-  const displayedRepos = useMemo(() => {
-    if (showSaved) return bookmarkedData || [];
-    return repos;
-  }, [repos, showSaved, bookmarkedData]);
+  const displayedRepos = showSaved ? bookmarkedData || [] : repos;
 
   // Global stats fetched independently so the header strip stays accurate
   // regardless of active filters or page (replaces the old useMemo approach).
@@ -402,7 +457,7 @@ export default function RepoDiscoveryPage() {
 
         return newParams;
       },
-      { replace: true }
+      { replace: true },
     );
   };
 
@@ -421,7 +476,9 @@ export default function RepoDiscoveryPage() {
               ? selectedRepo.description.slice(0, 160)
               : `Contribute to ${selectedRepo.owner}/${selectedRepo.name} on InternHack. Discover beginner-friendly open-source projects curated for students.`
           }
-          canonicalUrl={canonicalUrl(`/student/opensource?repo=${selectedRepo.id}`)}
+          canonicalUrl={canonicalUrl(
+            `/student/opensource?repo=${selectedRepo.id}`,
+          )}
         />
       ) : (
         <SEO
@@ -457,21 +514,31 @@ export default function RepoDiscoveryPage() {
                 </span>
               </h1>
               <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl">
-                Beginner-friendly open-source projects, curated by engineers for students.
+                Beginner-friendly open-source projects, curated by engineers for
+                students.
               </p>
             </div>
             {stats && (
               <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                 <span>
-                  <span className="text-stone-900 dark:text-stone-50">{stats.totalRepos}</span> repos
+                  <span className="text-stone-900 dark:text-stone-50">
+                    {stats.totalRepos}
+                  </span>{" "}
+                  repos
                 </span>
                 <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
                 <span>
-                  <span className="text-stone-900 dark:text-stone-50">{stats.totalStars}</span> stars
+                  <span className="text-stone-900 dark:text-stone-50">
+                    {stats.totalStars}
+                  </span>{" "}
+                  stars
                 </span>
                 <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
                 <span>
-                  <span className="text-lime-600 dark:text-lime-400">{stats.trendingCount}</span> trending
+                  <span className="text-lime-600 dark:text-lime-400">
+                    {stats.trendingCount}
+                  </span>{" "}
+                  trending
                 </span>
               </div>
             )}
@@ -520,7 +587,10 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => {
-              if (!user) { window.location.href = "/login"; return; }
+              if (!user) {
+                window.location.href = "/login";
+                return;
+              }
               setShowSuggestModal(true);
             }}
             className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 cursor-pointer hover:bg-stone-900 dark:hover:bg-stone-50 transition-colors text-left"
@@ -566,7 +636,9 @@ export default function RepoDiscoveryPage() {
 
             {!isMyRequestsLoading && isMyRequestsError && (
               <div className="flex items-center justify-between py-2 px-1">
-                <p className="text-sm text-red-500">Failed to load submissions</p>
+                <p className="text-sm text-red-500">
+                  Failed to load submissions
+                </p>
                 <button
                   type="button"
                   onClick={() => refetchMyRequests()}
@@ -577,16 +649,23 @@ export default function RepoDiscoveryPage() {
               </div>
             )}
 
-            {!isMyRequestsLoading && !isMyRequestsError && myRequests?.length === 0 && (
-              <p className="text-sm text-stone-400 dark:text-stone-500 py-2">
-                You haven't suggested any repos yet.
-              </p>
-            )}
+            {!isMyRequestsLoading &&
+              !isMyRequestsError &&
+              myRequests?.length === 0 && (
+                <p className="text-sm text-stone-400 dark:text-stone-500 py-2">
+                  You haven't suggested any repos yet.
+                </p>
+              )}
 
-            {!isMyRequestsLoading && !isMyRequestsError && myRequests && myRequests.length > 0 && (
-              <div className="space-y-2">
-                {(showAllSubmissions ? myRequests : myRequests.slice(0, 3)).map(
-                  (req) => (
+            {!isMyRequestsLoading &&
+              !isMyRequestsError &&
+              myRequests &&
+              myRequests.length > 0 && (
+                <div className="space-y-2">
+                  {(showAllSubmissions
+                    ? myRequests
+                    : myRequests.slice(0, 3)
+                  ).map((req) => (
                     <div
                       key={req.id}
                       className="flex items-center justify-between px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900"
@@ -611,22 +690,21 @@ export default function RepoDiscoveryPage() {
                         {req.status}
                       </span>
                     </div>
-                  )
-                )}
+                  ))}
 
-                {myRequests.length > 3 && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAllSubmissions((v) => !v)}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
-                  >
-                    {showAllSubmissions
-                      ? "Show less ↑"
-                      : `Show all ${myRequests.length} →`}
-                  </button>
-                )}
-              </div>
-            )}
+                  {myRequests.length > 3 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllSubmissions((v) => !v)}
+                      className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
+                    >
+                      {showAllSubmissions
+                        ? "Show less ↑"
+                        : `Show all ${myRequests.length} →`}
+                    </button>
+                  )}
+                </div>
+              )}
           </div>
         )}
 
@@ -634,7 +712,10 @@ export default function RepoDiscoveryPage() {
         <GuidanceCards />
 
         {/* Recently viewed & recommended */}
-        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
+        <RecentlyViewedSection
+          repos={recentlyViewed}
+          onSelect={handleOpenRepo}
+        />
 
         {user?.role === "STUDENT" && (
           <RecommendedSection onSelect={handleOpenRepo} />
@@ -649,7 +730,12 @@ export default function RepoDiscoveryPage() {
               <button
                 key={d.key}
                 type="button"
-                onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
+                onClick={() =>
+                  updateFilter(
+                    "domain",
+                    d.key === selectedDomain ? "ALL" : d.key,
+                  )
+                }
                 className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
                   active
                     ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
@@ -693,24 +779,27 @@ export default function RepoDiscoveryPage() {
             <button
               type="button"
               onClick={() => {
-                setSearchParams((prev) => {
-                  const params = new URLSearchParams(prev);
-                  const isActive = languageMode === "auto";
+                setSearchParams(
+                  (prev) => {
+                    const params = new URLSearchParams(prev);
+                    const isActive = languageMode === "auto";
 
-                  if (isActive) {
-                    params.delete("languageMode");
-                    params.delete("language");
-                  } else {
-                    params.set("languageMode", "auto");
-                    params.delete("language");
-                    inferredLanguages.forEach((lang) => {
-                      params.append("language", lang);
-                    });
-                  }
+                    if (isActive) {
+                      params.delete("languageMode");
+                      params.delete("language");
+                    } else {
+                      params.set("languageMode", "auto");
+                      params.delete("language");
+                      inferredLanguages.forEach((lang) => {
+                        params.append("language", lang);
+                      });
+                    }
 
-                  params.set("page", "1");
-                  return params;
-                }, { replace: true });
+                    params.set("page", "1");
+                    return params;
+                  },
+                  { replace: true },
+                );
               }}
               className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
                 languageMode === "auto"
@@ -739,13 +828,15 @@ export default function RepoDiscoveryPage() {
                 {activeFilters}
               </span>
             )}
-            <ChevronDown className={`w-3 h-3 transition-transform ${showFilters ? "rotate-180" : ""}`} />
+            <ChevronDown
+              className={`w-3 h-3 transition-transform ${showFilters ? "rotate-180" : ""}`}
+            />
           </button>
 
           {/* Sort dropdown */}
           <div className="relative" ref={sortDropdownRef}>
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               variant="ghost"
               size="sm"
               onClick={() => setSortOpen(!sortOpen)}
@@ -754,7 +845,9 @@ export default function RepoDiscoveryPage() {
             >
               <TrendingUp className="w-3 h-3" />
               {SORT_OPTIONS.find((s) => s.key === sortKey)?.label ?? "Sort"}
-              <ChevronDown className={`w-3 h-3 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
+              <ChevronDown
+                className={`w-3 h-3 transition-transform ${sortOpen ? "rotate-180" : ""}`}
+              />
             </Button>
             <AnimatePresence>
               {sortOpen && (
@@ -813,7 +906,9 @@ export default function RepoDiscoveryPage() {
                     className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
                   >
                     {DIFFICULTY_OPTIONS.map((d) => (
-                      <option key={d.key} value={d.key}>{d.label}</option>
+                      <option key={d.key} value={d.key}>
+                        {d.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -827,17 +922,20 @@ export default function RepoDiscoveryPage() {
                     disabled={languageMode === "auto"}
                     onChange={(e) => {
                       const value = e.target.value;
-                      setSearchParams((prev) => {
-                        const params = new URLSearchParams(prev);
-                        params.delete("language");
+                      setSearchParams(
+                        (prev) => {
+                          const params = new URLSearchParams(prev);
+                          params.delete("language");
 
-                        if (value !== "ALL") {
-                          params.append("language", value);
-                        }
+                          if (value !== "ALL") {
+                            params.append("language", value);
+                          }
 
-                        params.set("page", "1");
-                        return params;
-                      }, { replace: true });
+                          params.set("page", "1");
+                          return params;
+                        },
+                        { replace: true },
+                      );
                     }}
                     className={`px-3 ${languageMode === "auto" ? "opacity-50 cursor-not-allowed" : ""} py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25`}
                   >
@@ -855,7 +953,9 @@ export default function RepoDiscoveryPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        setSearchParams(new URLSearchParams(), { replace: true });
+                        setSearchParams(new URLSearchParams(), {
+                          replace: true,
+                        });
                         setInputValue("");
                       }}
                       className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer py-2"
@@ -874,11 +974,41 @@ export default function RepoDiscoveryPage() {
           <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
             {pagination ? (
               <>
-                <span className="text-stone-900 dark:text-stone-50">{pagination.total}</span>
-                {" "}repositor{pagination.total !== 1 ? "ies" : "y"}
-                {selectedDomain !== "ALL" && <> / <span className="text-stone-900 dark:text-stone-50">{REPO_DOMAINS.find((d) => d.key === selectedDomain)?.label}</span></>}
-                {selectedLanguage.length > 0 && <> / <span className="text-stone-900 dark:text-stone-50">{selectedLanguage.join(", ")}</span></>}
-                {search && <> / matching "<span className="text-stone-900 dark:text-stone-50">{search}</span>"</>}
+                <span className="text-stone-900 dark:text-stone-50">
+                  {pagination.total}
+                </span>{" "}
+                repositor{pagination.total !== 1 ? "ies" : "y"}
+                {selectedDomain !== "ALL" && (
+                  <>
+                    {" "}
+                    /{" "}
+                    <span className="text-stone-900 dark:text-stone-50">
+                      {
+                        REPO_DOMAINS.find((d) => d.key === selectedDomain)
+                          ?.label
+                      }
+                    </span>
+                  </>
+                )}
+                {selectedLanguage.length > 0 && (
+                  <>
+                    {" "}
+                    /{" "}
+                    <span className="text-stone-900 dark:text-stone-50">
+                      {selectedLanguage.join(", ")}
+                    </span>
+                  </>
+                )}
+                {search && (
+                  <>
+                    {" "}
+                    / matching "
+                    <span className="text-stone-900 dark:text-stone-50">
+                      {search}
+                    </span>
+                    "
+                  </>
+                )}
               </>
             ) : (
               "loading..."
@@ -901,21 +1031,32 @@ export default function RepoDiscoveryPage() {
             <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
               <AlertCircle className="w-5 h-5 text-stone-400 dark:text-stone-500" />
             </div>
-            <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">Failed to load repositories</h3>
-            <p className="text-sm text-stone-500 dark:text-stone-400">There was an error fetching the list. Please try again later.</p>
+            <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">
+              Failed to load repositories
+            </h3>
+            <p className="text-sm text-stone-500 dark:text-stone-400">
+              There was an error fetching the list. Please try again later.
+            </p>
           </div>
         )}
 
         {/* Empty */}
-        {!isLoading && !isLoadingBookmarks && !isError && displayedRepos.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-            <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
-              <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+        {!isLoading &&
+          !isLoadingBookmarks &&
+          !isError &&
+          displayedRepos.length === 0 && (
+            <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
+              <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
+                <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+              </div>
+              <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">
+                No repositories found
+              </h3>
+              <p className="text-sm text-stone-500 dark:text-stone-400">
+                Try adjusting your search or filters.
+              </p>
             </div>
-            <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">No repositories found</h3>
-            <p className="text-sm text-stone-500 dark:text-stone-400">Try adjusting your search or filters.</p>
-          </div>
-        )}
+          )}
 
         {/* Cards grid */}
         {!isLoading && !isError && displayedRepos.length > 0 && (
@@ -947,7 +1088,10 @@ export default function RepoDiscoveryPage() {
 
       {/* Suggest Repo Modal */}
       <AnimatePresence>
-        <SuggestRepoModal open={showSuggestModal} onClose={() => setShowSuggestModal(false)} />
+        <SuggestRepoModal
+          open={showSuggestModal}
+          onClose={() => setShowSuggestModal(false)}
+        />
       </AnimatePresence>
 
       {/* Detail Modal */}
@@ -1022,13 +1166,18 @@ export default function RepoDiscoveryPage() {
               <div className="px-5 py-5 space-y-5">
                 {/* Status row */}
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className={`rounded-md px-2 py-0.5 text-[11px] font-medium ring-1 ${difficultyBadge(selectedRepo.difficulty).cls}`}>
+                  <span
+                    className={`rounded-md px-2 py-0.5 text-[11px] font-medium ring-1 ${difficultyBadge(selectedRepo.difficulty).cls}`}
+                  >
                     {difficultyBadge(selectedRepo.difficulty).label}
                   </span>
                   <span className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium bg-stone-100 dark:bg-white/5 text-stone-700 dark:text-stone-300">
                     <span
                       className="inline-block h-2 w-2 rounded-full"
-                      style={{ backgroundColor: LANGUAGE_COLORS[selectedRepo.language] ?? "#888" }}
+                      style={{
+                        backgroundColor:
+                          LANGUAGE_COLORS[selectedRepo.language] ?? "#888",
+                      }}
                     />
                     {selectedRepo.language}
                   </span>
@@ -1056,9 +1205,21 @@ export default function RepoDiscoveryPage() {
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-0 border-t border-l border-stone-200 dark:border-white/10">
                   {[
-                    { label: "stars", value: formatCount(selectedRepo.stars), icon: Star },
-                    { label: "forks", value: formatCount(selectedRepo.forks), icon: GitFork },
-                    { label: "issues", value: formatCount(selectedRepo.openIssues), icon: CircleDot },
+                    {
+                      label: "stars",
+                      value: formatCount(selectedRepo.stars),
+                      icon: Star,
+                    },
+                    {
+                      label: "forks",
+                      value: formatCount(selectedRepo.forks),
+                      icon: GitFork,
+                    },
+                    {
+                      label: "issues",
+                      value: formatCount(selectedRepo.openIssues),
+                      icon: CircleDot,
+                    },
                   ].map((s) => (
                     <div
                       key={s.label}
@@ -1066,9 +1227,13 @@ export default function RepoDiscoveryPage() {
                     >
                       <div className="flex items-center justify-center gap-1.5 mb-1">
                         <s.icon className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
-                        <span className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">{s.value}</span>
+                        <span className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                          {s.value}
+                        </span>
                       </div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{s.label}</p>
+                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                        {s.label}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -1085,7 +1250,10 @@ export default function RepoDiscoveryPage() {
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {selectedRepo.techStack.map((t) => (
-                        <span key={t} className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-xs text-stone-700 dark:text-stone-300">
+                        <span
+                          key={t}
+                          className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-xs text-stone-700 dark:text-stone-300"
+                        >
                           {t}
                         </span>
                       ))}
@@ -1104,7 +1272,10 @@ export default function RepoDiscoveryPage() {
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {selectedRepo.issueTypes.map((t) => (
-                        <span key={t} className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-xs text-stone-700 dark:text-stone-300">
+                        <span
+                          key={t}
+                          className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-xs text-stone-700 dark:text-stone-300"
+                        >
                           {t}
                         </span>
                       ))}
@@ -1124,7 +1295,10 @@ export default function RepoDiscoveryPage() {
                     </div>
                     <div className="space-y-1.5">
                       {selectedRepo.highlights.map((h, i) => (
-                        <div key={i} className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300">
+                        <div
+                          key={i}
+                          className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300"
+                        >
                           <span className="h-1 w-1 bg-lime-400 mt-2 shrink-0" />
                           {h}
                         </div>
@@ -1143,7 +1317,10 @@ export default function RepoDiscoveryPage() {
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedRepo.tags.map((tag) => (
-                      <span key={tag} className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-[11px] font-mono text-stone-600 dark:text-stone-400">
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-[11px] font-mono text-stone-600 dark:text-stone-400"
+                      >
                         #{tag}
                       </span>
                     ))}
@@ -1192,11 +1369,17 @@ export default function RepoDiscoveryPage() {
   );
 }
 
-function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
+function RecommendedSection({
+  onSelect,
+}: {
+  onSelect: (repo: OpenSourceRepo) => void;
+}) {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.opensource.list({ recommended: "true" }),
     queryFn: async () => {
-      const res = await api.get<{ repos: OpenSourceRepo[] }>("/opensource/recommended");
+      const res = await api.get<{ repos: OpenSourceRepo[] }>(
+        "/opensource/recommended",
+      );
       return res.data;
     },
     staleTime: 10 * 60 * 1000,
@@ -1240,7 +1423,10 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
       <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-4">
         <div className="flex gap-4 min-w-full">
           {repos.map((repo, i) => (
-            <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
+            <div
+              key={repo.id}
+              className="min-w-[280px] sm:min-w-[320px] max-w-[320px]"
+            >
               <RepoCard repo={repo} index={i} onSelect={onSelect} />
             </div>
           ))}

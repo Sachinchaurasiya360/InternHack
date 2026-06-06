@@ -234,7 +234,6 @@ export default function DsaProblemDetailPage() {
     staleTime: 10 * 60 * 1000,
   });
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     setShowNextPanel(false);
   }, [slug]);
