@@ -206,10 +206,10 @@ model application {
 
   @@unique([jobId, studentId])
   @@index([jobId])
+  @@index([jobId, status])
   @@index([studentId])
   @@index([status])
   @@index([createdAt])
-  @@index([jobId, status])
 }
 
 model applicationStatusHistory {
