@@ -180,6 +180,7 @@ model round {
   timeLimitSecs       Int?
   autoGrade           Boolean           @default(false)
   activateAt          DateTime?
+  isArchived          Boolean           @default(false)
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   job                 job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
@@ -189,6 +190,7 @@ model round {
   @@unique([jobId, name])
   @@index([jobId])
 }
+
 
 model application {
   id                 Int               @id @default(autoincrement())
