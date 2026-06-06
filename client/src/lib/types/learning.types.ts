@@ -268,6 +268,8 @@ export interface AptitudeQuestion {
   topicSlug?: string;
 }
 
+export type AptitudeDifficultyLevel = "EASY" | "MEDIUM" | "HARD";
+
 export interface AptitudeTopicDetail {
   id: number;
   name: string;
@@ -276,9 +278,19 @@ export interface AptitudeTopicDetail {
   categoryName: string;
   categorySlug: string;
   totalQuestions: number;
+  currentDifficulty?: AptitudeDifficultyLevel;
   page: number;
   totalPages: number;
   questions: AptitudeQuestion[];
+}
+
+export interface AptitudeAnswerResult {
+  correct: boolean;
+  correctAnswer: string;
+  explanation?: string;
+  currentDifficulty: AptitudeDifficultyLevel;
+  previousDifficulty: AptitudeDifficultyLevel;
+  difficultyChange: "increased" | "decreased" | null;
 }
 
 export interface AptitudeCompany {
