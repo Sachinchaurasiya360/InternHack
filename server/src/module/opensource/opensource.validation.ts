@@ -14,6 +14,7 @@ export const opensourceListQuerySchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
   trending: z.enum(["true", "false"]).optional(),
   hacktoberfest: z.enum(["true", "false"]).optional(),
+  hasGoodFirstIssues: z.enum(["true", "false"]).optional(),
   ids: z.string().regex(/^\d+(,\d+)*$/, "Must be a comma-separated list of numeric IDs").optional(), // Comma-separated string of numeric IDs
 }).transform(({ sort, ...query }) => ({
   ...query,
