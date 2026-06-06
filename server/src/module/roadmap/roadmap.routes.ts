@@ -7,6 +7,7 @@ import {
   downloadPdf,
   enroll,
   getMyEnrollmentAnalytics,
+  getMyEnrollmentByRoadmapSlug,
   getMyEnrollment,
   deleteMyEnrollment,
   getMyEnrollments,
@@ -16,7 +17,9 @@ import {
   patchTopicProgress,
   postAiGenerate,
   postRecomputePace,
+  updateRoadmap,
   postRegenerateSection,
+  toggleShare,
 } from "./roadmap.controller.js";
 
 export const roadmapRouter = Router();
@@ -33,15 +36,21 @@ roadmapRouter.patch(
   authMiddleware,
   patchTopicProgress,
 );
+roadmapRouter.patch(
+  "/:slug",
+  authMiddleware,
+  updateRoadmap,
+);
 roadmapRouter.post(
   "/me/enrollments/:id/recompute-pace",
   authMiddleware,
   postRecomputePace,
 );
 
-roadmapRouter.get("/", getRoadmaps);
+roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
+roadmapRouter.get("/:slug/enrollment", authMiddleware, getMyEnrollmentByRoadmapSlug);
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);
-// Section-level AI regeneration — only for AI-generated roadmaps owned by the user
 roadmapRouter.post("/:slug/sections/:sectionId/regenerate", authMiddleware, aiRoadmapLimiter, postRegenerateSection);
+roadmapRouter.patch("/:slug/share", authMiddleware, toggleShare);

@@ -52,9 +52,9 @@ export const listQuerySchema = z.object({
   // limit: z.coerce.number().int().min(1).max(50).default(20),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "ALL_LEVELS"]).optional(),
-  search: z.string().optional(),
-  tag: z.string().optional(),
-  category: z.string().optional(),
+  search: z.string().max(200).optional(),
+  tag: z.string().max(100).optional(),
+  category: z.string().max(100).optional(),
 });
 
 export const aiGenerateSchema = z.object({
@@ -70,7 +70,15 @@ export const aiGenerateSchema = z.object({
   forceCreate: z.boolean().optional().default(false),
 });
 export type AiGenerateInput = z.infer<typeof aiGenerateSchema>;
-
+export const updateRoadmapSchema = z
+  .object({
+    title: z.string().trim().min(3).max(100).optional(),
+    shortDescription: z.string().trim().min(20).max(500).optional(),
+    level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one roadmap detail must be provided",
+  });
 // ── Section regeneration ──────────────────────────────────────────────────
 export const regenerateSectionParams = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid roadmap slug"),

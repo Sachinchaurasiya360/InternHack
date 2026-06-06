@@ -19,6 +19,7 @@ interface Props {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
+  ogImage?: string;
   icon: LucideIcon;
   iconColor: string;         // e.g. "text-emerald-500"
 }
@@ -26,6 +27,7 @@ interface Props {
 export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
+  ogImage,
 }: Props) {
   const [completed, setCompleted] = useState<Set<string>>(() => {
     try {
@@ -47,6 +49,10 @@ export default function GuideListPage({
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
   const totalEstimatedTime = steps.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+  const completedMinutes = steps
+    .filter((s) => completed.has(s.id))
+    .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
+  const remainingMinutes = totalEstimatedTime - completedMinutes;
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
@@ -58,6 +64,7 @@ export default function GuideListPage({
         description={seoDescription}
         keywords={seoKeywords}
         canonicalUrl={canonicalUrl(basePath)}
+        ogImage={ogImage}
       />
 
       {/* Atmospheric background */}
@@ -93,13 +100,13 @@ export default function GuideListPage({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-3 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
       >
         {[
           { icon: Icon, value: totalSteps, label: "Sections", iconColor },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
-          { icon: ArrowRight, value: `${totalEstimatedTime} min`, label: "Estimated Time", iconColor: "text-indigo-500" },
+          { icon: ArrowRight, value: allDone ? "Done!" : completed.size > 0 ? `${remainingMinutes} min left` : `${totalEstimatedTime} min total`, label: "Est. Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}

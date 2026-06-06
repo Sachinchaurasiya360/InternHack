@@ -31,6 +31,7 @@ import {
   Flame,
   ChevronRight,
   BookOpen,
+  Pencil,
   LayoutTemplate,
   GitCommit,
   Network,
@@ -125,11 +126,10 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             stiffness: 380,
             damping: 20,
           }}
-          className={`relative h-11 w-11 rounded-md flex items-center justify-center shrink-0 ${
-            sectionDone
+          className={`relative h-11 w-11 rounded-md flex items-center justify-center shrink-0 ${sectionDone
               ? "bg-lime-400 text-stone-950"
               : "bg-stone-950 dark:bg-stone-50 text-stone-50 dark:text-stone-950"
-          }`}
+            }`}
         >
           {sectionDone ? (
             <Check className="w-5 h-5" strokeWidth={3} />
@@ -371,11 +371,10 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
 
         {/* Title */}
         <p
-          className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${
-            isCompleted || isSkipped
+          className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${isCompleted || isSkipped
               ? "text-stone-400 dark:text-stone-600 line-through decoration-1 decoration-stone-300 dark:decoration-stone-700"
               : "text-stone-950 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-stone-50"
-          }`}
+            }`}
         >
           {topic.title}
         </p>
@@ -426,7 +425,7 @@ export default function RoadmapCanvasPage() {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 768 : false,
   );
-  const [isTouchDevice, setIsTouchDevice] = useState(() =>
+  const [isTouchDevice] = useState(() =>
     typeof window !== "undefined"
       ? "ontouchstart" in window || navigator.maxTouchPoints > 0
       : false,
@@ -438,10 +437,6 @@ export default function RoadmapCanvasPage() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
-  }, []);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const graphOffsetsRef = useRef(new Map<number, { x: number; y: number }>());
@@ -486,7 +481,7 @@ export default function RoadmapCanvasPage() {
         );
         setWeakTopicTitles(slugs);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const toggleSection = useCallback((id: number) => {
@@ -498,6 +493,12 @@ export default function RoadmapCanvasPage() {
     });
   }, []);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+   const [showEditModal, setShowEditModal] = useState(false);
+  const [title, setTitle] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
+  const [level, setLevel] = useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED">(
+    "BEGINNER",
+  );
   // Track previous percentComplete so we only fire the modal on the transition to 100
   const prevPercentRef = useRef<number | null>(null);
   const hasShownCompletionRef = useRef(false);
@@ -580,6 +581,13 @@ export default function RoadmapCanvasPage() {
 
     prevPercentRef.current = pct;
   }, [data]);
+  useEffect(() => {
+    if (!data) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTitle(data.enrollment.roadmap.title);
+    setShortDescription(data.enrollment.roadmap.shortDescription);
+    setLevel(data.enrollment.roadmap.level);
+  }, [data]);
 
   const progressByTopicId = useMemo(() => {
     if (!data)
@@ -610,6 +618,27 @@ export default function RoadmapCanvasPage() {
   const handleNodeClick = useCallback((topicId: number) => {
     setDrawerTopicId(topicId);
   }, []);
+  const handleUpdateRoadmap = async () => {
+  try {
+    await api.patch(`/roadmaps/${slug}`, {
+      title,
+      shortDescription,
+      level,
+    });
+
+    toast.success("Roadmap updated");
+
+    setShowEditModal(false);
+
+    const detail = await api.get<EnrollmentResponse>(
+      `/roadmaps/me/enrollments/${enrollmentId}`,
+    );
+
+    setData(detail.data);
+  } catch {
+    toast.error("Failed to update roadmap");
+  }
+};
 
   const allTopics = useMemo(() => {
     if (!data) return [];
@@ -742,9 +771,9 @@ export default function RoadmapCanvasPage() {
             position:
               viewMode === "GRAPH"
                 ? {
-                    x: TOPIC_X + getGraphOffset(topic.id).x,
-                    y: cursorY + getGraphOffset(topic.id).y,
-                  }
+                  x: TOPIC_X + getGraphOffset(topic.id).x,
+                  y: cursorY + getGraphOffset(topic.id).y,
+                }
                 : { x: TOPIC_X, y: cursorY },
             data: {
               topic,
@@ -873,20 +902,27 @@ export default function RoadmapCanvasPage() {
 
   const downloadPdf = async (theme: "light" | "dark") => {
     if (!enrollmentId) return;
+
     setDownloading(theme);
+
     try {
       const res = await api.get(
         `/roadmaps/me/enrollments/${enrollmentId}/pdf`,
         { responseType: "blob" },
       );
+
       const url = URL.createObjectURL(res.data as Blob);
+
       const a = document.createElement("a");
       a.href = url;
       a.download = `${slug}-roadmap${theme === "dark" ? "-dark" : ""}.pdf`;
       a.click();
+
       URL.revokeObjectURL(url);
+
+      toast.success("PDF downloaded successfully");
     } catch {
-      toast.error("Could not download PDF");
+      toast.error("PDF generation failed. Please try again.");
     } finally {
       setDownloading(null);
     }
@@ -1016,7 +1052,7 @@ export default function RoadmapCanvasPage() {
 
       {/* Main content area: fills the rest of the viewport, alongside sidebar */}
       <div
-        className={`flex flex-col h-screen pt-16 lg:pt-16 transition-all duration-300 ${
+        className={`flex flex-col min-h-screen overflow-y-auto pt-16 transition-all duration-300 ${
           collapsed ? "lg:ml-18" : "lg:ml-64"
         }`}
       >
@@ -1139,6 +1175,14 @@ export default function RoadmapCanvasPage() {
                 }
               />
             </div>
+                        <button
+              type="button"
+              onClick={() => setShowEditModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-stone-800 text-stone-50 text-xs font-bold rounded-md hover:bg-stone-700 transition-colors"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              Edit
+            </button>
 
             <button
               type="button"
@@ -1146,12 +1190,13 @@ export default function RoadmapCanvasPage() {
               disabled={downloading !== null}
               className="inline-flex items-center gap-1.5 px-3 py-2 bg-lime-400 text-stone-950 text-xs font-bold rounded-md hover:bg-lime-300 transition-colors disabled:opacity-60 cursor-pointer border-0"
             >
-              {downloading ? (
+              {downloading === "light" ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
                 <Download className="w-3.5 h-3.5" />
               )}
-              PDF
+
+              {downloading === "light" ? "Generating..." : "PDF"}
             </button>
           </div>
 
@@ -1369,11 +1414,10 @@ export default function RoadmapCanvasPage() {
                           bookmarked: !drawerProgress?.bookmarked,
                         })
                       }
-                      className={`inline-flex items-center justify-center h-7 w-7 rounded-md text-xs font-bold transition-colors cursor-pointer border ${
-                        drawerProgress?.bookmarked
+                      className={`inline-flex items-center justify-center h-7 w-7 rounded-md text-xs font-bold transition-colors cursor-pointer border ${drawerProgress?.bookmarked
                           ? "bg-lime-400 text-stone-950 border-lime-400"
                           : "bg-white text-stone-500 border-stone-200 hover:border-stone-400 dark:bg-stone-900 dark:text-stone-400 dark:border-stone-800 dark:hover:border-stone-600"
-                      }`}
+                        }`}
                     >
                       <Bookmark
                         className={`w-3 h-3 ${drawerProgress?.bookmarked ? "fill-current" : ""}`}
@@ -1477,6 +1521,129 @@ export default function RoadmapCanvasPage() {
             </>
           )}
         </AnimatePresence>
+                {showEditModal && (
+          <>
+    {/* Backdrop */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowEditModal(false)}
+      className="fixed inset-0 z-60 bg-stone-950/70 backdrop-blur-sm"
+    />
+
+    {/* Modal */}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, y: 20 }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 24,
+      }}
+      className="fixed inset-0 z-70 flex items-center justify-center p-4"
+    >
+      <div
+        className="w-full max-w-2xl rounded-2xl border border-stone-800 bg-stone-950 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-stone-800 px-6 py-5">
+          <h2 className="text-2xl font-bold text-stone-50">
+            Edit Roadmap Details
+          </h2>
+
+          <button
+            type="button"
+            onClick={() => setShowEditModal(false)}
+            className="rounded-md p-2 text-stone-500 hover:bg-stone-900 hover:text-stone-300"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="space-y-6 p-6">
+          {/* Title */}
+          <div>
+            <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.2em] text-stone-500">
+              Title
+            </label>
+
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none focus:border-lime-500"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.2em] text-stone-500">
+              Description
+            </label>
+
+            <textarea
+              rows={5}
+              value={shortDescription}
+              onChange={(e) =>
+                setShortDescription(e.target.value)
+              }
+              className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none resize-none focus:border-lime-500"
+            />
+          </div>
+
+          {/* Level */}
+          <div>
+            <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.2em] text-stone-500">
+              Level
+            </label>
+
+            <select
+              value={level}
+                           onChange={(e) =>
+                setLevel(
+                  e.target.value as "BEGINNER" | "INTERMEDIATE" | "ADVANCED",
+                )
+              }
+              className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none focus:border-lime-500"
+            >
+              <option value="BEGINNER">
+                Beginner
+              </option>
+
+              <option value="INTERMEDIATE">
+                Intermediate
+              </option>
+
+              <option value="ADVANCED">
+                Advanced
+              </option>
+            </select>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end gap-3 border-t border-stone-800 px-6 py-5">
+          <Button
+            variant="ghost"
+            onClick={() => setShowEditModal(false)}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={handleUpdateRoadmap}
+            className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+          >
+            Save Changes
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  </>
+)}
 
         {/* ─── Roadmap Completion Modal ─────────────────────────────────── */}
         {showCompletionModal && (
@@ -1665,19 +1832,19 @@ function RoadmapAnalyticsStrip({
 }) {
   const statusStyles = analytics
     ? {
-        AHEAD: "text-lime-300",
-        ON_TRACK: "text-sky-300",
-        BEHIND: "text-amber-300",
-      }[analytics.onTrackStatus]
+      AHEAD: "text-lime-300",
+      ON_TRACK: "text-sky-300",
+      BEHIND: "text-amber-300",
+    }[analytics.onTrackStatus]
     : "text-stone-500";
 
   const statusLabel =
     analytics?.onTrackStatus.replace("_", " ").toLowerCase() ?? "loading";
   const estimatedDate = analytics
     ? new Intl.DateTimeFormat(undefined, {
-        month: "short",
-        day: "numeric",
-      }).format(new Date(analytics.estimatedCompletionDate))
+      month: "short",
+      day: "numeric",
+    }).format(new Date(analytics.estimatedCompletionDate))
     : "calculating";
 
   return (
@@ -1856,9 +2023,8 @@ function StatusChip({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-bold transition-colors cursor-pointer border ${
-        active ? activeBg : idle
-      }`}
+      className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-bold transition-colors cursor-pointer border ${active ? activeBg : idle
+        }`}
     >
       {children}
     </button>

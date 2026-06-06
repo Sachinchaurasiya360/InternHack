@@ -382,7 +382,15 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
 
   private validateSuggestions(raw: unknown): string[] {
     if (!Array.isArray(raw)) return ["No specific suggestions available."];
-    return raw.filter((s): s is string => typeof s === "string").slice(0, 10);
+    return raw
+      .map((s) => {
+        if (typeof s === "string") return s;
+        if (s && typeof s === "object" && "suggestion" in s && typeof (s as Record<string, unknown>).suggestion === "string")
+          return (s as Record<string, string>).suggestion;
+        return null;
+      })
+      .filter((s): s is string => s !== null)
+      .slice(0, 10);
   }
 
   private validateKeywordAnalysis(raw: unknown): AtsKeywordAnalysis {

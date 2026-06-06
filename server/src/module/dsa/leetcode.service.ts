@@ -67,32 +67,29 @@ export const syncLeetCodeSolvedProblems = async (userId: number, leetcodeUsernam
         return { syncedCount: 0, totalFetched: titleSlugs.length };
     }
 
-    // 4. Upsert solved progress for each matched problem in parallel
-    const upsertPromises = matchingProblems.map((problem) =>
-        prisma.studentDsaProgress.upsert({
-            where: {
-                studentId_problemId: {
-                    studentId: userId,
-                    problemId: problem.id,
-                },
-            },
-            update: {
-                solved: true,
-                solvedAt: new Date(),
-                source: 'LEETCODE',
-            },
-            create: {
-                studentId: userId,
-                problemId: problem.id,
-                solved: true,
-                solvedAt: new Date(),
-                source: 'LEETCODE',
-            },
-        })
-    );
+    // Use bulk operations to avoid concurrent database deadlocks and pool exhaustion
+    await prisma.studentDsaProgress.createMany({
+        data: matchingProblems.map((problem) => ({
+            studentId: userId,
+            problemId: problem.id,
+            solved: true,
+            solvedAt: new Date(),
+            source: 'LEETCODE',
+        })),
+        skipDuplicates: true,
+    });
 
-    // Execute all database updates in parallel
-    await Promise.all(upsertPromises);
+    await prisma.studentDsaProgress.updateMany({
+        where: {
+            studentId: userId,
+            problemId: { in: matchingProblems.map((p) => p.id) },
+        },
+        data: {
+            solved: true,
+            solvedAt: new Date(),
+            source: 'LEETCODE',
+        },
+    });
 
     return {
         syncedCount: matchingProblems.length,

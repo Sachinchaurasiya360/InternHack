@@ -352,8 +352,8 @@ export default function InterviewLessonsPage() {
                 )}
 
                 <div className="flex flex-wrap gap-1.5">
-                  <MetaChip>
-                    {isLocked ? `${section.total} questions` : `${section.completed} / ${section.total} done`}
+                  <MetaChip className={isComplete ? "text-green-600 dark:text-green-400 border-green-300 dark:border-green-900/60" : ""}>
+                  {isLocked ? `${section.total} questions` : (<span className="inline-flex items-center gap-1"> {isComplete && <CheckCircle2 className="w-3 h-3" />}{section.completed} / {section.total} answered</span> )}
                   </MetaChip>
                   <MetaChip className={LEVEL_STYLE[section.level]}>{section.level}</MetaChip>
                 </div>

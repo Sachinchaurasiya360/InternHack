@@ -17,6 +17,7 @@ model roadmap {
   isPublished      Boolean             @default(false)
   isPremium        Boolean             @default(false)
   isAiGenerated    Boolean             @default(false)
+  isPubliclyShared Boolean             @default(false)
   topicCount       Int                 @default(0)
   outcomes         String[]            @default([])
   prerequisites    String[]            @default([])
@@ -84,25 +85,29 @@ model roadmapResource {
 
   @@index([topicId])
 }
-
 model roadmapEnrollment {
-  id              Int                    @id @default(autoincrement())
-  userId          Int
-  user            user                   @relation("UserRoadmapEnrollments", fields: [userId], references: [id], onDelete: Cascade)
-  roadmapId       Int
-  roadmap         roadmap                @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
-  hoursPerWeek    Int                    @default(8)
-  preferredDays   String[]               @default([])
-  startDate       DateTime               @default(now())
-  targetEndDate   DateTime
-  experienceLevel ExperienceLevel        @default(NEW)
-  goal            EnrollmentGoal         @default(JOB_READY)
-  status          EnrollmentStatus       @default(ACTIVE)
-  weeklyPlan      Json                   @default("[]")
-  pdfUrl          String?
-  topicProgress   roadmapTopicProgress[]
-  createdAt       DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
+  id                 Int                    @id @default(autoincrement())
+  userId             Int
+  user               user                   @relation("UserRoadmapEnrollments", fields: [userId], references: [id], onDelete: Cascade)
+  roadmapId          Int
+  roadmap            roadmap                @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  hoursPerWeek       Int                    @default(8)
+  preferredDays      String[]               @default([])
+  startDate          DateTime               @default(now())
+  targetEndDate      DateTime
+  experienceLevel    ExperienceLevel        @default(NEW)
+  goal               EnrollmentGoal         @default(JOB_READY)
+  status             EnrollmentStatus       @default(ACTIVE)
+  currentStreak      Int                    @default(0)
+  bestStreak         Int                    @default(0)
+  lastStreakDate     DateTime?
+  weeklyStreak       Int                    @default(0)
+  lastWeeklyStreakAt DateTime?
+  weeklyPlan         Json                   @default("[]")
+  pdfUrl             String?
+  topicProgress      roadmapTopicProgress[]
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
 
   @@unique([userId, roadmapId])
   @@index([userId])

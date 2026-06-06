@@ -279,6 +279,15 @@ export default function StudentProfilePage() {
     if (!form.name.trim() || form.name.trim().length < 2) {
       toast.error("Name must be at least 2 characters"); return;
     }
+    if (form.contactNo && form.contactNo.trim()) {
+      const normalizedPhone = form.contactNo.replace(/[\s-]/g, "");
+      if (!/^\+\d{11,13}$/.test(normalizedPhone)) {
+        toast.error("Phone must include country code (e.g. +91 9876543210)");
+        setFieldErrors((prev) => ({ ...prev, contactNo: ["Phone must include country code (e.g. +91 9876543210)"] }));
+        setOpenSections((prev) => ({ ...prev, basic: true }));
+        return;
+      }
+    }
     setFieldErrors({});
     setSaving(true);
     try {
@@ -426,7 +435,7 @@ export default function StudentProfilePage() {
   };
 
   const handleCopyProfileUrl = async () => {
-    const url = `${window.location.origin}/student/profile/public/${user?.id}`;
+    const url = `${window.location.origin}/student/profile/public/${user?.profileSlug ?? user?.id}`;
     try {
       await navigator.clipboard.writeText(url);
       setProfileUrlCopied(true);
@@ -716,8 +725,8 @@ export default function StudentProfilePage() {
           {/* Coding activity */}
           <motion.div custom={9} variants={fadeInUp} initial="hidden" animate="visible">
             <ContributionGraphs
-              githubUsername={form.githubUrl ? form.githubUrl.split("github.com/").pop()?.replace(/\/$/, "") : undefined}
-              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("leetcode.com/").pop()?.replace(/^\/?u\//, "").replace(/\/$/, "") : undefined}
+              githubUsername={form.githubUrl ? form.githubUrl.split("/").filter(Boolean).pop() : undefined}
+              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("/").filter(Boolean).pop() : undefined}
               showPrompts
             />
           </motion.div>

@@ -16,6 +16,19 @@ export class LeaveService {
     const employee = await prisma.employee.findUnique({ where: { id: employeeId } });
     if (!employee) throw new Error("Employee not found");
 
+    const start = new Date(data.startDate);
+    const end = new Date(data.endDate);
+    if (end < start) {
+      throw new Error("End date cannot be before start date");
+    }
+
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    if (data.totalDays <= 0 || data.totalDays > diffDays) {
+      throw new Error(`Invalid totalDays: ${data.totalDays}. It cannot exceed the calendar day difference of ${diffDays} days.`);
+    }
+
+
     // Check balance
     const year = new Date(data.startDate).getFullYear();
     const balance = await prisma.leaveBalance.findUnique({
@@ -253,10 +266,14 @@ export class LeaveService {
   }
 
   async createHoliday(data: { name: string; date: string; isOptional?: boolean | undefined; location?: string | null | undefined; year: number }) {
+    const holidayDate = new Date(data.date);
+    if (holidayDate.getFullYear() !== data.year) {
+      throw new Error(`Holiday date year (${holidayDate.getFullYear()}) does not match specified year (${data.year})`);
+    }
     return prisma.holiday.create({
       data: {
         name: data.name,
-        date: new Date(data.date),
+        date: holidayDate,
         isOptional: data.isOptional ?? false,
         location: data.location ?? null,
         year: data.year,

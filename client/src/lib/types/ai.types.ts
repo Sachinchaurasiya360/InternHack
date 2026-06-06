@@ -1,5 +1,11 @@
 export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL" | "CLAUDE";
-export type AIServiceType = "ATS_SCORE" | "COVER_LETTER" | "RESUME_GEN" | "LATEX_CHAT" | "EMAIL_CHAT";
+export type AIServiceType =
+  | "ATS_SCORE"
+  | "COVER_LETTER"
+  | "RESUME_GEN"
+  | "LATEX_CHAT"
+  | "EMAIL_CHAT"
+  | "AI_ROADMAP_GENERATION";
 
 export interface AIServiceConfig {
   id: number;

@@ -1,6 +1,12 @@
 import type { UserRole, User } from "./user.types";
 
-export type JobStatus = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
+export const JobStatus = {
+  DRAFT: "DRAFT",
+  PUBLISHED: "PUBLISHED",
+  CLOSED: "CLOSED",
+  ARCHIVED: "ARCHIVED",
+} as const;
+export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus];
 export type ApplicationStatus = "APPLIED" | "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED" | "WITHDRAWN";
 export type RoundStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
 export type FieldType = "TEXT" | "TEXTAREA" | "DROPDOWN" | "MULTI_SELECT" | "FILE_UPLOAD" | "BOOLEAN" | "NUMERIC" | "DATE" | "EMAIL" | "URL";
@@ -21,10 +27,18 @@ export interface CustomFieldDefinition {
   };
 }
 
+/** Scoring rubric for a single criterion within a hiring round */
 export interface EvaluationCriterion {
+  /** Unique identifier for this criterion entry */
   id: string;
+  /** Human-readable name of the criterion (e.g. "Communication Skills") */
   criterion: string;
+  /** Maximum possible score a candidate can receive for this criterion */
   maxScore: number;
+  /**
+   * Relative importance weight used to compute a weighted aggregate across criteria.
+   * When omitted all criteria are weighted equally.
+   */
   weight?: number;
 }
 

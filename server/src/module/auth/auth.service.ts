@@ -1,4 +1,4 @@
-﻿import crypto from "crypto";
+import crypto from "crypto";
 import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
@@ -12,6 +12,7 @@ const PROFILE_TTL = 300;
 
 const badgeService = new BadgeService();
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
+import { createUniqueProfileSlug } from "../../lib/slug.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
 import type { UserRole } from "@prisma/client";
@@ -169,6 +170,9 @@ export class AuthService {
       data: { verificationOtp: hashedOtp, otpExpiresAt },
     });
 
+    const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
+    (user as any).profileSlug = slug;
+
     // Send OTP email (fire-and-forget, don't block registration)
     sendEmail({
       to: user.email,
@@ -176,9 +180,7 @@ export class AuthService {
       html: otpEmailHtml(user.name, otp),
     }).catch((err) => console.error("Failed to send OTP email:", err));
 
-    const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: 0 });
-
-    return { user, token };
+    return { user: { ...user, profileSlug: slug } };
   }
 
   async googleAuth(data: GoogleAuthInput) {
@@ -277,7 +279,10 @@ export class AuthService {
         },
       });
 
-      // Send welcome email (fire-and-forget) â€” temporarily disabled
+      const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
+      user.profileSlug = slug;
+
+      // Send welcome email (fire-and-forget) – temporarily disabled
       // sendEmail({
       //   to: user.email,
       //   subject: "Welcome to InternHack!",
@@ -298,6 +303,7 @@ export class AuthService {
     return {
       user: {
         id: user.id,
+        profileSlug: user.profileSlug,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -338,7 +344,7 @@ export class AuthService {
 
       await prisma.user.update({
         where: { id: user.id },
-        data: { verificationOtp: hashedOtp, otpExpiresAt },
+        data: { verificationOtp: hashedOtp, otpExpiresAt, verificationAttempts: 0, verificationLockedUntil: null },
       });
 
       sendEmail({
@@ -363,6 +369,7 @@ export class AuthService {
     return {
       user: {
         id: user.id,
+        profileSlug: user.profileSlug,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -384,6 +391,7 @@ export class AuthService {
     name: true,
     email: true,
     role: true,
+    profileSlug: true,
     isVerified: true,
     contactNo: true,
     profilePic: true,
@@ -512,31 +520,44 @@ export class AuthService {
     // Bust cached profile so next GET /auth/me returns fresh data
     await cacheDel(`profile:me:${userId}`);
     await cacheDel(`profile:public:${userId}`);
+    if (user.profileSlug) {
+      await cacheDel(`profile:public:${user.profileSlug}`);
+    }
 
     return user;
   }
 
-  async getPublicProfile(userId: number) {
-    const cacheKey = `profile:public:${userId}`;
+  async getPublicProfile(identifier: string) {
+    const cacheKey = `profile:public:${identifier}`;
     const cached = await cacheGet(cacheKey);
     if (cached) return cached as never;
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId, role: "STUDENT", isProfilePublic: true },
-      select: {
-        ...this.profileSelect,
-        verifiedSkills: {
-          select: { skillName: true, score: true, verifiedAt: true },
-        },
-        atsScores: {
-          select: { overallScore: true },
-          orderBy: { overallScore: "desc" },
-          take: 1,
-        },
+    const selectOptions = {
+      ...this.profileSelect,
+      verifiedSkills: {
+        select: { skillName: true, score: true, verifiedAt: true },
       },
+      atsScores: {
+        select: { overallScore: true },
+        orderBy: { overallScore: "desc" as const },
+        take: 1,
+      },
+    };
+
+    let user: any;
+    user = await prisma.user.findUnique({
+      where: { profileSlug: identifier },
+      select: selectOptions,
     });
 
-    if (!user) {
+    if (!user && /^\d+$/.test(identifier)) {
+      user = await prisma.user.findUnique({
+        where: { id: Number(identifier) },
+        select: selectOptions,
+      });
+    }
+
+    if (!user || user.role !== "STUDENT" || !user.isProfilePublic) {
       throw new Error("User not found");
     }
 
@@ -559,6 +580,9 @@ export class AuthService {
   }
 
   async verifyEmail(email: string, otp: string) {
+    const MAX_VERIFICATION_ATTEMPTS = 5;
+    const LOCKOUT_DURATION_MS = 30 * 60 * 1000; // 30 minutes
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new Error("User not found");
@@ -566,6 +590,15 @@ export class AuthService {
 
     if (user.isVerified) {
       throw new Error("Email is already verified");
+    }
+
+    if (user.verificationLockedUntil && new Date() < user.verificationLockedUntil) {
+      const remainingMinutes = Math.ceil(
+        (user.verificationLockedUntil.getTime() - Date.now()) / 60000
+      );
+      throw new Error(
+        `Too many failed attempts. Please try again in ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`
+      );
     }
 
     if (!user.verificationOtp || !user.otpExpiresAt) {
@@ -578,7 +611,26 @@ export class AuthService {
 
     const isValid = await comparePassword(otp, user.verificationOtp);
     if (!isValid) {
-      throw new Error("Invalid verification code");
+      const updatedAttempts = user.verificationAttempts + 1;
+
+      if (updatedAttempts >= MAX_VERIFICATION_ATTEMPTS) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            verificationAttempts: updatedAttempts,
+            verificationLockedUntil: new Date(Date.now() + LOCKOUT_DURATION_MS),
+          },
+        });
+        throw new Error("Too many failed attempts. Account locked for 30 minutes for security");
+      }
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { verificationAttempts: updatedAttempts },
+      });
+
+      const attemptsRemaining = MAX_VERIFICATION_ATTEMPTS - updatedAttempts;
+      throw new Error(`Invalid verification code. ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? "s" : ""} remaining`);
     }
 
     const updated = await prisma.user.update({
@@ -587,9 +639,12 @@ export class AuthService {
         isVerified: true,
         verificationOtp: null,
         otpExpiresAt: null,
+        verificationAttempts: 0,
+        verificationLockedUntil: null,
       },
       select: {
         id: true,
+        profileSlug: true,
         name: true,
         email: true,
         role: true,
@@ -648,14 +703,16 @@ export class AuthService {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { verificationOtp: hashedOtp, otpExpiresAt },
+      data: { verificationOtp: hashedOtp, otpExpiresAt, verificationAttempts: 0, verificationLockedUntil: null },
     });
 
-    await sendEmail({
+    sendEmail({
       to: user.email,
       subject: "Verify your InternHack account",
       html: otpEmailHtml(user.name, otp),
-    });
+    }).catch((err) => console.error("Failed to send OTP email:", err));
+
+    return { message: "OTP sent successfully" };
   }
 
   async forgotPassword(email: string) {
@@ -669,9 +726,15 @@ export class AuthService {
     const hashedOtp = await hashPassword(otp);
     const resetOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
+    // Reset attempt counter and unlock on new OTP request
     await prisma.user.update({
       where: { id: user.id },
-      data: { resetPasswordOtp: hashedOtp, resetOtpExpiresAt },
+      data: {
+        resetPasswordOtp: hashedOtp,
+        resetOtpExpiresAt,
+        passwordResetAttempts: 0,
+        passwordResetLockedUntil: null,
+      },
     });
 
     await sendEmail({
@@ -682,9 +745,22 @@ export class AuthService {
   }
 
   async resetPassword(email: string, otp: string, newPassword: string) {
+    const MAX_RESET_ATTEMPTS = 3;
+    const LOCKOUT_DURATION_MS = 30 * 60 * 1000; // 30 minutes
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new Error("Invalid or expired reset code");
+    }
+
+    // Check if account is temporarily locked due to too many failed attempts
+    if (user.passwordResetLockedUntil && new Date() < user.passwordResetLockedUntil) {
+      const remainingMinutes = Math.ceil(
+        (user.passwordResetLockedUntil.getTime() - Date.now()) / 60000
+      );
+      throw new Error(
+        `Too many failed attempts. Please try again in ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`
+      );
     }
 
     if (!user.resetPasswordOtp || !user.resetOtpExpiresAt) {
@@ -697,17 +773,45 @@ export class AuthService {
 
     const isValid = await comparePassword(otp, user.resetPasswordOtp);
     if (!isValid) {
-      throw new Error("Invalid or expired reset code");
+      const updatedAttempts = user.passwordResetAttempts + 1;
+
+      // Lock account if max attempts exceeded
+      if (updatedAttempts >= MAX_RESET_ATTEMPTS) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            passwordResetAttempts: updatedAttempts,
+            passwordResetLockedUntil: new Date(Date.now() + LOCKOUT_DURATION_MS),
+          },
+        });
+        throw new Error(
+          `Too many failed attempts. Account locked for 30 minutes for security`
+        );
+      }
+
+      // Increment attempt counter
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordResetAttempts: updatedAttempts },
+      });
+
+      const attemptsRemaining = MAX_RESET_ATTEMPTS - updatedAttempts;
+      throw new Error(
+        `Invalid reset code. ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? "s" : ""} remaining`
+      );
     }
 
     const hashedPassword = await hashPassword(newPassword);
 
+    // Password reset successful - clear attempts and lockout
     await prisma.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,
         resetPasswordOtp: null,
         resetOtpExpiresAt: null,
+        passwordResetAttempts: 0,
+        passwordResetLockedUntil: null,
         tokenVersion: { increment: 1 },
       },
     });
@@ -827,6 +931,14 @@ export class AuthService {
       const now = Date.now();
       for (const [key, entry] of githubStatsCache) {
         if (entry.expiresAt <= now) githubStatsCache.delete(key);
+      }
+      while (githubStatsCache.size > 200) {
+        const oldestKey = githubStatsCache.keys().next().value;
+        if (oldestKey !== undefined) {
+          githubStatsCache.delete(oldestKey);
+        } else {
+          break;
+        }
       }
     }
 

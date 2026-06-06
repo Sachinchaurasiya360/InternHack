@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { gsocListQuerySchema, gsocSlugSchema } from "./gsoc.validation.js";
+import { cacheMiddleware } from "../../middleware/cache.middleware.js";
 
 export const gsocRouter = Router();
 
@@ -108,7 +109,7 @@ gsocRouter.get("/organizations/:slug/repos", async (req, res, next) => {
 });
 
 // Public: stats for filters
-gsocRouter.get("/stats", async (_req, res, next) => {
+gsocRouter.get("/stats", cacheMiddleware(3600, "gsoc:stats"), async (_req, res, next) => {
   try {
     const orgs = await prisma.gsocOrganization.findMany({
       select: {

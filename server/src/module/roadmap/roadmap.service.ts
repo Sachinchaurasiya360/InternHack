@@ -126,30 +126,29 @@ export async function listPublishedRoadmaps(opts: {
   search?: string | undefined;
   tag?: string | undefined;
   category?: string | undefined;
+  userId?: number | undefined;
 }) {
-  const where: Prisma.roadmapWhereInput = { isPublished: true, isAiGenerated: false };
+  // Build the visibility condition: public roadmaps + caller's own unpublished ones
+  const visibilityCondition: Prisma.roadmapWhereInput = opts.userId
+    ? { OR: [{ isPublished: true }, { isPublished: false, ownerUserId: opts.userId }] }
+    : { isPublished: true };
+
+  // Build additional AND filters
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
-    where.level = opts.level as
-      | "BEGINNER"
-      | "INTERMEDIATE"
-      | "ADVANCED"
-      | "ALL_LEVELS";
+    andConditions.push({
+      level: opts.level as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS",
+    });
   }
-  // if (opts.tag) {
-  //   andConditions.push({ tags: { has: opts.tag } });
-  // }
-  // if (opts.category) {
-  //   andConditions.push({ tags: { has: opts.category } });
-  // }
+
   const tagFilters: string[] = [];
   if (opts.tag) tagFilters.push(opts.tag);
   if (opts.category) tagFilters.push(opts.category);
-
   if (tagFilters.length > 0) {
     andConditions.push({ tags: { hasSome: tagFilters } });
   }
+
   if (opts.search) {
     const s = opts.search.trim();
     if (s) {
@@ -163,9 +162,10 @@ export async function listPublishedRoadmaps(opts: {
     }
   }
 
-  if (andConditions.length > 0) {
-    where.AND = andConditions;
-  }
+  const where: Prisma.roadmapWhereInput =
+    andConditions.length > 0
+      ? { AND: [visibilityCondition, ...andConditions] }
+      : visibilityCondition;
 
   const [roadmaps, total] = await Promise.all([
     prisma.roadmap.findMany({
@@ -186,6 +186,8 @@ export async function listPublishedRoadmaps(opts: {
         enrolledCount: true,
         tags: true,
         updatedAt: true,
+        isAiGenerated: true,
+        ownerUserId: true,
       },
     }),
     prisma.roadmap.count({ where }),
@@ -252,7 +254,9 @@ export async function enrollUser(args: {
   input: EnrollInput;
 }): Promise<EnrolledRoadmap> {
   const roadmap = await prisma.roadmap.findFirst({
-    where: { slug: args.roadmapSlug, isPublished: true },
+    where: { slug: args.roadmapSlug, 
+      OR: [{ isPublished: true }, { ownerUserId:args.userId }],
+     },
     include: {
       sections: {
         orderBy: { orderIndex: "asc" },
@@ -346,6 +350,30 @@ export async function getEnrollmentForUser(args: {
   return enrollment;
 }
 
+export async function getEnrollmentByRoadmapSlugForUser(args: {
+  userId: number;
+  slug: string;
+}) {
+  return prisma.roadmapEnrollment.findFirst({
+    where: {
+      userId: args.userId,
+      roadmap: {
+        slug: args.slug,
+      },
+    },
+    select: {
+      id: true,
+      status: true,
+      roadmap: {
+        select: {
+          id: true,
+          slug: true,
+        },
+      },
+    },
+  });
+}
+
 export async function deleteEnrollment(args: {
   userId: number;
   enrollmentId: number;
@@ -391,6 +419,38 @@ export async function listEnrollmentsForUser(userId: number) {
 }
 
 type TopicStatusValue = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
+
+async function updateEnrollmentStreak(enrollmentId: number) {
+  const completedTopics = await prisma.roadmapTopicProgress.findMany({
+    where: {
+      enrollmentId,
+      status: "COMPLETED",
+      completedAt: { not: null },
+    },
+    select: { completedAt: true },
+    orderBy: { completedAt: "asc" },
+  });
+
+  const completedDayKeys = getCompletedUtcDays(
+    completedTopics.map((topic) => ({
+      completedAt: topic.completedAt!,
+    })),
+  );
+
+  const { currentStreak, longestStreak } = calculateStreaks(completedDayKeys);
+  const lastCompletedAt = completedTopics.at(-1)?.completedAt ?? null;
+
+  await prisma.roadmapEnrollment.update({
+    where: { id: enrollmentId },
+    data: {
+      currentStreak,
+      bestStreak: longestStreak,
+      lastStreakDate: lastCompletedAt,
+      weeklyStreak: currentStreak >= 7 ? Math.floor(currentStreak / 7) : 0,
+      lastWeeklyStreakAt: currentStreak >= 7 ? lastCompletedAt : null,
+    },
+  });
+}
 
 export async function updateTopicProgress(args: {
   userId: number;
@@ -448,6 +508,10 @@ export async function updateTopicProgress(args: {
     update: data,
     create,
   });
+
+  if (args.status === "COMPLETED") {
+  await updateEnrollmentStreak(enrollment.id);
+}
 
   // Check if all topics are now complete
   let roadmapCompleted = false;

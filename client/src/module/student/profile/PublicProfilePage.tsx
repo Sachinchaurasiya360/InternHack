@@ -13,10 +13,12 @@ import { Button } from "../../../components/ui/button";
 import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import GitHubStatsCard from "./GitHubStatsCard";
+import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
 import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/types";
 
 interface PublicProfile {
   id: number;
+  profileSlug?: string | null;
   name: string;
   email: string;
   profilePic?: string;
@@ -76,13 +78,15 @@ function formatDate(dateStr: string) {
 }
 
 export default function PublicProfilePage() {
-  const { id } = useParams();
+  const { id, identifier } = useParams();
   const navigate = useNavigate();
 
+  const finalId = identifier || id;
+
   const { data: profile, isLoading, error } = useQuery({
-    queryKey: ["public-profile", id],
-    queryFn: () => api.get(`/auth/profile/${id}`).then((res) => res.data.profile as PublicProfile),
-    enabled: !!id,
+    queryKey: ["public-profile", finalId],
+    queryFn: () => api.get(`/auth/profile/${finalId}`).then((res) => res.data.profile as PublicProfile),
+    enabled: !!finalId,
   });
 
   if (isLoading) return <LoadingScreen />;
@@ -289,6 +293,11 @@ export default function PublicProfilePage() {
               />
             </motion.div>
           )}
+
+          {/* Open Source Contribution Heatmap */}
+          <motion.div custom={2.5} variants={fadeInUp} initial="hidden" animate="visible">
+            <OssContributionHeatmap compact studentId={profile.id} />
+          </motion.div>
 
           {/* Projects */}
           {profile.projects.length > 0 && (
