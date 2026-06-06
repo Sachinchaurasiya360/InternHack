@@ -137,7 +137,9 @@ export class RecruiterController {
       const jobId = parseInt(String(req.params["jobId"]), 10);
       if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
 
-      const filter = applicationFilterSchema.parse(req.query);
+      const parsed = applicationFilterSchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const filter = parsed.data;
       const data = await this.recruiterService.getApplications(jobId, req.user.id, filter);
       return res.status(200).json(data);
     } catch (error) {
