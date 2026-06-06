@@ -103,11 +103,17 @@ export default function ContributionsDashboardPage() {
               Welcome to your open-source command center. Monitor your pull requests, review roadmap progress, track achievements, and explore recommended codebases.
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button asChild variant="primary" className="bg-lime-400 text-stone-950 hover:bg-lime-300">
               <Link to="/student/opensource/github-analytics">
                 <Github className="w-4 h-4 mr-1.5" />
                 View GitHub Analytics
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" className="border-white/20 text-white hover:bg-white/5 bg-transparent border">
+              <Link to="/student/opensource/readiness">
+                <Sparkles className="w-4 h-4 mr-1.5" />
+                Internship Readiness Score
               </Link>
             </Button>
           </div>

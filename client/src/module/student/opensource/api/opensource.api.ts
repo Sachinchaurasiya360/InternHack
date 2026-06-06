@@ -93,3 +93,29 @@ export async function fetchGithubAnalytics(): Promise<GitHubAnalyticsResult> {
   const { data } = await api.get<GitHubAnalyticsResult>("/student/github-analytics");
   return data;
 }
+
+export interface InternshipReadinessResult {
+  readinessScore: number;
+  readinessRank: string;
+  categoryScores: {
+    resumeQuality: number;
+    githubPresence: number;
+    verifiedSkills: number;
+    openSourceContributions: number;
+  };
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: {
+    area: string;
+    text: string;
+    priority: "High" | "Medium" | "Low";
+  }[];
+  lastUpdated: string;
+}
+
+export async function fetchInternshipReadiness(forceRefresh = false): Promise<InternshipReadinessResult> {
+  const { data } = await api.get<InternshipReadinessResult>(
+    `/student/readiness${forceRefresh ? "?refresh=true" : ""}`
+  );
+  return data;
+}
