@@ -454,7 +454,7 @@ export class RecruiterService {
       });
 
       return this._updateApplicationStatus(tx, applicationId, "IN_PROGRESS", recruiterId, {
-        currentRoundId: nextRound.id,
+        currentRound: { connect: { id: nextRound.id } },
       });
     });
   }

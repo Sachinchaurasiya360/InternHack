@@ -196,7 +196,8 @@ model application {
   jobId              Int
   studentId          Int
   status             ApplicationStatus @default(APPLIED)
-  currentRoundId     Int?              @relation("ApplicationCurrentRound", fields: [currentRoundId], references: [id], onDelete: SetNull)
+  currentRoundId     Int?
+  currentRound       round?            @relation("ApplicationCurrentRound", fields: [currentRoundId], references: [id], onDelete: SetNull)
   customFieldAnswers Json              @default("{}")
   resumeUrl          String?
   coverLetter        String?
