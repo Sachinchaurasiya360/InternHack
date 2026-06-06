@@ -892,13 +892,64 @@ Return ONLY a JSON array, no markdown fences:
 
   async getUserDsaStreak(userId: number) {
     const today = new Date().toISOString().slice(0, 10);
-    const daily = await this.getDailyProblem(userId);
+
+    const submissions = await prisma.dsaSubmission.findMany({
+      where: { studentId: userId },
+      select: { createdAt: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const uniqueDays = new Set<string>();
+    for (const s of submissions) {
+      uniqueDays.add(s.createdAt.toISOString().slice(0, 10));
+    }
+
+    const sortedDays = Array.from(uniqueDays).sort().reverse();
+
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+
+    const todayDate = new Date(today);
+
+    for (const dayStr of sortedDays) {
+      const dayDate = new Date(dayStr + "T00:00:00Z");
+      const diffDays = Math.round(
+        (todayDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
+
+      if (diffDays === currentStreak) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    const allDays = [...uniqueDays].sort();
+    for (let i = 0; i < allDays.length; i++) {
+      if (i === 0) {
+        tempStreak = 1;
+      } else {
+        const prev = new Date(allDays[i - 1] + "T00:00:00Z");
+        const curr = new Date(allDays[i] + "T00:00:00Z");
+        const diff = Math.round(
+          (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        if (diff === 1) {
+          tempStreak++;
+        } else {
+          tempStreak = 1;
+        }
+      }
+      longestStreak = Math.max(longestStreak, tempStreak);
+    }
 
     return {
-      currentStreak: daily.solvedToday ? 1 : 0,
-      longestStreak: daily.solvedToday ? 1 : 0,
-      solvedToday: daily.solvedToday,
-      lastSolvedDate: daily.solvedToday ? today : null,
+      currentStreak,
+      longestStreak,
+      solvedToday: uniqueDays.has(today),
+      lastSolvedDate: sortedDays[0] || null,
+      activeDays: sortedDays.slice(0, 30),
     };
   }
 
