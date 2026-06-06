@@ -338,4 +338,22 @@ export class DsaController {
       next(err);
     }
   }
+
+  async generateHint(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      const { level } = req.body;
+      if (!["conceptual", "algorithmic", "code"].includes(level)) {
+        res.status(400).json({ message: "Invalid hint level. Must be: conceptual, algorithmic, or code" });
+        return;
+      }
+      const hint = await this.dsaService.generateHint(userId, problemId, level);
+      res.json(hint);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

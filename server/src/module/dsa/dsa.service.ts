@@ -902,6 +902,68 @@ Return ONLY a JSON array, no markdown fences:
     };
   }
 
+  private static HINT_TEMPLATES: Record<string, string[]> = {
+    conceptual: [
+      "Think about what data structure naturally maps to this problem. What operations are you performing on the input?",
+      "Consider the constraints — what is the expected time complexity? O(n), O(n log n), or O(n²)?",
+      "This problem can be reduced to a classic algorithm. Think about which one.",
+      "Try to express the problem in terms of simpler sub-problems. What would make the problem trivial?",
+      "What information do you need to track as you process the input? Can you use a hash map for O(1) lookups?",
+    ],
+    algorithmic: [
+      "Consider using the two-pointer technique — one fast, one slow — to traverse the input in a single pass.",
+      "A sliding window approach might work here. Expand the window when the condition holds, shrink it when it doesn't.",
+      "Try sorting the input first — many problems become straightforward once the data is ordered.",
+      "Think about using a monotonic stack to track the nearest greater/smaller element.",
+      "A binary search over the answer space could work if the problem has a monotonic property.",
+      "Consider using BFS for shortest-path problems or DFS when you need to explore all possibilities.",
+      "Use a prefix sum or running sum to avoid recalculating subarray totals repeatedly.",
+      "This can be solved with dynamic programming — define dp[i] as the optimal solution for the first i elements.",
+    ],
+    code: [
+      "Start by setting up your edge cases: empty input, single element, already sorted, etc.",
+      "Initialize your result variable and iterate through the input. Update the result as you go.",
+      "Use early termination — if you find the answer before processing all input, return immediately.",
+      "Consider using a min-heap or max-heap to keep track of the k largest/smallest elements.",
+      "For recursion, define your base case first, then the recursive step. Use memoization for overlapping subproblems.",
+      "Use a set to track visited elements and avoid duplicates. This is especially useful for graph/cycle detection.",
+      "If using binary search, remember to update left = mid + 1 and right = mid - 1, not left = mid.",
+      "For linked list problems, use a dummy head node to simplify edge cases involving the head.",
+    ],
+  };
+
+  async generateHint(userId: number, problemId: number, level: "conceptual" | "algorithmic" | "code") {
+    const problem = await prisma.dsaProblem.findUnique({
+      where: { id: problemId },
+      select: { id: true, title: true, tags: true, difficulty: true, hints: true },
+    });
+    if (!problem) throw new Error("Problem not found");
+
+    const templates = DsaService.HINT_TEMPLATES[level] ?? DsaService.HINT_TEMPLATES.conceptual;
+    const seed = problemId + level.charCodeAt(0) + (problem.tags[0]?.length ?? 0);
+    const idx = seed % templates.length;
+    const baseHint = templates[idx];
+
+    const tagContext = problem.tags.length > 0
+      ? ` This problem relates to: ${problem.tags.join(", ")}.`
+      : "";
+
+    const hint = `${baseHint}${tagContext} (level: ${level})`;
+
+    await prisma.usageLog.create({
+      data: { userId, action: "CODE_RUN" },
+    });
+
+    return {
+      hint,
+      level,
+      problemId,
+      problemTitle: problem.title,
+      difficulty: problem.difficulty,
+      hintIndex: idx,
+    };
+  }
+
   async getSimilarProblems(id: number, limit = 3) {
     const current = await prisma.dsaProblem.findUnique({
       where: { id },
