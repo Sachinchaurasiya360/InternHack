@@ -6,7 +6,7 @@ export const createOrderSchema = z.object({
 });
 
 export const verifyPaymentSchema = z.object({
-  razorpay_order_id: z.string().min(1, "razorpay_order_id is required"),
-  razorpay_payment_id: z.string().min(1, "razorpay_payment_id is required"),
-  razorpay_signature: z.string().min(1, "razorpay_signature is required"),
+  razorpay_order_id: z.string().min(1, "razorpay_order_id is required").max(255),
+  razorpay_payment_id: z.string().min(1, "razorpay_payment_id is required").max(255),
+  razorpay_signature: z.string().min(1, "razorpay_signature is required").max(512),
 });

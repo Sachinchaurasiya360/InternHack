@@ -15,6 +15,12 @@ export const compileLatexSchema = z.object({
     .min(10, "LaTeX source too short")
     .max(200000, "LaTeX source too large (200KB max)"),
   supportingFiles: z.array(supportingFileSchema).max(5).optional().default([]),
-});
+}).refine(
+  (data) => {
+    const filenames = (data.supportingFiles ?? []).map(f => f.filename);
+    return new Set(filenames).size === filenames.length;
+  },
+  { message: "Duplicate filenames in supporting files are not allowed", path: ["supportingFiles"] }
+);
 
 export type CompileLatexInput = z.infer<typeof compileLatexSchema>;

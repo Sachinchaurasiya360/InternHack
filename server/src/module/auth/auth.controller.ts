@@ -25,8 +25,7 @@ export class AuthController {
       }
 
       const data = await this.authService.register(result.data);
-      setTokenCookie(res, data.token);
-      return res.status(201).json({ message: "Registration successful", ...data });
+      return res.status(201).json({ message: "Registration successful. Please verify your email to continue.", user: data.user });
     } catch (error) {
       if (error instanceof Error && error.message === "Email already registered") {
         return res.status(409).json({ message: error.message });
