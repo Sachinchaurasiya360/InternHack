@@ -49,6 +49,7 @@ export class DsaController {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
       const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) return res.status(400).json({ message: "Invalid problem ID" });
       const result = await this.dsaService.toggleProblem(userId, problemId);
       res.json(result);
     } catch (err) {
@@ -61,6 +62,7 @@ export class DsaController {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
       const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) return res.status(400).json({ message: "Invalid problem ID" });
       const { notes } = req.body;
       const result = await this.dsaService.updateNotes(userId, problemId, notes ?? "");
       res.json(result);
@@ -74,6 +76,7 @@ export class DsaController {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
       const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) return res.status(400).json({ message: "Invalid problem ID" });
       const result = await this.dsaService.toggleBookmark(userId, problemId);
       res.json(result);
     } catch (err) {
