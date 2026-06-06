@@ -213,11 +213,11 @@ RESPONSE FORMAT:
       const worker = new Worker(workerUrl, {
         execArgv,
         workerData: {
-          buffer: buffer.buffer,
+          buffer: buffer.buffer as ArrayBuffer,
           byteOffset: buffer.byteOffset,
           byteLength: buffer.byteLength,
         },
-        transferList: [buffer.buffer],
+        transferList: [buffer.buffer as ArrayBuffer],
       });
 
       const timeout = setTimeout(() => {
