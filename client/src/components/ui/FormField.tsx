@@ -51,11 +51,11 @@ export const FormField = React.memo(function FormField({
   const childWithAttrs = React.Children.map(children, (child) => {
     if (React.isValidElement(child)) {
       const describedBy = [errorId, helperId].filter(Boolean).join(" ");
-      return React.cloneElement(child, {
+      return React.cloneElement(child as React.ReactElement<React.HTMLAttributes<HTMLElement>>, {
         id: fieldId,
         ...(describedBy && { "aria-describedby": describedBy }),
         ...(error && { "aria-invalid": "true" }),
-      } as any);
+      });
     }
     return child;
   });

@@ -62,7 +62,7 @@ export function PricingSection() {
       title: "Pro",
       desc: "Full access to all premium features",
       monthlyPrice: 249,
-      annuallyPrice: 2999,
+      annuallyPrice: 2499,
       priceSuffix: "",
       features: [
         { text: "Everything in Free plan", included: true },
@@ -258,37 +258,6 @@ className={cn(
                   </div>
                 </div>
 
-                {/* Button + billing note */}
-                <div className="px-6 md:px-8 pt-4 pb-2">
-                  <button
-                    onClick={plan.onAction}
-                    className={cn(
-                      "block w-full text-center py-3.5 px-6 rounded-xl text-sm font-semibold transition-all cursor-pointer border-0",
-                      plan.btnClass
-                    )}
-                  >
-                    {plan.buttonText}
-                  </button>
-                  {plan.id !== "free" && (
-                    <div className="h-7 overflow-hidden w-full">
-                      <AnimatePresence mode="wait">
-                        <motion.span
-                          key={billPlan}
-                          initial={{ y: 16, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          exit={{ y: -16, opacity: 0 }}
-                          transition={{ duration: 0.2, ease: "easeOut" }}
-                          className="text-xs text-center text-gray-400 dark:text-white/30 mt-2 block"
-                        >
-                          {billPlan === "monthly"
-                            ? "Billed monthly"
-                            : "Billed in one annual payment"}
-                        </motion.span>
-                      </AnimatePresence>
-                    </div>
-                  )}
-                </div>
-
                 {/* Features */}
                 <div className="px-6 md:px-8 pt-4 pb-8 flex-1">
                   <span className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wider mb-3 block">
@@ -318,6 +287,37 @@ className={cn(
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                {/* Button + billing note */}
+                <div className="px-6 md:px-8 pb-8 mt-auto">
+                  <button
+                    onClick={plan.onAction}
+                    className={cn(
+                      "block w-full text-center py-3.5 px-6 rounded-xl text-sm font-semibold transition-all cursor-pointer border-0",
+                      plan.btnClass
+                    )}
+                  >
+                    {plan.buttonText}
+                  </button>
+                  {plan.id !== "free" && (
+                    <div className="h-7 overflow-hidden w-full">
+                      <AnimatePresence mode="wait">
+                        <motion.span
+                          key={billPlan}
+                          initial={{ y: 16, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: -16, opacity: 0 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="text-xs text-center text-gray-400 dark:text-white/30 mt-2 block"
+                        >
+                          {billPlan === "monthly"
+                            ? "Billed monthly"
+                            : "Billed in one annual payment"}
+                        </motion.span>
+                      </AnimatePresence>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </motion.div>

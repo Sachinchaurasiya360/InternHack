@@ -51,6 +51,7 @@ export default function ExternalJobDetailPage() {
     },
     enabled: !!slug,
     retry: false,
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: similarJobs = [] } = useQuery({
@@ -71,6 +72,7 @@ export default function ExternalJobDetailPage() {
         .map((x) => x.job);
     },
     enabled: !!job,
+    staleTime: 10 * 60 * 1000,
   });
 
   useQuery({
@@ -81,6 +83,7 @@ export default function ExternalJobDetailPage() {
       return res.data;
     },
     enabled: !!job && isAuthenticated,
+    staleTime: 2 * 60 * 1000,
   });
 
   const applyMutation = useMutation({
@@ -122,8 +125,9 @@ export default function ExternalJobDetailPage() {
     );
   }
 
+  const now = Date.now(); // eslint-disable-line react-hooks/purity
   const daysLeft = job.expiresAt
-    ? Math.ceil((new Date(job.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    ? Math.ceil((new Date(job.expiresAt).getTime() - now) / (1000 * 60 * 60 * 24))
     : null;
 
   return (

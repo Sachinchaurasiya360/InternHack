@@ -3,6 +3,7 @@ import type { KeyboardEvent } from "react";
 import { MapPin, ChevronDown, X, Search } from "lucide-react";
 
 // ─── Popular job-search locations ────────────────────────────────────────────
+// eslint-disable-next-line react-refresh/only-export-components
 export const POPULAR_LOCATIONS: string[] = [
   "Remote",
   "Worldwide",
@@ -69,30 +70,17 @@ export function LocationDropdown({
     loc.toLowerCase().includes(query.trim().toLowerCase())
   ).slice(0, 10);
 
+  const [prevValue, setPrevValue] = useState(value);
+  const [prevOpen, setPrevOpen] = useState(open);
+
   // ── Sync external value → query when closed ────────────────────────────────
-  useEffect(() => {
-    if (!open) setQuery(value);
-  }, [value, open]);
-
-  // ── Close on outside click ─────────────────────────────────────────────────
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        commitSelection();
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Scroll active item into view ───────────────────────────────────────────
-  useEffect(() => {
-    if (activeIndex >= 0 && listRef.current) {
-      const item = listRef.current.children[activeIndex] as HTMLElement;
-      item?.scrollIntoView({ block: "nearest" });
+  if (value !== prevValue || open !== prevOpen) {
+    setPrevValue(value);
+    setPrevOpen(open);
+    if (!open) {
+      setQuery(value);
     }
-  }, [activeIndex]);
+  }
 
   const commitSelection = useCallback(() => {
     const trimmed = query.trim();
@@ -104,6 +92,26 @@ export function LocationDropdown({
     setQuery(final);
     onChange(final);
   }, [query, onChange]);
+
+  // ── Close on outside click ─────────────────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        commitSelection();
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [commitSelection]);
+
+  // ── Scroll active item into view ───────────────────────────────────────────
+  useEffect(() => {
+    if (activeIndex >= 0 && listRef.current) {
+      const item = listRef.current.children[activeIndex] as HTMLElement;
+      item?.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex]);
 
   const selectOption = (option: string) => {
     setQuery(option);

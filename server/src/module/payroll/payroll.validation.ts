@@ -28,4 +28,7 @@ export const contractorPaymentSchema = z.object({
   periodStart: z.string().datetime(),
   periodEnd: z.string().datetime(),
   invoiceUrl: z.string().url().optional(),
+}).refine((data) => new Date(data.periodStart) <= new Date(data.periodEnd), {
+  message: "Period end date must be after or equal to start date",
+  path: ["periodEnd"],
 });

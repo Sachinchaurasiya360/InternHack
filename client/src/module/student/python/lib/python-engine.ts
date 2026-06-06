@@ -12,16 +12,25 @@ export interface PyRunResult {
 const DEFAULT_TIMEOUT = 5000;
 const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.27.5/full/";
 
-let pyodidePromise: Promise<any> | null = null;
+type PyodideInstance = {
+  runPython: (code: string) => unknown;
+  runPythonAsync: (code: string) => Promise<unknown>;
+};
+
+type PyodideWindow = Window & {
+  loadPyodide?: (opts: { indexURL: string }) => Promise<PyodideInstance>;
+};
+
+let pyodidePromise: Promise<PyodideInstance> | null = null;
 let pyodideReady = false;
 
-function loadPyodide(): Promise<any> {
+function loadPyodide(): Promise<PyodideInstance> {
   if (pyodidePromise) return pyodidePromise;
 
-  pyodidePromise = new Promise(async (resolve, reject) => {
+  pyodidePromise = (async () => {
     try {
-      // Load the Pyodide script from CDN
-      if (!(window as any).loadPyodide) {
+      const win = window as PyodideWindow;
+      if (!win.loadPyodide) {
         const script = document.createElement("script");
         script.src = `${PYODIDE_CDN}pyodide.js`;
         script.async = true;
@@ -32,16 +41,16 @@ function loadPyodide(): Promise<any> {
         });
       }
 
-      const pyodide = await (window as any).loadPyodide({
+      const pyodide = await (window as PyodideWindow).loadPyodide!({
         indexURL: PYODIDE_CDN,
       });
       pyodideReady = true;
-      resolve(pyodide);
+      return pyodide;
     } catch (err) {
       pyodidePromise = null;
-      reject(err);
+      throw err;
     }
-  });
+  })();
 
   return pyodidePromise;
 }
@@ -89,8 +98,8 @@ sys.stderr = io.StringIO()
       ]);
 
       // Capture output
-      const stdout: string = pyodide.runPython("sys.stdout.getvalue()");
-      const stderr: string = pyodide.runPython("sys.stderr.getvalue()");
+      const stdout = String(pyodide.runPython("sys.stdout.getvalue()"));
+      const stderr = String(pyodide.runPython("sys.stderr.getvalue()"));
 
       if (stdout) {
         for (const line of stdout.split("\n")) {
@@ -113,7 +122,7 @@ sys.stderr = sys.__stderr__
         logs,
         timeMs: Math.round((performance.now() - start) * 100) / 100,
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Try to reset stdout/stderr on error
       try {
         const pyodide = await loadPyodide();
@@ -122,12 +131,12 @@ import sys
 sys.stdout = sys.__stdout__
 sys.stderr = sys.__stderr__
 `);
-      } catch {}
+      } catch { /* ignore reset failure */ }
 
       // Extract clean error message from Pyodide traceback
-      let message = err.message || String(err);
-      const tbMatch = message.match(/(?:^|\n)((?:Traceback|.*Error|.*Exception)[\s\S]*)/);
-      if (tbMatch) message = tbMatch[1].trim();
+      const rawMessage = err instanceof Error ? err.message : String(err);
+      const tbMatch = rawMessage.match(/(?:^|\n)((?:Traceback|.*Error|.*Exception)[\s\S]*)/);
+      const message = tbMatch ? tbMatch[1].trim() : rawMessage;
 
       return {
         logs,

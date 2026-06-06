@@ -29,9 +29,6 @@ adminRouter.get("/jobs", (req, res) => adminController.getAdminJobs(req, res));
 adminRouter.patch("/jobs/:id/status", (req, res) => adminController.updateAdminJobStatus(req, res));
 adminRouter.delete("/jobs/:id", (req, res) => adminController.deleteAdminJob(req, res));
 
-// Activity logs
-adminRouter.get("/activity-logs", (req, res) => adminController.getActivityLogs(req, res));
-
 // Error logs
 adminRouter.get("/error-logs", (req, res) => adminController.getErrorLogs(req, res));
 

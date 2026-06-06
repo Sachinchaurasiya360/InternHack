@@ -68,6 +68,15 @@ export class DepartmentService {
     const dept = await prisma.department.findUnique({ where: { id } });
     if (!dept) throw new Error("Department not found");
 
+    if (data.parentId !== undefined) {
+      if (data.parentId === id) throw new Error("A department cannot be its own parent");
+      if (data.parentId !== null) {
+        const parentDept = await prisma.department.findUnique({ where: { id: data.parentId } });
+        if (!parentDept) throw new Error("Parent department not found");
+        if (parentDept.parentId === id) throw new Error("Cyclic department dependency detected");
+      }
+    }
+
     const updateData: Record<string, unknown> = { ...data };
     if (data.name) updateData["slug"] = slugify(data.name);
 

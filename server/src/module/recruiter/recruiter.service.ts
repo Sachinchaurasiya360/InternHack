@@ -9,6 +9,24 @@ import {
 } from "../../utils/email-templates.js";
 import { createLogger } from "../../utils/logger.js";
 
+const S3_BUCKET = process.env["AWS_S3_BUCKET"] || "";
+// validating the URL
+function isValidS3Url(url: string) {
+  try {
+    const parsed = new URL(url);
+
+    if (!S3_BUCKET || parsed.protocol !== "https:") return false;
+
+    return (
+      parsed.hostname === `${S3_BUCKET}.s3.amazonaws.com` ||
+      (parsed.hostname.startsWith(`${S3_BUCKET}.s3.`) &&
+        parsed.hostname.endsWith(".amazonaws.com"))
+    );
+  } catch {
+    return false;
+  }
+}
+
 const logger = createLogger("recruiter.service");
 
 interface TalentSearchFilter {
@@ -46,10 +64,48 @@ interface ApplicationFilter {
   search?: string | undefined;
 }
 
+interface EvaluationCriterion {
+  id: string;
+  maxScore: number;
+}
 
+function getEvaluationCriteriaById(criteria: unknown): Map<string, EvaluationCriterion> {
+  if (!Array.isArray(criteria)) return new Map();
+
+  const criteriaById = new Map<string, EvaluationCriterion>();
+  for (const criterion of criteria) {
+    if (
+      typeof criterion === "object" &&
+      criterion !== null &&
+      "id" in criterion &&
+      "maxScore" in criterion &&
+      typeof criterion.id === "string" &&
+      typeof criterion.maxScore === "number"
+    ) {
+      criteriaById.set(criterion.id, { id: criterion.id, maxScore: criterion.maxScore });
+    }
+  }
+
+  return criteriaById;
+}
+
+function validateEvaluationScores(
+  evaluationScores: Record<string, { score: number; comment?: string | undefined }>,
+  evaluationCriteria: unknown,
+) {
+  const criteriaById = getEvaluationCriteriaById(evaluationCriteria);
+
+  for (const [criterionId, evaluation] of Object.entries(evaluationScores)) {
+    const criterion = criteriaById.get(criterionId);
+    if (criterion && evaluation.score > criterion.maxScore) {
+      throw new Error(`Evaluation score for ${criterionId} cannot exceed maxScore ${criterion.maxScore}`);
+    }
+  }
+}
 type UpdateRoundData = {
   [K in keyof CreateRoundData]?: CreateRoundData[K] | undefined;
 };
+
 export class RecruiterService {
   // ==================== ROUND MANAGEMENT ====================
 
@@ -57,6 +113,13 @@ export class RecruiterService {
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
+
+    const existing = await prisma.round.findFirst({
+      where: { jobId, name: data.name },
+    });
+    if (existing) {
+      throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { statusCode: 409 });
+    }
 
     return prisma.round.create({
       data: {
@@ -96,6 +159,15 @@ export class RecruiterService {
 
     const round = await prisma.round.findUnique({ where: { id: roundId } });
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
+
+    if (data.name !== undefined && data.name !== round.name) {
+      const existing = await prisma.round.findFirst({
+        where: { jobId, name: data.name, id: { not: roundId } },
+      });
+      if (existing) {
+        throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { statusCode: 409 });
+      }
+    }
 
     return prisma.round.update({
       where: { id: roundId },
@@ -145,6 +217,18 @@ export class RecruiterService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+    const existingRounds = await prisma.round.findMany({
+      where: {
+        id: { in: rounds.map((r) => r.roundId) },
+        jobId,
+      },
+      select: { id: true },
+    });
+
+    if (existingRounds.length !== rounds.length) {
+      throw new Error("Invalid round IDs");
+    }
+
     // Use a transaction with temporary high indices to avoid unique constraint conflicts
     await prisma.$transaction(async (tx) => {
       // First, set all to temporary high values
@@ -180,6 +264,8 @@ export class RecruiterService {
 
     if (filter.status) {
       where.status = filter.status as ApplicationStatus;
+    } else {
+      where.status = { not: "WITHDRAWN" };
     }
 
     if (filter.search) {
@@ -203,7 +289,8 @@ export class RecruiterService {
           student: { select: { id: true, name: true, email: true, profilePic: true, resumes: true } },
           roundSubmissions: {
             include: { round: { select: { id: true, name: true, orderIndex: true } } },
-            orderBy: { round: { orderIndex: "asc" } },
+            orderBy: { createdAt: "desc" },
+            take: 5,
           },
         },
       }),
@@ -217,7 +304,7 @@ export class RecruiterService {
       if (app.student) for (const u of app.student.resumes) allUrls.add(u);
     }
     const urlArr = [...allUrls];
-    const signedArr = await Promise.all(urlArr.map((u) => signUrl(u)));
+    const signedArr = await Promise.all(urlArr.map((u) => (isValidS3Url(u) ? signUrl(u) : Promise.resolve(u))),);
     const signedMap = new Map(urlArr.map((u, i) => [u, signedArr[i]!]));
 
     const signed = applications.map((app) => ({
@@ -257,9 +344,14 @@ export class RecruiterService {
 
     return {
       ...application,
-      resumeUrl: application.resumeUrl ? await signUrl(application.resumeUrl) : application.resumeUrl,
-      student: application.student
-        ? { ...application.student, resumes: await signUrls(application.student.resumes) }
+      resumeUrl: application.resumeUrl && isValidS3Url(application.resumeUrl) ? await signUrl(application.resumeUrl) : application.resumeUrl,
+      student: application.student ? {
+        ...application.student, resumes: await Promise.all(
+          application.student.resumes.map((u) =>
+            isValidS3Url(u) ? signUrl(u) : Promise.resolve(u),
+          ),
+        ),
+      }
         : application.student,
     };
   }
@@ -276,14 +368,17 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const previousStatus = application.status;
+    // Fix for #1111: Prevent duplicate status updates and emails
+    if (application.status === status) {
+      const { job: _job, student: _student, ...current } = application;
+      return current;
+    }
 
-    const updated = await prisma.application.update({
-      where: { id: applicationId },
-      data: { status },
+    const updated = await prisma.$transaction(async (tx) => {
+      return this._updateApplicationStatus(tx, applicationId, status, recruiterId);
     });
 
-    if (previousStatus !== status && isEmailableStatus(status) && application.student.email) {
+    if (isEmailableStatus(status) && application.student.email) {
       const clientUrl = process.env["CLIENT_URL"] || "https://www.internhack.xyz";
       const html = applicationStatusEmailHtml({
         studentName: application.student.name,
@@ -297,7 +392,7 @@ export class RecruiterService {
         subject: applicationStatusSubject(status, application.job.title),
         html,
       }).catch((err) => {
-        logger.error("Failed to send application status email", { applicationId, status, err });
+        logger.error("Failed to send application status email", err, { applicationId, status });
       });
     }
 
@@ -317,12 +412,18 @@ export class RecruiterService {
       if (!application) throw new Error("Application not found");
       if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+      if (application.status === "WITHDRAWN") {
+        throw new Error(
+          "Withdrawn applications cannot participate in the hiring process"
+        );
+      }
+
       const rounds = await tx.round.findMany({
         where: { jobId: application.jobId },
         orderBy: { orderIndex: "asc" },
       });
 
-      if (rounds.length === 0) throw new Error("No rounds defined for this job");
+      if (rounds.length === 0) throw new Error("No rounds are configured for this job. Please add at least one round before advancing applicants.");
 
       // Find current round index
       let currentIndex = -1;
@@ -333,13 +434,11 @@ export class RecruiterService {
       const nextIndex = currentIndex + 1;
       if (nextIndex >= rounds.length) {
         // All rounds completed
-        return tx.application.update({
-          where: { id: applicationId },
-          data: { status: "SHORTLISTED" },
-        });
+        return this._updateApplicationStatus(tx, applicationId, "SHORTLISTED", recruiterId);
       }
 
-      const nextRound = rounds[nextIndex]!;
+      const nextRound = rounds[nextIndex];
+      if (!nextRound) throw new Error("Round not found");
 
       // Create submission record for next round if not exists
       await tx.roundSubmission.upsert({
@@ -348,9 +447,8 @@ export class RecruiterService {
         create: { applicationId, roundId: nextRound.id, status: "IN_PROGRESS" },
       });
 
-      return tx.application.update({
-        where: { id: applicationId },
-        data: { currentRoundId: nextRound.id, status: "IN_PROGRESS" },
+      return this._updateApplicationStatus(tx, applicationId, "IN_PROGRESS", recruiterId, {
+        currentRoundId: nextRound.id,
       });
     });
   }
@@ -392,10 +490,34 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+// Fix for #1116: Gracefully catch malformed JSON data during evaluation
+    let parsedScores;
+    try {
+      parsedScores = JSON.parse(JSON.stringify(evaluationScores));
+    } catch (error) {
+      const err = new Error("Invalid JSON format in evaluation data");
+      (err as any).status = 422;
+      throw err;
+    }
+
+    if (application.status === "WITHDRAWN") {
+      throw new Error(
+        "Withdrawn applications cannot participate in the hiring process"
+      );
+    }
+    
+    // checking round ownership
+    const round = await prisma.round.findUnique({
+      where: { id: roundId },
+      select: { jobId: true, evaluationCriteria: true },
+    });
+
+    if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
+    validateEvaluationScores(parsedScores, round.evaluationCriteria);
     return prisma.roundSubmission.update({
       where: { applicationId_roundId: { applicationId, roundId } },
       data: {
-        evaluationScores: JSON.parse(JSON.stringify(evaluationScores)),
+        evaluationScores: parsedScores,
         recruiterNotes: recruiterNotes ?? null,
         evaluatedAt: new Date(),
         status: "COMPLETED",
@@ -462,43 +584,52 @@ export class RecruiterService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const [totalApplications, applicationsByStatus, rounds] = await Promise.all([
-      prisma.application.count({ where: { jobId } }),
-      prisma.application.groupBy({
-        by: ["status"],
-        where: { jobId },
-        _count: { id: true },
-      }),
-      prisma.round.findMany({
-        where: { jobId },
-        orderBy: { orderIndex: "asc" },
-        include: {
-          _count: { select: { roundSubmissions: true } },
-          roundSubmissions: {
-            select: { status: true },
+    const [totalApplications, applicationsByStatus, rounds, submissionsByRoundAndStatus] =
+      await Promise.all([
+        prisma.application.count({ where: { jobId } }),
+        prisma.application.groupBy({
+          by: ["status"],
+          where: { jobId },
+          _count: { id: true },
+        }),
+        prisma.round.findMany({
+          where: { jobId },
+          orderBy: { orderIndex: "asc" },
+          include: {
+            _count: { select: { roundSubmissions: true } },
           },
-        },
-      }),
-    ]);
+        }),
+        prisma.roundSubmission.groupBy({
+          by: ["roundId", "status"],
+          where: { round: { jobId } },
+          _count: { id: true },
+        }),
+      ]);
 
     const statusCounts: Record<string, number> = {};
     for (const s of applicationsByStatus) {
       statusCounts[s.status] = s._count.id;
     }
 
+    const submissionLookup = new Map(
+      submissionsByRoundAndStatus.map((s) => [
+        `${s.roundId}:${s.status}`,
+        s._count.id,
+      ]),
+    );
+
     const roundAnalytics = rounds.map((round) => {
-      const completed = round.roundSubmissions.filter((s) => s.status === "COMPLETED").length;
-      const inProgress = round.roundSubmissions.filter((s) => s.status === "IN_PROGRESS").length;
-      const pending = round.roundSubmissions.filter((s) => s.status === "PENDING").length;
+      const lookup = (status: string) =>
+        submissionLookup.get(`${round.id}:${status}`) ?? 0;
 
       return {
         id: round.id,
         name: round.name,
         orderIndex: round.orderIndex,
         totalSubmissions: round._count.roundSubmissions,
-        completed,
-        inProgress,
-        pending,
+        completed: lookup("COMPLETED"),
+        inProgress: lookup("IN_PROGRESS"),
+        pending: lookup("PENDING"),
       };
     });
 
@@ -598,7 +729,7 @@ export class RecruiterService {
     const allResumeUrls = new Set<string>();
     for (const s of students) for (const u of s.resumes) allResumeUrls.add(u);
     const resumeUrlArr = [...allResumeUrls];
-    const signedResumeArr = await Promise.all(resumeUrlArr.map((u) => signUrl(u)));
+    const signedResumeArr = await Promise.all(resumeUrlArr.map((u) => (isValidS3Url(u) ? signUrl(u) : Promise.resolve(u))),);
     const resumeSignedMap = new Map(resumeUrlArr.map((u, i) => [u, signedResumeArr[i]!]));
 
     const results = students.map((s) => ({
@@ -673,6 +804,18 @@ export class RecruiterService {
     const student = await prisma.user.findUnique({ where: { id: studentId } });
     if (!student || student.role !== "STUDENT") throw new Error("Student not found");
 
+    if (notes) {
+      const existing = await prisma.savedCandidate.findUnique({
+        where: { recruiterId_studentId: { recruiterId, studentId } },
+        select: { notes: true },
+      });
+
+      if (existing?.notes) {
+        const timestamp = new Date().toISOString();
+        notes = `${existing.notes}\n--- ${timestamp} ---\n${notes}`;
+      }
+    }
+
     return prisma.savedCandidate.upsert({
       where: { recruiterId_studentId: { recruiterId, studentId } },
       update: { notes: notes ?? null },
@@ -681,12 +824,40 @@ export class RecruiterService {
   }
 
   async unsaveCandidate(recruiterId: number, studentId: number) {
-    const existing = await prisma.savedCandidate.findUnique({
-      where: { recruiterId_studentId: { recruiterId, studentId } },
+    const { count } = await prisma.savedCandidate.deleteMany({
+      where: { recruiterId, studentId },
     });
-    if (!existing) return;
-    await prisma.savedCandidate.delete({
-      where: { recruiterId_studentId: { recruiterId, studentId } },
+    return count;
+  }
+  private async _updateApplicationStatus(
+    tx: Prisma.TransactionClient,
+    applicationId: number,
+    newStatus: ApplicationStatus,
+    recruiterId: number,
+    additionalData: Prisma.applicationUpdateInput = {}
+  ) {
+    const current = await tx.application.findUnique({
+      where: { id: applicationId },
+      select: { status: true },
+    });
+
+    if (!current) throw new Error("Application not found");
+
+    if (current.status !== newStatus) {
+      await tx.applicationStatusHistory.create({
+        data: {
+          applicationId,
+          fromStatus: current.status,
+          toStatus: newStatus,
+          changedBy: recruiterId,
+        },
+      });
+    }
+
+    return tx.application.update({
+      where: { id: applicationId },
+      data: { ...additionalData, status: newStatus },
     });
   }
 }
+

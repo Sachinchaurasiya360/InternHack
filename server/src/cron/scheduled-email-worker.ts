@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
 import { roadmapDay10EmailHtml } from "../utils/email-templates.js";
+import { withAdvisoryLock } from "../utils/cron-lock.js";
 
 let cronJob: cron.ScheduledTask | null = null;
 
@@ -59,14 +60,26 @@ async function drainScheduledEmails(): Promise<void> {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`[ScheduledEmail] Failed id=${row.id}:`, msg);
-      await prisma.scheduledEmail.update({
-        where: { id: row.id },
-        data: {
-          attempts: { increment: 1 },
-          lastError: msg.slice(0, 500),
-          failedAt: row.attempts + 1 >= MAX_ATTEMPTS ? new Date() : null,
-        },
-      });
+      const failureTime = new Date();
+      const nextAttempts = row.attempts + 1;
+      const isFailedMax = nextAttempts >= MAX_ATTEMPTS;
+
+      try {
+        await prisma.scheduledEmail.update({
+          where: { id: row.id },
+          data: {
+            attempts: { increment: 1 },
+            lastError: msg.slice(0, 500),
+            failedAt: isFailedMax ? failureTime : null,
+            // If not failed max, back off retry time; otherwise leave in future
+            sendAt: isFailedMax
+              ? row.sendAt
+              : new Date(failureTime.getTime() + nextAttempts * 5 * 60 * 1000), // linear backoff
+          },
+        });
+      } catch (dbErr) {
+        console.error(`[ScheduledEmail] Failed to write error state for id=${row.id}:`, dbErr);
+      }
     }
   }
 }
@@ -86,8 +99,7 @@ async function sendDay10(
   });
 
   if (!enrollment) {
-    console.warn(`[ScheduledEmail] Enrollment ${payload.enrollmentId} missing for scheduled ${scheduledId}, skipping`);
-    return;
+    throw new Error(`Enrollment ${payload.enrollmentId} missing for scheduled email ${scheduledId}`);
   }
 
   // Compute progress vs. planned topics for the first 10 days (week 1 + 2)
@@ -126,7 +138,18 @@ async function sendDay10(
 export function startScheduledEmailWorker(schedule = "*/5 * * * *"): void {
   if (cronJob) return;
   cronJob = cron.schedule(schedule, () => {
-    void drainScheduledEmails();
+    void withAdvisoryLock("scheduled-email-worker", async () => {
+      await drainScheduledEmails();
+    });
   });
   console.log(`[ScheduledEmail] Worker scheduled with cadence "${schedule}"`);
+}
+
+/** Stop the scheduled-email worker (used during graceful shutdown). */
+export function stopScheduledEmailWorker(): void {
+  if (cronJob) {
+    cronJob.stop();
+    cronJob = null;
+    console.log("[ScheduledEmail] Worker stopped");
+  }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 
+ 
 export interface StepPlayer<T> {
   current: T | undefined;
   index: number;
@@ -15,18 +16,21 @@ export interface StepPlayer<T> {
   setIndex: (i: number) => void;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useStepPlayer<T>(frames: T[], speedMs = 700): StepPlayer<T> {
   const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const total = frames.length;
   const framesRef = useRef(frames);
-  framesRef.current = frames;
+  useEffect(() => { framesRef.current = frames; });
 
   // Reset when frames change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIndex(0);
+     
     setIsPlaying(false);
-  }, [frames]);
+  }, [frames.length]);
 
   useEffect(() => {
     if (!isPlaying) return;

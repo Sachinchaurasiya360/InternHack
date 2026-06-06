@@ -1,5 +1,8 @@
-import { prisma } from "../../database/db.js";
+﻿import { prisma } from "../../database/db.js";
 import { jobIndexService } from "../job-index/job-index.service.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+
+const prefKey = (id: number) => `job-pref:${id}`;
 
 export class JobFeedService {
   async getFeed(userId: number, page = 1, limit = 10) {
@@ -99,7 +102,12 @@ export class JobFeedService {
   }
 
   async getPreferences(userId: number) {
-    return prisma.userJobPreference.findUnique({ where: { userId } });
+    const cached = await cacheGet(prefKey(userId));
+    if (cached) return cached as never;
+
+    const pref = await prisma.userJobPreference.findUnique({ where: { userId } });
+    await cacheSet(prefKey(userId), pref, 3600);
+    return pref;
   }
 
   async updatePreferences(
@@ -123,6 +131,7 @@ export class JobFeedService {
     // Re-generate embedding asynchronously
     jobIndexService.generateUserEmbedding(userId).catch(() => {});
 
+    await cacheDel(prefKey(userId));
     return pref;
   }
 
@@ -137,3 +146,4 @@ export class JobFeedService {
 }
 
 export const jobFeedService = new JobFeedService();
+

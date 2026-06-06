@@ -1,4 +1,5 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import { createRateLimitStore } from "../utils/rate-limit-store.js";
 
 // Rate limiting for AI roadmap generation to prevent abuse and API quota drains
 export const aiRoadmapLimiter = rateLimit({
@@ -6,6 +7,7 @@ export const aiRoadmapLimiter = rateLimit({
   max: 5, // Limit each IP or User to 5 requests per window
   standardHeaders: true,
   legacyHeaders: false,
+  store: createRateLimitStore("ai-roadmap"),
   keyGenerator: (req) => {
     // Prefer user ID if authenticated, fallback to IP
     const defaultIp = req.ip || "unknown_ip";
@@ -13,9 +15,23 @@ export const aiRoadmapLimiter = rateLimit({
     if (user && user.id) {
       return `user_${user.id}`;
     }
-    return defaultIp;
+     return ipKeyGenerator(req.ip || "unknown_ip");
   },
   message: { 
     message: "Too many AI roadmap generation requests. Please try again later."
+  },
+});
+
+export const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRateLimitStore("contact"),
+  keyGenerator: (req) => {
+    return req.ip || "unknown_ip";
+  },
+  message: {
+    message: "Too many contact submissions. Please try again later."
   },
 });

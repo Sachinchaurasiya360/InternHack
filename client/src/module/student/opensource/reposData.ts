@@ -23,6 +23,7 @@ export const SORT_OPTIONS = [
   { key: "stars", label: "Most Stars", order: "desc" },
   { key: "forks", label: "Most Forks", order: "desc" },
   { key: "openIssues", label: "Most Open Issues", order: "desc" },
+  { key: "createdAt", label: "Newest", order: "desc" },
   { key: "lastUpdated", label: "Recently Updated", order: "desc" },
   { key: "name", label: "Name A–Z", order: "asc" },
 ] as const;
@@ -41,3 +42,4 @@ export const LANGUAGE_COLORS: Record<string, string> = {
   Dart: "#00B4AB",
 };
 
+export const LANGUAGE_OPTIONS = ["ALL", ...Object.keys(LANGUAGE_COLORS)] as const;
