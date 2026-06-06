@@ -437,10 +437,6 @@ export default function RoadmapCanvasPage() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
-  }, []);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const graphOffsetsRef = useRef(new Map<number, { x: number; y: number }>());
