@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const questionIdSchema = z.string().trim().min(1).max(160);
+const questionIdSchema = z.string().trim().min(1).max(160).regex(/^[a-zA-Z0-9-]+$/, "Question ID must be alphanumeric with dashes only");
 const idArraySchema = z.array(questionIdSchema).max(1000);
 
 export const interviewProgressActionSchema = z.object({
