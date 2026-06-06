@@ -428,7 +428,7 @@ function EmptyState({
   return (
     <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-6 py-16 text-center">
       <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4">
-        <Briefcase className="w-4 h-4 text-stone-400" />
+        <Briefcase className="w-4 h-4 text-stone-400" aria-hidden="true" />
       </div>
       <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">{title}</h3>
       <p className="text-sm text-stone-500 max-w-sm mx-auto mb-5">{message}</p>
