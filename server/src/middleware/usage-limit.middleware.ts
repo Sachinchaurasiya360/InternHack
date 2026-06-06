@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import type { UsageAction } from "@prisma/client";
+import { Prisma, PrismaClientKnownRequestError, type UsageAction } from "@prisma/client";
 import { prisma } from "../database/db.js";
 import { DAILY_LIMITS, getPlanTier } from "../config/usage-limits.js";
 
@@ -10,46 +10,68 @@ export function usageLimit(action: UsageAction) {
       return;
     }
 
+    const userId = req.user.id;
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
     try {
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
+      // Serializable transaction prevents TOCTOU race: concurrent requests that
+      // race through the count→insert path will cause one to get a P2034
+      // serialization failure rather than both slipping past the daily cap.
+      type TxResult =
+        | { ok: true; used: number; limit: number; tier: string }
+        | { ok: false; reason: "user_missing" | "limit_reached"; used: number; limit: number; tier: string };
 
-      // Run both DB calls in parallel - they are fully independent.
-      const [user, used] = await Promise.all([
-        prisma.user.findUnique({
-          where: { id: req.user.id },
-          select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
-        }),
-        prisma.usageLog.count({
-          where: {
-            userId: req.user.id,
-            action,
-            createdAt: { gte: startOfDay },
-          },
-        }),
-      ]);
+      const result: TxResult = await prisma.$transaction(
+        async (tx: Prisma.TransactionClient) => {
+          const [user, used] = await Promise.all([
+            tx.user.findUnique({
+              where: { id: userId },
+              select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
+            }),
+            tx.usageLog.count({
+              where: { userId, action, createdAt: { gte: startOfDay } },
+            }),
+          ]);
 
-      if (!user) {
-        res.status(401).json({ message: "User not found" });
-        return;
-      }
+          if (!user) return { ok: false, reason: "user_missing", used: 0, limit: 0, tier: "FREE" } as const;
 
-      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
-      const limit = DAILY_LIMITS[action][tier];
+          const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
+          const limit = DAILY_LIMITS[action][tier];
 
-      if (used >= limit) {
+          if (used >= limit) return { ok: false, reason: "limit_reached", used, limit, tier } as const;
+
+          await tx.usageLog.create({ data: { userId, action } });
+          return { ok: true, used, limit, tier } as const;
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      );
+
+      if (!result.ok) {
+        if (result.reason === "user_missing") {
+          res.status(401).json({ message: "User not found" });
+          return;
+        }
         res.status(429).json({
-          message: tier === "FREE"
+          message: result.tier === "FREE"
             ? "Daily limit reached. Upgrade to Premium for higher limits."
             : "Daily limit reached. Try again tomorrow.",
-          usage: { used, limit, action, tier },
+          usage: { used: result.used, limit: result.limit, action, tier: result.tier },
         });
         return;
       }
 
-      (req as any).usageInfo = { used, limit, action, tier };
+      (req as any).usageInfo = { used: result.used, limit: result.limit, action, tier: result.tier };
       next();
     } catch (err) {
+      if (err instanceof PrismaClientKnownRequestError && err.code === "P2034") {
+        // Serialization failure from a concurrent request hitting the same limit window.
+        res.status(429).json({
+          message: "Too many concurrent requests. Please try again in a moment.",
+          usage: { action },
+        });
+        return;
+      }
       next(err);
     }
   };
