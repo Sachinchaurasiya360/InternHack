@@ -43,6 +43,7 @@ import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 import { useCoachStore } from "./stores/coach.store";
+import { markLearningPathMilestone } from "./learning-paths.data";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -99,6 +100,10 @@ const SKILL_LANGUAGE_MAP: Record<string, string[]> = {
 };
 
 export default function RepoDiscoveryPage() {
+  useEffect(() => {
+    markLearningPathMilestone("repo-discovery");
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
@@ -351,7 +356,7 @@ export default function RepoDiscoveryPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
+  const repos = data?.repos ?? [];
   const pagination = data?.pagination;
 
   const displayedRepos = useMemo(() => {

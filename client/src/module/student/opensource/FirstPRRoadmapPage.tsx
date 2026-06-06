@@ -14,6 +14,8 @@ import {
 import guideData from "./data/open-source-guide.json";
 import { useAuthStore } from "../../../lib/auth.store";
 import { useCoachStore } from "./stores/coach.store";
+import { notifyLearningPathProgressChanged } from "./learning-paths.data";
+import { NextInPathCard } from "./components/NextInPathCard";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -84,15 +86,18 @@ export default function FirstPRRoadmapPage() {
         });
       }
 
-      void patchFirstPRProgress(id, nextCompleted).catch(() => {
-        setCompleted((prev) => {
-          const rolledBack = new Set(prev);
-          if (isCurrentlyCompleted) rolledBack.add(id);
-          else rolledBack.delete(id);
-          return rolledBack;
+      void patchFirstPRProgress(id, nextCompleted)
+        .then(() => notifyLearningPathProgressChanged())
+        .catch(() => {
+          setCompleted((prev) => {
+            const rolledBack = new Set(prev);
+            if (isCurrentlyCompleted) rolledBack.add(id);
+            else rolledBack.delete(id);
+            return rolledBack;
+          });
+          notifyLearningPathProgressChanged();
+          toast.error("Failed to update progress. Please try again.");
         });
-        toast.error("Failed to update progress. Please try again.");
-      });
     },
     [completed],
   );
@@ -309,7 +314,9 @@ export default function FirstPRRoadmapPage() {
           const toReset = Array.from(completed);
           setCompleted(new Set());
           toReset.forEach((id) => {
-            void patchFirstPRProgress(id, false).catch(() => {});
+            void patchFirstPRProgress(id, false)
+              .then(() => notifyLearningPathProgressChanged())
+              .catch(() => {});
           });
         }}
       />
@@ -414,6 +421,8 @@ export default function FirstPRRoadmapPage() {
           );
         })}
       </div>
+
+      <NextInPathCard currentSlug="first-pr" completed={allDone} />
     </div>
   );
 }
