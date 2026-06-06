@@ -83,9 +83,10 @@ export const useCoachStore = create<CoachState>((set, get) => ({
       const { fetchCoachSuggestion } = await import("../api/coach.api");
       const result = await fetchCoachSuggestion(payload);
       setAdvice(result);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[coach] fetch failed:", err);
-      const msg = err.response?.data?.message || "Failed to get coaching advice. Please check your connection.";
+      const e = err as { response?: { data?: { message?: string } } };
+      const msg = e?.response?.data?.message || "Failed to get coaching advice. Please check your connection.";
       setError(msg);
     } finally {
       setLoading(false);

@@ -307,7 +307,7 @@ export default function MyApplicationsPage() {
       );
 
     if (statusFilter !== "ALL") {
-      base = base.filter((a: any) => a.status === statusFilter); // external applications don't have status, so this will empty them unless we add dummy status or handle it
+      base = []; // external applications don't have status, so they're hidden when filtering
     }
 
     return [...base].sort((a, b) => {
