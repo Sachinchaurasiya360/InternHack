@@ -52,9 +52,9 @@ export const listQuerySchema = z.object({
   // limit: z.coerce.number().int().min(1).max(50).default(20),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "ALL_LEVELS"]).optional(),
-  search: z.string().optional(),
-  tag: z.string().optional(),
-  category: z.string().optional(),
+  search: z.string().max(200).optional(),
+  tag: z.string().max(100).optional(),
+  category: z.string().max(100).optional(),
 });
 
 export const aiGenerateSchema = z.object({
