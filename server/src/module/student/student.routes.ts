@@ -4,6 +4,7 @@ import githubAnalyticsRouter from "./github-analytics.routes.js";
 import readinessRouter from "./readiness.routes.js";
 import hiringSignalRouter from "./hiring-signal.routes.js";
 import growthRouter from "./growth.routes.js";
+import coachRouter from "./coach.routes.js";
 import { StudentController } from "./student.controller.js";
 import { StudentService } from "./student.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
@@ -27,6 +28,8 @@ studentRouter.use('/readiness', readinessRouter);
 studentRouter.use('/hiring-signal', hiringSignalRouter);
 // Developer Growth Dashboard
 studentRouter.use('/growth', growthRouter);
+// AI Open Source Coach
+studentRouter.use('/coach', coachRouter);
 
 // Applications
 studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, res, next) => studentController.applyToJob(req, res, next));

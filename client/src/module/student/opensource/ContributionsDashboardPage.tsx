@@ -130,6 +130,12 @@ export default function ContributionsDashboardPage() {
                 Developer Growth
               </Link>
             </Button>
+            <Button asChild variant="secondary" className="border-white/20 text-white hover:bg-white/5 bg-transparent border">
+              <Link to="/student/opensource/coach">
+                <BookOpen className="w-4 h-4 mr-1.5" />
+                AI Open Source Coach
+              </Link>
+            </Button>
           </div>
         </div>
       </motion.div>

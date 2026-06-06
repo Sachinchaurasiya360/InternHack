@@ -165,3 +165,46 @@ export async function fetchDeveloperGrowth(forceRefresh = false): Promise<Develo
   );
   return data;
 }
+
+export interface CoachRecommendation {
+  repoId: number;
+  name: string;
+  owner: string;
+  url: string;
+  description: string;
+  language: string;
+  difficulty: string;
+  stars: number;
+  matchPercentage: number;
+  matchReason: string;
+  starterIssueAreas: string[];
+}
+
+export interface CoachRoadmap {
+  repoName: string;
+  repoUrl: string;
+  steps: { title: string; description: string; resources: string[] }[];
+  prChecklist: string[];
+}
+
+export interface CoachFeedback {
+  strengths: string[];
+  issues: string[];
+  improvedCode?: string;
+  suggestions: string[];
+}
+
+export async function fetchCoachRecommendations(): Promise<CoachRecommendation[]> {
+  const { data } = await api.get<CoachRecommendation[]>("/student/coach/recommendations");
+  return data;
+}
+
+export async function generateCoachRoadmap(repoId: number): Promise<CoachRoadmap> {
+  const { data } = await api.post<CoachRoadmap>("/student/coach/roadmap", { repoId });
+  return data;
+}
+
+export async function fetchCoachFeedback(repoId: number, codePatch: string): Promise<CoachFeedback> {
+  const { data } = await api.post<CoachFeedback>("/student/coach/feedback", { repoId, codePatch });
+  return data;
+}
