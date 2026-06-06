@@ -182,6 +182,7 @@ model round {
   activateAt          DateTime?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  isArchived          Boolean           @default(false)
   job                 job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   roundSubmissions    roundSubmission[]
 

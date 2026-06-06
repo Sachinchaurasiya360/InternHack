@@ -144,7 +144,7 @@ export class RecruiterService {
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
     return prisma.round.findMany({
-      where: { jobId },
+      where: { jobId, isArchived: false },
       orderBy: { orderIndex: "asc" },
       include: {
         _count: { select: { roundSubmissions: true } },
@@ -193,11 +193,17 @@ export class RecruiterService {
     const round = await prisma.round.findUnique({ where: { id: roundId } });
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
 
-    await prisma.round.delete({ where: { id: roundId } });
+    await prisma.round.update({
+      where: { id: roundId },
+      data: {
+        isArchived: true,
+        orderIndex: -roundId,
+      },
+    });
 
-    // Re-index remaining rounds
+    // Re-index remaining active rounds
     const remainingRounds = await prisma.round.findMany({
-      where: { jobId },
+      where: { jobId, isArchived: false },
       orderBy: { orderIndex: "asc" },
     });
 
@@ -419,7 +425,7 @@ export class RecruiterService {
       }
 
       const rounds = await tx.round.findMany({
-        where: { jobId: application.jobId },
+        where: { jobId: application.jobId, isArchived: false },
         orderBy: { orderIndex: "asc" },
       });
 
