@@ -12,9 +12,12 @@ export const createReviewSchema = z.object({
     weight: z.number().min(0).max(100).optional(),
   })).default([]),
 }).refine((data) => {
-  const sum = data.goals.reduce((acc, g) => acc + (g.weight ?? 0), 0);
+  const sum = data.goals.reduce((acc, curr) => acc + (curr.weight ?? 0), 0);
   return sum <= 100;
-}, { message: "Sum of goal weights must not exceed 100%" });
+}, {
+  message: "Total goals weight cannot exceed 100%",
+  path: ["goals"],
+});
 
 export const updateReviewSchema = z.object({
   selfRating: z.number().min(1).max(5).optional(),
