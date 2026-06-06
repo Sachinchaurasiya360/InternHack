@@ -6,6 +6,7 @@ import {
   submitRepoRequestSchema,
   approveRequestOverrideSchema,
   repoIdSchema,
+  repoOwnerNameSchema,
   firstPrProgressUpdateSchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
@@ -66,6 +67,46 @@ export class OpensourceController {
         return;
       }
       res.json({ repo });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getRepoByOwnerAndName(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = repoOwnerNameSchema.safeParse(req.params);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Invalid owner/name parameters" });
+        return;
+      }
+      const { owner, name } = parsed.data;
+      const repo = await service.getRepoByOwnerAndName(owner, name);
+      if (!repo) {
+        res.status(404).json({ message: "Repository not found" });
+        return;
+      }
+      res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=3600");
+      res.json({ repo });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getRepoGoodFirstIssues(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = repoOwnerNameSchema.safeParse(req.params);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Invalid owner/name parameters" });
+        return;
+      }
+      const { owner, name } = parsed.data;
+      const result = await service.getGoodFirstIssues(owner, name);
+      if (!result) {
+        res.status(404).json({ message: "Repository not found" });
+        return;
+      }
+      res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=1800");
+      res.json({ issues: result.issues });
     } catch (err) {
       next(err);
     }

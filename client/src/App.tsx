@@ -40,6 +40,7 @@ const CompanyDetailPage = lazyWithRetry(() => import("./module/student/companies
 const PublicAtsPage = lazyWithRetry(() => import("./module/student/ats/PublicAtsPage"));
 const GrantsPage = lazyWithRetry(() => import("./module/student/grants/GrantsPage"));
 const PublicOpenSourcePage = lazyWithRetry(() => import("./module/student/opensource/PublicOpenSourcePage"));
+const RepoPublicPage = lazyWithRetry(() => import("./module/student/opensource/RepoPublicPage"));
 const BlogListPage = lazyWithRetry(() => import("./module/blog/BlogListPage"));
 const BlogPostPage = lazyWithRetry(() => import("./module/blog/BlogPostPage"));
 const RecruiterLandingPage = lazyWithRetry(() => import("./module/recruiter/RecruiterLandingPage"));
@@ -344,6 +345,7 @@ function App() {
           <Route path="/recruiter/login" element={<Navigate to="/login?role=RECRUITER" replace />} />
           <Route path="/recruiter/register" element={<Navigate to="/register?role=RECRUITER" replace />} />
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
+          <Route path="/opensource/:owner/:name" element={<RepoPublicPage />} />
           {/* Roadmaps (public + auth) */}
           <Route path="/roadmaps" element={<RoadmapsLandingPage />} />
           <Route path="/roadmaps/:slug" element={<RoadmapDetailPage />} />
