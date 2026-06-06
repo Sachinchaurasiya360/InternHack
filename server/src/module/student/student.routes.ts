@@ -1,5 +1,6 @@
 import { Router } from "express";
 import contributionsRouter from "./contributions.routes.js";
+import githubAnalyticsRouter from "./github-analytics.routes.js";
 import { StudentController } from "./student.controller.js";
 import { StudentService } from "./student.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
@@ -15,6 +16,8 @@ export const studentRouter = Router();
 studentRouter.use(authMiddleware, requireRole("STUDENT"));
 // Open Source Contributions Dashboard
 studentRouter.use('/open-source/contributions', contributionsRouter);
+// GitHub Career Analytics
+studentRouter.use('/github-analytics', githubAnalyticsRouter);
 
 // Applications
 studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, res, next) => studentController.applyToJob(req, res, next));

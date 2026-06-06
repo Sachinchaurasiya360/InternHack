@@ -75,3 +75,21 @@ export async function fetchContributionsDashboard(): Promise<ContributionsDashbo
   const { data } = await api.get<ContributionsDashboardResponse>("/student/open-source/contributions");
   return data;
 }
+
+export interface GitHubAnalyticsResult {
+  developerScore: number;
+  developerRank: string;
+  projectDiversityScore: number;
+  documentationQualityScore: number;
+  repositoryActivityScore: number;
+  techStackBreakdown: { name: string; percentage: number }[];
+  recommendations: string[];
+  totalStars: number;
+  totalForks: number;
+  publicRepos: number;
+}
+
+export async function fetchGithubAnalytics(): Promise<GitHubAnalyticsResult> {
+  const { data } = await api.get<GitHubAnalyticsResult>("/student/github-analytics");
+  return data;
+}

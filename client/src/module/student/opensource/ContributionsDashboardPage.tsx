@@ -1,7 +1,3 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router";
-import { motion } from "framer-motion";
 import {
   GitPullRequest,
   GitMerge,
@@ -14,6 +10,7 @@ import {
   BookOpen,
   Sparkles,
   Heart,
+  Github,
 } from "lucide-react";
 import { fetchContributionsDashboard } from "./api/opensource.api";
 import { queryKeys } from "../../../lib/query-keys";
@@ -93,17 +90,27 @@ export default function ContributionsDashboardPage() {
         className="relative rounded-2xl overflow-hidden border border-stone-200 dark:border-white/10 bg-linear-to-br from-stone-900 via-stone-950 to-stone-900 p-8 shadow-xl text-white"
       >
         <div className="absolute top-0 right-0 w-80 h-80 bg-lime-400/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-lime-400/10 text-lime-400 border border-lime-400/20 text-xs font-mono uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            Open Source Track
+        <div className="relative z-10 max-w-2xl space-y-4">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-lime-400/10 text-lime-400 border border-lime-400/20 text-xs font-mono uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
+              Open Source Track
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              Open Source <span className="text-lime-400">Contributions</span>
+            </h1>
+            <p className="text-sm sm:text-base text-stone-400 leading-relaxed">
+              Welcome to your open-source command center. Monitor your pull requests, review roadmap progress, track achievements, and explore recommended codebases.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Open Source <span className="text-lime-400">Contributions</span>
-          </h1>
-          <p className="text-sm sm:text-base text-stone-400 leading-relaxed">
-            Welcome to your open-source command center. Monitor your pull requests, review roadmap progress, track achievements, and explore recommended codebases.
-          </p>
+          <div className="flex gap-3">
+            <Button asChild variant="primary" className="bg-lime-400 text-stone-950 hover:bg-lime-300">
+              <Link to="/student/opensource/github-analytics">
+                <Github className="w-4 h-4 mr-1.5" />
+                View GitHub Analytics
+              </Link>
+            </Button>
+          </div>
         </div>
       </motion.div>
 

@@ -16,6 +16,7 @@ const SEGMENT_NAMES: Record<string, string> = {
   programs: "Programs",
   analytics: "Analytics",
   contributions: "Contributions",
+  "github-analytics": "GitHub Analytics",
 };
 
 const LOWERCASE_WORDS = new Set(["and", "or", "the", "in", "on", "at", "to", "for", "of", "with", "a", "an"]);
