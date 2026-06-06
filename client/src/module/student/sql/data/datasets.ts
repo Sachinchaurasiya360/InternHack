@@ -1,4 +1,8 @@
 export const datasets: Record<string, string> = {
+  utility: `
+PRAGMA user_version = 0;
+`,
+
   world: `
 CREATE TABLE world (
   name TEXT,

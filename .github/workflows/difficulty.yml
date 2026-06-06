@@ -89,25 +89,21 @@ jobs:
 
             async function applyLabel(targetLabel) {
               const current = await getCurrentLabels();
+              const existingDifficulty = current.filter(l => DIFFICULTY_LABELS.includes(l));
 
-              const staleLabels = current.filter(l => DIFFICULTY_LABELS.includes(l) && l !== targetLabel);
-
-              await Promise.all(
-                staleLabels.map(name =>
-                  github.rest.issues.removeLabel({ ...repo, issue_number: prNum, name })
-                    .then(() => console.log(`🗑 Removed stale difficulty label: ${name}`))
-                )
-              );
-
-              if (current.includes(targetLabel) && staleLabels.length === 0) {
-                console.log(`✔ Difficulty label already correct: ${targetLabel} — skipping.`);
+              // Append-only mode: never remove existing difficulty labels.
+              // If any difficulty label already exists, preserve mentor/manual choice.
+              if (existingDifficulty.length > 0) {
+                if (current.includes(targetLabel)) {
+                  console.log(`✔ Difficulty label already present: ${targetLabel} — skipping.`);
+                } else {
+                  console.log(`Existing difficulty label(s) detected (${existingDifficulty.join(', ')}) — skipping auto-overwrite.`);
+                }
                 return;
               }
 
-              if (!current.includes(targetLabel)) {
-                await github.rest.issues.addLabels({ ...repo, issue_number: prNum, labels: [targetLabel] });
-                console.log(`🏷 Applied difficulty label: ${targetLabel}`);
-              }
+              await github.rest.issues.addLabels({ ...repo, issue_number: prNum, labels: [targetLabel] });
+              console.log(`🏷 Applied difficulty label: ${targetLabel}`);
             }
 
             // ── Main ───────────────────────────────────────────────────────

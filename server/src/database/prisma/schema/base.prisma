@@ -22,6 +22,8 @@ model user {
   resetOtpExpiresAt     DateTime?
   passwordResetAttempts Int                         @default(0)
   passwordResetLockedUntil DateTime?
+  verificationAttempts  Int                         @default(0)
+  verificationLockedUntil DateTime?
   contactNo             String?
   profilePic            String?
   coverImage            String?
@@ -97,6 +99,7 @@ model user {
   hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
   contentViews              contentView[]                @relation("UserContentViews")
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
+  coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -183,6 +186,7 @@ model round {
   roundSubmissions    roundSubmission[]
 
   @@unique([jobId, orderIndex])
+  @@unique([jobId, name])
   @@index([jobId])
 }
 
@@ -206,10 +210,10 @@ model application {
 
   @@unique([jobId, studentId])
   @@index([jobId])
+  @@index([jobId, status])
   @@index([studentId])
   @@index([status])
   @@index([createdAt])
-  @@index([jobId, status])
 }
 
 model applicationStatusHistory {
@@ -1014,7 +1018,7 @@ model savedCandidate {
   student     user     @relation("StudentSavedByRecruiters", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([recruiterId, studentId])
-  @@index([recruiterId])
+  @@index([recruiterId, studentId])
   @@index([studentId])
 }
 
@@ -1484,6 +1488,19 @@ model contentView {
   createdAt   DateTime    @default(now())
 
   @@index([contentType, contentId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model coachAdvice {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  trigger   String
+  title     String   @default("Coach suggestion")
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  user      user     @relation("UserCoachAdvice", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([createdAt])
 }
