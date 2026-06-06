@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Circle, ExternalLink,
-  Bookmark, BookmarkCheck, StickyNote, ChevronDown, ChevronLeft, ChevronRight,
+  Bookmark, BookmarkCheck, StickyNote, ChevronDown,
   Lightbulb, BookOpen, TrendingUp, Search,
 } from "lucide-react";
 import toast from "@/components/ui/toast";
@@ -28,7 +29,7 @@ export default function DsaTopicDetailPage() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<DiffFilter>("All");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const parentRef = useRef<HTMLDivElement>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
   const [noteValues, setNoteValues] = useState<Record<number, string>>({});
@@ -38,11 +39,11 @@ export default function DsaTopicDetailPage() {
   const searchParam = search.trim() || undefined;
 
   const { data: topic, isLoading } = useQuery({
-    queryKey: queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam }),
+    queryKey: queryKeys.dsa.topic(slug!, undefined, { difficulty: diffParam, search: searchParam }),
     queryFn: () => {
       const params = new URLSearchParams();
-      params.set("page", String(page));
-      params.set("limit", "50");
+      params.set("page", "1");
+      params.set("limit", "100");
       if (diffParam) params.set("difficulty", diffParam);
       if (searchParam) params.set("search", searchParam);
       return api.get<DsaTopicDetail>(`/dsa/topics/${slug}?${params}`).then((r) => r.data);
@@ -52,13 +53,14 @@ export default function DsaTopicDetailPage() {
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 
+  const queryKey = queryKeys.dsa.topic(slug!, undefined, { difficulty: diffParam, search: searchParam });
+
   const toggleMutation = useMutation({
     mutationFn: (problemId: number) =>
       api.post<{ problemId: number; solved: boolean }>(`/dsa/problems/${problemId}/toggle`).then((r) => r.data),
     onMutate: async (problemId) => {
-      const key = queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam });
-      await queryClient.cancelQueries({ queryKey: key });
-      const prev = queryClient.getQueryData<DsaTopicDetail>(key);
+      await queryClient.cancelQueries({ queryKey: queryKey });
+      const prev = queryClient.getQueryData<DsaTopicDetail>(queryKey);
       if (prev) {
         const updated = {
           ...prev,
@@ -68,12 +70,12 @@ export default function DsaTopicDetailPage() {
         };
         const delta = updated.problems.find((p) => p.id === problemId)!.solved ? 1 : -1;
         updated.totalSolved = prev.totalSolved + delta;
-        queryClient.setQueryData(key, updated);
+        queryClient.setQueryData(queryKey, updated);
       }
       return { prev };
     },
     onError: (_err, _problemId, context) => {
-      if (context?.prev) queryClient.setQueryData(queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam }), context.prev);
+      if (context?.prev) queryClient.setQueryData(queryKey, context.prev);
       toast.error("Failed to update progress");
     },
     onSettled: () => {
@@ -86,11 +88,10 @@ export default function DsaTopicDetailPage() {
     mutationFn: (problemId: number) =>
       api.post<{ problemId: number; bookmarked: boolean }>(`/dsa/problems/${problemId}/bookmark`).then((r) => r.data),
     onMutate: async (problemId) => {
-      const key = queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam });
-      await queryClient.cancelQueries({ queryKey: key });
-      const prev = queryClient.getQueryData<DsaTopicDetail>(key);
+      await queryClient.cancelQueries({ queryKey: queryKey });
+      const prev = queryClient.getQueryData<DsaTopicDetail>(queryKey);
       if (prev) {
-        queryClient.setQueryData(key, {
+        queryClient.setQueryData(queryKey, {
           ...prev,
           problems: prev.problems.map((p) =>
             p.id === problemId ? { ...p, bookmarked: !p.bookmarked } : p,
@@ -100,7 +101,7 @@ export default function DsaTopicDetailPage() {
       return { prev };
     },
     onError: (_err, _problemId, context) => {
-      if (context?.prev) queryClient.setQueryData(queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam }), context.prev);
+      if (context?.prev) queryClient.setQueryData(queryKey, context.prev);
       toast.error("Failed to update bookmark");
     },
     onSettled: () => {
@@ -112,10 +113,9 @@ export default function DsaTopicDetailPage() {
     setSavingNotes((prev) => new Set(prev).add(problemId));
     try {
       await api.put(`/dsa/problems/${problemId}/notes`, { notes });
-      const key = queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam });
-      const prev = queryClient.getQueryData<DsaTopicDetail>(key);
+      const prev = queryClient.getQueryData<DsaTopicDetail>(queryKey);
       if (prev) {
-        queryClient.setQueryData(key, {
+        queryClient.setQueryData(queryKey, {
           ...prev,
           problems: prev.problems.map((p) =>
             p.id === problemId ? { ...p, notes: notes.trim() || null } : p,
@@ -131,7 +131,7 @@ export default function DsaTopicDetailPage() {
         return next;
       });
     }
-  }, [queryClient, slug, page, diffParam, searchParam]);
+  }, [queryClient, slug, diffParam, searchParam]);
 
   const toggleNotes = (problemId: number, currentNotes: string | null | undefined) => {
     setExpandedNotes((prev) => {
@@ -147,6 +147,14 @@ export default function DsaTopicDetailPage() {
       return next;
     });
   };
+
+  const rowVirtualizer = useVirtualizer({
+    count: topic?.problems.length ?? 0,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 72,
+    overscan: 5,
+    measureElement: (el) => el.getBoundingClientRect().height,
+  });
 
   if (!user && topic && topic.orderIndex >= 5) {
     return <Navigate to="/learn/dsa" replace />;
@@ -277,7 +285,7 @@ export default function DsaTopicDetailPage() {
               type="text"
               placeholder="Search problems..."
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              onChange={(e) => { setSearch(e.target.value); }}
               className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
             />
           </div>
@@ -291,7 +299,7 @@ export default function DsaTopicDetailPage() {
               return (
                 <button
                   key={d}
-                  onClick={() => { setFilter(d); setPage(1); }}
+                  onClick={() => { setFilter(d); }}
                   className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
                     active
                       ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
@@ -313,29 +321,56 @@ export default function DsaTopicDetailPage() {
           </span>
         </div>
 
-        {/* Problem list */}
-        <div className="space-y-2">
-          {topic.problems.map((problem, pIdx) => (
-            <DsaProblemCard
-              key={problem.id}
-              problem={problem}
-              pIdx={pIdx}
-              user={user}
-              isExpanded={expandedId === problem.id}
-              toggleMutation={toggleMutation}
-              bookmarkMutation={bookmarkMutation}
-              expandedNotes={expandedNotes}
-              savingNotes={savingNotes}
-              noteValues={noteValues}
-              setNoteValues={setNoteValues}
-              saveNotes={saveNotes}
-              toggleNotes={toggleNotes}
-              setExpandedId={setExpandedId}
-              cleanHint={cleanHint}
-            />
-          ))}
-
-          {topic.problems.length === 0 && (
+        {/* Problem list (virtualized) */}
+        <div
+          ref={parentRef}
+          className="overflow-auto"
+          style={{ maxHeight: "calc(100vh - 350px)", minHeight: "300px" }}
+        >
+          {topic.problems.length > 0 ? (
+            <div
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const problem = topic!.problems[virtualRow.index];
+                return (
+                  <div
+                    key={virtualRow.key}
+                    data-index={virtualRow.index}
+                    ref={rowVirtualizer.measureElement}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                  >
+                    <DsaProblemCard
+                      problem={problem}
+                      pIdx={virtualRow.index}
+                      user={user}
+                      isExpanded={expandedId === problem.id}
+                      toggleMutation={toggleMutation}
+                      bookmarkMutation={bookmarkMutation}
+                      expandedNotes={expandedNotes}
+                      savingNotes={savingNotes}
+                      noteValues={noteValues}
+                      setNoteValues={setNoteValues}
+                      saveNotes={saveNotes}
+                      toggleNotes={toggleNotes}
+                      setExpandedId={setExpandedId}
+                      cleanHint={cleanHint}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
             <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
               <Search className="w-8 h-8 text-stone-400 mx-auto mb-3" />
               <p className="text-sm text-stone-600 dark:text-stone-400">No problems found.</p>
@@ -345,35 +380,6 @@ export default function DsaTopicDetailPage() {
             </div>
           )}
         </div>
-
-        {/* Pagination */}
-        {topic.totalPages > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-8 flex-wrap">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
-              className="rounded-md border border-stone-300 dark:border-white/10"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Prev
-            </Button>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums">
-              page {page} / {topic.totalPages}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setPage((p) => Math.min(topic.totalPages, p + 1))}
-              disabled={page >= topic.totalPages}
-              className="rounded-md border border-stone-300 dark:border-white/10"
-            >
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
