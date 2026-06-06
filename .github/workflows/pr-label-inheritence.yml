@@ -19,6 +19,7 @@ jobs:
             const pr = context.payload.pull_request;
             const body = pr.body || "";
             const prNumber = pr.number;
+            const repo = context.repo;
 
             console.log(`Processing PR #${prNumber}`);
 

@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Path-based labeling (Stacking)
-        uses: actions/labeler@v5
+        uses: actions/labeler@8558fd74291d67161a8a71d18e815d9c05aaec3e
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler-rules.yml
