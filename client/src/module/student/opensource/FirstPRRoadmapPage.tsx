@@ -12,6 +12,8 @@ import {
   patchFirstPRProgress,
 } from "./api/opensource.api";
 import guideData from "./data/open-source-guide.json";
+import { useAuthStore } from "../../../lib/auth.store";
+import { useCoachStore } from "./stores/coach.store";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -29,6 +31,8 @@ export default function FirstPRRoadmapPage() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuthStore();
+  const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
   useEffect(() => {
     let isMounted = true;
@@ -60,12 +64,25 @@ export default function FirstPRRoadmapPage() {
       const isCurrentlyCompleted = completed.has(id);
       const nextCompleted = !isCurrentlyCompleted;
 
+      const isCompletingLastStep = nextCompleted && completed.size === STEPS.length - 1;
+
       setCompleted((prev) => {
         const next = new Set(prev);
         if (nextCompleted) next.add(id);
         else next.delete(id);
         return next;
       });
+
+      // Trigger coach if this click completes the roadmap
+      if (isCompletingLastStep) {
+        triggerCoach({
+          trigger: "FIRST_PR_COMPLETE",
+          context: {
+            skills: user?.skills || [],
+            completedGuides: ["First Pull Request Roadmap"],
+          },
+        });
+      }
 
       void patchFirstPRProgress(id, nextCompleted).catch(() => {
         setCompleted((prev) => {

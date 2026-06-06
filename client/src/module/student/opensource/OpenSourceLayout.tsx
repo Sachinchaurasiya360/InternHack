@@ -1,6 +1,8 @@
 import { Fragment } from "react";
 import { Outlet, useLocation, Link } from "react-router";
 import { ChevronRight } from "lucide-react";
+import ContributionCoachPanel from "./ContributionCoachPanel";
+import CoachFloatingButton from "./CoachFloatingButton";
 
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
@@ -68,6 +70,8 @@ export default function OpenSourceLayout() {
     <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
       <OpenSourceBreadcrumb />
       <Outlet />
+      <ContributionCoachPanel />
+      <CoachFloatingButton />
     </div>
   );
 }
