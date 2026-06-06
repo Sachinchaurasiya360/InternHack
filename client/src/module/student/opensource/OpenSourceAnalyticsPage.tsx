@@ -14,6 +14,8 @@ import {
   BarChart3,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
+import { useAuthStore } from "../../../lib/auth.store";
 import {
   PieChart,
   Pie,
@@ -237,12 +239,23 @@ export default function OpenSourceAnalyticsPage() {
     markLearningPathMilestone("leaderboard");
   }, []);
 
+  const { user } = useAuthStore();
+  const isPremium = user?.subscriptionStatus === "ACTIVE" && user?.subscriptionPlan !== "FREE";
   const showHacktoberfestTracker = isHacktoberfestMode();
+
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [filterYear, setFilterYear] = useState<string>("ALL");
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
   const [filterTech, setFilterTech] = useState<string>("ALL");
   const [showFilters, setShowFilters] = useState(false);
+
+  if (!isPremium) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16">
+        <PremiumUpgradeCTA feature="Open Source Analytics" />
+      </div>
+    );
+  }
 
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
