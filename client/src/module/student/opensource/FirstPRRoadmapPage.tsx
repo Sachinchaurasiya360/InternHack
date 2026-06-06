@@ -172,6 +172,7 @@ export default function FirstPRRoadmapPage() {
         description="Step-by-step roadmap to making your first pull request on GitHub. Learn git workflow, finding issues, and contributing to open source projects."
         keywords="first pull request, open source contribution, GitHub beginner, git workflow, contribute to open source"
         canonicalUrl={canonicalUrl("/student/opensource/first-pr")}
+        ogImage="/og/og-first-pr.png"
       />
 
       {/* Atmospheric background */}
