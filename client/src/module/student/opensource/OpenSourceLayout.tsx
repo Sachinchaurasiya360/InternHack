@@ -23,6 +23,7 @@ const SEGMENT_NAMES: Record<string, string> = {
   coach: "AI Coach",
   "project-recommendations": "Project Recommendations",
   "gap-analysis": "Gap Analysis",
+  intelligence: "Career Intelligence",
 };
 
 const LOWERCASE_WORDS = new Set(["and", "or", "the", "in", "on", "at", "to", "for", "of", "with", "a", "an"]);

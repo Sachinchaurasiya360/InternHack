@@ -7,6 +7,7 @@ import growthRouter from "./growth.routes.js";
 import coachRouter from "./coach.routes.js";
 import projectRecommendationsRouter from "./project-recommendations.routes.js";
 import gapAnalysisRouter from "./gap-analysis.routes.js";
+import careerIntelligenceRouter from "./career-intelligence.routes.js";
 import { StudentController } from "./student.controller.js";
 import { StudentService } from "./student.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
@@ -36,6 +37,8 @@ studentRouter.use('/coach', coachRouter);
 studentRouter.use('/project-recommendations', projectRecommendationsRouter);
 // AI Career Gap Analysis
 studentRouter.use('/gap-analysis', gapAnalysisRouter);
+// Unified Career Intelligence Platform
+studentRouter.use('/career-intelligence', careerIntelligenceRouter);
 
 // Applications
 studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, res, next) => studentController.applyToJob(req, res, next));

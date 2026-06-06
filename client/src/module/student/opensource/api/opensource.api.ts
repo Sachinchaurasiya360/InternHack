@@ -265,3 +265,52 @@ export async function fetchGapAnalysis(forceRefresh = false, targetRole?: string
   const { data } = await api.get<GapAnalysisResult>(`/student/gap-analysis${queryString}`);
   return data;
 }
+
+export interface CareerIntelligenceResult {
+  overallScore: number;
+  components: {
+    atsScore: number;
+    githubScore: number;
+    openSourceScore: number;
+    readinessScore: number;
+    gapScore: number;
+  };
+  healthReport: {
+    summary: string;
+    strengths: string[];
+    weaknesses: string[];
+    priorities: {
+      action: string;
+      impact: "High" | "Medium" | "Low";
+      effort: "Low" | "Medium" | "High";
+      reason: string;
+    }[];
+  };
+  lastUpdated: string;
+}
+
+export interface StudentGoals {
+  targetRole: string;
+  targetCompany: string;
+  targetInternship: string;
+  weeklyGoals: { id: string; text: string; completed: boolean }[];
+  monthlyGoals: { id: string; text: string; completed: boolean }[];
+  milestones: { id: string; title: string; date: string; completed: boolean }[];
+}
+
+export async function fetchCareerIntelligence(forceRefresh = false): Promise<CareerIntelligenceResult> {
+  const { data } = await api.get<CareerIntelligenceResult>(
+    `/student/career-intelligence${forceRefresh ? "?refresh=true" : ""}`
+  );
+  return data;
+}
+
+export async function fetchStudentGoals(): Promise<StudentGoals> {
+  const { data } = await api.get<StudentGoals>("/student/career-intelligence/goals");
+  return data;
+}
+
+export async function saveStudentGoals(goals: StudentGoals): Promise<StudentGoals> {
+  const { data } = await api.post<StudentGoals>("/student/career-intelligence/goals", goals);
+  return data;
+}
