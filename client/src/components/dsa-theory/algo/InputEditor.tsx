@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Shuffle } from "lucide-react";
 
 interface Preset {
@@ -28,12 +28,13 @@ export function InputEditor({
   monospace = true,
 }: InputEditorProps) {
   const [draft, setDraft] = useState(value);
+  const [prevValue, setPrevValue] = useState(value);
 
   // Sync local draft when parent updates value externally (random/preset).
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+  if (value !== prevValue) {
+    setPrevValue(value);
     setDraft(value);
-  }, [value]);
+  }
 
   return (
     <div className="flex flex-col gap-2">

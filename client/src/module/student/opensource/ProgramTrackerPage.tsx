@@ -5,6 +5,15 @@ import {
   Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
+import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
+
+function nextDate(month: number, day: number, hour = 23, minute = 59): string {
+  const now = new Date();
+  const d = new Date(Date.UTC(now.getFullYear(), month - 1, day, hour, minute, 0));
+  if (d <= now) d.setUTCFullYear(d.getUTCFullYear() + 1);
+  return d.toISOString();
+}
 
 // ─── Data ──────────────────────────────────────────────────────
 interface Program {
@@ -83,7 +92,7 @@ const PROGRAMS: Program[] = [
       "Write a detailed proposal (problem statement, timeline, milestones)",
       "Submit via the GSoC portal before the deadline",
     ],
-    applicationDeadline: "2026-04-19T23:59:00Z",
+    applicationDeadline: nextDate(4, 19),
   },
   {
     id: 2,
@@ -129,7 +138,7 @@ const PROGRAMS: Program[] = [
       "Complete any take-home tasks if requested",
       "Wait for mentor selection notification",
     ],
-    applicationDeadline: "2026-05-15T23:59:00Z",
+    applicationDeadline: nextDate(5, 15),
   },
   {
     id: 3,
@@ -230,8 +239,8 @@ const PROGRAMS: Program[] = [
       "Make contributions to 1–2 projects during the contribution period",
       "Submit a final application with your contribution summary",
     ],
-    applicationStart: "2026-02-06T16:00:00Z",
-    applicationDeadline: "2026-02-13T16:00:00Z",
+    applicationStart: nextDate(2, 6, 16, 0),
+    applicationDeadline: nextDate(2, 13, 16, 0),
   },
   {
     id: 5,
@@ -1005,6 +1014,13 @@ export default function ProgramTrackerPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
+      <SEO
+        title="Open Source Program Tracker - Deadlines & Stipends"
+        description="Track deadlines, eligibility, and stipends for GSoC, LFX, MLH Fellowship, Outreachy, and 20+ other open source programs."
+        keywords="GSoC tracker, LFX mentorship, open source internships, Outreachy deadline, paid open source"
+        canonicalUrl={canonicalUrl("/student/opensource/programs")}
+        ogImage="/og/og-programs.png"
+      />
       {/* Hero */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
         <div className="absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl from-emerald-200/30 to-transparent rounded-bl-full pointer-events-none" />

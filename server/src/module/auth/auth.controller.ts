@@ -25,8 +25,7 @@ export class AuthController {
       }
 
       const data = await this.authService.register(result.data);
-      setTokenCookie(res, data.token);
-      return res.status(201).json({ message: "Registration successful", ...data });
+      return res.status(201).json({ message: "Registration successful. Please verify your email to continue.", user: data.user });
     } catch (error) {
       if (error instanceof Error && error.message === "Email already registered") {
         return res.status(409).json({ message: error.message });
@@ -144,12 +143,12 @@ export class AuthController {
         return res.status(403).json({ message: "Not authorized" });
       }
 
-      const id = Number(req.params["id"]);
-      if (!id || isNaN(id)) {
-        return res.status(400).json({ message: "Invalid user ID" });
+      const identifier = (req.params["identifier"] || req.params["id"]) as string;
+      if (!identifier) {
+        return res.status(400).json({ message: "Invalid user identifier" });
       }
 
-      const profile = await this.authService.getPublicProfile(id);
+      const profile = await this.authService.getPublicProfile(identifier);
       return res.status(200).json({ profile });
     } catch (error) {
       if (error instanceof Error && error.message === "User not found") {

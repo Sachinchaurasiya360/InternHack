@@ -6,5 +6,5 @@ export const chatMessageSchema = z.object({
 
 export const emailJobsSchema = z.object({
   jobIds: z.array(z.number().int().positive()).min(1).max(20),
-  context: z.string().max(2000).optional(),
+  context: z.string().max(200).optional(),
 });

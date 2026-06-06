@@ -33,7 +33,7 @@ export class ExaFundingSource extends BaseSignalSource {
     return process.env["EXA_API_KEY"];
   }
 
-  async fetch(): Promise<SourceResult> {
+  async fetch(signal?: AbortSignal): Promise<SourceResult> {
     const key = this.apiKey;
     if (!key) {
       return {
@@ -57,7 +57,7 @@ export class ExaFundingSource extends BaseSignalSource {
     const signals: FundingSignalData[] = [];
 
     for (const query of queries) {
-      const result = await this.search(key, query, startDate);
+      const result = await this.search(key, query, startDate, signal);
       if (result.error) {
         // Log but continue with remaining queries
         console.warn(`[ExaFundingSource] query "${query}" error: ${result.error}`);
@@ -78,6 +78,7 @@ export class ExaFundingSource extends BaseSignalSource {
     apiKey: string,
     query: string,
     startPublishedDate: string,
+    signal?: AbortSignal,
   ): Promise<ExaResponse> {
     try {
       const res = await fetch(this.apiUrl, {
@@ -86,6 +87,7 @@ export class ExaFundingSource extends BaseSignalSource {
           "Content-Type": "application/json",
           "x-api-key": apiKey,
         },
+        signal,
         body: JSON.stringify({
           query,
           type: "auto",

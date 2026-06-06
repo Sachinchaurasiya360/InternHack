@@ -31,7 +31,7 @@ export class OnboardingService {
       data: {
         employeeId: data.employeeId,
         targetDate: new Date(data.targetDate),
-        items: JSON.stringify(items),
+        items: items as any,
         status: "IN_PROGRESS",
       },
       include: { employee: { select: { id: true, firstName: true, lastName: true, employeeCode: true } } },
@@ -69,8 +69,8 @@ export class OnboardingService {
     const checklist = await prisma.onboardingChecklist.findUnique({ where: { employeeId } });
     if (!checklist) throw new Error("Onboarding checklist not found");
 
-    const items = JSON.parse(checklist.items as string) as OnboardingItem[];
-    if (itemIndex >= items.length) throw new Error("Invalid item index");
+    const items = checklist.items as unknown as OnboardingItem[];
+    if (itemIndex < 0 || itemIndex >= items.length) throw new Error("Invalid item index");
 
     items[itemIndex]!.completed = completed;
     items[itemIndex]!.completedAt = completed ? new Date().toISOString() : undefined;
@@ -82,7 +82,7 @@ export class OnboardingService {
     return prisma.onboardingChecklist.update({
       where: { employeeId },
       data: {
-        items: JSON.stringify(items),
+        items: items as any,
         status,
         completedAt: allCompleted ? new Date() : null,
       },

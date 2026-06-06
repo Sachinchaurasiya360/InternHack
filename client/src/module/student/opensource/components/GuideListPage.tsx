@@ -19,6 +19,7 @@ interface Props {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
+  ogImage?: string;
   icon: LucideIcon;
   iconColor: string;         // e.g. "text-emerald-500"
 }
@@ -26,6 +27,7 @@ interface Props {
 export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
+  ogImage,
 }: Props) {
   const [completed, setCompleted] = useState<Set<string>>(() => {
     try {
@@ -62,6 +64,7 @@ export default function GuideListPage({
         description={seoDescription}
         keywords={seoKeywords}
         canonicalUrl={canonicalUrl(basePath)}
+        ogImage={ogImage}
       />
 
       {/* Atmospheric background */}
@@ -97,7 +100,7 @@ export default function GuideListPage({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-3 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
       >
         {[
           { icon: Icon, value: totalSteps, label: "Sections", iconColor },

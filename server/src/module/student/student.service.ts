@@ -383,6 +383,9 @@ Rules:
     if (!application) throw new Error("Application not found");
     if (application.studentId !== studentId) throw new Error("Not authorized");
     if (application.status === "WITHDRAWN") throw new Error("Already withdrawn");
+    if (application.status === "HIRED" || application.status === "REJECTED") {
+      throw new Error("Cannot withdraw an application that is already HIRED or REJECTED");
+    }
 
     return prisma.application.update({
       where: { id: applicationId },
