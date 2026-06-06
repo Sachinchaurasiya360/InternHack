@@ -370,7 +370,7 @@ export class AuthService {
       updateData.graduationYear = data.graduationYear ? Number(data.graduationYear) : null;
     }
     if ("skills" in data) {
-      updateData.skills = Array.isArray(data.skills) ? data.skills : [];
+      updateData.skills = Array.isArray(data.skills) ? data.skills.map((s) => s.trim().toLowerCase()) : [];
     }
     if ("jobStatus" in data) {
       updateData.jobStatus = data.jobStatus || null;
