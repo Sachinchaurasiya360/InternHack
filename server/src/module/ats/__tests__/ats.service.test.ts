@@ -3,7 +3,6 @@ import { AtsService } from "../ats.service.js";
 import { prisma } from "../../../database/db.js";
 import { getBufferFromS3, getS3KeyFromUrl } from "../../../utils/s3.utils.js";
 import { getProviderForService } from "../../../lib/ai-provider-registry.js";
-import { PDFParse } from "pdf-parse";
 import { readFile } from "fs/promises";
 
 // ─── Module mocks (Vitest hoists these before imports) ────────────────────────
@@ -32,12 +31,37 @@ vi.mock("../../../lib/ai-request-logger.js", () => ({
   logAIRequest: vi.fn(),
 }));
 
-vi.mock("pdf-parse", () => ({
-  PDFParse: vi.fn(),
-}));
-
 vi.mock("fs/promises", () => ({
   readFile: vi.fn(),
+}));
+
+// ─── Worker thread mock ───────────────────────────────────────────────────────
+// extractPdfText offloads PDFParse to a worker thread. The mock simulates the
+// worker's postMessage() response via setImmediate so promise handlers fire
+// after all .on() registrations are in place.
+
+let _workerPayload: { text?: string; error?: string } = {};
+
+vi.mock("worker_threads", () => ({
+  Worker: vi.fn().mockImplementation(() => {
+    const handlers: Record<string, Array<(...args: unknown[]) => void>> = {};
+    const w = {
+      on(event: string, fn: (...args: unknown[]) => void) {
+        (handlers[event] ??= []).push(fn);
+        if (event === "message") {
+          // Fire after all .on() calls are registered
+          setImmediate(() => {
+            handlers["message"]?.forEach((h) => h(_workerPayload));
+            // Simulate a clean exit so the exit handler doesn't reject
+            handlers["exit"]?.forEach((h) => h(0));
+          });
+        }
+        return w;
+      },
+      terminate: vi.fn().mockResolvedValue(0),
+    };
+    return w;
+  }),
 }));
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -105,14 +129,7 @@ function mockCacheMiss() {
 }
 
 function mockValidPdf(text = VALID_RESUME_TEXT) {
-  vi.mocked(PDFParse).mockImplementation(
-    function () {
-      return {
-        getText: vi.fn().mockResolvedValue({ text }),
-        destroy: vi.fn().mockResolvedValue(undefined),
-      } as any;
-    }
-  );
+  _workerPayload = { text };
 }
 
 function mockValidAI(jsonStr = VALID_AI_JSON) {
@@ -183,14 +200,7 @@ describe("AtsService", () => {
     it("throws when extracted PDF text is under 50 characters", async () => {
       mockUserOwnsResume();
       mockCacheMiss();
-      vi.mocked(PDFParse).mockImplementation(
-        function () {
-          return {
-            getText: vi.fn().mockResolvedValue({ text: "too short" }),
-            destroy: vi.fn().mockResolvedValue(undefined),
-          } as any;
-        }
-      );
+      _workerPayload = { text: "too short" };
 
       await expect(
         service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL }),
@@ -467,14 +477,7 @@ describe("AtsService", () => {
 
     it("throws when PDF text extraction yields insufficient content", async () => {
       mockUserOwnsResume();
-      vi.mocked(PDFParse).mockImplementation(
-        function () {
-          return {
-            getText: vi.fn().mockResolvedValue({ text: "tiny" }),
-            destroy: vi.fn().mockResolvedValue(undefined),
-          } as any;
-        }
-      );
+      _workerPayload = { text: "tiny" };
 
       await expect(
         service.applySuggestions(STUDENT_ID, INPUT),
