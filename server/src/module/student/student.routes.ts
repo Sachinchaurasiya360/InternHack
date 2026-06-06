@@ -5,6 +5,7 @@ import readinessRouter from "./readiness.routes.js";
 import hiringSignalRouter from "./hiring-signal.routes.js";
 import growthRouter from "./growth.routes.js";
 import coachRouter from "./coach.routes.js";
+import projectRecommendationsRouter from "./project-recommendations.routes.js";
 import { StudentController } from "./student.controller.js";
 import { StudentService } from "./student.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
@@ -30,6 +31,8 @@ studentRouter.use('/hiring-signal', hiringSignalRouter);
 studentRouter.use('/growth', growthRouter);
 // AI Open Source Coach
 studentRouter.use('/coach', coachRouter);
+// AI Project Recommendation Engine
+studentRouter.use('/project-recommendations', projectRecommendationsRouter);
 
 // Applications
 studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, res, next) => studentController.applyToJob(req, res, next));

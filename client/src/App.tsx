@@ -109,6 +109,7 @@ const InternshipReadinessPage = lazyWithRetry(() => import("./module/student/ope
 const HiringSignalPage = lazyWithRetry(() => import("./module/student/opensource/HiringSignalPage"));
 const DeveloperGrowthPage = lazyWithRetry(() => import("./module/student/opensource/DeveloperGrowthPage"));
 const AiCoachPage = lazyWithRetry(() => import("./module/student/opensource/AiCoachPage"));
+const ProjectRecommendationsPage = lazyWithRetry(() => import("./module/student/opensource/ProjectRecommendationsPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));

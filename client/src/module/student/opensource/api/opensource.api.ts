@@ -208,3 +208,22 @@ export async function fetchCoachFeedback(repoId: number, codePatch: string): Pro
   const { data } = await api.post<CoachFeedback>("/student/coach/feedback", { repoId, codePatch });
   return data;
 }
+
+export interface ProjectRecommendationResult {
+  title: string;
+  description: string;
+  targetRole: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  duration: string;
+  portfolioImpact: number;
+  resumeImpact: number;
+  skills: string[];
+  milestones: { title: string; description: string }[];
+}
+
+export async function fetchProjectRecommendations(forceRefresh = false): Promise<ProjectRecommendationResult[]> {
+  const { data } = await api.get<ProjectRecommendationResult[]>(
+    `/student/project-recommendations${forceRefresh ? "?refresh=true" : ""}`
+  );
+  return data;
+}
