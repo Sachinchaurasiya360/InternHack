@@ -39,70 +39,62 @@ jobs:
               return MANAGED_PREFIXES.some(prefix => name.startsWith(prefix));
             }
 
-            // 1. Extract linked issue numbers using regex
-            // Matching keywords: Fixes, Closes, Resolves, Fixed, Closed, Resolved followed by #<number>
-            const regex = /(?:fixes|closes|resolves|fixed|closed|resolved)\s+#(\d+)/gi;
-            const matches = [...body.matchAll(regex)];
-            const linkedIssues = [...new Set(matches.map(match => parseInt(match[1])))];
+            // ── Main Logic ───────────────────────────────────────────────────
+            try {
+              // 1. Extract linked issue numbers using regex
+              const regex = /(?:fixes|closes|resolves|fixed|closed|resolved)\s+#(\d+)/gi;
+              const linkedIssues = [...new Set([...body.matchAll(regex)].map(m => parseInt(m[1])))];
 
-            console.log(`Linked issues found: ${linkedIssues.join(', ') || 'None'}`);
+              console.log(`Linked issues found: ${linkedIssues.join(', ') || 'None'}`);
 
-            const labelsToAdd = new Set();
+              const labelsToSet = new Set();
 
-            // 2. Fetch labels from linked issues (skip managed-prefix labels)
-            for (const issueNumber of linkedIssues) {
-              try {
-                const { data: issue } = await github.rest.issues.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issueNumber
-                });
-
-                if (issue.labels && issue.labels.length > 0) {
-                  for (const label of issue.labels) {
-                    const labelName = typeof label === 'string' ? label : label.name;
-                    if (isManagedLabel(labelName)) {
-                      console.log(`Skipping managed label "${labelName}" from issue #${issueNumber} (handled by dedicated workflow)`);
-                      continue;
-                    }
-                    labelsToAdd.add(labelName);
-                    console.log(`Inheriting label "${labelName}" from issue #${issueNumber}`);
+              // 2. Fetch labels from linked issues in parallel
+              await Promise.all(linkedIssues.map(async (issueNumber) => {
+                try {
+                  const { data: issue } = await github.rest.issues.get({
+                    ...repo,
+                    issue_number: issueNumber
+                  });
+                  if (issue.labels) {
+                    issue.labels.forEach(label => {
+                      const name = typeof label === 'string' ? label : label.name;
+                      if (!isManagedLabel(name)) {
+                        labelsToSet.add(name);
+                        console.log(`Inheriting label "${name}" from issue #${issueNumber}`);
+                      }
+                    });
                   }
+                } catch (err) {
+                  console.warn(`Could not fetch labels for issue #${issueNumber}: ${err.message}`);
                 }
-              } catch (error) {
-                console.warn(`Could not fetch details for issue #${issueNumber}: ${error.message}`);
+              }));
+
+              // 3. Hacktoberfest Label Check
+              const createdAt = new Date(pr.created_at);
+              if (createdAt.getMonth() === 9) { // October
+                labelsToSet.add('hacktoberfest-accepted');
               }
-            }
 
-            // 3. Hacktoberfest Label Check
-            const createdAt = new Date(pr.created_at);
-            if (createdAt.getMonth() === 9) { // 9 is October (0-indexed)
-              labelsToAdd.add('hacktoberfest-accepted');
-              console.log('PR created in October. Adding "hacktoberfest-accepted" label.');
-            }
-
-            // 4. Apply labels — only add ones not already on the PR (idempotency guard)
-            if (labelsToAdd.size > 0) {
-              const { data: currentIssue } = await github.rest.issues.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber
-              });
-              const currentLabels = new Set(currentIssue.labels.map(l => (typeof l === 'string' ? l : l.name)));
-
-              const newLabels = [...labelsToAdd].filter(l => !currentLabels.has(l));
-
-              if (newLabels.length > 0) {
-                console.log(`Applying inherited labels to PR #${prNumber}: ${newLabels.join(', ')}`);
-                await github.rest.issues.addLabels({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  labels: newLabels
+              // 4. Robust Append (Non-destructive)
+              if (labelsToSet.size > 0) {
+                const { data: currentIssue } = await github.rest.issues.get({
+                  ...repo,
+                  issue_number: prNumber
                 });
-              } else {
-                console.log('All inherited labels are already present on this PR — skipping.');
+                const currentLabels = currentIssue.labels.map(l => (typeof l === 'string' ? l : l.name));
+                const newLabels = [...labelsToSet].filter(l => !currentLabels.includes(l));
+
+                if (newLabels.length > 0) {
+                  await github.rest.issues.addLabels({
+                    ...repo,
+                    issue_number: prNumber,
+                    labels: newLabels
+                  });
+                  console.log(`Successfully appended labels: ${newLabels.join(', ')}`);
+                }
               }
-            } else {
-              console.log('No labels to inherit for this PR.');
+            } catch (err) {
+              console.error(`Inference failed: ${err.message}`);
+              // Do not crash the workflow
             }
