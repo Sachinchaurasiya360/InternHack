@@ -194,7 +194,7 @@ const grouped = useMemo(() => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mb-6"
+        className="mb-6 space-y-3"
       >
         <Link
           to="/learn/challenges"
@@ -210,6 +210,25 @@ const grouped = useMemo(() => {
               </p>
               <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
                 5 hands-on projects to test your skills — from portfolio sites to smart contracts
+              </p>
+            </div>
+          </div>
+          <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </Link>
+        <Link
+          to="/learn/mentors"
+          className="group flex items-center justify-between bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-5 py-4 hover:border-lime-400 dark:hover:border-lime-400 transition-colors no-underline"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-md bg-amber-100 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-800 flex items-center justify-center shrink-0">
+              <span className="text-sm font-bold text-amber-700 dark:text-amber-400">6</span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
+                Mentor Matching
+              </p>
+              <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
+                Connect with engineers from Google, Microsoft, Amazon, Netflix & more for 1:1 guidance
               </p>
             </div>
           </div>
