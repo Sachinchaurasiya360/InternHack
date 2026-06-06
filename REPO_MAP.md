@@ -353,7 +353,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `jobs/GovInternshipsPage.tsx` | Government internship listings |
 | `campus/CampusDrivesPage.tsx` | Browse campus drives |
 | `campus/CampusDriveDetailPage.tsx` | Drive details + register |
-| `checkout/CheckoutPage.tsx` | Subscription upgrade via Razorpay |
+| `checkout/CheckoutPage.tsx` | Subscription upgrade via Dodo Payments |
 | `profile/StudentProfilePage.tsx` | Edit profile |
 | `profile/PublicProfilePage.tsx` | Public profile with skills + verified badges |
 | `profile/GitHubImportModal.tsx` | Import profile data from GitHub |
@@ -537,8 +537,12 @@ AWS_ACCESS_KEY_ID     # S3 uploads
 AWS_SECRET_ACCESS_KEY
 AWS_REGION
 AWS_BUCKET_NAME
-RAZORPAY_KEY_ID       # Razorpay payments
-RAZORPAY_KEY_SECRET
+DODO_PAYMENTS_API_KEY        # Dodo Payments
+DODO_PAYMENTS_WEBHOOK_KEY
+DODO_PAYMENTS_ENVIRONMENT    # test_mode | live_mode
+DODO_PRODUCT_ID_MONTHLY
+DODO_PRODUCT_ID_YEARLY
+DODO_RETURN_URL
 RESEND_API_KEY        # Transactional emails
 EMAIL_FROM            # Sender address
 ALLOWED_ORIGINS       # CORS origins (comma-separated)
