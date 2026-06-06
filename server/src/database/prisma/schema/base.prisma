@@ -22,6 +22,8 @@ model user {
   resetOtpExpiresAt     DateTime?
   passwordResetAttempts Int                         @default(0)
   passwordResetLockedUntil DateTime?
+  verificationAttempts  Int                         @default(0)
+  verificationLockedUntil DateTime?
   contactNo             String?
   profilePic            String?
   coverImage            String?
@@ -183,6 +185,7 @@ model round {
   roundSubmissions    roundSubmission[]
 
   @@unique([jobId, orderIndex])
+  @@unique([jobId, name])
   @@index([jobId])
 }
 
@@ -206,10 +209,10 @@ model application {
 
   @@unique([jobId, studentId])
   @@index([jobId])
+  @@index([jobId, status])
   @@index([studentId])
   @@index([status])
   @@index([createdAt])
-  @@index([jobId, status])
 }
 
 model applicationStatusHistory {
@@ -1014,7 +1017,7 @@ model savedCandidate {
   student     user     @relation("StudentSavedByRecruiters", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([recruiterId, studentId])
-  @@index([recruiterId])
+  @@index([recruiterId, studentId])
   @@index([studentId])
 }
 

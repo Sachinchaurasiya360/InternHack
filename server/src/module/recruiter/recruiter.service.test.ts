@@ -12,6 +12,9 @@ const mocks = vi.hoisted(() => ({
     },
     round: {
       findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
     },
     roundSubmission: {
       update: vi.fn(),
@@ -208,5 +211,90 @@ describe("RecruiterService - evaluateSubmission", () => {
         }),
       })
     );
+  });
+});
+
+describe("RecruiterService - createRound", () => {
+  const service = new RecruiterService();
+  const jobId = 1;
+  const recruiterId = 10;
+  const roundData = { name: "Technical Interview", orderIndex: 0, description: "Test round" };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should throw 409 if round name already exists for the job", async () => {
+    mocks.prisma.job.findUnique.mockResolvedValue({ id: jobId, recruiterId });
+    mocks.prisma.round.findFirst.mockResolvedValue({ id: 99, jobId, name: roundData.name });
+
+    await expect(
+      service.createRound(jobId, recruiterId, roundData)
+    ).rejects.toMatchObject({ message: `A round named "${roundData.name}" already exists for this job`, statusCode: 409 });
+
+    expect(mocks.prisma.round.create).not.toHaveBeenCalled();
+  });
+
+  it("should create the round if name is unique", async () => {
+    mocks.prisma.job.findUnique.mockResolvedValue({ id: jobId, recruiterId });
+    mocks.prisma.round.findFirst.mockResolvedValue(null);
+    mocks.prisma.round.create.mockResolvedValue({ id: 1, jobId, ...roundData });
+
+    const result = await service.createRound(jobId, recruiterId, roundData);
+
+    expect(result).toEqual({ id: 1, jobId, ...roundData });
+    expect(mocks.prisma.round.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ name: roundData.name }),
+      })
+    );
+  });
+});
+
+describe("RecruiterService - updateRound", () => {
+  const service = new RecruiterService();
+  const jobId = 1;
+  const roundId = 5;
+  const recruiterId = 10;
+  const existingRound = { id: roundId, jobId, name: "Original Name", orderIndex: 0 };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should throw 409 if renamed to an existing name within the job", async () => {
+    mocks.prisma.job.findUnique.mockResolvedValue({ id: jobId, recruiterId });
+    mocks.prisma.round.findUnique.mockResolvedValue(existingRound);
+    mocks.prisma.round.findFirst.mockResolvedValue({ id: 99, jobId, name: "Duplicate Name" });
+
+    await expect(
+      service.updateRound(jobId, roundId, recruiterId, { name: "Duplicate Name" })
+    ).rejects.toMatchObject({ message: 'A round named "Duplicate Name" already exists for this job', statusCode: 409 });
+
+    expect(mocks.prisma.round.update).not.toHaveBeenCalled();
+  });
+
+  it("should skip duplicate check if name is unchanged", async () => {
+    mocks.prisma.job.findUnique.mockResolvedValue({ id: jobId, recruiterId });
+    mocks.prisma.round.findUnique.mockResolvedValue(existingRound);
+    mocks.prisma.round.update.mockResolvedValue(existingRound);
+
+    await service.updateRound(jobId, roundId, recruiterId, { name: "Original Name" });
+
+    expect(mocks.prisma.round.findFirst).not.toHaveBeenCalled();
+    expect(mocks.prisma.round.update).toHaveBeenCalled();
+  });
+
+  it("should allow update when new name is unique", async () => {
+    const updated = { ...existingRound, name: "Unique Name" };
+    mocks.prisma.job.findUnique.mockResolvedValue({ id: jobId, recruiterId });
+    mocks.prisma.round.findUnique.mockResolvedValue(existingRound);
+    mocks.prisma.round.findFirst.mockResolvedValue(null);
+    mocks.prisma.round.update.mockResolvedValue(updated);
+
+    const result = await service.updateRound(jobId, roundId, recruiterId, { name: "Unique Name" });
+
+    expect(result.name).toBe("Unique Name");
+    expect(mocks.prisma.round.update).toHaveBeenCalled();
   });
 });
