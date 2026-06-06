@@ -21,6 +21,10 @@ opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(r
 // Get GSoC organizations
 opensourceRouter.get("/gsoc/orgs", (req, res, next) => controller.getGsocOrgs(req, res, next));
 
+// Get recommended repos for student based on skills
+opensourceRouter.get("/recommended", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.getRecommendedRepos(req, res, next),
+);
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
 opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), (req, res, next) =>

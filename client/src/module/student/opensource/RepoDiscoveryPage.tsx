@@ -42,6 +42,7 @@ import { SuggestRepoModal } from "./SuggestRepoModal";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
+import { useCoachStore } from "./stores/coach.store";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -99,6 +100,7 @@ const SKILL_LANGUAGE_MAP: Record<string, string[]> = {
 
 export default function RepoDiscoveryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
   // Initialize filter states directly from the URL
   const search = searchParams.get("q") || "";
@@ -248,11 +250,32 @@ export default function RepoDiscoveryPage() {
   }, [bookmarks, showSaved]);
 
   const toggleBookmark = (id: number) => {
+    const isBookmarking = !bookmarks.includes(id);
+
     setBookmarks((prev) => {
-      const next = prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id];
+      const next = isBookmarking ? [...prev, id] : prev.filter((b) => b !== id);
       saveBookmarks(next);
       return next;
     });
+
+    if (isBookmarking) {
+      const repo = data?.repos?.find((r) => r.id === id);
+      if (repo) {
+        triggerCoach({
+          trigger: "REPO_BOOKMARKED",
+          context: {
+            skills: user?.skills || [],
+            bookmarkedRepos: [
+              {
+                name: repo.name,
+                language: repo.language,
+                domain: repo.domain || undefined,
+              },
+            ],
+          },
+        });
+      }
+    }
   };
 
   const handleShare = () => {

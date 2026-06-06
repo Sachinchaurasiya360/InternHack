@@ -413,4 +413,37 @@ where["OR"] = [
     });
     return progress.completedStepIds;
   }
+
+  async getRecommendedRepos(userId: number) {
+    // 1. Get student profile with skills
+    const student = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { skills: true },
+    });
+
+    const skills = student?.skills || [];
+    if (skills.length === 0) {
+      // Return trending repos as default fallback
+      return prisma.opensourceRepo.findMany({
+        where: { trending: true },
+        take: 6,
+        orderBy: { stars: "desc" },
+      });
+    }
+
+    // 2. Fetch repos matching skills (language or techStack subset)
+    // We search for repos where the primary language is in the student's skills
+    const repos = await prisma.opensourceRepo.findMany({
+      where: {
+        OR: [
+          { language: { in: skills, mode: "insensitive" } },
+          { trending: true },
+        ],
+      },
+      take: 8,
+      orderBy: [{ trending: "desc" }, { stars: "desc" }],
+    });
+
+    return repos;
+  }
 }
