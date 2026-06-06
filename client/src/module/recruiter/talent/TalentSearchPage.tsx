@@ -63,19 +63,29 @@ const labelClass =
 export default function TalentSearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const search = searchParams.get("search") || "";
+  const skills = searchParams.get("skills") || "";
+  const verifiedSkills = searchParams.get("verifiedSkills") || "";
+  const college = searchParams.get("college") || "";
+  const graduationYearMin = searchParams.get("graduationYearMin") || "";
+  const graduationYearMax = searchParams.get("graduationYearMax") || "";
+  const minAtsScore = Number(searchParams.get("minAtsScore")) || 0;
+  const location = searchParams.get("location") || "";
+  const jobStatus = searchParams.get("jobStatus") || "";
+
   const appliedFilters = useMemo<TalentFilters>(() => {
     return {
-      search: searchParams.get("search") || "",
-      skills: searchParams.get("skills") || "",
-      verifiedSkills: searchParams.get("verifiedSkills") || "",
-      college: searchParams.get("college") || "",
-      graduationYearMin: searchParams.get("graduationYearMin") || "",
-      graduationYearMax: searchParams.get("graduationYearMax") || "",
-      minAtsScore: Number(searchParams.get("minAtsScore")) || 0,
-      location: searchParams.get("location") || "",
-      jobStatus: searchParams.get("jobStatus") || "",
+      search,
+      skills,
+      verifiedSkills,
+      college,
+      graduationYearMin,
+      graduationYearMax,
+      minAtsScore,
+      location,
+      jobStatus,
     };
-  }, [searchParams]);
+  }, [search, skills, verifiedSkills, college, graduationYearMin, graduationYearMax, minAtsScore, location, jobStatus]);
 
   const page = Number(searchParams.get("page")) || 1;
 
