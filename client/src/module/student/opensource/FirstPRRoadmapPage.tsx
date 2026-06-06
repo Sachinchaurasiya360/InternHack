@@ -155,6 +155,7 @@ export default function FirstPRRoadmapPage() {
         description="Step-by-step roadmap to making your first pull request on GitHub. Learn git workflow, finding issues, and contributing to open source projects."
         keywords="first pull request, open source contribution, GitHub beginner, git workflow, contribute to open source"
         canonicalUrl={canonicalUrl("/student/opensource/first-pr")}
+        ogImage="/og/og-first-pr.png"
       />
 
       {/* Atmospheric background */}
@@ -282,11 +283,11 @@ export default function FirstPRRoadmapPage() {
 
       <ConfirmDialog
         open={showResetConfirm}
-        onOpenChange={setShowResetConfirm}
+        onCancel={() => setShowResetConfirm(false)}
         title="Reset progress?"
         description="This will clear all completed steps. Your server-side progress will be reset."
         confirmLabel="Reset"
-        variant="danger"
+        confirmVariant="danger"
         onConfirm={() => {
           const toReset = Array.from(completed);
           setCompleted(new Set());
