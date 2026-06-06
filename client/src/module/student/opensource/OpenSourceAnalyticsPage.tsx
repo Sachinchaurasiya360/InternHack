@@ -138,6 +138,27 @@ function ChartModal({ open, onClose, title, subtitle, children }: { open: boolea
   );
 }
 
+// ─── Accessible Chart ─────────────────────────────────────────────────
+function AccessibleChart({
+  label,
+  caption,
+  children,
+}: {
+  label: string;
+  caption: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <figure aria-label={label} tabIndex={0}>
+      {children}
+
+      <figcaption className="sr-only">
+        {caption}
+      </figcaption>
+    </figure>
+  );
+}
+
 // ─── Chart Card ─────────────────────────────────────────────────
 function ChartCard({ title, subtitle, index, children, expandedChildren, className = "" }: {
   title: string;
@@ -509,6 +530,7 @@ export default function OpenSourceAnalyticsPage() {
                   showButton
                 />
               ) : hasContributionActivity ? (
+                <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -518,6 +540,7 @@ export default function OpenSourceAnalyticsPage() {
                     <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
                   </BarChart>
                 </ResponsiveContainer>
+                </AccessibleChart>
               ) : (
                 <TrendEmptyState
                   message="Submit a repo suggestion and get it approved to start tracking your open source journey."
@@ -529,6 +552,7 @@ export default function OpenSourceAnalyticsPage() {
             {trendIsLoading ? (
               <TrendSkeleton />
             ) : hasContributionActivity ? (
+              <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -538,6 +562,7 @@ export default function OpenSourceAnalyticsPage() {
                   <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
                 </BarChart>
               </ResponsiveContainer>
+              </AccessibleChart>
             ) : trendIsError ? (
               <TrendEmptyState
                 message="We could not load your contribution trend right now. Try again in a moment."
@@ -741,6 +766,7 @@ export default function OpenSourceAnalyticsPage() {
                   {/* 1 - Category Distribution (Pie) */}
                   <ChartCard title="Category Distribution" subtitle="organizations by category" index={0}
                     expandedChildren={
+                      <AccessibleChart label="Pie chart showing distribution of GSoC organizations by category" caption="Pie chart representing the number of GSoC organizations across different categories such as web, security, development tools, and programming languages.">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie data={categoryData} cx="50%" cy="50%" innerRadius="25%" outerRadius="45%" dataKey="value" paddingAngle={2} stroke="none">
@@ -750,8 +776,10 @@ export default function OpenSourceAnalyticsPage() {
                           <Legend formatter={(v) => <span className="text-sm text-stone-400">{v}</span>} />
                         </PieChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Pie chart showing distribution of GSoC organizations by category" caption="Pie chart representing the number of GSoC organizations across different categories such as web, security, development tools, and programming languages.">
                     <ResponsiveContainer width="100%" height={260}>
                       <PieChart>
                         <Pie data={categoryData} cx="50%" cy="50%" innerRadius={55} outerRadius={95} dataKey="value" paddingAngle={2} stroke="none">
@@ -761,11 +789,13 @@ export default function OpenSourceAnalyticsPage() {
                         <Legend formatter={(v) => <span className="text-xs text-stone-500 dark:text-stone-400">{v}</span>} wrapperStyle={{ fontSize: 10 }} />
                       </PieChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 2 - Year Trend (Line) */}
                   <ChartCard title="Year-wise Participation" subtitle="organizations per year" index={1}
                     expandedChildren={
+                      <AccessibleChart label="Line chart showing GSoC organization participation by year" caption="Line chart displaying the number of organizations participating in Google Summer of Code each year.">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={yearTrendData}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -775,8 +805,10 @@ export default function OpenSourceAnalyticsPage() {
                           <Line type="monotone" dataKey="count" stroke="#a3e635" strokeWidth={2.5} dot={{ r: 4, fill: "#a3e635" }} activeDot={{ r: 6 }} name="Organizations" />
                         </LineChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Line chart showing GSoC organization participation by year" caption="Line chart displaying the number of organizations participating in Google Summer of Code each year.">
                     <ResponsiveContainer width="100%" height={260}>
                       <LineChart data={yearTrendData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -786,11 +818,13 @@ export default function OpenSourceAnalyticsPage() {
                         <Line type="monotone" dataKey="count" stroke="#a3e635" strokeWidth={2} dot={{ r: 3, fill: "#a3e635" }} activeDot={{ r: 5 }} name="Organizations" />
                       </LineChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 3 - Top Technologies */}
                   <ChartCard title="Top Technologies" subtitle="most common across orgs" index={2}
                     expandedChildren={
+                      <AccessibleChart label="Horizontal bar chart showing the most commonly used technologies across GSoC organizations" caption="Horizontal bar chart displaying the technologies most frequently used by GSoC organizations, ranked by organization count.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -802,8 +836,10 @@ export default function OpenSourceAnalyticsPage() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Horizontal bar chart showing the most commonly used technologies across GSoC organizations" caption="Horizontal bar chart displaying the technologies most frequently used by GSoC organizations, ranked by organization count.">
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -815,11 +851,13 @@ export default function OpenSourceAnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 4 - Top Topics */}
                   <ChartCard title="Top Topics" subtitle="most common topics" index={3}
                     expandedChildren={
+                      <AccessibleChart label="Horizontal bar chart showing the most common topics across GSoC organizations" caption="Horizontal bar chart displaying the most common project topics and focus areas among GSoC organizations.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -831,8 +869,10 @@ export default function OpenSourceAnalyticsPage() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Horizontal bar chart showing the most common topics across GSoC organizations" caption="Horizontal bar chart displaying the most common project topics and focus areas among GSoC organizations.">
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -844,11 +884,13 @@ export default function OpenSourceAnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 5 - Top Orgs by Projects */}
                   <ChartCard title="Top Organizations by Projects" subtitle="most gsoc projects" index={4}
                     expandedChildren={
+                      <AccessibleChart label="Bar chart showing GSoC organizations with the highest number of projects" caption="Bar chart displaying the top GSoC organizations ranked by total number of Google Summer of Code projects.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={topProjectsData} margin={{ left: 10 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -860,8 +902,10 @@ export default function OpenSourceAnalyticsPage() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Bar chart showing GSoC organizations with the highest number of projects" caption="Bar chart displaying the top GSoC organizations ranked by total number of Google Summer of Code projects.">
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={topProjectsData} margin={{ left: 10 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -873,11 +917,13 @@ export default function OpenSourceAnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 6 - Longevity Distribution */}
                   <ChartCard title="Longevity Distribution" subtitle="years active in gsoc" index={5}
                     expandedChildren={
+                      <AccessibleChart label="Bar chart showing how long organizations have participated in GSoC" caption="Bar chart displaying the number of organizations grouped by years of participation in Google Summer of Code.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={yearCountData}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -887,8 +933,10 @@ export default function OpenSourceAnalyticsPage() {
                           <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Organizations" />
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Bar chart showing how long organizations have participated in GSoC" caption="Bar chart displaying the number of organizations grouped by years of participation in Google Summer of Code.">
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={yearCountData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -898,6 +946,7 @@ export default function OpenSourceAnalyticsPage() {
                         <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Organizations" />
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
                 </div>
 
@@ -928,6 +977,7 @@ export default function OpenSourceAnalyticsPage() {
 
                   {selectedOrgs.length >= 2 ? (
                     <div className="max-w-xl mx-auto">
+                      <AccessibleChart label="Radar chart comparing selected GSoC organizations" caption="Radar chart comparing selected organizations based on projects, years active, technologies, and topics.">
                       <ResponsiveContainer width="100%" height={300}>
                         <RadarChart data={radarData}>
                           <PolarGrid stroke="rgba(120,113,108,0.2)" />
@@ -940,6 +990,7 @@ export default function OpenSourceAnalyticsPage() {
                           <Tooltip {...tooltipStyle} />
                         </RadarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center h-32 text-stone-400 dark:text-stone-500 text-sm">
