@@ -218,7 +218,9 @@ export class BlogService {
 
     if (data.title !== undefined) {
       updateData.title = data.title;
-      updateData.slug = await this.generateSlug(data.title, id);
+      if (data.title !== existing.title) {
+        updateData.slug = await this.generateSlug(data.title, id);
+      }
     }
 
     if (data.content !== undefined) {

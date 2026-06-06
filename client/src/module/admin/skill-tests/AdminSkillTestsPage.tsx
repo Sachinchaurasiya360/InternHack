@@ -3,6 +3,7 @@ import { BadgeCheck, Plus, Pencil, Trash2, ChevronDown, ChevronRight, Save, X, L
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
+import toast from "../../../components/ui/toast";
 
 interface SkillTestQuestion {
   question: string;
@@ -63,7 +64,7 @@ export default function AdminSkillTestsPage() {
       setEditing(data.test);
       setCreating(false);
       setExpandedQ(null);
-    } catch { alert("Failed to load test"); }
+    } catch { toast.error("Failed to load test"); }
   };
 
   const handleCreate = () => {
@@ -78,14 +79,14 @@ export default function AdminSkillTestsPage() {
       await api.delete(`/admin/skill-tests/${id}`);
       setTests((prev) => prev.filter((t) => t.id !== id));
       if (editing?.id === id) { setEditing(null); setCreating(false); }
-    } catch { alert("Failed to delete"); }
+    } catch { toast.error("Failed to delete"); }
   };
 
   const handleToggle = async (id: number, isActive: boolean) => {
     try {
       await api.patch(`/admin/skill-tests/${id}/toggle`, { isActive });
       setTests((prev) => prev.map((t) => t.id === id ? { ...t, isActive } : t));
-    } catch { alert("Failed to toggle"); }
+    } catch { toast.error("Failed to toggle"); }
   };
 
   const handleSave = async () => {
@@ -116,7 +117,7 @@ export default function AdminSkillTestsPage() {
       setEditing(null);
       setCreating(false);
       fetchTests();
-    } catch { alert("Failed to save test"); }
+    } catch { toast.error("Failed to save test"); }
     finally { setSaving(false); }
   };
 

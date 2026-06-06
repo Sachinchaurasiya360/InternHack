@@ -1,5 +1,6 @@
-﻿import { prisma } from "../../database/db.js";
-import { cacheGet, cacheSet } from "../../utils/cache.js";
+import { prisma } from "../../database/db.js";
+import { cacheGet, cacheSet, cacheDelPattern } from "../../utils/cache.js";
+import type { CreateProfessorInput, UpdateProfessorInput } from "./professor.validation.js";
 
 const PROF_TTL = 3600;
 
@@ -105,6 +106,24 @@ export class ProfessorService {
     };
     await cacheSet(cacheKey, result, PROF_TTL);
     return result;
+  }
+
+  async create(data: CreateProfessorInput) {
+    const record = await prisma.iitProfessor.create({ data });
+    await cacheDelPattern("professors:");
+    return record;
+  }
+
+  async update(id: number, data: UpdateProfessorInput) {
+    const record = await prisma.iitProfessor.update({ where: { id }, data });
+    await cacheDelPattern("professors:");
+    return record;
+  }
+
+  async delete(id: number) {
+    const record = await prisma.iitProfessor.delete({ where: { id } });
+    await cacheDelPattern("professors:");
+    return record;
   }
 }
 

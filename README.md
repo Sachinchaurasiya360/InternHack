@@ -2,6 +2,21 @@
 
 **Prepare. Practice. Placed.**
 
+## Table of Contents 📑
+
+- [About InternHack](#about-internhack)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [API Overview](#api-overview)
+- [Production Build](#production-build)
+- [Contributing](#contributing)
+- [Contributors](#contributors)
+- [Project Support](#project-support)
+- [License](#license)
+
 ## About InternHack
 - AI-powered career and hiring platform
 - Helps students prepare for placements and internships
