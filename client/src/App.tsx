@@ -110,6 +110,7 @@ const HiringSignalPage = lazyWithRetry(() => import("./module/student/opensource
 const DeveloperGrowthPage = lazyWithRetry(() => import("./module/student/opensource/DeveloperGrowthPage"));
 const AiCoachPage = lazyWithRetry(() => import("./module/student/opensource/AiCoachPage"));
 const ProjectRecommendationsPage = lazyWithRetry(() => import("./module/student/opensource/ProjectRecommendationsPage"));
+const GapAnalysisPage = lazyWithRetry(() => import("./module/student/opensource/GapAnalysisPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
@@ -507,6 +508,7 @@ function App() {
               <Route path="growth" element={<DeveloperGrowthPage />} />
               <Route path="coach" element={<AiCoachPage />} />
               <Route path="project-recommendations" element={<ProjectRecommendationsPage />} />
+              <Route path="gap-analysis" element={<GapAnalysisPage />} />
               <Route path="contributions" element={<ContributionsDashboardPage />} />
               <Route path="read-codebase" element={<ReadCodebasePage />} />
               <Route path="read-codebase/:sectionSlug" element={<ReadCodebaseSectionPage />} />

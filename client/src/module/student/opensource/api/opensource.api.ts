@@ -227,3 +227,41 @@ export async function fetchProjectRecommendations(forceRefresh = false): Promise
   );
   return data;
 }
+
+export interface TargetRoleMatch {
+  roleName: string;
+  matchPercentage: number;
+  isTarget: boolean;
+}
+
+export interface SkillGap {
+  skillName: string;
+  status: "Missing" | "Weak" | "Strong";
+  importance: "High" | "Medium" | "Low";
+}
+
+export interface LearningPriority {
+  technology: string;
+  priority: "High" | "Medium" | "Low";
+  timeframe: string;
+  reason: string;
+}
+
+export interface GapAnalysisResult {
+  targetRoles: TargetRoleMatch[];
+  skillGaps: SkillGap[];
+  missingTechnologies: string[];
+  learningPriorities: LearningPriority[];
+  careerRecommendations: string[];
+  lastUpdated: string;
+}
+
+export async function fetchGapAnalysis(forceRefresh = false, targetRole?: string): Promise<GapAnalysisResult> {
+  const params = new URLSearchParams();
+  if (forceRefresh) params.append("refresh", "true");
+  if (targetRole) params.append("targetRole", targetRole);
+  const queryString = params.toString() ? `?${params.toString()}` : "";
+
+  const { data } = await api.get<GapAnalysisResult>(`/student/gap-analysis${queryString}`);
+  return data;
+}

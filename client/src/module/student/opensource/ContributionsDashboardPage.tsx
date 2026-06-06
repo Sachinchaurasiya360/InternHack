@@ -14,6 +14,7 @@ import {
   Briefcase,
   TrendingUp,
   FolderGit2,
+  Target,
 } from "lucide-react";
 import { fetchContributionsDashboard } from "./api/opensource.api";
 import { queryKeys } from "../../../lib/query-keys";
@@ -141,6 +142,12 @@ export default function ContributionsDashboardPage() {
               <Link to="/student/opensource/project-recommendations">
                 <FolderGit2 className="w-4 h-4 mr-1.5" />
                 Project Recommendations
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" className="border-white/20 text-white hover:bg-white/5 bg-transparent border">
+              <Link to="/student/opensource/gap-analysis">
+                <Target className="w-4 h-4 mr-1.5" />
+                Career Gap Analysis
               </Link>
             </Button>
           </div>
