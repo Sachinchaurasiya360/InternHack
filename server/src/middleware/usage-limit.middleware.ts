@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { Prisma, PrismaClientKnownRequestError, type UsageAction } from "@prisma/client";
+import { Prisma, type UsageAction } from "@prisma/client";
 import { prisma } from "../database/db.js";
 import { DAILY_LIMITS, getPlanTier } from "../config/usage-limits.js";
 
@@ -64,8 +64,13 @@ export function usageLimit(action: UsageAction) {
       (req as any).usageInfo = { used: result.used, limit: result.limit, action, tier: result.tier };
       next();
     } catch (err) {
-      if (err instanceof PrismaClientKnownRequestError && err.code === "P2034") {
-        // Serialization failure from a concurrent request hitting the same limit window.
+      // P2034 = Prisma serialization failure — a concurrent request won the race.
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        (err as { code: unknown }).code === "P2034"
+      ) {
         res.status(429).json({
           message: "Too many concurrent requests. Please try again in a moment.",
           usage: { action },
