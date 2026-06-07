@@ -106,14 +106,15 @@ export default function ApplicationDetail() {
   );
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
 
-const fetchDetail = useCallback(async (signal) => {
+  const fetchDetail = useCallback(async (signal?: AbortSignal) => {
     try {
       const res = await api.get(
         `/recruiter/applications/${applicationId}`,
         { signal }
       );
+      setApplication(res.data.application);
       return res.data.application;
-    } catch (err) {
+    } catch (err: any) {
       if (err.name !== "CanceledError" && err.name !== "AbortError") {
         console.error(err);
       }
@@ -128,11 +129,7 @@ const fetchDetail = useCallback(async (signal) => {
     const loadData = async () => {
       try {
         setLoading(true);
-        const applicationData = await fetchDetail(controller.signal);
-        
-        if (isMounted) {
-          setApplication(applicationData);
-        }
+        await fetchDetail(controller.signal);
       } catch (err) {
         // Errors are already logged in fetchDetail, handled here to prevent crashes
       } finally {

@@ -425,7 +425,7 @@ export default function RoadmapCanvasPage() {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 768 : false,
   );
-  const [isTouchDevice, setIsTouchDevice] = useState(() =>
+  const [isTouchDevice] = useState(() =>
     typeof window !== "undefined"
       ? "ontouchstart" in window || navigator.maxTouchPoints > 0
       : false,
@@ -496,7 +496,7 @@ export default function RoadmapCanvasPage() {
    const [showEditModal, setShowEditModal] = useState(false);
   const [title, setTitle] = useState("");
   const [shortDescription, setShortDescription] = useState("");
-  const [level, setLevel] = useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED">(
+  const [level, setLevel] = useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS">(
     "BEGINNER",
   );
   // Track previous percentComplete so we only fire the modal on the transition to 100
@@ -619,26 +619,24 @@ export default function RoadmapCanvasPage() {
     setDrawerTopicId(topicId);
   }, []);
   const handleUpdateRoadmap = async () => {
-  try {
-    await api.patch(`/roadmaps/${slug}`, {
-      title,
-      shortDescription,
-      level,
-    });
+    try {
+      await api.patch(`/roadmaps/${slug}`, {
+        title,
+        shortDescription,
+        level,
+      });
 
-    toast.success("Roadmap updated");
+      toast.success("Roadmap updated");
 
-    setShowEditModal(false);
+      setShowEditModal(false);
 
-    const detail = await api.get<EnrollmentResponse>(
-      `/roadmaps/me/enrollments/${enrollmentId}`,
-    );
-
-    setData(detail.data);
-  } catch {
-    toast.error("Failed to update roadmap");
-  }
-};
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId!),
+      });
+    } catch {
+      toast.error("Failed to update roadmap");
+    }
+  };
 
   const allTopics = useMemo(() => {
     if (!data) return [];

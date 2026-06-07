@@ -490,7 +490,7 @@ export default function MyApplicationsPage() {
       </div>
 
       <div className="mb-5 flex flex-wrap gap-2">
-  {[
+  {([
     "ALL",
     "APPLIED",
     "IN_PROGRESS",
@@ -498,7 +498,7 @@ export default function MyApplicationsPage() {
     "HIRED",
     "REJECTED",
     "WITHDRAWN",
-  ].map((status) => (
+  ] as const).map((status) => (
     <button
       key={status}
       onClick={() => {

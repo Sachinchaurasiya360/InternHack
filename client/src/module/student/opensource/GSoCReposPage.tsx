@@ -617,9 +617,6 @@ export default function GSoCReposPage() {
 
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
-  const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
   const { wishlist, toggle, has } = useWishlist();
   const [showWishlist, setShowWishlist] = useState(false);
 
