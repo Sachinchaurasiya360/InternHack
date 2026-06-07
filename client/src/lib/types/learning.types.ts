@@ -112,6 +112,15 @@ export interface DsaSheetStats {
   solved: number;
 }
 
+export interface DsaList {
+  slug: string;
+  title: string;
+  description: string;
+  total: number;
+  solved: number;
+  estimatedHours: number;
+}
+
 export interface DsaBookmarkItem {
   id: number;
   problemId: number;
