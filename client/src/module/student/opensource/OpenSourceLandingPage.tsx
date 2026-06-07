@@ -1,7 +1,9 @@
 ﻿import { useRef } from "react";
 import { Link, useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
+import api from "../../../lib/axios";
 import {
   ArrowRight,
   CheckCircle,
@@ -208,6 +210,13 @@ export default function OpenSourceLandingPage() {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
 
+  const { data: gsocStats } = useQuery({
+    queryKey: ["gsoc-stats"],
+    queryFn: () => api.get("/gsoc/stats").then((r) => r.data),
+    staleTime: 24 * 60 * 60 * 1000,
+  });
+  const orgCount = gsocStats?.total ?? 520;
+
   const handleExplore = () => {
     navigate(isAuthenticated ? "/student/opensource" : "/login");
   };
@@ -308,7 +317,7 @@ export default function OpenSourceLandingPage() {
             className="grid grid-cols-2 sm:grid-cols-4 gap-8 mt-16 pt-10 border-t border-stone-200 dark:border-white/10 max-w-lg"
           >
             {[
-              { value: "520", suffix: "+", label: "GSoC Orgs" },
+              { value: String(orgCount), suffix: "+", label: "GSoC Orgs" },
               { value: "20", suffix: "+", label: "Programs" },
               { value: "30", suffix: "+", label: "Hidden Gems" },
               { value: "100", suffix: "%", label: "Free to Use" },
@@ -594,7 +603,7 @@ export default function OpenSourceLandingPage() {
 
               <div className="md:col-span-2 p-10 md:p-16 flex flex-col justify-center gap-8">
                 {[
-                  { value: "520", suffix: "+", label: "GSoC orgs indexed" },
+                  { value: String(orgCount), suffix: "+", label: "GSoC orgs indexed" },
                   { value: "20", suffix: "+", label: "programs tracked" },
                   { value: "100", suffix: "%", label: "free forever" },
                 ].map((s) => (
