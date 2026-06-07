@@ -28,6 +28,7 @@ import { AchievementsSection } from "./components/AchievementsSection";
 import { SocialLinksSection } from "./components/SocialLinksSection";
 import { ResumesSection } from "./components/ResumesSection";
 import { cardCls } from "./components/styles";
+import { markLearningPathMilestone } from "../opensource/learning-paths.data";
 
 interface ProfileData {
   name: string;
@@ -135,6 +136,12 @@ export default function StudentProfilePage() {
     : [];
 
   // ── React Query: profile, verified skills, job prefs ─────────────────
+  useEffect(() => {
+    if (form.githubUrl.trim()) {
+      markLearningPathMilestone("github-oauth");
+    }
+  }, [form.githubUrl]);
+
   const { data: profileUser, isLoading } = useQuery({
     queryKey: queryKeys.profile.me(),
     queryFn: () => api.get("/auth/me").then((r) => r.data.user),

@@ -95,6 +95,7 @@ export class AdminOpensourceService {
     tags?: string[];
     highlights?: string[];
     trending?: boolean;
+    hacktoberfest?: boolean;
   }) {
     return prisma.opensourceRepo.create({
       data: {
@@ -118,6 +119,7 @@ export class AdminOpensourceService {
         tags: input.tags ?? [],
         highlights: input.highlights ?? [],
         trending: input.trending ?? false,
+        hacktoberfest: input.hacktoberfest ?? false,
       },
     });
   }
@@ -159,6 +161,8 @@ export class AdminOpensourceService {
       data.highlights = input["highlights"] as string[];
     if (input["trending"] !== undefined)
       data.trending = input["trending"] as boolean;
+    if (input["hacktoberfest"] !== undefined)
+      data.hacktoberfest = input["hacktoberfest"] as boolean;
 
     return prisma.opensourceRepo.update({ where: { id: repoId }, data });
   }

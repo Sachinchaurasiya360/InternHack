@@ -112,6 +112,7 @@ export const createRepoSchema = z.object({
   tags: z.array(z.string()).default([]),
   highlights: z.array(z.string()).default([]),
   trending: z.boolean().default(false),
+  hacktoberfest: z.boolean().default(false),
 });
 
 export const updateRepoSchema = createRepoSchema.partial();
@@ -347,7 +348,15 @@ export const broadcastEmailSchema = z.object({
 // ==================== AI PROVIDER MANAGEMENT ====================
 
 export const switchAIProviderSchema = z.object({
-  service: z.enum(["ATS_SCORE", "COVER_LETTER", "RESUME_GEN", "LATEX_CHAT","AI_ROADMAP_GENERATION"]),
+  service: z.enum([
+    "ATS_SCORE",
+    "COVER_LETTER",
+    "RESUME_GEN",
+    "LATEX_CHAT",
+    "EMAIL_CHAT",
+    "AI_ROADMAP_GENERATION",
+    "DSA_CODE_REVIEW",
+  ]),
   provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL", "CLAUDE"]),
   modelName: z.string().min(1, "Model name is required"),
 });
