@@ -266,20 +266,21 @@ export default function FirstPRRoadmapPage() {
       </motion.div>
 
       {/* Completion banner */}
-      <AnimatePresence>
-        {allDone && (
-          <GuideCompletionSection
-            headline="You're an open source contributor!"
-            subtitle={`You've completed all ${totalSteps} steps. Time to find your next issue!`}
-            certificateGuideName="First PR Roadmap"
-            accentWord="contributor"
-          />
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="mb-8 rounded-2xl border border-green-200/80 dark:border-green-800 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 p-5 shadow-lg shadow-green-100/40 dark:shadow-green-950/20 flex items-center gap-4"
-          >
+    <AnimatePresence>
+  {allDone && (
+    <>
+      <GuideCompletionSection
+        headline="You're an open source contributor!"
+        subtitle={`You've completed all ${totalSteps} steps. Time to find your next issue!`}
+        certificateGuideName="First PR Roadmap"
+        accentWord="contributor"
+      />
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className="mb-8 rounded-2xl border border-green-200/80 dark:border-green-800 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 p-5 shadow-lg ..."
+      >
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 dark:bg-white/5 border border-green-200/70 dark:border-green-800 shrink-0">
               <Trophy className="w-7 h-7 text-green-600 dark:text-green-400" />
             </div>
@@ -307,8 +308,9 @@ export default function FirstPRRoadmapPage() {
               </div>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+    </>
+  )}
+</AnimatePresence>
 
       <ConfirmDialog
         open={showResetConfirm}
