@@ -565,4 +565,56 @@ Rules:
     throw new Error("Invalid type");
   }
 
+  async getSavedJobs(studentId: number) {
+    const pref = await prisma.userJobPreference.findUnique({
+      where: { userId: studentId },
+      select: { savedJobIds: true },
+    });
+    if (!pref || pref.savedJobIds.length === 0) return [];
+
+    const jobs = await prisma.job.findMany({
+      where: { id: { in: pref.savedJobIds } },
+      include: { _count: { select: { applications: true } } },
+      orderBy: { createdAt: "desc" },
+    });
+
+    // Preserve the order from savedJobIds
+    const idOrder = pref.savedJobIds;
+    return idOrder.map((id) => jobs.find((j) => j.id === id)).filter(Boolean);
+  }
+
+  async saveJob(jobId: number, studentId: number) {
+    const job = await prisma.job.findUnique({ where: { id: jobId }, select: { id: true } });
+    if (!job) throw new Error("Job not found");
+
+    await prisma.userJobPreference.upsert({
+      where: { userId: studentId },
+      create: { userId: studentId, savedJobIds: [jobId] },
+      update: { savedJobIds: { push: jobId } },
+    }).catch(() => {
+      // If push caused a duplicate (same id in array), silently succeed
+    });
+  }
+
+  async unsaveJob(jobId: number, studentId: number) {
+    const pref = await prisma.userJobPreference.findUnique({
+      where: { userId: studentId },
+      select: { savedJobIds: true },
+    });
+    if (!pref) return;
+
+    const updated = pref.savedJobIds.filter((id) => id !== jobId);
+    await prisma.userJobPreference.update({
+      where: { userId: studentId },
+      data: { savedJobIds: updated },
+    });
+  }
+
+  async isJobSaved(jobId: number, studentId: number) {
+    const pref = await prisma.userJobPreference.findUnique({
+      where: { userId: studentId },
+      select: { savedJobIds: true },
+    });
+    return pref?.savedJobIds.includes(jobId) ?? false;
+  }
 }
