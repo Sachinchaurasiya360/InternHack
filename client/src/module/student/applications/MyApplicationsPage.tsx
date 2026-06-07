@@ -298,7 +298,7 @@ export default function MyApplicationsPage() {
   }, [applications, debouncedSearch, sortOption, statusFilter]);
 
   const filteredExternal = useMemo(() => {
-    let base = !debouncedSearch.trim()
+    const base = !debouncedSearch.trim()
       ? externalApplications
       : externalApplications.filter(
         (a) =>
@@ -306,17 +306,13 @@ export default function MyApplicationsPage() {
           a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
 
-    if (statusFilter !== "ALL") {
-      base = base.filter((a) => a.status === statusFilter);
-    }
-
     return [...base].sort((a, b) => {
       if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
       return 0;
     });
-  }, [externalApplications, debouncedSearch, sortOption, statusFilter]);
+  }, [externalApplications, debouncedSearch, sortOption]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;

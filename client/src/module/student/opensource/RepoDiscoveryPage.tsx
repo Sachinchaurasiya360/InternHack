@@ -387,7 +387,7 @@ export default function RepoDiscoveryPage() {
   const handleRefreshRecs = () => {
     setRecommendationRefreshToken((token) => token + 1);
   };
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, hacktoberfestOnly, page]);
+
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -440,7 +440,6 @@ export default function RepoDiscoveryPage() {
     if (viewedOnly) return recentlyViewed;
     return data?.repos ?? [];
   })();
-  const displayedRepos = showSaved ? (bookmarkedData ?? []) : (data?.repos ?? []);
 
   // Global stats fetched independently so the header strip stays accurate
   // regardless of active filters or page (replaces the old useMemo approach).
@@ -1382,60 +1381,3 @@ export default function RepoDiscoveryPage() {
   );
 }
 
-function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.opensource.list({ recommended: "true" }),
-    queryFn: async () => {
-      const res = await api.get<{ repos: OpenSourceRepo[] }>("/opensource/recommended");
-      return res.data;
-    },
-    staleTime: 10 * 60 * 1000,
-  });
-
-  if (isLoading) {
-    return (
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="h-4 w-32 bg-stone-200 dark:bg-white/10 rounded animate-pulse" />
-        </div>
-        <div className="flex gap-4 overflow-x-hidden">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="min-w-[280px] sm:min-w-[320px]">
-              <RepoCardSkeleton />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  const repos = data?.repos || [];
-  if (repos.length === 0) return null;
-
-  return (
-    <div className="mb-10 group/rec">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Wand2 className="w-4 h-4 text-lime-600 dark:text-lime-400" />
-          <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 uppercase tracking-tight">
-            Recommended for you
-          </h2>
-          <div className="h-px w-8 bg-stone-200 dark:bg-white/10 group-hover/rec:w-16 transition-all" />
-        </div>
-        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">
-          Based on your stack
-        </span>
-      </div>
-
-      <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-4">
-        <div className="flex gap-4 min-w-full">
-          {repos.map((repo, i) => (
-            <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
-              <RepoCard repo={repo} index={i} onSelect={onSelect} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}

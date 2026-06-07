@@ -8,6 +8,7 @@ import {
   Clock,
   Map as MapIcon,
   Search,
+  Sparkles,
   Users,
   Wand2,
 } from "lucide-react";

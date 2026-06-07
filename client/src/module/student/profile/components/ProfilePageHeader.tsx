@@ -10,7 +10,7 @@ interface ProfilePageHeaderProps {
 
 export function ProfilePageHeader({ profileCompletion, saving, onSave }: ProfilePageHeaderProps) {
   const [showSuccess, setShowSuccess] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     return () => clearTimeout(timerRef.current);

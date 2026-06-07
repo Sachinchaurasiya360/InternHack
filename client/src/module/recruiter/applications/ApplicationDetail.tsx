@@ -131,13 +131,6 @@ export default function ApplicationDetail() {
       try {
         setLoading(true);
         await fetchDetail(controller.signal);
-      } catch (err) {
-        // Errors are already logged in fetchDetail, handled here to prevent crashes
-        const applicationData = await fetchDetail(controller.signal);
-        
-        if (isMounted) {
-          setApplication(applicationData);
-        }
       } catch {
         // errors already logged in fetchDetail
       } finally {

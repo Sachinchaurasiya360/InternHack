@@ -1,9 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck, Wand2 } from "lucide-react";
+import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck, Wand2, GitPullRequest } from "lucide-react";
 import type { OpenSourceRepo, RecommendedRepo } from "../../../lib/types";
-import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck, GitPullRequest } from "lucide-react";
-import type { OpenSourceRepo } from "../../../lib/types";
 import { LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { Button } from "../../../components/ui/button";
