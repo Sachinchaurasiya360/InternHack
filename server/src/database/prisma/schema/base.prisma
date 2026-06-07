@@ -68,7 +68,6 @@ model user {
   createdSkillTests     skillTest[]                 @relation("SkillTestCreator")
   skillTestAttempts     skillTestAttempt[]          @relation("StudentSkillTestAttempts")
   aptitudeProgress      studentAptitudeProgress[]   @relation("StudentAptitudeProgress")
-  aptitudeTopicProgress studentAptitudeTopicProgress[] @relation("StudentAptitudeTopicProgress")
   studentBadges         studentBadge[]              @relation("StudentBadges")
   dsaProgress           studentDsaProgress[]        @relation("StudentDsaProgress")
   dsaSubmissions        dsaSubmission[]             @relation("StudentDsaSubmissions")
@@ -766,17 +765,16 @@ model aptitudeCategory {
 }
 
 model aptitudeTopic {
-  id          Int                            @id @default(autoincrement())
+  id          Int                @id @default(autoincrement())
   categoryId  Int
   name        String
-  slug        String                         @unique
+  slug        String             @unique
   description String?
-  orderIndex  Int                            @default(0)
+  orderIndex  Int                @default(0)
   sourceUrl   String?
-  createdAt   DateTime                       @default(now())
+  createdAt   DateTime           @default(now())
   questions   aptitudeQuestion[]
-  topicProgress studentAptitudeTopicProgress[]
-  category    aptitudeCategory               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category    aptitudeCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model aptitudeQuestion {
@@ -790,28 +788,12 @@ model aptitudeQuestion {
   optionE       String?
   correctAnswer String
   explanation   String?
-  difficulty    AptitudeDifficulty        @default(MEDIUM)
+  difficulty    String                    @default("MEDIUM")
   companies     String[]                  @default([])
   sourceUrl     String?
   createdAt     DateTime                  @default(now())
   topic         aptitudeTopic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
   progress      studentAptitudeProgress[]
-
-  @@index([topicId, difficulty])
-}
-
-model studentAptitudeTopicProgress {
-  id                Int                @id @default(autoincrement())
-  studentId         Int
-  topicId           Int
-  currentDifficulty AptitudeDifficulty @default(MEDIUM)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  student           user               @relation("StudentAptitudeTopicProgress", fields: [studentId], references: [id], onDelete: Cascade)
-  topic             aptitudeTopic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
-
-  @@unique([studentId, topicId])
-  @@index([studentId])
 }
 
 model studentAptitudeProgress {
@@ -1248,6 +1230,7 @@ enum AIServiceType {
   LATEX_CHAT
   EMAIL_CHAT
   AI_ROADMAP_GENERATION
+  DSA_CODE_REVIEW
 }
 
 enum BadgeCategory {
@@ -1320,12 +1303,6 @@ enum TestDifficulty {
   BEGINNER
   INTERMEDIATE
   ADVANCED
-}
-
-enum AptitudeDifficulty {
-  EASY
-  MEDIUM
-  HARD
 }
 
 enum UsageAction {
