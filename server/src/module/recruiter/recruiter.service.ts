@@ -201,20 +201,31 @@ export class RecruiterService {
     });
 
     // Re-index remaining *active* rounds only.
-    const remainingRounds = await prisma.round.findMany({
-      where: { jobId, isArchived: false },
-      orderBy: { orderIndex: "asc" },
-    });
+    // Do it in a transaction to avoid partial updates.
+    await prisma.$transaction(async (tx) => {
+      // Move remaining active rounds to a temporary high range to avoid unique(jobId, orderIndex)
+      // collisions while shifting indices.
+      const remainingRounds = await tx.round.findMany({
+        where: { jobId, isArchived: false },
+        orderBy: { orderIndex: "asc" },
+        select: { id: true, orderIndex: true },
+      });
 
-    for (let i = 0; i < remainingRounds.length; i++) {
-      const r = remainingRounds[i]!;
-      if (r.orderIndex !== i) {
-        await prisma.round.update({
+      for (const r of remainingRounds) {
+        await tx.round.update({
+          where: { id: r.id },
+          data: { orderIndex: r.orderIndex + 10000 },
+        });
+      }
+
+      for (let i = 0; i < remainingRounds.length; i++) {
+        const r = remainingRounds[i]!;
+        await tx.round.update({
           where: { id: r.id },
           data: { orderIndex: i },
         });
       }
-    }
+    });
   }
 
 
@@ -227,6 +238,7 @@ export class RecruiterService {
       where: {
         id: { in: rounds.map((r) => r.roundId) },
         jobId,
+        isArchived: false,
       },
       select: { id: true },
     });
@@ -237,7 +249,7 @@ export class RecruiterService {
 
     // Use a transaction with temporary high indices to avoid unique constraint conflicts
     await prisma.$transaction(async (tx) => {
-      // First, set all to temporary high values
+      // First, set all to temporary high values (unique(jobId, orderIndex) safe)
       for (const r of rounds) {
         await tx.round.update({
           where: { id: r.roundId },
@@ -254,7 +266,7 @@ export class RecruiterService {
     });
 
     return prisma.round.findMany({
-      where: { jobId },
+      where: { jobId, isArchived: false },
       orderBy: { orderIndex: "asc" },
     });
   }
