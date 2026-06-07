@@ -149,7 +149,7 @@ function AccessibleChart({
   children: React.ReactNode;
 }) {
   return (
-    <figure aria-label={label} tabIndex={0}>
+    <figure role="img" aria-label={label} tabIndex={0}>
       {children}
 
       <figcaption className="sr-only">
