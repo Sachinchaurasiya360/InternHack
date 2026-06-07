@@ -5,7 +5,6 @@ import { SEO } from "../../components/SEO";
 import { PaginationControls } from "../../components/ui/PaginationControls";
 import { Button } from "../../components/ui/button";
 import api from "../../lib/axios";
-import toast from "../../components/ui/toast";
 
 interface Subscriber {
   id: number;
@@ -28,10 +27,7 @@ export default function AdminSubscribersPage() {
         setSubscribers(res.data.subscribers);
         setTotal(res.data.total);
       })
-      .catch((err) => {
-        console.error("Failed to fetch subscribers:", err);
-        toast.error("Failed to fetch subscribers");
-      })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, [page]);
 

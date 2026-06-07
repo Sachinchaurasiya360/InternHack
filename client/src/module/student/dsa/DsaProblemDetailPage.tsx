@@ -6,13 +6,12 @@ import {
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
-  History, Terminal, Lock, Crown, Code2, Flag, X, Sparkles,
+  History, Terminal, Lock, Crown, Code2, Flag, X,
 } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary, DsaSimilarProblem, DsaCodeReview } from "../../../lib/types";
-import { DsaAiReviewPanel } from "./components/DsaAiReviewPanel";
+import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary, DsaSimilarProblem } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
@@ -115,7 +114,7 @@ export default function DsaProblemDetailPage() {
   const [reportMessage, setReportMessage] = useState("");
 
   const [activeTab, setActiveTab] = useState<"problem" | "code">("problem");
-  const [rightTab, setRightTab] = useState<"results" | "history" | "output" | "ai-review">("results");
+  const [rightTab, setRightTab] = useState<"results" | "history" | "output">("results");
   const [language, setLanguage] = useState<DsaLanguage>("python");
   const [codeMap, setCodeMap] = useState<Record<DsaLanguage, string>>({
     python: DEFAULT_CODE.python,
@@ -247,20 +246,6 @@ export default function DsaProblemDetailPage() {
       }
     },
   });
-
-  const aiReviewMutation = useMutation({
-    mutationFn: (submissionId: number) =>
-      api.post<DsaCodeReview>(`/dsa/submissions/${submissionId}/review`).then((r) => r.data),
-    onError: (err: { response?: { status?: number; data?: { message?: string } } }) => {
-      if (err?.response?.status === 429) {
-        toast.error(err.response?.data?.message ?? "Daily limit reached");
-      } else {
-        toast.error(err?.response?.data?.message ?? "AI review failed");
-      }
-    },
-  });
-
-  useEffect(() => { aiReviewMutation.reset(); }, [problem?.id, aiReviewMutation]);
 
   const handleRun = useCallback(() => {
     if (!problem || !user || !isPremium) return;
@@ -659,7 +644,6 @@ export default function DsaProblemDetailPage() {
                       { key: "results" as const, label: "test results", icon: null },
                       { key: "output" as const, label: "output", icon: Terminal },
                       { key: "history" as const, label: "history", icon: History },
-                      { key: "ai-review" as const, label: "ai review", icon: Sparkles },
                     ]).map(({ key, label, icon: Icon }) => (
                       <button
                         key={key}
@@ -688,18 +672,6 @@ export default function DsaProblemDetailPage() {
                       <DsaTestResults result={executeMutation.data ?? null} isRunning={executeMutation.isPending} />
                     ) : rightTab === "output" ? (
                       <DsaConsoleOutput result={executeMutation.data ?? null} isRunning={executeMutation.isPending} />
-                    ) : rightTab === "ai-review" ? (
-                      <DsaAiReviewPanel
-                        review={aiReviewMutation.data ?? null}
-                        isLoading={aiReviewMutation.isPending}
-                        error={aiReviewMutation.error}
-                        onRequestReview={() => {
-                          if (executeMutation.data?.submissionId) {
-                            aiReviewMutation.mutate(executeMutation.data.submissionId);
-                          }
-                        }}
-                        hasSubmission={!!executeMutation.data?.submissionId}
-                      />
                     ) : (
                       <DsaSubmissionHistory submissions={submissions ?? []} onLoadCode={handleLoadSubmission} />
                     )}

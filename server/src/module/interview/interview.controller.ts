@@ -28,9 +28,8 @@ export class InterviewController {
   async getAll(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
-      const parsed = interviewQuerySchema.safeParse(req.query);
-      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
-      const data = await this.interviewService.getAll(req.user.id, parsed.data);
+      const query = interviewQuerySchema.parse(req.query);
+      const data = await this.interviewService.getAll(req.user.id, query);
       return res.json(data);
     } catch (error) {
       console.error(error);

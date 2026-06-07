@@ -20,7 +20,6 @@ import {
   CheckCircle,
   UserPlus,
   GripVertical,
-  GitPullRequest,
 } from "lucide-react";
 import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import {
@@ -33,7 +32,6 @@ import { CSS } from "@dnd-kit/utilities";
 import toast from "@/components/ui/toast";
 import { SEO } from "../../../components/SEO";
 import { useAuthStore } from "../../../lib/auth.store";
-import api from "../../../lib/axios";
 import type {
   ResumeData,
   TemplateId,
@@ -89,14 +87,6 @@ const REORDERABLE_SECTIONS = [
   "certifications",
 ] as const;
 const ORDER_STORAGE_KEY = "internhack-resume-section-order";
-
-type OssSectionResponse = {
-  title: string;
-  bullets: string[];
-  rawActivity: {
-    approvedRepos: Array<{ techStack?: string[] }>;
-  };
-};
 
 // ── Drag & Drop Wrapper ───────────────────────────────────────
 function SortableFormSection({
@@ -452,9 +442,6 @@ export default function ResumeBuilderPage() {
   };
   const [mobileView, setMobileView] = useState<"form" | "preview">("form");
   const [skillInput, setSkillInput] = useState("");
-  const [ossLoading, setOssLoading] = useState(false);
-  const [ossDraft, setOssDraft] = useState("");
-  const [ossTechStack, setOssTechStack] = useState<string[]>([]);
   const debouncedData = useDebounce(data, 300);
   const debouncedSectionOrder = useDebounce(sectionOrder, 300);
   const printRef = useRef<HTMLDivElement>(null);
@@ -614,54 +601,6 @@ export default function ResumeBuilderPage() {
     })), []);
   const removeProject = useCallback((id: string) =>
     setData((d) => ({ ...d, projects: d.projects.filter((p) => p.id !== id) })), []);
-
-  const generateOssSection = useCallback(async () => {
-    setOssLoading(true);
-    try {
-      const { data: section } = await api.get<OssSectionResponse>("/resume/oss-section");
-      const draft = section.bullets.map((bullet) => `- ${bullet.replace(/^[-*]\s*/, "")}`).join("\n");
-      const stack = [
-        ...new Set(
-          section.rawActivity.approvedRepos.flatMap((repo) => repo.techStack ?? []).filter(Boolean)
-        ),
-      ];
-      setOssDraft(draft);
-      setOssTechStack(stack);
-      setOpenSections((current) => ({ ...current, projects: true }));
-      toast.success("OSS section draft generated. Review it before inserting.");
-    } catch {
-      toast.error("Could not generate your OSS section. Try again in a moment.");
-    } finally {
-      setOssLoading(false);
-    }
-  }, []);
-
-  const insertOssSection = useCallback(() => {
-    const cleanedDraft = ossDraft
-      .split("\n")
-      .map((line) => line.trim().replace(/^[-*]\s*/, ""))
-      .filter(Boolean)
-      .map((line) => `- ${line}`)
-      .join("\n");
-
-    if (!cleanedDraft) {
-      toast.error("Add at least one OSS bullet before inserting.");
-      return;
-    }
-
-    const project: Project = {
-      id: uid(),
-      name: "Open Source Contributions",
-      description: cleanedDraft,
-      techStack: (ossTechStack.length > 0 ? ossTechStack : ["Open Source", "Git", "GitHub"]).join(", "),
-      link: user?.githubUrl ?? "",
-    };
-
-    setData((current) => ({ ...current, projects: [project, ...current.projects] }));
-    setOssDraft("");
-    setOssTechStack([]);
-    toast.success("OSS section inserted into your projects.");
-  }, [ossDraft, ossTechStack, user?.githubUrl]);
 
   const addCertification = useCallback(() =>
     setData((d) => ({
@@ -1027,54 +966,6 @@ export default function ResumeBuilderPage() {
                             onToggle={() => toggle("projects")}
                             delay={delay}
                           >
-                            <div className="mb-4 rounded-md border border-lime-200 dark:border-lime-400/20 bg-lime-50/70 dark:bg-lime-400/5 p-3">
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                <div>
-                                  <p className="text-xs font-bold text-stone-900 dark:text-stone-50">
-                                    Open Source Contributions
-                                  </p>
-                                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-                                    Generate bullets from approved repo requests, guide progress, and badges.
-                                  </p>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={generateOssSection}
-                                  disabled={ossLoading}
-                                  className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 disabled:opacity-60 disabled:cursor-not-allowed transition-colors border-0 cursor-pointer"
-                                >
-                                  <GitPullRequest className="w-3.5 h-3.5" />
-                                  {ossLoading ? "Generating..." : "Insert OSS Section"}
-                                </button>
-                              </div>
-                              {ossDraft && (
-                                <div className="mt-3 space-y-3">
-                                  <textarea
-                                    value={ossDraft}
-                                    onChange={(event) => setOssDraft(event.target.value)}
-                                    rows={5}
-                                    className={`${inputCls} font-mono leading-relaxed`}
-                                  />
-                                  <div className="flex flex-wrap gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={insertOssSection}
-                                      className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-bold text-white bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-950 dark:hover:bg-white transition-colors border-0 cursor-pointer"
-                                    >
-                                      <Plus className="w-3.5 h-3.5" />
-                                      Insert section
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => setOssDraft("")}
-                                      className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-bold text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-white/10 hover:bg-white dark:hover:bg-stone-950 transition-colors bg-transparent cursor-pointer"
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
                             <AnimatePresence>
                               {data.projects.map((proj) => (
                                 <ProjectRow key={proj.id} proj={proj} onUpdate={updateProject} onRemove={removeProject} />

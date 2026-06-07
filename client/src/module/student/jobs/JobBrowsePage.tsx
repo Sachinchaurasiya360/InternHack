@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   MapPin,
@@ -12,7 +12,6 @@ import {
   X,
   Landmark,
   ArrowUpRight,
-  Bookmark,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { ResultCount } from "../../../components/ui/ResultCount";
@@ -287,28 +286,6 @@ export default function JobBrowsePage() {
     },
     staleTime: 60_000,
     placeholderData: keepPreviousData,
-  });
-
-  const queryClient = useQueryClient();
-
-  const { data: savedIds } = useQuery({
-    queryKey: queryKeys.savedJobs.list(),
-    queryFn: () => api.get("/student/saved-jobs").then((res) => res.data.jobs as Job[]),
-    staleTime: 30_000,
-    select: (jobs) => new Set(jobs.map((j) => j.id)),
-  });
-
-  const { mutate: toggleSave } = useMutation({
-    mutationFn: async (jobId: number) => {
-      if (savedIds?.has(jobId)) {
-        await api.delete(`/student/jobs/${jobId}/save`);
-      } else {
-        await api.post(`/student/jobs/${jobId}/save`);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
-    },
   });
 
   const toggleTag = (tag: string) => {
@@ -832,45 +809,31 @@ export default function JobBrowsePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {(data?.jobs ?? []).map((job, i) => (
                       <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-                        <div className="relative">
-                          <JobCard
-                            to={`/jobs/${job.id}`}
-                            company={job.company || "C"}
-                            title={job.title}
-                            description={job.description}
-                            tags={job.tags}
-                            rightMeta={job._count ? `${job._count.applications} applied` : undefined}
-                            metaChips={
-                              <>
-                                <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
-                                <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
-                                {job.deadline && (
-                                  new Date(job.deadline) < new Date() ? (
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
-                                      <Clock className="w-3 h-3" /> expired
-                                    </span>
-                                  ) : (
-                                    <MetaChip icon={<Clock className="w-3 h-3" />}>
-                                      {new Date(job.deadline).toLocaleDateString()}
-                                    </MetaChip>
-                                  )
-                                )}
-                              </>
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSave(job.id); }}
-                            className={`absolute top-2 right-2 p-1.5 rounded-md transition-colors border-0 bg-transparent cursor-pointer z-10 ${
-                              savedIds?.has(job.id)
-                                ? "text-lime-600 dark:text-lime-400 hover:bg-lime-50 dark:hover:bg-lime-900/20"
-                                : "text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
-                            }`}
-                            title={savedIds?.has(job.id) ? "Remove from saved" : "Save job"}
-                          >
-                            <Bookmark className={`w-4 h-4 ${savedIds?.has(job.id) ? "fill-lime-600 dark:fill-lime-400" : ""}`} />
-                          </button>
-                        </div>
+                        <JobCard
+                          to={`/jobs/${job.id}`}
+                          company={job.company || "C"}
+                          title={job.title}
+                          description={job.description}
+                          tags={job.tags}
+                          rightMeta={job._count ? `${job._count.applications} applied` : undefined}
+                          metaChips={
+                            <>
+                              <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
+                              <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
+                              {job.deadline && (
+                                new Date(job.deadline) < new Date() ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
+                                    <Clock className="w-3 h-3" /> expired
+                                  </span>
+                                ) : (
+                                  <MetaChip icon={<Clock className="w-3 h-3" />}>
+                                    {new Date(job.deadline).toLocaleDateString()}
+                                  </MetaChip>
+                                )
+                              )}
+                            </>
+                          }
+                        />
                       </motion.div>
                     ))}
                   </div>

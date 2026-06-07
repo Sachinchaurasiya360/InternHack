@@ -3,7 +3,6 @@ import { exercisesSubqueryAggregate } from "./exercises-subquery-aggregate";
 import { exercisesJoins } from "./exercises-joins";
 import { exercisesWindowDdlDml } from "./exercises-window-ddl-dml";
 import { exercisesFunctionsSetops } from "./exercises-functions-setops";
-import { exercisesAdvancedReview } from "./exercises-advanced-review";
 
 export interface SqlExercise {
   id: string;
@@ -164,14 +163,6 @@ export const sections: SqlSection[] = [
     dataset: "world",
     orderIndex: 16,
   },
-  {
-    id: "advanced-sql-review",
-    title: "Advanced SQL Review",
-    description:
-      "Practice mixed interview-style SQL cases using window functions, CTEs, joins, NULL handling, string cleanup, and query plans.",
-    dataset: "mixed",
-    orderIndex: 17,
-  },
 ];
 
 export const exercises: SqlExercise[] = [
@@ -180,5 +171,4 @@ export const exercises: SqlExercise[] = [
   ...exercisesJoins,
   ...exercisesWindowDdlDml,
   ...exercisesFunctionsSetops,
-  ...exercisesAdvancedReview,
 ];

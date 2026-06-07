@@ -77,12 +77,4 @@ export const jobQuerySchema = z.object({
   includeExpired: coerceBoolean.default(false),
   salaryMin: z.coerce.number().int().nonnegative().optional(),
   salaryMax: z.coerce.number().int().nonnegative().optional(),
-}).refine((data) => {
-  if (data.salaryMin !== undefined && data.salaryMax !== undefined) {
-    return data.salaryMin <= data.salaryMax;
-  }
-  return true;
-}, {
-  message: "Minimum salary cannot be greater than maximum salary",
-  path: ["salaryMin"],
 });

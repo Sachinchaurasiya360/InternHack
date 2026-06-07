@@ -13,7 +13,6 @@ import { Button } from "../../../components/ui/button";
 import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import GitHubStatsCard from "./GitHubStatsCard";
-import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
 import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/types";
 
 interface PublicProfile {
@@ -293,11 +292,6 @@ export default function PublicProfilePage() {
               />
             </motion.div>
           )}
-
-          {/* Open Source Contribution Heatmap */}
-          <motion.div custom={2.5} variants={fadeInUp} initial="hidden" animate="visible">
-            <OssContributionHeatmap compact studentId={profile.id} />
-          </motion.div>
 
           {/* Projects */}
           {profile.projects.length > 0 && (

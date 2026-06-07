@@ -232,9 +232,6 @@ const STATUS_ORDER: Record<string, number> = {
   WITHDRAWN: 5,
 };
 
-const STATUS_TABS = ["ALL", "APPLIED", "IN_PROGRESS", "SHORTLISTED", "HIRED", "REJECTED", "WITHDRAWN"] as const;
-type StatusFilter = typeof STATUS_TABS[number];
-
 function sortApplications(
   apps: Application[],
   option: "newest" | "oldest" | "company" | "status"
@@ -259,7 +256,6 @@ export default function MyApplicationsPage() {
   const [page, setPage] = useState(1);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 200);
@@ -267,9 +263,9 @@ export default function MyApplicationsPage() {
   }, [search]);
 
   useEffect(() => {
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  setPage(1);
-}, [debouncedSearch, statusFilter]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1);
+  }, [debouncedSearch]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -284,39 +280,29 @@ export default function MyApplicationsPage() {
   const externalApplications = useMemo(() => data?.externalApplications ?? [], [data]);
 
   const filtered = useMemo(() => {
-    let base = !debouncedSearch.trim()
+    const base = !debouncedSearch.trim()
       ? applications
       : applications.filter(
         (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
-
-    if (statusFilter !== "ALL") {
-      base = base.filter(a => a.status === statusFilter);
-    }
-
     return sortApplications(base, sortOption);
-  }, [applications, debouncedSearch, sortOption, statusFilter]);
+  }, [applications, debouncedSearch, sortOption]);
 
-  const filteredExternal = useMemo(() => {
-    let base = !debouncedSearch.trim()
-      ? externalApplications
-      : externalApplications.filter(
+ const filteredExternal = useMemo(() => {
+  const base = !debouncedSearch.trim()
+    ? externalApplications
+    : externalApplications.filter(
         (a) =>
           a.adminJob.role?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
           a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
-
-    if (statusFilter !== "ALL") {
-      base = base.filter((a) => a.status === statusFilter);
-    }
-
-    return [...base].sort((a, b) => {
-      if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
-      return 0;
-    });
-  }, [externalApplications, debouncedSearch, sortOption, statusFilter]);
+  return [...base].sort((a, b) => {
+    if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
+    return 0;
+  });
+}, [externalApplications, debouncedSearch, sortOption]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;
@@ -397,8 +383,9 @@ export default function MyApplicationsPage() {
 
   if (isLoading) return <LoadingScreen />;
 
+
+
   const hasSearch = search.trim().length > 0;
-  const isFiltered = hasSearch || statusFilter !== "ALL";
 
   return (
     <div className="relative pb-16">
@@ -440,36 +427,16 @@ export default function MyApplicationsPage() {
         </div>
         {totalAll > 0 && (
           <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-            {isFiltered ? "showing" : "total"}{" "}
+            {hasSearch ? "showing" : "total"}{" "}
             <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-              {isFiltered ? totalFiltered : totalAll}
+              {hasSearch ? totalFiltered : totalAll}
             </span>
-            {isFiltered && (
+            {hasSearch && (
               <span className="ml-1">of {totalAll}</span>
             )}
           </div>
         )}
       </motion.div>
-
-      {/* Status Filter Tabs */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => {
-              setStatusFilter(tab);
-              setPage(1);
-            }}
-            className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-all ${
-              statusFilter === tab
-                ? "bg-lime-400 text-stone-900 border-lime-400"
-                : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 dark:hover:border-white/30"
-            }`}
-          >
-            {tab.replace("_", " ")}
-          </button>
-        ))}
-      </div>
 
       {/* Sort */}
       <div className="mb-4 flex items-center gap-2">
@@ -488,36 +455,7 @@ export default function MyApplicationsPage() {
           <option value="status">Status</option>
         </select>
       </div>
-
-      <div className="mb-5 flex flex-wrap gap-2">
-  {[
-    "ALL",
-    "APPLIED",
-    "IN_PROGRESS",
-    "SHORTLISTED",
-    "HIRED",
-    "REJECTED",
-    "WITHDRAWN",
-  ].map((status) => (
-    <button
-      key={status}
-      onClick={() => {
-        setStatusFilter(status);
-        setPage(1);
-      }}
-      className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
-        statusFilter === status
-          ? "bg-lime-400 text-stone-900 border-lime-400"
-          : "border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-      }`}
-    >
-      {status.replace("_", " ")}
-    </button>
-  ))}
-</div>
       {/* Search */}
-
-      
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
@@ -530,16 +468,13 @@ export default function MyApplicationsPage() {
         />
       </div>
 
-      {isFiltered && (
+      {hasSearch && (
         <div className="mb-6">
           <button
-            onClick={() => {
-              setSearch("");
-              setStatusFilter("ALL");
-            }}
+            onClick={() => setSearch("")}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
           >
-            <X className="w-3 h-3" /> clear all filters
+            <X className="w-3 h-3" /> clear search
           </button>
         </div>
       )}
@@ -566,15 +501,12 @@ export default function MyApplicationsPage() {
       ) : filtered.length === 0 && filteredExternal.length === 0 ? (
         <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
           <Search className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-          <p className="text-sm text-stone-500">No applications match your current filters.</p>
+          <p className="text-sm text-stone-500">No applications match your search.</p>
           <button
-            onClick={() => {
-              setSearch("");
-              setStatusFilter("ALL");
-            }}
+            onClick={() => setSearch("")}
             className="mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 bg-transparent border-0 cursor-pointer"
           >
-            Clear all filters
+            Clear search
           </button>
         </div>
       ) : (

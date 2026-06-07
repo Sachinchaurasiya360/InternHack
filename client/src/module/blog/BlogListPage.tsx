@@ -166,8 +166,7 @@ export default function BlogListPage() {
 
               {pagination && (
                 <span className="text-sm text-stone-400 dark:text-stone-500 ml-2">
-                  ({pagination.total} article
-                  {pagination.total !== 1 ? "s" : ""})
+                  ({pagination.total} article{pagination.total !== 1 ? "s" : ""})
                 </span>
               )}
             </div>

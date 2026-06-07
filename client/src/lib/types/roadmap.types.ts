@@ -87,8 +87,6 @@ export interface RoadmapListItem {
   isAiGenerated?: boolean;
   /** Set for AI-generated roadmaps that are not publicly published */
   ownerUserId?: number | null;
-  /** Creator name for community (publicly shared) roadmaps */
-  creatorName?: string | null;
 }
 
 export interface WeeklyPlanWeek {

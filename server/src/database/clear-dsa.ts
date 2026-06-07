@@ -17,8 +17,11 @@ async function main() {
   const del3 = await prisma.$executeRawUnsafe('DELETE FROM "dsaProblem"');
   console.log("Deleted problems:", del3);
 
-  const del4 = await prisma.$executeRawUnsafe('DELETE FROM "dsaTopic"');
-  console.log("Deleted topics:", del4);
+  const del4 = await prisma.$executeRawUnsafe('DELETE FROM "dsaSubTopic"');
+  console.log("Deleted subtopics:", del4);
+
+  const del5 = await prisma.$executeRawUnsafe('DELETE FROM "dsaTopic"');
+  console.log("Deleted topics:", del5);
 
   console.log("Done!");
   await prisma.$disconnect();

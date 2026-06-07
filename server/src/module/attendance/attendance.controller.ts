@@ -46,9 +46,8 @@ export class AttendanceController {
       const employeeId = Number(req.query["employeeId"]);
       if (isNaN(employeeId)) return res.status(400).json({ message: "employeeId required" });
 
-      const parsed = attendanceQuerySchema.safeParse(req.query);
-      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
-      const data = await this.attendanceService.getMyAttendance(employeeId, parsed.data);
+      const query = attendanceQuerySchema.parse(req.query);
+      const data = await this.attendanceService.getMyAttendance(employeeId, query);
       return res.json(data);
     } catch (error) {
       console.error(error);
@@ -98,9 +97,8 @@ export class AttendanceController {
 
   async getReport(req: Request, res: Response) {
     try {
-      const parsed = attendanceQuerySchema.safeParse(req.query);
-      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
-      const data = await this.attendanceService.getReport(parsed.data);
+      const query = attendanceQuerySchema.parse(req.query);
+      const data = await this.attendanceService.getReport(query);
       return res.json(data);
     } catch (error) {
       console.error(error);

@@ -120,7 +120,6 @@ export default function CompanyDetailPage() {
   const isInsideLayout = location.pathname.startsWith("/student/");
   const [sortBy, setSortBy] = useState("latest");
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
 
   const { 
     data: company, 

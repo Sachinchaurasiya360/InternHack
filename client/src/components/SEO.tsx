@@ -9,8 +9,6 @@ interface SEOProps {
   keywords?: string;
   canonicalUrl?: string;
   ogImage?: string;
-  /** Dark-mode OG image used for twitter:image (Discord fallback). Defaults to /og-image-dark.png. */
-  ogImageDark?: string;
   ogType?: string;
   noIndex?: boolean;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
@@ -20,14 +18,12 @@ const SITE_NAME = "InternHack";
 const DEFAULT_DESCRIPTION =
   "InternHack is an AI-powered career platform for students. Browse curated internships, score your resume with ATS AI, follow career roadmaps, and connect directly with recruiters.";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
-const DEFAULT_OG_IMAGE_DARK = `${SITE_URL}/og-image-dark.png`;
 
 export function SEO({
   title,
   description = DEFAULT_DESCRIPTION,
   canonicalUrl,
   ogImage = DEFAULT_OG_IMAGE,
-  ogImageDark = DEFAULT_OG_IMAGE_DARK,
   ogType = "website",
   noIndex = false,
   structuredData,
@@ -36,7 +32,6 @@ export function SEO({
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - AI-Powered Career Platform for Students`;
   const effectiveCanonical = canonicalUrl || `${SITE_URL}${pathname}`;
   const absoluteOgImage = ogImage.startsWith("http") ? ogImage : `${SITE_URL}${ogImage}`;
-  const absoluteOgImageDark = ogImageDark.startsWith("http") ? ogImageDark : `${SITE_URL}${ogImageDark}`;
 
   return (
     <Helmet>
@@ -59,7 +54,7 @@ export function SEO({
       <meta name="twitter:url" content={effectiveCanonical} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={absoluteOgImageDark} />
+      <meta name="twitter:image" content={absoluteOgImage} />
 
       {/* Canonical URL */}
       <link rel="canonical" href={effectiveCanonical} />

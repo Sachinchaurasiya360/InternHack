@@ -6,8 +6,6 @@ import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
-import { notifyLearningPathProgressChanged } from "../learning-paths.data";
-import { NextInPathCard } from "./NextInPathCard";
 
 interface Step { step: number; id: string; title: string; description: string ; estimatedMinutes?: number; }
 
@@ -21,7 +19,6 @@ interface Props {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
-  ogImage?: string;
   icon: LucideIcon;
   iconColor: string;         // e.g. "text-emerald-500"
 }
@@ -29,7 +26,6 @@ interface Props {
 export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
-  ogImage,
 }: Props) {
   const [completed, setCompleted] = useState<Set<string>>(() => {
     try {
@@ -43,7 +39,6 @@ export default function GuideListPage({
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
-      notifyLearningPathProgressChanged();
       return next;
     });
   }, [storageKey]);
@@ -59,7 +54,6 @@ export default function GuideListPage({
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
-  const currentSlug = basePath.split("/").pop() as "git-guide" | "communication" | "read-codebase" | "cicd";
 
   return (
     <div className="relative pb-12">
@@ -68,7 +62,6 @@ export default function GuideListPage({
         description={seoDescription}
         keywords={seoKeywords}
         canonicalUrl={canonicalUrl(basePath)}
-        ogImage={ogImage}
       />
 
       {/* Atmospheric background */}
@@ -201,8 +194,6 @@ export default function GuideListPage({
           );
         })}
       </div>
-
-      <NextInPathCard currentSlug={currentSlug} completed={allDone} />
     </div>
   );
 }

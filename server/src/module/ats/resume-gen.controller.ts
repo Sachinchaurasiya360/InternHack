@@ -3,6 +3,7 @@ import type { ResumeGenService } from "./resume-gen.service.js";
 import { generateResumeSchema } from "./resume-gen.validation.js";
 import type { UserProfile } from "./resume-gen.validation.js";
 import { prisma } from "../../database/db.js";
+import type { UsageAction } from "@prisma/client";
 
 export class ResumeGenController {
   constructor(private readonly resumeGenService: ResumeGenService) {}
@@ -69,6 +70,8 @@ export class ResumeGenController {
     latexContent: latex,
   },
 });
+
+      await prisma.usageLog.create({ data: { userId: req.user.id, action: "GENERATE_RESUME" as UsageAction } });
 
       const usage = req.usageInfo
         ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit }

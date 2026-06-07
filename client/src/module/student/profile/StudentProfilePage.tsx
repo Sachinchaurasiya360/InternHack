@@ -28,7 +28,6 @@ import { AchievementsSection } from "./components/AchievementsSection";
 import { SocialLinksSection } from "./components/SocialLinksSection";
 import { ResumesSection } from "./components/ResumesSection";
 import { cardCls } from "./components/styles";
-import { markLearningPathMilestone } from "../opensource/learning-paths.data";
 
 interface ProfileData {
   name: string;
@@ -136,12 +135,6 @@ export default function StudentProfilePage() {
     : [];
 
   // ── React Query: profile, verified skills, job prefs ─────────────────
-  useEffect(() => {
-    if (form.githubUrl.trim()) {
-      markLearningPathMilestone("github-oauth");
-    }
-  }, [form.githubUrl]);
-
   const { data: profileUser, isLoading } = useQuery({
     queryKey: queryKeys.profile.me(),
     queryFn: () => api.get("/auth/me").then((r) => r.data.user),
@@ -732,8 +725,8 @@ export default function StudentProfilePage() {
           {/* Coding activity */}
           <motion.div custom={9} variants={fadeInUp} initial="hidden" animate="visible">
             <ContributionGraphs
-              githubUsername={form.githubUrl ? form.githubUrl.split("/").filter(Boolean).pop() : undefined}
-              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("/").filter(Boolean).pop() : undefined}
+              githubUsername={form.githubUrl ? form.githubUrl.split("github.com/").pop()?.replace(/\/$/, "") : undefined}
+              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("leetcode.com/").pop()?.replace(/^\/?u\//, "").replace(/\/$/, "") : undefined}
               showPrompts
             />
           </motion.div>

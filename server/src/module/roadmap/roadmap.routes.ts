@@ -6,13 +6,11 @@ import {
   downloadCertificate,
   downloadPdf,
   enroll,
-  getCommunityRoadmaps,
   getMyEnrollmentAnalytics,
   getMyEnrollmentByRoadmapSlug,
   getMyEnrollment,
   deleteMyEnrollment,
   getMyEnrollments,
-  getMyEnrollmentsAnalyticsBatch,
   getRoadmap,
   getRoadmaps,
   getTopic,
@@ -20,15 +18,14 @@ import {
   postAiGenerate,
   postRecomputePace,
   updateRoadmap,
+  
   postRegenerateSection,
-  toggleShare,
 } from "./roadmap.controller.js";
 
 export const roadmapRouter = Router();
 
 roadmapRouter.post("/ai/generate", authMiddleware, aiRoadmapLimiter, postAiGenerate);
 roadmapRouter.get("/me/enrollments", authMiddleware, getMyEnrollments);
-roadmapRouter.get("/me/enrollments/analytics/batch", authMiddleware, getMyEnrollmentsAnalyticsBatch);
 roadmapRouter.get("/me/enrollments/:id/analytics", authMiddleware, getMyEnrollmentAnalytics);
 roadmapRouter.get("/me/enrollments/:id", authMiddleware, getMyEnrollment);
 roadmapRouter.delete("/me/enrollments/:id", authMiddleware, deleteMyEnrollment);
@@ -42,7 +39,7 @@ roadmapRouter.patch(
 roadmapRouter.patch(
   "/:slug",
   authMiddleware,
-  updateRoadmap,
+  updateRoadmap
 );
 roadmapRouter.post(
   "/me/enrollments/:id/recompute-pace",
@@ -51,10 +48,9 @@ roadmapRouter.post(
 );
 
 roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
-roadmapRouter.get("/community", getCommunityRoadmaps);
 roadmapRouter.get("/:slug/enrollment", authMiddleware, getMyEnrollmentByRoadmapSlug);
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);
+// Section-level AI regeneration — only for AI-generated roadmaps owned by the user
 roadmapRouter.post("/:slug/sections/:sectionId/regenerate", authMiddleware, aiRoadmapLimiter, postRegenerateSection);
-roadmapRouter.patch("/:slug/share", authMiddleware, toggleShare);

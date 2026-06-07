@@ -70,17 +70,11 @@ export function LocationDropdown({
     loc.toLowerCase().includes(query.trim().toLowerCase())
   ).slice(0, 10);
 
-  const [prevValue, setPrevValue] = useState(value);
-  const [prevOpen, setPrevOpen] = useState(open);
-
   // ── Sync external value → query when closed ────────────────────────────────
-  if (value !== prevValue || open !== prevOpen) {
-    setPrevValue(value);
-    setPrevOpen(open);
-    if (!open) {
-      setQuery(value);
-    }
-  }
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!open) setQuery(value);
+  }, [value, open]);
 
   const commitSelection = useCallback(() => {
     const trimmed = query.trim();

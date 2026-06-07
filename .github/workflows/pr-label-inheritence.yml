@@ -5,7 +5,7 @@ on:
     types: [opened, edited, reopened]
 
 permissions:
-  issues: write
+  issues: read
   pull-requests: write
 
 jobs:
@@ -81,7 +81,7 @@ jobs:
               console.log('PR created in October. Adding "hacktoberfest-accepted" label.');
             }
 
-            // 4. Apply labels in append-only mode — only add ones not already on the PR.
+            // 4. Apply labels — only add ones not already on the PR (idempotency guard)
             if (labelsToAdd.size > 0) {
               const { data: currentIssue } = await github.rest.issues.get({
                 owner: context.repo.owner,

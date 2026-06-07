@@ -18,7 +18,6 @@ import awsData from "./lessons/aws-cloud-fundamentals.json";
 import redisData from "./lessons/redis-caching.json";
 import securityData from "./lessons/web-security.json";
 import dbDesignData from "./lessons/database-design.json";
-import ossData from "./lessons/open-source-interview.json";
 
 export const sections: InterviewSection[] = interviewSections;
 
@@ -40,5 +39,4 @@ export const questions: InterviewQuestion[] = [
   ...(redisData as InterviewQuestion[]),
   ...(securityData as InterviewQuestion[]),
   ...(dbDesignData as InterviewQuestion[]),
-  ...(ossData as InterviewQuestion[]),
 ];

@@ -10,7 +10,6 @@ import { Button } from "../../../../components/ui/button";
 import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import api from "../../../../lib/axios";
-import { notifyLearningPathProgressChanged } from "../learning-paths.data";
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -58,7 +57,6 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       if (!step) return next;
       if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
-      notifyLearningPathProgressChanged();
       return next;
     });
   }, [step, storageKey]);

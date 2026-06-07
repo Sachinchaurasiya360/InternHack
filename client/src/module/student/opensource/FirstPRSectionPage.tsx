@@ -21,7 +21,6 @@ import {
 import guideData from "./data/open-source-guide.json";
 import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
 import { ReadingProgressBar } from "../../../components/ReadingProgressBar";
-import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource {
@@ -110,18 +109,15 @@ export default function FirstPRSectionPage() {
       return next;
     });
 
-    void patchFirstPRProgress(step.id, !isCurrentlyCompleted)
-      .then(() => notifyLearningPathProgressChanged())
-      .catch(() => {
-        setCompleted((prev) => {
-          const rolledBack = new Set(prev);
-          if (isCurrentlyCompleted) rolledBack.add(step.id);
-          else rolledBack.delete(step.id);
-          return rolledBack;
-        });
-        notifyLearningPathProgressChanged();
-        toast.error("Failed to update progress. Please try again.");
+    void patchFirstPRProgress(step.id, !isCurrentlyCompleted).catch(() => {
+      setCompleted((prev) => {
+        const rolledBack = new Set(prev);
+        if (isCurrentlyCompleted) rolledBack.add(step.id);
+        else rolledBack.delete(step.id);
+        return rolledBack;
       });
+      toast.error("Failed to update progress. Please try again.");
+    });
   }, [completed, step]);
 
   // ---> FIX: Define variables and call hook BEFORE the early return <---

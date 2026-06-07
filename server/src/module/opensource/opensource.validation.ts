@@ -23,11 +23,6 @@ export const repoIdSchema = z.object({
   id: z.coerce.number().int().positive("Invalid repo ID"),
 });
 
-export const repoOwnerNameSchema = z.object({
-  owner: z.string().min(1).max(200),
-  name: z.string().min(1).max(300),
-});
-
 export const submitRepoRequestSchema = z.object({
   name: z.string().min(1, "Repository name is required").max(300),
   owner: z.string().min(1, "Owner/org name is required").max(200),
@@ -75,9 +70,9 @@ export const bulkRepoRequestSchema = z.object({
 export const gsocOrgsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(100).optional().default(20),
-  search: z.string().min(1).max(200).optional(),
-  category: z.string().min(1).max(100).optional(),
-  technology: z.string().min(1).max(100).optional(),
+  search: z.string().optional(),
+  category: z.string().optional(),
+  technology: z.string().optional(),
   year: z.coerce.number().int().optional(),
 });
 

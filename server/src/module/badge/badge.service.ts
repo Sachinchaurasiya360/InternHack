@@ -52,40 +52,24 @@ export class BadgeService {
 
   async createBadge(input: CreateBadgeInput) {
     let slug = input.slug || slugify(input.name);
-
-    try {
-      const created = await prisma.badge.create({
-        data: {
-          name: input.name,
-          slug,
-          description: input.description,
-          iconUrl: input.iconUrl || null,
-          category: input.category,
-          criteria: JSON.parse(JSON.stringify(input.criteria)) as Prisma.InputJsonValue,
-          isActive: input.isActive ?? true,
-        },
-      });
-      await cacheDel(BADGES_CACHE_KEY);
-      return created;
-    } catch (error: any) {
-      if (error.code === "P2002") {
-        slug = `${slug}-${Date.now()}`;
-        const created = await prisma.badge.create({
-          data: {
-            name: input.name,
-            slug,
-            description: input.description,
-            iconUrl: input.iconUrl || null,
-            category: input.category,
-            criteria: JSON.parse(JSON.stringify(input.criteria)) as Prisma.InputJsonValue,
-            isActive: input.isActive ?? true,
-          },
-        });
-        await cacheDel(BADGES_CACHE_KEY);
-        return created;
-      }
-      throw error;
+    const existing = await prisma.badge.findUnique({ where: { slug } });
+    if (existing) {
+      slug = `${slug}-${Date.now()}`;
     }
+
+    const created = await prisma.badge.create({
+      data: {
+        name: input.name,
+        slug,
+        description: input.description,
+        iconUrl: input.iconUrl || null,
+        category: input.category,
+        criteria: JSON.parse(JSON.stringify(input.criteria)) as Prisma.InputJsonValue,
+        isActive: input.isActive ?? true,
+      },
+    });
+    await cacheDel(BADGES_CACHE_KEY);
+    return created;
   }
 
   async updateBadge(id: number, input: UpdateBadgeInput) {
@@ -96,20 +80,10 @@ export class BadgeService {
     if (input.name !== undefined) {
       data.name = input.name;
       if (!input.slug) {
-        let slug = slugify(input.name);
-        const existing = await prisma.badge.findFirst({ where: { slug, id: { not: id } } });
-        if (existing) slug = `${slug}-${Date.now()}`;
-        data.slug = slug;
+        data.slug = slugify(input.name);
       }
     }
-    if (input.slug !== undefined) {
-      const existing = await prisma.badge.findFirst({ where: { slug: input.slug, id: { not: id } } });
-      if (existing) {
-        data.slug = `${input.slug}-${Date.now()}`;
-      } else {
-        data.slug = input.slug;
-      }
-    }
+    if (input.slug !== undefined) data.slug = input.slug;
     if (input.description !== undefined) data.description = input.description;
     if (input.iconUrl !== undefined) data.iconUrl = input.iconUrl || null;
     if (input.category !== undefined) data.category = input.category;
@@ -118,19 +92,9 @@ export class BadgeService {
     }
     if (input.isActive !== undefined) data.isActive = input.isActive;
 
-    try {
-      const updated = await prisma.badge.update({ where: { id }, data });
-      await cacheDel(BADGES_CACHE_KEY);
-      return updated;
-    } catch (error: any) {
-      if (error.code === "P2002" && data.slug) {
-        data.slug = `${data.slug}-${Date.now()}`;
-        const updated = await prisma.badge.update({ where: { id }, data });
-        await cacheDel(BADGES_CACHE_KEY);
-        return updated;
-      }
-      throw error;
-    }
+    const updated = await prisma.badge.update({ where: { id }, data });
+    await cacheDel(BADGES_CACHE_KEY);
+    return updated;
   }
 
   async deleteBadge(id: number) {

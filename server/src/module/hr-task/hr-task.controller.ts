@@ -12,7 +12,7 @@ export class HRTaskController {
       const result = createTaskSchema.safeParse(req.body);
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
 
-      const creatorId = Number(req.user.id);
+      const creatorId = Number(req.body.creatorId ?? req.user.id);
       const task = await this.taskService.create(creatorId, result.data);
       return res.status(201).json({ message: "Task created", task });
     } catch (error) {

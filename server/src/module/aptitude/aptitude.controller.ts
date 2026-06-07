@@ -82,14 +82,4 @@ export class AptitudeController {
       next(err);
     }
   }
-
-  async getWeakAreas(req: Request, res: Response, next: NextFunction) {
-    try {
-      const studentId = req.user!.id;
-      const weakAreas = await this.service.getWeakAreas(studentId);
-      res.json(weakAreas);
-    } catch (err) {
-      next(err);
-    }
-  }
 }

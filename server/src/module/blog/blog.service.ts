@@ -21,14 +21,9 @@ interface ListAllParams {
 const authorSelect = { id: true, name: true, profilePic: true } as const;
 
 export class BlogService {
-  async generateSlug(title: string, excludeId?: number): Promise<string> {
+  async generateSlug(title: string): Promise<string> {
     let slug = slugify(title);
-    const existing = await prisma.blogPost.findFirst({
-      where: {
-        slug,
-        id: excludeId !== undefined ? { not: excludeId } : undefined,
-      },
-    });
+    const existing = await prisma.blogPost.findUnique({ where: { slug } });
     if (existing) {
       slug = `${slug}-${Date.now()}`;
     }
@@ -218,9 +213,7 @@ export class BlogService {
 
     if (data.title !== undefined) {
       updateData.title = data.title;
-      if (data.title !== existing.title) {
-        updateData.slug = await this.generateSlug(data.title, id);
-      }
+      updateData.slug = await this.generateSlug(data.title);
     }
 
     if (data.content !== undefined) {

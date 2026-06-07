@@ -425,7 +425,7 @@ export default function RoadmapCanvasPage() {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 768 : false,
   );
-  const [isTouchDevice] = useState(() =>
+  const [isTouchDevice, setIsTouchDevice] = useState(() =>
     typeof window !== "undefined"
       ? "ontouchstart" in window || navigator.maxTouchPoints > 0
       : false,
@@ -437,6 +437,10 @@ export default function RoadmapCanvasPage() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  }, []);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const graphOffsetsRef = useRef(new Map<number, { x: number; y: number }>());
@@ -481,9 +485,7 @@ export default function RoadmapCanvasPage() {
         );
         setWeakTopicTitles(slugs);
       })
-      .catch((err) => {
-        console.error("Failed to fetch recommendations:", err);
-      });
+      .catch(() => { });
   }, []);
 
   const toggleSection = useCallback((id: number) => {

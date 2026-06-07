@@ -129,14 +129,8 @@ export class WorkflowService {
       validatedPerformedBy = performedBy;
     }
 
-    let steps: unknown[];
-    let history: StepHistoryEntry[];
-    try {
-      steps = JSON.parse(instance.definition.steps as string) as unknown[];
-      history = JSON.parse(instance.stepHistory as string) as StepHistoryEntry[];
-    } catch {
-      throw new Error("Invalid workflow data: failed to parse definition steps or history");
-    }
+    const steps = JSON.parse(instance.definition.steps as string) as unknown[];
+    const history = JSON.parse(instance.stepHistory as string) as StepHistoryEntry[];
 
     history.push({
       step: instance.currentStep,

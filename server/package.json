@@ -18,7 +18,7 @@
   },
   "keywords": [],
   "author": "Sachin Chaurasiya",
-  "license": "MIT",
+  "license": "ISC",
   "type": "module",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",

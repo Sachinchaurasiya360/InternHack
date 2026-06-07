@@ -6,14 +6,14 @@ export const createReimbursementSchema = z.object({
   amount: z.number().positive(),
   currency: z.string().max(10).default("INR"),
   description: z.string().min(1).max(1000),
-  receiptUrls: z.array(z.string().url()).max(10, "Maximum of 10 receipts allowed").default([]),
+  receiptUrls: z.array(z.string().url()).default([]),
 });
 
 export const updateReimbursementSchema = z.object({
   category: z.string().min(1).max(100).optional(),
   amount: z.number().positive().optional(),
   description: z.string().min(1).max(1000).optional(),
-  receiptUrls: z.array(z.string().url()).max(10, "Maximum of 10 receipts allowed").optional(),
+  receiptUrls: z.array(z.string().url()).optional(),
 });
 
 export const approveReimbursementSchema = z.object({

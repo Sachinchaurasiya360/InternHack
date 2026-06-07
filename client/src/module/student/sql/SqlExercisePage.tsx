@@ -118,21 +118,6 @@ export default function SqlExercisePage() {
   const [dbReady, setDbReady] = useState(false);
   const [solved, setSolved] = useState(false);
 
-  const [prevExerciseId, setPrevExerciseId] = useState(exercise?.id);
-
-  if (exercise?.id !== prevExerciseId) {
-    setPrevExerciseId(exercise?.id);
-    setDbReady(false);
-    setResult(null);
-    setValidation(null);
-    setShowHints(0);
-    setShowExpected(false);
-
-    const savedEntry = exercise ? progress[exercise.id] : undefined;
-    setCode(savedEntry?.code || exercise?.starterCode || "");
-    setSolved(!!savedEntry?.solved);
-  }
-
   // Load database and exercise
   useEffect(() => {
     if (!exercise || !section) return;
@@ -146,8 +131,27 @@ export default function SqlExercisePage() {
       setDbReady(true);
     };
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDbReady(false);
+     
+    setResult(null);
+     
+    setValidation(null);
+     
+    setShowHints(0);
+     
+    setShowExpected(false);
+
+    // Restore saved code or use starter
+    const savedEntry = progress[exercise.id];
+     
+    setCode(savedEntry?.code || exercise.starterCode);
+     
+    setSolved(!!savedEntry?.solved);
+
     load();
-  }, [exercise, section]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exercise?.id, section?.id, progress]);
 
   const handleRun = useCallback(async () => {
     if (!exercise || !dbReady) return;

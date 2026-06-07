@@ -33,7 +33,8 @@ export class RecruiterController {
       return res.status(201).json({ message: "Round created successfully", round });
     } catch (error) {
       if (error instanceof Error) {
-        if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
+        const status = (error as Error & { status?: number }).status;
+        if (status) return res.status(status).json({ message: error.message });
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
@@ -76,7 +77,8 @@ export class RecruiterController {
       return res.status(200).json({ message: "Round updated successfully", round });
     } catch (error) {
       if (error instanceof Error) {
-        if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
+        const status = (error as Error & { status?: number }).status;
+        if (status) return res.status(status).json({ message: error.message });
         if (error.message === "Job not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
@@ -185,7 +187,8 @@ export class RecruiterController {
       return res.status(200).json({ message: "Application status updated", application });
     } catch (error) {
       if (error instanceof Error) {
-        if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
+        const status = (error as Error & { status?: number }).status;
+        if (status) return res.status(status).json({ message: error.message });
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
@@ -257,9 +260,9 @@ export class RecruiterController {
       return res.status(200).json({ message: "Submission evaluated successfully", submission });
     } catch (error) {
       if (error instanceof Error) {
-// Fix for #1116: Catch our custom 422 JSON parse error from the service
+// Fix for #1116: Catch our custom JSON parse error from the service
         const status = (error as Error & { status?: number }).status;
-        if (status === 422) return res.status(422).json({ message: error.message });
+        if (status) return res.status(status).json({ message: error.message });
 
         if (error.message === "Application not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });

@@ -137,12 +137,4 @@ export const interviewSections: InterviewSection[] = [
     level: "Advanced",
     freeTier: false,
   },
-  {
-    id: "open-source-interview",
-    title: "Open Source Contribution",
-    description: "Contribution workflow, Git best practices, PR etiquette, codebase navigation, and community collaboration.",
-    orderIndex: 17,
-    level: "Beginner",
-    freeTier: true,
-  },
 ];

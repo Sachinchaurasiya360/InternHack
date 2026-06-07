@@ -128,23 +128,29 @@ export class RecruiterService {
       where: { jobId, name: data.name },
     });
     if (existing) {
-      throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { statusCode: 409 });
+      throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { status: 409 });
     }
 
-    return prisma.round.create({
-      data: {
-        jobId,
-        name: data.name,
-        description: data.description ?? null,
-        orderIndex: data.orderIndex,
-        instructions: data.instructions ?? null,
-        customFields: data.customFields ? JSON.parse(JSON.stringify(data.customFields)) : [],
-        evaluationCriteria: data.evaluationCriteria ? JSON.parse(JSON.stringify(data.evaluationCriteria)) : [],
-        assessmentQuestions: data.assessmentQuestions ? JSON.parse(JSON.stringify(data.assessmentQuestions)) : [],
-        timeLimitSecs: data.timeLimitSecs ?? null,
-        autoGrade: data.autoGrade ?? false,
-        activateAt: data.activateAt ? new Date(data.activateAt) : null,
-      },
+    const parsedCustomFields = (data.customFields ?? []) as Prisma.InputJsonValue[];
+    const parsedEvaluationCriteria = (data.evaluationCriteria ?? []) as Prisma.InputJsonValue[];
+    const parsedAssessmentQuestions = (data.assessmentQuestions ?? []) as Prisma.InputJsonValue[];
+
+    return prisma.$transaction(async (tx) => {
+      return tx.round.create({
+        data: {
+          jobId,
+          name: data.name,
+          description: data.description ?? null,
+          orderIndex: data.orderIndex,
+          instructions: data.instructions ?? null,
+          customFields: parsedCustomFields,
+          evaluationCriteria: parsedEvaluationCriteria,
+          assessmentQuestions: parsedAssessmentQuestions,
+          timeLimitSecs: data.timeLimitSecs ?? null,
+          autoGrade: data.autoGrade ?? false,
+          activateAt: data.activateAt ? new Date(data.activateAt) : null,
+        },
+      });
     });
   }
 
@@ -175,9 +181,13 @@ export class RecruiterService {
         where: { jobId, name: data.name, id: { not: roundId } },
       });
       if (existing) {
-        throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { statusCode: 409 });
+        throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { status: 409 });
       }
     }
+
+    const parsedCustomFields = data.customFields as Prisma.InputJsonValue[] | undefined;
+    const parsedEvaluationCriteria = data.evaluationCriteria as Prisma.InputJsonValue[] | undefined;
+    const parsedAssessmentQuestions = data.assessmentQuestions as Prisma.InputJsonValue[] | undefined;
 
     return prisma.round.update({
       where: { id: roundId },
@@ -185,9 +195,9 @@ export class RecruiterService {
         ...(data.name !== undefined && { name: data.name }),
         ...(data.description !== undefined && { description: data.description }),
         ...(data.instructions !== undefined && { instructions: data.instructions }),
-        ...(data.customFields !== undefined && { customFields: JSON.parse(JSON.stringify(data.customFields)) }),
-        ...(data.evaluationCriteria !== undefined && { evaluationCriteria: JSON.parse(JSON.stringify(data.evaluationCriteria)) }),
-        ...(data.assessmentQuestions !== undefined && { assessmentQuestions: JSON.parse(JSON.stringify(data.assessmentQuestions)) }),
+        ...(parsedCustomFields !== undefined && { customFields: parsedCustomFields }),
+        ...(parsedEvaluationCriteria !== undefined && { evaluationCriteria: parsedEvaluationCriteria }),
+        ...(parsedAssessmentQuestions !== undefined && { assessmentQuestions: parsedAssessmentQuestions }),
         ...(data.timeLimitSecs !== undefined && { timeLimitSecs: data.timeLimitSecs }),
         ...(data.autoGrade !== undefined && { autoGrade: data.autoGrade }),
         ...(data.activateAt !== undefined && { activateAt: data.activateAt ? new Date(data.activateAt) : null }),
@@ -388,7 +398,7 @@ export class RecruiterService {
     if (!allowedNext.includes(status)) {
       throw Object.assign(
         new Error(`Cannot transition application status from ${application.status} to ${status}`),
-        { statusCode: 409 },
+        { status: 409 },
       );
     }
 
@@ -441,7 +451,11 @@ export class RecruiterService {
         orderBy: { orderIndex: "asc" },
       });
 
-      if (rounds.length === 0) throw new Error("No rounds are configured for this job. Please add at least one round before advancing applicants.");
+      if (rounds.length === 0) {
+        const err = new Error("No rounds are configured for this job. Please add at least one round before advancing applicants.");
+        (err as NodeJS.ErrnoException & { status?: number }).status = 422;
+        throw err;
+      }
 
       // Find current round index
       let currentIndex = -1;
@@ -514,7 +528,7 @@ export class RecruiterService {
       parsedScores = JSON.parse(JSON.stringify(evaluationScores));
     } catch (error) {
       const err = new Error("Invalid JSON format in evaluation data");
-      (err as any).status = 422;
+      (err as NodeJS.ErrnoException & { status?: number }).status = 422;
       throw err;
     }
 

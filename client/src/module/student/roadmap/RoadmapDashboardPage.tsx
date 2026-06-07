@@ -11,14 +11,12 @@ import {
   Loader2,
   X,
   Zap,
-  AlertTriangle,
-  CheckCircle2,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
-import type { RoadmapEnrollmentListItem, RoadmapEnrollmentAnalytics } from "../../../lib/types";
+import type { RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
 import {
@@ -62,19 +60,6 @@ export default function RoadmapDashboardPage() {
   });
 
   const enrollments = data?.enrollments || [];
-
-  const { data: batchAnalytics } = useQuery({
-    queryKey: [...queryKeys.roadmaps.enrollments(), "analytics-batch"],
-    queryFn: () =>
-      api
-        .get<{ analytics: RoadmapEnrollmentAnalytics[] }>("/roadmaps/me/enrollments/analytics/batch")
-        .then((r) => r.data),
-    staleTime: 5 * 60 * 1000,
-    enabled: enrollments.length > 0,
-  });
-  const analyticsMap = new Map(
-    (batchAnalytics?.analytics ?? []).map((a) => [a.enrollmentId, a]),
-  );
 
   const downloadPdf = async (id: number, slug: string) => {
     setDownloadingId(id);
@@ -255,15 +240,6 @@ export default function RoadmapDashboardPage() {
               e.roadmap.topicCount === 0
                 ? 0
                 : Math.round((completed / e.roadmap.topicCount) * 100);
-            const pace = analyticsMap.get(e.id);
-            const paceLabel =
-              pace?.onTrackStatus === "AHEAD"
-                ? { label: "Ahead", icon: CheckCircle2, cls: "text-emerald-600 dark:text-emerald-400" }
-                : pace?.onTrackStatus === "ON_TRACK"
-                  ? { label: "On Track", icon: CheckCircle2, cls: "text-lime-600 dark:text-lime-400" }
-                  : pace?.onTrackStatus === "BEHIND"
-                    ? { label: "Behind", icon: AlertTriangle, cls: "text-amber-600 dark:text-amber-400" }
-                    : null;
             return (
               <motion.article
                 key={e.id}
@@ -277,12 +253,6 @@ export default function RoadmapDashboardPage() {
                   <h2 className="text-lg font-bold text-gray-950 dark:text-white">
                     {e.roadmap.title}
                   </h2>
-                  {paceLabel && (
-                    <span className={`inline-flex items-center gap-1 text-xs font-mono font-bold shrink-0 ${paceLabel.cls}`}>
-                      <paceLabel.icon className="w-3.5 h-3.5" />
-                      {paceLabel.label}
-                    </span>
-                  )}
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">
                   {e.roadmap.shortDescription}
@@ -333,19 +303,6 @@ export default function RoadmapDashboardPage() {
                     <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />{" "}
                     {e.roadmap.estimatedHours}h total
                   </span>
-                  {pace && (
-                    <>
-                      <span className="inline-flex items-center gap-1">
-                        <Zap className="w-3.5 h-3.5" aria-hidden="true" />{" "}
-                        {pace.topicsCompletedThisWeek}/{pace.weeklyTarget} this week
-                      </span>
-                      {pace.estimatedCompletionDate && (
-                        <span className="text-[10px] text-gray-400">
-                          Est. {new Date(pace.estimatedCompletionDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-                        </span>
-                      )}
-                    </>
-                  )}
                 </div>
 
                 <div className="flex items-center gap-2">

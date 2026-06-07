@@ -28,11 +28,12 @@ export default function ProctoringCamera({ onViolation, onSnapshot, onError, onR
     onError,
   });
 
-  // Auto-start camera on mount and re-create intervals when config changes
+  // Auto-start camera on mount
   useEffect(() => {
     start();
     return () => stop();
-  }, [start, stop]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const statusColor =
     currentFaceCount === 1

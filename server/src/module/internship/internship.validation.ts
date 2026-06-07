@@ -13,7 +13,7 @@ export const createGovInternshipSchema = z.object({
   timeline: z.string().min(1, "Timeline is required"),
   organizer: z.string().min(1, "Organizer is required"),
   domain: z.string().min(1, "Domain is required"),
-  stipend: z.string().min(1, "Stipend is required").max(500),
+  stipend: z.string().min(1, "Stipend is required"),
   eligibility: z.string().min(1, "Eligibility is required"),
   reality: z.string().min(1, "Reality is required"),
   applyUrl: z.string().url("Must be a valid URL").regex(/^https?:\/\//i, "Must be a valid http(s) URL").optional().nullable(),
