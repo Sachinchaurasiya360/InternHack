@@ -228,7 +228,15 @@ export class OpensourceController {
         return;
       }
 
-      await service.rejectRepoRequest(id, req.body.adminNote);
+      const body = approveRequestOverrideSchema.safeParse(req.body);
+      if (!body.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: body.error.flatten()
+        });
+        return;
+      }
+      await service.rejectRepoRequest(id, body.data.adminNote);
       res.json({ message: "Request rejected" });
     } catch (err: any) {
       if (err.message === "Request not found") {
