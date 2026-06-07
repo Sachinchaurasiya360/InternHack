@@ -242,7 +242,7 @@ export default function InterviewQuestionPage() {
 
         <Link
           to={basePath}
-          className="mt-6 inline-flex items-center gap-2 px-4 py-2 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline"
+          className="mt-6 inline-flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline"
         >
           Browse all questions
           <ArrowUpRight className="w-3 h-3" />
