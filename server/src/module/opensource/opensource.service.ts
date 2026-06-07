@@ -126,7 +126,6 @@ export class OpensourceService {
         .filter((id: number) => !Number.isNaN(id));
       if (idList.length > 0) where["id"] = { in: idList };
     }
-const trimmedSearch = search?.trim();
 
     const trimmedSearch = search?.trim();
 
