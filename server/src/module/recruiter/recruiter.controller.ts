@@ -137,7 +137,9 @@ export class RecruiterController {
       const jobId = parseInt(String(req.params["jobId"]), 10);
       if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
 
-      const filter = applicationFilterSchema.parse(req.query);
+      const parsed = applicationFilterSchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const filter = parsed.data;
       const data = await this.recruiterService.getApplications(jobId, req.user.id, filter);
       return res.status(200).json(data);
     } catch (error) {
@@ -183,6 +185,7 @@ export class RecruiterController {
       return res.status(200).json({ message: "Application status updated", application });
     } catch (error) {
       if (error instanceof Error) {
+        if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }

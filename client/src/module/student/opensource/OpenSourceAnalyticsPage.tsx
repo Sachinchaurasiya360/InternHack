@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,6 +38,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { Button } from "../../../components/ui/button";
 import { SEO } from "../../../components/SEO";
+import { markLearningPathMilestone } from "./learning-paths.data";
 import type {
   GSoCOrganization,
   GSoCStats,
@@ -230,6 +231,10 @@ function TrendEmptyState({
 
 // ─── Page ───────────────────────────────────────────────────────
 export default function OpenSourceAnalyticsPage() {
+  useEffect(() => {
+    markLearningPathMilestone("leaderboard");
+  }, []);
+
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [filterYear, setFilterYear] = useState<string>("ALL");
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
@@ -416,54 +421,55 @@ export default function OpenSourceAnalyticsPage() {
   // Empty state: student has zero contributions
   if (!trendIsLoading && !trendIsError && contributionTotal === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center">
-        <div className="bg-indigo-50 rounded-full p-6 mb-5">
-          <BarChart3 className="w-12 h-12 text-indigo-400" />
+      <div className="pb-16">
+        <SEO title="Open Source Analytics" noIndex />
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <div className="w-14 h-14 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-5">
+            <BarChart3 className="w-7 h-7 text-lime-500" />
+          </div>
+          <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mb-2">
+            No contributions tracked yet
+          </h2>
+          <p className="text-sm text-stone-500 dark:text-stone-400 max-w-sm mb-6">
+            Submit a repo suggestion and get it approved to start tracking your open source journey.
+          </p>
+          <Link to="/student/opensource">
+            <Button variant="primary">Discover Repositories</Button>
+          </Link>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">
-          No contributions tracked yet
-        </h2>
-        <p className="text-gray-500 max-w-md mb-8">
-          Submit a repo suggestion and get it approved to start tracking
-          your open source journey.
-        </p>
-        <Link
-          to="/student/opensource"
-          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
-        >
-          Discover Repositories →
-        </Link>
       </div>
     );
   }
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+    <div className="pb-16">
       <SEO title="Open Source Analytics" noIndex />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8">
+      <div className="max-w-6xl mx-auto">
 
         {/* Editorial header */}
-        <div className="mb-8">
-          <div className="flex items-end justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5 leading-tight">
-                Open Source Analytics
-              </h1>
-              <p className="text-sm text-stone-600 dark:text-stone-400">
-                {allOrgs.length > 0
-                  ? `${orgs.length} of ${allOrgs.length} GSoC organizations${hasActiveFilter ? " (filtered)" : ""}${stats ? ` · ${stats.years.length} years · ${stats.technologies.length} technologies` : ""}`
-                  : "Your contribution activity and open source stats."
-                }
-              </p>
+        <div className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span className="h-1.5 w-1.5 bg-lime-400" />
+              open source / analytics
             </div>
-            <Link
-              to="/student/opensource"
-              className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
-            >
-              <ArrowLeft className="w-3 h-3" />
-              back to repos
-            </Link>
+            <h1 className="mt-3 text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
+              Open Source Analytics
+            </h1>
+            <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+              {allOrgs.length > 0
+                ? `${orgs.length} of ${allOrgs.length} GSoC organizations${hasActiveFilter ? " (filtered)" : ""}${stats ? ` · ${stats.years.length} years · ${stats.technologies.length} technologies` : ""}`
+                : "Your contribution activity and open source stats."
+              }
+            </p>
           </div>
+          <Link
+            to="/student/opensource"
+            className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline shrink-0"
+          >
+            <ArrowLeft className="w-3 h-3" />
+            back to repos
+          </Link>
         </div>
 
         {/* ── Contribution Heatmap ─────────────────────────────── */}

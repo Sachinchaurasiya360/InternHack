@@ -115,11 +115,18 @@ const fetchDetail = useCallback(async (signal) => {
     }
   }, [applicationId]);
 
+  const loadData = useCallback(async () => {
+    const applicationData = await fetchDetail();
+    if (applicationData) {
+      setApplication(applicationData);
+    }
+  }, [fetchDetail]);
+
   useEffect(() => {
     const controller = new AbortController();
     let isMounted = true;
 
-    const loadData = async () => {
+    const initialLoad = async () => {
       try {
         setLoading(true);
         const applicationData = await fetchDetail(controller.signal);
@@ -136,7 +143,7 @@ const fetchDetail = useCallback(async (signal) => {
       }
     };
 
-    loadData();
+    initialLoad();
 
     return () => {
       isMounted = false;
@@ -156,7 +163,7 @@ const fetchDetail = useCallback(async (signal) => {
   const handleAdvance = async () => {
     try {
       await api.patch(`/recruiter/applications/${applicationId}/advance`);
-      fetchDetail();
+      await loadData();
       toast.success("Application advanced");
     } catch {
       toast.error("Failed to advance");
@@ -168,7 +175,7 @@ const fetchDetail = useCallback(async (signal) => {
       await api.patch(`/recruiter/applications/${applicationId}/status`, {
         status,
       });
-      fetchDetail();
+      await loadData();
       toast.success("Status updated");
     } catch {
       toast.error("Failed to update status");
@@ -434,7 +441,7 @@ const fetchDetail = useCallback(async (signal) => {
                     criteria={sub.round?.evaluationCriteria || []}
                     onComplete={() => {
                       setEvaluatingRoundId(null);
-                      fetchDetail();
+                      loadData();
                     }}
                   />
                 </div>

@@ -15,20 +15,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
-
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<img[^>]*src=["']\/[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<img[^>]*src=["'][^"']*indiabix[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, "")
-    .replace(/Video\s*Explanation[\s\S]*?(?=<\/div>|$)/gi, "")
-    .replace(/<a[^>]*(?:youtube|youtu\.be|video)[^>]*>[\s\S]*?<\/a>/gi, "")
-    .replace(/\s*style=["'][^"']*["']/gi, "")
-    .replace(/<(div|span|p|font)\s*>\s*<\/\1>/gi, "")
-    .replace(/<\/?font[^>]*>/gi, "")
-    .replace(/\s*class=["'][^"']*["']/gi, "")
-    .trim();
-}
+import { sanitizeHtml } from "../../../lib/sanitize";
 
 interface QuestionResult {
   correct: boolean;
