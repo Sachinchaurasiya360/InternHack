@@ -55,7 +55,11 @@ const NAV_GROUPS: NavGroup[] = [
 
 export function useStudentSidebar() {
   const { user, logout } = useAuthStore();
-  const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
+  const isPremium =
+    user?.subscriptionStatus === "ACTIVE" &&
+    user?.subscriptionPlan !== "FREE" &&
+    user?.subscriptionEndDate &&
+    new Date(user.subscriptionEndDate) > new Date();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("sidebar-collapsed") === "true";

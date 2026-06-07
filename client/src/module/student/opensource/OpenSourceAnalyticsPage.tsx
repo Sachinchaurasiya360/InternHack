@@ -240,7 +240,11 @@ export default function OpenSourceAnalyticsPage() {
   }, []);
 
   const { user } = useAuthStore();
-  const isPremium = user?.subscriptionStatus === "ACTIVE" && user?.subscriptionPlan !== "FREE";
+  const isPremium =
+    user?.subscriptionStatus === "ACTIVE" &&
+    user?.subscriptionPlan !== "FREE" &&
+    user?.subscriptionEndDate &&
+    new Date(user.subscriptionEndDate) > new Date();
   const showHacktoberfestTracker = isHacktoberfestMode();
 
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);

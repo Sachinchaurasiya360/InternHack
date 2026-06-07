@@ -24,8 +24,6 @@ import {
   ShieldCheck,
   GitPullRequest,
   Award,
-  Globe,
-  Users,
   Crown,
 } from "lucide-react";
 import { DodoPayments } from "dodopayments-checkout";
@@ -93,8 +91,6 @@ const plans: Plan[] = [
       "Unlimited repo suggestions",
       "OSS portfolio page with custom URL",
       "Good first issues live feed (unlimited)",
-      "AI repo matching & recommendations",
-      "Mentor matching access",
       "Streak freeze tokens",
       "Weekly digest email",
       "Priority leaderboard placement",
@@ -137,10 +133,8 @@ const FEATURE_TILES = [
   { icon: <ShieldCheck className="w-4 h-4" />, label: "Skill Verification" },
   { icon: <GitPullRequest className="w-4 h-4" />, label: "OSS Analytics" },
   { icon: <Map className="w-4 h-4" />, label: "Career Roadmaps" },
-  { icon: <Globe className="w-4 h-4" />, label: "AI Repo Matching" },
   { icon: <Award className="w-4 h-4" />, label: "Grant Alerts" },
   { icon: <Building2 className="w-4 h-4" />, label: "YC Company Search" },
-  { icon: <Users className="w-4 h-4" />, label: "Mentor Matching" },
   { icon: <Star className="w-4 h-4" />, label: "Leaderboard Boost" },
   { icon: <Crown className="w-4 h-4" />, label: "Verified Certificate" },
 ];
