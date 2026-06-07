@@ -59,6 +59,10 @@ function ExerciseSection({
     const p = getLocalProgress();
     return p[lessonId]?.exercisesSolved ?? {};
   });
+  useEffect(() => {
+  setActiveIdx(0);
+  setSolved(getLocalProgress()[lessonId]?.exercisesSolved ?? {});
+}, [lessonId]);
 
   const exercise = exercises[activeIdx];
 
@@ -245,7 +249,10 @@ export default function FlaskLessonDetailPage() {
     const p = getLocalProgress();
     return !!p[lessonId ?? ""]?.completed;
   });
-
+useEffect(() => {
+  const p = getLocalProgress();
+  setCompleted(!!p[lessonId ?? ""]?.completed);
+}, [lessonId]);
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
   const sectionLessons = useMemo(
@@ -264,10 +271,10 @@ export default function FlaskLessonDetailPage() {
     setCompleted(newVal);
     if (newVal && isAuthenticated && sectionSlug) {
       const progress = getLocalProgress();
-      const allDone = sectionLessons.every((l) => progress[l.id]?.completed);
+      const allDone = lessons.every((l) => progress[l.id]?.completed);
       if (allDone) reportMilestone("COURSE_COMPLETE", "flask");
     }
-  }, [lessonId, isAuthenticated, sectionSlug, sectionLessons]);
+  }, [lessonId, isAuthenticated, sectionSlug]);
 
   if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
     return <Navigate to={basePath} replace />;
