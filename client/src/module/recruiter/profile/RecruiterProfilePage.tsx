@@ -40,9 +40,7 @@ const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
 function initials(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return "?";
-  return (
-    (parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")
-  ).toUpperCase();
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
 }
 
 export default function RecruiterProfilePage() {
@@ -101,22 +99,18 @@ export default function RecruiterProfilePage() {
   const handleProfilePicSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    // 1. Size Restriction
+
     if (file.size > MAX_IMAGE_SIZE) {
       toast.error("Image must be under 2 MB");
       if (picInputRef.current) picInputRef.current.value = "";
       return;
     }
-
-    // 2. Format Restriction (No webp allowed)
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Only JPG and PNG formats are allowed");
       if (picInputRef.current) picInputRef.current.value = "";
       return;
     }
-
     const reader = new FileReader();
     reader.onload = () => setCropSrc(reader.result as string);
     reader.readAsDataURL(file);
@@ -127,19 +121,19 @@ export default function RecruiterProfilePage() {
     setCropSrc(null);
     setUploadingPic(true);
     try {
-      const file = new File([blob], "cropped.jpg", { type: blob.type || "image/jpeg" });
+      const file = new File([blob], "cropped.jpg", {
+        type: blob.type || "image/jpeg",
+      });
       const res = await uploadDirectToS3({
         file,
         folder: "profile-pics",
         endpoint: "/profile-pic",
       });
-
       const u = res.user || res;
       let imagePath = u.profilePic || u.fileUrl || u.url || "";
       if (imagePath && !imagePath.startsWith("http")) {
         imagePath = `${api.defaults.baseURL?.replace("/api", "") || "http://localhost:3000"}/${imagePath.replace(/^\//, "")}`;
       }
-
       setForm((prev) => ({ ...prev, profilePic: imagePath }));
       setUser({ ...user!, profilePic: imagePath });
       toast.success("Profile picture updated!");
@@ -234,7 +228,6 @@ export default function RecruiterProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <SEO title="Recruiter Profile" noIndex />
-
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: 12 }}
@@ -268,7 +261,7 @@ export default function RecruiterProfilePage() {
           ) : (
             <Save className="w-4 h-4" />
           )}
-          {saving ? "Saving…" : "Save changes"}
+          {saving ? "Saving " : "Save changes"}
         </motion.button>
       </motion.header>
 
@@ -316,7 +309,6 @@ export default function RecruiterProfilePage() {
               className="hidden"
             />
           </div>
-
           <div className="flex-1 min-w-0">
             <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50 truncate">
               {form.name || "Your name"}
@@ -332,7 +324,6 @@ export default function RecruiterProfilePage() {
               </p>
             )}
           </div>
-
           <div className="w-full sm:w-56">
             <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5">
               <span>profile completeness</span>
@@ -415,17 +406,12 @@ export default function RecruiterProfilePage() {
       </Section>
 
       {/* About */}
-      <Section
-        title="About"
-        eyebrow="02 / pitch"
-        icon={AlignLeft}
-        delay={0.15}
-      >
+      <Section title="About" eyebrow="02 / pitch" icon={AlignLeft} delay={0.15}>
         <textarea
           value={form.bio}
           onChange={(e) => handleChange("bio", e.target.value)}
           className="w-full px-3 py-2.5 text-sm bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder:text-stone-400 focus:outline-none focus:border-lime-400 min-h-32 resize-none"
-          placeholder="Tell candidates a bit about yourself and your company…"
+          placeholder="Tell candidates a bit about yourself and your company"
           maxLength={500}
         />
         <p className="text-[11px] font-mono tabular-nums text-stone-400 dark:text-stone-500 mt-1.5 text-right">
