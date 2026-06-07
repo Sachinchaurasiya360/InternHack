@@ -75,7 +75,7 @@ export function AiHintPanel({ problemId }: { problemId: number }) {
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-stone-50 dark:hover:bg-stone-800/40 transition-colors border-0 bg-transparent cursor-pointer"
       >
-        <span className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
+          <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
           <Sparkles className="w-3 h-3 text-amber-500" />
           AI hints
           {hints.length > 0 && (
@@ -107,7 +107,7 @@ export function AiHintPanel({ problemId }: { problemId: number }) {
                   key={i}
                   className="bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-white/10 rounded-md p-3"
                 >
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[9px] font-mono uppercase tracking-widest text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-sm mb-2">
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-mono uppercase tracking-widest text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-sm mb-2">
                     <Check className="w-2.5 h-2.5" />
                     {LEVEL_LABELS[h.level as HintLevel] || h.level}
                   </div>
@@ -118,14 +118,14 @@ export function AiHintPanel({ problemId }: { problemId: number }) {
               ))}
 
               {allLevelsDone ? (
-                <p className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 text-center pt-1">
+                <p className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 text-center pt-1">
                   All hint levels revealed
                 </p>
               ) : (
                 <button
                   onClick={handleGetHint}
                   disabled={!canRequest}
-                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-[10px] font-mono uppercase tracking-widest border border-stone-300 dark:border-white/15 rounded-md text-stone-900 dark:text-stone-50 hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-mono uppercase tracking-widest border border-stone-300 dark:border-white/15 rounded-md text-stone-900 dark:text-stone-50 hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {hintMutation.isPending ? (
                     <span className="inline-flex items-center gap-2">
