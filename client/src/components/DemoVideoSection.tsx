@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
-import { Play, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router";
+
+const DEMO_VIDEO_URL = import.meta.env.VITE_DEMO_VIDEO_URL as
+  | string
+  | undefined;
 
 export function DemoVideoSection() {
   return (
@@ -46,59 +50,63 @@ export function DemoVideoSection() {
                 <span className="h-2.5 w-2.5 rounded-sm bg-stone-300 dark:bg-white/20" />
                 <span className="h-2.5 w-2.5 rounded-sm bg-stone-300 dark:bg-white/20" />
               </div>
+
               <span className="ml-2 text-xs font-mono text-stone-500">
                 internhack.xyz / demo
               </span>
+
               <span className="ml-auto flex items-center gap-1.5 text-xs font-mono text-stone-500">
                 <span className="h-1.5 w-1.5 rounded-full bg-lime-400 animate-pulse" />
-                coming soon
+                {DEMO_VIDEO_URL ? "playable demo" : "demo unavailable"}
               </span>
             </div>
 
-            <div className="relative aspect-video bg-stone-950 flex flex-col items-center justify-center gap-6 px-6 text-center">
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-10"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)",
-                  backgroundSize: "40px 40px",
-                }}
-              />
+            <div className="relative aspect-video bg-stone-950">
+              {DEMO_VIDEO_URL ? (
+                <iframe
+                  className="absolute inset-0 h-full w-full"
+                  src={DEMO_VIDEO_URL}
+                  title="InternHack product demo video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center gap-5 px-6 text-center">
+                  <p className="text-lg font-semibold text-stone-200">
+                    Demo video is currently unavailable
+                  </p>
 
-              <motion.div
-                whileHover={{ scale: 1.08 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="relative z-10 flex items-center justify-center w-20 h-20 rounded-2xl bg-lime-400/10 border border-lime-400/30 cursor-default"
-              >
-                <Play className="w-8 h-8 text-lime-400 fill-lime-400 ml-1" />
-              </motion.div>
+                  <p className="text-sm text-stone-500 max-w-sm mx-auto">
+                    Add a demo video URL through{" "}
+                    <code className="rounded bg-white/10 px-1.5 py-0.5 text-stone-300">
+                      VITE_DEMO_VIDEO_URL
+                    </code>{" "}
+                    to enable the playable walkthrough. You can still try the
+                    live ATS scorer and explore the platform directly.
+                  </p>
 
-              <div className="relative z-10 space-y-2">
-                <p className="text-lg font-semibold text-stone-200">
-                  Demo video coming soon
-                </p>
-                <p className="text-sm text-stone-500 max-w-sm mx-auto">
-                  Our 90-second product walkthrough is being recorded.
-                  In the meantime, try the live platform, no signup needed for the ATS scorer.
-                </p>
-              </div>
-
-              <Link to="/ats-score" className="relative z-10 no-underline">
-                <motion.div
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors"
-                >
-                  Try ATS scorer live
-                  <ArrowRight className="w-4 h-4" />
-                </motion.div>
-              </Link>
+                  <Link to="/ats-score" className="no-underline">
+                    <motion.div
+                      whileHover={{ scale: 1.03 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 20,
+                      }}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors"
+                    >
+                      Try ATS scorer live
+                      <ArrowRight className="w-4 h-4" />
+                    </motion.div>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 
           <p className="mt-4 text-center text-xs font-mono text-stone-500">
-            Full demo video drops soon · live product available at{" "}
+            Watch the product walkthrough or try the live platform at{" "}
             <a
               href="https://www.internhack.xyz"
               target="_blank"
