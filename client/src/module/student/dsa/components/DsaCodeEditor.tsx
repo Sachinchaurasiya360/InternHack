@@ -33,7 +33,7 @@ export function DsaCodeEditor({ value, onChange, onRun, language, onLanguageChan
   const handleChange = useCallback((val: string) => onChange(val), [onChange]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
         <select
