@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
@@ -65,6 +65,10 @@ opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), a
 
 opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.getStudentContributionTrend(req, res, next),
+);
+
+opensourceRouter.get("/analytics/hacktoberfest", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.getHacktoberfestProgress(req, res, next),
 );
 
 // Get open source activity
@@ -145,5 +149,10 @@ opensourceRouter.put("/requests/:id/reject", authMiddleware, requireRole("ADMIN"
 
 // ─── Public: Single Repo ───────────────────────────────────────
 
-// Must be AFTER all /requests/* and /first-pr/* routes
+// Must be AFTER all /requests/* and /first-pr/* routes.
+// /:owner/:name routes must appear BEFORE /:id so two-segment paths resolve correctly.
+opensourceRouter.get("/:owner/:name/issues", (req, res, next) =>
+  controller.getRepoGoodFirstIssues(req, res, next),
+);
+opensourceRouter.get("/:owner/:name", (req, res, next) => controller.getRepoByOwnerAndName(req, res, next));
 opensourceRouter.get("/:id", (req, res, next) => controller.getRepoById(req, res, next));

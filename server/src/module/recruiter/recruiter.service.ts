@@ -1,5 +1,5 @@
 import { prisma } from "../../database/db.js";
-import type { Prisma, ApplicationStatus } from "@prisma/client";
+import type { Prisma, ApplicationStatus, RoundStatus } from "@prisma/client";
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
@@ -28,6 +28,16 @@ function isValidS3Url(url: string) {
 }
 
 const logger = createLogger("recruiter.service");
+
+/** Legal manual status transitions for recruiter PATCH /applications/:id/status */
+const ALLOWED_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> = {
+  APPLIED: ["IN_PROGRESS", "REJECTED"],
+  IN_PROGRESS: ["SHORTLISTED", "REJECTED", "HIRED"],
+  SHORTLISTED: ["REJECTED", "HIRED"],
+  REJECTED: [],
+  HIRED: [],
+  WITHDRAWN: [],
+};
 
 interface TalentSearchFilter {
   page: number;
@@ -229,6 +239,11 @@ export class RecruiterService {
       throw new Error("Invalid round IDs");
     }
 
+    const totalRounds = await prisma.round.count({ where: { jobId } });
+    if (rounds.length !== totalRounds) {
+      throw new Error("All rounds must be included in the reorder request");
+    }
+
     // Use a transaction with temporary high indices to avoid unique constraint conflicts
     await prisma.$transaction(async (tx) => {
       // First, set all to temporary high values
@@ -372,6 +387,14 @@ export class RecruiterService {
     if (application.status === status) {
       const { job: _job, student: _student, ...current } = application;
       return current;
+    }
+
+    const allowedNext = ALLOWED_TRANSITIONS[application.status];
+    if (!allowedNext.includes(status)) {
+      throw Object.assign(
+        new Error(`Cannot transition application status from ${application.status} to ${status}`),
+        { statusCode: 409 },
+      );
     }
 
     const updated = await prisma.$transaction(async (tx) => {
@@ -611,27 +634,25 @@ export class RecruiterService {
       statusCounts[s.status] = s._count.id;
     }
 
-    const submissionLookup = new Map(
+    const submissionLookup = new Map<string, number>(
       submissionsByRoundAndStatus.map((s) => [
         `${s.roundId}:${s.status}`,
         s._count.id,
       ]),
     );
 
-    const roundAnalytics = rounds.map((round) => {
-      const lookup = (status: string) =>
-        submissionLookup.get(`${round.id}:${status}`) ?? 0;
+    const getSubmissionCount = (roundId: number, status: RoundStatus): number =>
+      submissionLookup.get(`${roundId}:${status}`) ?? 0;
 
-      return {
-        id: round.id,
-        name: round.name,
-        orderIndex: round.orderIndex,
-        totalSubmissions: round._count.roundSubmissions,
-        completed: lookup("COMPLETED"),
-        inProgress: lookup("IN_PROGRESS"),
-        pending: lookup("PENDING"),
-      };
-    });
+    const roundAnalytics = rounds.map((round) => ({
+      id: round.id,
+      name: round.name,
+      orderIndex: round.orderIndex,
+      totalSubmissions: round._count.roundSubmissions,
+      completed: getSubmissionCount(round.id, "COMPLETED"),
+      inProgress: getSubmissionCount(round.id, "IN_PROGRESS"),
+      pending: getSubmissionCount(round.id, "PENDING"),
+    }));
 
     return {
       jobId,
@@ -860,4 +881,4 @@ export class RecruiterService {
     });
   }
 }
-
+

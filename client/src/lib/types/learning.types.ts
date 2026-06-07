@@ -181,6 +181,17 @@ export interface DsaExecutionResult {
   submissionId: number;
 }
 
+export interface DsaCodeReview {
+  timeComplexity: string;
+  spaceComplexity: string;
+  readability: {
+    score: number;
+    feedback: string;
+  };
+  edgeCases: string[];
+  suggestions: string[];
+}
+
 export interface DsaSubmissionSummary {
   id: number;
   language: DsaLanguage;
@@ -268,6 +279,8 @@ export interface AptitudeQuestion {
   topicSlug?: string;
 }
 
+export type AptitudeDifficultyLevel = "EASY" | "MEDIUM" | "HARD";
+
 export interface AptitudeTopicDetail {
   id: number;
   name: string;
@@ -276,9 +289,19 @@ export interface AptitudeTopicDetail {
   categoryName: string;
   categorySlug: string;
   totalQuestions: number;
+  currentDifficulty?: AptitudeDifficultyLevel;
   page: number;
   totalPages: number;
   questions: AptitudeQuestion[];
+}
+
+export interface AptitudeAnswerResult {
+  correct: boolean;
+  correctAnswer: string;
+  explanation?: string;
+  currentDifficulty: AptitudeDifficultyLevel;
+  previousDifficulty: AptitudeDifficultyLevel;
+  difficultyChange: "increased" | "decreased" | null;
 }
 
 export interface AptitudeCompany {
@@ -299,4 +322,24 @@ export interface AptitudeProgress {
   totalAnswered: number;
   totalCorrect: number;
   currentStreak: number;
+}
+
+export interface AptitudeWeakAreaTopic {
+  topicId: number;
+  topicName: string;
+  topicSlug: string;
+  categoryName: string;
+  categorySlug: string;
+  answered: number;
+  correct: number;
+  accuracy: number;
+  isWeak: boolean;
+}
+
+export interface AptitudeWeakAreas {
+  totalAnswered: number;
+  minimumAnswered: number;
+  isReady: boolean;
+  topics: AptitudeWeakAreaTopic[];
+  focusRecommendations: AptitudeWeakAreaTopic[];
 }
