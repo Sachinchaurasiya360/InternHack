@@ -24,6 +24,7 @@ export default function DsaFoundationsHubPage() {
   useEffect(() => {
     if (overallPct === 100 && !localStorage.getItem("dsa-foundations:celebrated")) {
       localStorage.setItem("dsa-foundations:celebrated", "true");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowCelebration(true);
     }
   }, [overallPct]);

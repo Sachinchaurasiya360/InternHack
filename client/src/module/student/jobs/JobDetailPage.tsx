@@ -83,6 +83,29 @@ export default function JobDetailPage() {
     staleTime: 30 * 60 * 1000,
   });
 
+  const queryClient = useQueryClient();
+
+  const { data: isSaved } = useQuery({
+    queryKey: queryKeys.savedJobs.check(id!),
+    queryFn: () => api.get(`/student/jobs/${id}/save`).then((res) => res.data.saved as boolean),
+    enabled: !!id && isAuthenticated && user?.role === "STUDENT",
+    staleTime: 30_000,
+  });
+
+  const { mutate: toggleSave } = useMutation({
+    mutationFn: async () => {
+      if (isSaved) {
+        await api.delete(`/student/jobs/${id}/save`);
+      } else {
+        await api.post(`/student/jobs/${id}/save`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.check(id!) });
+    },
+  });
+
   const backPath = inStudentLayout ? "/student/jobs" : "/jobs";
   const applyPath = inStudentLayout ? `/student/jobs/${id}/apply` : `/jobs/${Number(id)}/apply`;
 
@@ -149,29 +172,6 @@ export default function JobDetailPage() {
     }
     await copyJobLink();
   };
-
-  const queryClient = useQueryClient();
-
-  const { data: isSaved } = useQuery({
-    queryKey: queryKeys.savedJobs.check(id!),
-    queryFn: () => api.get(`/student/jobs/${id}/save`).then((res) => res.data.saved as boolean),
-    enabled: !!id && isAuthenticated && user?.role === "STUDENT",
-    staleTime: 30_000,
-  });
-
-  const { mutate: toggleSave } = useMutation({
-    mutationFn: async () => {
-      if (isSaved) {
-        await api.delete(`/student/jobs/${id}/save`);
-      } else {
-        await api.post(`/student/jobs/${id}/save`);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.check(id!) });
-    },
-  });
 
   const ctaButton = isAuthenticated && user?.role === "STUDENT" ? (
     applicationStatus?.applied ? (

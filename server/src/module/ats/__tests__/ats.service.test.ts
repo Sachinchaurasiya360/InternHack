@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { Worker } from "worker_threads";
 import { AtsService } from "../ats.service.js";
 import { prisma } from "../../../database/db.js";
 import { getBufferFromS3, getS3KeyFromUrl } from "../../../utils/s3.utils.js";
@@ -128,6 +129,19 @@ describe("AtsService", () => {
     // Safe defaults — individual tests override what they need
     vi.mocked(getS3KeyFromUrl).mockReturnValue("intern-bucket/resume.pdf");
     vi.mocked(getBufferFromS3).mockResolvedValue(Buffer.from("pdf-binary-data"));
+
+    // Worker mock that resolves with text on the message event
+    vi.mocked(Worker).mockImplementation(function () {
+      const workerMock = {
+        on: vi.fn().mockImplementation((event: string, cb: (...args: any[]) => void) => {
+          if (event === "message") setTimeout(() => cb({ text: VALID_RESUME_TEXT }), 0);
+          return workerMock;
+        }),
+        terminate: vi.fn().mockResolvedValue(undefined),
+      };
+      return workerMock as any;
+    } as any);
+
     mockValidPdf(service);
     mockValidAI();
   });
@@ -216,46 +230,32 @@ describe("AtsService", () => {
     });
 
     it("fetches buffer from S3 when URL resolves to an S3 key", async () => {
-      mockUserOwnsResume();
-      mockCacheMiss();
-      vi.mocked(prisma.atsScore.create).mockResolvedValue(MOCK_ATS_ROW as any);
+      vi.spyOn(service as any, "extractPdfText").mockRestore();
 
-      await service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL });
+      await (service as any).extractPdfText(RESUME_URL);
 
       expect(getS3KeyFromUrl).toHaveBeenCalledWith(RESUME_URL);
       expect(getBufferFromS3).toHaveBeenCalledWith("intern-bucket/resume.pdf");
     });
 
     it("reads from local filesystem when URL starts with /uploads/", async () => {
+      vi.spyOn(service as any, "extractPdfText").mockRestore();
       const localUrl = "/uploads/resume-12345.pdf";
-      vi.mocked(prisma.user.findUnique).mockResolvedValue({
-        resumes: [localUrl],
-      } as any);
-      mockCacheMiss();
       vi.mocked(getS3KeyFromUrl).mockReturnValue(null);
       vi.mocked(readFile).mockResolvedValue(Buffer.from("local-pdf-data") as any);
-      vi.mocked(prisma.atsScore.create).mockResolvedValue({
-        ...MOCK_ATS_ROW,
-        resumeUrl: localUrl,
-      } as any);
 
-      await expect(
-        service.scoreResume(STUDENT_ID, { resumeUrl: localUrl }),
-      ).resolves.toBeDefined();
+      await (service as any).extractPdfText(localUrl);
 
       expect(readFile).toHaveBeenCalled();
     });
 
     it("throws 'Invalid resume URL format' for non-S3 non-upload URLs", async () => {
+      vi.spyOn(service as any, "extractPdfText").mockRestore();
       const badUrl = "ftp://example.com/resume.pdf";
-      vi.mocked(prisma.user.findUnique).mockResolvedValue({
-        resumes: [badUrl],
-      } as any);
-      mockCacheMiss();
       vi.mocked(getS3KeyFromUrl).mockReturnValue(null);
 
       await expect(
-        service.scoreResume(STUDENT_ID, { resumeUrl: badUrl }),
+        (service as any).extractPdfText(badUrl),
       ).rejects.toThrow("Invalid resume URL format");
     });
 

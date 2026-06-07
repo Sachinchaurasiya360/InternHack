@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Linkedin, Twitter, MessageCircle, Download, Award } from "lucide-react";
 import gsap from "gsap";
@@ -72,16 +72,15 @@ export function CompletionCelebration({
   userName,
 }: CompletionCelebrationProps) {
   const confettiRef = useRef<HTMLDivElement>(null);
-  const [cleanup, setCleanup] = useState<(() => void) | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (open && confettiRef.current) {
-      const c = createConfetti(confettiRef.current);
-      setCleanup(() => c);
+      cleanupRef.current = createConfetti(confettiRef.current);
     }
-    if (!open && cleanup) {
-      cleanup();
-      setCleanup(null);
+    if (!open && cleanupRef.current) {
+      cleanupRef.current();
+      cleanupRef.current = null;
     }
   }, [open]);
 
