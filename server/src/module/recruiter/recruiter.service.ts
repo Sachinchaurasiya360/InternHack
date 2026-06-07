@@ -239,6 +239,11 @@ export class RecruiterService {
       throw new Error("Invalid round IDs");
     }
 
+    const totalRounds = await prisma.round.count({ where: { jobId } });
+    if (rounds.length !== totalRounds) {
+      throw new Error("All rounds must be included in the reorder request");
+    }
+
     // Use a transaction with temporary high indices to avoid unique constraint conflicts
     await prisma.$transaction(async (tx) => {
       // First, set all to temporary high values
