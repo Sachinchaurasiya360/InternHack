@@ -181,6 +181,17 @@ export interface DsaExecutionResult {
   submissionId: number;
 }
 
+export interface DsaCodeReview {
+  timeComplexity: string;
+  spaceComplexity: string;
+  readability: {
+    score: number;
+    feedback: string;
+  };
+  edgeCases: string[];
+  suggestions: string[];
+}
+
 export interface DsaSubmissionSummary {
   id: number;
   language: DsaLanguage;
@@ -299,4 +310,24 @@ export interface AptitudeProgress {
   totalAnswered: number;
   totalCorrect: number;
   currentStreak: number;
+}
+
+export interface AptitudeWeakAreaTopic {
+  topicId: number;
+  topicName: string;
+  topicSlug: string;
+  categoryName: string;
+  categorySlug: string;
+  answered: number;
+  correct: number;
+  accuracy: number;
+  isWeak: boolean;
+}
+
+export interface AptitudeWeakAreas {
+  totalAnswered: number;
+  minimumAnswered: number;
+  isReady: boolean;
+  topics: AptitudeWeakAreaTopic[];
+  focusRecommendations: AptitudeWeakAreaTopic[];
 }

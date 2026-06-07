@@ -38,7 +38,7 @@
       - "**/lazy/**"
       - "**/perf/**"
       - "vite.config.*"
-      - "server/src/lib/redis/**"
+      - "server/src/config/redis.ts"
 
 "type:testing":
   - changed-files:
