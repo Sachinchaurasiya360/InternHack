@@ -16,6 +16,7 @@ export default function GitCheatsheetPage() {
       seoKeywords="git open source, fork clone workflow, git cheatsheet, git rebase, merge conflicts, pull request git"
       icon={GitBranch}
       iconColor="text-orange-500"
+      certificateGuideName="Git Cheatsheet"
     />
   );
 }
