@@ -72,12 +72,24 @@ export class OpensourceService {
       domain,
       sortBy,
       sortOrder,
+      trending,
+      hacktoberfest,
+      ids,
     } = query;
     const skip = (page - 1) * limit;
     const where: Record<string, any> = {};
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
+    if (trending === "true") where["trending"] = true;
+    if (hacktoberfest === "true") where["hacktoberfest"] = true;
+    if (ids) {
+      const idList = ids
+        .split(",")
+        .map((id: string) => Number(id))
+        .filter((id: number) => !Number.isNaN(id));
+      if (idList.length > 0) where["id"] = { in: idList };
+    }
 const trimmedSearch = search?.trim();
 
 if (trimmedSearch) {
@@ -350,6 +362,69 @@ where["OR"] = [
       where: { id },
       data: { status: "REJECTED", adminNote: adminNote || null },
     });
+  }
+
+  private static readonly HACKTOBERFEST_GOAL = 4;
+  private static readonly FIRST_PR_TOTAL_STEPS = 7;
+
+  async getHacktoberfestProgress(userId: number) {
+    const octStart = new Date(Date.UTC(2026, 9, 1));
+    const novStart = new Date(Date.UTC(2026, 10, 1));
+
+    const [approvedInOctober, repoSuggestionsInOctober, firstPrProgress] =
+      await Promise.all([
+        prisma.repoRequest.count({
+          where: {
+            userId,
+            status: "APPROVED",
+            createdAt: { gte: octStart, lt: novStart },
+          },
+        }),
+        prisma.repoRequest.count({
+          where: {
+            userId,
+            createdAt: { gte: octStart, lt: novStart },
+          },
+        }),
+        prisma.studentFirstPrProgress.findUnique({
+          where: { userId },
+          select: { completedStepIds: true },
+        }),
+      ]);
+
+    const completedSteps = firstPrProgress?.completedStepIds.length ?? 0;
+    const completed = Math.min(
+      OpensourceService.HACKTOBERFEST_GOAL,
+      approvedInOctober,
+    );
+    const goal = OpensourceService.HACKTOBERFEST_GOAL;
+
+    const nodeDefs = [
+      { id: 1, label: "1st PR", description: "First approved contribution" },
+      { id: 2, label: "2nd PR", description: "Second approved contribution" },
+      { id: 3, label: "3rd PR", description: "Third approved contribution" },
+      {
+        id: 4,
+        label: "Complete",
+        description: "Hacktoberfest goal reached",
+      },
+    ];
+
+    return {
+      completed,
+      goal,
+      percent: Math.round((completed / goal) * 100),
+      nodes: nodeDefs.map((node) => ({
+        ...node,
+        completed: approvedInOctober >= node.id,
+      })),
+      stats: {
+        approvedContributions: approvedInOctober,
+        repoSuggestions: repoSuggestionsInOctober,
+        firstPrStepsCompleted: completedSteps,
+        firstPrTotalSteps: OpensourceService.FIRST_PR_TOTAL_STEPS,
+      },
+    };
   }
 
   async getStudentContributionTrend(userId: number) {

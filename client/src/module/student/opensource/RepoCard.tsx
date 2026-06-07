@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck } from "lucide-react";
+import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck, GitPullRequest } from "lucide-react";
 import type { OpenSourceRepo } from "../../../lib/types";
 import { LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
@@ -62,6 +62,12 @@ export const RepoCard = React.memo(function RepoCard({
             <div className="absolute -top-2 right-12 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
               <Flame size={10} aria-hidden />
               trending
+            </div>
+          )}
+          {repo.hacktoberfest && (
+            <div className="absolute -top-2 left-3 inline-flex items-center gap-1 rounded-md bg-orange-600 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-white">
+              <GitPullRequest size={10} aria-hidden />
+              hacktoberfest
             </div>
           )}
 
