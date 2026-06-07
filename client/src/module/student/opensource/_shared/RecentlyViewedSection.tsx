@@ -3,21 +3,33 @@ import type { OpenSourceRepo } from "../../../../lib/types";
 interface RecentlyViewedSectionProps {
   repos: OpenSourceRepo[];
   onSelect: (repo: OpenSourceRepo) => void;
+  onClearHistory?: () => void;
 }
 
-export function RecentlyViewedSection({ repos, onSelect }: RecentlyViewedSectionProps) {
-  if (repos.length === 0) {
-    return null;
-  }
-
+export function RecentlyViewedSection({ repos, onSelect, onClearHistory }: RecentlyViewedSectionProps) {
   return (
     <div className="mb-6">
-      <div className="flex items-center gap-1.5 mb-2">
-        <div className="h-1 w-1 bg-lime-400"></div>
-        <h2 className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-          Recently Viewed
-        </h2>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-1.5">
+          <div className="h-1 w-1 bg-lime-400"></div>
+          <h2 className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            Recently Viewed {repos.length > 0 && `(${repos.length})`}
+          </h2>
+        </div>
+        {repos.length > 0 && onClearHistory && (
+          <button
+            type="button"
+            onClick={onClearHistory}
+            className="border-0 bg-transparent text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-red-500 transition-colors cursor-pointer"
+          >
+            Clear history
+          </button>
+        )}
       </div>
+      {repos.length === 0 && (
+        <p className="text-xs text-stone-400 dark:text-stone-500 py-2">Repos you open will appear here.</p>
+      )}
+      {repos.length > 0 && (
       <div className="relative">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-700 scrollbar-track-transparent">
           {repos.map((repo) => (

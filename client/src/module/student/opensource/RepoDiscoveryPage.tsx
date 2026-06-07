@@ -199,7 +199,7 @@ export default function RepoDiscoveryPage() {
     return Array.from(langs);
   }, [user]);
 
-  const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
+  const { recentlyViewed, addRepo, clearHistory } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     addRepo(repo);
@@ -634,7 +634,7 @@ export default function RepoDiscoveryPage() {
         <GuidanceCards />
 
         {/* Recently viewed & recommended */}
-        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
+        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} onClearHistory={clearHistory} />
 
         {user?.role === "STUDENT" && (
           <RecommendedSection onSelect={handleOpenRepo} />
