@@ -33,6 +33,12 @@ studentRouter.get("/applications/:applicationId/rounds/:roundId", (req, res) => 
 studentRouter.post("/applications/:applicationId/rounds/:roundId/submit", (req, res) => studentController.submitRound(req, res));
 studentRouter.put("/applications/:applicationId/rounds/:roundId/submit", (req, res) => studentController.submitRound(req, res));
 
+// Saved jobs (wishlist)
+studentRouter.get("/saved-jobs", (req, res) => studentController.getSavedJobs(req, res));
+studentRouter.post("/jobs/:jobId/save", (req, res) => studentController.saveJob(req, res));
+studentRouter.delete("/jobs/:jobId/save", (req, res) => studentController.unsaveJob(req, res));
+studentRouter.get("/jobs/:jobId/save", (req, res) => studentController.isJobSaved(req, res));
+
 // Mock interview
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));
 studentRouter.post("/mock-interview/book", (req, res, next) => studentController.bookMockInterview(req, res, next));

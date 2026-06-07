@@ -16,17 +16,19 @@ interface GuidanceCard {
   icon: LucideIcon;
   title: string;
   desc: string;
+  minutes: number;
+  steps: number;
 }
 
 const GUIDANCE_CARDS: GuidanceCard[] = [
-  { to: "/student/opensource/first-pr", icon: GitPullRequest, title: "Your First Contribution", desc: "10 steps from zero to your first merged PR" },
-  { to: "/student/opensource/gsoc", icon: Trophy, title: "GSoC Repos", desc: "Organisations accepted into Google Summer of Code" },
-  { to: "/student/opensource/gsoc-proposal", icon: Award, title: "GSoC Proposal Guide", desc: "Write a winning proposal in 8 steps" },
-  { to: "/student/opensource/programs", icon: GraduationCap, title: "Program Tracker", desc: "Deadlines for GSoC, LFX, MLH, Outreachy" },
-  { to: "/student/opensource/read-codebase", icon: BookOpen, title: "Read a Codebase", desc: "Understand unfamiliar code like a senior" },
-  { to: "/student/opensource/git-guide", icon: GitBranch, title: "Git for Open Source", desc: "Fork to PR workflow with copy, paste commands" },
-  { to: "/student/opensource/communication", icon: MessageSquare, title: "Communication Templates", desc: "Issues, PRs, reviews and bug reports" },
-  { to: "/student/opensource/cicd", icon: Settings, title: "CI / CD Basics", desc: "Fix lint, test and build errors" },
+  { to: "/student/opensource/first-pr", icon: GitPullRequest, title: "Your First Contribution", desc: "10 steps from zero to your first merged PR", minutes: 45, steps: 10 },
+  { to: "/student/opensource/gsoc", icon: Trophy, title: "GSoC Repos", desc: "Organisations accepted into Google Summer of Code", minutes: 30, steps: 6 },
+  { to: "/student/opensource/gsoc-proposal", icon: Award, title: "GSoC Proposal Guide", desc: "Write a winning proposal in 8 steps", minutes: 60, steps: 8 },
+  { to: "/student/opensource/programs", icon: GraduationCap, title: "Program Tracker", desc: "Deadlines for GSoC, LFX, MLH, Outreachy", minutes: 20, steps: 4 },
+  { to: "/student/opensource/read-codebase", icon: BookOpen, title: "Read a Codebase", desc: "Understand unfamiliar code like a senior", minutes: 45, steps: 7 },
+  { to: "/student/opensource/git-guide", icon: GitBranch, title: "Git for Open Source", desc: "Fork to PR workflow with copy, paste commands", minutes: 45, steps: 8 },
+  { to: "/student/opensource/communication", icon: MessageSquare, title: "Communication Templates", desc: "Issues, PRs, reviews and bug reports", minutes: 30, steps: 5 },
+  { to: "/student/opensource/cicd", icon: Settings, title: "CI / CD Basics", desc: "Fix lint, test and build errors", minutes: 60, steps: 6 },
 ];
 
 export const GuidanceCards = React.memo(function GuidanceCards() {
@@ -93,6 +95,9 @@ export const GuidanceCards = React.memo(function GuidanceCards() {
                 <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2 leading-relaxed">
                   {card.desc}
                 </p>
+                <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 mt-1">
+                  ~{card.minutes} min &middot; {card.steps} steps
+                </span>
               </div>
             </Link>
           </motion.div>

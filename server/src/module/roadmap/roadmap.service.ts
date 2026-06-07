@@ -204,6 +204,35 @@ export async function listPublishedRoadmaps(opts: {
   };
 }
 
+export async function listCommunityRoadmaps(limit = 24) {
+  const rows = await prisma.roadmap.findMany({
+    where: { isPubliclyShared: true, isAiGenerated: true },
+    orderBy: { updatedAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      shortDescription: true,
+      level: true,
+      estimatedHours: true,
+      coverImage: true,
+      ogImage: true,
+      topicCount: true,
+      enrolledCount: true,
+      tags: true,
+      updatedAt: true,
+      isAiGenerated: true,
+      ownerUserId: true,
+      owner: { select: { name: true } },
+    },
+  });
+  return rows.map(({ owner, ...r }) => ({
+    ...r,
+    creatorName: owner?.name ?? null,
+  }));
+}
+
 export async function getRoadmapBySlug(slug: string) {
   return prisma.roadmap.findUnique({
     where: { slug },

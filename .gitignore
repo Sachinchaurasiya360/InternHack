@@ -2,3 +2,9 @@
 server/.env
 client/.env
 node_modules/EaseMotion-css/
+node_modules/
+
+# Claude Code
+CLAUDE.md
+agents.md
+REPO_MAP.md

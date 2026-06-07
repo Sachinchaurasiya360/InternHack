@@ -1,7 +1,7 @@
 import { useParams, Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, IndianRupee, Users, Send, Check, Building2, Clock, ArrowUpRight, Share2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, MapPin, IndianRupee, Users, Send, Check, Building2, Clock, ArrowUpRight, Share2, Bookmark } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -81,6 +81,29 @@ export default function JobDetailPage() {
         .then((res) => res.data.posts as { id: number; title: string; slug: string; excerpt: string; readingTime: number; featuredImage?: string }[]),
     enabled: !!job && job.tags.length > 0,
     staleTime: 30 * 60 * 1000,
+  });
+
+  const queryClient = useQueryClient();
+
+  const { data: isSaved } = useQuery({
+    queryKey: queryKeys.savedJobs.check(id!),
+    queryFn: () => api.get(`/student/jobs/${id}/save`).then((res) => res.data.saved as boolean),
+    enabled: !!id && isAuthenticated && user?.role === "STUDENT",
+    staleTime: 30_000,
+  });
+
+  const { mutate: toggleSave } = useMutation({
+    mutationFn: async () => {
+      if (isSaved) {
+        await api.delete(`/student/jobs/${id}/save`);
+      } else {
+        await api.post(`/student/jobs/${id}/save`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.check(id!) });
+    },
   });
 
   const backPath = inStudentLayout ? "/student/jobs" : "/jobs";
@@ -206,6 +229,18 @@ export default function JobDetailPage() {
                 <p className="mt-2 text-sm text-stone-500">{job.company}</p>
               </div>
               <div className="shrink-0 flex flex-wrap items-center gap-2 sm:justify-end">
+                {isAuthenticated && user?.role === "STUDENT" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    mode="icon"
+                    size="lg"
+                    aria-label={isSaved ? "Remove from saved" : "Save job"}
+                    onClick={() => toggleSave()}
+                  >
+                    <Bookmark className={isSaved ? "fill-lime-600 dark:fill-lime-400 text-lime-600 dark:text-lime-400" : ""} />
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="outline"

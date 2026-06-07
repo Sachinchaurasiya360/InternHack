@@ -67,27 +67,31 @@ export class AdminAuthService {
 
     const hashedPassword = await hashPassword(data.password);
 
-    const user = await prisma.user.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        password: hashedPassword,
-        role: "ADMIN",
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          password: hashedPassword,
+          role: "ADMIN",
+        },
+      });
+
+      const adminProfile = await tx.adminProfile.create({
+        data: { userId: user.id, tier: data.tier },
+      });
+
+      return {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        adminProfile: { tier: adminProfile.tier },
+      };
     });
 
-    const adminProfile = await prisma.adminProfile.create({
-      data: { userId: user.id, tier: data.tier },
-    });
-
-    return {
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-      adminProfile: { tier: adminProfile.tier },
-    };
+    return result;
   }
 }

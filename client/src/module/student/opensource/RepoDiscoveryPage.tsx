@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,6 +24,7 @@ import {
   Check,
   Copy,
   Bookmark,
+  GitPullRequest,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
@@ -43,6 +44,8 @@ import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 import { useCoachStore } from "./stores/coach.store";
+import { markLearningPathMilestone } from "./learning-paths.data";
+import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -99,6 +102,10 @@ const SKILL_LANGUAGE_MAP: Record<string, string[]> = {
 };
 
 export default function RepoDiscoveryPage() {
+  useEffect(() => {
+    markLearningPathMilestone("repo-discovery");
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
@@ -110,6 +117,8 @@ export default function RepoDiscoveryPage() {
   const sortKey = searchParams.get("sort") || "stars";
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
+  const hacktoberfestOnly = searchParams.get("hacktoberfest") === "true";
+  const showHacktoberfestFilter = isHacktoberfestMode();
 
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
@@ -194,7 +203,13 @@ export default function RepoDiscoveryPage() {
     return Array.from(langs);
   }, [user]);
 
-  const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
+  const handleRecentlyViewedOverflow = useCallback(() => {
+    toast.success("Oldest repo removed from recently viewed");
+  }, []);
+
+  const { recentlyViewed, addRepo, clearHistory } = useRecentlyViewedRepos({
+    onRepoRemoved: handleRecentlyViewedOverflow,
+  });
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     addRepo(repo);
@@ -300,12 +315,13 @@ export default function RepoDiscoveryPage() {
     }
     
     if (trendingOnly) params.trending = "true";
+    if (hacktoberfestOnly) params.hacktoberfest = "true";
 
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
 
     return params;
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, hacktoberfestOnly, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -352,11 +368,7 @@ export default function RepoDiscoveryPage() {
   });
 
   const pagination = data?.pagination;
-
-  const displayedRepos = useMemo(() => {
-    if (showSaved) return bookmarkedData || [];
-    return data?.repos ?? [];
-  }, [data, showSaved, bookmarkedData]);
+  const displayedRepos = showSaved ? (bookmarkedData ?? []) : (data?.repos ?? []);
 
   // Global stats fetched independently so the header strip stays accurate
   // regardless of active filters or page (replaces the old useMemo approach).
@@ -545,11 +557,14 @@ export default function RepoDiscoveryPage() {
         {/* My Submissions */}
         {!!user && (
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 <div className="h-1 w-1 bg-lime-400" />
                 my submissions
               </div>
+              <Link to="/student/opensource/my-submissions" className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors no-underline">
+                View all &rarr;
+              </Link>
             </div>
 
             {isMyRequestsLoading && (
@@ -633,7 +648,7 @@ export default function RepoDiscoveryPage() {
         <GuidanceCards />
 
         {/* Recently viewed & recommended */}
-        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
+        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} onClear={clearHistory} />
 
         {user?.role === "STUDENT" && (
           <RecommendedSection onSelect={handleOpenRepo} />
@@ -687,6 +702,21 @@ export default function RepoDiscoveryPage() {
             <Flame className="w-3 h-3" />
             Trending
           </button>
+
+          {showHacktoberfestFilter && (
+            <button
+              type="button"
+              onClick={() => updateFilter("hacktoberfest", hacktoberfestOnly ? "" : "true")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+                hacktoberfestOnly
+                  ? "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30"
+                  : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              }`}
+            >
+              <GitPullRequest className="w-3 h-3" />
+              Hacktoberfest repos only
+            </button>
+          )}
 
           {inferredLanguages.length > 0 && (
             <button

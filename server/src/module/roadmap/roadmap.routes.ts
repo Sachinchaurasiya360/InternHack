@@ -6,11 +6,13 @@ import {
   downloadCertificate,
   downloadPdf,
   enroll,
+  getCommunityRoadmaps,
   getMyEnrollmentAnalytics,
   getMyEnrollmentByRoadmapSlug,
   getMyEnrollment,
   deleteMyEnrollment,
   getMyEnrollments,
+  getMyEnrollmentsAnalyticsBatch,
   getRoadmap,
   getRoadmaps,
   getTopic,
@@ -26,6 +28,7 @@ export const roadmapRouter = Router();
 
 roadmapRouter.post("/ai/generate", authMiddleware, aiRoadmapLimiter, postAiGenerate);
 roadmapRouter.get("/me/enrollments", authMiddleware, getMyEnrollments);
+roadmapRouter.get("/me/enrollments/analytics/batch", authMiddleware, getMyEnrollmentsAnalyticsBatch);
 roadmapRouter.get("/me/enrollments/:id/analytics", authMiddleware, getMyEnrollmentAnalytics);
 roadmapRouter.get("/me/enrollments/:id", authMiddleware, getMyEnrollment);
 roadmapRouter.delete("/me/enrollments/:id", authMiddleware, deleteMyEnrollment);
@@ -48,6 +51,7 @@ roadmapRouter.post(
 );
 
 roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
+roadmapRouter.get("/community", getCommunityRoadmaps);
 roadmapRouter.get("/:slug/enrollment", authMiddleware, getMyEnrollmentByRoadmapSlug);
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
