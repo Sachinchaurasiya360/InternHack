@@ -117,6 +117,18 @@ export class WorkflowService {
     if (!instance) throw new Error("Workflow instance not found");
     if (instance.status !== "ACTIVE") throw new Error("Workflow is not active");
 
+    let validatedPerformedBy: number | undefined = undefined;
+    if (performedBy !== undefined) {
+      const userExists = await prisma.user.findUnique({
+        where: { id: performedBy },
+        select: { id: true },
+      });
+      if (!userExists) {
+        throw new Error(`User with id ${performedBy} does not exist`);
+      }
+      validatedPerformedBy = performedBy;
+    }
+
     const steps = JSON.parse(instance.definition.steps as string) as unknown[];
     const history = JSON.parse(instance.stepHistory as string) as StepHistoryEntry[];
 
@@ -124,7 +136,7 @@ export class WorkflowService {
       step: instance.currentStep,
       action,
       note,
-      performedBy,
+      performedBy: validatedPerformedBy,
       performedAt: new Date().toISOString(),
     });
 

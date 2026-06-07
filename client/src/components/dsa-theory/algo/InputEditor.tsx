@@ -31,6 +31,7 @@ export function InputEditor({
 
   // Sync local draft when parent updates value externally (random/preset).
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraft(value);
   }, [value]);
 

@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
 import { roadmapDay10EmailHtml } from "../utils/email-templates.js";
+import { withAdvisoryLock } from "../utils/cron-lock.js";
 
 let cronJob: cron.ScheduledTask | null = null;
 
@@ -137,7 +138,18 @@ async function sendDay10(
 export function startScheduledEmailWorker(schedule = "*/5 * * * *"): void {
   if (cronJob) return;
   cronJob = cron.schedule(schedule, () => {
-    void drainScheduledEmails();
+    void withAdvisoryLock("scheduled-email-worker", async () => {
+      await drainScheduledEmails();
+    });
   });
   console.log(`[ScheduledEmail] Worker scheduled with cadence "${schedule}"`);
+}
+
+/** Stop the scheduled-email worker (used during graceful shutdown). */
+export function stopScheduledEmailWorker(): void {
+  if (cronJob) {
+    cronJob.stop();
+    cronJob = null;
+    console.log("[ScheduledEmail] Worker stopped");
+  }
 }

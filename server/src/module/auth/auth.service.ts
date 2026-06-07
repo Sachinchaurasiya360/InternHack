@@ -1,10 +1,14 @@
-import crypto from "crypto";
+﻿import crypto from "crypto";
 import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+
+// TTL shorter than S3 presigned URL expiry (S3 default â‰¥15 min)
+const PROFILE_TTL = 300;
 
 const badgeService = new BadgeService();
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
@@ -38,7 +42,8 @@ interface UpdateProfileInput {
   portfolioUrl?: string;
   leetcodeUrl?: string;
   jobStatus?: string | null;
-  projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string }[];
+  // Added builtAt for GSSoC '26 Featured Projects
+  projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string; builtAt?: string }[];
   achievements?: { id: string; title: string; description: string; date?: string }[];
   isProfilePublic?: boolean;
 }
@@ -272,7 +277,7 @@ export class AuthService {
         },
       });
 
-      // Send welcome email (fire-and-forget) — temporarily disabled
+      // Send welcome email (fire-and-forget) â€” temporarily disabled
       // sendEmail({
       //   to: user.email,
       //   subject: "Welcome to InternHack!",
@@ -406,6 +411,10 @@ export class AuthService {
   } as const;
 
   async getProfile(userId: number) {
+    const cacheKey = `profile:me:${userId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: this.profileSelect,
@@ -425,6 +434,7 @@ export class AuthService {
       (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
     }
 
+    await cacheSet(cacheKey, user, PROFILE_TTL);
     return user;
   }
 
@@ -445,7 +455,33 @@ export class AuthService {
       updateData.jobStatus = data.jobStatus || null;
     }
     if ("projects" in data) {
-      updateData.projects = Array.isArray(data.projects) ? data.projects : [];
+      if (Array.isArray(data.projects)) {
+        const dateRegex = /^\d{4}-(?:0[1-9]|1[0-2])$/;
+        updateData.projects = data.projects.map((p: any) => {
+          if (!p || typeof p !== "object") return p;
+          const proj = { ...p };
+          if (proj.builtAt != null && typeof proj.builtAt !== "string") {
+            throw Object.assign(new Error("Invalid type for builtAt. Expected string."), { statusCode: 400 });
+          }
+          if (typeof proj.builtAt === "string") {
+            const trimmed = proj.builtAt.trim();
+            if (trimmed) {
+              if (dateRegex.test(trimmed)) {
+                proj.builtAt = trimmed;
+              } else if (!isNaN(Date.parse(trimmed))) {
+                proj.builtAt = new Date(trimmed).toISOString();
+              } else {
+                throw Object.assign(new Error(`Invalid date format for builtAt. Use YYYY-MM or ISO-8601.`), { statusCode: 400 });
+              }
+            } else {
+              delete proj.builtAt;
+            }
+          }
+          return proj;
+        });
+      } else {
+        updateData.projects = [];
+      }
     }
     if ("achievements" in data) {
       updateData.achievements = Array.isArray(data.achievements) ? data.achievements : [];
@@ -473,10 +509,18 @@ export class AuthService {
       (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
     }
 
+    // Bust cached profile so next GET /auth/me returns fresh data
+    await cacheDel(`profile:me:${userId}`);
+    await cacheDel(`profile:public:${userId}`);
+
     return user;
   }
 
   async getPublicProfile(userId: number) {
+    const cacheKey = `profile:public:${userId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const user = await prisma.user.findUnique({
       where: { id: userId, role: "STUDENT", isProfilePublic: true },
       select: {
@@ -506,10 +550,12 @@ export class AuthService {
     if (rest.coverImage) {
       (rest as Record<string, unknown>).coverImage = await signUrl(rest.coverImage);
     }
-    return {
+    const result = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
     };
+    await cacheSet(cacheKey, result, PROFILE_TTL);
+    return result;
   }
 
   async verifyEmail(email: string, otp: string) {
@@ -557,7 +603,7 @@ export class AuthService {
       },
     });
 
-    // Send welcome email (fire-and-forget) — temporarily disabled
+    // Send welcome email (fire-and-forget) â€” temporarily disabled
     // sendEmail({
     //   to: user.email,
     //   subject: "Welcome to InternHack!",
@@ -623,9 +669,15 @@ export class AuthService {
     const hashedOtp = await hashPassword(otp);
     const resetOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
+    // Reset attempt counter and unlock on new OTP request
     await prisma.user.update({
       where: { id: user.id },
-      data: { resetPasswordOtp: hashedOtp, resetOtpExpiresAt },
+      data: {
+        resetPasswordOtp: hashedOtp,
+        resetOtpExpiresAt,
+        passwordResetAttempts: 0,
+        passwordResetLockedUntil: null,
+      },
     });
 
     await sendEmail({
@@ -636,9 +688,22 @@ export class AuthService {
   }
 
   async resetPassword(email: string, otp: string, newPassword: string) {
+    const MAX_RESET_ATTEMPTS = 3;
+    const LOCKOUT_DURATION_MS = 30 * 60 * 1000; // 30 minutes
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new Error("Invalid or expired reset code");
+    }
+
+    // Check if account is temporarily locked due to too many failed attempts
+    if (user.passwordResetLockedUntil && new Date() < user.passwordResetLockedUntil) {
+      const remainingMinutes = Math.ceil(
+        (user.passwordResetLockedUntil.getTime() - Date.now()) / 60000
+      );
+      throw new Error(
+        `Too many failed attempts. Please try again in ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`
+      );
     }
 
     if (!user.resetPasswordOtp || !user.resetOtpExpiresAt) {
@@ -651,17 +716,45 @@ export class AuthService {
 
     const isValid = await comparePassword(otp, user.resetPasswordOtp);
     if (!isValid) {
-      throw new Error("Invalid or expired reset code");
+      const updatedAttempts = user.passwordResetAttempts + 1;
+
+      // Lock account if max attempts exceeded
+      if (updatedAttempts >= MAX_RESET_ATTEMPTS) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            passwordResetAttempts: updatedAttempts,
+            passwordResetLockedUntil: new Date(Date.now() + LOCKOUT_DURATION_MS),
+          },
+        });
+        throw new Error(
+          `Too many failed attempts. Account locked for 30 minutes for security`
+        );
+      }
+
+      // Increment attempt counter
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordResetAttempts: updatedAttempts },
+      });
+
+      const attemptsRemaining = MAX_RESET_ATTEMPTS - updatedAttempts;
+      throw new Error(
+        `Invalid reset code. ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? "s" : ""} remaining`
+      );
     }
 
     const hashedPassword = await hashPassword(newPassword);
 
+    // Password reset successful - clear attempts and lockout
     await prisma.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,
         resetPasswordOtp: null,
         resetOtpExpiresAt: null,
+        passwordResetAttempts: 0,
+        passwordResetLockedUntil: null,
         tokenVersion: { increment: 1 },
       },
     });
@@ -787,3 +880,4 @@ export class AuthService {
     return data;
   }
 }
+

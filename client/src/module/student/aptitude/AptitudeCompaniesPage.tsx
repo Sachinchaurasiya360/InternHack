@@ -96,6 +96,7 @@ export default function AptitudeCompaniesPage() {
   const { data: companies, isLoading } = useQuery({
     queryKey: queryKeys.aptitude.companies(),
     queryFn: () => api.get<AptitudeCompany[]>("/aptitude/companies").then((r) => r.data),
+    staleTime: 30 * 60 * 1000,
   });
 
   const { data: companyData, isLoading: loadingQuestions } = useQuery({
@@ -103,6 +104,7 @@ export default function AptitudeCompaniesPage() {
     queryFn: () =>
       api.get<AptitudeCompanyQuestions>(`/aptitude/companies/${encodeURIComponent(selectedCompany!)}?page=${page}&limit=10`).then((r) => r.data),
     enabled: !!selectedCompany,
+    staleTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {

@@ -127,6 +127,7 @@ function BTreeDrilldown() {
   useEffect(() => {
     if (!racing) return;
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setScanT(-1);
     setSeekStep(-1);
 
@@ -162,6 +163,7 @@ function BTreeDrilldown() {
       clearInterval(seekHandle);
       clearTimeout(stopHandle);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [racing, target]);
 
   const startRace = () => {

@@ -255,14 +255,21 @@ Rules:
     if (!job.isActive || job.expiresAt < new Date()) throw new Error("This job has expired");
 
     try {
-      const application = await prisma.externalJobApplication.create({
-        data: { studentId, adminJobId },
-        include: {
-          adminJob: {
-            select: { id: true, slug: true, company: true, role: true },
+      const application = await prisma.$transaction(async (tx) => {
+        const createdApplication = await tx.externalJobApplication.create({
+          data: { studentId, adminJobId },
+          include: {
+            adminJob: {
+              select: { id: true, slug: true, company: true, role: true },
+            },
           },
-        },
+        });
+        await tx.usageLog.create({
+          data: { userId: studentId, action: "JOB_APPLICATION" },
+        });
+        return createdApplication;
       });
+
       // Check application badges (fire-and-forget)
       badgeService.checkAndAwardBadges(studentId, "first_application").catch(() => {});
       badgeService.checkAndAwardBadges(studentId, "job_apply").catch(() => {});
@@ -293,6 +300,34 @@ Rules:
 
     await prisma.externalJobApplication.delete({ where: { id: applicationId } });
     return { success: true };
+  }
+
+  async updateApplicationNotes(applicationId: number, studentId: number, notes: string) {
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      select: { id: true, studentId: true },
+    });
+    if (!application || application.studentId !== studentId) throw new Error("Application not found");
+
+    return prisma.application.update({
+      where: { id: applicationId },
+      data: { studentNotes: notes },
+      select: { studentNotes: true, updatedAt: true },
+    });
+  }
+
+  async updateExternalApplicationNotes(applicationId: number, studentId: number, notes: string) {
+    const application = await prisma.externalJobApplication.findUnique({
+      where: { id: applicationId },
+      select: { id: true, studentId: true },
+    });
+    if (!application || application.studentId !== studentId) throw new Error("External application not found");
+
+    return prisma.externalJobApplication.update({
+      where: { id: applicationId },
+      data: { studentNotes: notes },
+      select: { studentNotes: true, updatedAt: true },
+    });
   }
 
   private async checkApplicationMilestone(studentId: number) {
@@ -386,6 +421,13 @@ Rules:
     ]);
     if (!application) throw new Error("Application not found");
     if (application.studentId !== studentId) throw new Error("Not authorized");
+
+    if (application.status === "WITHDRAWN") {
+      throw new Error(
+        "Withdrawn applications cannot participate in the hiring process"
+      );
+    }
+
     if (!round || round.jobId !== application.jobId) throw new Error("Round not found");
 
     let submission;

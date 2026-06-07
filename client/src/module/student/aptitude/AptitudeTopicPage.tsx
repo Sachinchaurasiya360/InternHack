@@ -94,6 +94,7 @@ export default function AptitudeTopicPage() {
   }, [timerRunning, topic?.questions.length]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentQ(0);
     setSubmitted(false);
     setResultsMap({});

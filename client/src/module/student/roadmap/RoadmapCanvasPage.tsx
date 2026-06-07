@@ -31,6 +31,7 @@ import {
   Flame,
   ChevronRight,
   BookOpen,
+  Pencil,
   LayoutTemplate,
   GitCommit,
   Network,
@@ -38,6 +39,8 @@ import {
   ChevronUp,
   RefreshCw,
   Sparkles,
+  TrendingUp,
+  AlertTriangle,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
@@ -48,6 +51,7 @@ import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import type {
   RoadmapEnrollment,
+  RoadmapEnrollmentAnalytics,
   RoadmapEnrollmentSummary,
   RoadmapSection,
   RoadmapTopic,
@@ -56,10 +60,15 @@ import type {
 } from "../../../lib/types";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 interface EnrollmentResponse {
   enrollment: RoadmapEnrollment;
   summary: RoadmapEnrollmentSummary;
+}
+
+interface AnalyticsResponse {
+  analytics: RoadmapEnrollmentAnalytics;
 }
 
 interface TopicNodeData {
@@ -67,6 +76,7 @@ interface TopicNodeData {
   status: RoadmapTopicStatus;
   bookmarked: boolean;
   isNext: boolean;
+  isWeak: boolean;
   index: number;
   onClick: () => void;
 }
@@ -116,11 +126,10 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             stiffness: 380,
             damping: 20,
           }}
-          className={`relative h-11 w-11 rounded-md flex items-center justify-center shrink-0 ${
-            sectionDone
+          className={`relative h-11 w-11 rounded-md flex items-center justify-center shrink-0 ${sectionDone
               ? "bg-lime-400 text-stone-950"
               : "bg-stone-950 dark:bg-stone-50 text-stone-50 dark:text-stone-950"
-          }`}
+            }`}
         >
           {sectionDone ? (
             <Check className="w-5 h-5" strokeWidth={3} />
@@ -155,7 +164,11 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             title={data.isCollapsed ? "Expand section" : "Collapse section"}
             className="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors pointer-events-auto mr-1 cursor-pointer"
           >
-            {data.isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+            {data.isCollapsed ? (
+              <ChevronDown className="w-5 h-5" />
+            ) : (
+              <ChevronUp className="w-5 h-5" />
+            )}
           </button>
         )}
 
@@ -164,7 +177,11 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
             type="button"
             onClick={data.onRegenerate}
             disabled={data.isRegenerating}
-            title={data.isRegenerating ? "Regenerating section…" : "Regenerate this section with AI"}
+            title={
+              data.isRegenerating
+                ? "Regenerating section…"
+                : "Regenerate this section with AI"
+            }
             className="p-1 rounded hover:bg-lime-100 dark:hover:bg-lime-950/40 text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors pointer-events-auto mr-2 cursor-pointer"
           >
             {data.isRegenerating ? (
@@ -234,15 +251,21 @@ function SectionLabelNode({ data }: NodeProps<SectionLabelData>) {
 
 // ─── Custom node: topic card ────────────────────────────────────────────────
 function TopicNode({ data }: NodeProps<TopicNodeData>) {
-  const { status, topic, isNext, bookmarked, index } = data;
+  const { status, topic, isNext, bookmarked, index, isWeak } = data;
   const isCompleted = status === "COMPLETED";
   const isInProgress = status === "IN_PROGRESS";
+  const isSkipped = status === "SKIPPED";
 
   const railColor = isCompleted
     ? "bg-lime-500"
     : isInProgress
       ? "bg-amber-400"
-      : "bg-stone-200 dark:bg-stone-800";
+      : isSkipped
+        ? "bg-stone-400 dark:bg-stone-600"
+        : "bg-stone-200 dark:bg-stone-800";
+
+  const weakRing =
+    isWeak && !isCompleted ? "ring-2 ring-amber-400 ring-offset-1" : "";
 
   const cardBorder = isNext
     ? "border-lime-400 dark:border-lime-500"
@@ -260,7 +283,7 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
       whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
       whileTap={{ scale: 0.98 }}
       onClick={data.onClick}
-      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-grab active:cursor-grabbing w-72 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10`}
+      className={`group relative bg-white dark:bg-stone-900 border-y border-r ${cardBorder} border-l-0 rounded-r-md cursor-pointer active:cursor-grabbing w-72 min-h-16 overflow-hidden transition-all hover:shadow-lg hover:shadow-lime-500/5 dark:hover:shadow-lime-400/10 ${weakRing}`}
     >
       <Handle
         type="target"
@@ -313,6 +336,10 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
             >
               <Check className="w-2.5 h-2.5 text-stone-950" strokeWidth={3.5} />
             </motion.div>
+          ) : isSkipped ? (
+            <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              skipped
+            </span>
           ) : isInProgress ? (
             <span className="inline-flex items-center gap-1 text-[9.5px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
               <motion.span
@@ -344,11 +371,10 @@ function TopicNode({ data }: NodeProps<TopicNodeData>) {
 
         {/* Title */}
         <p
-          className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${
-            isCompleted
+          className={`text-sm font-bold leading-snug line-clamp-2 transition-colors ${isCompleted || isSkipped
               ? "text-stone-400 dark:text-stone-600 line-through decoration-1 decoration-stone-300 dark:decoration-stone-700"
               : "text-stone-950 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-stone-50"
-          }`}
+            }`}
         >
           {topic.title}
         </p>
@@ -395,17 +421,72 @@ const nodeTypes = { topic: TopicNode, sectionLabel: SectionLabelNode };
 // ─── Page ──────────────────────────────────────────────────────────────────
 export default function RoadmapCanvasPage() {
   const { slug = "" } = useParams();
+
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false,
+  );
+  const [isTouchDevice, setIsTouchDevice] = useState(() =>
+    typeof window !== "undefined"
+      ? "ontouchstart" in window || navigator.maxTouchPoints > 0
+      : false,
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  }, []);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const graphOffsetsRef = useRef(new Map<number, { x: number; y: number }>());
   const [drawerTopicId, setDrawerTopicId] = useState<number | null>(null);
   const [downloading, setDownloading] = useState<"light" | "dark" | null>(null);
-  const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">("LINEAR");
+  const [viewMode, setViewMode] = useState<"LINEAR" | "GRID" | "GRAPH">(
+    "LINEAR",
+  );
+
+  // On small screens (< 768px), default to a linear list view.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isMobile && viewMode !== "LINEAR") setViewMode("LINEAR");
+  }, [isMobile, viewMode]);
   // Track which sectionId is currently being regenerated
-  const [regeneratingSectionId, setRegeneratingSectionId] = useState<number | null>(null);
-  // Modal state for the regenerate instructions dialog
-  const [regenModal, setRegenModal] = useState<{ sectionId: number; sectionTitle: string } | null>(null);
+  const [regeneratingSectionId, setRegeneratingSectionId] = useState<
+    number | null
+  >(null);
+  const [regenModal, setRegenModal] = useState<{
+    sectionId: number;
+    sectionTitle: string;
+  } | null>(null);
+
   const [regenInstructions, setRegenInstructions] = useState("");
-  const [collapsedSections, setCollapsedSections] = useState<Set<number>>(new Set());
+  const [collapsedSections, setCollapsedSections] = useState<Set<number>>(
+    new Set(),
+  );
+  const [weakTopicTitles, setWeakTopicTitles] = useState<Set<string>>(
+    new Set(),
+  );
+
+  useEffect(() => {
+    api
+      .get<{
+        weakAreas: { type: string; topic: string; topicSlug?: string }[];
+      }>("/student/recommendations")
+      .then((res) => {
+        const slugs = new Set(
+          res.data.weakAreas
+            .filter((w) => w.type === "roadmap" && w.topicSlug)
+            .map((w) => w.topicSlug as string),
+        );
+        setWeakTopicTitles(slugs);
+      })
+      .catch(() => { });
+  }, []);
 
   const toggleSection = useCallback((id: number) => {
     setCollapsedSections((prev) => {
@@ -416,13 +497,34 @@ export default function RoadmapCanvasPage() {
     });
   }, []);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showEditModal, setShowEditModal] =
+  useState(false);
+
+const [title, setTitle] = useState("");
+
+const [shortDescription, setShortDescription] =
+  useState("");
+
+const [level, setLevel] =
+  useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED">(
+    "BEGINNER"
+  );
   // Track previous percentComplete so we only fire the modal on the transition to 100
   const prevPercentRef = useRef<number | null>(null);
   const hasShownCompletionRef = useRef(false);
 
-  const { data: enrollmentsList, isLoading: enrollmentsLoading, error: enrollmentsError } = useQuery({
+  const {
+    data: enrollmentsList,
+    isLoading: enrollmentsLoading,
+    error: enrollmentsError,
+  } = useQuery({
     queryKey: queryKeys.roadmaps.enrollments(),
-    queryFn: () => api.get<{ enrollments: { id: number; roadmap: { slug: string } }[] }>("/roadmaps/me/enrollments").then(res => res.data),
+    queryFn: () =>
+      api
+        .get<{
+          enrollments: { id: number; roadmap: { slug: string } }[];
+        }>("/roadmaps/me/enrollments")
+        .then((res) => res.data),
   });
 
   useEffect(() => {
@@ -431,7 +533,9 @@ export default function RoadmapCanvasPage() {
     }
   }, [enrollmentsError, navigate, slug]);
 
-  const enrollmentMatch = enrollmentsList?.enrollments.find((x) => x.roadmap.slug === slug);
+  const enrollmentMatch = enrollmentsList?.enrollments.find(
+    (x) => x.roadmap.slug === slug,
+  );
 
   useEffect(() => {
     if (enrollmentsList && !enrollmentMatch && !enrollmentsLoading) {
@@ -441,9 +545,27 @@ export default function RoadmapCanvasPage() {
 
   const enrollmentId = enrollmentMatch?.id || null;
 
-  const { data, isLoading: detailLoading, isError: detailError } = useQuery({
+  const {
+    data,
+    isLoading: detailLoading,
+    isError: detailError,
+  } = useQuery({
     queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId!),
-    queryFn: () => api.get<EnrollmentResponse>(`/roadmaps/me/enrollments/${enrollmentId}`).then(res => res.data),
+    queryFn: () =>
+      api
+        .get<EnrollmentResponse>(`/roadmaps/me/enrollments/${enrollmentId}`)
+        .then((res) => res.data),
+    enabled: !!enrollmentId,
+  });
+
+  const { data: analyticsData } = useQuery({
+    queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId!),
+    queryFn: () =>
+      api
+        .get<AnalyticsResponse>(
+          `/roadmaps/me/enrollments/${enrollmentId}/analytics`,
+        )
+        .then((res) => res.data),
     enabled: !!enrollmentId,
   });
 
@@ -469,6 +591,15 @@ export default function RoadmapCanvasPage() {
 
     prevPercentRef.current = pct;
   }, [data]);
+  useEffect(() => {
+  if (!data) return;
+
+  setTitle(data.enrollment.roadmap.title);
+  setShortDescription(
+    data.enrollment.roadmap.shortDescription
+  );
+  setLevel(data.enrollment.roadmap.level);
+}, [data]);
 
   const progressByTopicId = useMemo(() => {
     if (!data)
@@ -499,20 +630,82 @@ export default function RoadmapCanvasPage() {
   const handleNodeClick = useCallback((topicId: number) => {
     setDrawerTopicId(topicId);
   }, []);
+  const handleUpdateRoadmap = async () => {
+  try {
+    await api.patch(`/roadmaps/${slug}`, {
+      title,
+      shortDescription,
+      level,
+    });
+
+    toast.success("Roadmap updated");
+
+    setShowEditModal(false);
+
+    const detail = await api.get<EnrollmentResponse>(
+      `/roadmaps/me/enrollments/${enrollmentId}`,
+    );
+
+    setData(detail.data);
+  } catch {
+    toast.error("Failed to update roadmap");
+  }
+};
 
   const allTopics = useMemo(() => {
     if (!data) return [];
     return data.enrollment.roadmap.sections.flatMap((s) => s.topics);
   }, [data]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<TopicNodeData | SectionLabelData>([]);
+  const regenProgressImpact = useMemo(() => {
+    const empty = { totalAffected: 0, completed: 0, inProgress: 0 };
+    if (!regenModal || !data) return empty;
+    const section = data.enrollment.roadmap.sections.find(
+      (s) => s.id === regenModal.sectionId,
+    );
+    if (!section) return empty;
+    let completed = 0;
+    let inProgress = 0;
+    for (const topic of section.topics) {
+      const p = progressByTopicId.get(topic.id);
+      if (p?.status === "COMPLETED") completed++;
+      else if (p?.status === "IN_PROGRESS") inProgress++;
+    }
+    return { totalAffected: completed + inProgress, completed, inProgress };
+  }, [regenModal, data, progressByTopicId]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<
+    TopicNodeData | SectionLabelData
+  >([]);
+
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
-  const isAiOwned = !!(data?.enrollment.roadmap.isAiGenerated && data?.enrollment.roadmap.ownerUserId);
+  const isAiOwned = !!(
+    data?.enrollment.roadmap.isAiGenerated &&
+    data?.enrollment.roadmap.ownerUserId
+  );
 
-  const openRegenModal = useCallback((sectionId: number, sectionTitle: string) => {
-    setRegenInstructions("");
-    setRegenModal({ sectionId, sectionTitle });
+  const openRegenModal = useCallback(
+    (sectionId: number, sectionTitle: string) => {
+      setRegenInstructions("");
+      setRegenModal({ sectionId, sectionTitle });
+    },
+    [],
+  );
+
+  const getGraphOffset = useCallback((topicId: number) => {
+    const existing = graphOffsetsRef.current.get(topicId);
+    if (existing) return existing;
+
+    const xSeed = (topicId * 37) % 100;
+    const ySeed = (topicId * 53) % 50;
+    const offset = {
+      x: xSeed - 50,
+      y: ySeed - 25,
+    };
+
+    graphOffsetsRef.current.set(topicId, offset);
+    return offset;
   }, []);
 
   useEffect(() => {
@@ -587,12 +780,19 @@ export default function RoadmapCanvasPage() {
           newNodes.push({
             id: String(topic.id),
             type: "topic",
-            position: viewMode === "GRAPH" ? { x: TOPIC_X + (Math.random() * 100 - 50), y: cursorY + (Math.random() * 50 - 25) } : { x: TOPIC_X, y: cursorY },
+            position:
+              viewMode === "GRAPH"
+                ? {
+                  x: TOPIC_X + getGraphOffset(topic.id).x,
+                  y: cursorY + getGraphOffset(topic.id).y,
+                }
+                : { x: TOPIC_X, y: cursorY },
             data: {
               topic,
               status: p?.status ?? "NOT_STARTED",
               bookmarked: p?.bookmarked ?? false,
               isNext: topic.id === nextTopicId,
+              isWeak: weakTopicTitles.has(topic.slug),
               index: globalIdx,
               onClick: () => handleNodeClick(topic.id),
             },
@@ -603,7 +803,8 @@ export default function RoadmapCanvasPage() {
 
           if (tIdx > 0) {
             const prev = section.topics[tIdx - 1];
-            const prevDone = progressByTopicId.get(prev.id)?.status === "COMPLETED";
+            const prevDone =
+              progressByTopicId.get(prev.id)?.status === "COMPLETED";
             const isFrontier = prevDone && topic.id === nextTopicId;
             newEdges.push({
               id: `e${prev.id}-${topic.id}`,
@@ -639,13 +840,44 @@ export default function RoadmapCanvasPage() {
         });
       }
 
-      prevSectionLastTopicId = !isCollapsed ? (section.topics[section.topics.length - 1]?.id ?? prevSectionLastTopicId) : prevSectionLastTopicId;
+      prevSectionLastTopicId = !isCollapsed
+        ? (section.topics[section.topics.length - 1]?.id ??
+          prevSectionLastTopicId)
+        : prevSectionLastTopicId;
       cursorY += SECTION_GAP;
     });
 
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [data, allTopics, progressByTopicId, nextTopicId, handleNodeClick, viewMode, collapsedSections, isAiOwned, openRegenModal, regeneratingSectionId, setNodes, setEdges]);
+  }, [
+    data,
+
+    allTopics,
+
+    progressByTopicId,
+
+    nextTopicId,
+
+    handleNodeClick,
+
+    viewMode,
+
+    collapsedSections,
+    toggleSection,
+
+    isAiOwned,
+
+    openRegenModal,
+
+    regeneratingSectionId,
+
+    getGraphOffset,
+
+    setNodes,
+
+    setEdges,
+    weakTopicTitles,
+  ]);
 
   const drawerTopic = useMemo(() => {
     if (!drawerTopicId || !data) return null;
@@ -666,8 +898,15 @@ export default function RoadmapCanvasPage() {
         `/roadmaps/me/enrollments/${enrollmentId}/topics/${topicId}`,
         patch,
       );
-      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollments() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollments(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId),
+      });
     } catch {
       toast.error("Could not save progress");
     }
@@ -675,20 +914,27 @@ export default function RoadmapCanvasPage() {
 
   const downloadPdf = async (theme: "light" | "dark") => {
     if (!enrollmentId) return;
+
     setDownloading(theme);
+
     try {
       const res = await api.get(
         `/roadmaps/me/enrollments/${enrollmentId}/pdf`,
         { responseType: "blob" },
       );
+
       const url = URL.createObjectURL(res.data as Blob);
+
       const a = document.createElement("a");
       a.href = url;
       a.download = `${slug}-roadmap${theme === "dark" ? "-dark" : ""}.pdf`;
       a.click();
+
       URL.revokeObjectURL(url);
+
+      toast.success("PDF downloaded successfully");
     } catch {
-      toast.error("Could not download PDF");
+      toast.error("PDF generation failed. Please try again.");
     } finally {
       setDownloading(null);
     }
@@ -696,11 +942,21 @@ export default function RoadmapCanvasPage() {
 
   // ── Section regeneration mutation ────────────────────────────────────────
   const regenerateMutation = useMutation({
-    mutationFn: ({ sectionId, instructions }: { sectionId: number; instructions?: string }) =>
-      api.post<{ message: string; section: RoadmapSection }>(
-        `/roadmaps/${slug}/sections/${sectionId}/regenerate`,
-        { instructions: instructions?.trim() || undefined },
-      ).then((r) => r.data),
+    mutationFn: ({
+      sectionId,
+      instructions,
+    }: {
+      sectionId: number;
+      instructions?: string;
+    }) =>
+      api
+        .post<{
+          message: string;
+          section: RoadmapSection;
+        }>(`/roadmaps/${slug}/sections/${sectionId}/regenerate`, {
+          instructions: instructions?.trim() || undefined,
+        })
+        .then((r) => r.data),
     onMutate: ({ sectionId }) => {
       setRegeneratingSectionId(sectionId);
     },
@@ -708,14 +964,23 @@ export default function RoadmapCanvasPage() {
       toast.success("Section regenerated");
       // Refresh the enrollment detail so the canvas re-renders with new topics
       if (enrollmentId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId) });
-        queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.enrollments() });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollments(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId),
+        });
       }
       setRegenModal(null);
       setRegenInstructions("");
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
-      const msg = err?.response?.data?.message ?? "Could not regenerate section. Please try again.";
+      const msg =
+        err?.response?.data?.message ??
+        "Could not regenerate section. Please try again.";
       toast.error(msg);
     },
     onSettled: () => {
@@ -725,7 +990,10 @@ export default function RoadmapCanvasPage() {
 
   const confirmRegen = () => {
     if (!regenModal) return;
-    regenerateMutation.mutate({ sectionId: regenModal.sectionId, instructions: regenInstructions });
+    regenerateMutation.mutate({
+      sectionId: regenModal.sectionId,
+      instructions: regenInstructions,
+    });
   };
 
   // useStudentSidebar must be called unconditionally (rules of hooks). It always
@@ -764,9 +1032,15 @@ export default function RoadmapCanvasPage() {
         </div>
         {sidebar}
         <div className="flex flex-col items-center justify-center pt-32 px-6 text-center">
-          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">Could not load your roadmap</p>
-          <p className="text-sm text-stone-500 mb-6">There was a problem connecting to the server. Please try again.</p>
-          <Button onClick={() => window.location.reload()} variant="outline">Retry</Button>
+          <p className="text-lg font-bold text-stone-950 dark:text-stone-50 mb-2">
+            Could not load your roadmap
+          </p>
+          <p className="text-sm text-stone-500 mb-6">
+            There was a problem connecting to the server. Please try again.
+          </p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry
+          </Button>
         </div>
       </div>
     );
@@ -775,6 +1049,7 @@ export default function RoadmapCanvasPage() {
   if (!data) return null;
 
   const { summary } = data;
+  const analytics = analyticsData?.analytics ?? null;
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -789,7 +1064,7 @@ export default function RoadmapCanvasPage() {
 
       {/* Main content area: fills the rest of the viewport, alongside sidebar */}
       <div
-        className={`flex flex-col h-screen pt-16 lg:pt-16 transition-all duration-300 ${
+        className={`flex flex-col min-h-screen overflow-y-auto pt-16 transition-all duration-300 ${
           collapsed ? "lg:ml-18" : "lg:ml-64"
         }`}
       >
@@ -822,29 +1097,50 @@ export default function RoadmapCanvasPage() {
             </div>
 
             <div className="hidden md:flex items-center gap-5 shrink-0">
-            <div className="flex bg-stone-900/50 p-1 rounded-lg border border-stone-800">
-              <button
-                onClick={() => setViewMode("LINEAR")}
-                className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "LINEAR" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
-                title="Linear View"
-              >
-                <GitCommit className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("GRID")}
-                className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRID" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
-                title="Grid View"
-              >
-                <LayoutTemplate className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("GRAPH")}
-                className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === "GRAPH" ? "bg-stone-800 text-stone-50" : "text-stone-400 hover:text-stone-200"}`}
-                title="Graph View"
-              >
-                <Network className="w-4 h-4" />
-              </button>
-            </div>
+              <div className="flex bg-stone-900/50 p-1 rounded-lg border border-stone-800">
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
+                  onClick={() => setViewMode("LINEAR")}
+                  title="Linear View"
+                  className={
+                    viewMode === "LINEAR"
+                      ? "bg-stone-800 text-stone-50"
+                      : "text-stone-400 hover:text-stone-200"
+                  }
+                >
+                  <GitCommit className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
+                  onClick={() => setViewMode("GRID")}
+                  title="Grid View"
+                  className={
+                    viewMode === "GRID"
+                      ? "bg-stone-800 text-stone-50"
+                      : "text-stone-400 hover:text-stone-200"
+                  }
+                >
+                  <LayoutTemplate className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  mode="icon"
+                  size="sm"
+                  onClick={() => setViewMode("GRAPH")}
+                  title="Graph View"
+                  className={
+                    viewMode === "GRAPH"
+                      ? "bg-stone-800 text-stone-50"
+                      : "text-stone-400 hover:text-stone-200"
+                  }
+                >
+                  <Network className="w-4 h-4" />
+                </Button>
+              </div>
               <Stat
                 icon={Target}
                 label="progress"
@@ -886,11 +1182,19 @@ export default function RoadmapCanvasPage() {
                 label="streak"
                 value={
                   <span className="font-bold tabular-nums">
-                    {computeStreak(data)}d
+                    {analytics?.currentStreak ?? 0}d
                   </span>
                 }
               />
             </div>
+            <button
+  type="button"
+  onClick={() => setShowEditModal(true)}
+  className="inline-flex items-center gap-1.5 px-3 py-2 bg-stone-800 text-stone-50 text-xs font-bold rounded-md hover:bg-stone-700 transition-colors"
+>
+  <Pencil className="w-3.5 h-3.5" />
+  Edit
+</button>
 
             <button
               type="button"
@@ -898,14 +1202,17 @@ export default function RoadmapCanvasPage() {
               disabled={downloading !== null}
               className="inline-flex items-center gap-1.5 px-3 py-2 bg-lime-400 text-stone-950 text-xs font-bold rounded-md hover:bg-lime-300 transition-colors disabled:opacity-60 cursor-pointer border-0"
             >
-              {downloading ? (
+              {downloading === "light" ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
                 <Download className="w-3.5 h-3.5" />
               )}
-              PDF
+
+              {downloading === "light" ? "Generating..." : "PDF"}
             </button>
           </div>
+
+          <RoadmapAnalyticsStrip analytics={analytics} />
 
           {/* Animated progress strip */}
           <div className="h-0.5 bg-stone-900 overflow-hidden">
@@ -924,6 +1231,8 @@ export default function RoadmapCanvasPage() {
             <ReactFlow
               nodes={nodes}
               edges={edges}
+              panOnScroll={false}
+              zoomOnScroll={!isTouchDevice}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               nodeTypes={nodeTypes}
@@ -938,7 +1247,7 @@ export default function RoadmapCanvasPage() {
               nodesDraggable={true}
               nodesConnectable={false}
               elementsSelectable={true}
-              panOnDrag={[1, 2]}
+              panOnDrag={true}
               minZoom={0.4}
               maxZoom={1.5}
               className="bg-stone-50 dark:bg-stone-950"
@@ -1003,7 +1312,11 @@ export default function RoadmapCanvasPage() {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 28, stiffness: 280 }}
-                className="fixed inset-y-0 right-0 w-full sm:w-115 bg-white dark:bg-stone-950 border-l border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto"
+                className={
+                  isMobile
+                    ? "fixed bottom-0 left-0 right-0 h-[78vh] bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto rounded-t-2xl"
+                    : "fixed inset-y-0 right-0 w-full sm:w-115 bg-white dark:bg-stone-950 border-l border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto"
+                }
               >
                 <div className="sticky top-0 z-10 bg-white/90 dark:bg-stone-950/90 backdrop-blur border-b border-stone-200 dark:border-stone-800 px-5 py-3 flex items-center justify-between">
                   <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-stone-400">
@@ -1088,18 +1401,35 @@ export default function RoadmapCanvasPage() {
                     >
                       <Check className="w-3 h-3" /> Completed
                     </StatusChip>
+                    <StatusChip
+                      active={drawerProgress?.status === "SKIPPED"}
+                      onClick={() =>
+                        updateProgress(drawerTopic.id, { status: "SKIPPED" })
+                      }
+                    >
+                      Skipped
+                    </StatusChip>
                     <button
                       type="button"
+                      aria-label={
+                        drawerProgress?.bookmarked
+                          ? "Remove bookmark"
+                          : "Add bookmark"
+                      }
+                      title={
+                        drawerProgress?.bookmarked
+                          ? "Remove bookmark"
+                          : "Add bookmark"
+                      }
                       onClick={() =>
                         updateProgress(drawerTopic.id, {
                           bookmarked: !drawerProgress?.bookmarked,
                         })
                       }
-                      className={`inline-flex items-center justify-center h-7 w-7 rounded-md text-xs font-bold transition-colors cursor-pointer border ${
-                        drawerProgress?.bookmarked
+                      className={`inline-flex items-center justify-center h-7 w-7 rounded-md text-xs font-bold transition-colors cursor-pointer border ${drawerProgress?.bookmarked
                           ? "bg-lime-400 text-stone-950 border-lime-400"
                           : "bg-white text-stone-500 border-stone-200 hover:border-stone-400 dark:bg-stone-900 dark:text-stone-400 dark:border-stone-800 dark:hover:border-stone-600"
-                      }`}
+                        }`}
                     >
                       <Bookmark
                         className={`w-3 h-3 ${drawerProgress?.bookmarked ? "fill-current" : ""}`}
@@ -1119,16 +1449,8 @@ export default function RoadmapCanvasPage() {
                         resources
                       </p>
                       <ul className="space-y-1">
-                        {drawerTopic.resources.map((r: RoadmapResource, i: number) => (
-                          <motion.li
-                            key={r.id}
-                            initial={{ opacity: 0, x: 8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{
-                              delay: 0.25 + i * 0.04,
-                              duration: 0.3,
-                            }}
-                          >
+                        {drawerTopic.resources.map((r: RoadmapResource) => (
+                          <li key={r.id}>
                             <a
                               href={r.url}
                               target="_blank"
@@ -1148,7 +1470,7 @@ export default function RoadmapCanvasPage() {
                               </span>
                               <ExternalLink className="w-3 h-3 text-stone-300 dark:text-stone-700 shrink-0 group-hover:text-lime-500 transition-colors" />
                             </a>
-                          </motion.li>
+                          </li>
                         ))}
                       </ul>
                     </motion.div>
@@ -1211,6 +1533,125 @@ export default function RoadmapCanvasPage() {
             </>
           )}
         </AnimatePresence>
+        {showEditModal && (
+  <>
+    {/* Backdrop */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowEditModal(false)}
+      className="fixed inset-0 z-60 bg-stone-950/70 backdrop-blur-sm"
+    />
+
+    {/* Modal */}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, y: 20 }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 24,
+      }}
+      className="fixed inset-0 z-70 flex items-center justify-center p-4"
+    >
+      <div
+        className="w-full max-w-2xl rounded-2xl border border-stone-800 bg-stone-950 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-stone-800 px-6 py-5">
+          <h2 className="text-2xl font-bold text-stone-50">
+            Edit Roadmap Details
+          </h2>
+
+          <button
+            type="button"
+            onClick={() => setShowEditModal(false)}
+            className="rounded-md p-2 text-stone-500 hover:bg-stone-900 hover:text-stone-300"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="space-y-6 p-6">
+          {/* Title */}
+          <div>
+            <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.2em] text-stone-500">
+              Title
+            </label>
+
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none focus:border-lime-500"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.2em] text-stone-500">
+              Description
+            </label>
+
+            <textarea
+              rows={5}
+              value={shortDescription}
+              onChange={(e) =>
+                setShortDescription(e.target.value)
+              }
+              className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none resize-none focus:border-lime-500"
+            />
+          </div>
+
+          {/* Level */}
+          <div>
+            <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.2em] text-stone-500">
+              Level
+            </label>
+
+            <select
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className="w-full rounded-xl border border-stone-700 bg-stone-900 px-4 py-3 text-stone-50 outline-none focus:border-lime-500"
+            >
+              <option value="BEGINNER">
+                Beginner
+              </option>
+
+              <option value="INTERMEDIATE">
+                Intermediate
+              </option>
+
+              <option value="ADVANCED">
+                Advanced
+              </option>
+            </select>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end gap-3 border-t border-stone-800 px-6 py-5">
+          <Button
+            variant="ghost"
+            onClick={() => setShowEditModal(false)}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={handleUpdateRoadmap}
+            className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+          >
+            Save Changes
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  </>
+)}
 
         {/* ─── Roadmap Completion Modal ─────────────────────────────────── */}
         {showCompletionModal && (
@@ -1231,8 +1672,10 @@ export default function RoadmapCanvasPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                onClick={() => !regenerateMutation.isPending && setRegenModal(null)}
-                className="fixed inset-0 z-[60] bg-stone-950/60 backdrop-blur-sm"
+                onClick={() =>
+                  !regenerateMutation.isPending && setRegenModal(null)
+                }
+                className="fixed inset-0 z-60 bg-stone-950/60 backdrop-blur-sm"
               />
               {/* Dialog */}
               <motion.div
@@ -1244,7 +1687,7 @@ export default function RoadmapCanvasPage() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.94, y: 8 }}
                 transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                className="fixed inset-0 z-[70] flex items-center justify-center px-4 pointer-events-none"
+                className="fixed inset-0 z-70 flex items-center justify-center px-4 pointer-events-none"
               >
                 <div className="w-full max-w-md pointer-events-auto bg-stone-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
                   {/* Header */}
@@ -1254,10 +1697,13 @@ export default function RoadmapCanvasPage() {
                         <RefreshCw className="w-3.5 h-3.5 text-stone-950" />
                       </div>
                       <div>
-                        <p id="regen-dialog-title" className="text-sm font-bold text-stone-50">
+                        <p
+                          id="regen-dialog-title"
+                          className="text-sm font-bold text-stone-50"
+                        >
                           Regenerate section
                         </p>
-                        <p className="text-[10px] font-mono text-stone-500 truncate max-w-60">
+                        <p className="text-xs font-mono text-stone-500 truncate max-w-60">
                           {regenModal.sectionTitle}
                         </p>
                       </div>
@@ -1275,8 +1721,59 @@ export default function RoadmapCanvasPage() {
 
                   {/* Body */}
                   <div className="px-5 py-4 space-y-4">
+                    <div
+                      role="alert"
+                      className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-3"
+                    >
+                      <AlertTriangle
+                        className="mt-0.5 h-4 w-4 shrink-0 text-amber-400"
+                        aria-hidden
+                      />
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-amber-100">
+                          Progress in this section will be reset
+                        </p>
+                        <p className="text-xs text-amber-100/80 leading-relaxed">
+                          Regenerating this section will reset your progress for
+                          all topics in it. This cannot be undone.
+                        </p>
+                        {regenProgressImpact.totalAffected > 0 ? (
+                          <p className="text-[11px] font-mono text-amber-200/90">
+                            {regenProgressImpact.completed > 0 && (
+                              <span>
+                                {regenProgressImpact.completed} completed
+                              </span>
+                            )}
+                            {regenProgressImpact.completed > 0 &&
+                              regenProgressImpact.inProgress > 0 &&
+                              " · "}
+                            {regenProgressImpact.inProgress > 0 && (
+                              <span>
+                                {regenProgressImpact.inProgress} in progress
+                              </span>
+                            )}{" "}
+                            topic
+                            {regenProgressImpact.totalAffected === 1
+                              ? ""
+                              : "s"}{" "}
+                            will be affected.
+                          </p>
+                        ) : (
+                          <p className="text-[11px] font-mono text-amber-200/70">
+                            No completed or in-progress topics in this section
+                            yet.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
                     <p className="text-xs text-stone-400 leading-relaxed">
-                      AI will rewrite this section's topics and resources while keeping the rest of your roadmap intact. Your progress on existing topics will be cleared for this section.
+                      AI will rewrite this section's topics and resources while
+                      keeping the rest of your roadmap intact. Your progress on
+                      existing topics will be cleared for this section. AI will
+                      rewrite this section's topics and resources while keeping
+                      the rest of your roadmap intact. Your progress on existing
+                      topics will be cleared for this section.
                     </p>
 
                     <div>
@@ -1323,7 +1820,6 @@ export default function RoadmapCanvasPage() {
                       ) : (
                         <Sparkles className="w-3.5 h-3.5" />
                       )}
-                      {regenerateMutation.isPending ? "Regenerating…" : "Regenerate"}
                     </Button>
                   </div>
                 </div>
@@ -1337,6 +1833,139 @@ export default function RoadmapCanvasPage() {
 }
 
 // ─── Small subcomponents ───────────────────────────────────────────────────
+function RoadmapAnalyticsStrip({
+  analytics,
+}: {
+  analytics: RoadmapEnrollmentAnalytics | null;
+}) {
+  const statusStyles = analytics
+    ? {
+      AHEAD: "text-lime-300",
+      ON_TRACK: "text-sky-300",
+      BEHIND: "text-amber-300",
+    }[analytics.onTrackStatus]
+    : "text-stone-500";
+
+  const statusLabel =
+    analytics?.onTrackStatus.replace("_", " ").toLowerCase() ?? "loading";
+  const estimatedDate = analytics
+    ? new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+    }).format(new Date(analytics.estimatedCompletionDate))
+    : "calculating";
+
+  return (
+    <div className="border-t border-white/10 bg-stone-950/95 px-5 py-3">
+      <div className="grid gap-3 lg:grid-cols-5 lg:items-center">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:col-span-4">
+          <AnalyticsMetric
+            label="current streak"
+            value={analytics ? `${analytics.currentStreak}d` : "--"}
+          />
+          <AnalyticsMetric
+            label="best streak"
+            value={analytics ? `${analytics.longestStreak}d` : "--"}
+          />
+          <AnalyticsMetric
+            label="this week"
+            value={
+              analytics
+                ? `${analytics.topicsCompletedThisWeek}/${analytics.weeklyTarget}`
+                : "--"
+            }
+          />
+          <AnalyticsMetric label="finish est." value={estimatedDate} />
+        </div>
+
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex w-28 shrink-0 items-center gap-2">
+            <TrendingUp
+              className={`w-3.5 h-3.5 ${statusStyles}`}
+              aria-hidden="true"
+            />
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-stone-100 capitalize truncate">
+                {statusLabel}
+              </p>
+              <p className="text-[10px] font-mono text-stone-500 uppercase tracking-wider">
+                pace
+              </p>
+            </div>
+          </div>
+
+          <div className="min-w-0 rounded-md border border-white/10 bg-white/5 px-3 py-2">
+            <p className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+              trend
+            </p>
+
+            <div className="h-8 mt-1">
+              {analytics && analytics.progressTrend.length > 1 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={analytics.progressTrend}>
+                    <defs>
+                      <linearGradient
+                        id="trendFill"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="#a3e635"
+                          stopOpacity={0.35}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="#a3e635"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <Area
+                      type="monotone"
+                      dataKey="cumulative"
+                      stroke="#a3e635"
+                      strokeWidth={2}
+                      fill="url(#trendFill)"
+                      dot={{ r: 2, strokeWidth: 0, fill: "#a3e635" }}
+                      isAnimationActive={false}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-[10px] font-mono text-stone-600">
+                  complete 2 days to see
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="min-w-0 rounded-md border border-white/10 bg-white/5 px-3 py-2">
+      <p className="text-[10px] font-mono uppercase tracking-wider text-stone-500 truncate">
+        {label}
+      </p>
+      <p className="mt-0.5 text-sm font-bold text-stone-50 tabular-nums truncate">
+        {value}
+      </p>
+    </div>
+  );
+}
+
 function Stat({
   icon: Icon,
   label,
@@ -1402,23 +2031,10 @@ function StatusChip({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-bold transition-colors cursor-pointer border ${
-        active ? activeBg : idle
-      }`}
+      className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-bold transition-colors cursor-pointer border ${active ? activeBg : idle
+        }`}
     >
       {children}
     </button>
   );
-}
-
-function computeStreak(data: EnrollmentResponse): number {
-  // Count distinct days (UTC) on which any topic was completed.
-  // Simple approximation: number of unique YYYY-MM-DD strings across completedAt timestamps.
-  const days = new Set<string>();
-  for (const p of data.enrollment.topicProgress) {
-    if (p.status === "COMPLETED" && p.completedAt) {
-      days.add(new Date(p.completedAt).toISOString().slice(0, 10));
-    }
-  }
-  return days.size;
 }

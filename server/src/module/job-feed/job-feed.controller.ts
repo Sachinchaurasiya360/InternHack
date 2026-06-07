@@ -41,7 +41,6 @@ export class JobFeedController {
         res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
         return;
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const pref = await jobFeedService.updatePreferences(req.user.id, parsed.data as any);
       res.json(pref);
     } catch (err) { next(err); }

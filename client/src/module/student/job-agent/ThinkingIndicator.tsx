@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BotMessageSquare, User, Search, Zap, BarChart3, CheckCircle2 } from "lucide-react";
+import { User, Search, Zap, BarChart3, CheckCircle2 } from "lucide-react";
 
 const STEPS = [
   { icon: User, text: "Analyzing your profile", delay: 0 },
@@ -31,8 +31,8 @@ export function ThinkingIndicator() {
       animate={{ opacity: 1, y: 0 }}
       className="flex gap-3"
     >
-      <div className="w-8 h-8 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center shrink-0">
-        <BotMessageSquare className="w-4 h-4 text-stone-50 dark:text-stone-900" />
+      <div className="w-8 h-8 rounded-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 flex items-center justify-center shrink-0">
+        <img src="/logo.png" alt="InternHack" className="w-5 h-5 object-contain" />
       </div>
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 mb-1">

@@ -14,10 +14,14 @@ import {
   roadmapSlugParam,
   topicSlugParam,
   updateProgressSchema,
+  updateRoadmapSchema,
 } from "./roadmap.validation.js";
 import {
   buildWeeklyPlan,
-  enrollUser,
+  getEnrollmentAnalyticsForUser,
+    enrollUser,
+  findDuplicateRoadmap,
+  getEnrollmentByRoadmapSlugForUser,
   getEnrollmentForUser,
   getRoadmapBySlug,
   getTopicBySlug,
@@ -26,6 +30,7 @@ import {
   recomputePace,
   summarizeProgress,
   updateTopicProgress,
+  deleteEnrollment,
 } from "./roadmap.service.js";
 import {
   buildRoadmapSlug,
@@ -37,6 +42,8 @@ import {
 import { generateRoadmapPdf, generateCertificatePdf } from "./roadmap.pdf.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { roadmapWelcomeEmailHtml } from "../../utils/email-templates.js";
+// FIX: import clearCache so we can bust the cache for the new roadmap slug
+import { clearCache } from "../../middleware/cache.middleware.js";
 
 const validationError = (res: Response, errors: unknown) =>
   res.status(400).json({ message: "Validation failed", errors });
@@ -49,7 +56,7 @@ export async function getRoadmaps(req: Request, res: Response, next: NextFunctio
       validationError(res, parsed.error.flatten().fieldErrors);
       return;
     }
-    const data = await listPublishedRoadmaps(parsed.data);
+    const data = await listPublishedRoadmaps({ ...parsed.data, userId: req.user?.id });
     res.json(data);
   } catch (err) {
     next(err);
@@ -171,7 +178,7 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
             experienceLevel: full.experienceLevel,
             goal: full.goal,
           },
-          weeklyPlan: weeklyPlan.map((w) => ({
+          weeklyPlan: (weeklyPlan || []).map((w) => ({
             week: w.week,
             topicSlugs: w.topicSlugs,
             totalHours: w.totalHours,
@@ -205,7 +212,7 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
         });
 
         if (userRecord) {
-          const weekOne = weeklyPlan[0]?.topicSlugs ?? [];
+          const weekOne = weeklyPlan?.[0]?.topicSlugs ?? [];
           await sendEmail({
             to: userRecord.email,
             subject: `Your ${full.roadmap.title} is ready`,
@@ -228,7 +235,11 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
         }
       }
     } catch (err) {
-      console.error("[Roadmap] Welcome email/PDF failed:", err);
+      console.error("[Roadmap] Welcome email/PDF failed:", {
+        enrollmentId: enrollment.id,
+        userId: req.user!.id,
+        err,
+      });
     }
 
     res.status(201).json({
@@ -250,6 +261,28 @@ export async function getMyEnrollments(req: Request, res: Response, next: NextFu
   try {
     const enrollments = await listEnrollmentsForUser(req.user!.id);
     res.json({ enrollments });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getMyEnrollmentByRoadmapSlug(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = roadmapSlugParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    const enrollment = await getEnrollmentByRoadmapSlugForUser({
+      userId: req.user!.id,
+      slug: params.data.slug,
+    });
+
+    res.json({
+      enrolled: Boolean(enrollment),
+      enrollment,
+    });
   } catch (err) {
     next(err);
   }
@@ -279,6 +312,52 @@ export async function getMyEnrollment(req: Request, res: Response, next: NextFun
   }
 }
 
+export async function getMyEnrollmentAnalytics(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = enrollmentIdParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    const analytics = await getEnrollmentAnalyticsForUser({
+      userId: req.user!.id,
+      enrollmentId: params.data.id,
+    });
+    if (!analytics) {
+      res.status(404).json({ message: "Enrollment not found" });
+      return;
+    }
+
+    res.json({ analytics });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteMyEnrollment(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = enrollmentIdParam.safeParse(req.params);
+    if (!params.success) {
+      validationError(res, params.error.flatten().fieldErrors);
+      return;
+    }
+
+    await deleteEnrollment({
+      userId: req.user!.id,
+      enrollmentId: params.data.id,
+    });
+
+    res.status(204).send();
+  } catch (err: any) {
+    if (err?.status === 404) {
+      res.status(404).json({ message: err.message });
+      return;
+    }
+    next(err);
+  }
+}
+
 export async function patchTopicProgress(req: Request, res: Response, next: NextFunction) {
   try {
     const params = enrollmentTopicParams.safeParse(req.params);
@@ -293,7 +372,7 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
     }
 
 
-  const { progress, roadmapCompleted } = await updateTopicProgress({
+    const { progress, roadmapCompleted } = await updateTopicProgress({
       userId: req.user!.id,
       enrollmentId: params.data.id,
       topicId: params.data.topicId,
@@ -303,7 +382,6 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
     });
     res.json({ progress, roadmapCompleted });
 
-
   } catch (err) {
     if (typeof err === "object" && err && "status" in err) {
       const e = err as { status: number; message: string };
@@ -311,6 +389,62 @@ export async function patchTopicProgress(req: Request, res: Response, next: Next
       return;
     }
     next(err);
+  }
+}
+export async function updateRoadmap(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const slug = Array.isArray(req.params.slug)
+      ? req.params.slug[0]
+      : req.params.slug;
+
+    if (!slug) {
+      return res.status(400).json({
+        message: "Slug is required",
+      });
+    }
+
+    const result =
+      updateRoadmapSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        errors: result.error.flatten(),
+      });
+    }
+
+    const roadmap =
+      await prisma.roadmap.findUnique({
+        where: { slug },
+      });
+
+    if (!roadmap) {
+      return res.status(404).json({
+        message: "Roadmap not found",
+      });
+    }
+
+    const user = req.user;
+    if (!user || roadmap.ownerUserId !== user.id) {
+      return res.status(403).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const updatedRoadmap =
+      await prisma.roadmap.update({
+        where: { slug },
+        data: result.data,
+      });
+
+    return res.json({
+      roadmap: updatedRoadmap,
+    });
+  } catch (error) {
+    next(error);
   }
 }
 
@@ -438,6 +572,36 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     const userId = req.user!.id;
     const input = parsed.data;
 
+    // 1. Enforce max capacity threshold guard
+    const MAX_AI_ROADMAPS = 5;
+    const existingCount = await prisma.roadmapEnrollment.count({
+      where: {
+        userId,
+        roadmap: { ownerUserId: userId },
+      },
+    });
+
+    if (existingCount >= MAX_AI_ROADMAPS) {
+      res.status(409).json({
+        message: "You have reached the limit of 5 active AI roadmaps. Please complete or delete existing ones before generating new ones.",
+      });
+      return;
+    }
+
+    // 2. Evaluate similarity duplicate check block
+    const duplicate = await findDuplicateRoadmap(
+      input.goalDescription,
+      userId
+    );
+
+    if (duplicate && !input.forceCreate) {
+      res.status(409).json({
+        message: "Similar roadmap already exists",
+        roadmap: duplicate,
+      });
+      return;
+    }
+
     // 1. Generate via Gemini, validate shape
     let generated;
     try {
@@ -478,7 +642,10 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
           prerequisites: generated.prerequisites,
           tags: generated.tags,
           faqs: generated.faqs as unknown as Prisma.InputJsonValue,
-          isPublished: false,
+          // FIX: was `false` — AI-generated roadmaps must be published so the
+          // canvas page can load them via GET /roadmaps/:slug without hitting
+          // the unpublished ownership gate and returning a 404.
+          isPublished: true,
           isAiGenerated: true,
           ownerUserId: userId,
           topicCount,
@@ -641,8 +808,18 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
         });
       }
     } catch (err) {
-      console.error("[Roadmap AI] Welcome email/PDF failed:", err);
+      console.error("[Roadmap AI] Welcome email/PDF failed:", {
+        enrollmentId: enrollment.id,
+        userId,
+        err,
+      });
     }
+
+    // FIX: Bust the cache for this slug so the first GET after generation
+    // always hits the DB and returns the freshly created roadmap, not a
+    // stale cache entry from a previous 404 or an earlier roadmap at the
+    // same URL pattern.
+    clearCache(`roadmap:/api/roadmaps/${slug}`);
 
     res.status(201).json({
       message: "Roadmap generated",
@@ -653,9 +830,6 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     next(err);
   }
 }
-
-
-
 
 export async function downloadCertificate(req: Request, res: Response, next: NextFunction) {
   try {
@@ -692,8 +866,6 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
       select: { name: true },
     });
 
-
-
     const completedTopics = enrollment.topicProgress
       .filter((p) => p.status === "COMPLETED" && p.completedAt)
       .sort((a, b) => b.completedAt!.getTime() - a.completedAt!.getTime());
@@ -706,9 +878,6 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
       completedAt: actualCompletedAt,
     });
 
-
-
-
     const suffix = theme === "dark" ? "-dark" : "";
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
@@ -720,7 +889,6 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
     next(err);
   }
 }
-
 
 
 // ─── Section Regeneration ─────────────────────────────────────────────────
@@ -741,7 +909,6 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
     const userId = req.user!.id;
     const { slug, sectionId } = params.data;
 
-    // 1. Load the roadmap — must be AI-generated and owned by this user
     const roadmap = await prisma.roadmap.findUnique({
       where: { slug },
       include: {
@@ -767,19 +934,16 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
       return;
     }
 
-    // 2. Find the target section
     const targetSection = roadmap.sections.find((s) => s.id === sectionId);
     if (!targetSection) {
       res.status(404).json({ message: "Section not found in this roadmap" });
       return;
     }
 
-    // 3. Build neighbour context (all other sections)
     const neighbourSections = roadmap.sections
       .filter((s) => s.id !== sectionId)
       .map((s) => ({ title: s.title, orderIndex: s.orderIndex }));
 
-    // 4. Call AI
     let generated;
     try {
       generated = await regenerateSection(
@@ -806,7 +970,6 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
       return;
     }
 
-    // 5. Slugify new topics (unique within the section)
     const usedSlugs = new Set<string>();
     const slugify = (s: string, idx: number) => {
       const base = s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || `topic-${idx + 1}`;
@@ -817,27 +980,19 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
       return slug;
     };
 
-    // 6. Persist: delete old topics (cascade deletes resources + progress),
-    //    then recreate section title/summary + new topics + resources.
-    //    We do NOT delete the section row itself so enrollment foreign keys
-    //    and orderIndex stay intact.
     const updatedSection = await prisma.$transaction(async (tx) => {
-      // Delete all existing topics for this section (resources cascade)
+
       await tx.roadmapTopic.deleteMany({ where: { sectionId } });
 
-      // Update section metadata
       await tx.roadmapSection.update({
         where: { id: sectionId },
         data: {
           title: generated.title,
           summary: generated.summary,
-          // Mark the section as AI-regenerated with a timestamp
           aiRegeneratedAt: new Date(),
         },
       });
 
-      // Create new topics
-      const createdTopics: { id: number; index: number }[] = [];
       for (const [tIdx, topic] of generated.topics.entries()) {
         const topicSlug = slugify(topic.title, tIdx);
         const created = await tx.roadmapTopic.create({
@@ -855,9 +1010,7 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
             selfCheck: topic.selfCheck ?? null,
           },
         });
-        createdTopics.push({ id: created.id, index: tIdx });
 
-        // Create resources for this topic
         if (topic.resources?.length) {
           await tx.roadmapResource.createMany({
             data: topic.resources.map((r, rIdx) => ({
@@ -873,7 +1026,6 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
         }
       }
 
-      // Recompute roadmap-level topicCount
       const newTopicCount = roadmap.sections.reduce((sum, s) => {
         if (s.id === sectionId) return sum + generated.topics.length;
         return sum + s.topics.length;
@@ -884,7 +1036,6 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
         data: { topicCount: newTopicCount, updatedAt: new Date() },
       });
 
-      // Return the freshly created section with topics + resources
       return tx.roadmapSection.findUnique({
         where: { id: sectionId },
         include: {
@@ -896,6 +1047,9 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
       });
     });
 
+    // FIX: Bust the cache for this roadmap so section changes are visible immediately
+    clearCache(`roadmap:/api/roadmaps/${slug}`);
+
     res.json({
       message: "Section regenerated successfully",
       section: updatedSection,
@@ -904,3 +1058,4 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
     next(err);
   }
 }
+

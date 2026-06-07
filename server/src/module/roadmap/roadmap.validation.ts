@@ -33,7 +33,7 @@ export type EnrollInput = z.infer<typeof enrollSchema>;
 export const updateProgressSchema = z.object({
   status: z.enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "SKIPPED"]).optional(),
   bookmarked: z.boolean().optional(),
-  notes: z.string().max(5000).optional(),
+  notes: z.string().max(1000).optional(),
 }).refine(
   (v) => v.status !== undefined || v.bookmarked !== undefined || v.notes !== undefined,
   { message: "Provide at least one field" },
@@ -67,9 +67,15 @@ export const aiGenerateSchema = z.object({
   knownSkills: z.array(z.string().max(40)).max(20).default([]),
   mustInclude: z.array(z.string().max(40)).max(20).default([]),
   avoid: z.array(z.string().max(40)).max(20).default([]),
+  forceCreate: z.boolean().optional().default(false),
 });
 export type AiGenerateInput = z.infer<typeof aiGenerateSchema>;
 
+export const updateRoadmapSchema = z.object({
+  title: z.string().min(3).max(100).optional(),
+  shortDescription: z.string().min(20).max(500).optional(),
+  level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
+});
 // ── Section regeneration ──────────────────────────────────────────────────
 export const regenerateSectionParams = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid roadmap slug"),

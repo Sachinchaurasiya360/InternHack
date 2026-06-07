@@ -1,4 +1,4 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsGlobalYouth: Grant[] = [
   {
@@ -19,6 +19,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Global applicants welcome",
     ],
     status: "Active",
+    deadline: "2027-01-11",
     ecosystem: "Global",
     highlights: [
       "$100K over 2 years with no equity taken",
@@ -44,6 +45,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Proficiency in English required",
     ],
     status: "Active",
+    deadline: "2027-01-16",
     ecosystem: "Global",
     highlights: [
       "All expenses covered including travel, lodging, and meals",
@@ -69,6 +71,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Open to students from any country",
     ],
     status: "Active",
+    deadline: "2027-01-21",
     ecosystem: "Global",
     highlights: [
       "Compete against student entrepreneurs from 60+ countries",
@@ -94,6 +97,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Both individuals ($90K) and partnerships ($180K split) eligible",
     ],
     status: "Active",
+    deadline: "2027-01-26",
     ecosystem: "Global",
     highlights: [
       "90% of fellows are people of color",
@@ -108,7 +112,7 @@ export const grantsGlobalYouth: Grant[] = [
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
       "Resolution supports young social entrepreneurs (18-25) tackling poverty, inequality, and injustice. Fellows receive funding for 12 months, plus mentoring, legal support, and connections to scale their ventures.",
-    fundingAmount: "£18,000/year",
+    fundingAmount: "Â£18,000/year",
     category: "Global Youth",
     tags: ["Social Enterprise", "Youth", "UK", "Poverty"],
     website: "https://www.resolutionfoundation.org",
@@ -119,6 +123,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Must commit to working on venture full-time during fellowship",
     ],
     status: "Active",
+    deadline: "2027-01-31",
     ecosystem: "UK",
     highlights: [
       "Targeted at 18-25 year old social entrepreneurs",
@@ -144,6 +149,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Must be nominated by their institution",
     ],
     status: "Active",
+    deadline: "2027-02-05",
     ecosystem: "USA",
     highlights: [
       "Complete freedom to design your own year abroad",
@@ -169,6 +175,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Global applicants from any country",
     ],
     status: "Active",
+    deadline: "2027-02-10",
     ecosystem: "Global",
     highlights: [
       "Open to youth as young as 12",
@@ -194,6 +201,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Applications reviewed on a rolling basis",
     ],
     status: "Active",
+    deadline: "2027-02-15",
     ecosystem: "Global",
     highlights: [
       "$10,000 grant plus 1-year executive coaching",
@@ -219,6 +227,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Semester-long commitment required",
     ],
     status: "Active",
+    deadline: "2027-02-20",
     ecosystem: "Global",
     highlights: [
       "Official UN recognition and certificate",
@@ -244,6 +253,7 @@ export const grantsGlobalYouth: Grant[] = [
       "Open to students from any university worldwide",
     ],
     status: "Active",
+    deadline: "2027-02-25",
     ecosystem: "Global",
     highlights: [
       "$1M grand prize - largest student competition in the world",

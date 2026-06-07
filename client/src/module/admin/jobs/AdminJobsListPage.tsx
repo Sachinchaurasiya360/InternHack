@@ -41,9 +41,8 @@ export default function AdminJobsListPage() {
     }
   };
 
-  useEffect(() => {
-    fetchJobs();
-  }, [statusFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
+  useEffect(() => { fetchJobs(); }, [statusFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

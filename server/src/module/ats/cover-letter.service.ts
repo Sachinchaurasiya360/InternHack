@@ -139,7 +139,7 @@ export class CoverLetterService {
       concise:
         "Be extremely brief and direct. Use short sentences. Cut all filler. Write 1-2 short paragraphs maximum, targeting 150-200 words. Ignore the default paragraph count and word limit — brevity is the priority. Every sentence must earn its place.",
       startup:
-        "Use bold, mission-driven language. Show that you understand the startup's vision and want to help build something meaningful. Be direct, energetic, and avoid corporate speak.",
+        "Use bold, mission-driven language with a startup-casual vibe. Show that you understand the startup's vision and want to help build something meaningful. Be direct, energetic, and avoid corporate speak.",
     };
     
 
