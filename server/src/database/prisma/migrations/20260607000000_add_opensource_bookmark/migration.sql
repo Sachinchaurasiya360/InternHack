@@ -6,8 +6,8 @@ CREATE TABLE "opensourceBookmark" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "opensourceBookmark_pkey" PRIMARY KEY ("id"),
-    CONSTRAINT "opensourceBookmark_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "opensourceBookmark_repoId_fkey" FOREIGN KEY ("repoId") REFERENCES "opensourceRepo"("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "opensourceBookmark_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "opensourceBookmark_repoId_fkey" FOREIGN KEY ("repoId") REFERENCES "opensourceRepo"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
