@@ -241,12 +241,45 @@ where["OR"] = [
     };
   }
 
+  private FREE_MONTHLY_REPO_SUGGESTIONS = 3;
+
   async submitRepoRequest(userId: number, data: any) {
     const existing = await prisma.repoRequest.findFirst({
       where: { url: data.url, status: { in: ["PENDING", "APPROVED"] } },
     });
     if (existing) {
       throw new Error("This repository has already been submitted");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
+    });
+
+    if (user) {
+      const isPremium =
+        (user.subscriptionPlan === "MONTHLY" || user.subscriptionPlan === "YEARLY") &&
+        user.subscriptionStatus === "ACTIVE" &&
+        (!user.subscriptionEndDate || user.subscriptionEndDate > new Date());
+
+      if (!isPremium) {
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        const monthlyCount = await prisma.repoRequest.count({
+          where: {
+            userId,
+            createdAt: { gte: startOfMonth },
+          },
+        });
+
+        if (monthlyCount >= this.FREE_MONTHLY_REPO_SUGGESTIONS) {
+          throw new Error(
+            "You've used all your free repo suggestions this month. Upgrade to Pro for unlimited suggestions.",
+          );
+        }
+      }
     }
     const request = await prisma.repoRequest.create({
       data: { ...data, userId },
