@@ -676,6 +676,9 @@ export class RecruiterService {
       where.OR = [
         { name: { contains: filter.search, mode: "insensitive" } },
         { email: { contains: filter.search, mode: "insensitive" } },
+        { skills: { has: filter.search } },
+        { skills: { has: filter.search.charAt(0).toUpperCase() + filter.search.slice(1).toLowerCase() } },
+        { bio: { contains: filter.search, mode: "insensitive" } },
       ];
     }
     if (filter.college) {
