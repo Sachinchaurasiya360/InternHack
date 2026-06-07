@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { AptitudeService } from "./aptitude.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
+import { submitAnswerSchema } from "./aptitude.validation.js";
 
 export class AptitudeController {
   constructor(private service: AptitudeService) {}
@@ -30,11 +31,14 @@ export class AptitudeController {
 
   async submitAnswer(req: Request, res: Response, next: NextFunction) {
     try {
-      const questionId = parseInt(req.params.id as string);
+      const parsed = submitAnswerSchema.safeParse({ body: req.body, params: req.params });
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+
+      const questionId = parseInt(parsed.data.params.id);
+      if (isNaN(questionId)) return res.status(400).json({ message: "Invalid question ID" });
+
       const studentId = req.user!.id;
-      const { answer } = req.body;
-      if (!answer) return res.status(400).json({ error: "Answer is required" });
-      const result = await this.service.submitAnswer(studentId, questionId, answer);
+      const result = await this.service.submitAnswer(studentId, questionId, parsed.data.body.answer);
       res.json(result);
     } catch (err) {
       next(err);
