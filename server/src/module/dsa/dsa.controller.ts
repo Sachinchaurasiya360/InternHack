@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { DsaService } from "./dsa.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 import { syncLeetCodeSolvedProblems } from "./leetcode.service.js";
+import { syncLeetCodeSchema } from "./dsa.validation.js";
 import { prisma } from "../../database/db.js";
 import { isPremiumUser } from "../../utils/premium.utils.js";
 
@@ -228,9 +229,9 @@ export class DsaController {
     try {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
-      const { leetcodeUsername } = req.body;
-      if (!leetcodeUsername) { res.status(400).json({ message: "LeetCode username is required" }); return; }
-      const result = await syncLeetCodeSolvedProblems(userId, leetcodeUsername);
+      const parsed = syncLeetCodeSchema.safeParse(req.body);
+      if (!parsed.success) { res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() }); return; }
+      const result = await syncLeetCodeSolvedProblems(userId, parsed.data.leetcodeUsername);
       res.json({
         success: true,
         message: `Successfully synced ${result.syncedCount} problems from LeetCode.`,
