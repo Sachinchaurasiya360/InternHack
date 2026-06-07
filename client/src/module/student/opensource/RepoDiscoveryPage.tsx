@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -199,7 +199,13 @@ export default function RepoDiscoveryPage() {
     return Array.from(langs);
   }, [user]);
 
-  const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
+  const handleRecentlyViewedOverflow = useCallback(() => {
+    toast.success("Oldest repo removed from recently viewed");
+  }, []);
+
+  const { recentlyViewed, addRepo, clearHistory } = useRecentlyViewedRepos({
+    onRepoRemoved: handleRecentlyViewedOverflow,
+  });
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     addRepo(repo);
@@ -634,7 +640,7 @@ export default function RepoDiscoveryPage() {
         <GuidanceCards />
 
         {/* Recently viewed & recommended */}
-        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
+        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} onClear={clearHistory} />
 
         {user?.role === "STUDENT" && (
           <RecommendedSection onSelect={handleOpenRepo} />
