@@ -460,13 +460,13 @@ where["OR"] = [
     };
   }
 
-  async getStudentContributionTrend(userId: number) {
+  async getStudentContributionTrend(userId: number, startDate?: string, endDate?: string) {
     const now = new Date();
     const currentMonthStart = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
     );
-    const startMonth = this.addMonthsUTC(currentMonthStart, -5);
-    const endMonth = this.addMonthsUTC(currentMonthStart, 1);
+    const startMonth = startDate ? new Date(startDate) : this.addMonthsUTC(currentMonthStart, -5);
+    const endMonth = endDate ? new Date(endDate) : this.addMonthsUTC(currentMonthStart, 1);
     const approvedRequests = await prisma.repoRequest.findMany({
       where: {
         userId,
@@ -482,7 +482,10 @@ where["OR"] = [
       countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
     }
 
-    const trend = Array.from({ length: 6 }, (_, index) => {
+    const monthDiff = (endMonth.getUTCFullYear() - startMonth.getUTCFullYear()) * 12
+      + (endMonth.getUTCMonth() - startMonth.getUTCMonth());
+    const numMonths = Math.max(monthDiff, 1);
+    const trend = Array.from({ length: numMonths }, (_, index) => {
       const monthStart = this.addMonthsUTC(startMonth, index);
       const monthKey = this.getMonthKeyUTC(monthStart);
       return {

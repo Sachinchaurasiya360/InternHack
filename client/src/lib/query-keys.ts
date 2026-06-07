@@ -103,7 +103,7 @@ export const queryKeys = {
       ["opensource", "list", params] as const,
     detail: (id: number) => ["opensource", "detail", id] as const,
     myRequests: () => ["opensource", "my-requests"] as const,
-    trend: () => ["opensource", "trend"] as const,
+    trend: (startDate?: string, endDate?: string) => ["opensource", "trend", startDate, endDate] as const,
     hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,

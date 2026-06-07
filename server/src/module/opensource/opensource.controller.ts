@@ -255,7 +255,8 @@ export class OpensourceController {
     next: NextFunction,
   ) {
     try {
-      const result = await service.getStudentContributionTrend(req.user!.id);
+      const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
+      const result = await service.getStudentContributionTrend(req.user!.id, startDate, endDate);
       res.json(result);
     } catch (err) {
       next(err);
