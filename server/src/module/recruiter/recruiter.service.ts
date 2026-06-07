@@ -29,6 +29,16 @@ function isValidS3Url(url: string) {
 
 const logger = createLogger("recruiter.service");
 
+/** Legal manual status transitions for recruiter PATCH /applications/:id/status */
+const ALLOWED_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> = {
+  APPLIED: ["IN_PROGRESS", "REJECTED"],
+  IN_PROGRESS: ["SHORTLISTED", "REJECTED", "HIRED"],
+  SHORTLISTED: ["REJECTED", "HIRED"],
+  REJECTED: [],
+  HIRED: [],
+  WITHDRAWN: [],
+};
+
 interface TalentSearchFilter {
   page: number;
   limit: number;
@@ -372,6 +382,14 @@ export class RecruiterService {
     if (application.status === status) {
       const { job: _job, student: _student, ...current } = application;
       return current;
+    }
+
+    const allowedNext = ALLOWED_TRANSITIONS[application.status];
+    if (!allowedNext.includes(status)) {
+      throw Object.assign(
+        new Error(`Cannot transition application status from ${application.status} to ${status}`),
+        { statusCode: 409 },
+      );
     }
 
     const updated = await prisma.$transaction(async (tx) => {
@@ -860,4 +878,4 @@ export class RecruiterService {
     });
   }
 }
-
+

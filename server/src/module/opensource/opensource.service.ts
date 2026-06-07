@@ -1,5 +1,5 @@
 import { prisma } from "../../database/db.js";
-import { fetchGithubStats } from "../../lib/github.js";
+import { fetchGithubGoodFirstIssues, fetchGithubStats } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
   repoRequestSubmittedHtml,
@@ -134,6 +134,35 @@ where["OR"] = [
       );
     }
     return repo;
+  }
+
+  async getRepoByOwnerAndName(owner: string, name: string) {
+    const repo = (await prisma.opensourceRepo.findFirst({
+      where: {
+        owner: { equals: owner, mode: "insensitive" },
+        name: { equals: name, mode: "insensitive" },
+      },
+    })) as any;
+    if (!repo) return null;
+
+    const SIX_HOURS = 6 * 60 * 60 * 1000;
+    const isStale =
+      !repo.githubStatsUpdatedAt ||
+      Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
+
+    if (isStale && repo.url?.includes("github.com")) {
+      this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
+        console.error(`[github] background update failed for ${repo.id}:`, err),
+      );
+    }
+    return repo;
+  }
+
+  async getGoodFirstIssues(owner: string, name: string) {
+    const repo = await this.getRepoByOwnerAndName(owner, name);
+    if (!repo) return null;
+    const issues = await fetchGithubGoodFirstIssues(owner, name);
+    return { repo, issues };
   }
 
   private async updateGithubStats(id: number, url: string, name: string) {

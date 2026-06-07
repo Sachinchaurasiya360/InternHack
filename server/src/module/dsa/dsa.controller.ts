@@ -2,6 +2,8 @@ import type { Request, Response, NextFunction } from "express";
 import { DsaService } from "./dsa.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 import { syncLeetCodeSolvedProblems } from "./leetcode.service.js";
+import { prisma } from "../../database/db.js";
+import { isPremiumUser } from "../../utils/premium.utils.js";
 
 export class DsaController {
   constructor(private dsaService: DsaService) {}
@@ -49,6 +51,7 @@ export class DsaController {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
       const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) return res.status(400).json({ message: "Invalid problem ID" });
       const result = await this.dsaService.toggleProblem(userId, problemId);
       res.json(result);
     } catch (err) {
@@ -61,6 +64,7 @@ export class DsaController {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
       const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) return res.status(400).json({ message: "Invalid problem ID" });
       const { notes } = req.body;
       const result = await this.dsaService.updateNotes(userId, problemId, notes ?? "");
       res.json(result);
@@ -74,6 +78,7 @@ export class DsaController {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
       const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) return res.status(400).json({ message: "Invalid problem ID" });
       const result = await this.dsaService.toggleBookmark(userId, problemId);
       res.json(result);
     } catch (err) {
@@ -296,6 +301,36 @@ export class DsaController {
       const data = await this.dsaService.getSimilarProblems(id, limit);
       res.json(data);
     } catch (err) {
+      next(err);
+    }
+  }
+
+  async generateCodeReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+
+      const isPremium = await isPremiumUser(userId);
+      if (!isPremium) {
+        res.status(403).json({ message: "Premium subscription required" });
+        return;
+      }
+
+      const submissionId = parseInt(req.params.submissionId as string);
+      if (isNaN(submissionId)) { res.status(400).json({ message: "Invalid submission ID" }); return; }
+      const review = await this.dsaService.generateCodeReview(submissionId, userId);
+      res.json(review);
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message.includes("Submission not found")) {
+          res.status(404).json({ message: err.message });
+          return;
+        }
+        if (err.message.includes("Not authorized")) {
+          res.status(403).json({ message: err.message });
+          return;
+        }
+      }
       next(err);
     }
   }

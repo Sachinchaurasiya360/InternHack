@@ -127,7 +127,10 @@ export class HRTaskService {
   }
 
   async update(id: number, data: { title?: string | undefined; description?: string | undefined; assigneeId?: number | undefined; priority?: TaskPriority | undefined; dueDate?: string | null | undefined; labels?: string[] | undefined; parentTaskId?: number | null | undefined }, context: { employeeId: number; isAdmin: boolean }) {
-    await this._checkTaskAccess(id, context, true);
+    await this._checkTaskAccess(id, context, false);
+    if (data.assigneeId !== undefined) {
+      await this._checkTaskAccess(id, context, true);
+    }
     const task = await prisma.hrTask.findUnique({ where: { id } });
     if (!task) throw new Error("Task not found");
 

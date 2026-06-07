@@ -68,7 +68,7 @@ export function ResumesSection({
         {uploadingResume ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload resume (PDF)</>}
       </button>
       <input ref={resumeInputRef} type="file" accept=".pdf" onChange={onUpload} className="hidden" />
-      <p className="text-[10px] font-mono text-stone-500">PDF only, max 10 MB each.</p>
+      <p className="text-[10px] font-mono text-stone-500">PDF only, max 5 MB each.</p>
     </div>
   );
 }
