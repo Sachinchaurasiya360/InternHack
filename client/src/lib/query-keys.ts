@@ -128,6 +128,7 @@ export const queryKeys = {
     companies: () => ["aptitude", "companies"] as const,
     company: (name: string) => ["aptitude", "company", name] as const,
     progress: () => ["aptitude", "progress"] as const,
+    weakAreas: () => ["aptitude", "weak-areas"] as const,
   },
 
   // Skill Tests
