@@ -223,7 +223,6 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
   );
 };
 
-function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => void }) {
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
 
   return (

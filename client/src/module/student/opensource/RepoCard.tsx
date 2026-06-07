@@ -15,6 +15,21 @@ interface RepoCardProps {
 }
 
 const MAX_STAGGER_INDEX = 8;
+const GOOD_FIRST_LABELS = [
+  "good first issue",
+  "good-first-issue",
+  "first timers only",
+  "first-timers-only",
+  "beginner",
+  "beginner-friendly",
+  "help wanted",
+  "help-wanted",
+];
+
+const hasGoodFirstIssues = (repo: OpenSourceRepo | RecommendedRepo) => {
+  const labels = [...repo.issueTypes, ...repo.tags].map((label) => label.toLowerCase());
+  return labels.some((label) => GOOD_FIRST_LABELS.some((goodLabel) => label.includes(goodLabel)));
+};
 
 export const RepoCard = React.memo(function RepoCard({
   repo,
@@ -25,6 +40,7 @@ export const RepoCard = React.memo(function RepoCard({
 }: RepoCardProps) {
   const badge = difficultyBadge(repo.difficulty);
   const delay = Math.min(index, MAX_STAGGER_INDEX) * 0.04;
+  const goodFirst = hasGoodFirstIssues(repo);
 
   return (
     <motion.div
@@ -58,10 +74,20 @@ export const RepoCard = React.memo(function RepoCard({
           onClick={() => onSelect(repo)}
           className="flex flex-col flex-1 text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
         >
-          {repo.trending && (
-            <div className="absolute -top-2 right-12 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
-              <Flame size={10} aria-hidden />
-              trending
+          {(repo.trending || goodFirst) && (
+            <div className="absolute -top-2 right-12 inline-flex items-center gap-2 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-xs font-mono uppercase tracking-widest text-lime-400">
+              {repo.trending && (
+                <span className="inline-flex items-center gap-1">
+                  <Flame size={10} aria-hidden />
+                  trending
+                </span>
+              )}
+              {goodFirst && (
+                <span className="inline-flex items-center gap-1">
+                  <CircleDot size={10} aria-hidden />
+                  good first
+                </span>
+              )}
             </div>
           )}
 

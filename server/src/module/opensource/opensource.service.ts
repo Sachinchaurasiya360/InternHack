@@ -9,6 +9,16 @@ import {
 
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const RECOMMENDATION_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+const GOOD_FIRST_LABELS = [
+  "good first issue",
+  "good-first-issue",
+  "first timers only",
+  "first-timers-only",
+  "beginner",
+  "beginner-friendly",
+  "help wanted",
+  "help-wanted",
+];
 
 let statsCache: {
   data: {
@@ -77,41 +87,80 @@ export class OpensourceService {
       domain,
       sortBy,
       sortOrder,
+      trending,
+      goodFirstIssue,
+      ids,
     } = query;
     const skip = (page - 1) * limit;
     const where: Record<string, any> = {};
+    const andFilters: Record<string, any>[] = [];
+    const idFilters =
+      typeof ids === "string"
+        ? ids
+            .split(",")
+            .map((id) => Number(id))
+            .filter((id) => Number.isInteger(id) && id > 0)
+        : [];
+
+    if (idFilters.length > 0) where["id"] = { in: idFilters };
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
-const trimmedSearch = search?.trim();
+    if (trending === "true") where["trending"] = true;
 
-if (trimmedSearch) {
-  // Prisma's scalar-list filters can't do case-insensitive substring match
-  // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-  // subquery and merge the matching ids into the OR clause.
+    if (goodFirstIssue === "true") {
+      andFilters.push({
+        OR: [
+          { issueTypes: { hasSome: GOOD_FIRST_LABELS } },
+          { tags: { hasSome: GOOD_FIRST_LABELS } },
+          { difficulty: "BEGINNER" },
+        ],
+      });
+    }
+
+    const trimmedSearch = search?.trim();
+
+    if (trimmedSearch) {
+      // Prisma's scalar-list filters can't do case-insensitive substring match
+      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+      // subquery and merge the matching ids into the OR clause.
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
           SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${trimmedSearch}%`}
         )
+        OR EXISTS (
+          SELECT 1 FROM unnest("issueTypes") AS t WHERE t ILIKE ${`%${trimmedSearch}%`}
+        )
       `;
     
       const tagMatchIds = tagMatches.map((r) => r.id);
-where["OR"] = [
-  { name: { contains: trimmedSearch, mode: "insensitive" } },
-  { owner: { contains: trimmedSearch, mode: "insensitive" } },
-  { description: { contains: trimmedSearch, mode: "insensitive" } },
-  { language: { contains: trimmedSearch, mode: "insensitive" } },
+      andFilters.push({
+        OR: [
+          { name: { contains: trimmedSearch, mode: "insensitive" } },
+          { owner: { contains: trimmedSearch, mode: "insensitive" } },
+          { description: { contains: trimmedSearch, mode: "insensitive" } },
+          { language: { contains: trimmedSearch, mode: "insensitive" } },
         ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
-      ];
+        ],
+      });
     }
+
+    if (andFilters.length > 0) {
+      where["AND"] = andFilters;
+    }
+
+    const orderBy =
+      sortBy === "name"
+        ? [{ name: sortOrder }]
+        : [{ trending: "desc" as const }, { [sortBy]: sortOrder }];
 
     const [repos, total] = await Promise.all([
       prisma.opensourceRepo.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { [sortBy]: sortOrder },
+        orderBy,
       }),
       prisma.opensourceRepo.count({ where }),
     ]);

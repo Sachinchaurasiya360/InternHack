@@ -149,7 +149,6 @@ const fetchDetail = useCallback(async (signal) => {
       controller.abort();
     };
   }, [applicationId, fetchDetail]);
-  }, [applicationId]);
 
   useEffect(() => {
     if (application?.student?.id) {
@@ -464,8 +463,6 @@ case "COMPLETED":
       return <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />;
     default:
       return <XCircle className="w-4 h-4 text-red-500 dark:text-red-400" />;
-  }
-}
   }
 }
 
