@@ -1,6 +1,7 @@
 import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
 import type { UserRole, JobStatus } from "@prisma/client";
+import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 
 export class AdminPlatformService {
   async getPlatformDashboard() {
@@ -234,6 +235,7 @@ export class AdminPlatformService {
     }
 
     await prisma.user.delete({ where: { id: userId } });
+    invalidateVersionCache(userId);
   }
 
   async getAdminJobs(query: {

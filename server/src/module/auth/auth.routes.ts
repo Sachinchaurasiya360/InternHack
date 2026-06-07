@@ -16,6 +16,7 @@ import {
   resetPasswordSchema,
   updateProfileSchema,
   importGitHubSchema,
+  deleteAccountSchema,
 } from "./auth.validation.js";
 
 // ---------------------------------------------------------------------------
@@ -61,3 +62,4 @@ authRouter.put("/me", authMiddleware, validateBody(updateProfileSchema), (req, r
 authRouter.post("/import-github", authMiddleware, validateBody(importGitHubSchema), (req, res) => authController.importGitHub(req, res));
 authRouter.get("/github-stats", authMiddleware, usageLimit("GITHUB_STATS"), (req, res) => authController.getGitHubStats(req, res));
 authRouter.get("/profile/:identifier", authMiddleware, (req, res) => authController.getPublicProfile(req, res));
+authRouter.delete("/account", authMiddleware, validateBody(deleteAccountSchema), (req, res) => authController.deleteAccount(req, res));
