@@ -6,6 +6,7 @@ import {
   downloadCertificate,
   downloadPdf,
   enroll,
+  getCommunityRoadmaps,
   getMyEnrollmentAnalytics,
   getMyEnrollmentByRoadmapSlug,
   getMyEnrollment,
@@ -48,6 +49,7 @@ roadmapRouter.post(
 );
 
 roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
+roadmapRouter.get("/community", getCommunityRoadmaps);
 roadmapRouter.get("/:slug/enrollment", authMiddleware, getMyEnrollmentByRoadmapSlug);
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);

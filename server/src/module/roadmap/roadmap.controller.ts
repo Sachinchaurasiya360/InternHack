@@ -31,6 +31,7 @@ import {
   summarizeProgress,
   updateTopicProgress,
   deleteEnrollment,
+  listCommunityRoadmaps,
 } from "./roadmap.service.js";
 import {
   buildRoadmapSlug,
@@ -49,6 +50,15 @@ const validationError = (res: Response, errors: unknown) =>
   res.status(400).json({ message: "Validation failed", errors });
 
 // ─── Public ────────────────────────────────────────────────────────────────
+export async function getCommunityRoadmaps(_req: Request, res: Response, next: NextFunction) {
+  try {
+    const roadmaps = await listCommunityRoadmaps();
+    res.json({ roadmaps });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getRoadmaps(req: Request, res: Response, next: NextFunction) {
   try {
     const parsed = listQuerySchema.safeParse(req.query);

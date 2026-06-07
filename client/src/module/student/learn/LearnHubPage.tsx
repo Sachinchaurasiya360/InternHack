@@ -163,14 +163,12 @@ const grouped = useMemo(() => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="mb-14 p-6 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md"
+          className="mb-14"
         >
-          <div className="flex items-center justify-between gap-4 mb-5">
-            <div className="flex items-center gap-2">
+          <div className="flex items-end justify-between gap-4 flex-wrap mb-6 pb-4 border-b border-stone-200 dark:border-white/10">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
               <span className="h-1.5 w-1.5 bg-lime-400" />
-              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
-                recommended for you
-              </span>
+              recommended for you
             </div>
             <span className="text-xs font-mono uppercase tracking-widest text-stone-400">
               {weakAreas.length} area{weakAreas.length !== 1 ? "s" : ""} to strengthen
