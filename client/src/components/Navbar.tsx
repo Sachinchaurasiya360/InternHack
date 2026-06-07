@@ -8,7 +8,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import { useAuthStore } from "../lib/auth.store";
 import { useThemeStore } from "../lib/theme.store";
@@ -48,6 +48,15 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
     navigate("/");
   };
 
+  const handleThemeToggle = (event: MouseEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+
+    toggleTheme({
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    });
+  };
+
   const dashboardLink =
     user?.role === "ADMIN"
       ? "/admin"
@@ -85,10 +94,41 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
 
           <div className="hidden lg:flex items-center gap-1">
             {NAV_ITEMS.map((item) => {
-              const active =
-                item.href === "/"
-                  ? location.pathname === "/"
-                  : location.pathname.startsWith(item.href + "/") || location.pathname === item.href;
+              const active = (() => {
+                if (item.href === "/") {
+                  return location.pathname === "/";
+                }
+                if (item.href === "/jobs") {
+                  return (
+                    location.pathname === "/jobs" ||
+                    location.pathname.startsWith("/jobs/") ||
+                    location.pathname === "/student/jobs" ||
+                    location.pathname.startsWith("/student/jobs/") ||
+                    location.pathname === "/internships" ||
+                    location.pathname.startsWith("/internships/") ||
+                    location.pathname === "/student/internships" ||
+                    location.pathname.startsWith("/student/internships/") ||
+                    location.pathname === "/external-jobs" ||
+                    location.pathname.startsWith("/external-jobs/")
+                  );
+                }
+                if (item.href === "/companies") {
+                  return (
+                    location.pathname === "/companies" ||
+                    location.pathname.startsWith("/companies/") ||
+                    location.pathname === "/student/companies" ||
+                    location.pathname.startsWith("/student/companies/") ||
+                    location.pathname === "/yc" ||
+                    location.pathname.startsWith("/yc/") ||
+                    location.pathname === "/student/yc" ||
+                    location.pathname.startsWith("/student/yc/")
+                  );
+                }
+                return (
+                  location.pathname === item.href ||
+                  location.pathname.startsWith(item.href + "/")
+                );
+              })();
               return (
                 <Link key={item.href} to={item.href} aria-current={active ? "page" : undefined} className="no-underline">
                   <button
@@ -116,15 +156,15 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
 
           <div className="hidden lg:flex items-center gap-2">
             <button
-              onClick={toggleTheme}
+              onClick={handleThemeToggle}
               aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
               className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 dark:text-stone-400 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors"
             >
               {theme === "dark" ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4" />
-              )}
+  <Sun className="w-4 h-4" />
+) : (
+  <Moon className="w-4 h-4" />
+)}
             </button>
 
             {isAuthenticated ? (
@@ -211,7 +251,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
 
           <div className="flex lg:hidden items-center gap-2">
             <button
-              onClick={toggleTheme}
+              onClick={handleThemeToggle}
               aria-label={
                 theme === "dark"
                   ? "Switch to light mode"
@@ -220,9 +260,9 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               className="p-2 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50 rounded-md transition-colors"
             >
               {theme === "dark" ? (
-                <Moon className="w-4 h-4" />
-              ) : (
                 <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
               )}
             </button>
             {isAuthenticated && (

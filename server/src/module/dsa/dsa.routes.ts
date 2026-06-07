@@ -1,5 +1,4 @@
 import { Router } from "express";
-import express from "express";
 import { DsaController } from "./dsa.controller.js";
 import { DsaService } from "./dsa.service.js";
 import { DsaImportController } from "./dsa-import.controller.js";
@@ -18,7 +17,7 @@ export const dsaRouter = Router();
 
 // ── LeetCode / CSV import routes (must be before /:id catch-alls) ──
 dsaRouter.post("/import/leetcode", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.previewLeetcode(req, res, next));
-dsaRouter.post("/import/csv", authMiddleware, requireRole("STUDENT"), express.json({ limit: "6mb" }), (req, res, next) => dsaImportController.previewCsv(req, res, next));
+dsaRouter.post("/import/csv", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.previewCsv(req, res, next));
 dsaRouter.post("/import/confirm", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.confirm(req, res, next));
 dsaRouter.get("/import/status", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.status(req, res, next));
 
@@ -34,6 +33,7 @@ dsaRouter.get("/streak", authMiddleware, requireRole("STUDENT"), (req, res, next
 
 dsaRouter.post("/problems/:problemId/execute", authMiddleware, requireRole("STUDENT"), usageLimit("CODE_RUN"), (req, res, next) => dsaController.executeCode(req, res, next));
 dsaRouter.get("/problems/:problemId/submissions", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getSubmissionHistory(req, res, next));
+dsaRouter.post("/submissions/:submissionId/review", authMiddleware, requireRole("STUDENT"), usageLimit("CODE_RUN"), (req, res, next) => dsaController.generateCodeReview(req, res, next));
 dsaRouter.post("/sync/leetcode", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.syncLeetCode(req, res, next));
 
 // Public routes (with optional auth)

@@ -8,6 +8,8 @@ export interface ProjectItem {
   techStack: string[];
   liveUrl?: string;
   repoUrl?: string;
+  // Added for GSSoC '26: Track when the project was built
+  builtAt?: string;
 }
 
 export interface AchievementItem {
@@ -19,6 +21,7 @@ export interface AchievementItem {
 
 export interface User {
   id: number;
+  profileSlug?: string | null;
   name: string;
   email: string;
   role: UserRole;

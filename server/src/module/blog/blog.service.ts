@@ -21,9 +21,14 @@ interface ListAllParams {
 const authorSelect = { id: true, name: true, profilePic: true } as const;
 
 export class BlogService {
-  async generateSlug(title: string): Promise<string> {
+  async generateSlug(title: string, excludeId?: number): Promise<string> {
     let slug = slugify(title);
-    const existing = await prisma.blogPost.findUnique({ where: { slug } });
+    const existing = await prisma.blogPost.findFirst({
+      where: {
+        slug,
+        id: excludeId !== undefined ? { not: excludeId } : undefined,
+      },
+    });
     if (existing) {
       slug = `${slug}-${Date.now()}`;
     }
@@ -213,7 +218,9 @@ export class BlogService {
 
     if (data.title !== undefined) {
       updateData.title = data.title;
-      updateData.slug = await this.generateSlug(data.title);
+      if (data.title !== existing.title) {
+        updateData.slug = await this.generateSlug(data.title, id);
+      }
     }
 
     if (data.content !== undefined) {
@@ -266,8 +273,8 @@ export class BlogService {
       throw new Error("Post not found");
     }
 
-    if (!isAdmin && userId !== undefined && post.authorId !== userId) {
-      throw new Error("Not authorized to modify this post");
+    if (!isAdmin) {
+      throw new Error("Not authorized to feature this post");
     }
 
     return prisma.blogPost.update({

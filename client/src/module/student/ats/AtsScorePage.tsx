@@ -1,10 +1,10 @@
 import { useState, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useReactToPrint } from "react-to-print";
 import toast from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { uploadDirectToS3 } from "../../../utils/upload";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import {
   Upload,
   FileText,
@@ -24,6 +24,7 @@ import {
   ArrowRight,
   Mail,
   Download,
+  ChevronDown,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
@@ -46,7 +47,7 @@ import { ScoreCircle, getScoreTier } from "./components/ScoreCircle";
 import { ScoreBreakdownPanel } from "./components/ScoreBreakdownPanel";
 import { KeywordAnalysisPanel } from "./components/KeywordAnalysisPanel";
 import { SuggestionsPanel } from "./components/SuggestionsPanel";
-import { cardCls, sectionKickerCls, inputCls } from "./components/ats-ui";
+import { cardCls, sectionKickerCls, sectionTitleCls, inputCls } from "./components/ats-ui";
 
 const CATEGORY_LABELS: Record<string, string> = {
   formatting: "Formatting",
@@ -114,12 +115,108 @@ export default function AtsScorePage() {
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
   const [historySearch, setHistorySearch] = useState("");
   const debouncedHistorySearch = useDebounce(historySearch, 300);
+  const [chartOpen, setChartOpen] = useState(true);
   const navigate = useNavigate();
 
-  const handlePrint = useReactToPrint({
-    contentRef: printRef,
-    documentTitle: `ATS_Report_${new Date().toLocaleDateString("en-IN")}`,
-  });
+  const handleDownloadPdf = async () => {
+    if (!result) return;
+
+    const { jsPDF } = await import("jspdf");
+
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const filename = `ats-report-${dateStr}.pdf`;
+
+    let y = 20;
+
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const checkPageBreak = () => {
+      if (y > pageHeight - 20) {
+        doc.addPage();
+        y = 20;
+      }
+    };
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("ATS Analysis Report", 20, y);
+
+    y += 12;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+
+    doc.text(`Resume: ${getResumeName(result.resumeUrl)}`, 20, y);
+    y += 8;
+
+    doc.text(`Generated: ${dateStr}`, 20, y);
+    y += 12;
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Overall ATS Score: ${result.overallScore}/100`, 20, y);
+
+    y += 12;
+
+    doc.text("Category Scores", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+
+    Object.entries(result.categoryScores).forEach(([key, value]) => {
+      doc.text(`${key}: ${value}`, 25, y);
+      y += 7;
+    });
+
+    y += 5;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Missing Keywords", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+
+    if (result.keywordAnalysis.missing.length === 0) {
+      doc.text("None", 25, y);
+      y += 7;
+    } else {
+      result.keywordAnalysis.missing.forEach((keyword) => {
+        checkPageBreak();
+
+        doc.text(`• ${keyword}`, 25, y);
+        y += 7;
+      });
+    }
+
+    y += 5;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Suggestions", 20, y);
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+
+    result.suggestions.forEach((suggestion) => {
+      const text = typeof suggestion === "string" ? suggestion : (suggestion as { suggestion?: string }).suggestion ?? String(suggestion);
+      const lines = doc.splitTextToSize(`• ${text}`, 160);
+      const blockHeight = lines.length * 6 + 2;
+
+      if (y + blockHeight > pageHeight - 20) {
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.text(lines, 25, y);
+      y += blockHeight;
+    });
+
+    doc.save(filename);
+  };
 
   const { data: usageData } = useQuery<UsageStats>({
     queryKey: queryKeys.ats.usage(),
@@ -420,141 +517,169 @@ export default function AtsScorePage() {
         transition={{ duration: 0.4, delay: 0.1 }}
         className={`${cardCls} mb-6`}
       >
-        <CardHeader
-          kicker="progress"
-          title="Score over time"
-          right={
-            chartData.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => setChartOpen((o) => !o)}
+          className="w-full flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10 text-left bg-transparent cursor-pointer hover:bg-stone-50 dark:hover:bg-white/5 transition-colors"
+          aria-expanded={chartOpen}
+          aria-controls="chart-body"
+        >
+          <div className="flex flex-col gap-1 min-w-0">
+            <span className={sectionKickerCls}>
+              <span className="h-1 w-1 bg-lime-400" />
+              progress
+            </span>
+            <span className={sectionTitleCls}>Score over time</span>
+          </div>
+          <div className="shrink-0 flex items-center gap-3">
+            {chartData.length > 0 && (
               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 {chartData.length}{" "}
                 {chartData.length === 1 ? "analysis" : "analyses"}
               </span>
-            ) : null
-          }
-        />
-        <div className="p-5">
-          {chartData.length <= 1 ? (
-            <div className="flex items-center gap-3 py-4 text-sm text-stone-500">
-              <TrendingUp className="w-4 h-4 text-lime-500" />
-              {chartData.length === 0
-                ? "Analyze your first resume to start tracking progress."
-                : "Run one more analysis to start tracking your progress."}
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={chartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(120,113,108,0.15)"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="key"
-                  tickFormatter={(val: string) =>
-                    new Date(val).toLocaleDateString("en-IN", {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  }
-                  tick={{
-                    fontSize: 10,
-                    fontFamily: "monospace",
-                    fill: "#78716c",
-                  }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  domain={[0, 100]}
-                  tick={{
-                    fontSize: 10,
-                    fontFamily: "monospace",
-                    fill: "#78716c",
-                  }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip content={<ScoreTooltip />} cursor={false} />
-                <Line
-                  type="monotone"
-                  dataKey="score"
-                  stroke="#a3e635"
-                  strokeWidth={2}
-                  dot={{ fill: "#a3e635", strokeWidth: 0, r: 4 }}
-                  activeDot={{ r: 7, fill: "#a3e635" }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          )}
-          {scoreHistory.length > 0 && (
-            <div className="mt-5 border-t border-stone-200 pt-5 dark:border-white/10">
-              <div className="relative mb-3">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
-                <input
-                  type="search"
-                  value={historySearch}
-                  onChange={(e) => setHistorySearch(e.target.value)}
-                  placeholder="Search by company, role, or resume"
-                  className={`${inputCls} pl-9 pr-10`}
-                  aria-label="Search ATS score history"
-                />
-                {historySearch && (
-                  <button
-                    type="button"
-                    onClick={() => setHistorySearch("")}
-                    className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md border-0 bg-transparent text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-white/10 dark:hover:text-stone-200"
-                    aria-label="Clear history search"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
+            )}
+            <ChevronDown
+              className={`w-4 h-4 text-stone-400 transition-transform duration-200 ${chartOpen ? "rotate-0" : "-rotate-90"}`}
+            />
+          </div>
+        </button>
+        <AnimatePresence initial={false}>
+          {chartOpen && (
+            <motion.div
+              id="chart-body"
+              key="chart-body"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              style={{ overflow: "hidden" }}
+            >
+              <div className="p-5">
+                {chartData.length <= 1 ? (
+                  <div className="flex items-center gap-3 py-4 text-sm text-stone-500">
+                    <TrendingUp className="w-4 h-4 text-lime-500" />
+                    {chartData.length === 0
+                      ? "Analyze your first resume to start tracking progress."
+                      : "Run one more analysis to start tracking your progress."}
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={chartData}>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="rgba(120,113,108,0.15)"
+                        vertical={false}
+                      />
+                      <XAxis
+                        dataKey="key"
+                        tickFormatter={(val: string) =>
+                          new Date(val).toLocaleDateString("en-IN", {
+                            month: "short",
+                            day: "numeric",
+                          })
+                        }
+                        tick={{
+                          fontSize: 10,
+                          fontFamily: "monospace",
+                          fill: "#78716c",
+                        }}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <YAxis
+                        domain={[0, 100]}
+                        tick={{
+                          fontSize: 10,
+                          fontFamily: "monospace",
+                          fill: "#78716c",
+                        }}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <Tooltip content={<ScoreTooltip />} cursor={false} />
+                      <Line
+                        type="monotone"
+                        dataKey="score"
+                        stroke="#a3e635"
+                        strokeWidth={2}
+                        dot={{ fill: "#a3e635", strokeWidth: 0, r: 4 }}
+                        activeDot={{ r: 7, fill: "#a3e635" }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+                {scoreHistory.length > 0 && (
+                  <div className="mt-5 border-t border-stone-200 pt-5 dark:border-white/10">
+                    <div className="relative mb-3">
+                      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+                      <input
+                        type="search"
+                        value={historySearch}
+                        onChange={(e) => setHistorySearch(e.target.value)}
+                        placeholder="Search by company, role, or resume"
+                        className={`${inputCls} pl-9 pr-10`}
+                        aria-label="Search ATS score history"
+                      />
+                      {historySearch && (
+                        <button
+                          type="button"
+                          onClick={() => setHistorySearch("")}
+                          className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md border-0 bg-transparent text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-white/10 dark:hover:text-stone-200"
+                          aria-label="Clear history search"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+
+                    {filteredHistory.length > 0 ? (
+                      <div className="divide-y divide-stone-200 overflow-hidden rounded-md border border-stone-200 dark:divide-white/10 dark:border-white/10">
+                        {filteredHistory.map((item) => {
+                          const company = getCompanyFromJobDescription(
+                            item.jobDescription,
+                          );
+                          const tier = getScoreTier(item.overallScore);
+
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex items-center gap-4 bg-white px-4 py-3 dark:bg-stone-900"
+                            >
+                              <div
+                                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-stone-100 text-sm font-bold tabular-nums dark:bg-stone-950 ${tier.text}`}
+                              >
+                                {item.overallScore}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-sm font-bold text-stone-900 dark:text-stone-50">
+                                  {item.jobTitle ?? "General ATS analysis"}
+                                </p>
+                                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                                  {company && <span>{company}</span>}
+                                  <span>{getResumeName(item.resumeUrl)}</span>
+                                </div>
+                              </div>
+                              <span className="shrink-0 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                                {new Date(item.createdAt).toLocaleDateString(
+                                  "en-IN",
+                                  { month: "short", day: "numeric" },
+                                )}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="rounded-md border border-dashed border-stone-300 px-4 py-6 text-center text-sm text-stone-500 dark:border-white/15">
+                        No ATS history matches that search.
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
-
-              {filteredHistory.length > 0 ? (
-                <div className="divide-y divide-stone-200 overflow-hidden rounded-md border border-stone-200 dark:divide-white/10 dark:border-white/10">
-                  {filteredHistory.map((item) => {
-                    const company = getCompanyFromJobDescription(
-                      item.jobDescription,
-                    );
-                    const tier = getScoreTier(item.overallScore);
-
-                    return (
-                      <div
-                        key={item.id}
-                        className="flex items-center gap-4 bg-white px-4 py-3 dark:bg-stone-900"
-                      >
-                        <div
-                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-stone-100 text-sm font-bold tabular-nums dark:bg-stone-950 ${tier.text}`}
-                        >
-                          {item.overallScore}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-bold text-stone-900 dark:text-stone-50">
-                            {item.jobTitle ?? "General ATS analysis"}
-                          </p>
-                          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                            {company && <span>{company}</span>}
-                            <span>{getResumeName(item.resumeUrl)}</span>
-                          </div>
-                        </div>
-                        <span className="shrink-0 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                          {new Date(item.createdAt).toLocaleDateString(
-                            "en-IN",
-                            { month: "short", day: "numeric" },
-                          )}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="rounded-md border border-dashed border-stone-300 px-4 py-6 text-center text-sm text-stone-500 dark:border-white/15">
-                  No ATS history matches that search.
-                </div>
-              )}
-            </div>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </motion.div>
 
       {/* Main grid */}
@@ -682,15 +807,7 @@ export default function AtsScorePage() {
                       </label>
                       <textarea
                         value={jobDescription}
-                        onChange={(e) => {
-                          const next = e.target.value.slice(0, JD_MAX_CHARS);
-                          if (e.target.value.length > JD_MAX_CHARS) {
-                            toast.error(
-                              `Job description capped at ${JD_MAX_CHARS.toLocaleString()} characters.`,
-                            );
-                          }
-                          setJobDescription(next);
-                        }}
+                        onChange={(e) => setJobDescription(e.target.value)}
                         maxLength={JD_MAX_CHARS}
                         placeholder="Paste the job description for tailored keyword analysis..."
                         rows={5}
@@ -994,11 +1111,20 @@ export default function AtsScorePage() {
                     kicker="result"
                     title="Overall ATS score"
                     right={
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
-                      >
-                        / {overallTier.label.toLowerCase()}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <CopyButton
+                          text={[
+                            `ATS Score: ${result.overallScore}/100`,
+                            `Tier: ${overallTier.label}`,
+                            `\nSuggestions:\n${result.suggestions.map((s, i) => `${i + 1}. ${typeof s === "string" ? s : (s as { suggestion?: string }).suggestion ?? ""}`).join("\n")}`,
+                          ].join("\n")}
+                        />
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${overallTier.text}`}
+                        >
+                          / {overallTier.label.toLowerCase()}
+                        </span>
+                      </div>
                     }
                   />
                   <div className="p-6 flex items-center gap-6">
@@ -1073,12 +1199,13 @@ export default function AtsScorePage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => handlePrint()}
-                      className="shrink-0 mr-1 inline-flex items-center gap-2 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer print:hidden"
+                      onClick={handleDownloadPdf}
+                      disabled={loading}
+                      className="shrink-0 mr-1 inline-flex items-center gap-2 px-3.5 py-3 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors border-0 bg-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed print:hidden"
                       title="Download or print this ATS report"
                     >
                       <Download className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Print</span>
+                      <span className="hidden sm:inline">Download Report</span>
                     </button>
                   </div>
 

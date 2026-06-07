@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Award, ArrowRight,
   Trophy,
+  Clock,
 } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
@@ -10,6 +11,8 @@ import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
 import GuideCompletionSection from "./components/GuideCompletionSection";
+import { notifyLearningPathProgressChanged } from "./learning-paths.data";
+import { NextInPathCard } from "./components/NextInPathCard";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -17,6 +20,7 @@ interface Step {
   id: string;
   title: string;
   description: string;
+  estimatedMinutes?: number;
   level: string;
 }
 
@@ -58,6 +62,7 @@ export default function GSoCProposalPage() {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
+      notifyLearningPathProgressChanged();
       return next;
     });
   }, []);
@@ -65,7 +70,11 @@ export default function GSoCProposalPage() {
   const totalSteps = STEPS.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
-
+  const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+  const completedMinutes = STEPS
+    .filter((s) => completed.has(s.id))
+    .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
+  const remainingMinutes = totalEstimatedMinutes - completedMinutes;
   return (
     <div className="relative pb-12">
       <SEO
@@ -73,6 +82,7 @@ export default function GSoCProposalPage() {
         description="Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure."
         keywords="GSoC proposal guide, Google Summer of Code, GSoC tips, open source proposal, GSoC application"
         canonicalUrl={canonicalUrl("/student/opensource/gsoc-proposal")}
+        ogImage="/og/og-gsoc-proposal.png"
       />
 
       {/* Atmospheric background */}
@@ -114,6 +124,7 @@ export default function GSoCProposalPage() {
           { icon: Award, value: totalSteps, label: "Steps", iconColor: "text-red-500" },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
+          { icon: Clock, value: allDone ? "Done!" : completed.size > 0 ? `${remainingMinutes} min left` : `${totalEstimatedMinutes} min total`, label: "Est. Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -187,6 +198,9 @@ export default function GSoCProposalPage() {
                     }`}>
                       {step.title}
                     </h3>
+                    {step.estimatedMinutes && (
+                      <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>
+                      )}
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${LEVEL_BG[step.level] || "bg-gray-100 dark:bg-gray-800"} ${LEVEL_COLOR[step.level] || "text-gray-500"}`}>
                       {step.level}
                     </span>
@@ -203,6 +217,8 @@ export default function GSoCProposalPage() {
           );
         })}
       </div>
+
+      <NextInPathCard currentSlug="gsoc-proposal" completed={allDone} />
     </div>
   );
 }

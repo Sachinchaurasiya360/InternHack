@@ -1,6 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
 import { executeCode, LANGUAGE_IDS } from "../../utils/judge0.utils.js";
+import { getProviderForService } from "../../lib/ai-provider-registry.js";
+import { logAIRequest } from "../../lib/ai-request-logger.js";
+import { codeReviewResponseSchema, type CodeReviewResponse } from "./dsa.validation.js";
 
 interface TestCaseResult {
   input: string;
@@ -330,7 +333,7 @@ export class DsaService {
     }));
   }
 
-  async reportProblem({userId, problemId, reason, message,}: { userId: number; problemId: number; reason: string; message?: string;}) {
+  async reportProblem({ userId, problemId, reason, message, }: { userId: number; problemId: number; reason: string; message?: string; }) {
     return prisma.dsaProblemReport.create({
       data: {
         userId,
@@ -782,10 +785,16 @@ Return ONLY a JSON array, no markdown fences:
       });
     }
 
-    // Log usage for rate limiting
-    await prisma.usageLog.create({
-      data: { userId: studentId, action: "CODE_RUN" },
-    });
+    // Track engagement — fire-and-forget, never blocks the submission response
+    void prisma.contentView.create({
+      data: {
+        userId: studentId,
+        contentType: "DSA",
+        contentId: String(problemId),
+        timeSpentMs: maxTime,
+        completed: allPassed,
+      },
+    }).catch(() => { /* swallow — analytics must never break submissions */ });
 
     return { passed: passedCount, total: testCases.length, allPassed, results, submissionId: submission.id };
   }
@@ -925,5 +934,151 @@ Return ONLY a JSON array, no markdown fences:
     });
 
     return similar.slice(0, limit);
+  }
+
+  // ── AI Code Review ──
+
+  async generateCodeReview(submissionId: number, studentId: number): Promise<CodeReviewResponse> {
+    // 1. Fetch submission and verify ownership
+    const submission = await prisma.dsaSubmission.findUnique({
+      where: { id: submissionId },
+    });
+    if (!submission) throw new Error("Submission not found");
+    if (submission.studentId !== studentId) throw new Error("Not authorized to review this submission");
+
+    // 2. Fetch problem context
+    const problem = await prisma.dsaProblem.findUnique({
+      where: { id: submission.problemId },
+      select: {
+        title: true,
+        description: true,
+        constraints: true,
+        difficulty: true,
+        tags: true,
+      },
+    });
+    if (!problem) throw new Error("Problem not found");
+
+    // 3. Call AI via provider registry
+    const provider = getProviderForService("DSA_CODE_REVIEW");
+    const prompt = this.buildCodeReviewPrompt(submission, problem);
+    const response = await provider.generateText(prompt);
+
+    // 4. Parse and validate
+    try {
+      const parsed = this.parseCodeReviewResponse(response.text);
+      // 5. Log success
+      logAIRequest("DSA_CODE_REVIEW", response, true, undefined, studentId);
+      
+      await prisma.usageLog.create({
+        data: { userId: studentId, action: "CODE_RUN" },
+      });
+
+      return parsed;
+    } catch (err) {
+      logAIRequest("DSA_CODE_REVIEW", response, false, err instanceof Error ? err.message : "Parse failed", studentId);
+      throw err;
+    }
+  }
+
+  private buildCodeReviewPrompt(
+    submission: { code: string; language: string; passed: number; total: number; allPassed: boolean },
+    problem: { title: string; description: string | null; constraints: string | null; difficulty: string; tags: string[] },
+  ): string {
+    return `You are an expert DSA code reviewer. Analyze the following student submission and provide structured feedback.
+
+PROBLEM: ${problem.title}
+DIFFICULTY: ${problem.difficulty}
+TAGS: ${problem.tags.join(", ")}
+
+${problem.description ? `DESCRIPTION:\n${problem.description}` : ""}
+
+${problem.constraints ? `CONSTRAINTS:\n${problem.constraints}` : ""}
+
+STUDENT'S CODE (${submission.language}):
+\`\`\`${submission.language}
+${submission.code}
+\`\`\`
+
+TEST RESULTS: ${submission.passed}/${submission.total} passed${submission.allPassed ? " (All passed)" : ""}
+
+Analyze the code and respond with ONLY valid JSON (no markdown formatting, no code blocks, no explanation) in this exact structure:
+{
+  "timeComplexity": "<Big-O time complexity with brief justification, e.g. 'O(n log n) — sorting dominates'>",
+  "spaceComplexity": "<Big-O space complexity with brief justification, e.g. 'O(n) — hash map stores at most n entries'>",
+  "readability": {
+    "score": <number 1-10>,
+    "feedback": "<specific readability feedback: variable naming, structure, comments, etc.>"
+  },
+  "edgeCases": [
+    "<edge case the solution might miss or handles well, be specific to this problem>",
+    "<another edge case>"
+  ],
+  "suggestions": [
+    "<specific, actionable improvement suggestion>",
+    "<another suggestion>"
+  ]
+}
+
+Rules:
+1. Be specific to THIS problem and THIS code — avoid generic advice
+2. If all tests passed, focus on optimization and code quality
+3. If tests failed, prioritize correctness issues
+4. Provide 2-4 edge cases and 2-5 suggestions
+5. For readability score: 1-3 = poor, 4-6 = decent, 7-8 = good, 9-10 = excellent`;
+  }
+
+  private parseCodeReviewResponse(responseText: string): CodeReviewResponse {
+    let jsonStr = responseText.trim();
+
+    // Strip markdown code fences if present
+    const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch?.[1]) {
+      jsonStr = jsonMatch[1].trim();
+    }
+
+    // Strip trailing commas before ] or } (common AI quirk)
+    jsonStr = jsonStr.replace(/,\s*([\]}])/g, "$1");
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(jsonStr);
+    } catch {
+      // Try to extract just the JSON object if there's surrounding text
+      const objMatch = jsonStr.match(/\{[\s\S]*\}/);
+      if (objMatch) {
+        const cleaned = objMatch[0].replace(/,\s*([\]}])/g, "$1");
+        parsed = JSON.parse(cleaned);
+      } else {
+        parsed = {};
+      }
+    }
+
+    // Validate with Zod
+    const result = codeReviewResponseSchema.safeParse(parsed);
+    if (result.success) {
+      return result.data;
+    }
+
+    // Fallback: return a best-effort response from the raw parsed data
+    const obj = parsed as Record<string, unknown>;
+    return {
+      timeComplexity: typeof obj["timeComplexity"] === "string" ? obj["timeComplexity"] : "Unable to determine",
+      spaceComplexity: typeof obj["spaceComplexity"] === "string" ? obj["spaceComplexity"] : "Unable to determine",
+      readability: {
+        score: typeof (obj["readability"] as Record<string, unknown>)?.["score"] === "number"
+          ? Math.max(1, Math.min(10, Math.round((obj["readability"] as Record<string, unknown>)["score"] as number)))
+          : 5,
+        feedback: typeof (obj["readability"] as Record<string, unknown>)?.["feedback"] === "string"
+          ? (obj["readability"] as Record<string, unknown>)["feedback"] as string
+          : "No feedback available",
+      },
+      edgeCases: Array.isArray(obj["edgeCases"])
+        ? obj["edgeCases"].filter((s): s is string => typeof s === "string")
+        : [],
+      suggestions: Array.isArray(obj["suggestions"])
+        ? obj["suggestions"].filter((s): s is string => typeof s === "string")
+        : [],
+    };
   }
 }

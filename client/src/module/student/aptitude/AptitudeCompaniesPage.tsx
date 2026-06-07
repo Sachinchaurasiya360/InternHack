@@ -21,6 +21,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
+import { sanitizeHtml } from "../../../lib/sanitize";
 
 const COMPANY_LOGOS: Record<string, string> = {
   "TCS": "https://companieslogo.com/img/orig/TCS.NS_BIG-89c50e39.png?t=1740792736",
@@ -57,20 +58,6 @@ const COMPANY_LOGOS: Record<string, string> = {
   "Samsung": "https://www.logo.wine/a/logo/Samsung/Samsung-Logo.wine.svg",
 };
 
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<img[^>]*src=["']\/[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<img[^>]*src=["'][^"']*indiabix[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, "")
-    .replace(/Video\s*Explanation[\s\S]*?(?=<\/div>|$)/gi, "")
-    .replace(/<a[^>]*(?:youtube|youtu\.be|video)[^>]*>[\s\S]*?<\/a>/gi, "")
-    .replace(/\s*style=["'][^"']*["']/gi, "")
-    .replace(/<(div|span|p|font)\s*>\s*<\/\1>/gi, "")
-    .replace(/<\/?font[^>]*>/gi, "")
-    .replace(/\s*class=["'][^"']*["']/gi, "")
-    .trim();
-}
-
 function Kicker({ label }: { label: string }) {
   return (
     <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -96,6 +83,7 @@ export default function AptitudeCompaniesPage() {
   const { data: companies, isLoading } = useQuery({
     queryKey: queryKeys.aptitude.companies(),
     queryFn: () => api.get<AptitudeCompany[]>("/aptitude/companies").then((r) => r.data),
+    staleTime: 30 * 60 * 1000,
   });
 
   const { data: companyData, isLoading: loadingQuestions } = useQuery({
@@ -103,6 +91,7 @@ export default function AptitudeCompaniesPage() {
     queryFn: () =>
       api.get<AptitudeCompanyQuestions>(`/aptitude/companies/${encodeURIComponent(selectedCompany!)}?page=${page}&limit=10`).then((r) => r.data),
     enabled: !!selectedCompany,
+    staleTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {

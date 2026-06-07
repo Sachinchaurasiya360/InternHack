@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Mail, Globe, Clock3, Bug, Loader2, Send, CheckCircle, AlertCircle, User, Tag, MessageSquare } from "lucide-react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
@@ -43,8 +44,18 @@ export default function ContactPage() {
       <main className="flex-1 max-w-5xl mx-auto px-4 pt-28 pb-16">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
-            Contact Us
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Contact{" "}
+            <span className="relative inline-block">
+              <span className="relative z-10">Us.</span>
+              <motion.span
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
+                aria-hidden
+                className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+              />
+            </span>
           </h1>
           <p className="text-base text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
             We'd love to hear from you. Reach out for support, feedback,
@@ -59,26 +70,26 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {/* Name */}
             <div>
-              <label htmlFor="name" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Name</label>
+              <label htmlFor="name" className="mb-1 block text-xs font-medium text-stone-600 dark:text-stone-400">Name</label>
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 flex-shrink-0 text-lime-500 dark:text-lime-400" />
                 <input
                   id="name" name="name" value={formData.name} onChange={handleChange} required
                   placeholder="Your name"
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
                 />
               </div>
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Email</label>
+              <label htmlFor="email" className="mb-1 block text-xs font-medium text-stone-600 dark:text-stone-400">Email</label>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 flex-shrink-0 text-lime-500 dark:text-lime-400" />
                 <input
                   id="email" name="email" type="email" value={formData.email} onChange={handleChange} required
                   placeholder="you@example.com"
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
                 />
               </div>
             </div>
@@ -86,26 +97,26 @@ export default function ContactPage() {
 
           {/* Subject */}
           <div>
-            <label htmlFor="subject" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Subject</label>
+              <label htmlFor="subject" className="mb-1 block text-xs font-medium text-stone-600 dark:text-stone-400">Subject</label>
             <div className="flex items-center gap-2">
               <Tag className="h-4 w-4 flex-shrink-0 text-lime-500 dark:text-lime-400" />
               <input
                 id="subject" name="subject" value={formData.subject} onChange={handleChange} required
-                placeholder="What's this about?"
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                  placeholder="What's this about?"
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
               />
             </div>
           </div>
 
           {/* Message */}
           <div>
-            <label htmlFor="message" className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Message</label>
+              <label htmlFor="message" className="mb-1 block text-xs font-medium text-stone-600 dark:text-stone-400">Message</label>
             <div className="flex items-start gap-2">
               <MessageSquare className="mt-2 h-4 w-4 flex-shrink-0 text-lime-500 dark:text-lime-400" />
               <textarea
                 id="message" name="message" rows={5} value={formData.message} onChange={handleChange} required
-                placeholder="Tell us what's on your mind..."
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500 resize-y"
+                  placeholder="Tell us what's on your mind..."
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500 resize-y"
               />
             </div>
           </div>

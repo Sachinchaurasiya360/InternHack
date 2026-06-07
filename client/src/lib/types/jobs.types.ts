@@ -1,6 +1,12 @@
 import type { UserRole, User } from "./user.types";
 
-export type JobStatus = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
+export const JobStatus = {
+  DRAFT: "DRAFT",
+  PUBLISHED: "PUBLISHED",
+  CLOSED: "CLOSED",
+  ARCHIVED: "ARCHIVED",
+} as const;
+export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus];
 export type ApplicationStatus = "APPLIED" | "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED" | "WITHDRAWN";
 export type RoundStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
 export type FieldType = "TEXT" | "TEXTAREA" | "DROPDOWN" | "MULTI_SELECT" | "FILE_UPLOAD" | "BOOLEAN" | "NUMERIC" | "DATE" | "EMAIL" | "URL";
@@ -21,10 +27,18 @@ export interface CustomFieldDefinition {
   };
 }
 
+/** Scoring rubric for a single criterion within a hiring round */
 export interface EvaluationCriterion {
+  /** Unique identifier for this criterion entry */
   id: string;
+  /** Human-readable name of the criterion (e.g. "Communication Skills") */
   criterion: string;
+  /** Maximum possible score a candidate can receive for this criterion */
   maxScore: number;
+  /**
+   * Relative importance weight used to compute a weighted aggregate across criteria.
+   * When omitted all criteria are weighted equally.
+   */
   weight?: number;
 }
 
@@ -99,6 +113,7 @@ export interface Application {
   customFieldAnswers: Record<string, unknown>;
   resumeUrl?: string;
   coverLetter?: string;
+  studentNotes: string | null;
   job?: Job;
   student?: User;
   roundSubmissions?: RoundSubmission[];
@@ -132,6 +147,25 @@ export interface ExternalJob {
   tags: string[];
   expiresAt?: string;
   createdAt?: string;
+}
+
+export interface ExternalApplication {
+  id: number;
+  studentId: number;
+  adminJobId: number;
+  studentNotes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  adminJob: {
+    id: number;
+    slug: string | null;
+    company: string | null;
+    role: string | null;
+    location: string | null;
+    salary: string | null;
+    tags: string[];
+    applyLink: string | null;
+  };
 }
 
 // Scraped Jobs

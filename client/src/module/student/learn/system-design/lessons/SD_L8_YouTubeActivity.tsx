@@ -154,6 +154,7 @@ function ABRPlayer() {
        
       setCurrentTier(ideal.i);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bandwidth, t]);
 
   const reset = () => { setEvents([]); setCurrentTier(2); setT(0); setPlaying(false); };

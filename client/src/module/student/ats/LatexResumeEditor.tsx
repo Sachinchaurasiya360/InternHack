@@ -4,9 +4,7 @@ import toast from "@/components/ui/toast";
 import { motion } from "framer-motion";
 import {
   Download,
-  Copy,
   AlertCircle,
-  Check,
   FileCode2,
   Eye,
   Loader2,
@@ -31,6 +29,7 @@ import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { useLatexAutoSave } from "./useLatexAutoSave";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import { getLatexTemplate } from "./latex-templates.data";
 
 const DEFAULT_TEMPLATE = `\\documentclass[11pt,a4paper]{article}
@@ -141,7 +140,6 @@ export default function LatexResumeEditor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [copied, setCopied] = useState(false);
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
   const [chatOpen, setChatOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
@@ -232,16 +230,6 @@ export default function LatexResumeEditor() {
       .finally(() => setCompiling(false));
   }, [code, supportingFiles]);
 
-  const handleCopyLatex = async () => {
-  try {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    toast.success("Copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
-  } catch {
-    toast.error("Failed to copy");
-  }
-};
 
   const handleCompile = async () => {
     setCompiling(true);
@@ -395,15 +383,7 @@ export default function LatexResumeEditor() {
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={handleCopyLatex}
-            className={ghostBtnCls}
-            title="Copy LaTeX"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-lime-500" /> : <Copy className="w-3.5 h-3.5" />}
-            {copied ? "Copied" : "Copy"}
-          </button>
+          <CopyButton text={code} />
 
           <button
             type="button"

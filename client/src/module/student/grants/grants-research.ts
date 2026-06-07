@@ -1,10 +1,9 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsResearch: Grant[] = [
   {
     id: 71,
     name: "Fulbright-Nehru Fellowship",
-     deadline: "2026-07-20",
     organization: "USIEF",
     logo: "https://placehold.co/100x100/EEE/999?text=F",
     description:
@@ -20,6 +19,7 @@ export const grantsResearch: Grant[] = [
       "Application deadline typically in February/June each year",
     ],
     status: "Active",
+    deadline: "2026-06-05",
     ecosystem: "USA",
     highlights: [
       "Most prestigious Indo-US academic exchange program",
@@ -30,7 +30,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 72,
     name: "Wellcome Trust Research Grants",
-     deadline: "2026-07-20",
     organization: "Wellcome Trust",
     logo: "https://placehold.co/100x100/EEE/999?text=W",
     description:
@@ -46,6 +45,7 @@ export const grantsResearch: Grant[] = [
       "Multiple grant types: Discovery, Career Development, Collaborative",
     ],
     status: "Active",
+    deadline: "2027-06-10",
     ecosystem: "UK",
     highlights: [
       "One of the world's largest research funders (£16B+ endowment)",
@@ -56,7 +56,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 73,
     name: "Grand Challenges Explorations",
-     deadline: "2026-07-20",
     organization: "Bill & Melinda Gates Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
@@ -72,6 +71,7 @@ export const grantsResearch: Grant[] = [
       "Successful Phase 1 projects can receive up to $1M in follow-on funding",
     ],
     status: "Active",
+    deadline: "2027-06-15",
     ecosystem: "Global",
     highlights: [
       "Simple 2-page application process",
@@ -82,7 +82,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 74,
     name: "CERN Openlab Summer Students",
-     deadline: "2026-07-20",
     organization: "CERN",
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
@@ -98,6 +97,7 @@ export const grantsResearch: Grant[] = [
       "Applications open October-January each year",
     ],
     status: "Active",
+    deadline: "2027-06-20",
     ecosystem: "Switzerland",
     highlights: [
       "Work alongside world-class scientists at CERN",
@@ -108,7 +108,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 75,
     name: "DAAD Research Grants",
-    deadline: "2026-07-20",
     organization: "DAAD (German Academic Exchange Service)",
     logo: "https://placehold.co/100x100/EEE/999?text=D",
     description:
@@ -124,6 +123,7 @@ export const grantsResearch: Grant[] = [
       "Application deadlines vary by country and program",
     ],
     status: "Active",
+    deadline: "2027-06-25",
     ecosystem: "Germany",
     highlights: [
       "World's largest academic exchange organization",
@@ -134,7 +134,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 76,
     name: "Marie Sklodowska-Curie Fellowship",
-     deadline: "2026-07-20",
     organization: "European Commission",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -150,6 +149,7 @@ export const grantsResearch: Grant[] = [
       "Annual call with September deadline",
     ],
     status: "Active",
+    deadline: "2027-06-30",
     ecosystem: "EU",
     highlights: [
       "One of Europe's most prestigious research fellowships",
@@ -160,7 +160,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 77,
     name: "Swiss Government Excellence Scholarships",
-     deadline: "2026-07-20",
     organization: "Swiss Confederation",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -176,6 +175,7 @@ export const grantsResearch: Grant[] = [
       "Application through Swiss embassy in home country",
     ],
     status: "Active",
+    deadline: "2027-07-05",
     ecosystem: "Switzerland",
     highlights: [
       "Full tuition waiver at top Swiss universities (ETH, EPFL)",
@@ -186,7 +186,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 78,
     name: "Humboldt Research Fellowship",
-     deadline: "2026-07-20",
     organization: "Alexander von Humboldt Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
@@ -202,6 +201,7 @@ export const grantsResearch: Grant[] = [
       "Applications accepted year-round; review takes 4-7 months",
     ],
     status: "Active",
+    deadline: "2027-07-10",
     ecosystem: "Germany",
     highlights: [
       "Lifetime membership in Humboldt network of 30,000+ researchers",
@@ -212,7 +212,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 79,
     name: "JSPS Fellowship",
-     deadline: "2026-07-20",
     organization: "Japan Society for the Promotion of Science",
     logo: "https://placehold.co/100x100/EEE/999?text=J",
     description:
@@ -228,6 +227,7 @@ export const grantsResearch: Grant[] = [
       "Must have a host researcher at a Japanese institution",
     ],
     status: "Active",
+    deadline: "2027-07-15",
     ecosystem: "Japan",
     highlights: [
       "Research allowance of ¥150,000/year",
@@ -238,7 +238,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 80,
     name: "Newton International Fellowship",
-     deadline: "2026-07-20",
     organization: "Royal Society",
     logo: "https://placehold.co/100x100/EEE/999?text=R",
     description:
@@ -254,6 +253,7 @@ export const grantsResearch: Grant[] = [
       "Annual deadline in March",
     ],
     status: "Active",
+    deadline: "2027-07-20",
     ecosystem: "UK",
     highlights: [
       "2-year fully funded research position in UK",
@@ -264,7 +264,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 131,
     name: "Schmidt Science Fellows",
-     deadline: "2026-07-20",
     organization: "Schmidt Futures",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -280,6 +279,7 @@ export const grantsResearch: Grant[] = [
       "Annual cohort of ~30 fellows",
     ],
     status: "Active",
+    deadline: "2027-07-25",
     ecosystem: "Global",
     highlights: [
       "Encourages disciplinary pivoting - unique among fellowships",
@@ -290,7 +290,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 132,
     name: "Simons Foundation Grants",
-     deadline: "2026-07-20",
     organization: "Simons Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -306,6 +305,7 @@ export const grantsResearch: Grant[] = [
       "Nominations and direct applications depending on program",
     ],
     status: "Active",
+    deadline: "2027-07-30",
     ecosystem: "USA",
     highlights: [
       "One of the largest private funders of basic science",
@@ -316,7 +316,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 133,
     name: "HHMI Investigator Program",
-     deadline: "2026-07-20",
     organization: "Howard Hughes Medical Institute",
     logo: "https://placehold.co/100x100/EEE/999?text=H",
     description:
@@ -332,6 +331,7 @@ export const grantsResearch: Grant[] = [
       "Competition held every 3-5 years; ~25 new investigators per cycle",
     ],
     status: "Active",
+    deadline: "2027-08-04",
     ecosystem: "USA",
     highlights: [
       "7-year renewable appointments with full salary support",
@@ -342,7 +342,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 134,
     name: "Moore Foundation Science Grants",
-     deadline: "2026-07-20",
     organization: "Gordon & Betty Moore Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=M",
     description:
@@ -358,6 +357,7 @@ export const grantsResearch: Grant[] = [
       "Both invited proposals and open calls",
     ],
     status: "Active",
+    deadline: "2027-08-09",
     ecosystem: "USA",
     highlights: [
       "$1.5B+ in science grants since founding",
@@ -368,7 +368,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 135,
     name: "Chan Zuckerberg Initiative Science",
-     deadline: "2026-07-20",
     organization: "Chan Zuckerberg Initiative",
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
@@ -384,6 +383,7 @@ export const grantsResearch: Grant[] = [
       "Annual calls for specific programs",
     ],
     status: "Active",
+    deadline: "2027-08-14",
     ecosystem: "USA",
     highlights: [
       "$5.3B+ committed to science",
@@ -394,7 +394,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 136,
     name: "Kavli Foundation Grants",
-     deadline: "2026-07-20",
     organization: "Kavli Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
@@ -410,6 +409,7 @@ export const grantsResearch: Grant[] = [
       "Kavli Prize nominations from the scientific community",
     ],
     status: "Active",
+    deadline: "2027-08-19",
     ecosystem: "USA",
     highlights: [
       "20 Kavli Institutes at top universities worldwide",
@@ -420,7 +420,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 137,
     name: "Sloan Research Fellowship",
-     deadline: "2026-07-20",
     organization: "Alfred P. Sloan Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -436,6 +435,7 @@ export const grantsResearch: Grant[] = [
       "Nomination by department head or senior colleague",
     ],
     status: "Active",
+    deadline: "2027-08-24",
     ecosystem: "USA",
     highlights: [
       "55 Sloan Fellows have gone on to win Nobel Prizes",
@@ -446,7 +446,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 138,
     name: "Packard Fellowship for Science and Engineering",
-     deadline: "2026-07-20",
     organization: "David and Lucile Packard Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=P",
     description:
@@ -462,6 +461,7 @@ export const grantsResearch: Grant[] = [
       "Nominated by university - 2 nominees per institution",
     ],
     status: "Active",
+    deadline: "2027-08-29",
     ecosystem: "USA",
     highlights: [
       "$875K over 5 years - among the most generous",
@@ -472,7 +472,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 139,
     name: "Burroughs Wellcome Fund Career Awards",
-     deadline: "2026-07-20",
     organization: "Burroughs Wellcome Fund",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
@@ -488,6 +487,7 @@ export const grantsResearch: Grant[] = [
       "Annual deadlines varying by program",
     ],
     status: "Active",
+    deadline: "2027-09-03",
     ecosystem: "USA",
     highlights: [
       "5-year awards with flexible spending",
@@ -498,7 +498,6 @@ export const grantsResearch: Grant[] = [
   {
     id: 140,
     name: "W.M. Keck Foundation Research Grants",
-     deadline: "2026-07-20",
     organization: "W.M. Keck Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=K",
     description:
@@ -514,6 +513,7 @@ export const grantsResearch: Grant[] = [
       "Two-stage application process (Phase I concept, Phase II full proposal)",
     ],
     status: "Active",
+    deadline: "2027-09-08",
     ecosystem: "USA",
     highlights: [
       "Funds projects that are too risky for NIH/NSF",

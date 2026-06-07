@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { StudentService } from "./student.service.js";
-import { applyToJobSchema, mockInterviewFeedbackSchema, submitRoundSchema } from "./student.validation.js";
+import { applyToJobSchema, submitRoundSchema, mockInterviewFeedbackSchema, updateApplicationNotesSchema } from "./student.validation.js";
 import { prisma } from "../../database/db.js";
 import { getPlanTier } from "../../config/usage-limits.js";
 import { createLogger } from "../../utils/logger.js";
@@ -22,7 +22,6 @@ export class StudentController {
 
       const application = await this.studentService.applyToJob(jobId, req.user.id, result.data);
 
-      await prisma.usageLog.create({ data: { userId: req.user.id, action: "JOB_APPLICATION" } });
       const usage = req.usageInfo ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit } : undefined;
 
       return res.status(201).json({ message: "Application submitted successfully", application, usage });
@@ -163,7 +162,9 @@ export class StudentController {
       if (isNaN(adminJobId)) return res.status(400).json({ message: "Invalid job ID" });
 
       const application = await this.studentService.applyToExternalJob(req.user.id, adminJobId);
-      return res.status(201).json({ message: "Applied successfully", application });
+      const usage = req.usageInfo ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit } : undefined;
+
+      return res.status(201).json({ message: "Applied successfully", application, usage });
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === "External job not found") return res.status(404).json({ message: error.message });
@@ -230,6 +231,48 @@ export class StudentController {
     }
   }
 
+  async updateApplicationNotes(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId)) return res.status(400).json({ message: "Invalid application ID" });
+
+      const result = updateApplicationNotesSchema.safeParse(req.body);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+
+      const updated = await this.studentService.updateApplicationNotes(applicationId, req.user.id, result.data.notes);
+      return res.status(200).json({ notes: updated.studentNotes ?? "", updatedAt: updated.updatedAt });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Application not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      logger.error("Failed to update application notes", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async updateExternalApplicationNotes(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const applicationId = parseInt(String(req.params["applicationId"]), 10);
+      if (isNaN(applicationId)) return res.status(400).json({ message: "Invalid application ID" });
+
+      const result = updateApplicationNotesSchema.safeParse(req.body);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+
+      const updated = await this.studentService.updateExternalApplicationNotes(applicationId, req.user.id, result.data.notes);
+      return res.status(200).json({ notes: updated.studentNotes ?? "", updatedAt: updated.updatedAt });
+    } catch (error) {
+      if (error instanceof Error && error.message === "External application not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      logger.error("Failed to update external application notes", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   async withdrawApplication(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -289,6 +332,59 @@ export class StudentController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to submit round", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async getSavedJobs(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const jobs = await this.studentService.getSavedJobs(req.user.id);
+      return res.status(200).json({ jobs });
+    } catch (error) {
+      logger.error("Failed to get saved jobs", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async saveJob(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const jobId = parseInt(String(req.params["jobId"]), 10);
+      if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
+      await this.studentService.saveJob(jobId, req.user.id);
+      return res.status(200).json({ message: "Job saved" });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Job not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      logger.error("Failed to save job", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async unsaveJob(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const jobId = parseInt(String(req.params["jobId"]), 10);
+      if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
+      await this.studentService.unsaveJob(jobId, req.user.id);
+      return res.status(200).json({ message: "Job unsaved" });
+    } catch (error) {
+      logger.error("Failed to unsave job", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async isJobSaved(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const jobId = parseInt(String(req.params["jobId"]), 10);
+      if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
+      const saved = await this.studentService.isJobSaved(jobId, req.user.id);
+      return res.status(200).json({ saved });
+    } catch (error) {
+      logger.error("Failed to check job saved status", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

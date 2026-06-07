@@ -9,6 +9,27 @@ import { createLogger } from "../../utils/logger.js";
 const logger = createLogger("UploadController");
 
 const MAX_RESUMES = 2;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB — must match s3.utils.ts UPLOAD_POLICIES
+
+/**
+ * Server-side allowlist of permitted MIME types for presigned URL generation.
+ * Scoped to the four upload targets the application actually uses:
+ * resumes (PDF), profile-pics, cover-images, and company-logos (images + SVG).
+ * Executables, scripts, HTML, and other dangerous types are excluded.
+ */
+const ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+]);
+
+/**
+ * SVG is an XSS risk when served from S3, so it is excluded from the general
+ * allowlist. The company-logos folder intentionally permits SVG because the
+ * existing per-folder policy in s3.utils.ts already allows it there.
+ */
+const SVG_ALLOWED_FOLDERS = new Set(["company-logos"]);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,6 +67,12 @@ export class UploadController {
       const { fileName, fileType, folder } = req.body;
       if (!fileName || !fileType || !folder) {
         return res.status(400).json({ message: "fileName, fileType, and folder are required" });
+      }
+
+      const isSvgForLogoFolder =
+        fileType === "image/svg+xml" && SVG_ALLOWED_FOLDERS.has(folder as string);
+      if (!ALLOWED_MIME_TYPES.has(fileType as string) && !isSvgForLogoFolder) {
+        return res.status(400).json({ message: "File type not allowed." });
       }
 
       const fileKey = createUniqueS3Key(folder, String(req.user.id), fileName);
@@ -152,6 +179,9 @@ export class UploadController {
       if (!isValidS3FileUrl(fileUrl)) {
         return res.status(400).json({ message: "Invalid fileUrl origin" });
       }
+      if (typeof size === "number" && size > MAX_FILE_SIZE) {
+        return res.status(400).json({ message: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB limit` });
+      }
 
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { resumes: true } });
@@ -169,14 +199,6 @@ export class UploadController {
         where: { id: userId },
         data: { resumes: updatedResumes },
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
-      });
-
-      // Log daily quota usage for resume generation/upload
-      await prisma.usageLog.create({
-        data: {
-          userId: req.user.id,
-          action: "GENERATE_RESUME",
-        },
       });
 
       const signedResumes = await signUrls(user.resumes);

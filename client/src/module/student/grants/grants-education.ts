@@ -1,10 +1,9 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsEducation: Grant[] = [
   {
     id: 10,
     name: "Foundation Grants",
-     deadline: "2026-07-20",
     organization: "NEAR Protocol",
     logo: "https://cryptologos.cc/logos/near-protocol-near-logo.svg",
     description:
@@ -20,6 +19,7 @@ export const grantsEducation: Grant[] = [
       "$100M dedicated to startups (20 startups)",
     ],
     status: "Active",
+    deadline: "2026-12-12",
     ecosystem: "NEAR",
     highlights: [
       "$800M total ecosystem commitment",
@@ -30,7 +30,6 @@ export const grantsEducation: Grant[] = [
   {
     id: 18,
     name: "zkSync Grants & Fellowship",
-     deadline: "2026-07-20",
     organization: "Matter Labs / ZKsync Foundation",
     logo: "https://cryptologos.cc/logos/zksync-zk-logo.svg",
     description:
@@ -46,6 +45,7 @@ export const grantsEducation: Grant[] = [
       "Ethereum Foundation ZK Grants pool: $900K",
     ],
     status: "Active",
+    deadline: "2026-12-17",
     ecosystem: "zkSync",
     highlights: [
       "$3,500/month fellowship stipend",
@@ -56,7 +56,6 @@ export const grantsEducation: Grant[] = [
   {
     id: 48,
     name: "Research Grants",
-     deadline: "2026-07-20",
     organization: "Protocol Labs",
     logo: "https://protocol.ai/assets/img/pl-logo.svg",
     description:
@@ -72,6 +71,7 @@ export const grantsEducation: Grant[] = [
       "Applications reviewed in two rounds (April and September)",
     ],
     status: "Active",
+    deadline: "2026-12-22",
     ecosystem: "Multi-chain",
     highlights: [
       "$60K PhD Fellowships covering tuition",

@@ -3,6 +3,9 @@ import type { AdminService } from "./admin.service.js";
 import { setTokenCookie } from "../../utils/cookie.utils.js";
 import { createLogger } from "../../utils/logger.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
+import { clearCache } from "../../middleware/cache.middleware.js";
+import { cacheDelPattern } from "../../utils/cache.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 
 const logger = createLogger("AdminController");
 import {
@@ -265,6 +268,8 @@ export class AdminController {
       }
 
       const company = await this.adminService.createCompany(req.user.id, result.data);
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.status(201).json({ message: "Company created", company });
     } catch (err) {
       next(err);
@@ -283,6 +288,9 @@ export class AdminController {
       }
 
       const company = await this.adminService.updateCompany(id, result.data as Parameters<typeof this.adminService.updateCompany>[1]);
+      clearCache("companies:detail");
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.json({ message: "Company updated", company });
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
@@ -298,6 +306,9 @@ export class AdminController {
       if (isNaN(id)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       const company = await this.adminService.approveCompany(id);
+      clearCache("companies:detail");
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.json({ message: "Company approved", company });
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
@@ -313,6 +324,9 @@ export class AdminController {
       if (isNaN(id)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       await this.adminService.deleteCompany(id);
+      clearCache("companies:detail");
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.json({ message: "Company deleted" });
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
@@ -346,6 +360,10 @@ export class AdminController {
       }
 
       const review = await this.adminService.updateReviewStatus(id, result.data.status);
+      // Review approval updates avgRating/reviewCount on the company — bust detail and list caches
+      clearCache("companies:reviews");
+      clearCache("companies:detail");
+      void cacheDelPattern("companies:list:");
       res.json({ message: `Review ${result.data.status.toLowerCase()}`, review });
     } catch (err) {
       if (err instanceof Error && err.message === "Review not found") {
@@ -1073,8 +1091,6 @@ export class AdminController {
     }
   }
 
-  private broadcastInFlight = false;
-
   async sendBroadcastEmail(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -1083,23 +1099,49 @@ export class AdminController {
         return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
       }
       const isTest = !!result.data.testEmail;
-      if (!isTest && this.broadcastInFlight) {
-        return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
-      }
-      if (!isTest) this.broadcastInFlight = true;
-      try {
+      // Test emails skip the distributed lock — they target a single address
+      if (isTest) {
         const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
         return res.status(200).json({
           success: true,
-          message: data.test ? "Test email sent" : `Broadcast complete: ${data.sent}/${data.recipients} sent, ${data.failed} failed`,
+          message: "Test email sent",
           ...data,
         });
-      } finally {
-        if (!isTest) this.broadcastInFlight = false;
       }
+
+      // Use a PostgreSQL advisory lock so only one instance can broadcast at a time.
+      // withAdvisoryLock silently returns if the lock is already held by another pod.
+      let broadcastResult: Awaited<ReturnType<typeof this.adminService.sendBroadcastEmail>> | null = null;
+      let lockAcquired = false;
+      let callbackError: unknown = null;
+
+      await withAdvisoryLock("admin-broadcast-email", async () => {
+        lockAcquired = true;
+        try {
+          broadcastResult = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user!.id });
+        } catch (err) {
+          callbackError = err;
+        }
+      });
+
+      if (!lockAcquired) {
+        return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
+      }
+
+      if (callbackError) {
+        throw callbackError;
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Broadcast complete: ${broadcastResult!.sent}/${broadcastResult!.recipients} sent, ${broadcastResult!.failed} failed`,
+        ...broadcastResult!,
+      });
     } catch (error) {
       logger.error("Failed to send broadcast email", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      if (!res.headersSent) {
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
     }
   }
 }

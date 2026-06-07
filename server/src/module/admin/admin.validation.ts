@@ -251,7 +251,7 @@ export const hackathonQuerySchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
-export const createHackathonSchema = z.object({
+const hackathonBaseSchema = z.object({
   name: z.string().min(1).max(300),
   organizer: z.string().min(1).max(200),
   logo: z.string().optional().or(z.literal("")),
@@ -270,7 +270,21 @@ export const createHackathonSchema = z.object({
   highlights: z.array(z.string()).default([]),
 });
 
-export const updateHackathonSchema = createHackathonSchema.partial();
+export const createHackathonSchema = hackathonBaseSchema.refine(
+  (data) => new Date(data.startDate) <= new Date(data.endDate),
+  { message: "End date cannot be before start date", path: ["endDate"] }
+);
+
+// partial() must be called on the base schema before refinement (Zod v4)
+export const updateHackathonSchema = hackathonBaseSchema.partial().refine(
+  (data) => {
+    if (data.startDate && data.endDate) {
+      return new Date(data.startDate) <= new Date(data.endDate);
+    }
+    return true;
+  },
+  { message: "End date cannot be before start date", path: ["endDate"] }
+);
 
 // ==================== ADMIN EXTERNAL JOBS ====================
 
@@ -333,7 +347,15 @@ export const broadcastEmailSchema = z.object({
 // ==================== AI PROVIDER MANAGEMENT ====================
 
 export const switchAIProviderSchema = z.object({
-  service: z.enum(["ATS_SCORE", "COVER_LETTER", "RESUME_GEN", "LATEX_CHAT","AI_ROADMAP_GENERATION"]),
+  service: z.enum([
+    "ATS_SCORE",
+    "COVER_LETTER",
+    "RESUME_GEN",
+    "LATEX_CHAT",
+    "EMAIL_CHAT",
+    "AI_ROADMAP_GENERATION",
+    "DSA_CODE_REVIEW",
+  ]),
   provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL", "CLAUDE"]),
   modelName: z.string().min(1, "Model name is required"),
 });

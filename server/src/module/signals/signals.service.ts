@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 import { BaseSignalSource } from "./sources/base.source.js";
 import type { FundingSignalData } from "./sources/base.source.js";
 import { YcLaunchesSource } from "./sources/yc-launches.source.js";
@@ -78,7 +79,9 @@ export class SignalsService {
   startCron(schedule = "0 */6 * * *") {
     if (this.cronJob) this.cronJob.stop();
     this.cronJob = cron.schedule(schedule, () => {
-      void this.ingestAll();
+      void withAdvisoryLock("signals-ingestion", async () => {
+        await this.ingestAll();
+      });
     });
     console.log(`[Signals] Cron scheduled: ${schedule}`);
   }
@@ -120,11 +123,16 @@ export class SignalsService {
 
     for (const src of this.sources) {
       const startTime = Date.now();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), SOURCE_TIMEOUT);
       try {
-        const timeoutPromise = new Promise<never>((_r, reject) =>
-          setTimeout(() => reject(new Error("Source timeout exceeded")), SOURCE_TIMEOUT),
-        );
-        const result = await Promise.race([src.fetch(), timeoutPromise]);
+        const result = await Promise.race([
+          src.fetch(controller.signal),
+          new Promise<never>((_r, reject) =>
+            setTimeout(() => reject(new Error("Source timeout exceeded")), SOURCE_TIMEOUT)
+          )
+        ]);
+        clearTimeout(timeoutId);
         const { created, updated } = await this.upsertSignals(result.source, result.signals);
         const duration = Date.now() - startTime;
 
@@ -246,7 +254,7 @@ export class SignalsService {
         } else {
           ops.push(
             prisma.fundingSignal.create({
-              data: { ...data, source, sourceId: s.sourceId, status: "ACTIVE" },
+              data: { ...data, source, sourceId: s.sourceId, status: "ACTIVE", lastSeenAt: new Date() },
             }),
           );
           created++;
@@ -383,6 +391,7 @@ export class SignalsService {
         careersUrl: input.careersUrl ?? null,
         hiringSignal: input.hiringSignal ?? false,
         status: "ACTIVE",
+        lastSeenAt: new Date(),
       },
     });
     return { ...row, amountUsd: row.amountUsd?.toString() ?? null };
