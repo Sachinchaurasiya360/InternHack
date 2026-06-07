@@ -234,6 +234,7 @@ export const queryKeys = {
     list: (name: string, page?: number) => ["dsa", "list", name, page] as const,
     submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
     importStatus: () => ["dsa", "import-status"] as const,
+    streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
   },

@@ -19,6 +19,7 @@ import { LoginGate } from "../../../components/LoginGate";
 import { LeetCodeSync } from "./components/LeetCodeSync";
 import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 import { DsaHeatmap } from "./components/DsaHeatmap";
+import { DsaStreakWidget } from "./components/DsaStreakWidget";
 import { ResultCount } from "../../../components/ui/ResultCount";
 
 const TOPICS_PER_PAGE = 20;
@@ -423,7 +424,17 @@ const clearFilters = () => {
           </motion.div>
         )}
 
-        {/* Heatmap (logged-in) */}
+        {/* Streak widget + Heatmap (logged-in) */}
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="mb-4"
+          >
+            <DsaStreakWidget />
+          </motion.div>
+        )}
         {user && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}

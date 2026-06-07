@@ -201,6 +201,14 @@ export interface DsaCodeReview {
   suggestions: string[];
 }
 
+export interface DsaStreak {
+  currentStreak: number;
+  longestStreak: number;
+  solvedToday: boolean;
+  lastSolvedDate: string | null;
+  activeDays: string[];
+}
+
 export interface DsaSubmissionSummary {
   id: number;
   language: DsaLanguage;
