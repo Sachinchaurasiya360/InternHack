@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import { z } from "zod";
 import { AptitudeService } from "./aptitude.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
@@ -31,10 +32,13 @@ export class AptitudeController {
   async submitAnswer(req: Request, res: Response, next: NextFunction) {
     try {
       const questionId = parseInt(req.params.id as string);
+      if (isNaN(questionId)) return res.status(400).json({ error: "Invalid question ID" });
+
       const studentId = req.user!.id;
-      const { answer } = req.body;
-      if (!answer) return res.status(400).json({ error: "Answer is required" });
-      const result = await this.service.submitAnswer(studentId, questionId, answer);
+      const body = z.object({ answer: z.union([z.string(), z.number()]) }).safeParse(req.body);
+      if (!body.success) return res.status(400).json({ error: "Invalid answer format", errors: body.error.flatten() });
+
+      const result = await this.service.submitAnswer(studentId, questionId, body.data.answer);
       res.json(result);
     } catch (err) {
       next(err);
