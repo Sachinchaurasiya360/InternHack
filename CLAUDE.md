@@ -109,3 +109,39 @@ Students can suggest repos via `POST /api/opensource/requests`. Admin reviews at
 - Add `rounded-full` pill badges above headings
 - Fabricate new UsageAction enum values, reuse existing ones to avoid migrations
 - Push to remote without explicit permission
+
+## PR Review Process
+
+### Before taking any action on a PR
+
+1. Pull all active PRs and read the full diff, all comments, and the complete review history.
+2. Check `gh pr checks <number>` — do not merge anything with failing lint, typecheck, or build.
+3. Check mergeability — do not rebase or fix conflicts on behalf of the author unless explicitly instructed.
+
+### Review checklist (apply to every PR)
+
+- **Code quality:** bad practices, unnecessary complexity, duplicate logic, DRY violations, poor naming
+- **Architecture:** follows module pattern (routes → controller → service → validation), no business logic in controllers, no DB queries outside services
+- **Error handling:** all async paths caught, correct HTTP status codes (400 for validation, 403 for auth, 422 for business rule, 500 for unexpected)
+- **Security:** no IDOR (verify ownership before any resource access), no raw user input in queries, no secrets in code
+- **Performance:** no N+1 queries, no blocking operations in hot paths
+- **Breaking changes:** does the PR remove or rename anything used elsewhere
+- **Schema changes:** any addition, removal, or rename of a Prisma model field requires a migration file committed alongside the schema change — missing migration = request changes, do not merge. Removing a column causes data loss; flag this explicitly before merging.
+- **Conflicts:** CONFLICTING mergeability = skip, do not rebase for the author
+- **Spam / low-quality:** one-line cosmetic changes with no value, fabricated fixes, whitespace-only diffs = close with explanation
+
+### Decision rules
+
+- **Merge:** CI fully green, no conflicts, code meets all standards above
+- **Request changes:** real issues found — leave specific, actionable comments on exactly what must be fixed
+- **Close:** spam, major unresolved conflicts, repeated violations after prior review, or more than 3 days elapsed since changes were requested with no meaningful update from the author — close and ask them to open a fresh PR after resolving the issues
+
+### Schema change safety rule
+
+PRs that touch `server/src/database/prisma/schema/*.prisma`:
+
+- Adding a nullable column or column with a default: safe, but migration file must be present
+- Adding a NOT NULL column without a default on an existing table: dangerous in production — require a migration with a backfill or a default value
+- Removing a column: causes permanent data loss — always flag this explicitly and confirm with the maintainer before merging
+- Renaming a column: treated the same as remove + add — flag it
+- Never merge schema changes without the corresponding migration file in `server/src/database/prisma/migrations/`
