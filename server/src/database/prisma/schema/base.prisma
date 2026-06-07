@@ -80,6 +80,7 @@ model user {
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
   guideFeedbacks        guideFeedback[]
+  gsocSuccesses         gsocSuccess[]               @relation("UserGsocSuccesses")
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
@@ -532,8 +533,31 @@ model gsocOrganization {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  successStories    gsocSuccess[]
   @@index([category])
   @@index([name])
+}
+
+model gsocSuccess {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  orgId        Int
+  projectTitle String
+  quote        String
+  country      String?
+  year         Int
+  verified     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user user @relation("UserGsocSuccesses", fields: [userId], references: [id], onDelete: Cascade)
+
+  org gsocOrganization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([orgId])
+  @@index([year])
+  @@index([verified])
 }
 
 model ycCompany {

@@ -58,3 +58,11 @@ export const approveRequestOverrideSchema = z.object({
   difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
   tags: z.array(z.string()).optional(),
 });
+
+export const gsocAlumniQuerySchema = z.object({
+  page: z.coerce.number().int().positive().optional().default(1),
+  limit: z.coerce.number().int().positive().max(100).optional().default(20),
+  org: z.string().optional(),
+  country: z.string().optional(),
+  year: z.coerce.number().int().optional(),
+});

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { OpensourceController } from "./opensource.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
+import { prisma } from "../../database/db.js";
 
 export const opensourceRouter = Router();
 const controller = new OpensourceController();
@@ -16,6 +17,16 @@ opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(r
 
 // Get GSoC organizations
 opensourceRouter.get("/gsoc/orgs", (req, res, next) => controller.getGsocOrgs(req, res, next));
+
+opensourceRouter.get(
+  "/gsoc/alumni",
+  (req, res, next) => controller.getGsocAlumni(req, res, next)
+);
+
+opensourceRouter.get(
+  "/gsoc/alumni/stats",
+  (req, res, next) => controller.getGsocAlumniStats(req, res, next)
+);
 
 // ─── Repo Requests (Student-authenticated) ─────────────────────
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts

@@ -3,6 +3,7 @@ import { OpensourceService } from "./opensource.service.js";
 import {
   opensourceListQuerySchema,
   gsocOrgsQuerySchema,
+  gsocAlumniQuerySchema,
   submitRepoRequestSchema,
   approveRequestOverrideSchema,
   repoIdSchema,
@@ -165,4 +166,36 @@ export class OpensourceController {
       next(err);
     }
   }
+
+
+  async getGsocAlumni(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = gsocAlumniQuerySchema.safeParse(req.query);
+
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Invalid query parameters",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+
+      const result = await service.getGsocAlumni(parsed.data);
+
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getGsocAlumniStats(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await service.getGsocAlumniStats();
+
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
+  

@@ -147,7 +147,96 @@ export class OpensourceService {
       totalPages: Math.ceil(total / limit),
     };
   }
+  async getGsocAlumni(query: {
+  page: number;
+  limit: number;
+  org?: string;
+  country?: string;
+  year?: number;
+}) {
+  const { page, limit, org, country, year } = query;
 
+  const skip = (page - 1) * limit;
+
+  const where: Record<string, any> = {
+    verified: true,
+  };
+
+  if (country) {
+    where.country = {
+      contains: country,
+      mode: "insensitive",
+    };
+  }
+
+  if (year) {
+    where.year = year;
+  }
+
+  if (org) {
+    where.org = {
+      name: {
+        contains: org,
+        mode: "insensitive",
+      },
+    };
+  }
+
+  const [alumni, total] = await Promise.all([
+    prisma.gsocSuccess.findMany({
+      where,
+      skip,
+      take: limit,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            profilePic: true,
+          },
+        },
+        org: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+      orderBy: {
+        year: "desc",
+      },
+    }),
+    prisma.gsocSuccess.count({ where }),
+  ]);
+
+  return {
+    alumni,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
+async getGsocAlumniStats() {
+  const alumni = await prisma.gsocSuccess.findMany({
+    where: {
+      verified: true,
+    },
+    select: {
+      orgId: true,
+    },
+  });
+
+  const uniqueOrgs = new Set(alumni.map((a) => a.orgId));
+
+  return {
+    totalStudents: alumni.length,
+    totalOrganizations: uniqueOrgs.size,
+  };
+}
+
+  
   async submitRepoRequest(userId: number, data: any) {
     const existing = await prisma.repoRequest.findFirst({
       where: { url: data.url, status: { in: ["PENDING", "APPROVED"] } },
