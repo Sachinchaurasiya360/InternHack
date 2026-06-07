@@ -1,8 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { prisma } from "../../database/db.js";
 import { JobAgentEmailError, jobAgentService } from "./job-agent.service.js";
 import { chatMessageSchema, emailJobsSchema } from "./job-agent.validation.js";
-import type { UsageAction } from "@prisma/client";
 
 export class JobAgentController {
   chat = async (req: Request, res: Response, next: NextFunction) => {
@@ -15,10 +13,6 @@ export class JobAgentController {
         return;
       }
       const result = await jobAgentService.chat(req.user.id, parsed.data.message);
-
-      await prisma.usageLog.create({
-        data: { userId: req.user.id, action: "AI_JOB_CHAT" as UsageAction },
-      });
 
       res.json(result);
     } catch (err) { next(err); }
@@ -61,11 +55,6 @@ export class JobAgentController {
           },
           abortController.signal,
         );
-
-        // Log usage once per request (not per token)
-        await prisma.usageLog.create({
-          data: { userId: req.user.id, action: "AI_JOB_CHAT" as UsageAction },
-        });
 
         send("done", {});
       } catch (err) {

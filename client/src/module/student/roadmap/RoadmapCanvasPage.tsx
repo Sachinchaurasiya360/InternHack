@@ -425,7 +425,7 @@ export default function RoadmapCanvasPage() {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 768 : false,
   );
-  const [isTouchDevice, setIsTouchDevice] = useState(() =>
+  const [isTouchDevice] = useState(() =>
     typeof window !== "undefined"
       ? "ontouchstart" in window || navigator.maxTouchPoints > 0
       : false,
@@ -481,7 +481,9 @@ export default function RoadmapCanvasPage() {
         );
         setWeakTopicTitles(slugs);
       })
-      .catch(() => { });
+      .catch((err) => {
+        console.error("Failed to fetch recommendations:", err);
+      });
   }, []);
 
   const toggleSection = useCallback((id: number) => {

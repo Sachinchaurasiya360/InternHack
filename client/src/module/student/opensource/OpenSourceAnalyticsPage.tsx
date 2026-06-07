@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,6 +38,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { Button } from "../../../components/ui/button";
 import { SEO } from "../../../components/SEO";
+import { markLearningPathMilestone } from "./learning-paths.data";
 import type {
   GSoCOrganization,
   GSoCStats,
@@ -230,6 +231,10 @@ function TrendEmptyState({
 
 // ─── Page ───────────────────────────────────────────────────────
 export default function OpenSourceAnalyticsPage() {
+  useEffect(() => {
+    markLearningPathMilestone("leaderboard");
+  }, []);
+
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [filterYear, setFilterYear] = useState<string>("ALL");
   const [filterCategory, setFilterCategory] = useState<string>("ALL");

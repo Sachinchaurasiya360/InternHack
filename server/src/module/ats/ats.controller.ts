@@ -30,8 +30,6 @@ export class AtsController {
 
       const score = await this.atsService.scoreResume(req.user.id, result.data);
 
-      await prisma.usageLog.create({ data: { userId: req.user.id, action: "ATS_SCORE" } });
-
       const usage = req.usageInfo
         ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit }
         : undefined;
@@ -83,8 +81,6 @@ export class AtsController {
       }
 
       const response = await this.atsService.applySuggestions(req.user.id, result.data);
-
-      await prisma.usageLog.create({ data: { userId: req.user.id, action: "GENERATE_RESUME" } });
 
       res.json(response);
     } catch (err) {

@@ -21,6 +21,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
+import { sanitizeHtml } from "../../../lib/sanitize";
 
 const COMPANY_LOGOS: Record<string, string> = {
   "TCS": "https://companieslogo.com/img/orig/TCS.NS_BIG-89c50e39.png?t=1740792736",
@@ -56,20 +57,6 @@ const COMPANY_LOGOS: Record<string, string> = {
   "Cisco": "https://www.logo.wine/a/logo/Cisco_Systems/Cisco_Systems-Logo.wine.svg",
   "Samsung": "https://www.logo.wine/a/logo/Samsung/Samsung-Logo.wine.svg",
 };
-
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<img[^>]*src=["']\/[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<img[^>]*src=["'][^"']*indiabix[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, "")
-    .replace(/Video\s*Explanation[\s\S]*?(?=<\/div>|$)/gi, "")
-    .replace(/<a[^>]*(?:youtube|youtu\.be|video)[^>]*>[\s\S]*?<\/a>/gi, "")
-    .replace(/\s*style=["'][^"']*["']/gi, "")
-    .replace(/<(div|span|p|font)\s*>\s*<\/\1>/gi, "")
-    .replace(/<\/?font[^>]*>/gi, "")
-    .replace(/\s*class=["'][^"']*["']/gi, "")
-    .trim();
-}
 
 function Kicker({ label }: { label: string }) {
   return (

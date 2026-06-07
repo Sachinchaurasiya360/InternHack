@@ -49,6 +49,7 @@ This repository includes AI assistant context files (`CLAUDE.md` and `.claude/`)
 | **Authentication** | JWT Authentication, Google OAuth |
 | **Payments** | Dodo Payments |
 | **Cloud Storage** | AWS S3 with Local Storage Fallback |
+| **Caching & Rate Limiting** | Redis via `ioredis` (optional, in-memory fallback when `REDIS_URL` unset) |
 | **Email Services** | Resend |
 | **Development Tools** | ESLint, Prettier, Nodemon, tsx |
 
@@ -111,7 +112,7 @@ cd InternHack
 
 ### Docker Compose (alternative)
 
-Requires [Docker Desktop](https://docs.docker.com/get-docker/) or Docker Engine plus Compose v2. You do **not** need a host-installed PostgreSQL or Node for this path. (**Redis is not used** by InternHack.) The API service image is defined in [`server/Dockerfile.dev`](server/Dockerfile.dev) for local dev only; production deploy continues to use [`server/dockerfile`](server/dockerfile).
+Requires [Docker Desktop](https://docs.docker.com/get-docker/) or Docker Engine plus Compose v2. You do **not** need a host-installed PostgreSQL or Node for this path. (Redis is **optional** for local dev — rate limiting and caching fall back to in-memory stores when `REDIS_URL` is unset. Set it in `.env` if you want to test Redis-backed rate limiting.) The API service image is defined in [`server/Dockerfile.dev`](server/Dockerfile.dev) for local dev only; production deploy continues to use [`server/dockerfile`](server/dockerfile).
 
 From the repo root:
 
@@ -211,6 +212,7 @@ For Docker Compose, use the **repo root [`.env.example`](.env.example)** as the 
 
 | Variable | Required | Description |
 |----------|----------|-------------|
+| `REDIS_URL` | No (required in production) | Redis connection string — without it rate limiters use per-process in-memory stores; the server **refuses to start** in `NODE_ENV=production` without this set |
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `JWT_SECRET` | Yes | Random secret for JWT signing (64+ chars recommended) |
 | `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID |
@@ -232,7 +234,7 @@ For Docker Compose, use the **repo root [`.env.example`](.env.example)** as the 
 | `JUDGE0_RAPIDAPI_KEY_1` | No | Judge0 key for code execution |
 | `EXTERNAL_JOB_API_KEY` | No | API key for external job ingest endpoint |
 
-> Only `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GEMINI_API_KEY`, and `ALLOWED_ORIGINS` are required to run the app locally. Other services degrade gracefully.
+> Only `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GEMINI_API_KEY`, and `ALLOWED_ORIGINS` are required to run the app locally. `REDIS_URL` is strongly recommended for production (see note above). Other services degrade gracefully.
 
 ### Client (`client/.env`, or root `.env` — only `VITE_*` vars are exposed to Vite)
 

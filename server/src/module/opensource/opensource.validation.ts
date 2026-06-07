@@ -24,6 +24,11 @@ export const repoIdSchema = z.object({
   id: z.coerce.number().int().positive("Invalid repo ID"),
 });
 
+export const repoOwnerNameSchema = z.object({
+  owner: z.string().min(1).max(200),
+  name: z.string().min(1).max(300),
+});
+
 export const submitRepoRequestSchema = z.object({
   name: z.string().min(1, "Repository name is required").max(300),
   owner: z.string().min(1, "Owner/org name is required").max(200),

@@ -149,5 +149,10 @@ opensourceRouter.get("/:id/good-first-issues", (req, res, next) => controller.ge
 
 // ─── Public: Single Repo ───────────────────────────────────────
 
-// Must be AFTER all /requests/*, /first-pr/*, and /:id/* routes
+// Must be AFTER all /requests/* and /first-pr/* routes.
+// /:owner/:name routes must appear BEFORE /:id so two-segment paths resolve correctly.
+opensourceRouter.get("/:owner/:name/issues", (req, res, next) =>
+  controller.getRepoGoodFirstIssues(req, res, next),
+);
+opensourceRouter.get("/:owner/:name", (req, res, next) => controller.getRepoByOwnerAndName(req, res, next));
 opensourceRouter.get("/:id", (req, res, next) => controller.getRepoById(req, res, next));
