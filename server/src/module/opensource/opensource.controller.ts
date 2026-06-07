@@ -6,6 +6,7 @@ import {
   submitRepoRequestSchema,
   approveRequestOverrideSchema,
   repoIdSchema,
+  repoOwnerNameSchema,
   firstPrProgressUpdateSchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
@@ -27,7 +28,7 @@ export class OpensourceController {
       const languages = await service.getLanguages();
 
       // cache for 1 hour, allow stale data for 24 hours while revalidating
-      res.setHeader( "Cache-Control", "public, max-age=3600, stale-while-revalidate=86400" );
+      res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
 
       res.json({ languages });
     } catch (err) {
@@ -66,6 +67,46 @@ export class OpensourceController {
         return;
       }
       res.json({ repo });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getRepoByOwnerAndName(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = repoOwnerNameSchema.safeParse(req.params);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Invalid owner/name parameters" });
+        return;
+      }
+      const { owner, name } = parsed.data;
+      const repo = await service.getRepoByOwnerAndName(owner, name);
+      if (!repo) {
+        res.status(404).json({ message: "Repository not found" });
+        return;
+      }
+      res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=3600");
+      res.json({ repo });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getRepoGoodFirstIssues(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = repoOwnerNameSchema.safeParse(req.params);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Invalid owner/name parameters" });
+        return;
+      }
+      const { owner, name } = parsed.data;
+      const result = await service.getGoodFirstIssues(owner, name);
+      if (!result) {
+        res.status(404).json({ message: "Repository not found" });
+        return;
+      }
+      res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=1800");
+      res.json({ issues: result.issues });
     } catch (err) {
       next(err);
     }
@@ -187,7 +228,15 @@ export class OpensourceController {
         return;
       }
 
-      await service.rejectRepoRequest(id, req.body.adminNote);
+      const body = approveRequestOverrideSchema.safeParse(req.body);
+      if (!body.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: body.error.flatten()
+        });
+        return;
+      }
+      await service.rejectRepoRequest(id, body.data.adminNote);
       res.json({ message: "Request rejected" });
     } catch (err: any) {
       if (err.message === "Request not found") {
@@ -206,12 +255,35 @@ export class OpensourceController {
     next: NextFunction,
   ) {
     try {
-      const result = await service.getStudentContributionTrend(req.user!.id);
+      const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
+      const result = await service.getStudentContributionTrend(req.user!.id, startDate, endDate);
       res.json(result);
     } catch (err) {
       next(err);
     }
   }
+
+  getHacktoberfestProgress = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      if (!req.user?.id) {
+        res.status(401).json({ message: "Unauthorized access" });
+        return;
+      }
+
+      const result = await service.getHacktoberfestProgress(req.user.id);
+
+      res.json({
+        success: true,
+        data: result
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
 
   async getFirstPrProgress(req: Request, res: Response, next: NextFunction) {
     try {

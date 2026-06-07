@@ -481,7 +481,9 @@ export default function RoadmapCanvasPage() {
         );
         setWeakTopicTitles(slugs);
       })
-      .catch(() => { });
+      .catch((err) => {
+        console.error("Failed to fetch recommendations:", err);
+      });
   }, []);
 
   const toggleSection = useCallback((id: number) => {

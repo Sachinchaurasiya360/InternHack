@@ -14,6 +14,7 @@ export const opensourceListQuerySchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
   trending: z.enum(["true", "false"]).optional(),
   goodFirstIssue: z.enum(["true", "false"]).optional(),
+  hacktoberfest: z.enum(["true", "false"]).optional(),
   ids: z.string().regex(/^\d+(,\d+)*$/, "Must be a comma-separated list of numeric IDs").optional(), // Comma-separated string of numeric IDs
 }).transform(({ sort, ...query }) => ({
   ...query,
@@ -22,6 +23,11 @@ export const opensourceListQuerySchema = z.object({
 
 export const repoIdSchema = z.object({
   id: z.coerce.number().int().positive("Invalid repo ID"),
+});
+
+export const repoOwnerNameSchema = z.object({
+  owner: z.string().min(1).max(200),
+  name: z.string().min(1).max(300),
 });
 
 export const submitRepoRequestSchema = z.object({

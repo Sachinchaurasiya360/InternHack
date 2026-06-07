@@ -2,6 +2,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck, Wand2 } from "lucide-react";
 import type { OpenSourceRepo, RecommendedRepo } from "../../../lib/types";
+import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck, GitPullRequest } from "lucide-react";
+import type { OpenSourceRepo } from "../../../lib/types";
 import { LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { Button } from "../../../components/ui/button";
@@ -88,6 +90,12 @@ export const RepoCard = React.memo(function RepoCard({
                   good first
                 </span>
               )}
+            </div>
+          )}
+          {repo.hacktoberfest && (
+            <div className="absolute -top-2 left-3 inline-flex items-center gap-1 rounded-md bg-orange-600 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-white">
+              <GitPullRequest size={10} aria-hidden />
+              hacktoberfest
             </div>
           )}
 

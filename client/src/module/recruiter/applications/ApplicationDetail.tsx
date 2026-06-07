@@ -20,16 +20,16 @@ import { SEO } from "../../../components/SEO";
 
 function useResumeStatus(url: string | null | undefined) {
   const [status, setStatus] = useState<"checking" | "ok" | "unavailable">(
-    "checking",
+    () => (url ? "checking" : "unavailable"),
   );
 
   useEffect(() => {
   if (!url) {
-    setStatus("unavailable"); // Or whatever your default empty state is
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStatus("unavailable");
     return;
   }
 
-  // 1. Instantly reset status to "checking" when URL changes to prevent stale UI
   setStatus("checking");
 
   const controller = new AbortController();
@@ -38,16 +38,10 @@ function useResumeStatus(url: string | null | undefined) {
   const checkLink = async () => {
     try {
       const fullUrl = url.startsWith("http") ? url : `${SERVER_URL}${url}`;
-      
-      const res = await fetch(fullUrl, { 
-        method: "HEAD",
-        signal // 2. Attach the abort signal to the fetch request
-      });
-
+      const res = await fetch(fullUrl, { method: "HEAD", signal });
       setStatus(res.ok ? "ok" : "unavailable");
-    } catch (err: any) {
-      // 3. Ignore errors caused by intentional aborts
-      if (err.name !== "AbortError") {
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
         setStatus("unavailable");
       }
     }
@@ -122,16 +116,30 @@ export default function ApplicationDetail() {
     }
   }, [applicationId]);
 
+  const loadData = useCallback(async () => {
+    const applicationData = await fetchDetail();
+    if (applicationData) {
+      setApplication(applicationData);
+    }
+  }, [fetchDetail]);
+
   useEffect(() => {
     const controller = new AbortController();
     let isMounted = true;
 
-    const loadData = async () => {
+    const initialLoad = async () => {
       try {
         setLoading(true);
         await fetchDetail(controller.signal);
       } catch (err) {
         // Errors are already logged in fetchDetail, handled here to prevent crashes
+        const applicationData = await fetchDetail(controller.signal);
+        
+        if (isMounted) {
+          setApplication(applicationData);
+        }
+      } catch {
+        // errors already logged in fetchDetail
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -139,7 +147,7 @@ export default function ApplicationDetail() {
       }
     };
 
-    loadData();
+    initialLoad();
 
     return () => {
       isMounted = false;
@@ -159,7 +167,7 @@ export default function ApplicationDetail() {
   const handleAdvance = async () => {
     try {
       await api.patch(`/recruiter/applications/${applicationId}/advance`);
-      fetchDetail();
+      await loadData();
       toast.success("Application advanced");
     } catch {
       toast.error("Failed to advance");
@@ -171,7 +179,7 @@ export default function ApplicationDetail() {
       await api.patch(`/recruiter/applications/${applicationId}/status`, {
         status,
       });
-      fetchDetail();
+      await loadData();
       toast.success("Status updated");
     } catch {
       toast.error("Failed to update status");
@@ -437,7 +445,7 @@ export default function ApplicationDetail() {
                     criteria={sub.round?.evaluationCriteria || []}
                     onComplete={() => {
                       setEvaluatingRoundId(null);
-                      fetchDetail();
+                      loadData();
                     }}
                   />
                 </div>

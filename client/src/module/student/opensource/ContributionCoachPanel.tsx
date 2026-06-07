@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
-  Sparkles,
+  BrainCircuit,
   Bookmark,
   Trash2,
   ChevronDown,
@@ -134,6 +134,7 @@ function SavedAdviceSection() {
 
   useEffect(() => {
     if (expanded && items.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       void load();
     }
   }, [expanded, items.length, load]);
@@ -196,7 +197,7 @@ function SavedAdviceSection() {
                   </h5>
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="p-1 rounded text-stone-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100 bg-transparent border-0 cursor-pointer shrink-0"
+                    className="p-1 rounded-sm text-stone-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100 bg-transparent border-0 cursor-pointer shrink-0"
                     title="Delete"
                   >
                     <Trash2 className="w-3 h-3" />
@@ -290,11 +291,11 @@ export default function ContributionCoachPanel() {
   };
 
   const triggerLabel: Record<string, string> = {
-    FIRST_PR_COMPLETE: "🎉 First PR Roadmap Complete",
-    REPO_BOOKMARKED: "📌 Repo Bookmarked",
-    GITHUB_CONNECTED: "🔗 GitHub Connected",
-    INACTIVITY: "👋 Welcome Back",
-    MANUAL: "💡 Coach Advice",
+    FIRST_PR_COMPLETE: "First PR Roadmap Complete",
+    REPO_BOOKMARKED: "Repo Bookmarked",
+    GITHUB_CONNECTED: "GitHub Connected",
+    INACTIVITY: "Welcome Back",
+    MANUAL: "Coach Advice",
   };
 
   return (
@@ -321,8 +322,8 @@ export default function ContributionCoachPanel() {
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-white/10">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-lime-400/15 border border-lime-400/30 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-lime-600 dark:text-lime-400" />
+                <div className="w-8 h-8 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center">
+                  <BrainCircuit className="w-4 h-4 text-lime-400 dark:text-stone-900" />
                 </div>
                 <div>
                   <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 leading-tight">
@@ -345,8 +346,8 @@ export default function ContributionCoachPanel() {
             {/* Trigger badge */}
             {currentTrigger && (
               <div className="px-4 pt-3">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-lime-400/10 border border-lime-400/20 text-xs font-semibold text-lime-700 dark:text-lime-400">
-                  {triggerLabel[currentTrigger] ?? "💡 Coach Advice"}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-lime-400/10 border border-lime-400/20 text-xs font-semibold text-lime-700 dark:text-lime-400">
+                  {triggerLabel[currentTrigger] ?? "Coach Advice"}
                 </span>
               </div>
             )}
@@ -359,8 +360,8 @@ export default function ContributionCoachPanel() {
               {isLoading && !advice && (
                 <div className="flex flex-col items-center justify-center h-full gap-3">
                   <div className="relative">
-                    <div className="w-10 h-10 rounded-xl bg-lime-400/10 border border-lime-400/20 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-lime-600 dark:text-lime-400" />
+                    <div className="w-10 h-10 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center">
+                      <BrainCircuit className="w-5 h-5 text-lime-400 dark:text-stone-900" />
                     </div>
                     <motion.div
                       animate={{ rotate: 360 }}
@@ -369,7 +370,7 @@ export default function ContributionCoachPanel() {
                         repeat: Infinity,
                         ease: "linear",
                       }}
-                      className="absolute -inset-1 rounded-xl border-2 border-transparent border-t-lime-400/40"
+                      className="absolute -inset-1 rounded-md border-2 border-transparent border-t-lime-400/40"
                     />
                   </div>
                   <p className="text-sm text-stone-500 font-medium">
@@ -383,7 +384,7 @@ export default function ContributionCoachPanel() {
 
               {error && (
                 <div className="flex flex-col items-center justify-center h-full gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-center justify-center">
                     <AlertCircle className="w-5 h-5 text-red-500" />
                   </div>
                   <p className="text-sm text-stone-600 dark:text-stone-400 text-center">
@@ -391,7 +392,7 @@ export default function ContributionCoachPanel() {
                   </p>
                   <button
                     onClick={handleRetry}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-100 dark:bg-stone-900 text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors border-0 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-stone-100 dark:bg-stone-900 text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors border-0 cursor-pointer"
                   >
                     <RefreshCw className="w-3 h-3" />
                     Retry
@@ -405,8 +406,8 @@ export default function ContributionCoachPanel() {
 
               {!isLoading && !advice && !error && (
                 <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
-                  <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-stone-400" />
+                  <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center">
+                    <BrainCircuit className="w-5 h-5 text-stone-400" />
                   </div>
                   <p className="text-sm text-stone-500 font-medium">
                     Your AI Contribution Coach
@@ -425,7 +426,7 @@ export default function ContributionCoachPanel() {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-lime-400 text-stone-950 text-sm font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-lime-400 text-stone-950 text-sm font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
                 >
                   {saving ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -436,7 +437,7 @@ export default function ContributionCoachPanel() {
                 </button>
                 <button
                   onClick={handleRetry}
-                  className="p-2 rounded-lg text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors border-0 bg-transparent cursor-pointer"
+                  className="p-2 rounded-md text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors border-0 bg-transparent cursor-pointer"
                   title="Get new suggestion"
                 >
                   <RefreshCw className="w-4 h-4" />

@@ -7,6 +7,11 @@ export const queryKeys = {
     detail: (id: string | number) => ["jobs", "detail", id] as const,
     related: (id: string | number) => ["jobs", "related", id] as const,
   },
+  savedJobs: {
+    all: ["saved-jobs"] as const,
+    list: () => ["saved-jobs", "list"] as const,
+    check: (jobId: string | number) => ["saved-jobs", "check", jobId] as const,
+  },
   // Hackathons
   hackathons: {
     all: ["hackathons"] as const,
@@ -98,7 +103,8 @@ export const queryKeys = {
       ["opensource", "list", params] as const,
     detail: (id: number) => ["opensource", "detail", id] as const,
     myRequests: () => ["opensource", "my-requests"] as const,
-    trend: () => ["opensource", "trend"] as const,
+    trend: (startDate?: string, endDate?: string) => ["opensource", "trend", startDate, endDate] as const,
+    hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
@@ -124,6 +130,7 @@ export const queryKeys = {
     companies: () => ["aptitude", "companies"] as const,
     company: (name: string) => ["aptitude", "company", name] as const,
     progress: () => ["aptitude", "progress"] as const,
+    weakAreas: () => ["aptitude", "weak-areas"] as const,
   },
 
   // Skill Tests
@@ -224,8 +231,11 @@ export const queryKeys = {
     patterns: () => ["dsa", "patterns"] as const,
     pattern: (name: string, page?: number) => ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
+    lists: () => ["dsa", "lists"] as const,
+    list: (name: string, page?: number) => ["dsa", "list", name, page] as const,
     submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
     importStatus: () => ["dsa", "import-status"] as const,
+    streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
   },
@@ -240,5 +250,6 @@ export const queryKeys = {
     enrollmentDetail: (id: number) => ["roadmaps", "enrollment-detail", id] as const,
     enrollmentAnalytics: (id: number) => ["roadmaps", "enrollment-analytics", id] as const,
     topic: (slug: string, topicSlug: string) => ["roadmaps", "topic", slug, topicSlug] as const,
+    community: () => ["roadmaps", "community"] as const,
   },
 };

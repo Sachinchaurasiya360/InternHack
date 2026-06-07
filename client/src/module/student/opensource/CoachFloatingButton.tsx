@@ -1,11 +1,7 @@
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { BrainCircuit } from "lucide-react";
 import { useCoachStore } from "./stores/coach.store";
 
-/**
- * Floating button visible on all open-source section pages.
- * Clicking it toggles the coach panel open/closed.
- */
 export default function CoachFloatingButton() {
   const { toggle, isOpen } = useCoachStore();
 
@@ -18,9 +14,10 @@ export default function CoachFloatingButton() {
       transition={{ delay: 0.5, type: "spring", stiffness: 300, damping: 20 }}
       onClick={toggle}
       title="Open Contribution Coach"
-      className="fixed bottom-6 right-6 z-30 w-12 h-12 rounded-xl bg-lime-400 text-stone-950 shadow-lg shadow-lime-500/25 hover:bg-lime-300 hover:shadow-xl hover:shadow-lime-500/30 transition-all flex items-center justify-center border-0 cursor-pointer group"
+      className="fixed bottom-6 right-6 z-30 flex items-center gap-2 h-10 px-3.5 rounded-md bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 shadow-lg hover:bg-stone-700 dark:hover:bg-stone-200 transition-all border-0 cursor-pointer text-sm font-bold"
     >
-      <Sparkles className="w-5 h-5 group-hover:scale-110 transition-transform" />
+      <BrainCircuit className="w-4 h-4 shrink-0" />
+      <span>Coach</span>
     </motion.button>
   );
 }
