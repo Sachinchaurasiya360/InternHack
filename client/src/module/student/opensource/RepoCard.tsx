@@ -1,13 +1,13 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck } from "lucide-react";
-import type { OpenSourceRepo } from "../../../lib/types";
+import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck, Wand2 } from "lucide-react";
+import type { OpenSourceRepo, RecommendedRepo } from "../../../lib/types";
 import { LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { Button } from "../../../components/ui/button";
 
 interface RepoCardProps {
-  repo: OpenSourceRepo;
+  repo: OpenSourceRepo | RecommendedRepo;
   index: number;
   onSelect: (repo: OpenSourceRepo) => void;
   bookmarked?: boolean;
@@ -107,6 +107,15 @@ export const RepoCard = React.memo(function RepoCard({
           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5 leading-snug">
             {repo.name}
           </h3>
+
+          {"matchReason" in repo && repo.matchReason && (
+            <div className="mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-lime-400/10 text-[10px] font-mono text-lime-600 dark:text-lime-400">
+                <Wand2 size={10} />
+                {repo.matchReason}
+              </span>
+            </div>
+          )}
 
           <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 leading-relaxed mb-4 flex-1">
             {repo.description}

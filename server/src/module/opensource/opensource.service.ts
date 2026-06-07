@@ -1,3 +1,4 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
 import { fetchGithubStats } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -7,6 +8,8 @@ import {
 } from "../../utils/email-templates.js";
 
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const RECOMMENDATION_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
 let statsCache: {
   data: {
     totalRepos: number;
@@ -17,6 +20,8 @@ let statsCache: {
   } | null;
   expiresAt: number;
 } = { data: null, expiresAt: 0 };
+
+const recommendationCache = new Map<number, { repos: any[]; expiresAt: number }>();
 
 export class OpensourceService {
   async getGlobalStats() {
@@ -414,36 +419,112 @@ where["OR"] = [
     return progress.completedStepIds;
   }
 
-  async getRecommendedRepos(userId: number) {
-    // 1. Get student profile with skills
-    const student = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { skills: true },
-    });
+  async getRecommendedRepos(userId: number, viewedIds: number[] = [], forceRefresh = false) {
+    const now = Date.now();
 
-    const skills = student?.skills || [];
-    if (skills.length === 0) {
-      // Return trending repos as default fallback
-      return prisma.opensourceRepo.findMany({
-        where: { trending: true },
-        take: 6,
-        orderBy: { stars: "desc" },
-      });
+    if (!forceRefresh) {
+      const cached = recommendationCache.get(userId);
+      if (cached && cached.expiresAt > now) {
+        return cached.repos.filter((repo) => !viewedIds.includes(repo.id));
+      }
     }
 
-    // 2. Fetch repos matching skills (language or techStack subset)
-    // We search for repos where the primary language is in the student's skills
-    const repos = await prisma.opensourceRepo.findMany({
-      where: {
-        OR: [
-          { language: { in: skills, mode: "insensitive" } },
-          { trending: true },
-        ],
+    const student = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        skills: true,
+        projects: true,
+        atsScores: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { keywordAnalysis: true },
+        },
       },
-      take: 8,
-      orderBy: [{ trending: "desc" }, { stars: "desc" }],
     });
 
-    return repos;
+    if (!student) {
+      throw new Error("User not found");
+    }
+
+    const skills = Array.isArray(student.skills) ? student.skills.join(", ") : "";
+    const projects = student.projects ? JSON.stringify(student.projects) : "";
+    const atsKeywords = student.atsScores[0]?.keywordAnalysis
+      ? JSON.stringify(student.atsScores[0].keywordAnalysis)
+      : "";
+
+    if (!skills && !projects && !atsKeywords) {
+      return [];
+    }
+
+    const candidateRepos = await prisma.opensourceRepo.findMany({
+      where: viewedIds.length > 0 ? { id: { notIn: viewedIds } } : undefined,
+      orderBy: [{ trending: "desc" }, { stars: "desc" }],
+      take: 40,
+    });
+
+    if (candidateRepos.length === 0) {
+      return [];
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return [];
+    }
+
+    const prompt = `
+You are an expert open source matchmaker. Recommend 5 open source repositories for a student to contribute to based on their profile.
+
+Student Profile:
+Skills: ${skills}
+Projects: ${projects}
+ATS Keywords: ${atsKeywords}
+
+Candidate Repositories:
+${JSON.stringify(
+  candidateRepos.map((repo) => ({
+    id: repo.id,
+    name: repo.name,
+    language: repo.language,
+    techStack: repo.techStack,
+    domain: repo.domain,
+    trending: repo.trending,
+    issueTypes: repo.issueTypes,
+  })),
+)}
+
+Select the top 5 most relevant repositories. Boost repos that are trending or have good first issue opportunities.
+Return only a JSON array with objects in this shape:
+[
+  { "id": 1, "matchReason": "Matches your React skills" }
+]
+Keep matchReason concise, max 8 words.
+`;
+
+    try {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      const cleanText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+      const matches = JSON.parse(cleanText) as { id: number; matchReason: string }[];
+
+      const recommended = matches
+        .map((match) => {
+          const repo = candidateRepos.find((candidate) => candidate.id === match.id);
+          return repo ? { ...repo, matchReason: match.matchReason } : null;
+        })
+        .filter((repo): repo is NonNullable<typeof repo> => Boolean(repo));
+
+      recommendationCache.set(userId, {
+        repos: recommended,
+        expiresAt: now + RECOMMENDATION_TTL_MS,
+      });
+
+      return recommended;
+    } catch (error) {
+      console.error("Gemini recommendation error:", error);
+      return [];
+    }
   }
 }

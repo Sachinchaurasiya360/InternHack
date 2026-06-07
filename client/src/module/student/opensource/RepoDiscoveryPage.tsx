@@ -24,6 +24,7 @@ import {
   Check,
   Copy,
   Bookmark,
+  RefreshCw,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
@@ -32,7 +33,7 @@ import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import type { OpenSourceRepo, Pagination, RepoRequest } from "../../../lib/types";
+import type { OpenSourceRepo, RecommendedRepo, Pagination, RepoRequest } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
@@ -306,6 +307,44 @@ export default function RepoDiscoveryPage() {
 
     return params;
   }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, page]);
+
+  const [recommendationRefreshToken, setRecommendationRefreshToken] = useState(0);
+
+  const [viewedIds, setViewedIds] = useState<number[]>(() => {
+    try {
+      const stored = localStorage.getItem("viewed_repos");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const handleSelectRepo = (repo: OpenSourceRepo) => {
+    handleOpenRepo(repo);
+    if (!viewedIds.includes(repo.id)) {
+      const updated = [...viewedIds, repo.id];
+      setViewedIds(updated);
+      localStorage.setItem("viewed_repos", JSON.stringify(updated));
+    }
+  };
+
+  const { data: recommendedData, isFetching: isFetchingRec } = useQuery({
+    queryKey: queryKeys.opensource.recommended(recommendationRefreshToken),
+    queryFn: async () => {
+      const res = await api.get<{ recommended: RecommendedRepo[] }>("/opensource/recommended", {
+        params: {
+          forceRefresh: recommendationRefreshToken > 0 ? "true" : undefined,
+          viewedIds: viewedIds.join(","),
+        },
+      });
+      return res.data;
+    },
+    enabled: !!user,
+  });
+
+  const handleRefreshRecs = () => {
+    setRecommendationRefreshToken((token) => token + 1);
+  };
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -868,6 +907,37 @@ export default function RepoDiscoveryPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Recommended for You */}
+        {user && recommendedData?.recommended && recommendedData.recommended.length > 0 && (
+          <div className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Wand2 className="w-5 h-5 text-lime-600 dark:text-lime-400" />
+                <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">Recommended for you</h2>
+              </div>
+              <button
+                type="button"
+                onClick={handleRefreshRecs}
+                disabled={isFetchingRec}
+                className={ghostBtnCls}
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isFetchingRec ? "animate-spin" : ""}`} />
+                Refresh
+              </button>
+            </div>
+
+            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar">
+              <AnimatePresence mode="popLayout">
+                {recommendedData.recommended.map((repo, i) => (
+                  <div key={repo.id} className="min-w-[300px] w-[300px] sm:min-w-[350px] sm:w-[350px] snap-start shrink-0">
+                    <RepoCard repo={repo} index={i} onSelect={handleSelectRepo} />
+                  </div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
 
         {/* Results count */}
         <div className="flex items-center justify-between mb-4">

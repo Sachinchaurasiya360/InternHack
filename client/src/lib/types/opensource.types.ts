@@ -26,6 +26,10 @@ export interface OpenSourceRepo {
   matchedSkills?: string[];
 }
 
+export interface RecommendedRepo extends OpenSourceRepo {
+  matchReason: string;
+}
+
 // Repo Requests
 export type RepoRequestStatus = "PENDING" | "APPROVED" | "REJECTED";
 

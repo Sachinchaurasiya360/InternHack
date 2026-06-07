@@ -247,9 +247,22 @@ export class OpensourceController {
 
   async getRecommendedRepos(req: Request, res: Response, next: NextFunction) {
     try {
-      const repos = await service.getRecommendedRepos(req.user!.id);
-      res.json({ repos });
-    } catch (err) {
+      const forceRefresh = req.query.forceRefresh === "true";
+      const viewedIds =
+        typeof req.query.viewedIds === "string"
+          ? req.query.viewedIds
+              .split(",")
+              .map((id) => Number(id))
+              .filter((id) => Number.isInteger(id) && id > 0)
+          : [];
+
+      const recommended = await service.getRecommendedRepos(req.user!.id, viewedIds, forceRefresh);
+      res.json({ recommended });
+    } catch (err: any) {
+      if (err.message === "User not found") {
+        res.status(404).json({ message: err.message });
+        return;
+      }
       next(err);
     }
   }
