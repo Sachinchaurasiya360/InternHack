@@ -16,6 +16,12 @@ interface RepoCardProps {
 
 const MAX_STAGGER_INDEX = 8;
 
+const isRepoNew = (createdAt: string) => {
+  const created = new Date(createdAt).getTime();
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  return created > weekAgo;
+};
+
 export const RepoCard = React.memo(function RepoCard({
   repo,
   index,
@@ -25,6 +31,7 @@ export const RepoCard = React.memo(function RepoCard({
 }: RepoCardProps) {
   const badge = difficultyBadge(repo.difficulty);
   const delay = Math.min(index, MAX_STAGGER_INDEX) * 0.04;
+  const isNew = isRepoNew(repo.createdAt);
 
   return (
     <motion.div
@@ -62,6 +69,11 @@ export const RepoCard = React.memo(function RepoCard({
             <div className="absolute -top-2 right-12 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
               <Flame size={10} aria-hidden />
               trending
+            </div>
+          )}
+          {isNew && (
+            <div className="absolute -top-2 left-3 inline-flex items-center rounded-md bg-lime-400 px-2 py-0.5 text-[9px] font-mono uppercase tracking-widest text-stone-950">
+              New
             </div>
           )}
 
