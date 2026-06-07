@@ -15,7 +15,7 @@ import {
 const logger = createLogger("RecruiterController");
 
 export class RecruiterController {
-  constructor(private readonly recruiterService: RecruiterService) {}
+  constructor(private readonly recruiterService: RecruiterService) { }
 
   // ==================== ROUND MANAGEMENT ====================
 
@@ -34,6 +34,7 @@ export class RecruiterController {
     } catch (error) {
       if (error instanceof Error) {
         if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
+        if ((error as any).statusCode === 422) return res.status(422).json({ message: error.message });
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
@@ -77,6 +78,7 @@ export class RecruiterController {
     } catch (error) {
       if (error instanceof Error) {
         if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
+        if ((error as any).statusCode === 422) return res.status(422).json({ message: error.message });
         if (error.message === "Job not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
@@ -257,7 +259,7 @@ export class RecruiterController {
       return res.status(200).json({ message: "Submission evaluated successfully", submission });
     } catch (error) {
       if (error instanceof Error) {
-// Fix for #1116: Catch our custom 422 JSON parse error from the service
+        // Fix for #1116: Catch our custom 422 JSON parse error from the service
         const status = (error as Error & { status?: number }).status;
         if (status === 422) return res.status(422).json({ message: error.message });
 
