@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Save, Loader2 } from "lucide-react";
 
 interface ProfilePageHeaderProps {
@@ -10,17 +10,18 @@ interface ProfilePageHeaderProps {
 
 export function ProfilePageHeader({ profileCompletion, saving, onSave }: ProfilePageHeaderProps) {
   const [showSuccess, setShowSuccess] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
   const handleSave = async () => {
     try {
       await onSave();
       setShowSuccess(true);
 
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
-
-      return () => clearTimeout(timer);
+      timerRef.current = setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
       console.error("Save failed:", error);
     }
