@@ -1,23 +1,27 @@
 import React from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, CheckCircle2 } from "lucide-react";
 import type { Track } from "./tracks";
 import { getLessonCount } from "./lesson-counts";
+import type { TrackProgress } from "./useTrackProgress";
 
 interface TrackCardProps {
   track: Track;
   index: number;
+  progress?: TrackProgress | null;
 }
 
 const MAX_STAGGER_INDEX = 8;
 const STAGGER_STEP = 0.04;
 const BASE_DELAY = 0.05;
 
-export const TrackCard = React.memo(function TrackCard({ track, index }: TrackCardProps) {
+export const TrackCard = React.memo(function TrackCard({ track, index, progress }: TrackCardProps) {
   const delay = BASE_DELAY + Math.min(index, MAX_STAGGER_INDEX) * STAGGER_STEP;
   const liveCount = getLessonCount(track.lessonCountKey);
   const statLabel = liveCount != null ? `${liveCount} lessons` : track.stat;
+  const pct = progress && progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : null;
+  const isComplete = pct !== null && pct >= 100;
 
   return (
     <motion.div
@@ -50,6 +54,30 @@ export const TrackCard = React.memo(function TrackCard({ track, index }: TrackCa
             </span>
           </div>
         </div>
+
+        {progress && (
+          <div className="mb-3">
+            {isComplete ? (
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Completed
+              </span>
+            ) : (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-stone-500 font-mono">{progress.completed}/{progress.total} {progress.label}</span>
+                  <span className="text-stone-500 font-mono">{pct}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-stone-100 dark:bg-stone-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-lime-500 rounded-full transition-all duration-500"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
           {track.description}
