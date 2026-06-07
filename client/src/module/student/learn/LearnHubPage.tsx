@@ -19,6 +19,7 @@ import {
 } from "./components/RecommendationCard";
 import api from "../../../lib/axios";
 import { Button } from "../../../components/ui/button";
+import { useTrackProgress } from "./useTrackProgress";
 
 const CATEGORY_DESCRIPTION: Record<TrackCategory, string> = {
   practice: "Curated questions, animated lessons, and roadmaps to ace placements.",
@@ -41,6 +42,7 @@ export default function LearnHubPage() {
     retry: false,
   });
   const weakAreas = recData?.weakAreas ?? [];
+  const { progressMap } = useTrackProgress();
 
 const grouped = useMemo(() => {
     let filtered = TRACKS;
@@ -331,7 +333,7 @@ const grouped = useMemo(() => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {group.tracks.map((track, idx) => (
-                  <TrackCard key={track.id} track={track} index={idx} />
+                  <TrackCard key={track.id} track={track} index={idx} progress={progressMap[track.id]} />
                 ))}
               </div>
             </section>
