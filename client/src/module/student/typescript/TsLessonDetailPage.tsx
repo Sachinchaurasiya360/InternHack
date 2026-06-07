@@ -56,14 +56,14 @@ function ExerciseSection({
   lessonId: string;
 }) {
   const [activeIdx, setActiveIdx] = useState(0);
-  
+
   const exercise = exercises[activeIdx];
   const [code, setCode] = useState(exercise?.starterCode || "");
   const [result, setResult] = useState<TsRunResult | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showHints, setShowHints] = useState(0);
   const [showSolution, setShowSolution] = useState(false);
-  
+
   const [solved, setSolved] = useState<Record<string, boolean>>(() => {
     const p = getLocalProgress();
     return p[lessonId]?.exercisesSolved ?? {};
@@ -331,7 +331,7 @@ export default function TsLessonDetailPage() {
       <div className="max-w-7xl mx-auto px-3 sm:px-8 py-6 sm:py-8">
         {/* FIXED STICKY: Added 'items-start' to stop layout stretching and allow sticking */}
         <div className="flex flex-col xl:flex-row items-start gap-8">
-          
+
           {/* Column 1: Main Content Flow */}
           <div ref={containerRef} className="flex-1 min-w-0 w-full space-y-5">
             {/* Editorial header */}
@@ -452,8 +452,8 @@ export default function TsLessonDetailPage() {
 
               {/* Code examples */}
               <motion.div
-                id="code-examples"
-                data-toc-id="code-examples"
+                id="codeExamples"
+                data-toc-id="codeExamples"
                 style={{ scrollMarginTop: "5rem" }}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -507,8 +507,8 @@ export default function TsLessonDetailPage() {
               {/* Common pitfalls */}
               {content.commonPitfalls && content.commonPitfalls.length > 0 && (
                 <motion.div
-                  id="common-pitfalls"
-                  data-toc-id="common-pitfalls"
+                  id="commonPitfalls"
+                  data-toc-id="commonPitfalls"
                   style={{ scrollMarginTop: "5rem" }}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -538,8 +538,8 @@ export default function TsLessonDetailPage() {
               {/* Interview tips */}
               {content.interviewTips && content.interviewTips.length > 0 && (
                 <motion.div
-                  id="interview-tips"
-                  data-toc-id="interview-tips"
+                  id="interviewTips"
+                  data-toc-id="interviewTips"
                   style={{ scrollMarginTop: "5rem" }}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
