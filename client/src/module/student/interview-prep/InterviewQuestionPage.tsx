@@ -79,26 +79,9 @@ export default function InterviewQuestionPage() {
 
   const [completed, setCompleted] = useState(false);
 
-  let section = null;
-  let sectionQuestions: typeof questions = [];
-  let question = null;
-
-  try {
-    section = sections.find((s) => s.id === sectionSlug) || null;
-
-    sectionQuestions = questions
-      .filter((q) => q.sectionId === sectionSlug)
-      .sort((a, b) => a.orderIndex - b.orderIndex);
-
-    question =
-      sectionQuestions.find((q) => q.id === questionId) || null;
-  } catch (error) {
-    console.error("Failed to load interview question data:", error);
-
-    section = null;
-    sectionQuestions = [];
-    question = null;
-  }
+  const section = useMemo( () => sections.find((s) => s.id === sectionSlug) || null, [sectionSlug]);
+  const sectionQuestions = useMemo(() => { return questions.filter((q) => q.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex);}, [sectionSlug]);
+  const question = useMemo(() => { return sectionQuestions.find((q) => q.id === questionId) || null;}, [sectionQuestions, questionId]);
 
   const currentIndex = question
     ? sectionQuestions.findIndex((q) => q.id === question.id)
