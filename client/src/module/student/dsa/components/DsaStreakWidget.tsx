@@ -27,7 +27,7 @@ function StreakCalendar({ activeDays, currentStreak }: { activeDays: string[]; c
             title={`${dayNum} ${dayStr}${isActive ? " — solved" : ""}`}
           >
             <div
-              className={`w-5 h-5 rounded-sm text-[8px] font-mono flex items-center justify-center ${
+              className={`w-5 h-5 rounded-sm text-xs font-mono flex items-center justify-center ${
                 isActive
                   ? "bg-orange-500 text-white"
                   : "bg-stone-100 dark:bg-stone-800 text-stone-300 dark:text-stone-600"
@@ -35,7 +35,7 @@ function StreakCalendar({ activeDays, currentStreak }: { activeDays: string[]; c
             >
               {isActive ? <CheckCircle2 className="w-3 h-3" /> : null}
             </div>
-            <span className="text-[8px] font-mono text-stone-400">{dayNum.charAt(0)}</span>
+            <span className="text-xs font-mono text-stone-400">{dayNum.charAt(0)}</span>
           </div>
         );
       })}
@@ -70,7 +70,7 @@ export function DsaStreakWidget() {
           </span>
           <span className="text-xs text-stone-500 dark:text-stone-400">day streak</span>
           {milestone && (
-            <span className="text-[10px] font-mono text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-sm">
+            <span className="text-xs font-mono text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-sm">
               {milestone}
             </span>
           )}
