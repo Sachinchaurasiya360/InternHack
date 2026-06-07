@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -212,21 +212,23 @@ function ParticipationBar({ participatedYears }: { participatedYears: number[] }
   );
 }
 
-function GSoCOrgCard({
+const GSoCOrgCard = memo(function GSoCOrgCard({
   org,
-  onClick,
+  onSelect,
   wishlisted,
   onWishlistToggle,
 }: {
   org: GSoCOrganization;
-  onClick: () => void;
+  onSelect: (org: GSoCOrganization) => void;
   wishlisted: boolean;
-  onWishlistToggle: (e: React.MouseEvent) => void;
+  onWishlistToggle: (orgId: number, event: React.MouseEvent) => void;
 }) {
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
+  const handleSelect = () => onSelect(org);
+  const handleWishlistClick = (event: React.MouseEvent) => onWishlistToggle(org.id, event);
 
   return (
-    <div role="button" tabIndex={0} onClick={onClick} onKeyDown={(e) => e.key === "Enter" && onClick()} className={cardBase}>
+    <div role="button" tabIndex={0} onClick={handleSelect} onKeyDown={(e) => e.key === "Enter" && handleSelect()} className={cardBase}>
       <div className="mb-3 flex items-start gap-3">
         <OrgMark org={org} />
         <div className="min-w-0 flex-1">
@@ -269,7 +271,7 @@ function GSoCOrgCard({
 
       <button
         type="button"
-        onClick={onWishlistToggle}
+        onClick={handleWishlistClick}
         className="mb-3 flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest transition-colors"
         aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
       >
@@ -294,7 +296,7 @@ function GSoCOrgCard({
       </div>
     </div>
   );
-}
+});
 
 interface GSoCOrgModalProps {
   org: GSoCOrganization;
@@ -632,13 +634,24 @@ export default function GSoCReposPage() {
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
     };
+  }, []);
+
+  const clearPendingSearchTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
   }, []);
 
   // FIX 2: Functional updater.
   // This ensures that delayed debounced calls always use the freshest URL state.
   const updateFilter = (key: string, value: string) => {
+    clearPendingSearchTimer();
     setSearchParams(
       (prev) => {
         const newParams = new URLSearchParams(prev);
@@ -657,7 +670,7 @@ export default function GSoCReposPage() {
   // ---> UPDATED TO USE timerRef <---
   const handleSearch = (value: string) => {
     setSearch(value);
-    if (timerRef.current) clearTimeout(timerRef.current);
+    clearPendingSearchTimer();
     
     timerRef.current = setTimeout(() => {
       updateFilter("q", value);
@@ -665,10 +678,23 @@ export default function GSoCReposPage() {
   };
 
   const clearFilters = () => {
+    clearPendingSearchTimer();
     setSearch("");
     setSearchParams({}, { replace: true });
     setPage(1);
   };
+
+  const handleOrgClick = useCallback((org: GSoCOrganization) => {
+    setSelectedOrg(org);
+  }, [setSelectedOrg]);
+
+  const handleWishlistToggle = useCallback(
+    (orgId: number, event: React.MouseEvent) => {
+      event.stopPropagation();
+      toggle(orgId);
+    },
+    [toggle]
+  );
 
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
@@ -893,12 +919,9 @@ export default function GSoCReposPage() {
                 >
                   <GSoCOrgCard
                     org={org}
-                    onClick={() => setSelectedOrg(org)}
+                    onSelect={handleOrgClick}
                     wishlisted={has(org.id)}
-                    onWishlistToggle={(e) => {
-                      e.stopPropagation();
-                      toggle(org.id);
-                    }}
+                    onWishlistToggle={handleWishlistToggle}
                   />
                 </motion.div>
               ))}
