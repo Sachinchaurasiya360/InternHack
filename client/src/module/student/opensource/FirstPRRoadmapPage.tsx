@@ -266,56 +266,16 @@ export default function FirstPRRoadmapPage() {
       </motion.div>
 
       {/* Completion banner */}
-<AnimatePresence>
-  {allDone && (
-    <>
-      <GuideCompletionSection
-        headline="You're an open source contributor!"
-        subtitle={`You've completed all ${totalSteps} steps. Time to find your next issue!`}
-        certificateGuideName="First PR Roadmap"
-        accentWord="contributor"
-      />
-
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        className="mb-8 rounded-2xl border border-green-200/80 dark:border-green-800 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 p-5 shadow-lg ..."
-      >
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 dark:bg-white/5 border border-green-200/70 dark:border-green-800 shrink-0">
-          <Trophy className="w-7 h-7 text-green-600 dark:text-green-400" />
-        </div>
-
-        <div>
-          <p className="text-base font-bold text-green-950 dark:text-green-200">
-            Congratulations, you completed your first PR roadmap.
-          </p>
-
-          <p className="text-sm text-green-800 dark:text-green-300 mt-0.5">
-            10 / 10 steps complete. You are ready to contribute with
-            confidence.
-          </p>
-
-          <div className="flex gap-4 mt-3 flex-wrap items-center">
-            <Link
-              to="/student/opensource"
-              className="text-sm text-lime-700 dark:text-lime-400 underline font-medium"
-            >
-              Discover repos to contribute to
-            </Link>
-
-            <button
-              onClick={() => setShowResetConfirm(true)}
-              className="text-sm text-lime-700 dark:text-lime-400 border border-lime-400 px-3 py-0.5 rounded-lg font-medium"
-            >
-              Start over
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </>
-  )}
-</AnimatePresence>
+      <AnimatePresence>
+        {allDone && (
+          <GuideCompletionSection
+            headline="You're an open source contributor!"
+            subtitle={`You've completed all ${totalSteps} steps. Time to find your next issue!`}
+            certificateGuideName="First PR Roadmap"
+            accentWord="contributor"
+          />
+        )}
+      </AnimatePresence>
 
       <ConfirmDialog
         open={showResetConfirm}
