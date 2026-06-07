@@ -866,7 +866,7 @@ function ProgramCard({ program }: { program: Program }) {
                 href={getGoogleCalendarUrl(program)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer no-underline"
+                className="flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer no-underline"
               >
                 <CalendarPlus className="w-3 h-3" /> Add to Calendar
               </a>
@@ -876,15 +876,16 @@ function ProgramCard({ program }: { program: Program }) {
               </div>
             )}
             <a href={program.website} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 no-underline transition-colors">
+              className="flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 no-underline transition-colors"
+            >
               <Globe className="w-3 h-3" /> Website <ExternalLink className="w-3 h-3 opacity-60" />
             </a>
             <a
               href={program.applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white dark:text-gray-950 bg-gray-950 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg no-underline transition-colors"
-            >
+              className="flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold text-white dark:text-gray-950 bg-gray-950 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-200 rounded-lg no-underline transition-colors"
+              >
               Apply <ExternalLink className="w-3 h-3 opacity-70" />
             </a>
           </div>
@@ -901,7 +902,7 @@ function ProgramCard({ program }: { program: Program }) {
             transition={{ duration: 0.25 }}
             className="overflow-hidden border-t border-gray-100 dark:border-gray-800"
           >
-            <div className="p-5 bg-gray-50 dark:bg-gray-950 grid md:grid-cols-3 gap-6">
+            <div className="p-5 bg-gray-50 dark:bg-gray-950 grid grid-cols-1 md:grid-cols-3 gap-6">              
               {/* Requirements */}
               <div>
                 <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
@@ -1122,7 +1123,7 @@ export default function ProgramTrackerPage() {
             className="w-full pl-9 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
           />
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           {[
             {
               label: "Status",
