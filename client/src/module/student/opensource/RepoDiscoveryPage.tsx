@@ -43,6 +43,7 @@ import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 import { useCoachStore } from "./stores/coach.store";
+import { markLearningPathMilestone } from "./learning-paths.data";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -99,6 +100,10 @@ const SKILL_LANGUAGE_MAP: Record<string, string[]> = {
 };
 
 export default function RepoDiscoveryPage() {
+  useEffect(() => {
+    markLearningPathMilestone("repo-discovery");
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
@@ -352,11 +357,7 @@ export default function RepoDiscoveryPage() {
   });
 
   const pagination = data?.pagination;
-
-  const displayedRepos = useMemo(() => {
-    if (showSaved) return bookmarkedData || [];
-    return data?.repos ?? [];
-  }, [data, showSaved, bookmarkedData]);
+  const displayedRepos = showSaved ? (bookmarkedData ?? []) : (data?.repos ?? []);
 
   // Global stats fetched independently so the header strip stays accurate
   // regardless of active filters or page (replaces the old useMemo approach).

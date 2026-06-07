@@ -29,6 +29,16 @@ function isValidS3Url(url: string) {
 
 const logger = createLogger("recruiter.service");
 
+/** Legal manual status transitions for recruiter PATCH /applications/:id/status */
+const ALLOWED_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> = {
+  APPLIED: ["IN_PROGRESS", "REJECTED"],
+  IN_PROGRESS: ["SHORTLISTED", "REJECTED", "HIRED"],
+  SHORTLISTED: ["REJECTED", "HIRED"],
+  REJECTED: [],
+  HIRED: [],
+  WITHDRAWN: [],
+};
+
 interface TalentSearchFilter {
   page: number;
   limit: number;
@@ -144,14 +154,13 @@ export class RecruiterService {
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
     return prisma.round.findMany({
-      where: { jobId, isArchived: false },
+      where: { jobId },
       orderBy: { orderIndex: "asc" },
       include: {
         _count: { select: { roundSubmissions: true } },
       },
     });
   }
-
 
   async updateRound(jobId: number, roundId: number, recruiterId: number, data: UpdateRoundData) {
     const job = await prisma.job.findUnique({ where: { id: jobId } });
@@ -194,15 +203,11 @@ export class RecruiterService {
     const round = await prisma.round.findUnique({ where: { id: roundId } });
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
 
-    // Soft-delete: archive the round but keep submission history.
-    await prisma.round.update({
-      where: { id: roundId },
-      data: { isArchived: true },
-    });
+    await prisma.round.delete({ where: { id: roundId } });
 
-    // Re-index remaining *active* rounds only.
+    // Re-index remaining rounds
     const remainingRounds = await prisma.round.findMany({
-      where: { jobId, isArchived: false },
+      where: { jobId },
       orderBy: { orderIndex: "asc" },
     });
 
@@ -216,7 +221,6 @@ export class RecruiterService {
       }
     }
   }
-
 
   async reorderRounds(jobId: number, recruiterId: number, rounds: { roundId: number; orderIndex: number }[]) {
     const job = await prisma.job.findUnique({ where: { id: jobId } });
@@ -380,6 +384,14 @@ export class RecruiterService {
       return current;
     }
 
+    const allowedNext = ALLOWED_TRANSITIONS[application.status];
+    if (!allowedNext.includes(status)) {
+      throw Object.assign(
+        new Error(`Cannot transition application status from ${application.status} to ${status}`),
+        { statusCode: 409 },
+      );
+    }
+
     const updated = await prisma.$transaction(async (tx) => {
       return this._updateApplicationStatus(tx, applicationId, status, recruiterId);
     });
@@ -425,10 +437,9 @@ export class RecruiterService {
       }
 
       const rounds = await tx.round.findMany({
-        where: { jobId: application.jobId, isArchived: false },
+        where: { jobId: application.jobId },
         orderBy: { orderIndex: "asc" },
       });
-
 
       if (rounds.length === 0) throw new Error("No rounds are configured for this job. Please add at least one round before advancing applicants.");
 
@@ -465,26 +476,11 @@ export class RecruiterService {
   async getSubmission(applicationId: number, roundId: number, recruiterId: number) {
     const application = await prisma.application.findUnique({
       where: { id: applicationId },
-      include: { job: { select: { recruiterId: true, id: true } } },
+      include: { job: { select: { recruiterId: true } } },
     });
 
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
-
-    const round = await prisma.round.findUnique({
-      where: { id: roundId },
-      select: { id: true, jobId: true, isArchived: true },
-    });
-
-    if (!round || round.jobId !== application.job.id) throw new Error("Round not found");
-    if (round.isArchived) {
-      // Archived rounds are hidden from the active pipeline.
-      // But keep existing submission history accessible if it exists.
-      const submission = await prisma.roundSubmission.findUnique({
-        where: { applicationId_roundId: { applicationId, roundId } },
-      });
-      if (!submission) throw new Error("Submission not found");
-    }
 
     return prisma.roundSubmission.findUnique({
       where: { applicationId_roundId: { applicationId, roundId } },
@@ -496,7 +492,6 @@ export class RecruiterService {
       },
     });
   }
-
 
   async evaluateSubmission(
     applicationId: number,
@@ -616,7 +611,7 @@ export class RecruiterService {
           _count: { id: true },
         }),
         prisma.round.findMany({
-          where: { jobId, isArchived: false },
+          where: { jobId },
           orderBy: { orderIndex: "asc" },
           include: {
             _count: { select: { roundSubmissions: true } },
@@ -624,11 +619,10 @@ export class RecruiterService {
         }),
         prisma.roundSubmission.groupBy({
           by: ["roundId", "status"],
-          where: { round: { jobId, isArchived: false } },
+          where: { round: { jobId } },
           _count: { id: true },
         }),
       ]);
-
 
     const statusCounts: Record<string, number> = {};
     for (const s of applicationsByStatus) {
