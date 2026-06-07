@@ -11,6 +11,7 @@ import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import api from "../../../../lib/axios";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
+import { useGuideProgress } from "../useGuideProgress";
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -50,7 +51,23 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   });
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const { saveProgress } = useGuideProgress();
 
+  const GUIDE_SLUGS: Record<string, string> = {
+    "/student/opensource/first-pr": "first-pr",
+    "/student/opensource/git-guide": "git-guide",
+    "/student/opensource/gsoc-proposal": "gsoc-proposal",
+    "/student/opensource/read-codebase": "read-codebase",
+    "/student/opensource/communication": "communication",
+    "/student/opensource/cicd": "cicd",
+  };
+
+  useEffect(() => {
+    const slug = GUIDE_SLUGS[basePath];
+    if (slug && step) {
+      saveProgress(slug, step.step, steps.length, step.title, step.id);
+    }
+  }, [step, basePath, steps.length, saveProgress]);
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {

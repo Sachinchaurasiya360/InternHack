@@ -44,6 +44,7 @@ import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 import { useCoachStore } from "./stores/coach.store";
 import { markLearningPathMilestone } from "./learning-paths.data";
+import { useGuideProgress } from "./useGuideProgress";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -106,6 +107,7 @@ export default function RepoDiscoveryPage() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const triggerCoach = useCoachStore((s) => s.triggerCoach);
+  const { current: currentGuide, dismiss } = useGuideProgress();
 
   // Initialize filter states directly from the URL
   const search = searchParams.get("q") || "";
@@ -430,6 +432,34 @@ export default function RepoDiscoveryPage() {
           keywords="open source, first contribution, good first issue, github, beginner friendly, GSoC, hacktoberfest"
           canonicalUrl={canonicalUrl("/student/opensource")}
         />
+      )}
+
+      {currentGuide && (
+        <div className="sticky top-0 z-40 bg-gradient-to-r from-lime-50 to-emerald-50 dark:from-lime-950/40 dark:to-emerald-950/40 border-b border-lime-200 dark:border-lime-800/40 px-4 sm:px-8">
+          <div className="max-w-6xl mx-auto py-2.5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <BookOpen className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <p className="text-xs font-medium text-stone-800 dark:text-stone-200 truncate">
+                Continue: {currentGuide.title} — Step {currentGuide.step} of {currentGuide.totalSteps}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to={currentGuide.sectionSlug ? `${currentGuide.basePath}/${currentGuide.sectionSlug}` : currentGuide.basePath}
+                className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 px-3 py-1.5 rounded-md transition-colors"
+              >
+                Continue &rarr;
+              </Link>
+              <button
+                type="button"
+                onClick={dismiss}
+                className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors bg-transparent border-0 cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8">
