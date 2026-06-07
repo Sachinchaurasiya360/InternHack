@@ -377,7 +377,7 @@ where["OR"] = [
           where: {
             userId,
             status: "APPROVED",
-            updatedAt: { gte: octStart, lt: novStart },
+            createdAt: { gte: octStart, lt: novStart },
           },
         }),
         prisma.repoRequest.count({
