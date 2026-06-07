@@ -785,11 +785,6 @@ Return ONLY a JSON array, no markdown fences:
       });
     }
 
-    // Log usage for rate limiting
-    await prisma.usageLog.create({
-      data: { userId: studentId, action: "CODE_RUN" },
-    });
-
     // Track engagement — fire-and-forget, never blocks the submission response
     void prisma.contentView.create({
       data: {

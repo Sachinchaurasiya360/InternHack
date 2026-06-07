@@ -22,7 +22,6 @@ export class StudentController {
 
       const application = await this.studentService.applyToJob(jobId, req.user.id, result.data);
 
-      await prisma.usageLog.create({ data: { userId: req.user.id, action: "JOB_APPLICATION" } });
       const usage = req.usageInfo ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit } : undefined;
 
       return res.status(201).json({ message: "Application submitted successfully", application, usage });

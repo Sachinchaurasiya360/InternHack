@@ -197,14 +197,6 @@ export class UploadController {
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
-      // Log daily quota usage for resume generation/upload
-      await prisma.usageLog.create({
-        data: {
-          userId: req.user.id,
-          action: "GENERATE_RESUME",
-        },
-      });
-
       const signedResumes = await signUrls(user.resumes);
       return res.status(200).json({
         message: "Resume updated",

@@ -264,9 +264,6 @@ Rules:
             },
           },
         });
-        await tx.usageLog.create({
-          data: { userId: studentId, action: "JOB_APPLICATION" },
-        });
         return createdApplication;
       });
 
