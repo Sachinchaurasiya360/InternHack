@@ -565,6 +565,13 @@ const STIPEND_OPTIONS = [
   "Medium ($1k–5k)",
   "Low/None",
 ];
+const SORT_OPTIONS = [
+  { value: "default", label: "Default order" },
+  { value: "deadline-asc", label: "Deadline: Soonest First" },
+  { value: "deadline-desc", label: "Deadline: Latest First" },
+  { value: "stipend-desc", label: "Stipend: Highest First" },
+  { value: "name-asc", label: "Alphabetical" },
+];
 
 type LocalCurrencyConfig = {
   currency: string;
@@ -984,7 +991,7 @@ export default function ProgramTrackerPage() {
           status: STATUS_OPTIONS.includes(parsed.status) ? parsed.status : "All",
           eligibility: ELIGIBILITY_OPTIONS.includes(parsed.eligibility) ? parsed.eligibility : "All",
           stipend: STIPEND_OPTIONS.includes(parsed.stipend) ? parsed.stipend : "All",
-          sortBy: ["default", "deadline"].includes(parsed.sortBy) ? parsed.sortBy : "default",
+          sortBy: SORT_OPTIONS.some((o) => o.value === parsed.sortBy) ? parsed.sortBy : "default",
         };
       }
     }
@@ -1039,12 +1046,28 @@ export default function ProgramTrackerPage() {
     if (selectedStipend === "Medium ($1k–5k)") list = list.filter((p) => p.stipendRange === "Medium");
     if (selectedStipend === "Low/None") list = list.filter((p) => p.stipendRange === "Low/None");
 
-    if (sortBy === "deadline") {
+    if (sortBy === "deadline-asc") {
       list.sort((a, b) => {
         const dateA = a.applicationDeadline ? new Date(a.applicationDeadline).getTime() : Infinity;
         const dateB = b.applicationDeadline ? new Date(b.applicationDeadline).getTime() : Infinity;
         return dateA - dateB;
       });
+    } else if (sortBy === "deadline-desc") {
+      list.sort((a, b) => {
+        const dateA = a.applicationDeadline ? new Date(a.applicationDeadline).getTime() : -Infinity;
+        const dateB = b.applicationDeadline ? new Date(b.applicationDeadline).getTime() : -Infinity;
+        return dateB - dateA;
+      });
+    } else if (sortBy === "stipend-desc") {
+      const rank = { High: 3, Medium: 2, "Low/None": 1 };
+      list.sort((a, b) => {
+        const aVal = rank[a.stipendRange] || 0;
+        const bVal = rank[b.stipendRange] || 0;
+        if (bVal !== aVal) return bVal - aVal;
+        return Number(b.stipendPaid) - Number(a.stipendPaid);
+      });
+    } else if (sortBy === "name-asc") {
+      list.sort((a, b) => a.name.localeCompare(b.name));
     }
     return list;
   }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy]);
@@ -1110,6 +1133,42 @@ export default function ProgramTrackerPage() {
         </div>
       </section>
 
+      {/* Next Deadline badge */}
+      {(() => {
+        const now = Date.now();
+        const withDeadlines = PROGRAMS.filter(
+          (p) => p.applicationDeadline && new Date(p.applicationDeadline).getTime() > now,
+        );
+        const next = withDeadlines.reduce((earliest, p) => {
+          const d = new Date(p.applicationDeadline!).getTime();
+          return d < earliest.time ? { program: p, time: d } : earliest;
+        }, { program: withDeadlines[0], time: Infinity });
+        if (next.program) {
+          const days = Math.ceil((next.time - now) / 86400000);
+          return (
+            <div className="sticky top-0 z-10 mb-5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-lg px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <p className="text-xs font-medium text-stone-700 dark:text-stone-300">
+                  Next deadline:{" "}
+                  <span className="font-bold">{next.program.name}</span> closes in{" "}
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">{days} days</span>
+                </p>
+              </div>
+              <a
+                href={next.program.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 px-3 py-1.5 rounded-md transition-colors no-underline"
+              >
+                View &rarr;
+              </a>
+            </div>
+          );
+        }
+        return null;
+      })()}
+
       {/* Filter bar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
@@ -1167,15 +1226,27 @@ export default function ProgramTrackerPage() {
               </div>
             </div>
           ))}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setSortBy((prev) => (prev === "deadline" ? "default" : "deadline"))}
-            className={sortBy === "deadline" ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}
-          >
-            <Calendar className="w-3.5 h-3.5 mr-1.5" />
-            Sort by deadline
-          </Button>
+          <div className="relative group">
+            <Button variant="outline" size="sm">
+              <Calendar className="w-3.5 h-3.5" />
+              <span className="text-gray-400">Sort:</span>
+              <span className="font-semibold text-gray-900 dark:text-white">{SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? "Default order"}</span>
+              <ChevronDown className="w-3 h-3 opacity-50" />
+            </Button>
+            <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:block">
+              {SORT_OPTIONS.map((opt) => (
+                <Button
+                  key={opt.value}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSortBy(opt.value)}
+                  className={`w-full justify-start ${sortBy === opt.value ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}`}
+                >
+                  {opt.label}
+                </Button>
+              ))}
+            </div>
+          </div>
           {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default") && (
             <Button
               variant="outline"
