@@ -7,6 +7,7 @@ import {
 import { Button } from "../../../components/ui/button";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
+import { markLearningPathMilestone } from "./learning-paths.data";
 
 function nextDate(month: number, day: number, hour = 23, minute = 59): string {
   const now = new Date();
@@ -933,6 +934,10 @@ function ProgramCard({ program }: { program: Program }) {
 
 // ─── Page ────────────────────────────────────────────────────────
 export default function ProgramTrackerPage() {
+  useEffect(() => {
+    markLearningPathMilestone("mentor-program");
+  }, []);
+
   // Load saved filters from localStorage on mount, fall back to defaults
   const getSavedFilters = () => {
   try {
