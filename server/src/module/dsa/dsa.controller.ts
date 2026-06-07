@@ -188,6 +188,28 @@ export class DsaController {
     }
   }
 
+  async getLists(req: Request, res: Response, next: NextFunction) {
+    try {
+      const studentId = req.user?.id;
+      const lists = await this.dsaService.getLists(studentId);
+      res.json(lists);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getListProblems(req: Request, res: Response, next: NextFunction) {
+    try {
+      const list = req.params.name as string;
+      const studentId = req.user?.id;
+      const { page, limit } = parsePagination(req, { defaultLimit: 50 });
+      const result = await this.dsaService.getListProblems(list, studentId, page, limit);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getMyProgress(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;

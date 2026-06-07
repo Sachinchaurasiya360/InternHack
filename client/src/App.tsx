@@ -52,6 +52,7 @@ const DsaTopicsPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopics
 const DsaTopicDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicDetailPage"));
 const DsaCompaniesPage = lazyWithRetry(() => import("./module/student/dsa/DsaCompaniesPage"));
 const DsaPatternsPage = lazyWithRetry(() => import("./module/student/dsa/DsaPatternsPage"));
+const DsaListsPage = lazyWithRetry(() => import("./module/student/dsa/DsaListsPage"));
 const DsaBookmarksPage = lazyWithRetry(() => import("./module/student/dsa/DsaBookmarksPage"));
 const DsaProblemDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaProblemDetailPage"));
 const DsaFoundationsHubPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsHubPage"));
@@ -407,6 +408,7 @@ function App() {
             <Route path="dsa" element={<DsaTopicsPage />} />
             <Route path="dsa/companies" element={<DsaCompaniesPage />} />
             <Route path="dsa/patterns" element={<DsaPatternsPage />} />
+            <Route path="dsa/lists" element={<DsaListsPage />} />
             <Route path="dsa/bookmarks" element={<ProtectedRoute role="STUDENT"><DsaBookmarksPage /></ProtectedRoute>} />
             <Route path="dsa/problem" element={<Navigate to="/learn/dsa" replace />} />
             <Route path="dsa/problem/:slug" element={<DsaProblemDetailPage />} />

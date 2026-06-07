@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
 CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, Search, BookOpen, TrendingUp, Target, Download, X,
+  Lock, Search, BookOpen, TrendingUp, Target, Download, X, List,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Button } from "../../../components/ui/button";
@@ -263,6 +263,7 @@ const clearFilters = () => {
   const quickLinks = [
     { to: "/learn/dsa/companies", icon: Building2, label: "companies" },
     { to: "/learn/dsa/patterns", icon: Puzzle, label: "patterns" },
+    { to: "/learn/dsa/lists", icon: List, label: "lists" },
     ...(user ? [{ to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" }] : []),
   ];
 

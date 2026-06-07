@@ -547,6 +547,121 @@ export class DsaService {
     });
   }
 
+  async getLists(studentId?: number) {
+    const allProblems = await prisma.dsaProblem.findMany({
+      select: { id: true, sheets: true },
+    });
+
+    const sheets = ["blind75", "neetcode150", "internhack100", "faang100"];
+    const sheetProblems = new Map<string, number[]>();
+    for (const s of sheets) {
+      sheetProblems.set(s, []);
+    }
+
+    for (const p of allProblems) {
+      for (const s of p.sheets) {
+        sheetProblems.get(s)?.push(p.id);
+      }
+    }
+
+    let solvedIds = new Set<number>();
+    if (studentId) {
+      const solved = await prisma.studentDsaProgress.findMany({
+        where: { studentId, solved: true },
+        select: { problemId: true },
+      });
+      solvedIds = new Set(solved.map((s) => s.problemId));
+    }
+
+    const listMeta: Record<string, { title: string; description: string; estimatedHours: number }> = {
+      blind75: {
+        title: "Blind 75",
+        description: "The most referenced DSA problem list for FAANG interview prep. Covers arrays, strings, trees, graphs, and more.",
+        estimatedHours: 75,
+      },
+      neetcode150: {
+        title: "NeetCode 150",
+        description: "Expanded version of Blind 75. Covers LeetCode's essential problem set grouped by patterns.",
+        estimatedHours: 150,
+      },
+      internhack100: {
+        title: "InternHack 100",
+        description: "InternHack's own curated list — handpicked problems that cover every must-know DSA concept.",
+        estimatedHours: 100,
+      },
+      faang100: {
+        title: "FAANG Hot 100",
+        description: "The 100 most frequently asked DSA problems at Facebook, Amazon, Apple, Netflix, and Google.",
+        estimatedHours: 100,
+      },
+    };
+
+    return sheets.map((name) => {
+      const ids = sheetProblems.get(name) || [];
+      const meta = listMeta[name];
+      return {
+        slug: name,
+        title: meta.title,
+        description: meta.description,
+        total: ids.length,
+        solved: ids.filter((id) => solvedIds.has(id)).length,
+        estimatedHours: meta.estimatedHours,
+      };
+    });
+  }
+
+  async getListProblems(list: string, studentId?: number, page = 1, limit = 50) {
+    const where = { sheets: { has: list } };
+
+    const [problems, total] = await Promise.all([
+      prisma.dsaProblem.findMany({
+        where,
+        orderBy: { difficulty: "asc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.dsaProblem.count({ where }),
+    ]);
+
+    let solvedIds = new Set<number>();
+    let bookmarkedIds = new Set<number>();
+    if (studentId) {
+      const pIds = problems.map((p) => p.id);
+      const [progress, bookmarks] = await Promise.all([
+        prisma.studentDsaProgress.findMany({
+          where: { studentId, problemId: { in: pIds }, solved: true },
+          select: { problemId: true },
+        }),
+        prisma.dsaBookmark.findMany({
+          where: { studentId, problemId: { in: pIds } },
+          select: { problemId: true },
+        }),
+      ]);
+      solvedIds = new Set(progress.map((p) => p.problemId));
+      bookmarkedIds = new Set(bookmarks.map((b) => b.problemId));
+    }
+
+    return {
+      problems: problems.map((p) => ({
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        difficulty: p.difficulty,
+        leetcodeUrl: p.leetcodeUrl,
+        gfgUrl: p.gfgUrl,
+        tags: p.tags,
+        companies: p.companies,
+        sheets: p.sheets,
+        acceptanceRate: p.acceptanceRate,
+        solved: solvedIds.has(p.id),
+        bookmarked: bookmarkedIds.has(p.id),
+      })),
+      total,
+      totalPages: Math.ceil(total / limit),
+      page,
+    };
+  }
+
   async getMyProgress(studentId: number) {
     const allProblems = await prisma.dsaProblem.findMany({
       select: { id: true, difficulty: true },
