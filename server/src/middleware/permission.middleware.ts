@@ -1,27 +1,56 @@
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../database/db.js";
+import { redis } from "../../config/redis.js"; // Ensure this path correctly points to the Redis config
 
-// In-memory permission cache (userId → permissions[], expires)
-const permCache = new Map<number, { permissions: string[]; expiresAt: number }>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const PERMISSION_CACHE_TTL = 5 * 60; // 5 minutes in seconds
 
+/**
+ * Fetches user permissions using Redis as a distributed cache layer
+ */
 async function getUserPermissions(userId: number): Promise<string[]> {
-  const cached = permCache.get(userId);
-  if (cached && cached.expiresAt > Date.now()) return cached.permissions;
-
+  const cacheKey = `perms:${userId}`;
+  
+  try {
+    // 1. Try Redis cache first
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (error) {
+    console.error('Redis error while fetching permissions:', error);
+    // Fallback gracefully to DB if Redis is down
+  }
+  
+  // 2. Fetch from database if cache miss or Redis fails
   const userRoles = await prisma.userCustomRole.findMany({
     where: { userId },
     include: { role: { select: { permissions: true } } },
   });
-
+  
   const permissions = [...new Set(userRoles.flatMap((ur) => ur.role.permissions))];
-  permCache.set(userId, { permissions, expiresAt: Date.now() + CACHE_TTL });
+  
+  try {
+    // 3. Store in Redis for future requests
+    await redis.setex(
+      cacheKey,
+      PERMISSION_CACHE_TTL,
+      JSON.stringify(permissions)
+    );
+  } catch (error) {
+    console.error('Redis error while setting permissions cache:', error);
+  }
+  
   return permissions;
 }
 
-/** Clear cached permissions for a user (call after role assignment changes) */
+/** * Clear cached permissions for a user (call after role assignment changes)
+ * Keeps synchronous signature to maintain backward compatibility across the app
+ */
 export function invalidatePermissionCache(userId: number): void {
-  permCache.delete(userId);
+  const cacheKey = `perms:${userId}`;
+  redis.del(cacheKey).catch((error) => {
+    console.error('Failed to invalidate Redis permission cache:', error);
+  });
 }
 
 /**
