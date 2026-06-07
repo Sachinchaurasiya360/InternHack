@@ -4,7 +4,7 @@ import api from "../../../../lib/axios";
 import { queryKeys } from "../../../../lib/query-keys";
 import type { DsaStreak } from "../../../../lib/types";
 
-function StreakCalendar({ activeDays, currentStreak }: { activeDays: string[]; currentStreak: number }) {
+function StreakCalendar({ activeDays }: { activeDays: string[] }) {
   const today = new Date();
   const dayStrings: string[] = [];
   for (let i = 6; i >= 0; i--) {
@@ -58,8 +58,6 @@ export function DsaStreakWidget() {
     streak.currentStreak >= 7 ? "7-day streak!" :
     null;
 
-  const todayStr = new Date().toISOString().slice(0, 10);
-
   return (
     <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
       <div className="flex items-center justify-between gap-4 mb-3">
@@ -80,7 +78,7 @@ export function DsaStreakWidget() {
         </div>
       </div>
 
-      <StreakCalendar activeDays={streak.activeDays} currentStreak={streak.currentStreak} />
+      <StreakCalendar activeDays={streak.activeDays} />
 
       <div className="flex items-center gap-2 mt-3 text-xs text-stone-500 dark:text-stone-400">
         <Target className="w-3.5 h-3.5" />

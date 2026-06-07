@@ -33,17 +33,15 @@ export default function MySubmissionsPage() {
     staleTime: 30_000,
   });
 
-  const requests = data ?? [];
-
   const filtered = useMemo(() => {
-    return requests.filter((r) => r.status === activeTab);
-  }, [requests, activeTab]);
+    return (data ?? []).filter((r) => r.status === activeTab);
+  }, [data, activeTab]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { PENDING: 0, APPROVED: 0, REJECTED: 0 };
-    for (const r of requests) c[r.status]++;
+    for (const r of (data ?? [])) c[r.status]++;
     return c;
-  }, [requests]);
+  }, [data]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">

@@ -281,14 +281,6 @@ export default function OpenSourceAnalyticsPage() {
   const [startMonth, setStartMonth] = useState(defaultStart);
   const [endMonth, setEndMonth] = useState(today);
 
-  if (!isPremium) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-16">
-        <PremiumUpgradeCTA feature="Open Source Analytics" />
-      </div>
-    );
-  }
-
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
     queryFn: () => api.get("/gsoc/stats").then((r) => r.data),
@@ -468,6 +460,14 @@ export default function OpenSourceAnalyticsPage() {
       prev.includes(id) ? prev.filter((x) => x !== id) : prev.length >= 4 ? prev : [...prev, id]
     );
   };
+
+  if (!isPremium) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16">
+        <PremiumUpgradeCTA feature="Open Source Analytics" />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return <LoadingScreen />;
