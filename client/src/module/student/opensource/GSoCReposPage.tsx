@@ -187,17 +187,6 @@ function FilterDropdown({
   );
 }
 
-function GSoCOrgCard({
-  org,
-  onClick,
-  wishlisted,
-  onWishlistToggle,
-}: {
-  org: GSoCOrganization;
-  onClick: () => void;
-  wishlisted: boolean;
-  onWishlistToggle: (e: React.MouseEvent) => void;
-}) {
 const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }) => {
   // Show participation from 2016 to current year
   const currentYear = new Date().getFullYear();
@@ -223,6 +212,17 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
   );
 };
 
+function GSoCOrgCard({
+  org,
+  onClick,
+  wishlisted,
+  onWishlistToggle,
+}: {
+  org: GSoCOrganization;
+  onClick: () => void;
+  wishlisted: boolean;
+  onWishlistToggle: (e: React.MouseEvent) => void;
+}) {
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
 
   return (
