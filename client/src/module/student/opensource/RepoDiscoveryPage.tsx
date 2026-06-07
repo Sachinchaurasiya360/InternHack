@@ -546,11 +546,14 @@ export default function RepoDiscoveryPage() {
         {/* My Submissions */}
         {!!user && (
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 <div className="h-1 w-1 bg-lime-400" />
                 my submissions
               </div>
+              <Link to="/student/opensource/my-submissions" className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors no-underline">
+                View all &rarr;
+              </Link>
             </div>
 
             {isMyRequestsLoading && (

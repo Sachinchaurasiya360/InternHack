@@ -105,6 +105,7 @@ const CommTemplatesSectionPage = lazyWithRetry(() => import("./module/student/op
 const CICDGuidePage = lazyWithRetry(() => import("./module/student/opensource/CICDGuidePage"));
 const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/CICDGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
+const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
@@ -507,6 +508,7 @@ function App() {
               <Route path="communication/:sectionSlug" element={<CommTemplatesSectionPage />} />
               <Route path="cicd" element={<CICDGuidePage />} />
               <Route path="cicd/:sectionSlug" element={<CICDGuideSectionPage />} />
+              <Route path="my-submissions" element={<MySubmissionsPage />} />
             </Route>
             <Route path="ai-agent" element={<JobAgentPage />} />
             <Route path="signals" element={<SignalsPage />} />
