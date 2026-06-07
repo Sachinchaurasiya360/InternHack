@@ -12,6 +12,7 @@ import {
   getMyEnrollment,
   deleteMyEnrollment,
   getMyEnrollments,
+  getMyEnrollmentsAnalyticsBatch,
   getRoadmap,
   getRoadmaps,
   getTopic,
@@ -27,6 +28,7 @@ export const roadmapRouter = Router();
 
 roadmapRouter.post("/ai/generate", authMiddleware, aiRoadmapLimiter, postAiGenerate);
 roadmapRouter.get("/me/enrollments", authMiddleware, getMyEnrollments);
+roadmapRouter.get("/me/enrollments/analytics/batch", authMiddleware, getMyEnrollmentsAnalyticsBatch);
 roadmapRouter.get("/me/enrollments/:id/analytics", authMiddleware, getMyEnrollmentAnalytics);
 roadmapRouter.get("/me/enrollments/:id", authMiddleware, getMyEnrollment);
 roadmapRouter.delete("/me/enrollments/:id", authMiddleware, deleteMyEnrollment);

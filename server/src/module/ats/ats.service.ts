@@ -1,7 +1,7 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { PDFParse } from "pdf-parse";
+import { Worker } from "worker_threads";
 import { prisma } from "../../database/db.js";
 import { getBufferFromS3, getS3KeyFromUrl } from "../../utils/s3.utils.js";
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
@@ -200,10 +200,47 @@ RESPONSE FORMAT:
       throw new Error("Invalid resume URL format");
     }
 
-    const parser = new PDFParse({ data: buffer });
-    const result = await parser.getText();
-    await parser.destroy();
-    return result.text;
+    return new Promise<string>((resolve, reject) => {
+      // Detect dev (tsx) vs production (compiled JS) to resolve the worker path
+      // and register the tsx ESM loader when needed.
+      const isDev = import.meta.url.endsWith(".ts");
+      const workerFile = isDev
+        ? "../../workers/pdf-parse.worker.ts"
+        : "../../workers/pdf-parse.worker.js";
+      const workerUrl = new URL(workerFile, import.meta.url);
+      const execArgv = isDev ? ["--import", "tsx"] : [];
+
+      const worker = new Worker(workerUrl, {
+        execArgv,
+        workerData: {
+          buffer: buffer.buffer as ArrayBuffer,
+          byteOffset: buffer.byteOffset,
+          byteLength: buffer.byteLength,
+        },
+        transferList: [buffer.buffer as ArrayBuffer],
+      });
+
+      const timeout = setTimeout(() => {
+        void worker.terminate();
+        reject(new Error("PDF parsing timed out"));
+      }, 30_000);
+
+      worker.on("message", (msg: { text?: string; error?: string }) => {
+        clearTimeout(timeout);
+        if (msg.error) reject(new Error(msg.error));
+        else resolve(msg.text ?? "");
+      });
+
+      worker.on("error", (err: Error) => {
+        clearTimeout(timeout);
+        reject(err);
+      });
+
+      worker.on("exit", (code: number) => {
+        clearTimeout(timeout);
+        if (code !== 0) reject(new Error(`PDF worker exited with code ${code}`));
+      });
+    });
   }
 
   private async callAI(

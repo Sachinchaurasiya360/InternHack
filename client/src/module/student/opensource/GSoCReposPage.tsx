@@ -28,6 +28,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
+import { markLearningPathMilestone } from "./learning-paths.data";
 
 const WISHLIST_KEY = "gsoc_wishlist";
 
@@ -597,6 +598,10 @@ function GSoCOrgModal({
 }
 
 export default function GSoCReposPage() {
+  useEffect(() => {
+    markLearningPathMilestone("gsoc-orgs");
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   // 1. Initialize state strictly from URL params

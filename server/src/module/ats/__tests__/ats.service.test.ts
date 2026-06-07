@@ -3,7 +3,6 @@ import { AtsService } from "../ats.service.js";
 import { prisma } from "../../../database/db.js";
 import { getBufferFromS3, getS3KeyFromUrl } from "../../../utils/s3.utils.js";
 import { getProviderForService } from "../../../lib/ai-provider-registry.js";
-import { PDFParse } from "pdf-parse";
 import { readFile } from "fs/promises";
 
 // ─── Module mocks (Vitest hoists these before imports) ────────────────────────
@@ -32,13 +31,14 @@ vi.mock("../../../lib/ai-request-logger.js", () => ({
   logAIRequest: vi.fn(),
 }));
 
-vi.mock("pdf-parse", () => ({
-  PDFParse: vi.fn(),
-}));
-
 vi.mock("fs/promises", () => ({
   readFile: vi.fn(),
 }));
+
+// worker_threads is mocked so the Worker constructor never actually spawns a
+// thread. extractPdfText is spied on per-test (see mockValidPdf / mockPdfError)
+// so tests stay focused on the service logic above the PDF extraction layer.
+vi.mock("worker_threads", () => ({ Worker: vi.fn() }));
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -104,15 +104,10 @@ function mockCacheMiss() {
   vi.mocked(prisma.atsScore.findFirst).mockResolvedValue(null);
 }
 
-function mockValidPdf(text = VALID_RESUME_TEXT) {
-  vi.mocked(PDFParse).mockImplementation(
-    function () {
-      return {
-        getText: vi.fn().mockResolvedValue({ text }),
-        destroy: vi.fn().mockResolvedValue(undefined),
-      } as any;
-    }
-  );
+// Spy on the private extractPdfText method so tests control returned text
+// without spawning a real worker thread.
+function mockValidPdf(service: AtsService, text = VALID_RESUME_TEXT) {
+  vi.spyOn(service as any, "extractPdfText").mockResolvedValue(text);
 }
 
 function mockValidAI(jsonStr = VALID_AI_JSON) {
@@ -133,7 +128,7 @@ describe("AtsService", () => {
     // Safe defaults — individual tests override what they need
     vi.mocked(getS3KeyFromUrl).mockReturnValue("intern-bucket/resume.pdf");
     vi.mocked(getBufferFromS3).mockResolvedValue(Buffer.from("pdf-binary-data"));
-    mockValidPdf();
+    mockValidPdf(service);
     mockValidAI();
   });
 
@@ -171,10 +166,9 @@ describe("AtsService", () => {
 
     it("strips query params from presigned URL before ownership check", async () => {
       const presignedUrl = `${RESUME_URL}?X-Amz-Signature=abc123&X-Amz-Expires=3600`;
-      mockUserOwnsResume(RESUME_URL); // stored URL has no query string
+      mockUserOwnsResume(RESUME_URL);
       vi.mocked(prisma.atsScore.findFirst).mockResolvedValue(MOCK_ATS_ROW as any);
 
-      // Must NOT throw "Resume does not belong to this user"
       await expect(
         service.scoreResume(STUDENT_ID, { resumeUrl: presignedUrl }),
       ).resolves.toBeDefined();
@@ -183,14 +177,7 @@ describe("AtsService", () => {
     it("throws when extracted PDF text is under 50 characters", async () => {
       mockUserOwnsResume();
       mockCacheMiss();
-      vi.mocked(PDFParse).mockImplementation(
-        function () {
-          return {
-            getText: vi.fn().mockResolvedValue({ text: "too short" }),
-            destroy: vi.fn().mockResolvedValue(undefined),
-          } as any;
-        }
-      );
+      vi.spyOn(service as any, "extractPdfText").mockResolvedValue("too short");
 
       await expect(
         service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL }),
@@ -467,14 +454,7 @@ describe("AtsService", () => {
 
     it("throws when PDF text extraction yields insufficient content", async () => {
       mockUserOwnsResume();
-      vi.mocked(PDFParse).mockImplementation(
-        function () {
-          return {
-            getText: vi.fn().mockResolvedValue({ text: "tiny" }),
-            destroy: vi.fn().mockResolvedValue(undefined),
-          } as any;
-        }
-      );
+      vi.spyOn(service as any, "extractPdfText").mockResolvedValue("tiny");
 
       await expect(
         service.applySuggestions(STUDENT_ID, INPUT),

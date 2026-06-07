@@ -9,6 +9,7 @@ import { createLogger } from "../../utils/logger.js";
 const logger = createLogger("UploadController");
 
 const MAX_RESUMES = 2;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB — must match s3.utils.ts UPLOAD_POLICIES
 
 /**
  * Server-side allowlist of permitted MIME types for presigned URL generation.
@@ -178,6 +179,9 @@ export class UploadController {
       if (!isValidS3FileUrl(fileUrl)) {
         return res.status(400).json({ message: "Invalid fileUrl origin" });
       }
+      if (typeof size === "number" && size > MAX_FILE_SIZE) {
+        return res.status(400).json({ message: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB limit` });
+      }
 
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { resumes: true } });
@@ -195,14 +199,6 @@ export class UploadController {
         where: { id: userId },
         data: { resumes: updatedResumes },
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
-      });
-
-      // Log daily quota usage for resume generation/upload
-      await prisma.usageLog.create({
-        data: {
-          userId: req.user.id,
-          action: "GENERATE_RESUME",
-        },
       });
 
       const signedResumes = await signUrls(user.resumes);

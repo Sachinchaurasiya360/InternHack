@@ -345,6 +345,23 @@ export async function getMyEnrollmentAnalytics(req: Request, res: Response, next
   }
 }
 
+export async function getMyEnrollmentsAnalyticsBatch(req: Request, res: Response, next: NextFunction) {
+  try {
+    const enrollments = await listEnrollmentsForUser(req.user!.id);
+    const analytics = await Promise.all(
+      enrollments.map((e) =>
+        getEnrollmentAnalyticsForUser({
+          userId: req.user!.id,
+          enrollmentId: e.id,
+        }),
+      ),
+    );
+    res.json({ analytics: analytics.filter(Boolean) });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function deleteMyEnrollment(req: Request, res: Response, next: NextFunction) {
   try {
     const params = enrollmentIdParam.safeParse(req.params);
