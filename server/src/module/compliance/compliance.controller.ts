@@ -1,6 +1,11 @@
 import type { Request, Response } from "express";
 import type { ComplianceService } from "./compliance.service.js";
 import { createComplianceDocSchema, updateComplianceDocSchema, complianceQuerySchema } from "./compliance.validation.js";
+import { z } from "zod";
+
+const acknowledgeSchema = z.object({
+  employeeId: z.coerce.number()
+});
 
 export class ComplianceController {
   constructor(private readonly complianceService: ComplianceService) {}
@@ -82,8 +87,12 @@ export class ComplianceController {
       const id = Number(req.params["id"]);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid document ID" });
 
-      const employeeId = Number(req.body.employeeId);
-      if (isNaN(employeeId)) return res.status(400).json({ message: "employeeId required" });
+      const body = acknowledgeSchema.safeParse(req.body);
+      if (!body.success) return res.status(400).json({
+        message: "Validation failed",
+        errors: body.error.flatten()
+      });
+      const employeeId = body.data.employeeId;
 
       const document = await this.complianceService.acknowledge(id, employeeId);
       return res.json({ message: "Document acknowledged", document });

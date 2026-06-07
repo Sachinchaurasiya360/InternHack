@@ -1230,6 +1230,7 @@ enum AIServiceType {
   LATEX_CHAT
   EMAIL_CHAT
   AI_ROADMAP_GENERATION
+  DSA_CODE_REVIEW
 }
 
 enum BadgeCategory {

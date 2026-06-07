@@ -336,6 +336,20 @@ export default function DsaProblemDetailPage() {
     },
   });
 
+  const aiReviewMutation = useMutation({
+    mutationFn: (submissionId: number) =>
+      api.post<DsaCodeReview>(`/dsa/submissions/${submissionId}/review`).then((r) => r.data),
+    onError: (err: { response?: { status?: number; data?: { message?: string } } }) => {
+      if (err?.response?.status === 429) {
+        toast.error(err.response?.data?.message ?? "Daily limit reached");
+      } else {
+        toast.error(err?.response?.data?.message ?? "AI review failed");
+      }
+    },
+  });
+
+  useEffect(() => { aiReviewMutation.reset(); }, [problem?.id, aiReviewMutation]);
+
   const handleRun = useCallback(() => {
     if (!problem || !user || !isPremium) return;
     executeMutation.mutate({
