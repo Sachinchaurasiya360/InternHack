@@ -22,7 +22,8 @@ export class HRTaskController {
       const result = createTaskSchema.safeParse(req.body);
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
 
-      const creatorId = Number(context.employeeId);
+      const creatorId = Number(req.body.creatorId ?? context.employeeId);
+      if (creatorId === 0) return res.status(400).json({ message: "Admin must specify creatorId in request body" });
       const task = await this.taskService.create(creatorId, result.data);
       return res.status(201).json({ message: "Task created", task });
     } catch (error) {
@@ -37,6 +38,10 @@ export class HRTaskController {
       if (!context) return res.status(403).json({ message: "Employee record not found" });
 
       const query = taskQuerySchema.parse(req.query);
+      if (context.isAdmin) {
+        const data = await this.taskService.getAllTasks(query);
+        return res.json(data);
+      }
       const data = await this.taskService.getMyTasks(context.employeeId, query);
       return res.json(data);
     } catch (error) {
@@ -51,6 +56,10 @@ export class HRTaskController {
       if (!context) return res.status(403).json({ message: "Employee record not found" });
 
       const query = taskQuerySchema.parse(req.query);
+      if (context.isAdmin) {
+        const data = await this.taskService.getAllTasks(query);
+        return res.json(data);
+      }
       const data = await this.taskService.getTeamTasks(context.employeeId, query);
       return res.json(data);
     } catch (error) {

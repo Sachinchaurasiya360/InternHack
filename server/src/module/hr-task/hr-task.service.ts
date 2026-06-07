@@ -55,6 +55,29 @@ export class HRTaskService {
     });
   }
 
+  async getAllTasks(query: TaskQuery) {
+    const where: Prisma.hrTaskWhereInput = {};
+    if (query.status) where.status = query.status;
+    if (query.priority) where.priority = query.priority;
+
+    const [tasks, total] = await Promise.all([
+      prisma.hrTask.findMany({
+        where,
+        include: {
+          assignee: { select: { id: true, firstName: true, lastName: true } },
+          creator: { select: { id: true, firstName: true, lastName: true } },
+          _count: { select: { subTasks: true } },
+        },
+        orderBy: [{ priority: "desc" }, { dueDate: "asc" }],
+        skip: (query.page - 1) * query.limit,
+        take: query.limit,
+      }),
+      prisma.hrTask.count({ where }),
+    ]);
+
+    return { tasks, pagination: { page: query.page, limit: query.limit, total, totalPages: Math.ceil(total / query.limit) } };
+  }
+
   async getMyTasks(employeeId: number, query: TaskQuery) {
     const where: Prisma.hrTaskWhereInput = { assigneeId: employeeId };
     if (query.status) where.status = query.status;
