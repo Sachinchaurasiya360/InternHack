@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router";
 import { motion } from "framer-motion";
-import { Clock, BookOpen, Target, ChevronRight, ArrowRight, Check, HelpCircle, Map as MapIcon } from "lucide-react";
+import { Clock, BookOpen, Target, ChevronRight, ArrowRight, Check, HelpCircle, Map as MapIcon, Users } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { Navbar } from "../../../components/Navbar";
@@ -205,6 +205,7 @@ export default function RoadmapDetailPage() {
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-stone-500 dark:text-stone-400 mb-8 font-mono">
               <span className="inline-flex items-center gap-2"><Clock className="w-4 h-4" aria-hidden="true" /> {roadmap.estimatedHours} hours</span>
               <span className="inline-flex items-center gap-2"><BookOpen className="w-4 h-4" aria-hidden="true" /> {roadmap.topicCount} topics</span>
+              <span className="inline-flex items-center gap-2"><Users className="w-4 h-4" aria-hidden="true" /> {roadmap.enrolledCount.toLocaleString()} enrolled</span>
               <span className="inline-flex items-center gap-2"><Target className="w-4 h-4" aria-hidden="true" /> Free</span>
             </div>
 
