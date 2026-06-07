@@ -59,6 +59,9 @@ export class AttendanceService {
 
     const now = new Date();
     const workHours = (now.getTime() - record.checkIn.getTime()) / 3600000;
+    if (workHours < 0) {
+      throw new Error("Check-out time cannot be before check-in time");
+    }
     const standardHours = 8;
     const overtime = Math.max(0, workHours - standardHours);
     const status: AttendanceStatus = workHours < 4 ? "HALF_DAY" : "PRESENT";

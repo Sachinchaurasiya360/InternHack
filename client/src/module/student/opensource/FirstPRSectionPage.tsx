@@ -22,6 +22,7 @@ import guideData from "./data/open-source-guide.json";
 import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
 import { ReadingProgressBar } from "../../../components/ReadingProgressBar";
 import { markGuideProgressTouched } from "./guide-progress";
+import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource {
@@ -111,15 +112,18 @@ export default function FirstPRSectionPage() {
     });
     markGuideProgressTouched("first-pr-roadmap-completed", step.id);
 
-    void patchFirstPRProgress(step.id, !isCurrentlyCompleted).catch(() => {
-      setCompleted((prev) => {
-        const rolledBack = new Set(prev);
-        if (isCurrentlyCompleted) rolledBack.add(step.id);
-        else rolledBack.delete(step.id);
-        return rolledBack;
+    void patchFirstPRProgress(step.id, !isCurrentlyCompleted)
+      .then(() => notifyLearningPathProgressChanged())
+      .catch(() => {
+        setCompleted((prev) => {
+          const rolledBack = new Set(prev);
+          if (isCurrentlyCompleted) rolledBack.add(step.id);
+          else rolledBack.delete(step.id);
+          return rolledBack;
+        });
+        notifyLearningPathProgressChanged();
+        toast.error("Failed to update progress. Please try again.");
       });
-      toast.error("Failed to update progress. Please try again.");
-    });
   }, [completed, step]);
 
   // ---> FIX: Define variables and call hook BEFORE the early return <---

@@ -22,6 +22,7 @@ import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
 import { markGuideProgressTouched } from "./guide-progress";
+import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource { title: string; url: string; type: string }
@@ -90,6 +91,7 @@ export default function GSoCProposalStepPage() {
       if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
       markGuideProgressTouched(STORAGE_KEY, step.id);
+      notifyLearningPathProgressChanged();
       return next;
     });
   }, [step]);

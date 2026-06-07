@@ -335,6 +335,23 @@ export async function getMyEnrollmentAnalytics(req: Request, res: Response, next
   }
 }
 
+export async function getMyEnrollmentsAnalyticsBatch(req: Request, res: Response, next: NextFunction) {
+  try {
+    const enrollments = await listEnrollmentsForUser(req.user!.id);
+    const analytics = await Promise.all(
+      enrollments.map((e) =>
+        getEnrollmentAnalyticsForUser({
+          userId: req.user!.id,
+          enrollmentId: e.id,
+        }),
+      ),
+    );
+    res.json({ analytics: analytics.filter(Boolean) });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function deleteMyEnrollment(req: Request, res: Response, next: NextFunction) {
   try {
     const params = enrollmentIdParam.safeParse(req.params);
@@ -1058,4 +1075,46 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
     next(err);
   }
 }
+// ─── Share ────────────────────────────────────────────────────────────────────
+export async function toggleShare(req: Request, res: Response, next: NextFunction) {
+  try {
+    const parsed = roadmapSlugParam.safeParse(req.params);
+    if (!parsed.success) {
+      validationError(res, parsed.error.flatten().fieldErrors);
+      return;
+    }
 
+    const slug = parsed.data.slug;
+    const userId = req.user!.id;
+
+    const roadmap = await prisma.roadmap.findFirst({
+      where: { slug, ownerUserId: userId },
+    });
+
+    if (!roadmap) {
+      res.status(403).json({ message: "Not authorized or roadmap not found" });
+      return;
+    }
+
+    if (!roadmap.isAiGenerated) {
+      res.status(400).json({ message: "Only AI-generated roadmaps can be shared" });
+      return;
+    }
+
+    const updated = await prisma.roadmap.update({
+      where: { slug },
+      data: { isPubliclyShared: !roadmap.isPubliclyShared },
+    });
+
+    // Bust cache so share state is immediately reflected
+    clearCache(`roadmap:/api/roadmaps/${slug}`);
+
+    res.json({
+      success: true,
+      isPubliclyShared: updated.isPubliclyShared,
+      shareUrl: `https://internhack.xyz/roadmaps/${slug}`,
+    });
+  } catch (err) {
+    next(err);
+  }
+}

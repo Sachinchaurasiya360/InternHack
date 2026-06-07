@@ -1,5 +1,5 @@
 import { prisma } from "../../database/db.js";
-import { fetchGithubStats } from "../../lib/github.js";
+import { fetchGithubGoodFirstIssues, fetchGithubStats } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
   repoRequestSubmittedHtml,
@@ -78,23 +78,25 @@ export class OpensourceService {
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
-    const trimmedSearch = search?.trim();
-    if (trimmedSearch) {
-      // Prisma's scalar-list filters can't do case-insensitive substring match
-      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-      // subquery and merge the matching ids into the OR clause.
+const trimmedSearch = search?.trim();
+
+if (trimmedSearch) {
+  // Prisma's scalar-list filters can't do case-insensitive substring match
+  // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+  // subquery and merge the matching ids into the OR clause.
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
           SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${trimmedSearch}%`}
         )
       `;
+    
       const tagMatchIds = tagMatches.map((r) => r.id);
-      where["OR"] = [
-        { name: { contains: trimmedSearch, mode: "insensitive" } },
-        { owner: { contains: trimmedSearch, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-        { language: { contains: search, mode: "insensitive" } },
+where["OR"] = [
+  { name: { contains: trimmedSearch, mode: "insensitive" } },
+  { owner: { contains: trimmedSearch, mode: "insensitive" } },
+  { description: { contains: trimmedSearch, mode: "insensitive" } },
+  { language: { contains: trimmedSearch, mode: "insensitive" } },
         ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
       ];
     }
@@ -134,6 +136,35 @@ export class OpensourceService {
     return repo;
   }
 
+  async getRepoByOwnerAndName(owner: string, name: string) {
+    const repo = (await prisma.opensourceRepo.findFirst({
+      where: {
+        owner: { equals: owner, mode: "insensitive" },
+        name: { equals: name, mode: "insensitive" },
+      },
+    })) as any;
+    if (!repo) return null;
+
+    const SIX_HOURS = 6 * 60 * 60 * 1000;
+    const isStale =
+      !repo.githubStatsUpdatedAt ||
+      Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
+
+    if (isStale && repo.url?.includes("github.com")) {
+      this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
+        console.error(`[github] background update failed for ${repo.id}:`, err),
+      );
+    }
+    return repo;
+  }
+
+  async getGoodFirstIssues(owner: string, name: string) {
+    const repo = await this.getRepoByOwnerAndName(owner, name);
+    if (!repo) return null;
+    const issues = await fetchGithubGoodFirstIssues(owner, name);
+    return { repo, issues };
+  }
+
   private async updateGithubStats(id: number, url: string, name: string) {
     const stats = await fetchGithubStats(url);
     if (!stats) return;
@@ -162,10 +193,12 @@ export class OpensourceService {
     const skip = (page - 1) * limit;
     const where: any = {};
 
-    if (search) {
+    const trimmedSearch = search?.trim();
+
+      if (trimmedSearch) {
       where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
+        { name: { contains: trimmedSearch, mode: "insensitive" } },
+        { description: { contains: trimmedSearch, mode: "insensitive" } },
       ];
     }
     if (category) {
@@ -408,5 +441,38 @@ export class OpensourceService {
       select: { completedStepIds: true },
     });
     return progress.completedStepIds;
+  }
+
+  async getRecommendedRepos(userId: number) {
+    // 1. Get student profile with skills
+    const student = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { skills: true },
+    });
+
+    const skills = student?.skills || [];
+    if (skills.length === 0) {
+      // Return trending repos as default fallback
+      return prisma.opensourceRepo.findMany({
+        where: { trending: true },
+        take: 6,
+        orderBy: { stars: "desc" },
+      });
+    }
+
+    // 2. Fetch repos matching skills (language or techStack subset)
+    // We search for repos where the primary language is in the student's skills
+    const repos = await prisma.opensourceRepo.findMany({
+      where: {
+        OR: [
+          { language: { in: skills, mode: "insensitive" } },
+          { trending: true },
+        ],
+      },
+      take: 8,
+      orderBy: [{ trending: "desc" }, { stars: "desc" }],
+    });
+
+    return repos;
   }
 }

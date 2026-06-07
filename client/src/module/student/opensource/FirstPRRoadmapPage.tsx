@@ -13,6 +13,10 @@ import {
 } from "./api/opensource.api";
 import guideData from "./data/open-source-guide.json";
 import { markGuideProgressTouched } from "./guide-progress";
+import { useAuthStore } from "../../../lib/auth.store";
+import { useCoachStore } from "./stores/coach.store";
+import { notifyLearningPathProgressChanged } from "./learning-paths.data";
+import { NextInPathCard } from "./components/NextInPathCard";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -30,6 +34,8 @@ export default function FirstPRRoadmapPage() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuthStore();
+  const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
   useEffect(() => {
     let isMounted = true;
@@ -61,6 +67,8 @@ export default function FirstPRRoadmapPage() {
       const isCurrentlyCompleted = completed.has(id);
       const nextCompleted = !isCurrentlyCompleted;
 
+      const isCompletingLastStep = nextCompleted && completed.size === STEPS.length - 1;
+
       setCompleted((prev) => {
         const next = new Set(prev);
         if (nextCompleted) next.add(id);
@@ -69,17 +77,31 @@ export default function FirstPRRoadmapPage() {
       });
       markGuideProgressTouched("first-pr-roadmap-completed", id);
 
-      void patchFirstPRProgress(id, nextCompleted).catch(() => {
-        setCompleted((prev) => {
-          const rolledBack = new Set(prev);
-          if (isCurrentlyCompleted) rolledBack.add(id);
-          else rolledBack.delete(id);
-          return rolledBack;
+      // Trigger coach if this click completes the roadmap
+      if (isCompletingLastStep) {
+        triggerCoach({
+          trigger: "FIRST_PR_COMPLETE",
+          context: {
+            skills: user?.skills || [],
+            completedGuides: ["First Pull Request Roadmap"],
+          },
         });
-        toast.error("Failed to update progress. Please try again.");
-      });
+      }
+
+      void patchFirstPRProgress(id, nextCompleted)
+        .then(() => notifyLearningPathProgressChanged())
+        .catch(() => {
+          setCompleted((prev) => {
+            const rolledBack = new Set(prev);
+            if (isCurrentlyCompleted) rolledBack.add(id);
+            else rolledBack.delete(id);
+            return rolledBack;
+          });
+          notifyLearningPathProgressChanged();
+          toast.error("Failed to update progress. Please try again.");
+        });
     },
-    [completed],
+    [completed, triggerCoach, user],
   );
 
   const totalSteps = STEPS.length;
@@ -157,6 +179,7 @@ export default function FirstPRRoadmapPage() {
         description="Step-by-step roadmap to making your first pull request on GitHub. Learn git workflow, finding issues, and contributing to open source projects."
         keywords="first pull request, open source contribution, GitHub beginner, git workflow, contribute to open source"
         canonicalUrl={canonicalUrl("/student/opensource/first-pr")}
+        ogImage="/og/og-first-pr.png"
       />
 
       {/* Atmospheric background */}
@@ -284,16 +307,18 @@ export default function FirstPRRoadmapPage() {
 
       <ConfirmDialog
         open={showResetConfirm}
-        onOpenChange={setShowResetConfirm}
+        onCancel={() => setShowResetConfirm(false)}
         title="Reset progress?"
         description="This will clear all completed steps. Your server-side progress will be reset."
         confirmLabel="Reset"
-        variant="danger"
+        confirmVariant="danger"
         onConfirm={() => {
           const toReset = Array.from(completed);
           setCompleted(new Set());
           toReset.forEach((id) => {
-            void patchFirstPRProgress(id, false).catch(() => {});
+            void patchFirstPRProgress(id, false)
+              .then(() => notifyLearningPathProgressChanged())
+              .catch(() => {});
           });
         }}
       />
@@ -398,6 +423,8 @@ export default function FirstPRRoadmapPage() {
           );
         })}
       </div>
+
+      <NextInPathCard currentSlug="first-pr" completed={allDone} />
     </div>
   );
 }

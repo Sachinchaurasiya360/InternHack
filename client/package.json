@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npx puppeteer browsers install chrome && vite build",
+    "build": "vite build",
+    "puppeteer:install": "npx puppeteer browsers install chrome",
     "lint": "eslint .",
     "typecheck": "tsc -b",
     "preview": "vite preview"
@@ -57,6 +58,7 @@
     "react-router": "^7.15.1",
     "react-syntax-highlighter": "^16.1.1",
     "react-to-print": "^3.3.0",
+    "react-tooltip": "^6.0.7",
     "reactflow": "^11.11.4",
     "recharts": "^3.8.1",
     "rehype-highlight": "^7.0.2",
@@ -76,8 +78,8 @@
     "@prerenderer/rollup-plugin": "^0.3.12",
     "@types/file-saver": "^2.0.7",
     "@types/node": "^24.10.1",
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^5.1.1",
     "eslint": "^9.39.1",

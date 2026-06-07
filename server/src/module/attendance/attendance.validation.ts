@@ -16,6 +16,14 @@ export const regularizeSchema = z.object({
   checkIn: z.string().datetime(),
   checkOut: z.string().datetime(),
   notes: z.string().min(1, "Reason for regularization is required").max(500),
+}).refine((data) => new Date(data.date) <= new Date(), {
+  message: "Date must not be in the future",
+}).refine((data) => new Date(data.checkIn) <= new Date(data.checkOut), {
+  message: "Check-out time must be after check-in time",
+  path: ["checkOut"],
+}).refine((data) => new Date(data.checkIn) <= new Date() && new Date(data.checkOut) <= new Date(), {
+  message: "Attendance times cannot be in the future",
+  path: ["checkOut"],
 });
 
 export const attendanceQuerySchema = z.object({

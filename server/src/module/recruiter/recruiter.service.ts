@@ -29,6 +29,16 @@ function isValidS3Url(url: string) {
 
 const logger = createLogger("recruiter.service");
 
+/** Legal manual status transitions for recruiter PATCH /applications/:id/status */
+const ALLOWED_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> = {
+  APPLIED: ["IN_PROGRESS", "REJECTED"],
+  IN_PROGRESS: ["SHORTLISTED", "REJECTED", "HIRED"],
+  SHORTLISTED: ["REJECTED", "HIRED"],
+  REJECTED: [],
+  HIRED: [],
+  WITHDRAWN: [],
+};
+
 interface TalentSearchFilter {
   page: number;
   limit: number;
@@ -114,6 +124,13 @@ export class RecruiterService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
+    const existing = await prisma.round.findFirst({
+      where: { jobId, name: data.name },
+    });
+    if (existing) {
+      throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { statusCode: 409 });
+    }
+
     return prisma.round.create({
       data: {
         jobId,
@@ -152,6 +169,15 @@ export class RecruiterService {
 
     const round = await prisma.round.findUnique({ where: { id: roundId } });
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
+
+    if (data.name !== undefined && data.name !== round.name) {
+      const existing = await prisma.round.findFirst({
+        where: { jobId, name: data.name, id: { not: roundId } },
+      });
+      if (existing) {
+        throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { statusCode: 409 });
+      }
+    }
 
     return prisma.round.update({
       where: { id: roundId },
@@ -356,6 +382,14 @@ export class RecruiterService {
     if (application.status === status) {
       const { job: _job, student: _student, ...current } = application;
       return current;
+    }
+
+    const allowedNext = ALLOWED_TRANSITIONS[application.status];
+    if (!allowedNext.includes(status)) {
+      throw Object.assign(
+        new Error(`Cannot transition application status from ${application.status} to ${status}`),
+        { statusCode: 409 },
+      );
     }
 
     const updated = await prisma.$transaction(async (tx) => {
@@ -568,43 +602,52 @@ export class RecruiterService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const [totalApplications, applicationsByStatus, rounds] = await Promise.all([
-      prisma.application.count({ where: { jobId } }),
-      prisma.application.groupBy({
-        by: ["status"],
-        where: { jobId },
-        _count: { id: true },
-      }),
-      prisma.round.findMany({
-        where: { jobId },
-        orderBy: { orderIndex: "asc" },
-        include: {
-          _count: { select: { roundSubmissions: true } },
-          roundSubmissions: {
-            select: { status: true },
+    const [totalApplications, applicationsByStatus, rounds, submissionsByRoundAndStatus] =
+      await Promise.all([
+        prisma.application.count({ where: { jobId } }),
+        prisma.application.groupBy({
+          by: ["status"],
+          where: { jobId },
+          _count: { id: true },
+        }),
+        prisma.round.findMany({
+          where: { jobId },
+          orderBy: { orderIndex: "asc" },
+          include: {
+            _count: { select: { roundSubmissions: true } },
           },
-        },
-      }),
-    ]);
+        }),
+        prisma.roundSubmission.groupBy({
+          by: ["roundId", "status"],
+          where: { round: { jobId } },
+          _count: { id: true },
+        }),
+      ]);
 
     const statusCounts: Record<string, number> = {};
     for (const s of applicationsByStatus) {
       statusCounts[s.status] = s._count.id;
     }
 
+    const submissionLookup = new Map(
+      submissionsByRoundAndStatus.map((s) => [
+        `${s.roundId}:${s.status}`,
+        s._count.id,
+      ]),
+    );
+
     const roundAnalytics = rounds.map((round) => {
-      const completed = round.roundSubmissions.filter((s) => s.status === "COMPLETED").length;
-      const inProgress = round.roundSubmissions.filter((s) => s.status === "IN_PROGRESS").length;
-      const pending = round.roundSubmissions.filter((s) => s.status === "PENDING").length;
+      const lookup = (status: string) =>
+        submissionLookup.get(`${round.id}:${status}`) ?? 0;
 
       return {
         id: round.id,
         name: round.name,
         orderIndex: round.orderIndex,
         totalSubmissions: round._count.roundSubmissions,
-        completed,
-        inProgress,
-        pending,
+        completed: lookup("COMPLETED"),
+        inProgress: lookup("IN_PROGRESS"),
+        pending: lookup("PENDING"),
       };
     });
 
@@ -835,4 +878,4 @@ export class RecruiterService {
     });
   }
 }
-
+

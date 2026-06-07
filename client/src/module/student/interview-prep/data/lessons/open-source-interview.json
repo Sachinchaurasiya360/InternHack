@@ -1,0 +1,272 @@
+[
+  {
+    "id": "oss-contribution-process",
+    "sectionId": "open-source-interview",
+    "orderIndex": 0,
+    "title": "Walk Me Through Your Contribution Process",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Fork", "Clone", "Branch", "Commit", "PR", "Review"],
+    "content": {
+      "question": "Walk me through your typical open-source contribution process from finding an issue to getting a PR merged.",
+      "answer": "A structured contribution process demonstrates that you understand how open-source collaboration works beyond just pushing code.\n\nStart by finding a project that aligns with your skills and interests. Look for repositories with 'good first issue' or 'help wanted' labels. Before contributing, read the CONTRIBUTING.md and understand the project's coding standards, PR template, and testing requirements.\n\nWhen you find an issue you want to work on, comment on it expressing interest and asking clarifying questions. This prevents duplicate work and shows the maintainers you're thoughtful. Once assigned, fork the repository, clone it locally, and create a descriptive branch name (e.g., feat/add-login-validation or fix/typo-in-readme).\n\nMake focused, atomic commits following Conventional Commits style (feat:, fix:, chore:, docs:). Write meaningful commit messages. Push your branch and open a Pull Request against the original repository. Fill out the PR template thoroughly, linking to the issue you're addressing.\n\nDuring review, be responsive to feedback. Address comments promptly, make requested changes, and engage respectfully if you disagree. Once approved and merged, celebrate your contribution!",
+      "codeExamples": [],
+      "notes": [
+        "Always communicate early — comment on the issue before starting work",
+        "Keep PRs small and focused — one feature or fix per PR",
+        "Respond to reviews within 48 hours to keep momentum",
+        "Thank reviewers for their time and feedback"
+      ],
+      "followUps": [
+        "How do you handle a situation where a maintainer rejects your approach?",
+        "What do you do if your PR has been open for weeks with no review?",
+        "How do you choose which project to contribute to next?"
+      ],
+      "interviewTips": [
+        "Walk through the process step-by-step, showing you understand the full lifecycle",
+        "Emphasize communication skills — commenting on issues, responding to reviews",
+        "Mention specific examples from your actual contributions"
+      ]
+    }
+  },
+  {
+    "id": "oss-read-unfamiliar-codebase",
+    "sectionId": "open-source-interview",
+    "orderIndex": 1,
+    "title": "Reading an Unfamiliar Codebase",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Code Reading", "Architecture", "Documentation", "Debugging", "Exploration"],
+    "content": {
+      "question": "How do you approach reading and understanding an unfamiliar codebase to make your first contribution?",
+      "answer": "Reading an unfamiliar codebase is a skill that improves with practice. Start by understanding the project's purpose and architecture at a high level before diving into code.\n\nFirst, read the project's README, documentation, and any architecture guides. Understand the tech stack, folder structure, and key design patterns. Run the project locally and explore its functionality as a user.\n\nNext, trace through a feature end-to-end. Start from the entry point (e.g., main.ts, index.tsx, app.ts) and follow how a request flows through the system. Use the debugger or add logging to understand the runtime behavior.\n\nLook at recently merged PRs to see how other contributors solved similar problems. Read the tests — they often reveal how the code is expected to behave. Use your IDE's 'Go to Definition' and 'Find References' features to navigate the code graph.\n\nWhen you find the area relevant to your change, study the existing patterns and follow them. Consistency is more important than perfection in an unfamiliar codebase.",
+      "codeExamples": [],
+      "notes": [
+        "Start high-level (README, docs) before diving into code",
+        "Run the project locally and explore it as a user",
+        "Trace a complete feature flow from entry to response",
+        "Study existing PRs and tests for patterns"
+      ],
+      "followUps": [
+        "What tools or IDE features do you use for codebase navigation?",
+        "How do you decide where to start when the codebase has no documentation?",
+        "What questions do you ask a maintainer when you're stuck?"
+      ],
+      "interviewTips": [
+        "Show that you have a systematic approach, not just 'read random files'",
+        "Mention specific tools like IDE search, debugger, or sequence diagrams",
+        "Highlight that you look for patterns rather than trying to understand everything"
+      ]
+    }
+  },
+  {
+    "id": "oss-good-first-issue",
+    "sectionId": "open-source-interview",
+    "orderIndex": 2,
+    "title": "Writing a Good First-Time Issue Comment",
+    "difficulty": "Beginner",
+    "type": "Situational",
+    "concepts": ["Communication", "Issue Etiquette", "Community", "Onboarding"],
+    "content": {
+      "question": "You find an interesting issue labeled 'good first issue'. What do you write in your first comment expressing interest?",
+      "answer": "A well-crafted first comment sets the tone for your interaction with the project maintainers and increases the likelihood of a positive response.\n\nStart by introducing yourself briefly and expressing genuine interest in the project. Reference the specific issue by number and summarize your understanding of what needs to be done. This shows you've read and understood the issue.\n\nAsk specific, informed questions about implementation details, the expected behavior, or any constraints. Avoid vague questions like 'How do I start?'. Instead, ask about the relevant files, the testing approach, or the preferred solution direction.\n\nMention your relevant experience briefly — 'I've worked with React and have contributed to similar projects.' Offer to pick up the issue and ask for assignment.\n\nFinally, thank the maintainers for their work on the project. A respectful, well-written comment shows you'll be a positive contributor to the community.",
+      "codeExamples": [],
+      "notes": [
+        "Show you've done your homework — reference the issue and the project",
+        "Ask specific, informed questions, not generic ones",
+        "Be respectful and appreciative of maintainers' volunteer time",
+        "Offer to start working once assigned"
+      ],
+      "followUps": [
+        "What if a maintainer doesn't respond to your comment?",
+        "How do you handle an issue that already has someone assigned?",
+        "What if you realize the issue is too complex after signing up?"
+      ],
+      "interviewTips": [
+        "Demonstrate that you understand open-source etiquette",
+        "Show you value maintainers' time by coming prepared",
+        "Emphasize clear communication as a key soft skill"
+      ]
+    }
+  },
+  {
+    "id": "oss-git-workflow",
+    "sectionId": "open-source-interview",
+    "orderIndex": 3,
+    "title": "Git Workflow for Contributing",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Git", "Rebase", "Merge", "Squash", "Sync", "Fork"],
+    "content": {
+      "question": "Describe the Git workflow you use when contributing to an open-source project. How do you keep your fork in sync and handle merge conflicts?",
+      "answer": "A disciplined Git workflow is essential for smooth contributions, especially when working across multiple PRs or with active upstream repositories.\n\nStart by forking the upstream repository and cloning your fork. Add the upstream repository as a remote (git remote add upstream URL). Before starting any work, sync your main branch: git checkout main, git fetch upstream, git merge upstream/main (or rebase).\n\nCreate a feature branch from the latest main: git checkout -b fix/issue-description. Make small, atomic commits with clear messages. I use Conventional Commits format (feat:, fix:, chore:, docs:, refactor:).\n\nWhen the upstream main has moved forward while you're working, rebase your branch: git fetch upstream, git rebase upstream/main. This keeps your commits on top of the latest changes. If conflicts arise, resolve them carefully, testing after each resolution.\n\nBefore opening a PR, squash related commits into logical units using git rebase -i. Force push to your branch (git push --force-with-lease). Open the PR against the upstream repository.\n\nDuring review, make additional commits for requested changes. After the PR is approved, the maintainers may squash-merge, so don't squash prematurely.",
+      "codeExamples": [],
+      "notes": [
+        "Never commit directly to main — always use feature branches",
+        "Use rebase (not merge) to incorporate upstream changes into your branch",
+        "Use --force-with-lease instead of --force for safety",
+        "Keep PRs focused — one logical change per PR"
+      ],
+      "followUps": [
+        "What's the difference between rebase and merge, and when would you use each?",
+        "How do you recover from a rebase gone wrong?",
+        "What is the git reflog and when have you used it?"
+      ],
+      "interviewTips": [
+        "Show you understand both the mechanics and the rationale behind each step",
+        "Mention --force-with-lease specifically — it shows you care about safety",
+        "Demonstrate that you can recover from mistakes (reflog, ORIG_HEAD)"
+      ]
+    }
+  },
+  {
+    "id": "oss-rejected-pr",
+    "sectionId": "open-source-interview",
+    "orderIndex": 4,
+    "title": "Handling a Rejected PR",
+    "difficulty": "Intermediate",
+    "type": "Situational",
+    "concepts": ["Resilience", "Feedback", "Collaboration", "Growth Mindset"],
+    "content": {
+      "question": "Tell me about a time one of your PRs was rejected or received critical feedback. How did you handle it?",
+      "answer": "Open-source contributions involve collaboration, and not every PR gets accepted on the first try. How you handle rejection reveals your ability to collaborate and grow.\n\nWhen I had a PR for a UI component rejected because it didn't follow the project's existing accessibility patterns, I first took time to understand the reviewer's feedback fully. I asked clarifying questions about which specific patterns I should follow and asked for examples of similar components that passed review.\n\nI studied the existing accessible components, implemented the changes, and re-submitted. The reviewer appreciated my responsiveness. The key lesson was understanding that the rejection was about the code, not about me personally.\n\nIf a PR is rejected outright, I try to understand the maintainer's perspective. Sometimes the feature doesn't align with the project's roadmap. In that case, I thank them for their time and look for other issues. Maintaining a positive relationship is more important than getting a single PR merged.",
+      "codeExamples": [],
+      "notes": [
+        "Separate your ego from your code — criticism of the PR is not criticism of you",
+        "Ask clarifying questions rather than getting defensive",
+        "Sometimes the best response is to gracefully move on",
+        "Every rejection is a learning opportunity"
+      ],
+      "followUps": [
+        "What if you disagree with a reviewer's feedback?",
+        "How do you decide whether to argue or accept the feedback?",
+        "Have you ever had a PR closed without review? What did you do?"
+      ],
+      "interviewTips": [
+        "Share a specific, real example with details (anonymized if needed)",
+        "Show growth and learning from the experience",
+        "Emphasize that you value relationships over PR count"
+      ]
+    }
+  },
+  {
+    "id": "oss-fork-vs-branch",
+    "sectionId": "open-source-interview",
+    "orderIndex": 5,
+    "title": "Fork vs Branch",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Fork", "Branch", "Permissions", "Collaboration Model"],
+    "content": {
+      "question": "What is the difference between a fork and a branch? When would you use each in open-source contributions?",
+      "answer": "A fork is a server-side copy of an entire repository under your GitHub account, while a branch is a lightweight pointer to a specific commit within a single repository.\n\nForks are used when you don't have write access to the upstream repository — which is the case for most open-source contributions. You fork the repository, clone your fork, make changes, and submit a PR from your fork's branch to the upstream repository. The fork serves as your personal workspace.\n\nBranches are used within a repository to isolate changes. In a forked repository, you create branches for each feature or fix you're working on. In the upstream repository, maintainers use branches to manage their development workflow.\n\nIf you have write access (e.g., within your team's repository), you can work directly in branches without forking. But for external open-source contributions, the fork-and-PR model is standard because it respects the maintainers' control over their repository.",
+      "codeExamples": [],
+      "notes": [
+        "Fork = copy of the entire repo under your account (server-side)",
+        "Branch = pointer to a commit within a repo (lightweight)",
+        "External contributors must fork due to permission restrictions",
+        "Team members with write access can use branches directly"
+      ],
+      "followUps": [
+        "How do you sync your fork with the upstream repository?",
+        "Can you have multiple forks of the same repository?",
+        "How do you delete a fork after it's been merged upstream?"
+      ],
+      "interviewTips": [
+        "Clearly distinguish between server-side (fork) and local (branch) concepts",
+        "Explain the permission model — fork when no write access, branch when you have it",
+        "This is a fundamental question — be precise and confident"
+      ]
+    }
+  },
+  {
+    "id": "oss-find-good-issues",
+    "sectionId": "open-source-interview",
+    "orderIndex": 6,
+    "title": "Finding Good First Issues",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Issue Discovery", "Labels", "Project Selection", "Filtering"],
+    "content": {
+      "question": "How do you find good first issues and choose which open-source projects to contribute to?",
+      "answer": "Finding the right project and issue is the most important first step in open-source contribution. Starting with a project you actually use gives you intrinsic motivation and domain knowledge.\n\nI start by listing projects I use daily — tools, libraries, and frameworks I'm already familiar with. For these projects, I check their GitHub issues filtered by labels like 'good first issue', 'help wanted', 'beginner friendly', or 'up-for-grabs'.\n\nFor discovering new projects, I use platforms like Good First Issue (goodfirstissue.dev), Up For Grabs, or GitHub's Explore page. I also use InternHack's open source discovery page, which filters repos by domain and difficulty level.\n\nWhen evaluating a project, I check several signals: recent commit activity (is it actively maintained?), responsiveness of maintainers (how quickly do issues get responses?), quality of contributing documentation (is there CONTRIBUTING.md?), and community friendliness (read through recent PR discussions).\n\nI also look at the issue's scope. A good first issue should be well-described, have clear acceptance criteria, and not require deep project-specific knowledge. I avoid issues that have been open for months without activity.",
+      "codeExamples": [],
+      "notes": [
+        "Start with projects you already use and love",
+        "Check for active maintenance — recent commits and responsive maintainers",
+        "Look for well-described issues with clear acceptance criteria",
+        "Use label filters: good-first-issue, help-wanted, beginner-friendly"
+      ],
+      "followUps": [
+        "What red flags would make you avoid a project?",
+        "How do you evaluate if a maintainer is responsive?",
+        "Would you rather contribute to a small new project or a large established one?"
+      ],
+      "interviewTips": [
+        "Show that you're strategic about where you invest your time",
+        "Mention specific tools and platforms you use",
+        "Demonstrate that you evaluate both the code and the community"
+      ]
+    }
+  },
+  {
+    "id": "oss-good-pr-description",
+    "sectionId": "open-source-interview",
+    "orderIndex": 7,
+    "title": "What Makes a Good PR Description?",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["PR", "Communication", "Documentation", "Review"],
+    "content": {
+      "question": "What elements make a great PR description? What information do maintainers expect to see?",
+      "answer": "A great PR description makes the reviewer's job easy. It clearly explains what the change does, why it's needed, and how it was tested. Maintainers review many PRs, so a well-written description increases your chances of a fast, smooth review.\n\nEvery PR should include: a concise title following Conventional Commits (e.g., feat: add dark mode toggle), the issue it closes (Closes #123), a summary of what was changed and why, screenshots or screen recordings for UI changes, testing instructions, and any relevant environment notes.\n\nGood PR descriptions also include context about the approach taken and why alternatives were rejected. This shows thoughtfulness and can prevent review cycles debating approaches that were already considered.\n\nInclude a checklist of verification steps the reviewer should follow. This reduces back-and-forth and demonstrates that you've tested your changes thoroughly. If the PR has breaking changes or migration steps, call those out prominently.",
+      "codeExamples": [],
+      "notes": [
+        "Always link to the issue your PR addresses",
+        "Include screenshots for any visual changes",
+        "Explain your approach and why you chose it over alternatives",
+        "Include testing instructions and a verification checklist"
+      ],
+      "followUps": [
+        "What if a PR is just fixing a typo — do you still need a full description?",
+        "How do you handle a PR that addresses multiple related issues?",
+        "What information do you include when the change is purely technical with no visible effect?"
+      ],
+      "interviewTips": [
+        "Show that you think from the reviewer's perspective",
+        "Mention that a good PR description speeds up the review process",
+        "The checklist is a practical detail that shows attention to process"
+      ]
+    }
+  },
+  {
+    "id": "oss-open-source-mindset",
+    "sectionId": "open-source-interview",
+    "orderIndex": 8,
+    "title": "Why Open Source?",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Motivation", "Community", "Learning", "Career Growth"],
+    "content": {
+      "question": "Why did you start contributing to open source, and what keeps you motivated to continue?",
+      "answer": "Authenticity matters here. Share your genuine motivation rather than what you think interviewers want to hear.\n\nI started contributing to open source because I wanted to work on real software used by real people, beyond academic projects and coding challenges. My first contribution was fixing a typo in documentation — small, but it gave me confidence that I could participate.\n\nWhat keeps me motivated is the learning. Every PR review teaches me something — a better way to structure code, a test pattern I hadn't considered, or a performance optimization. I've learned more from code reviews by experienced maintainers than from any course.\n\nBeyond technical skills, open source taught me collaboration, asynchronous communication, and how to give and receive constructive feedback. It's also deeply satisfying to see a project I contributed to being used by thousands of people.\n\nFor career growth, open source contributions provide a public portfolio of my work. Interviewers can see my actual code, how I handle feedback, and my attention to quality.",
+      "codeExamples": [],
+      "notes": [
+        "Be genuine — share your real story, not a rehearsed answer",
+        "Highlight both technical and soft skill growth",
+        "Open source demonstrates initiative and passion beyond required work",
+        "It provides a public, verifiable portfolio for interviews"
+      ],
+      "followUps": [
+        "How do you balance open-source contributions with your other commitments?",
+        "What type of open-source work do you enjoy most (docs, features, bug fixes, reviews)?",
+        "Have you ever become a maintainer of a project you started contributing to?"
+      ],
+      "interviewTips": [
+        "This is often asked to gauge genuine interest vs resume padding",
+        "Share a specific story about a meaningful interaction or learning moment",
+        "Connect open source to your career goals and growth"
+      ]
+    }
+  }
+]
