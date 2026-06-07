@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { DsaService } from "./dsa.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 import { syncLeetCodeSolvedProblems } from "./leetcode.service.js";
+import { executeCodeSchema } from "./dsa.validation.js";
 import { prisma } from "../../database/db.js";
 import { isPremiumUser } from "../../utils/premium.utils.js";
 
@@ -203,7 +204,9 @@ export class DsaController {
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
       const problemId = parseInt(req.params.problemId as string);
       if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
-      const { language, code } = req.body;
+      const parsed = executeCodeSchema.safeParse(req.body);
+      if (!parsed.success) { res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() }); return; }
+      const { language, code } = parsed.data;
       const result = await this.dsaService.executeCodeAgainstTestCases(userId, problemId, language, code);
       res.json(result);
     } catch (err) {
