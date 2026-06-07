@@ -56,11 +56,13 @@ export default function GuideCompletionSection({
     [],
   );
 
+  const studentName = user?.name ?? "Student";
+
   const handleDownload = useCallback(async () => {
     setDownloading(true);
     try {
       await downloadGuideCertificate({
-        studentName: user?.name ?? "Student",
+        studentName,
         guideName: certificateGuideName,
         completionDate,
       });
@@ -69,7 +71,7 @@ export default function GuideCompletionSection({
     } finally {
       setDownloading(false);
     }
-  }, [user?.name, certificateGuideName, completionDate]);
+  }, [studentName, certificateGuideName, completionDate]);
 
   return (
     <motion.section
