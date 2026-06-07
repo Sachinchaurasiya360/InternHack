@@ -28,7 +28,7 @@ export class OpensourceController {
       const languages = await service.getLanguages();
 
       // cache for 1 hour, allow stale data for 24 hours while revalidating
-      res.setHeader( "Cache-Control", "public, max-age=3600, stale-while-revalidate=86400" );
+      res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
 
       res.json({ languages });
     } catch (err) {
@@ -261,6 +261,28 @@ export class OpensourceController {
       next(err);
     }
   }
+
+  getHacktoberfestProgress = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      if (!req.user?.id) {
+        res.status(401).json({ message: "Unauthorized access" });
+        return;
+      }
+
+      const result = await service.getHacktoberfestProgress(req.user.id);
+
+      res.json({
+        success: true,
+        data: result
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
 
   async getFirstPrProgress(req: Request, res: Response, next: NextFunction) {
     try {

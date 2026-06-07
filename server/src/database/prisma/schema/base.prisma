@@ -490,8 +490,9 @@ model opensourceRepo {
   logo        String?
   tags        String[]       @default([])
   highlights  String[]       @default([])
-  trending    Boolean        @default(false)
-  lastUpdated DateTime       @default(now())
+  trending      Boolean        @default(false)
+  hacktoberfest Boolean        @default(false)
+  lastUpdated   DateTime       @default(now())
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
 

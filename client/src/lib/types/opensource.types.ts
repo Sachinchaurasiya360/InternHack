@@ -20,6 +20,7 @@ export interface OpenSourceRepo {
   tags: string[];
   highlights: string[];
   trending: boolean;
+  hacktoberfest: boolean;
   lastUpdated: string;
   createdAt: string;
   updatedAt: string;
@@ -60,6 +61,26 @@ export interface OpenSourceContributionTrendResponse {
   trend: OpenSourceContributionTrendPoint[];
   total: number;
   domains: { domain: string; count: number }[];
+}
+
+export interface HacktoberfestProgressNode {
+  id: number;
+  label: string;
+  description: string;
+  completed: boolean;
+}
+
+export interface HacktoberfestProgressResponse {
+  completed: number;
+  goal: number;
+  percent: number;
+  nodes: HacktoberfestProgressNode[];
+  stats: {
+    approvedContributions: number;
+    repoSuggestions: number;
+    firstPrStepsCompleted: number;
+    firstPrTotalSteps: number;
+  };
 }
 
 // GSoC Organizations
