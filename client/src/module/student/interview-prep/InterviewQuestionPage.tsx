@@ -235,7 +235,28 @@ export default function InterviewQuestionPage() {
   );
   }
 
-  const { content } = question;
+  const content = question.content;
+  const hasValidContent = content && typeof content.question === "string" && typeof content.answer === "string";
+  
+  if (!hasValidContent) {
+    console.error("Malformed interview question payload", {
+      sectionSlug,
+      questionId,
+    });
+
+  return (
+      <div className="relative max-w-3xl mx-auto py-24 px-6 text-center">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-xl p-8">
+          <h2 className="text-2xl font-bold">Question not found</h2>
+          <p className="text-sm text-stone-600 dark:text-stone-400">
+            Invalid or corrupted question data.
+          </p>
+          <Link to={basePath}>Go back</Link>
+        </div>
+      </div>
+    );
+  }
+  
   const codeExamples = content.codeExamples ?? [];
 
   return (
