@@ -96,6 +96,7 @@ export class ReimbursementController {
       if (isNaN(id)) return res.status(400).json({ message: "Invalid reimbursement ID" });
 
       const body = approveReimbursementSchema.safeParse(req.body);
+      if (!body.success) return res.status(400).json({ message: "Validation failed", errors: body.error.flatten() });
       const record = await this.reimbursementService.approve(id, body.data?.approverNote);
       return res.json({ message: "Reimbursement approved", record });
     } catch (error) {
@@ -112,24 +113,9 @@ export class ReimbursementController {
       if (isNaN(id)) return res.status(400).json({ message: "Invalid reimbursement ID" });
 
       const body = approveReimbursementSchema.safeParse(req.body);
+      if (!body.success) return res.status(400).json({ message: "Validation failed", errors: body.error.flatten() });
       const record = await this.reimbursementService.reject(id, body.data?.approverNote);
       return res.json({ message: "Reimbursement rejected", record });
-    } catch (error) {
-      if (error instanceof Error && (error.message === "Reimbursement not found" || error.message.startsWith("Only")))
-        return res.status(400).json({ message: error.message });
-      console.error(error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  async financeApprove(req: Request, res: Response) {
-    try {
-      const id = Number(req.params["id"]);
-      if (isNaN(id)) return res.status(400).json({ message: "Invalid reimbursement ID" });
-
-      const body = approveReimbursementSchema.safeParse(req.body);
-      const record = await this.reimbursementService.financeApprove(id, body.data?.approverNote);
-      return res.json({ message: "Reimbursement approved by finance", record });
     } catch (error) {
       if (error instanceof Error && (error.message === "Reimbursement not found" || error.message.startsWith("Only")))
         return res.status(400).json({ message: error.message });
@@ -151,3 +137,4 @@ export class ReimbursementController {
     }
   }
 }
+
