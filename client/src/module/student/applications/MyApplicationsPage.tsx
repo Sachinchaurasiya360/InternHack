@@ -267,9 +267,8 @@ export default function MyApplicationsPage() {
   }, [search]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -305,18 +304,13 @@ export default function MyApplicationsPage() {
           a.adminJob.role?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
           a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
-
-    if (statusFilter !== "ALL") {
-      base = base.filter((a: any) => a.status === statusFilter); // external applications don't have status, so this will empty them unless we add dummy status or handle it
-    }
-
     return [...base].sort((a, b) => {
       if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
       return 0;
     });
-  }, [externalApplications, debouncedSearch, sortOption, statusFilter]);
+  }, [externalApplications, debouncedSearch, sortOption]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;
@@ -460,7 +454,7 @@ export default function MyApplicationsPage() {
               setStatusFilter(tab);
               setPage(1);
             }}
-            className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-all ${
+            className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-all cursor-pointer ${
               statusFilter === tab
                 ? "bg-lime-400 text-stone-900 border-lime-400"
                 : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 dark:hover:border-white/30"
@@ -471,7 +465,7 @@ export default function MyApplicationsPage() {
         ))}
       </div>
 
-      {/* Sort */}
+      {/* Sort Options */}
       <div className="mb-4 flex items-center gap-2">
         <label htmlFor="sort" className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
           Sort by
@@ -488,7 +482,8 @@ export default function MyApplicationsPage() {
           <option value="status">Status</option>
         </select>
       </div>
-      {/* Search */}
+
+      {/* Widget and Search */}
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />

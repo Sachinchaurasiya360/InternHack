@@ -244,4 +244,13 @@ export class OpensourceController {
       next(err);
     }
   }
+
+  async getRecommendedRepos(req: Request, res: Response, next: NextFunction) {
+    try {
+      const repos = await service.getRecommendedRepos(req.user!.id);
+      res.json({ repos });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
