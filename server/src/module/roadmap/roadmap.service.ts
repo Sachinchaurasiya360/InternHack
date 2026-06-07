@@ -142,12 +142,12 @@ export async function listPublishedRoadmaps(opts: {
     });
   }
 
-  const tagFilters: string[] = [];
-  if (opts.tag) tagFilters.push(opts.tag);
-  if (opts.category) tagFilters.push(opts.category);
-  if (tagFilters.length > 0) {
-    andConditions.push({ tags: { hasSome: tagFilters } });
-  }
+ const tagFilters: string[] = [];
+if (opts.tag) tagFilters.push(opts.tag.toLowerCase());
+if (opts.category) tagFilters.push(opts.category.toLowerCase());
+if (tagFilters.length > 0) {
+  andConditions.push({ tags: { hasSome: tagFilters } });
+}
 
   if (opts.search) {
     const s = opts.search.trim();

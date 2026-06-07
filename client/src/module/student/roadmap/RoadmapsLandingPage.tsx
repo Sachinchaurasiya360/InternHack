@@ -153,12 +153,15 @@ export default function RoadmapsLandingPage() {
     }
     
     if (tag) {
-      result = result.filter(r => r.tags.includes(tag));
-    }
-
+  result = result.filter(r =>
+    r.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
+  );
+  }
     if (category) {
-      result = result.filter(r => r.tags.includes(category));
-    }
+  result = result.filter(r =>
+    r.tags.map(t => t.toLowerCase()).includes(category.toLowerCase())
+  );
+  }
     
     return result;
   }, [roadmaps, debouncedSearch, level, tag, category]);
@@ -179,7 +182,7 @@ export default function RoadmapsLandingPage() {
       }
       if (level && level !== "ALL_LEVELS" && r.level && r.level !== level) return false;
       if (tag && !(r.tags ?? []).includes(tag)) return false;
-      if (category && !(r.tags ?? []).includes(category)) return false;
+      if (category && !(r.tags ?? []).map(t => t.toLowerCase()).includes(category.toLowerCase())) return false;
       return true;
     });
   }, [enrollments, debouncedSearch, level, tag, category]);
