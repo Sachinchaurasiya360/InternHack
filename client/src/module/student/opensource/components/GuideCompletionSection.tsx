@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Download, ArrowRight } from "lucide-react";
-import toast from "@/components/ui/toast";
+import toast from "../../../../components/ui/toast";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { downloadGuideCertificate } from "../_shared/guide-certificate.utils";
 import GuideCertificateCard from "./GuideCertificateCard";
