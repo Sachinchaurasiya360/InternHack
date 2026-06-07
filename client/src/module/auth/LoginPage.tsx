@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, ArrowRight } from "lucide-react";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { SEO } from "../../components/SEO";
@@ -97,6 +97,15 @@ export default function LoginPage() {
             transition={{ duration: 0.4 }}
             className="w-full"
           >
+            <div className="mb-6">
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 text-sm font-medium text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white no-underline"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to home
+              </Link>
+            </div>
             <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
               <span className="h-1.5 w-1.5 bg-lime-400" />
               sign in
