@@ -42,7 +42,7 @@ function useWishlist() {
     }
   });
 
-  const toggle = (id: number) => {
+  const toggle = useCallback((id: number) => {
     setWishlist((prev) => {
       const next = prev.includes(id)
         ? prev.filter((x) => x !== id)
@@ -50,9 +50,9 @@ function useWishlist() {
       localStorage.setItem(WISHLIST_KEY, JSON.stringify(next));
       return next;
     });
-  };
+  }, []);
 
-  const has = (id: number) => wishlist.includes(id);
+  const has = useCallback((id: number) => wishlist.includes(id), [wishlist]);
   return { wishlist, toggle, has };
 }
 
@@ -228,7 +228,21 @@ const GSoCOrgCard = memo(function GSoCOrgCard({
   const handleWishlistClick = (event: React.MouseEvent) => onWishlistToggle(org.id, event);
 
   return (
-    <div role="button" tabIndex={0} onClick={handleSelect} onKeyDown={(e) => e.key === "Enter" && handleSelect()} className={cardBase}>
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleSelect}
+      onKeyDown={(e) => {
+        const isSpace = e.key === " " || e.key === "Spacebar" || e.code === "Space";
+        if (isSpace) {
+          e.preventDefault();
+        }
+        if (e.key === "Enter" || isSpace) {
+          handleSelect();
+        }
+      }}
+      className={cardBase}
+    >
       <div className="mb-3 flex items-start gap-3">
         <OrgMark org={org} />
         <div className="min-w-0 flex-1">
@@ -651,7 +665,9 @@ export default function GSoCReposPage() {
   // FIX 2: Functional updater.
   // This ensures that delayed debounced calls always use the freshest URL state.
   const updateFilter = (key: string, value: string) => {
-    clearPendingSearchTimer();
+    if (key === "q") {
+      clearPendingSearchTimer();
+    }
     setSearchParams(
       (prev) => {
         const newParams = new URLSearchParams(prev);
