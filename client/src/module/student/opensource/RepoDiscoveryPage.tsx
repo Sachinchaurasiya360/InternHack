@@ -371,6 +371,7 @@ export default function RepoDiscoveryPage() {
   const displayedRepos = useMemo(() => {
     if (showSaved) return bookmarkedData || [];
     return data?.repos ?? [];
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
   }, [data, showSaved, bookmarkedData]);
 
   // Global stats fetched independently so the header strip stays accurate
