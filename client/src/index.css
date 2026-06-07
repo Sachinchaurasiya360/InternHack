@@ -322,18 +322,30 @@ body::-webkit-scrollbar-thumb:hover {
     color: #030712;
   }
 
-  /* Hide navigation and sidebar */
+  /* Hide navigation, sidebar, and print-hidden elements */
   nav,
   aside,
   .navbar,
   .sidebar,
-  .student-sidebar {
+  .student-sidebar,
+  [data-print-hide] {
     display: none !important;
   }
 
   /* Hide print button and other action buttons */
   .print\:hidden {
     display: none !important;
+  }
+
+  /* Show link URLs after anchor text */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+  a[href^="#"]::after,
+  a[href^="javascript"]::after {
+    content: none;
   }
 
   /* ATS Report section — full width and clean */

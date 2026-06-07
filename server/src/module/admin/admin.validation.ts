@@ -112,6 +112,7 @@ export const createRepoSchema = z.object({
   tags: z.array(z.string()).default([]),
   highlights: z.array(z.string()).default([]),
   trending: z.boolean().default(false),
+  hacktoberfest: z.boolean().default(false),
 });
 
 export const updateRepoSchema = createRepoSchema.partial();

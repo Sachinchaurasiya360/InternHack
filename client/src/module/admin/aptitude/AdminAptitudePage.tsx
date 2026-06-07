@@ -10,6 +10,7 @@ import {
   X,
   Loader2,
 } from "lucide-react";
+import DOMPurify from "dompurify";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
@@ -492,7 +493,7 @@ export default function AdminAptitudePage() {
                 {expandedQ === i && (
                   <div className="px-4 pb-4 border-t border-gray-800 pt-3 text-sm text-gray-300 space-y-2">
                     <div
-                      dangerouslySetInnerHTML={{ __html: q.question }}
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(q.question) }}
                       className="prose prose-invert prose-sm max-w-none"
                     />
                     <div className="grid grid-cols-2 gap-2 text-xs">
@@ -537,7 +538,7 @@ export default function AdminAptitudePage() {
                       <div className="text-xs text-gray-400 mt-2">
                         <strong>Explanation:</strong>{" "}
                         <span
-                          dangerouslySetInnerHTML={{ __html: q.explanation }}
+                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(q.explanation) }}
                         />
                       </div>
                     )}
