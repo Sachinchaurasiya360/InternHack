@@ -1339,6 +1339,7 @@ enum UsageAction {
   AI_JOB_CHAT
   CODE_RUN
   GITHUB_STATS
+  ROADMAP_GENERATION
 }
 
 enum EmailCampaignStatus {
