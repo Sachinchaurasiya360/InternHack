@@ -103,7 +103,6 @@ export default function ApplicationDetail() {
   const [isAdvancing, setIsAdvancing] = useState(false);
 
   const fetchDetail = useCallback(async (signal?: AbortSignal) => {
-const fetchDetail = useCallback(async (signal?: AbortSignal) => {
     try {
       const res = await api.get(
         `/recruiter/applications/${applicationId}`,
@@ -111,8 +110,6 @@ const fetchDetail = useCallback(async (signal?: AbortSignal) => {
       );
       setApplication(res.data.application);
       return res.data.application;
-    } catch (err: any) {
-      if (err.name !== "CanceledError" && err.name !== "AbortError") {
     } catch (err) {
       if (err instanceof Error && err.name !== "CanceledError" && err.name !== "AbortError") {
         console.error(err);
