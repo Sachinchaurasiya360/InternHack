@@ -1085,8 +1085,8 @@ export default function ProgramTrackerPage() {
         ogImage="/og/og-programs.png"
       />
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
-        <div className="absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl from-emerald-200/30 to-transparent rounded-bl-full pointer-events-none" />
+      <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
+        <div className="absolute top-0 right-0 w-56 h-56 bg-linear-to-bl from-emerald-200/30 to-transparent rounded-bl-full pointer-events-none" />
         <div className="relative">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg">
@@ -1146,7 +1146,7 @@ export default function ProgramTrackerPage() {
         if (next.program) {
           const days = Math.ceil((next.time - now) / 86400000);
           return (
-            <div className="sticky top-0 z-10 mb-5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-lg px-4 py-2.5 flex items-center justify-between">
+            <div className="sticky top-0 z-10 mb-5 bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-lg px-4 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <p className="text-xs font-medium text-stone-700 dark:text-stone-300">
@@ -1203,7 +1203,7 @@ export default function ProgramTrackerPage() {
             },
           ].map(({ label, value, options, set }) => (
             <div key={label} className="relative group">
-              <Button variant="outline" size="sm">
+              <Button variant="secondary" size="sm">
                 <Filter className="w-3 h-3" />
                 <span className="text-gray-400">{label}:</span>
                 <span className="font-semibold text-gray-900 dark:text-white">
@@ -1227,7 +1227,7 @@ export default function ProgramTrackerPage() {
             </div>
           ))}
           <div className="relative group">
-            <Button variant="outline" size="sm">
+            <Button variant="secondary" size="sm">
               <Calendar className="w-3.5 h-3.5" />
               <span className="text-gray-400">Sort:</span>
               <span className="font-semibold text-gray-900 dark:text-white">{SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? "Default order"}</span>
@@ -1249,7 +1249,7 @@ export default function ProgramTrackerPage() {
           </div>
           {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default") && (
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); }}
               className="text-gray-500"
