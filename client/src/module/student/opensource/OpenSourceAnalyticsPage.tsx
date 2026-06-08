@@ -7,7 +7,9 @@ import {
   AlertCircle,
   Filter,
   X,
-  Maximize2
+  Maximize2,
+  Flame,
+  TrendingUp
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import {
@@ -158,6 +160,12 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
 const selectClass = "text-sm bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 min-w-[130px]";
 
 // ─── Page ───────────────────────────────────────────────────────
+type OpenSourceContributionTrendResponse = {
+  trend: { label: string; count: number }[];
+  total: number;
+};
+
+// ─── Page ───────────────────────────────────────────────────────
 export default function OpenSourceAnalyticsPage() {
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [filterYear, setFilterYear] = useState<string>("ALL");
@@ -191,7 +199,36 @@ export default function OpenSourceAnalyticsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
+    queryKey: ["opensource", "trend"],
+    queryFn: () => api.get("/opensource/analytics/trend").then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const allOrgs = orgsData ?? [];
+  const contributionTrend = contributionTrendData?.trend ?? [];
+  const contributionTotal = contributionTrendData?.total ?? 0;
+  const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
+
+  const currentStreak = (() => {
+    let count = 0;
+    for (let i = contributionTrend.length - 1; i >= 0; i--) {
+      if (contributionTrend[i].count > 0) count++;
+      else break;
+    }
+    return count;
+  })();
+
+  const longestStreak = (() => {
+    let max = 0, cur = 0;
+    for (const point of contributionTrend) {
+      cur = point.count > 0 ? cur + 1 : 0;
+      max = Math.max(max, cur);
+    }
+    return max;
+  })();
+
+  // ─── Derive filter options ──────────────────────────────────
 
   // ─── Derive filter options ──────────────────────────────────
   const years = useMemo(() => {
@@ -394,7 +431,68 @@ export default function OpenSourceAnalyticsPage() {
       {orgs.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          {/* 1 - Category Distribution (Pie) */}
+         {/* 1 - Monthly Contribution Activity */}
+          <ChartCard
+            title="Monthly Contribution Activity"
+            subtitle={
+              trendIsLoading
+                ? "Loading your approved open source contribution history"
+                : `Approved repo requests in the last 6 months${contributionTotal ? ` · ${contributionTotal} total` : ""}`
+            }
+            index={0}
+            className="lg:col-span-2"
+          >
+            {!trendIsLoading && !trendIsError && contributionTrend.length > 0 && (
+              <div className="mb-4">
+                {currentStreak === 0 ? (
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Flame className="w-4 h-4 text-gray-400" />
+                    No active streak — contribute this month to start one!
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-md text-sm font-medium text-gray-800">
+                      <Flame className="w-4 h-4 text-orange-500" />
+                      Current streak: {currentStreak} month{currentStreak !== 1 ? "s" : ""}
+                    </div>
+                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-md text-sm font-medium text-gray-800">
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                      Longest streak: {longestStreak} month{longestStreak !== 1 ? "s" : ""}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {trendIsLoading ? (
+              <div className="flex items-end gap-2 h-[300px] px-4 animate-pulse">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex-1 bg-gray-200 rounded-t-lg" style={{ height: `${40 + i * 10}%` }} />
+                ))}
+              </div>
+            ) : hasContributionActivity ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
+                  <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <Tooltip {...tooltipStyle} />
+                  <Bar dataKey="count" fill="#0ea5e9" radius={[8, 8, 0, 0]} name="Approved contributions" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : trendIsError ? (
+              <div className="flex flex-col items-center justify-center h-[300px] text-gray-400 text-sm gap-2">
+                <TrendingUp className="w-8 h-8 text-gray-300" />
+                <p>We could not load your contribution trend right now. Try again in a moment.</p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[300px] text-gray-400 text-sm gap-2">
+                <TrendingUp className="w-8 h-8 text-gray-300" />
+                <p>Approve a repository suggestion to start tracking your monthly open source activity here.</p>
+              </div>
+            )}
+          </ChartCard>
+
+          {/* 2 - Category Distribution (Pie) */}
           <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={0}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
