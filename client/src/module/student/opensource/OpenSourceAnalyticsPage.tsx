@@ -666,7 +666,7 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
           </ChartCard>
 
           {/* 2 - Category Distribution (Pie) */}
-          <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={0}
+          <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={1}
             expandedChildren={
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
