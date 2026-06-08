@@ -1250,6 +1250,7 @@ enum AIServiceType {
   EMAIL_CHAT
   AI_ROADMAP_GENERATION
   DSA_CODE_REVIEW
+  SOLUTION_REVIEW
 }
 
 enum BadgeCategory {
@@ -1339,6 +1340,7 @@ enum UsageAction {
   AI_JOB_CHAT
   CODE_RUN
   GITHUB_STATS
+  SOLUTION_REVIEW
 }
 
 enum EmailCampaignStatus {
@@ -1525,7 +1527,20 @@ model coachAdvice {
   title     String   @default("Coach suggestion")
   content   String   @db.Text
   createdAt DateTime @default(now())
-  user      user     @relation("UserCoachAdvice", fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model solutionReview {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  title        String   @default("Untitled Review")
+  language     String   @default("python")
+  code         String   @db.Text
+  problemContext String? @db.Text
+  review       Json?
+  createdAt    DateTime @default(now())
+  user         user     @relation("UserSolutionReviews", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt])

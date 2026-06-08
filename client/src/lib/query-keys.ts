@@ -251,4 +251,9 @@ export const queryKeys = {
     topic: (slug: string, topicSlug: string) => ["roadmaps", "topic", slug, topicSlug] as const,
     community: () => ["roadmaps", "community"] as const,
   },
+  solutionReview: {
+    all: ["solution-review"] as const,
+    history: () => ["solution-review", "history"] as const,
+    detail: (id: number) => ["solution-review", "detail", id] as const,
+  },
 };

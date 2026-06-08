@@ -92,6 +92,7 @@ const PublicProfilePage = lazyWithRetry(() => import("./module/student/profile/P
 const RepoDiscoveryPage = lazyWithRetry(() => import("./module/student/opensource/RepoDiscoveryPage"));
 const GSoCReposPage = lazyWithRetry(() => import("./module/student/opensource/GSoCReposPage"));
 const ProgramTrackerPage = lazyWithRetry(() => import("./module/student/opensource/ProgramTrackerPage"));
+const SolutionReviewPage = lazyWithRetry(() => import("./module/student/solution-review/SolutionReviewPage"));
 const FirstPRRoadmapPage = lazyWithRetry(() => import("./module/student/opensource/FirstPRRoadmapPage"));
 const FirstPRSectionPage = lazyWithRetry(() => import("./module/student/opensource/FirstPRSectionPage"));
 const GSoCProposalPage = lazyWithRetry(() => import("./module/student/opensource/GSoCProposalPage"));
@@ -490,6 +491,7 @@ function App() {
             <Route path="ats/cover-letter" element={<CoverLetterPage />} />
             <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
             <Route path="ats/latex-templates" element={<LatexTemplatesGallery />} />
+            <Route path="solution-review" element={<SolutionReviewPage />} />
             <Route path="skill-verification" element={<SkillVerificationPage />} />
             <Route path="mock-interview" element={<MockInterviewPage />} />
             <Route path="companies/add" element={<AddCompanyPage />} />
