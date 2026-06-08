@@ -1,4 +1,5 @@
 import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
+import { BadgeProgressWidget } from "../opensource/components/BadgeProgressWidget";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
@@ -307,7 +308,7 @@ export default function MyApplicationsPage() {
       );
 
     if (statusFilter !== "ALL") {
-      base = base.filter((a) => a.status === statusFilter);
+      base = statusFilter === "APPLIED" ? base : [];
     }
 
     return [...base].sort((a, b) => {
@@ -490,15 +491,7 @@ export default function MyApplicationsPage() {
       </div>
 
       <div className="mb-5 flex flex-wrap gap-2">
-  {[
-    "ALL",
-    "APPLIED",
-    "IN_PROGRESS",
-    "SHORTLISTED",
-    "HIRED",
-    "REJECTED",
-    "WITHDRAWN",
-  ].map((status) => (
+  {STATUS_TABS.map((status) => (
     <button
       key={status}
       onClick={() => {
@@ -517,6 +510,10 @@ export default function MyApplicationsPage() {
 </div>
       {/* Search */}
 
+      
+      <div className="mb-6">
+        <BadgeProgressWidget />
+      </div>
       
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">
