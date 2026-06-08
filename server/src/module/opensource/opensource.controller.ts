@@ -8,6 +8,7 @@ import {
   repoIdSchema,
   repoOwnerNameSchema,
   firstPrProgressUpdateSchema,
+  guideFeedbackSchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
@@ -321,6 +322,24 @@ export class OpensourceController {
     try {
       const repos = await service.getRecommendedRepos(req.user!.id);
       res.json({ repos });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async submitGuideFeedback(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = guideFeedbackSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+
+      await service.submitGuideFeedback(req.user!.id, parsed.data);
+      res.status(201).json({ message: "Feedback submitted successfully" });
     } catch (err) {
       next(err);
     }

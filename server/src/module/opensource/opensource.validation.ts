@@ -112,3 +112,10 @@ export const firstPrProgressUpdateSchema = z.object({
   stepId: z.string().min(1, "Step ID is required").max(200),
   completed: z.boolean(),
 });
+
+export const guideFeedbackSchema = z.object({
+  guideId: z.string().min(1, "Guide ID is required"),
+  stepId: z.string().min(1, "Step ID is required"),
+  rating: z.enum(["up", "down"]),
+  reason: z.string().optional(),
+});

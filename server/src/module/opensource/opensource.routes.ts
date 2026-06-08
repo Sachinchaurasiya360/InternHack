@@ -149,6 +149,10 @@ opensourceRouter.patch("/first-pr/progress", authMiddleware, requireRole("STUDEN
   controller.patchFirstPrProgress(req, res, next),
 );
 
+opensourceRouter.post("/guide-feedback", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.submitGuideFeedback(req, res, next),
+);
+
 // ─── Admin: Manage Repo Requests ───────────────────────────────
 
 opensourceRouter.get("/requests/all", authMiddleware, requireRole("ADMIN"), (req, res, next) =>

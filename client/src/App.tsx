@@ -244,6 +244,7 @@ const AdminRepoRequestsPage = lazyWithRetry(() => import("./module/admin/repo-re
 const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broadcast/AdminBroadcastEmailPage"));
 const AdminSignalsPage = lazyWithRetry(() => import("./module/admin/signals/AdminSignalsPage"));
 const AdminInterviewsPage = lazyWithRetry(() => import("./module/admin/interviews/AdminInterviewsPage"));
+const GuideFeedbackDashboard = lazyWithRetry(() => import("./module/admin/GuideFeedbackDashboard"));
 
 function JobBrowseOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -587,6 +588,7 @@ function App() {
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
+            <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
             <Route path="profile/:identifier" element={<PublicProfilePage />} />
           </Route>
 
