@@ -7,6 +7,7 @@ import type { BlockchainProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
+import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
 const FREE_LIMIT = 5;
 
@@ -18,12 +19,6 @@ function getLocalProgress(): BlockchainProgress {
   }
 }
 
-const DIFF_COLOR: Record<string, string> = {
-  Beginner: "text-emerald-600 dark:text-emerald-400",
-  Intermediate: "text-amber-600 dark:text-amber-400",
-  Advanced: "text-rose-600 dark:text-rose-400",
-};
-
 export default function BlockchainSectionPage() {
   const { sectionSlug } = useParams();
   const basePath = "/learn/blockchain";
@@ -34,16 +29,17 @@ export default function BlockchainSectionPage() {
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
 
-  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
-    return <Navigate to={basePath} replace />;
-  }
-
+  // ✅ useMemo FIRST — before any early returns
   const sectionLessons = useMemo(
     () => lessons.filter((l) => l.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
     [sectionSlug]
   );
+// ✅ early returns AFTER all hooks
+  if (sectionIndex >= FREE_LIMIT && !isAuthenticated) {
+    return <Navigate to={basePath} replace />;
+  }
 
-  if (!section) {
+   if (!section) {
     return (
       <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-8 py-16 text-center">

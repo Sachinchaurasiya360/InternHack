@@ -1,61 +1,96 @@
 # InternHack
 
-**Prepare. Practice. Placed.**, An open-source, full-stack career platform that helps students land jobs through AI-powered tools, structured learning, and recruiter dashboards. InternHack brings together job discovery, skill development, and hiring workflows into a single unified platform, enabling students to seamlessly move from learning to applying. It provides AI-powered tools such as resume scoring, job matching, and mock interviews to enhance preparation and improve outcomes. Recruiters can efficiently manage job postings, evaluate candidates, and streamline multi-round hiring processes. With dedicated features for students, recruiters, and administrators, InternHack aims to make the hiring ecosystem more accessible, efficient, and data-driven.
+**Prepare. Practice. Placed.**
+
+## Table of Contents 📑
+
+- [About InternHack](#about-internhack)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [API Overview](#api-overview)
+- [Production Build](#production-build)
+- [Contributing](#contributing)
+- [Contributors](#contributors)
+- [Project Support](#project-support)
+- [License](#license)
+
+## About InternHack
+- AI-powered career and hiring platform
+- Helps students prepare for placements and internships
+- Provides resume scoring and job matching tools
+- Offers mock interview practice and learning resources
+- Supports job discovery and application tracking
+- Enables recruiters to manage job postings and candidates
+- Streamlines hiring workflows and interview processes
+- Includes dedicated dashboards for students, recruiters, and admins
+- Built to make hiring more accessible, efficient, and data-driven
 
 Live at **[internhack.xyz](https://www.internhack.xyz)**
 
 ---
 
+## AI Assistant Context Files
+
+This repository includes AI assistant context files (`CLAUDE.md` and `.claude/`) for Claude Code users. These files provide project-specific context and code generation instructions for AI-assisted development and are **optional for contributors not using Claude Code**.
+
+---
+
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, Vite 7, TailwindCSS 4, React Router 7, Framer Motion, Zustand, React Query |
-| Backend | Express 5, TypeScript 5, Prisma 7 |
-| Database | PostgreSQL |
-| AI | Google Gemini (`gemini-2.5-flash`) |
-| Auth | JWT + Google OAuth |
-| Payments | Dodo Payments |
-| Storage | AWS S3 (with local fallback) |
-| Email | Resend |
+| Category | Technologies |
+|----------|--------------|
+| **Frontend** | React 18, Vite 7, TailwindCSS 4, React Router 7, Framer Motion, Zustand, React Query |
+| **Backend** | Express 5, TypeScript 5, Prisma ORM |
+| **Database** | PostgreSQL |
+| **AI Integration** | Google Gemini (`gemini-2.5-flash`) |
+| **Authentication** | JWT Authentication, Google OAuth |
+| **Payments** | Dodo Payments |
+| **Cloud Storage** | AWS S3 with Local Storage Fallback |
+| **Caching & Rate Limiting** | Redis via `ioredis` (optional, in-memory fallback when `REDIS_URL` unset) |
+| **Email Services** | Resend |
+| **Development Tools** | ESLint, Prettier, Nodemon, tsx |
 
 ---
 
 ## Features
 
-### For Students
+### Features for Students
 
-- **Job Board**: Browse recruiter-posted jobs with search, filters, tags, and one-click apply
-- **External Jobs**: Curated listings from external sources, updated regularly
-- **AI Job Agent**: Chat-based AI assistant that finds jobs matching your profile and skills
-- **ATS Resume Scorer**: Upload resume + JD, get an AI-powered match score with keyword gap analysis
-- **Cover Letter Generator**: AI-generated cover letters tailored to specific job postings
-- **AI Resume Builder**: Generate professional LaTeX resumes with AI assistance
-- **Mock Interviews**: Practice with AI-driven interview simulations
-- **Learning Hub**: 3,300+ DSA problems, SQL practice, aptitude questions, and 500+ lessons across 12 technologies
-- **Skill Tests**: Timed assessments with auto-grading and verified skill badges
-- **Career Roadmaps**: Guided paths for Full-Stack, Frontend, Backend, Data Science, DevOps, and more
-- **Company Explorer**: Reviews, ratings, salaries, HR contacts, and open positions
-- **Application Tracker**: Track applications from applied through hiring rounds to offer
-- **Open Source Guide**: Step-by-step guides for reading codebases and contributing to OSS
+- **Job Board** — Browse recruiter-posted jobs with advanced search, filters, tags, and one-click applications.
+- **External Job Listings** — Access curated opportunities aggregated from external platforms and updated regularly.
+- **AI Job Agent** — AI-powered assistant that recommends jobs based on user profiles, skills, and interests.
+- **ATS Resume Scorer** — Upload resumes and job descriptions to receive AI-generated compatibility scores and keyword gap analysis.
+- **Cover Letter Generator** — Generate personalized cover letters tailored to specific job applications.
+- **AI Resume Builder** — Create professional LaTeX-based resumes with AI-assisted content generation.
+- **Mock Interviews** — Practice technical and behavioral interviews through AI-driven interview simulations.
+- **Learning Hub** — Access 3,300+ DSA problems, SQL practice sets, aptitude questions, and 500+ lessons across multiple technologies.
+- **Skill Assessments** — Participate in timed assessments with automated grading and verified skill badges.
+- **Career Roadmaps** — Follow structured learning paths for Full-Stack, Frontend, Backend, Data Science, DevOps, and other domains.
+- **Company Explorer** — Explore company reviews, ratings, salary insights, HR contacts, and active openings.
+- **Application Tracker** — Monitor application progress from submission to interview rounds and final offers.
+- **Open Source Guide** — Step-by-step guidance for understanding codebases and contributing to open-source projects.
 
-### For Recruiters
+### Features for Recruiters
 
-- **Dashboard**: Overview of posted jobs, applications, and hiring pipeline
-- **Job Management**: Create jobs with custom fields, multiple interview rounds, and auto-assessments
-- **Multi-Round Hiring**: Coding, DSA, HR, system design rounds with per-round evaluations
-- **Application Review**: Filter applicants, advance/reject through rounds, ATS scores per resume
-- **Talent Pools**: Save and organize promising candidates
-- **Campus Drives**: Manage campus recruitment drives
+- **Recruiter Dashboard** — Centralized overview of job postings, applications, and hiring pipelines.
+- **Job Management** — Create and manage job postings with custom fields, interview workflows, and automated assessments.
+- **Multi-Round Hiring Workflow** — Conduct coding, DSA, HR, and system design interview rounds with structured evaluations.
+- **Application Review System** — Filter applicants, track candidate progress, and manage round-wise selection or rejection processes.
+- **ATS Resume Analysis** — Access AI-generated ATS scores and resume evaluations for better candidate screening.
+- **Talent Pool Management** — Save, organize, and manage promising candidates for future opportunities.
+- **Campus Recruitment Drives** — Plan and manage campus hiring campaigns efficiently.
 
-### For Admins
+### Features for Admins
 
-- **Platform Dashboard**: Real-time stats across the platform
-- **User & Job Management**: Moderate users, jobs, companies, reviews
-- **External Job Management**: Post and manage curated external job listings
-- **AI Provider Management**: Switch between AI providers (Gemini, Groq, Claude, etc.)
-- **Content Management**: DSA problems, aptitude questions, skill tests, hackathons, blog
-- **Activity & Error Logs**: Full audit trail
+- **Admin Dashboard** — Monitor real-time platform statistics, user activity, and system performance.
+- **User & Job Management** — Manage users, recruiters, job postings, companies, and platform reviews.
+- **External Job Management** — Create, manage, and moderate curated external job listings.
+- **AI Provider Management** — Configure and switch between multiple AI providers such as Gemini, Groq, and Claude.
+- **Content Management System** — Manage DSA problems, aptitude questions, skill assessments, hackathons, blogs, and learning resources.
+- **Activity & Error Logging** — Maintain detailed audit trails, activity logs, and system error monitoring.
 
 ---
 
@@ -75,17 +110,48 @@ git clone https://github.com/Sachinchaurasiya360/InternHack.git
 cd InternHack
 ```
 
+### Docker Compose (alternative)
+
+Requires [Docker Desktop](https://docs.docker.com/get-docker/) or Docker Engine plus Compose v2. You do **not** need a host-installed PostgreSQL or Node for this path. (Redis is **optional** for local dev — rate limiting and caching fall back to in-memory stores when `REDIS_URL` is unset. Set it in `.env` if you want to test Redis-backed rate limiting.) The API service image is defined in [`server/Dockerfile.dev`](server/Dockerfile.dev) for local dev only; production deploy continues to use [`server/dockerfile`](server/dockerfile).
+
+From the repo root:
+
+```bash
+cp .env.example .env
+# Set JWT_SECRET at minimum; add OAuth/AI keys as needed (see Environment Variables below).
+
+docker compose up --build
+```
+
+Compose falls back to the same Postgres defaults as `.env.example` when variables are absent, but the API refuses to boot without **`JWT_SECRET`**, which your root `.env` must supply.
+
+- Frontend **http://localhost:5173** — API **http://localhost:3000**
+- Source trees are bind-mounted into the containers; `CHOKIDAR_USEPOLLING` helps file watching on Docker Desktop for macOS.
+- On startup, the API container runs `prisma migrate deploy`, then `npm run dev`.
+- The frontend service runs **Vite in dev mode** (`npm run dev`) for hot reload; production client builds (`cd client && npm run build`) are still separate from this Compose file.
+
+Optional sample data:
+
+```bash
+docker compose exec server npm run seed
+```
+
+Uncomment the `postgres` `ports` section in `docker-compose.yml` if you need to reach Postgres from tools on your host defaulting to localhost.
+
+To install Node and Postgres on your machine instead, follow the numbered steps below.
+
 ### 2. Set up environment variables
 
 ```bash
-# Server
+# Without Docker — per-package env files
 cp server/.env.example server/.env
-# Fill in your values (see Environment Variables section below)
-
-# Client
 cp client/.env.example client/.env
-# Fill in VITE_GOOGLE_CLIENT_ID
+
+# Docker Compose — single consolidated file at the repo root
+cp .env.example .env
 ```
+
+Fill values as described below (Compose uses `.env`; per-package copies use `server/.env` and `client/.env`).
 
 ### 3. Install dependencies
 
@@ -100,15 +166,16 @@ cd client && npm install
 ### 4. Set up the database
 
 ```bash
-# From the server/src/database/ directory (prisma.config.ts lives here)
-cd server/src/database
+# Go to server directory
+cd server
 
-# Generate Prisma client
-npx prisma generate
+# Generate Prisma client using prisma.config.ts
+npx prisma generate --config src/database/prisma.config.ts
 
-# Push schema to your database
-npx prisma db push
+# Push schema to database
+npx prisma db push --config src/database/prisma.config.ts
 ```
+
 
 ### 5. Seed initial data (optional)
 
@@ -120,7 +187,7 @@ cd server
 npm run seed:admin
 
 # Seed all sample data (DSA, aptitude, companies, etc.)
-npm run seed:all
+npm run seed
 ```
 
 ### 6. Start development servers
@@ -139,10 +206,13 @@ Open **http://localhost:5173** and you're in!
 
 ## Environment Variables
 
-### Server (`server/.env`)
+For Docker Compose, use the **repo root [`.env.example`](.env.example)** as the master template (`cp .env.example .env`).
+
+### Server (`server/.env` or root `.env` with Compose)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
+| `REDIS_URL` | No (required in production) | Redis connection string — without it rate limiters use per-process in-memory stores; the server **refuses to start** in `NODE_ENV=production` without this set |
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `JWT_SECRET` | Yes | Random secret for JWT signing (64+ chars recommended) |
 | `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID |
@@ -164,9 +234,9 @@ Open **http://localhost:5173** and you're in!
 | `JUDGE0_RAPIDAPI_KEY_1` | No | Judge0 key for code execution |
 | `EXTERNAL_JOB_API_KEY` | No | API key for external job ingest endpoint |
 
-> Only `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GEMINI_API_KEY`, and `ALLOWED_ORIGINS` are required to run the app locally. Other services degrade gracefully.
+> Only `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GEMINI_API_KEY`, and `ALLOWED_ORIGINS` are required to run the app locally. `REDIS_URL` is strongly recommended for production (see note above). Other services degrade gracefully.
 
-### Client (`client/.env`)
+### Client (`client/.env`, or root `.env` — only `VITE_*` vars are exposed to Vite)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -179,6 +249,8 @@ Open **http://localhost:5173** and you're in!
 
 ```
 InternHack/
+├── docker-compose.yml        # Postgres + API + client (dev, hot reload)
+├── .env.example              # Compose + combined env documentation
 ├── client/                   # React frontend (Vite)
 │   ├── src/
 │   │   ├── components/       # Shared UI components
@@ -214,6 +286,8 @@ InternHack/
     ├── CLAUDE.md             # Project instructions
     └── REPO_MAP.md           # Detailed module map
 ```
+
+> 📊 **Database Schema:** For a visual overview of all models and their relationships, see [docs/database-schema.md](./docs/database-schema.md).
 
 ### Module Pattern (Server)
 
@@ -272,6 +346,28 @@ We welcome contributions! See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the ful
 - Code style and conventions
 
 ---
+
+## Contributors  
+
+A huge thanks to all the amazing contributors who helped make **InternHack** better 🚀✨  
+
+<div align="center">
+  <a href="https://github.com/Sachinchaurasiya360/InternHack/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=Sachinchaurasiya360/InternHack" alt="Contributors" />
+  </a>
+</div>
+
+<br/><br/>
+
+## Project Support
+
+<div align="center">
+
+[![Stars](https://img.shields.io/github/stars/Sachinchaurasiya360/InternHack?style=social)](https://github.com/Sachinchaurasiya360/InternHack/stargazers)
+&nbsp;&nbsp;
+[![Forks](https://img.shields.io/github/forks/Sachinchaurasiya360/InternHack?style=social)](https://github.com/Sachinchaurasiya360/InternHack/network/members)
+
+</div>
 
 ## License
 

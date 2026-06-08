@@ -58,4 +58,15 @@ export class InternshipService {
       categories: categoryGroups.map((g) => ({ name: g.category, count: g._count.id })),
     };
   }
+
+  async create(data: any) {
+    return prisma.govInternship.create({ data });
+  }
+
+  async update(id: number, data: any) {
+    return prisma.govInternship.update({
+      where: { id },
+      data,
+    });
+  }
 }

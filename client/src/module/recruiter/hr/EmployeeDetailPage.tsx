@@ -19,6 +19,7 @@ import type { HREmployee, EmploymentStatus } from "./hr-types";
 import HRModal from "./components/HRModal";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { labelize, initials, labelClass } from "./hr-utils";
 
 const STATUS_OPTIONS: EmploymentStatus[] = [
   "ONBOARDING",
@@ -43,12 +44,6 @@ const STATUS_DOT: Record<EmploymentStatus, string> = {
 const inputClass =
   "w-full px-3 py-2 rounded-md bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors";
 
-const labelClass =
-  "block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5";
-
-function labelize(value: string): string {
-  return value.replace(/_/g, " ").toLowerCase();
-}
 
 function formatDate(iso?: string | null): string {
   if (!iso) return "/";
@@ -57,10 +52,6 @@ function formatDate(iso?: string | null): string {
     month: "short",
     year: "numeric",
   });
-}
-
-function initials(first?: string, last?: string): string {
-  return `${first?.[0] ?? ""}${last?.[0] ?? ""}`.toUpperCase();
 }
 
 export default function EmployeeDetailPage() {

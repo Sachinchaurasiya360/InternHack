@@ -31,6 +31,7 @@ import type {
 } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { formatLabel, initials } from "./hr-utils";
 
 const STATUS_OPTIONS: EmploymentStatus[] = [
   "ONBOARDING",
@@ -50,17 +51,6 @@ const TYPE_OPTIONS: EmploymentType[] = [
 ];
 
 type ViewMode = "table" | "grid";
-
-function formatLabel(value: string) {
-  return value
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function initials(first: string, last: string) {
-  return `${first?.[0] ?? ""}${last?.[0] ?? ""}`.toUpperCase();
-}
 
 export default function EmployeesPage() {
   const navigate = useNavigate();

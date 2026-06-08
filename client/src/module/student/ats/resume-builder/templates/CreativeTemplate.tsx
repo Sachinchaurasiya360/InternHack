@@ -1,32 +1,22 @@
 import type { ResumeData } from "../types";
 
-export default function CreativeTemplate({ data }: { data: ResumeData }) {
+export default function CreativeTemplate({
+  data,
+  sectionOrder = ["summary", "experience", "education", "skills", "projects", "certifications"],
+}: {
+  data: ResumeData;
+  sectionOrder?: string[];
+}) {
   const { personalInfo, summary, experience, education, skills, projects, certifications } = data;
 
-  return (
-    <div className="w-full bg-white text-gray-800 font-sans text-[11px] leading-relaxed flex">
-      {/* Left Accent Strip */}
-      <div className="w-[30%] bg-gradient-to-b from-violet-600 to-indigo-700 text-white p-5 shrink-0">
-        {/* Avatar placeholder */}
-        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold text-white mb-4 mx-auto">
-          {personalInfo.fullName ? personalInfo.fullName.charAt(0).toUpperCase() : "?"}
-        </div>
+  const sidebarKeys = ["skills", "certifications"];
+  const mainKeys = ["summary", "experience", "education", "projects"];
 
-        {/* Contact */}
-        <div className="mb-5">
-          <h2 className="text-[9px] font-bold uppercase tracking-widest text-violet-200 mb-2">Contact</h2>
-          <div className="space-y-1.5 text-[10px] text-violet-100">
-            {personalInfo.email && <p>{personalInfo.email}</p>}
-            {personalInfo.phone && <p>{personalInfo.phone}</p>}
-            {personalInfo.location && <p>{personalInfo.location}</p>}
-            {personalInfo.linkedIn && <p>{personalInfo.linkedIn}</p>}
-            {personalInfo.portfolio && <p>{personalInfo.portfolio}</p>}
-          </div>
-        </div>
-
-        {/* Skills */}
-        {skills.length > 0 && (
-          <div className="mb-5">
+  const renderSidebarSection = (key: string) => {
+    switch (key) {
+      case "skills":
+        return skills.length > 0 ? (
+          <div key="skills" className="mb-5">
             <h2 className="text-[9px] font-bold uppercase tracking-widest text-violet-200 mb-2">Skills</h2>
             <div className="space-y-1.5">
               {skills.map((skill, i) => (
@@ -37,11 +27,10 @@ export default function CreativeTemplate({ data }: { data: ResumeData }) {
               ))}
             </div>
           </div>
-        )}
-
-        {/* Certifications */}
-        {certifications.length > 0 && (
-          <div>
+        ) : null;
+      case "certifications":
+        return certifications.length > 0 ? (
+          <div key="certifications">
             <h2 className="text-[9px] font-bold uppercase tracking-widest text-violet-200 mb-2">Certifications</h2>
             {certifications.map((cert) => (
               <div key={cert.id} className="mb-2">
@@ -52,22 +41,23 @@ export default function CreativeTemplate({ data }: { data: ResumeData }) {
               </div>
             ))}
           </div>
-        )}
-      </div>
+        ) : null;
+      default:
+        return null;
+    }
+  };
 
-      {/* Right Content */}
-      <div className="flex-1 p-6">
-        {/* Name */}
-        <div className="mb-5">
-          <h1 className="text-xl font-bold text-gray-900 tracking-tight">
-            {personalInfo.fullName || "Your Name"}
-          </h1>
-          {summary && <p className="text-gray-500 mt-2 leading-relaxed">{summary}</p>}
-        </div>
-
-        {/* Experience */}
-        {experience.length > 0 && (
-          <div className="mb-5">
+  const renderMainSection = (key: string) => {
+    switch (key) {
+      case "summary":
+        return summary ? (
+          <div key="summary" className="mb-5">
+            <p className="text-gray-500 mt-2 leading-relaxed">{summary}</p>
+          </div>
+        ) : null;
+      case "experience":
+        return experience.length > 0 ? (
+          <div key="experience" className="mb-5">
             <h2 className="text-xs font-bold text-violet-700 uppercase tracking-wider mb-3 pb-1 border-b border-violet-100">
               Experience
             </h2>
@@ -94,11 +84,10 @@ export default function CreativeTemplate({ data }: { data: ResumeData }) {
               </div>
             ))}
           </div>
-        )}
-
-        {/* Education */}
-        {education.length > 0 && (
-          <div className="mb-5">
+        ) : null;
+      case "education":
+        return education.length > 0 ? (
+          <div key="education" className="mb-5">
             <h2 className="text-xs font-bold text-violet-700 uppercase tracking-wider mb-3 pb-1 border-b border-violet-100">
               Education
             </h2>
@@ -117,11 +106,10 @@ export default function CreativeTemplate({ data }: { data: ResumeData }) {
               </div>
             ))}
           </div>
-        )}
-
-        {/* Projects */}
-        {projects.length > 0 && (
-          <div>
+        ) : null;
+      case "projects":
+        return projects.length > 0 ? (
+          <div key="projects">
             <h2 className="text-xs font-bold text-violet-700 uppercase tracking-wider mb-3 pb-1 border-b border-violet-100">
               Projects
             </h2>
@@ -137,7 +125,46 @@ export default function CreativeTemplate({ data }: { data: ResumeData }) {
               </div>
             ))}
           </div>
-        )}
+        ) : null;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="w-full bg-white text-gray-800 font-sans text-[11px] leading-relaxed flex">
+      {/* Left Accent Strip */}
+      <div className="w-[30%] bg-gradient-to-b from-violet-600 to-indigo-700 text-white p-5 shrink-0">
+        {/* Avatar placeholder */}
+        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold text-white mb-4 mx-auto">
+          {personalInfo.fullName ? personalInfo.fullName.charAt(0).toUpperCase() : "?"}
+        </div>
+
+        {/* Contact */}
+        <div className="mb-5">
+          <h2 className="text-[9px] font-bold uppercase tracking-widest text-violet-200 mb-2">Contact</h2>
+          <div className="space-y-1.5 text-[10px] text-violet-100">
+            {personalInfo.email && <p>{personalInfo.email}</p>}
+            {personalInfo.phone && <p>{personalInfo.phone}</p>}
+            {personalInfo.location && <p>{personalInfo.location}</p>}
+            {personalInfo.linkedIn && <p>{personalInfo.linkedIn}</p>}
+            {personalInfo.portfolio && <p>{personalInfo.portfolio}</p>}
+          </div>
+        </div>
+
+        {sectionOrder.filter(k => sidebarKeys.includes(k)).map(renderSidebarSection)}
+      </div>
+
+      {/* Right Content */}
+      <div className="flex-1 p-6">
+        {/* Name */}
+        <div className="mb-5">
+          <h1 className="text-xl font-bold text-gray-900 tracking-tight">
+            {personalInfo.fullName || "Your Name"}
+          </h1>
+        </div>
+
+        {sectionOrder.filter(k => mainKeys.includes(k)).map(renderMainSection)}
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { JobController } from "./job.controller.js";
 import { JobService } from "./job.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
+import { cacheMiddleware } from "../../middleware/cache.middleware.js";
 
 const jobService = new JobService();
 const jobController = new JobController(jobService);
@@ -13,9 +14,10 @@ export const jobRouter = Router();
 jobRouter.get("/recruiter/my-jobs", authMiddleware, requireRole("RECRUITER"), (req, res) => jobController.getRecruiterJobs(req, res));
 
 // Public routes
-jobRouter.get("/", (req, res) => jobController.getJobs(req, res));
-jobRouter.get("/landing/:slug", (req, res) => jobController.getLandingPage(req, res));
-jobRouter.get("/:id", (req, res) => jobController.getJobById(req, res));
+jobRouter.get("/", cacheMiddleware(60, "jobs:list"), (req, res) => jobController.getJobs(req, res));
+jobRouter.get("/landing/:slug", cacheMiddleware(300, "jobs:landing"), (req, res) => jobController.getLandingPage(req, res));
+jobRouter.get("/:id/related", cacheMiddleware(180, "jobs:related"), (req, res) => jobController.getRelatedJobs(req, res));
+jobRouter.get("/:id", cacheMiddleware(120, "jobs:detail"), (req, res) => jobController.getJobById(req, res));
 
 // Recruiter-only routes
 jobRouter.post("/", authMiddleware, requireRole("RECRUITER"), (req, res) => jobController.createJob(req, res));

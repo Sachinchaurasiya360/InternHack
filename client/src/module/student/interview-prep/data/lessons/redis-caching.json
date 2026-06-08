@@ -1,0 +1,665 @@
+[
+  {
+    "id": "redis-data-types",
+    "sectionId": "redis-caching",
+    "orderIndex": 0,
+    "title": "Core Data Types",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Strings", "Hashes", "Lists", "Sets", "Sorted Sets"],
+    "content": {
+      "question": "What are the primary data types supported by Redis?",
+      "answer": "1. **Strings**: Basic text/binary up to 512MB. 2. **Hashes**: Field-value maps for objects. 3. **Lists**: Collections ordered by insertion. 4. **Sets**: Unique unordered collections. 5. **Sorted Sets**: Like Sets but with scores for ordering (leaderboards)."
+    }
+  },
+  {
+    "id": "redis-caching-strategies",
+    "sectionId": "redis-caching",
+    "orderIndex": 1,
+    "title": "Caching Strategies",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Cache-Aside", "Write-Through", "Write-Behind", "Read-Through"],
+    "content": {
+      "question": "Explain Cache-Aside vs. Write-Through caching.",
+      "answer": "**Cache-Aside**: App checks cache; if miss, loads from DB and updates cache. **Write-Through**: App writes to cache and DB simultaneously. Cache-aside is more resilient to cache failure."
+    }
+  },
+  {
+    "id": "redis-eviction-policies",
+    "sectionId": "redis-caching",
+    "orderIndex": 2,
+    "title": "Eviction Policies",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["LRU", "LFU", "TTL", "Maxmemory"],
+    "content": {
+      "question": "What happens when Redis runs out of memory?",
+      "answer": "Redis applies an eviction policy. **LRU (Least Recently Used)** deletes the oldest data. **LFU (Least Frequently Used)** deletes the least popular data. **noeviction** returns errors on writes."
+    }
+  },
+  {
+    "id": "redis-persistence-rdb-aof",
+    "sectionId": "redis-caching",
+    "orderIndex": 3,
+    "title": "Persistence: RDB vs. AOF",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["RDB", "AOF", "Snapshotting", "Durability", "Forking"],
+    "content": {
+      "question": "Explain RDB vs. AOF persistence.",
+      "answer": "**RDB** creates point-in-time snapshots (fast restarts, low durability). **AOF** logs every write operation (high durability, slow restarts, larger files)."
+    }
+  },
+  {
+    "id": "redis-transactions-multi",
+    "sectionId": "redis-caching",
+    "orderIndex": 4,
+    "title": "Transactions & Atomicity",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["MULTI", "EXEC", "DISCARD", "WATCH", "Optimistic Locking"],
+    "content": {
+      "question": "How do transactions work in Redis?",
+      "answer": "Use `MULTI` to start, then queue commands, and `EXEC` to run them all atomically. Note: Redis doesn't support rollback on individual command failures."
+    }
+  },
+  {
+    "id": "redis-pub-sub",
+    "sectionId": "redis-caching",
+    "orderIndex": 5,
+    "title": "Pub/Sub Messaging",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Publish", "Subscribe", "Channels", "Decoupling"],
+    "content": {
+      "question": "What is Redis Pub/Sub used for?",
+      "answer": "Real-time, fire-and-forget messaging between services (like chat or live updates). It is not persistent."
+    }
+  },
+  {
+    "id": "redis-sentinel-vs-cluster",
+    "sectionId": "redis-caching",
+    "orderIndex": 6,
+    "title": "Sentinel vs. Cluster",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["High Availability", "Scaling", "Failover", "Sharding"],
+    "content": {
+      "question": "What is the difference between Redis Sentinel and Redis Cluster?",
+      "answer": "Sentinel is for high availability and automatic failover in a master-slave setup. Cluster is for horizontal scaling (sharding) multiple masters and providing HA."
+    }
+  },
+  {
+    "id": "redis-cache-pen-break-snow",
+    "sectionId": "redis-caching",
+    "orderIndex": 7,
+    "title": "Penetration, Breakdown, & Snowslide",
+    "difficulty": "Advanced",
+    "type": "Situational",
+    "concepts": ["Cache Penetration", "Cache Breakdown", "Cache Snowslide", "Bloom Filters"],
+    "content": {
+      "question": "Explain Cache Penetration and Snowslide.",
+      "answer": "Penetration: Many requests for non-existent data hit the DB. Snowslide: Many keys expire at once, flooding the DB. Fix with Bloom filters and random TTL jitter."
+    }
+  },
+  {
+    "id": "redis-distributed-locking-redlock",
+    "sectionId": "redis-caching",
+    "orderIndex": 8,
+    "title": "Distributed Locking (Redlock)",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": ["SETNX", "Redlock", "Race Conditions", "Resource Locking"],
+    "content": {
+      "question": "How do you implement a distributed lock in Redis?",
+      "answer": "Use `SET resource_name my_random_value NX PX 30000`. The 'NX' ensures only one setter wins, and 'PX' prevents deadlocks if the client crashes."
+    }
+  },
+  {
+    "id": "redis-pipelining",
+    "sectionId": "redis-caching",
+    "orderIndex": 9,
+    "title": "Pipelining",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Latency", "RTT", "Network Optimization", "Batching"],
+    "content": {
+      "question": "What is Redis Pipelining?",
+      "answer": "Sending multiple commands without waiting for individual replies, reducing network round-trip time significantly for batch operations."
+    }
+  },
+  {
+    "id": "redis-streams-vs-kafka",
+    "sectionId": "redis-caching",
+    "orderIndex": 10,
+    "title": "Redis Streams",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Streams", "Consumer Groups", "Log Storage", "ACK"],
+    "content": {
+      "question": "What are Redis Streams?",
+      "answer": "A persistent, append-only log with consumer groups support. It's similar to Kafka but faster and easier to set up for smaller-scale use cases."
+    }
+  },
+  {
+    "id": "redis-eviction-lru-vs-lfu",
+    "sectionId": "redis-caching",
+    "orderIndex": 11,
+    "title": "LRU vs LFU in depth",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["Memory Management", "Hot Data", "Access Patterns"],
+    "content": {
+      "question": "When would you prefer LFU over LRU eviction?",
+      "answer": "LFU (Least Frequently Used) is better if some keys are 'hot' for long periods, as LRU might evict them just because they haven't been touched in a few seconds."
+    }
+  },
+  {
+    "id": "redis-lua-scripting",
+    "sectionId": "redis-caching",
+    "orderIndex": 12,
+    "title": "Lua Scripting",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": ["Lua", "EVAL", "Atomicity", "EVALSHA"],
+    "content": {
+      "question": "What are the advantages of using Lua scripts in Redis?",
+      "answer": "Atomicity, reduced network overhead, and the ability to perform complex logic (if/else, loops) directly on the server without multiple RTTs."
+    }
+  },
+  {
+    "id": "redis-replication-basics",
+    "sectionId": "redis-caching",
+    "orderIndex": 13,
+    "title": "Replication: Master-Slave",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Replication", "Master", "Replica", "Read Scaling"],
+    "content": {
+      "question": "How does Redis replication work?",
+      "answer": "Asynchronous master-slave replication. Master sends write stream to slaves. Provides read scaling and data redundancy."
+    }
+  },
+  {
+    "id": "redis-internal-memory-optimization",
+    "sectionId": "redis-caching",
+    "orderIndex": 14,
+    "title": "Memory Optimization",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["ZipList", "SkipList", "IntSet", "Memory Fragmentation"],
+    "content": {
+      "question": "How does Redis optimize memory internally for small datasets?",
+      "answer": "Using compact encodings like ZipLists and IntSets until the collection reaches a certain size, then converting to standard formats."
+    }
+  },
+  {
+    "id": "redis-bitmaps-use-case",
+    "sectionId": "redis-caching",
+    "orderIndex": 15,
+    "title": "Redis Bitmaps",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Bitmaps", "Memory Efficiency", "Analytics"],
+    "content": {
+      "question": "What is a good use case for Redis Bitmaps?",
+      "answer": "Tracking daily active users (DAU) or feature flags for millions of users with extremely low memory overhead."
+    }
+  },
+  {
+    "id": "redis-hyperloglog",
+    "sectionId": "redis-caching",
+    "orderIndex": 16,
+    "title": "HyperLogLog",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Cardinality", "Probabilistic Data", "Uniqueness"],
+    "content": {
+      "question": "What is HyperLogLog in Redis?",
+      "answer": "A probabilistic data structure used to estimate the cardinality (number of unique elements) in a very large dataset with minimal fixed memory (12KB)."
+    }
+  },
+  {
+    "id": "redis-ttl-command",
+    "sectionId": "redis-caching",
+    "orderIndex": 17,
+    "title": "Setting Expiry",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["TTL", "EXPIRE", "PEXPIRE"],
+    "content": {
+      "question": "How do you set a key to expire in 60 seconds?",
+      "answer": "Use the `EXPIRE key 60` command."
+    }
+  },
+  {
+    "id": "redis-info-command",
+    "sectionId": "redis-caching",
+    "orderIndex": 18,
+    "title": "Redis Info",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Monitoring", "Statistics"],
+    "content": {
+      "question": "What does the 'INFO' command do?",
+      "answer": "It provides comprehensive statistics and information about the Redis server, including memory usage, connected clients, and performance metrics."
+    }
+  },
+  {
+    "id": "redis-config-get-set",
+    "sectionId": "redis-caching",
+    "orderIndex": 19,
+    "title": "Runtime Configuration",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Config", "Hot Reload"],
+    "content": {
+      "question": "How do you change a Redis configuration without restarting the server?",
+      "answer": "Use the `CONFIG SET parameter value` command."
+    }
+  },
+  {
+    "id": "redis-monitor-command",
+    "sectionId": "redis-caching",
+    "orderIndex": 20,
+    "title": "Real-time Monitoring",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Monitoring", "Debugging"],
+    "content": {
+      "question": "What is the 'MONITOR' command used for?",
+      "answer": "It shows every command processed by the Redis server in real-time. Useful for debugging, but has a performance hit."
+    }
+  },
+  {
+    "id": "redis-scan-vs-keys",
+    "sectionId": "redis-caching",
+    "orderIndex": 21,
+    "title": "SCAN over KEYS",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Performance", "Iteration"],
+    "content": {
+      "question": "Why should you use SCAN instead of KEYS in production?",
+      "answer": "`KEYS` can block the server for a long time if there are millions of keys. `SCAN` is a non-blocking cursor-based iterator."
+    }
+  },
+  {
+    "id": "redis-del-vs-unlink",
+    "sectionId": "redis-caching",
+    "orderIndex": 22,
+    "title": "DEL vs. UNLINK",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Performance", "Memory Cleanup"],
+    "content": {
+      "question": "What is the difference between DEL and UNLINK?",
+      "answer": "`DEL` deletes the key and reclaims memory synchronously. `UNLINK` removes the key but reclaims memory in a background thread for better performance with large objects."
+    }
+  },
+  {
+    "id": "redis-geo-commands",
+    "sectionId": "redis-caching",
+    "orderIndex": 23,
+    "title": "Geospatial Indexing",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Geo", "Location"],
+    "content": {
+      "question": "What can you do with Redis GEO commands?",
+      "answer": "Store coordinates (longitude/latitude), calculate the distance between points, and find all members within a certain radius of a location."
+    }
+  },
+  {
+    "id": "redis-blocking-lists-brpop",
+    "sectionId": "redis-caching",
+    "orderIndex": 24,
+    "title": "Blocking List Pops",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Queue", "BRPOP", "BLPOP"],
+    "content": {
+      "question": "What are BRPOP and BLPOP?",
+      "answer": "Blocking versions of RPOP and LPOP. They block the connection until a new element is available in the list, making them perfect for simple task queues."
+    }
+  },
+  {
+    "id": "redis-client-buffering",
+    "sectionId": "redis-caching",
+    "orderIndex": 25,
+    "title": "Client Buffers",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Memory", "Networking"],
+    "content": {
+      "question": "What happens if a client's output buffer fills up in Redis?",
+      "answer": "If it reaches a configured limit, Redis will close the connection to protect server memory. This often happens if a subscriber can't keep up with messages."
+    }
+  },
+  {
+    "id": "redis-max-clients-limit",
+    "sectionId": "redis-caching",
+    "orderIndex": 26,
+    "title": "Max Clients",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Scaling", "Connection Management"],
+    "content": {
+      "question": "How do you check current client connections and the max limit?",
+      "answer": "Use `INFO clients` to check current count and `CONFIG GET maxclients` to see the limit (default is usually 10,000)."
+    }
+  },
+  {
+    "id": "redis-slowlog-debugging",
+    "sectionId": "redis-caching",
+    "orderIndex": 27,
+    "title": "Redis Slowlog",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Performance", "Slow Queries"],
+    "content": {
+      "question": "What is the SLOWLOG command?",
+      "answer": "It allows you to read a log of commands that exceeded a specified execution time. Vital for finding performance bottlenecks."
+    }
+  },
+  {
+    "id": "redis-object-encoding",
+    "sectionId": "redis-caching",
+    "orderIndex": 28,
+    "title": "Object Encoding",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Memory", "Internal Optimization"],
+    "content": {
+      "question": "How do you check the internal memory encoding of a specific key?",
+      "answer": "Use `OBJECT ENCODING <key>` (e.g., it might return 'ziplist' for a small hash)."
+    }
+  },
+  {
+    "id": "redis-persistence-save-command",
+    "sectionId": "redis-caching",
+    "orderIndex": 29,
+    "title": "Manual Snapshots",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["RDB", "Backup"],
+    "content": {
+      "question": "What is the difference between SAVE and BGSAVE?",
+      "answer": "`SAVE` is synchronous and blocks the server. `BGSAVE` forks a background process to create the snapshot without blocking clients."
+    }
+  },
+  {
+    "id": "redis-pipeline-transaction-diff",
+    "sectionId": "redis-caching",
+    "orderIndex": 30,
+    "title": "Pipeline vs. MULTI",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Atomicity", "Networking", "Batches"],
+    "content": {
+      "question": "How does Pipelining differ from a MULTI transaction?",
+      "answer": "Pipelining only optimizes network RTT; it's NOT atomic. MULTI ensures all commands run together without interruption."
+    }
+  },
+  {
+    "id": "redis-hash-vs-individual-keys",
+    "sectionId": "redis-caching",
+    "orderIndex": 31,
+    "title": "Hash vs. Individual Keys",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["Memory", "Data Organization"],
+    "content": {
+      "question": "Why store an object as a Hash instead of multiple individual keys?",
+      "answer": "Hashes are much more memory-efficient due to field-name compression (ZipLists) and keep related data together."
+    }
+  },
+  {
+    "id": "redis-expire-at-timestamp",
+    "sectionId": "redis-caching",
+    "orderIndex": 32,
+    "title": "Expire at Timestamp",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["TTL", "UNIX time"],
+    "content": {
+      "question": "How do you set a key to expire at a specific UNIX timestamp?",
+      "answer": "Use the `EXPIREAT key <timestamp>` command."
+    }
+  },
+  {
+    "id": "redis-client-id-command",
+    "sectionId": "redis-caching",
+    "orderIndex": 33,
+    "title": "Client ID",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Identity", "Tracking"],
+    "content": {
+      "question": "How do you get the current connection's unique ID?",
+      "answer": "Run `CLIENT ID`."
+    }
+  },
+  {
+    "id": "redis-flush-commands",
+    "sectionId": "redis-caching",
+    "orderIndex": 34,
+    "title": "Wiping Data",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Cleanup", "Danger"],
+    "content": {
+      "question": "What is the difference between FLUSHDB and FLUSHALL?",
+      "answer": "`FLUSHDB` clears keys from the current database. `FLUSHALL` clears keys from EVERY database on the server."
+    }
+  },
+  {
+    "id": "redis-databases-count",
+    "sectionId": "redis-caching",
+    "orderIndex": 35,
+    "title": "Multiple Databases",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Isolation", "DB Indices"],
+    "content": {
+      "question": "How many databases does Redis have by default and how do you switch?",
+      "answer": "16 (indexed 0-15). Use `SELECT <index>` to switch. Note: Namespacing with prefixes is usually preferred over multiple DBs."
+    }
+  },
+  {
+    "id": "redis-atomic-set-nx",
+    "sectionId": "redis-caching",
+    "orderIndex": 36,
+    "title": "Atomic SET if not exists",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Atomicity", "Redlock"],
+    "content": {
+      "question": "What does 'SET key value NX' do?",
+      "answer": "It only sets the key if it doesn't already exist. It's the building block for distributed locks."
+    }
+  },
+  {
+    "id": "redis-zset-range-by-score",
+    "sectionId": "redis-caching",
+    "orderIndex": 37,
+    "title": "ZSET Range Query",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Sorted Sets", "Filtering"],
+    "content": {
+      "question": "How do you get members of a Sorted Set with scores between 10 and 50?",
+      "answer": "Use `ZRANGEBYSCORE myset 10 50`."
+    }
+  },
+  {
+    "id": "redis-lua-script-cache",
+    "sectionId": "redis-caching",
+    "orderIndex": 38,
+    "title": "Script Caching",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Lua", "Performance"],
+    "content": {
+      "question": "What is the purpose of SCRIPT LOAD and EVALSHA?",
+      "answer": "`SCRIPT LOAD` uploads a Lua script and returns a SHA1 hash. `EVALSHA` runs the script using that hash, saving bandwidth by not sending the full code every time."
+    }
+  },
+  {
+    "id": "redis-client-pause",
+    "sectionId": "redis-caching",
+    "orderIndex": 39,
+    "title": "Pausing Clients",
+    "difficulty": "Advanced",
+    "type": "Experience",
+    "concepts": ["Maintenance", "Migration"],
+    "content": {
+      "question": "What does CLIENT PAUSE do?",
+      "answer": "It stops processing commands from all clients for a specified duration. Useful during a master switch or maintenance."
+    }
+  },
+  {
+    "id": "redis-memory-fragmentation",
+    "sectionId": "redis-caching",
+    "orderIndex": 40,
+    "title": "Memory Fragmentation",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Memory Management", "Defrag"],
+    "content": {
+      "question": "What is 'mem_fragmentation_ratio' in INFO memory?",
+      "answer": "It's the ratio between memory used by the OS (RSS) and memory allocated by Redis. A high ratio (e.g., > 1.5) means significant fragmentation."
+    }
+  },
+  {
+    "id": "redis-client-caching-tracking",
+    "sectionId": "redis-caching",
+    "orderIndex": 41,
+    "title": "Client-Side Caching (Redis 6+)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Performance", "Invalidation"],
+    "content": {
+      "question": "What is Redis Client-Side Caching?",
+      "answer": "A feature where Redis tracks the keys a client has requested and sends an 'invalidation' message when those keys change, allowing the client to maintain its own local cache safely."
+    }
+  },
+  {
+    "id": "redis-acl-manager",
+    "sectionId": "redis-caching",
+    "orderIndex": 42,
+    "title": "ACLs (Access Control Lists)",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Security", "Multi-user"],
+    "content": {
+      "question": "What was introduced in Redis 6 regarding security?",
+      "answer": "ACLs (Access Control Lists), which provide fine-grained permissions for specific users (e.g., restricting a user to only certain keys or commands)."
+    }
+  },
+  {
+    "id": "redis-appendfsync-options",
+    "sectionId": "redis-caching",
+    "orderIndex": 43,
+    "title": "AOF Sync Options",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Durability", "Performance"],
+    "content": {
+      "question": "Compare the three 'appendfsync' values in AOF.",
+      "answer": "1. `always`: Slowest, safest (every write). 2. `everysec`: Modern balance (1s loss max). 3. `no`: Fast, relies on OS buffer (up to 30s loss)."
+    }
+  },
+  {
+    "id": "redis-rdb-compression",
+    "sectionId": "redis-caching",
+    "orderIndex": 44,
+    "title": "RDB Compression",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Storage", "CPU"],
+    "content": {
+      "question": "Should you enable RDB compression?",
+      "answer": "Yes, usually. It reduces snapshot file size significantly at the cost of a small amount of CPU during the RDB creation process."
+    }
+  },
+  {
+    "id": "redis-client-reply",
+    "sectionId": "redis-caching",
+    "orderIndex": 45,
+    "title": "Disabling Replies",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Performance", "Fire and Forget"],
+    "content": {
+      "question": "What does 'CLIENT REPLY OFF' do?",
+      "answer": "It stops the server from sending responses to commands. Useful for fire-and-forget logging or optimizing high-volume writes where individual result confirmation isn't needed."
+    }
+  },
+  {
+    "id": "redis-migration-pattern",
+    "sectionId": "redis-caching",
+    "orderIndex": 46,
+    "title": "Data Migration",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["MIGRATE", "DUMP/RESTORE"],
+    "content": {
+      "question": "How do you move a key from one Redis instance to another?",
+      "answer": "Use the `MIGRATE` command, which handles the serialization, transfer, and deletion (optional) in a single atomic-feeling operation."
+    }
+  },
+  {
+    "id": "redis-swap-files-legacy",
+    "sectionId": "redis-caching",
+    "orderIndex": 47,
+    "title": "Redis VM/Swap (Legacy)",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["History", "Architecture"],
+    "content": {
+      "question": "Did Redis ever support swapping data to disk?",
+      "answer": "Yes (Redis 2.0), but it was deprecated and removed in 2.6 as it ruined performance and predictability. Redis is now strictly in-memory."
+    }
+  },
+  {
+    "id": "redis-set-operations",
+    "sectionId": "redis-caching",
+    "orderIndex": 48,
+    "title": "Set Math: Intersection/Union",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["Sets", "Analytics"],
+    "content": {
+      "question": "How do you find common elements between two sets?",
+      "answer": "Use `SINTER set1 set2`. For all unique elements across both, use `SUNION`."
+    }
+  },
+  {
+    "id": "redis-zpopmin-max",
+    "sectionId": "redis-caching",
+    "orderIndex": 49,
+    "title": "Popping from Sorted Sets",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Leaderboards", "Sorting"],
+    "content": {
+      "question": "How do you remove and retrieve the member with the highest score from a Sorted Set?",
+      "answer": "Use `ZPOPMAX myset`."
+    }
+  },
+  {
+    "id": "redis-max-memory-samples",
+    "sectionId": "redis-caching",
+    "orderIndex": 50,
+    "title": "LRU Accuracy",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Memory Management", "Tuning"],
+    "content": {
+      "question": "What is 'maxmemory-samples'?",
+      "answer": "It controls the accuracy of the LRU/LFU approximation. Increasing it (e.g., from default 5 to 10) makes eviction more precise but uses more CPU."
+    }
+  }
+]

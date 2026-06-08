@@ -1,39 +1,29 @@
 import type { ResumeData } from "../types";
 
-export default function ProfessionalTemplate({ data }: { data: ResumeData }) {
+export default function ProfessionalTemplate({
+  data,
+  sectionOrder = ["summary", "experience", "education", "skills", "projects", "certifications"],
+}: {
+  data: ResumeData;
+  sectionOrder?: string[];
+}) {
   const { personalInfo, summary, experience, education, skills, projects, certifications } = data;
 
-  return (
-    <div className="w-full bg-white text-gray-800 font-sans text-[11px] leading-relaxed">
-      {/* Dark Header */}
-      <div className="bg-gray-900 text-white px-8 py-5">
-        <h1 className="text-xl font-bold tracking-wide">
-          {personalInfo.fullName || "Your Name"}
-        </h1>
-        <div className="flex items-center gap-3 mt-1.5 text-[10px] text-gray-300 flex-wrap">
-          {personalInfo.email && <span>{personalInfo.email}</span>}
-          {personalInfo.phone && <span>{personalInfo.phone}</span>}
-          {personalInfo.location && <span>{personalInfo.location}</span>}
-          {personalInfo.linkedIn && <span>{personalInfo.linkedIn}</span>}
-          {personalInfo.portfolio && <span>{personalInfo.portfolio}</span>}
-        </div>
-      </div>
-
-      <div className="px-8 py-6">
-        {/* Summary */}
-        {summary && (
-          <div className="mb-5">
+  const renderSection = (key: string) => {
+    switch (key) {
+      case "summary":
+        return summary ? (
+          <div key="summary" className="mb-5">
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2 flex items-center gap-2">
               <span className="w-1 h-4 bg-gray-900 rounded-full inline-block" />
               Professional Summary
             </h2>
             <p className="text-gray-600 pl-3">{summary}</p>
           </div>
-        )}
-
-        {/* Experience */}
-        {experience.length > 0 && (
-          <div className="mb-5">
+        ) : null;
+      case "experience":
+        return experience.length > 0 ? (
+          <div key="experience" className="mb-5">
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2 flex items-center gap-2">
               <span className="w-1 h-4 bg-gray-900 rounded-full inline-block" />
               Professional Experience
@@ -57,11 +47,10 @@ export default function ProfessionalTemplate({ data }: { data: ResumeData }) {
               </div>
             ))}
           </div>
-        )}
-
-        {/* Skills */}
-        {skills.length > 0 && (
-          <div className="mb-5">
+        ) : null;
+      case "skills":
+        return skills.length > 0 ? (
+          <div key="skills" className="mb-5">
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2 flex items-center gap-2">
               <span className="w-1 h-4 bg-gray-900 rounded-full inline-block" />
               Technical Skills
@@ -74,11 +63,10 @@ export default function ProfessionalTemplate({ data }: { data: ResumeData }) {
               ))}
             </div>
           </div>
-        )}
-
-        {/* Education */}
-        {education.length > 0 && (
-          <div className="mb-5">
+        ) : null;
+      case "education":
+        return education.length > 0 ? (
+          <div key="education" className="mb-5">
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2 flex items-center gap-2">
               <span className="w-1 h-4 bg-gray-900 rounded-full inline-block" />
               Education
@@ -99,11 +87,10 @@ export default function ProfessionalTemplate({ data }: { data: ResumeData }) {
               </div>
             ))}
           </div>
-        )}
-
-        {/* Projects */}
-        {projects.length > 0 && (
-          <div className="mb-5">
+        ) : null;
+      case "projects":
+        return projects.length > 0 ? (
+          <div key="projects" className="mb-5">
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2 flex items-center gap-2">
               <span className="w-1 h-4 bg-gray-900 rounded-full inline-block" />
               Projects
@@ -127,11 +114,10 @@ export default function ProfessionalTemplate({ data }: { data: ResumeData }) {
               </div>
             ))}
           </div>
-        )}
-
-        {/* Certifications */}
-        {certifications.length > 0 && (
-          <div>
+        ) : null;
+      case "certifications":
+        return certifications.length > 0 ? (
+          <div key="certifications">
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2 flex items-center gap-2">
               <span className="w-1 h-4 bg-gray-900 rounded-full inline-block" />
               Certifications
@@ -146,7 +132,30 @@ export default function ProfessionalTemplate({ data }: { data: ResumeData }) {
               </div>
             ))}
           </div>
-        )}
+        ) : null;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="w-full bg-white text-gray-800 font-sans text-[11px] leading-relaxed">
+      {/* Dark Header */}
+      <div className="bg-gray-900 text-white px-8 py-5">
+        <h1 className="text-xl font-bold tracking-wide">
+          {personalInfo.fullName || "Your Name"}
+        </h1>
+        <div className="flex items-center gap-3 mt-1.5 text-[10px] text-gray-400 flex-wrap">
+          {personalInfo.email && <span>{personalInfo.email}</span>}
+          {personalInfo.phone && <span>{personalInfo.phone}</span>}
+          {personalInfo.location && <span>{personalInfo.location}</span>}
+          {personalInfo.linkedIn && <span>{personalInfo.linkedIn}</span>}
+          {personalInfo.portfolio && <span>{personalInfo.portfolio}</span>}
+        </div>
+      </div>
+
+      <div className="px-8 py-6">
+        {sectionOrder.map(renderSection)}
       </div>
     </div>
   );

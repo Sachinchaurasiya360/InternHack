@@ -1,30 +1,45 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const connectionString = process.env["DATABASE_URL"] ?? "";
+import { Pool } from "pg";
 
-// Pool size: Neon/Supabase free tiers allow ~20 connections.
-// Keep a comfortable margin below the hard limit.
-const adapter = new PrismaPg(
-  {
-    connectionString,
-    max: 10,
-    idleTimeoutMillis: 30_000,
-    connectionTimeoutMillis: 5_000,
-    keepAlive: true,
-  },
-  {
-    // Without these, an idle pg client erroring (managed Postgres dropping
-    // idle TCP connections, network blips) emits an unhandled 'error' event
-    // on the pool and crashes the Node process.
-    onPoolError: (err) => {
-      console.error("[prisma/pg] pool error:", err);
-    },
-    onConnectionError: (err) => {
-      console.error("[prisma/pg] connection error:", err);
-    },
-  },
-);
+// Strip sslmode from the URL so the explicit ssl option below takes full control.
+// Newer pg versions treat sslmode=require as verify-full and reject AWS RDS certs.
+const rawConnectionString = process.env["DATABASE_URL"] ?? "";
+const connectionString = rawConnectionString
+  .replace(/([?&])sslmode=[^&]*/g, "$1")
+  .replace(/[?&]$/, "");
+
+function resolveSsl():
+  | false
+  | { rejectUnauthorized: false } {
+  if (process.env["DATABASE_SSL"] === "true") {
+    return { rejectUnauthorized: false };
+  }
+  if (process.env["DATABASE_SSL"] === "false") {
+    return false;
+  }
+  // Local Postgres installs typically do not support TLS.
+  if (/localhost|127\.0\.0\.1/.test(rawConnectionString)) {
+    return false;
+  }
+  return { rejectUnauthorized: false };
+}
+
+const pool = new Pool({
+  connectionString,
+  max: 20,
+  idleTimeoutMillis: 30_000,
+  connectionTimeoutMillis: 5_000,
+  keepAlive: true,
+  ssl: resolveSsl(),
+});
+
+pool.on("error", (err) => {
+  console.error("[pg pool] error:", err);
+});
+
+const adapter = new PrismaPg(pool);
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 

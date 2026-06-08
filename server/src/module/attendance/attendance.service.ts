@@ -48,11 +48,9 @@ export class AttendanceService {
   }
 
   async checkOut(employeeId: number, notes?: string | undefined) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const record = await prisma.attendanceRecord.findUnique({
-      where: { employeeId_date: { employeeId, date: today } },
+    const record = await prisma.attendanceRecord.findFirst({
+      where: { employeeId, checkOut: null },
+      orderBy: { date: "desc" },
     });
 
     if (!record) throw new Error("No check-in found for today");
@@ -61,6 +59,9 @@ export class AttendanceService {
 
     const now = new Date();
     const workHours = (now.getTime() - record.checkIn.getTime()) / 3600000;
+    if (workHours < 0) {
+      throw new Error("Check-out time cannot be before check-in time");
+    }
     const standardHours = 8;
     const overtime = Math.max(0, workHours - standardHours);
     const status: AttendanceStatus = workHours < 4 ? "HALF_DAY" : "PRESENT";
@@ -129,8 +130,21 @@ export class AttendanceService {
     const date = new Date(data.date);
     date.setHours(0, 0, 0, 0);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date > today) {
+      throw new Error("Cannot regularize attendance for future dates");
+    }
+
     const checkIn = new Date(data.checkIn);
     const checkOut = new Date(data.checkOut);
+    const now = new Date();
+    if (checkIn > now) throw new Error("Check-in time cannot be in the future");
+    if (checkOut > now) throw new Error("Check-out time cannot be in the future");
+    if (checkOut <= checkIn) {
+      throw new Error("Check-out time must be after check-in time");
+    }
+
     const workHours = (checkOut.getTime() - checkIn.getTime()) / 3600000;
 
     return prisma.attendanceRecord.upsert({

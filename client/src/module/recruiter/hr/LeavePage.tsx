@@ -28,6 +28,7 @@ import type {
 } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { formatLabel, initials } from "./hr-utils";
 
 const LEAVE_TYPES: LeaveType[] = [
   "CASUAL",
@@ -48,17 +49,6 @@ const REQUEST_STATUSES: LeaveRequestStatus[] = [
 ];
 
 type TabKey = "requests" | "balance" | "policies" | "holidays";
-
-function formatLabel(value: string) {
-  return value
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function initials(first?: string, last?: string) {
-  return `${first?.[0] ?? ""}${last?.[0] ?? ""}`.toUpperCase() || "?";
-}
 
 export default function LeavePage() {
   const queryClient = useQueryClient();
