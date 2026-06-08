@@ -113,6 +113,9 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
     };
   }, [open, onClose]);
 
+  const [remaining, setRemaining] = useState<number>(5);
+  const [rateLimitError, setRateLimitError] = useState<string | null>(null);
+
   const mutation = useMutation({
     mutationFn: async (data: SuggestRepoForm) => {
       const payload = {
@@ -128,7 +131,11 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
       };
       return api.post("/opensource/requests", payload);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      const rem = response.headers["x-ratelimit-remaining"];
+      if (rem !== undefined) {
+        setRemaining(parseInt(rem, 10));
+      }
       setSuccess(true);
       queryClient.invalidateQueries({
         queryKey: queryKeys.opensource.myRequests(),
@@ -137,7 +144,24 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
         setSuccess(false);
         setForm(INITIAL_FORM);
         onClose();
-      }, 2000);
+        setTimeout(() => setRemaining(5), 300);
+      }, 2500);
+    },
+    onError: (error: any) => {
+      if (error?.response?.status === 429) {
+        const resetHeader = error.response?.headers?.["x-ratelimit-reset"] as string | undefined;
+        if (resetHeader) {
+          const resetMs = new Date(resetHeader).getTime() - Date.now();
+          const hoursLeft = Math.ceil(resetMs / (1000 * 60 * 60));
+          setRateLimitError(`You've reached your daily limit. Resets in ${hoursLeft} hour${hoursLeft !== 1 ? "s" : ""}.`);
+          setRemaining(0);
+        } else {
+          setRateLimitError("You've reached your daily limit. Please try again tomorrow.");
+          setRemaining(0);
+        }
+      } else {
+        setRateLimitError(null);
+      }
     },
   });
 
@@ -206,10 +230,17 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
         className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 rounded-t-2xl flex items-center justify-between z-10">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-            Suggest a Repository
-          </h2>
+        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 rounded-t-2xl flex items-start justify-between z-10">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+              Suggest a Repository
+            </h2>
+            {typeof remaining === 'number' && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Suggestions remaining today: <span className="font-semibold text-indigo-600 dark:text-indigo-400">{remaining}/5</span>
+              </p>
+            )}
+          </div>
           <Button
             variant="ghost"
             mode="icon"
@@ -229,9 +260,14 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
               Request Submitted!
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mb-2">
               You'll receive an email once it's reviewed.
             </p>
+            {remaining !== null && (
+              <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 inline-block px-3 py-1 rounded-full">
+                {remaining} of 5 suggestions remaining today
+              </p>
+            )}
           </div>
         ) : (
           <form className="px-6 py-5 space-y-4" onSubmit={handleSubmit}>
@@ -431,12 +467,11 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               </div>
             </div>
 
-            {mutation.isError && (
+            {(mutation.isError || rateLimitError) && (
               <p className="text-sm text-red-500">
-                {(mutation.error as { response?: { status?: number; data?: { message?: string } } })?.response?.status === 429
-                  ? (mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message
-                  : (mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-                  "Failed to submit. Please try again."}
+                {rateLimitError ??
+                  ((mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                    "Failed to submit. Please try again.")}
               </p>
             )}
 
@@ -444,7 +479,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               type="submit"
               variant="mono"
               size="lg"
-              disabled={mutation.isPending || !parsedRepo}
+              disabled={mutation.isPending || !parsedRepo || remaining === 0}
               className="w-full rounded-xl"
             >
               {mutation.isPending ? (
@@ -456,6 +491,11 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
                 "Submit Request"
               )}
             </Button>
+            {remaining === 0 && (
+              <p className="text-center text-xs font-medium text-amber-600 dark:text-amber-400">
+                Daily limit reached. Come back tomorrow.
+              </p>
+            )}
           </form>
         )}
       </motion.div>
