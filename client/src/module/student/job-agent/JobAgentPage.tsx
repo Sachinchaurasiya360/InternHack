@@ -383,7 +383,7 @@ export default function JobAgentPage() {
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 min-h-0 flex flex-col overflow-hidden px-4 sm:px-8">
+      <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-8 isolate">
         <AnimatePresence mode="wait">
           {isEmpty ? (
             <motion.div
