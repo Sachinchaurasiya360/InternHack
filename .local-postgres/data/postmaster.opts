@@ -1,0 +1,1 @@
+/usr/lib/postgresql/16/bin/postgres "-D" "/workspaces/InternHack/.local-postgres/data" "-p" "55432" "-k" "/workspaces/InternHack/.local-postgres/socket"
