@@ -18,6 +18,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { AiHintPanel } from "./components/AiHintPanel";
 import { DsaCodeEditor } from "./components/DsaCodeEditor";
 import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
@@ -536,6 +537,11 @@ export default function DsaProblemDetailPage() {
                     ))}
                   </div>
                 </div>
+              )}
+
+              {/* AI Hints */}
+              {user && (
+                <AiHintPanel problemId={problem.id} />
               )}
 
               {/* Notes */}

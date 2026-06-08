@@ -52,6 +52,7 @@ const DsaTopicsPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopics
 const DsaTopicDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicDetailPage"));
 const DsaCompaniesPage = lazyWithRetry(() => import("./module/student/dsa/DsaCompaniesPage"));
 const DsaPatternsPage = lazyWithRetry(() => import("./module/student/dsa/DsaPatternsPage"));
+const DsaListsPage = lazyWithRetry(() => import("./module/student/dsa/DsaListsPage"));
 const DsaBookmarksPage = lazyWithRetry(() => import("./module/student/dsa/DsaBookmarksPage"));
 const DsaProblemDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaProblemDetailPage"));
 const DsaFoundationsHubPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsHubPage"));
@@ -105,6 +106,7 @@ const CommTemplatesSectionPage = lazyWithRetry(() => import("./module/student/op
 const CICDGuidePage = lazyWithRetry(() => import("./module/student/opensource/CICDGuidePage"));
 const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/CICDGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
+const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
@@ -116,6 +118,7 @@ const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-inte
 const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
 const BuildChallengesPage = lazyWithRetry(() => import("./module/student/learn/challenges/BuildChallengesPage"));
+const MentorMatchingPage = lazyWithRetry(() => import("./module/student/learn/mentors/MentorMatchingPage"));
 const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
 const ExamDetailPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamDetailPage"));
 const ExamMockPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamRunnerPage").then((m) => ({ default: m.ExamMockPage })));
@@ -370,6 +373,7 @@ function App() {
           <Route path="/learn" element={<LearnLayout />}>
             <Route index element={<LearnHubPage />} />
             <Route path="challenges" element={<BuildChallengesPage />} />
+            <Route path="mentors" element={<MentorMatchingPage />} />
             <Route path="javascript" element={<JsLessonsPage />} />
             <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
             <Route path="javascript/:sectionSlug/:lessonId" element={<JsLessonDetailPage />} />
@@ -407,6 +411,7 @@ function App() {
             <Route path="dsa" element={<DsaTopicsPage />} />
             <Route path="dsa/companies" element={<DsaCompaniesPage />} />
             <Route path="dsa/patterns" element={<DsaPatternsPage />} />
+            <Route path="dsa/lists" element={<DsaListsPage />} />
             <Route path="dsa/bookmarks" element={<ProtectedRoute role="STUDENT"><DsaBookmarksPage /></ProtectedRoute>} />
             <Route path="dsa/problem" element={<Navigate to="/learn/dsa" replace />} />
             <Route path="dsa/problem/:slug" element={<DsaProblemDetailPage />} />
@@ -507,6 +512,7 @@ function App() {
               <Route path="communication/:sectionSlug" element={<CommTemplatesSectionPage />} />
               <Route path="cicd" element={<CICDGuidePage />} />
               <Route path="cicd/:sectionSlug" element={<CICDGuideSectionPage />} />
+              <Route path="my-submissions" element={<MySubmissionsPage />} />
             </Route>
             <Route path="ai-agent" element={<JobAgentPage />} />
             <Route path="signals" element={<SignalsPage />} />

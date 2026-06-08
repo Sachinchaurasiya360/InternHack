@@ -5,84 +5,138 @@ import { useLearningPath } from "../learning-paths.context";
 
 export function LearningPathSidebar() {
   const { selectedPath, selectedPathId, setSelectedPathId, progress, nextIncompleteItem } = useLearningPath();
-  const progressPct = progress.totalCount > 0 ? Math.round((progress.completedCount / progress.totalCount) * 100) : 0;
+  const progressPct =
+    progress.totalCount > 0
+      ? Math.round((progress.completedCount / progress.totalCount) * 100)
+      : 0;
 
   return (
-    <aside className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-stone-900">
-      <div className="mb-4 flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-stone-900 text-lime-300 dark:bg-stone-50 dark:text-stone-950">
-          <Route className="h-4 w-4" />
+    <aside className="border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md overflow-hidden">
+      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-stone-200 dark:border-white/10">
+        <div className="w-7 h-7 rounded-md bg-stone-900 dark:bg-stone-50 flex items-center justify-center shrink-0">
+          <Route className="w-3.5 h-3.5 text-lime-400 dark:text-stone-900" />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-mono uppercase tracking-widest text-stone-500">Learning path</p>
-          <h2 className="mt-1 text-sm font-bold leading-tight text-stone-950 dark:text-stone-50">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            Learning path
+          </p>
+          <h2 className="text-sm font-bold leading-tight text-stone-900 dark:text-stone-50 truncate">
             {selectedPath.title}
           </h2>
         </div>
       </div>
 
-      <select
-        value={selectedPathId}
-        onChange={(event) => setSelectedPathId(event.target.value as LearningPathId)}
-        className="mb-4 h-10 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 text-sm font-medium text-stone-800 outline-none transition-colors focus:border-stone-500 dark:border-white/10 dark:bg-stone-950 dark:text-stone-100"
-      >
-        {LEARNING_PATHS.map((path) => (
-          <option key={path.id} value={path.id}>
-            {path.title}
-          </option>
-        ))}
-      </select>
+      <div className="p-4 space-y-4">
+        <select
+          value={selectedPathId}
+          onChange={(e) => setSelectedPathId(e.target.value as LearningPathId)}
+          className="w-full h-9 px-3 rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950 text-sm font-medium text-stone-800 dark:text-stone-100 outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
+        >
+          {LEARNING_PATHS.map((path) => (
+            <option key={path.id} value={path.id}>
+              {path.title}
+            </option>
+          ))}
+        </select>
 
-      <div className="mb-4">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
-            Path {progress.completedCount} of {progress.totalCount} complete
-          </span>
-          <span className="text-xs font-mono text-stone-500">{progressPct}%</span>
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-stone-900 dark:text-stone-50">
+              {progress.completedCount} of {progress.totalCount} complete
+            </span>
+            <span className="text-[10px] font-mono text-stone-500">{progressPct}%</span>
+          </div>
+          <div className="h-1.5 bg-stone-100 dark:bg-stone-800 overflow-hidden">
+            <div
+              className="h-full bg-lime-400 transition-all duration-500"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
         </div>
-        <div className="h-2 overflow-hidden rounded bg-stone-100 dark:bg-stone-800">
-          <div className="h-full bg-lime-400 transition-all duration-500" style={{ width: `${progressPct}%` }} />
+
+        <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
+          <Clock className="w-3.5 h-3.5 shrink-0" />
+          <span>{progress.remainingMinutes} min remaining</span>
         </div>
-      </div>
 
-      <div className="mb-4 flex items-center gap-2 rounded-xl bg-stone-50 px-3 py-2.5 text-sm text-stone-600 dark:bg-stone-950 dark:text-stone-300">
-        <Clock className="h-4 w-4 text-stone-400" />
-        <span>{progress.remainingMinutes} min estimated time left</span>
-      </div>
-
-      <div className="space-y-2">
-        {selectedPath.items.map((item, index) => {
-          const complete = progress.completedSlugs.has(item.slug);
-          return (
-            <Link
-              key={item.slug}
-              to={item.href}
-              className="flex items-center gap-3 rounded-xl px-2 py-2 text-sm no-underline transition-colors hover:bg-stone-50 dark:hover:bg-stone-950"
-            >
-              {complete ? (
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
-              ) : (
-                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded bg-stone-100 text-xs font-bold text-stone-500 dark:bg-stone-800">
-                  {index + 1}
+        <div className="space-y-0.5">
+          {selectedPath.items.map((item, index) => {
+            const complete = progress.completedSlugs.has(item.slug);
+            return (
+              <Link
+                key={item.slug}
+                to={item.href}
+                className="flex items-center gap-3 px-2 py-1.5 rounded-md text-sm no-underline transition-colors hover:bg-stone-50 dark:hover:bg-stone-800"
+              >
+                {complete ? (
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-lime-500" />
+                ) : (
+                  <span className="flex w-4 h-4 shrink-0 items-center justify-center rounded-sm bg-stone-100 dark:bg-stone-800 text-[10px] font-bold font-mono text-stone-500">
+                    {index + 1}
+                  </span>
+                )}
+                <span
+                  className={
+                    complete
+                      ? "line-through text-stone-400 text-xs"
+                      : "text-stone-700 dark:text-stone-300 text-xs"
+                  }
+                >
+                  {item.title}
                 </span>
-              )}
-              <span className={complete ? "line-through text-stone-400" : "text-stone-700 dark:text-stone-300"}>
-                {item.title}
-              </span>
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })}
+        </div>
+
+        {nextIncompleteItem && (
+          <Link
+            to={nextIncompleteItem.href}
+            className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-md border border-lime-200 dark:border-lime-400/30 bg-lime-50 dark:bg-lime-400/10 text-xs font-bold text-stone-950 dark:text-lime-200 no-underline hover:bg-lime-100 dark:hover:bg-lime-400/15 transition-colors"
+          >
+            <span>Next: {nextIncompleteItem.title}</span>
+            <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+          </Link>
+        )}
+      </div>
+    </aside>
+  );
+}
+
+export function LearningPathCompact() {
+  const { selectedPath, progress, nextIncompleteItem } = useLearningPath();
+  const progressPct =
+    progress.totalCount > 0
+      ? Math.round((progress.completedCount / progress.totalCount) * 100)
+      : 0;
+
+  return (
+    <div className="flex items-center gap-4 px-4 py-2.5 overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-2 shrink-0">
+        <div className="w-5 h-5 rounded-sm bg-stone-900 dark:bg-stone-50 flex items-center justify-center">
+          <Route className="w-2.5 h-2.5 text-lime-400 dark:text-stone-900" />
+        </div>
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 whitespace-nowrap">
+          {selectedPath.title}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-2 shrink-0">
+        <div className="w-20 h-1 bg-stone-200 dark:bg-stone-700">
+          <div className="h-full bg-lime-400 transition-all" style={{ width: `${progressPct}%` }} />
+        </div>
+        <span className="text-[10px] font-mono text-stone-500">{progressPct}%</span>
       </div>
 
       {nextIncompleteItem && (
         <Link
           to={nextIncompleteItem.href}
-          className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-lime-200 bg-lime-50 px-3 py-3 text-sm font-bold text-stone-950 no-underline transition-colors hover:bg-lime-100 dark:border-lime-400/30 dark:bg-lime-400/10 dark:text-lime-200"
+          className="flex items-center gap-1.5 shrink-0 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 no-underline hover:text-lime-500 transition-colors whitespace-nowrap"
         >
-          <span>Next: {nextIncompleteItem.title}</span>
-          <ArrowRight className="h-4 w-4 shrink-0" />
+          Next: {nextIncompleteItem.title}
+          <ArrowRight className="w-3 h-3" />
         </Link>
       )}
-    </aside>
+    </div>
   );
 }

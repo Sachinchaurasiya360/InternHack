@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, GitFork, CircleDot, Flame, ArrowRight } from "lucide-react";
+import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck, GitPullRequest } from "lucide-react";
 import type { OpenSourceRepo } from "../../../lib/types";
 import { LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
@@ -9,11 +9,13 @@ interface RepoCardProps {
   repo: OpenSourceRepo;
   index: number;
   onSelect: (repo: OpenSourceRepo) => void;
+  bookmarked: boolean;
+  onToggleBookmark: (id: number) => void;
 }
 
 const MAX_STAGGER_INDEX = 8;
 
-export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: RepoCardProps) {
+export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bookmarked, onToggleBookmark }: RepoCardProps) {
   const badge = difficultyBadge(repo.difficulty);
   const delay = Math.min(index, MAX_STAGGER_INDEX) * 0.04;
 
@@ -28,14 +30,20 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
       className="h-full"
     >
       <button
-        aria-label={`${repo.name} by ${repo.owner}, ${repo.difficulty} difficulty, ${repo.stars} stars, ${repo.openIssues} open issues`}
+        aria-label={`${repo.name} by ${repo.owner}, ${repo.difficulty} difficulty, ${repo.stars} stars, ${repo.openIssues} open issues${bookmarked ? ", Bookmarked" : ""}`}
         onClick={() => onSelect(repo)}
         className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
       >
         {repo.trending && (
-          <div className="absolute -top-2 right-4 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
+          <div className="absolute -top-2 right-12 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
             <Flame size={10} aria-hidden="true" />
             trending
+          </div>
+        )}
+        {repo.hacktoberfest && (
+          <div className="absolute -top-2 left-3 inline-flex items-center gap-1 rounded-md bg-orange-600 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-white">
+            <GitPullRequest size={10} aria-hidden="true" />
+            hacktoberfest
           </div>
         )}
 
@@ -73,9 +81,24 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
                 </div>
               </div>
             </div>
-            <span className={`rounded-md px-2 py-0.5 text-[10px] font-medium ring-1 shrink-0 ${badge.cls}`}>
-              {badge.label}
-            </span>
+            
+            {/* Restored Bookmark Button */}
+            <div className="flex items-center gap-2 shrink-0 relative z-10">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onToggleBookmark(repo.id);
+                }}
+                className="p-1 text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
+              >
+                {bookmarked ? <BookmarkCheck size={16} className="text-lime-600 dark:text-lime-400" /> : <Bookmark size={16} />}
+              </button>
+              <span className={`rounded-md px-2 py-0.5 text-[10px] font-medium ring-1 shrink-0 ${badge.cls}`}>
+                {badge.label}
+              </span>
+            </div>
           </div>
 
           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5 leading-snug">

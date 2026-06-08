@@ -1,5 +1,5 @@
 import { prisma } from "../../database/db.js";
-import type { Prisma, ApplicationStatus } from "@prisma/client";
+import type { Prisma, ApplicationStatus, RoundStatus } from "@prisma/client";
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
@@ -131,6 +131,19 @@ export class RecruiterService {
       throw Object.assign(new Error(`A round named "${data.name}" already exists for this job`), { statusCode: 409 });
     }
 
+    // SAFE FIX: Parse the payload safely before executing the Prisma query 
+    let parsedCustomFields: any[] = [];
+    let parsedEvaluationCriteria: any[] = [];
+    let parsedAssessmentQuestions: any[] = [];
+
+    try {
+      parsedCustomFields = data.customFields ? JSON.parse(JSON.stringify(data.customFields)) : [];
+      parsedEvaluationCriteria = data.evaluationCriteria ? JSON.parse(JSON.stringify(data.evaluationCriteria)) : [];
+      parsedAssessmentQuestions = data.assessmentQuestions ? JSON.parse(JSON.stringify(data.assessmentQuestions)) : [];
+    } catch (error) {
+      throw Object.assign(new Error("Invalid JSON format in configuration arrays"), { statusCode: 422 });
+    }
+
     return prisma.round.create({
       data: {
         jobId,
@@ -138,9 +151,9 @@ export class RecruiterService {
         description: data.description ?? null,
         orderIndex: data.orderIndex,
         instructions: data.instructions ?? null,
-        customFields: data.customFields ? JSON.parse(JSON.stringify(data.customFields)) : [],
-        evaluationCriteria: data.evaluationCriteria ? JSON.parse(JSON.stringify(data.evaluationCriteria)) : [],
-        assessmentQuestions: data.assessmentQuestions ? JSON.parse(JSON.stringify(data.assessmentQuestions)) : [],
+        customFields: parsedCustomFields,
+        evaluationCriteria: parsedEvaluationCriteria,
+        assessmentQuestions: parsedAssessmentQuestions,
         timeLimitSecs: data.timeLimitSecs ?? null,
         autoGrade: data.autoGrade ?? false,
         activateAt: data.activateAt ? new Date(data.activateAt) : null,
@@ -179,15 +192,34 @@ export class RecruiterService {
       }
     }
 
+    // SAFE FIX: Extract payload fields conditionally to avoid inline parsing errors
+    let parsedCustomFields = undefined;
+    let parsedEvaluationCriteria = undefined;
+    let parsedAssessmentQuestions = undefined;
+
+    try {
+      if (data.customFields !== undefined) {
+        parsedCustomFields = JSON.parse(JSON.stringify(data.customFields));
+      }
+      if (data.evaluationCriteria !== undefined) {
+        parsedEvaluationCriteria = JSON.parse(JSON.stringify(data.evaluationCriteria));
+      }
+      if (data.assessmentQuestions !== undefined) {
+        parsedAssessmentQuestions = JSON.parse(JSON.stringify(data.assessmentQuestions));
+      }
+    } catch (error) {
+      throw Object.assign(new Error("Invalid JSON format in updated configuration arrays"), { statusCode: 422 });
+    }
+
     return prisma.round.update({
       where: { id: roundId },
       data: {
         ...(data.name !== undefined && { name: data.name }),
         ...(data.description !== undefined && { description: data.description }),
         ...(data.instructions !== undefined && { instructions: data.instructions }),
-        ...(data.customFields !== undefined && { customFields: JSON.parse(JSON.stringify(data.customFields)) }),
-        ...(data.evaluationCriteria !== undefined && { evaluationCriteria: JSON.parse(JSON.stringify(data.evaluationCriteria)) }),
-        ...(data.assessmentQuestions !== undefined && { assessmentQuestions: JSON.parse(JSON.stringify(data.assessmentQuestions)) }),
+        ...(parsedCustomFields !== undefined && { customFields: parsedCustomFields }),
+        ...(parsedEvaluationCriteria !== undefined && { evaluationCriteria: parsedEvaluationCriteria }),
+        ...(parsedAssessmentQuestions !== undefined && { assessmentQuestions: parsedAssessmentQuestions }),
         ...(data.timeLimitSecs !== undefined && { timeLimitSecs: data.timeLimitSecs }),
         ...(data.autoGrade !== undefined && { autoGrade: data.autoGrade }),
         ...(data.activateAt !== undefined && { activateAt: data.activateAt ? new Date(data.activateAt) : null }),
@@ -237,6 +269,11 @@ export class RecruiterService {
 
     if (existingRounds.length !== rounds.length) {
       throw new Error("Invalid round IDs");
+    }
+
+    const totalRounds = await prisma.round.count({ where: { jobId } });
+    if (rounds.length !== totalRounds) {
+      throw new Error("All rounds must be included in the reorder request");
     }
 
     // Use a transaction with temporary high indices to avoid unique constraint conflicts
@@ -508,7 +545,7 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-// Fix for #1116: Gracefully catch malformed JSON data during evaluation
+    // Fix for #1116: Gracefully catch malformed JSON data during evaluation
     let parsedScores;
     try {
       parsedScores = JSON.parse(JSON.stringify(evaluationScores));
@@ -523,7 +560,7 @@ export class RecruiterService {
         "Withdrawn applications cannot participate in the hiring process"
       );
     }
-    
+
     // checking round ownership
     const round = await prisma.round.findUnique({
       where: { id: roundId },
@@ -629,27 +666,25 @@ export class RecruiterService {
       statusCounts[s.status] = s._count.id;
     }
 
-    const submissionLookup = new Map(
+    const submissionLookup = new Map<string, number>(
       submissionsByRoundAndStatus.map((s) => [
         `${s.roundId}:${s.status}`,
         s._count.id,
       ]),
     );
 
-    const roundAnalytics = rounds.map((round) => {
-      const lookup = (status: string) =>
-        submissionLookup.get(`${round.id}:${status}`) ?? 0;
+    const getSubmissionCount = (roundId: number, status: RoundStatus): number =>
+      submissionLookup.get(`${roundId}:${status}`) ?? 0;
 
-      return {
-        id: round.id,
-        name: round.name,
-        orderIndex: round.orderIndex,
-        totalSubmissions: round._count.roundSubmissions,
-        completed: lookup("COMPLETED"),
-        inProgress: lookup("IN_PROGRESS"),
-        pending: lookup("PENDING"),
-      };
-    });
+    const roundAnalytics = rounds.map((round) => ({
+      id: round.id,
+      name: round.name,
+      orderIndex: round.orderIndex,
+      totalSubmissions: round._count.roundSubmissions,
+      completed: getSubmissionCount(round.id, "COMPLETED"),
+      inProgress: getSubmissionCount(round.id, "IN_PROGRESS"),
+      pending: getSubmissionCount(round.id, "PENDING"),
+    }));
 
     return {
       jobId,
@@ -673,6 +708,9 @@ export class RecruiterService {
       where.OR = [
         { name: { contains: filter.search, mode: "insensitive" } },
         { email: { contains: filter.search, mode: "insensitive" } },
+        { skills: { has: filter.search } },
+        { skills: { has: filter.search.charAt(0).toUpperCase() + filter.search.slice(1).toLowerCase() } },
+        { bio: { contains: filter.search, mode: "insensitive" } },
       ];
     }
     if (filter.college) {

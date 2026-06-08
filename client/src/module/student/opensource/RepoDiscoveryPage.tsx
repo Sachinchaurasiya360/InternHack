@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,11 +23,13 @@ import {
   Share2,
   Check,
   Copy,
+  Bookmark,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 import { queryKeys } from "../../../lib/query-keys";
 import { SEO } from "../../../components/SEO";
+import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import type { OpenSourceRepo, Pagination, RepoRequest } from "../../../lib/types";
@@ -40,6 +42,32 @@ import { SuggestRepoModal } from "./SuggestRepoModal";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
+import { useCoachStore } from "./stores/coach.store";
+import { markLearningPathMilestone } from "./learning-paths.data";
+
+const BOOKMARK_KEY = "oss_bookmarks";
+
+const getBookmarks = (): number[] => {
+  try {
+    const saved = localStorage.getItem(BOOKMARK_KEY);
+    if (!saved) return [];
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed) && parsed.every((id) => typeof id === "number")) {
+      return parsed;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+};
+
+const saveBookmarks = (ids: number[]) => {
+  try {
+    localStorage.setItem(BOOKMARK_KEY, JSON.stringify(ids));
+  } catch (error) {
+    console.warn("Failed to save bookmarks to localStorage", error);
+  }
+};
 
 const STATUS_STYLE: Record<string, string> = {
   PENDING: "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
@@ -72,13 +100,18 @@ const SKILL_LANGUAGE_MAP: Record<string, string[]> = {
 };
 
 export default function RepoDiscoveryPage() {
+  useEffect(() => {
+    markLearningPathMilestone("repo-discovery");
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
+  const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
   // Initialize filter states directly from the URL
   const search = searchParams.get("q") || "";
   const selectedDomain = searchParams.get("domain") || "ALL";
   const selectedDifficulty = searchParams.get("difficulty") || "ALL";
-  const selectedLanguage = searchParams.getAll("language");
+  const selectedLanguage = searchParams.getAll("language") || "ALL";
   const sortKey = searchParams.get("sort") || "stars";
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
@@ -86,8 +119,10 @@ export default function RepoDiscoveryPage() {
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
   const searchRef = useRef<HTMLInputElement>(null);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
 
   const [showFilters, setShowFilters] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
 
   useEffect(() => {
@@ -108,7 +143,7 @@ export default function RepoDiscoveryPage() {
     return () => clearTimeout(timer);
   }, [inputValue, search, setSearchParams]);
 
-  // Keyboard shortcut to focus search
+  // Keyboard shortcut & click outside bindings
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
@@ -116,17 +151,30 @@ export default function RepoDiscoveryPage() {
         e.preventDefault();
         searchRef.current?.focus();
       }
+      if (e.key === "Escape") {
+        setSortOpen(false);
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
+        setSortOpen(false);
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [showAllSubmissions, setShowAllSubmissions] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
+  const [bookmarks, setBookmarks] = useState<number[]>(() => getBookmarks());
+  const [showSaved, setShowSaved] = useState(false);
   const { copied: copiedCloneUrl, copy: copyCloneUrl } = useCopyToClipboard();
   const { user } = useAuthStore();
 
@@ -163,7 +211,7 @@ export default function RepoDiscoveryPage() {
     }, { replace: true });
   };
 
-  const handleCloseRepo = useCallback(() => {
+  const handleCloseRepo = () => {
     setSelectedRepo(null);
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
@@ -171,7 +219,7 @@ export default function RepoDiscoveryPage() {
       return params;
     }, { replace: true });
     setCopiedShareUrl(false);
-  }, [setSearchParams]);
+  };
 
   // Deep-link support: load a repo from URL on first render
   const initialRepoId = searchParams.get("repo");
@@ -192,6 +240,7 @@ export default function RepoDiscoveryPage() {
 
   useEffect(() => {
     if (deepLinkError) {
+      toast.error("Could not load the linked repository. It may not exist or has been removed.");
       setSearchParams((prev) => {
         const params = new URLSearchParams(prev);
         params.delete("repo");
@@ -199,6 +248,40 @@ export default function RepoDiscoveryPage() {
       }, { replace: true });
     }
   }, [deepLinkError, setSearchParams]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (showSaved && bookmarks.length === 0) setShowSaved(false);
+  }, [bookmarks, showSaved]);
+
+  const toggleBookmark = (id: number) => {
+    const isBookmarking = !bookmarks.includes(id);
+
+    setBookmarks((prev) => {
+      const next = isBookmarking ? [...prev, id] : prev.filter((b) => b !== id);
+      saveBookmarks(next);
+      return next;
+    });
+
+    if (isBookmarking) {
+      const repo = data?.repos?.find((r) => r.id === id);
+      if (repo) {
+        triggerCoach({
+          trigger: "REPO_BOOKMARKED",
+          context: {
+            skills: user?.skills || [],
+            bookmarkedRepos: [
+              {
+                name: repo.name,
+                language: repo.language,
+                domain: repo.domain || undefined,
+              },
+            ],
+          },
+        });
+      }
+    }
+  };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -212,12 +295,14 @@ export default function RepoDiscoveryPage() {
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
-    if (languageMode === "auto"){
+    
+    if (languageMode === "auto") {
       if (inferredLanguages.length > 0) {
         params.language = inferredLanguages[0]; 
       }
+    } else if (selectedLanguage.length > 0) {
+      params.language = selectedLanguage[0];
     }
-    else if (selectedLanguage.length > 0) params.language = selectedLanguage[0];
     
     if (trendingOnly) params.trending = "true";
 
@@ -261,20 +346,44 @@ export default function RepoDiscoveryPage() {
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
   }, [languagesData]);
 
-  const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
-  const pagination = data?.pagination;
+  const { data: bookmarkedData, isLoading: isLoadingBookmarks } = useQuery({
+    queryKey: ["opensource-bookmarked", bookmarks],
+    queryFn: () =>
+      api
+        .get("/opensource", { params: { ids: bookmarks.join(","), limit: 100 } })
+        .then((r) => r.data.repos as OpenSourceRepo[]),
+    enabled: showSaved && bookmarks.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
 
-  const stats = useMemo(() => {
-    if (!pagination) return null;
-    const totalStars = repos.reduce((s, r) => s + r.stars, 0);
-    const trendingCount = repos.filter((r) => r.trending).length;
-    return {
-      totalRepos: pagination.total,
-      totalStars: formatCount(totalStars),
-      trendingCount,
-      languages: [...new Set(repos.map((r) => r.language))].length,
-    };
-  }, [repos, pagination]);
+  const pagination = data?.pagination;
+  const displayedRepos = showSaved ? (bookmarkedData ?? []) : (data?.repos ?? []);
+
+  // Global stats fetched independently so the header strip stays accurate
+  // regardless of active filters or page (replaces the old useMemo approach).
+  const { data: globalStats } = useQuery({
+    queryKey: queryKeys.opensource.stats(),
+    queryFn: () =>
+      api
+        .get<{
+          totalRepos: number;
+          totalStars: number;
+          trendingCount: number;
+          languageCount: number;
+          domainBreakdown: { domain: string; count: number }[];
+        }>("/opensource/stats")
+        .then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const stats = globalStats
+    ? {
+        totalRepos: globalStats.totalRepos,
+        totalStars: formatCount(globalStats.totalStars),
+        trendingCount: globalStats.trendingCount,
+        languages: globalStats.languageCount,
+      }
+    : null;
 
   const updateFilter = (key: string, value: string | number) => {
     setSearchParams(
@@ -301,59 +410,6 @@ export default function RepoDiscoveryPage() {
     (selectedDomain !== "ALL" ? 1 : 0) +
     (selectedDifficulty !== "ALL" ? 1 : 0) +
     (selectedLanguage.length > 0 ? 1 : 0);
-
-  // Accessibility: Focus Trap & Escape Key for Modal
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!selectedRepo) return;
-
-    // Store previously focused element so we can restore it on close
-    previousFocusRef.current = document.activeElement as HTMLElement | null;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleCloseRepo();
-        return;
-      }
-
-      if (e.key === "Tab") {
-        const modal = document.getElementById("repo-modal-content");
-        if (!modal) return;
-        
-        const focusableElements = modal.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusableElements.length === 0) return;
-
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-
-        if (e.shiftKey && document.activeElement === firstElement) {
-          lastElement.focus();
-          e.preventDefault();
-        } else if (!e.shiftKey && document.activeElement === lastElement) {
-          firstElement.focus();
-          e.preventDefault();
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    
-    // Auto-focus the close button when it opens
-    const timeoutId = setTimeout(() => {
-      const closeBtn = document.getElementById("repo-modal-close");
-      closeBtn?.focus();
-    }, 100);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      clearTimeout(timeoutId);
-      // Restore focus to the card that opened the modal
-      previousFocusRef.current?.focus();
-    };
-  }, [selectedRepo, handleCloseRepo]);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -422,25 +478,15 @@ export default function RepoDiscoveryPage() {
           </div>
         </div>
 
-        {/* Screen Reader Announcer for Search Results */}
-        <div aria-live="polite" className="sr-only">
-          {isLoading
-            ? "Searching repositories..."
-            : pagination
-            ? `Showing ${pagination.total} repositories`
-            : ""}
-        </div>
-
         {/* Search bar */}
         <div className="mb-6 relative">
-          <Search aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-500" />
           <input
             ref={searchRef}
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Search repos, languages, tags..."
-            aria-label="Search open source repositories"
             className="w-full pl-10 pr-10 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
           />
           <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-stone-200 dark:border-white/10 text-[10px] font-mono text-stone-400 dark:text-stone-500 bg-stone-50 dark:bg-stone-800">
@@ -507,7 +553,6 @@ export default function RepoDiscoveryPage() {
               </div>
             </div>
 
-            {/* Loading skeleton */}
             {isMyRequestsLoading && (
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
@@ -519,28 +564,25 @@ export default function RepoDiscoveryPage() {
               </div>
             )}
 
-            {/* Error state */}
             {!isMyRequestsLoading && isMyRequestsError && (
               <div className="flex items-center justify-between py-2 px-1">
                 <p className="text-sm text-red-500">Failed to load submissions</p>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={() => refetchMyRequests()}
+                  className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent"
                 >
                   Retry ↻
-                </Button>
+                </button>
               </div>
             )}
 
-            {/* Empty state */}
             {!isMyRequestsLoading && !isMyRequestsError && myRequests?.length === 0 && (
               <p className="text-sm text-stone-400 dark:text-stone-500 py-2">
                 You haven't suggested any repos yet.
               </p>
             )}
 
-            {/* Submissions list */}
             {!isMyRequestsLoading && !isMyRequestsError && myRequests && myRequests.length > 0 && (
               <div className="space-y-2">
                 {(showAllSubmissions ? myRequests : myRequests.slice(0, 3)).map(
@@ -573,16 +615,15 @@ export default function RepoDiscoveryPage() {
                 )}
 
                 {myRequests.length > 3 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <button
+                    type="button"
                     onClick={() => setShowAllSubmissions((v) => !v)}
-                    className="mt-1"
+                    className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
                   >
                     {showAllSubmissions
                       ? "Show less ↑"
                       : `Show all ${myRequests.length} →`}
-                  </Button>
+                  </button>
                 )}
               </div>
             )}
@@ -592,15 +633,19 @@ export default function RepoDiscoveryPage() {
         {/* Guidance Cards */}
         <GuidanceCards />
 
+        {/* Recently viewed & recommended */}
         <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
 
         {user?.role === "STUDENT" && (
-          <RecommendedSection onSelect={handleOpenRepo} />
+          <RecommendedSection 
+            onSelect={handleOpenRepo} 
+            bookmarks={bookmarks}
+            onToggleBookmark={toggleBookmark}
+          />
         )}
 
-        <fieldset className="flex flex-wrap items-center gap-2 mb-4">
-          <legend className="sr-only">Filter repositories</legend>
-          
+        {/* Filter bar */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
           {/* Domain chips */}
           {REPO_DOMAINS.map((d) => {
             const active = selectedDomain === d.key;
@@ -608,8 +653,6 @@ export default function RepoDiscoveryPage() {
               <button
                 key={d.key}
                 type="button"
-                aria-pressed={active}
-                aria-label={`Filter by domain: ${d.label}`}
                 onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
                 className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
                   active
@@ -621,6 +664,20 @@ export default function RepoDiscoveryPage() {
               </button>
             );
           })}
+
+          {/* Saved toggle */}
+          <button
+            type="button"
+            onClick={() => setShowSaved((v) => !v)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              showSaved
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
+            }`}
+          >
+            <Bookmark className="w-3 h-3" />
+            Saved {bookmarks.length > 0 && `(${bookmarks.length})`}
+          </button>
 
           {/* Trending toggle */}
           <button
@@ -638,45 +695,40 @@ export default function RepoDiscoveryPage() {
 
           {inferredLanguages.length > 0 && (
             <button
-            type="button"
-            onClick={() => {
-              setSearchParams((prev) => {
-                const params = new URLSearchParams(prev);
+              type="button"
+              onClick={() => {
+                setSearchParams((prev) => {
+                  const params = new URLSearchParams(prev);
+                  const isActive = languageMode === "auto";
 
-                const isActive = languageMode === "auto";
+                  if (isActive) {
+                    params.delete("languageMode");
+                    params.delete("language");
+                  } else {
+                    params.set("languageMode", "auto");
+                    params.delete("language");
+                    inferredLanguages.forEach((lang) => {
+                      params.append("language", lang);
+                    });
+                  }
 
-                if (isActive) {
-                  params.delete("languageMode");
-                  params.delete("language");
-                } else {
-                  params.set("languageMode", "auto");
-
-                  params.delete("language");
-                  inferredLanguages.forEach((lang) => {
-                    params.append("language", lang);
-                  });
-                }
-
-                params.set("page", "1");
-                return params;
-              }, { replace: true });
-            }}
-            className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
-              languageMode === "auto"
-                ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-            }`}
-          >
-            My Languages
-          </button>
+                  params.set("page", "1");
+                  return params;
+                }, { replace: true });
+              }}
+              className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
+                languageMode === "auto"
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                  : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              }`}
+            >
+              My Languages
+            </button>
           )}
 
           {/* More filters toggle */}
           <button
             type="button"
-            aria-expanded={showFilters}
-            aria-controls="expanded-filters-section"
-            aria-label="Toggle additional filters"
             onClick={() => setShowFilters(!showFilters)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
               activeFilters > 0
@@ -695,26 +747,60 @@ export default function RepoDiscoveryPage() {
           </button>
 
           {/* Sort dropdown */}
-          <div className="relative flex items-center">
-            <TrendingUp aria-hidden="true" className="w-3 h-3 absolute left-3 text-stone-700 dark:text-stone-300 pointer-events-none" />
-            <select
-              aria-label="Sort repositories"
-              value={sortKey}
-              onChange={(e) => updateFilter("sort", e.target.value)}
-              className="pl-8 pr-3 py-1.5 rounded-md text-xs font-bold border border-stone-300 dark:border-white/15 bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 focus:outline-none focus:border-stone-400 dark:focus:border-white/25 cursor-pointer appearance-none"
+          <div className="relative" ref={sortDropdownRef}>
+            <Button 
+              type="button" 
+              variant="ghost"
+              size="sm"
+              onClick={() => setSortOpen(!sortOpen)}
+              aria-haspopup="listbox"
+              aria-expanded={sortOpen}
             >
-              {SORT_OPTIONS.map((opt) => (
-                <option key={opt.key} value={opt.key}>{opt.label}</option>
-              ))}
-            </select>
+              <TrendingUp className="w-3 h-3" />
+              {SORT_OPTIONS.find((s) => s.key === sortKey)?.label ?? "Sort"}
+              <ChevronDown className={`w-3 h-3 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
+            </Button>
+            <AnimatePresence>
+              {sortOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl origin-top"
+                  role="listbox"
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <Button
+                      key={opt.key}
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      role="option"
+                      aria-selected={sortKey === opt.key}
+                      onClick={() => {
+                        updateFilter("sort", opt.key);
+                        setSortOpen(false);
+                      }}
+                      className={`w-full justify-start text-left px-2.5 py-1.5 rounded-md text-xs font-normal transition-colors cursor-pointer ${
+                        sortKey === opt.key
+                          ? "bg-stone-900 dark:bg-stone-50 text-lime-400 hover:bg-stone-900 dark:hover:bg-stone-50 hover:text-lime-400"
+                          : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      {opt.label}
+                    </Button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        </fieldset>
+        </div>
 
         {/* Expanded filters */}
         <AnimatePresence>
           {showFilters && (
             <motion.div
-              id="expanded-filters-section"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -722,11 +808,10 @@ export default function RepoDiscoveryPage() {
             >
               <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
                 <div>
-                  <label htmlFor="difficulty-filter" className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     difficulty
                   </label>
                   <select
-                    id="difficulty-filter"
                     value={selectedDifficulty}
                     onChange={(e) => updateFilter("difficulty", e.target.value)}
                     className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
@@ -737,19 +822,17 @@ export default function RepoDiscoveryPage() {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="language-filter" className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     language
                   </label>
+
                   <select
-                    id="language-filter"
-                    value={selectedLanguage[0] || "ALL"}
+                    value={selectedLanguage}
                     disabled={languageMode === "auto"}
                     onChange={(e) => {
                       const value = e.target.value;
-
                       setSearchParams((prev) => {
                         const params = new URLSearchParams(prev);
-
                         params.delete("language");
 
                         if (value !== "ALL") {
@@ -757,7 +840,6 @@ export default function RepoDiscoveryPage() {
                         }
 
                         params.set("page", "1");
-
                         return params;
                       }, { replace: true });
                     }}
@@ -776,7 +858,6 @@ export default function RepoDiscoveryPage() {
                   <div className="flex items-end">
                     <button
                       type="button"
-                      aria-label="Clear all active filters"
                       onClick={() => {
                         setSearchParams(new URLSearchParams(), { replace: true });
                         setInputValue("");
@@ -792,8 +873,8 @@ export default function RepoDiscoveryPage() {
           )}
         </AnimatePresence>
 
-        {/* Results count (Visual only, SR already read the live region above) */}
-        <div className="flex items-center justify-between mb-4" aria-hidden="true">
+        {/* Results count */}
+        <div className="flex items-center justify-between mb-4">
           <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
             {pagination ? (
               <>
@@ -811,7 +892,7 @@ export default function RepoDiscoveryPage() {
 
         {/* Loading */}
         {isLoading && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" role="list" aria-busy="true">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <RepoCardSkeleton key={i} />
             ))}
@@ -820,19 +901,20 @@ export default function RepoDiscoveryPage() {
 
         {/* Error */}
         {isError && (
-          <div role="alert" className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
+          <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
             <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
-              <AlertCircle aria-hidden="true" className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+              <AlertCircle className="w-5 h-5 text-stone-400 dark:text-stone-500" />
             </div>
             <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">Failed to load repositories</h3>
             <p className="text-sm text-stone-500 dark:text-stone-400">There was an error fetching the list. Please try again later.</p>
           </div>
         )}
+
         {/* Empty */}
-        {!isLoading && !isError && repos.length === 0 && (
+        {!isLoading && !isLoadingBookmarks && !isError && displayedRepos.length === 0 && (
           <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
             <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
-              <Search aria-hidden="true" className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+              <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
             </div>
             <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">No repositories found</h3>
             <p className="text-sm text-stone-500 dark:text-stone-400">Try adjusting your search or filters.</p>
@@ -840,15 +922,18 @@ export default function RepoDiscoveryPage() {
         )}
 
         {/* Cards grid */}
-        {!isLoading && !isError && repos.length > 0 && (
-          <div 
-            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-            role="list"
-            aria-label="Open source repositories"
-          >
+        {!isLoading && !isError && displayedRepos.length > 0 && (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
-              {repos.map((repo, i) => (
-                <RepoCard key={repo.id} repo={repo} index={i} onSelect={handleOpenRepo} />
+              {displayedRepos.map((repo, i) => (
+                <RepoCard
+                  key={repo.id}
+                  repo={repo}
+                  index={i}
+                  onSelect={handleOpenRepo}
+                  bookmarked={bookmarks.includes(repo.id)}
+                  onToggleBookmark={() => toggleBookmark(repo.id)}
+                />
               ))}
             </AnimatePresence>
           </div>
@@ -869,7 +954,7 @@ export default function RepoDiscoveryPage() {
         <SuggestRepoModal open={showSuggestModal} onClose={() => setShowSuggestModal(false)} />
       </AnimatePresence>
 
-      {/* Accessible Detail Modal */}
+      {/* Detail Modal */}
       <AnimatePresence>
         {selectedRepo && (
           <motion.div
@@ -880,10 +965,6 @@ export default function RepoDiscoveryPage() {
             onClick={handleCloseRepo}
           >
             <motion.div
-              id="repo-modal-content"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="repo-dialog-title"
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -904,8 +985,7 @@ export default function RepoDiscoveryPage() {
                         repository
                       </span>
                     </div>
-                    {/* ID links back to aria-labelledby on the dialog */}
-                    <h2 id="repo-dialog-title" className="text-base font-bold text-stone-900 dark:text-stone-50 truncate">
+                    <h2 className="text-base font-bold text-stone-900 dark:text-stone-50 truncate">
                       {selectedRepo.owner}/{selectedRepo.name}
                     </h2>
                   </div>
@@ -933,13 +1013,12 @@ export default function RepoDiscoveryPage() {
                     )}
                   </button>
                   <button
-                    id="repo-modal-close" // NEW: Required for Focus Trap auto-focus
                     type="button"
                     onClick={handleCloseRepo}
                     className="w-8 h-8 rounded-md flex items-center justify-center text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-white/5 cursor-pointer"
-                    aria-label="Close dialog"
+                    aria-label="Close"
                   >
-                    <X aria-hidden="true" className="w-4 h-4" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -959,7 +1038,7 @@ export default function RepoDiscoveryPage() {
                   </span>
                   {selectedRepo.trending && (
                     <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-stone-900 dark:bg-stone-50 text-lime-400">
-                      <Flame aria-hidden="true" size={10} /> trending
+                      <Flame size={10} /> trending
                     </span>
                   )}
                 </div>
@@ -973,7 +1052,7 @@ export default function RepoDiscoveryPage() {
                     </p>
                   </div>
                   <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex items-start gap-2">
-                    <BookOpen aria-hidden="true" className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0 mt-0.5" />
+                    <BookOpen className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0 mt-0.5" />
                     <span>{selectedRepo.description}</span>
                   </p>
                 </div>
@@ -990,7 +1069,7 @@ export default function RepoDiscoveryPage() {
                       className="p-3 border-r border-b border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-center"
                     >
                       <div className="flex items-center justify-center gap-1.5 mb-1">
-                        <s.icon aria-hidden="true" className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
+                        <s.icon className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
                         <span className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">{s.value}</span>
                       </div>
                       <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{s.label}</p>
@@ -1004,7 +1083,7 @@ export default function RepoDiscoveryPage() {
                     <div className="flex items-center gap-1.5 mb-2">
                       <div className="h-1 w-1 bg-lime-400"></div>
                       <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
-                        <Code2 aria-hidden="true" className="w-3 h-3" />
+                        <Code2 className="w-3 h-3" />
                         tech stack
                       </p>
                     </div>
@@ -1043,7 +1122,7 @@ export default function RepoDiscoveryPage() {
                     <div className="flex items-center gap-1.5 mb-2">
                       <div className="h-1 w-1 bg-lime-400"></div>
                       <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
-                        <Wand2 aria-hidden="true" className="w-3 h-3" />
+                        <Wand2 className="w-3 h-3" />
                         why contribute
                       </p>
                     </div>
@@ -1075,17 +1154,16 @@ export default function RepoDiscoveryPage() {
                   </div>
                 </div>
 
-                {/* Quick actions & View on GitHub */}
+                {/* Quick actions */}
                 <div className="grid grid-cols-2 gap-2">
                   <a
                     href={selectedRepo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Open ${selectedRepo.name} on GitHub`}
                     className="group flex items-center justify-center gap-2 py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 text-sm font-bold transition-colors no-underline"
                   >
                     Open on GitHub
-                    <ExternalLink aria-hidden="true" className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                    <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                   </a>
                   <button
                     type="button"
@@ -1118,7 +1196,15 @@ export default function RepoDiscoveryPage() {
   );
 }
 
-function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
+function RecommendedSection({ 
+  onSelect,
+  bookmarks,
+  onToggleBookmark
+}: { 
+  onSelect: (repo: OpenSourceRepo) => void;
+  bookmarks: number[];
+  onToggleBookmark: (id: number) => void;
+}) {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.opensource.list({ recommended: "true" }),
     queryFn: async () => {
@@ -1134,12 +1220,7 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
         <div className="flex items-center gap-2 mb-4">
           <div className="h-4 w-32 bg-stone-200 dark:bg-white/10 rounded animate-pulse" />
         </div>
-        <div 
-          className="flex gap-4 overflow-x-hidden" 
-          role="list" 
-          aria-busy="true" 
-          aria-label="Loading recommended repositories"
-        >
+        <div className="flex gap-4 overflow-x-hidden">
           {[1, 2, 3].map((i) => (
             <div key={i} className="min-w-[280px] sm:min-w-[320px]">
               <RepoCardSkeleton />
@@ -1169,14 +1250,16 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
       </div>
 
       <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-4">
-        <div 
-          className="flex gap-4 min-w-full"
-          role="list"
-          aria-label="Recommended repositories"
-        >
+        <div className="flex gap-4 min-w-full">
           {repos.map((repo, i) => (
             <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
-              <RepoCard repo={repo} index={i} onSelect={onSelect} />
+              <RepoCard 
+                repo={repo} 
+                index={i} 
+                onSelect={onSelect} 
+                bookmarked={bookmarks.includes(repo.id)}
+                onToggleBookmark={() => onToggleBookmark(repo.id)}
+              />
             </div>
           ))}
         </div>

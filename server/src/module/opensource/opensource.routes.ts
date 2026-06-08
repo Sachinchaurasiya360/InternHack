@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
@@ -67,7 +67,10 @@ opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"),
   controller.getStudentContributionTrend(req, res, next),
 );
 
-// Get open source activity
+opensourceRouter.get("/analytics/hacktoberfest", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.getHacktoberfestProgress(req, res, next),
+);
+
 opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
   try {
     const queryStudentId = req.query.studentId as string | undefined;
@@ -121,6 +124,23 @@ opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
   }
 });
 
+opensourceRouter.get("/premium/status", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
+    });
+    const isPremium =
+      user !== null &&
+      (user.subscriptionPlan === "MONTHLY" || user.subscriptionPlan === "YEARLY") &&
+      user.subscriptionStatus === "ACTIVE" &&
+      (!user.subscriptionEndDate || user.subscriptionEndDate > new Date());
+    res.json({ isPremium });
+  } catch (err) {
+    next(err);
+  }
+});
+
 opensourceRouter.get("/first-pr/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.getFirstPrProgress(req, res, next),
 );
@@ -129,7 +149,7 @@ opensourceRouter.patch("/first-pr/progress", authMiddleware, requireRole("STUDEN
   controller.patchFirstPrProgress(req, res, next),
 );
 
-// ─── Admin: Manage Repo Requests ─────────────────────────────────
+// ─── Admin: Manage Repo Requests ───────────────────────────────
 
 opensourceRouter.get("/requests/all", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
   controller.getAllRepoRequests(req, res, next),

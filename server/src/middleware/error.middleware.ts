@@ -11,7 +11,13 @@ function sanitizeBody(body: unknown): Prisma.InputJsonValue | null {
   if (!body || typeof body !== "object") return null;
   const sanitized: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
-    sanitized[key] = SENSITIVE_KEYS.has(key) ? "[REDACTED]" : value;
+    if (SENSITIVE_KEYS.has(key)) {
+      sanitized[key] = "[REDACTED]";
+    } else if (value && typeof value === "object" && !Array.isArray(value)) {
+      sanitized[key] = sanitizeBody(value);
+    } else {
+      sanitized[key] = value;
+    }
   }
   return sanitized as Prisma.InputJsonValue;
 }

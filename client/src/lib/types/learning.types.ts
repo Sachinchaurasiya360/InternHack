@@ -112,6 +112,15 @@ export interface DsaSheetStats {
   solved: number;
 }
 
+export interface DsaList {
+  slug: string;
+  title: string;
+  description: string;
+  total: number;
+  solved: number;
+  estimatedHours: number;
+}
+
 export interface DsaBookmarkItem {
   id: number;
   problemId: number;
@@ -190,6 +199,14 @@ export interface DsaCodeReview {
   };
   edgeCases: string[];
   suggestions: string[];
+}
+
+export interface DsaStreak {
+  currentStreak: number;
+  longestStreak: number;
+  solvedToday: boolean;
+  lastSolvedDate: string | null;
+  activeDays: string[];
 }
 
 export interface DsaSubmissionSummary {
@@ -279,6 +296,8 @@ export interface AptitudeQuestion {
   topicSlug?: string;
 }
 
+export type AptitudeDifficultyLevel = "EASY" | "MEDIUM" | "HARD";
+
 export interface AptitudeTopicDetail {
   id: number;
   name: string;
@@ -287,9 +306,19 @@ export interface AptitudeTopicDetail {
   categoryName: string;
   categorySlug: string;
   totalQuestions: number;
+  currentDifficulty?: AptitudeDifficultyLevel;
   page: number;
   totalPages: number;
   questions: AptitudeQuestion[];
+}
+
+export interface AptitudeAnswerResult {
+  correct: boolean;
+  correctAnswer: string;
+  explanation?: string;
+  currentDifficulty: AptitudeDifficultyLevel;
+  previousDifficulty: AptitudeDifficultyLevel;
+  difficultyChange: "increased" | "decreased" | null;
 }
 
 export interface AptitudeCompany {

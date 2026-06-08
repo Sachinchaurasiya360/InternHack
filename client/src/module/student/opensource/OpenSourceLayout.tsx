@@ -4,7 +4,6 @@ import { ChevronRight } from "lucide-react";
 import ContributionCoachPanel from "./ContributionCoachPanel";
 import CoachFloatingButton from "./CoachFloatingButton";
 import { LearningPathProvider } from "./learning-paths.context";
-import { LearningPathSidebar } from "./components/LearningPathSidebar";
 
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
@@ -71,15 +70,10 @@ export default function OpenSourceLayout() {
   return (
     <LearningPathProvider>
       <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
-        <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 pb-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:px-8">
-          <main className="min-w-0">
-            <OpenSourceBreadcrumb />
-            <Outlet />
-          </main>
-          <div className="pt-6 lg:sticky lg:top-20 lg:h-fit">
-            <LearningPathSidebar />
-          </div>
-        </div>
+        <main>
+          <OpenSourceBreadcrumb />
+          <Outlet />
+        </main>
         <ContributionCoachPanel />
         <CoachFloatingButton />
       </div>
