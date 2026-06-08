@@ -43,7 +43,7 @@ export default function DsaTopicDetailPage() {
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
-      params.set("limit", "200");
+      params.set("limit", "200"); // covers all current topics; virtualizer handles render performance
       if (diffParam) params.set("difficulty", diffParam);
       if (searchParam) params.set("search", searchParam);
       return api.get<DsaTopicDetail>(`/dsa/topics/${slug}?${params}`).then((r) => r.data);
