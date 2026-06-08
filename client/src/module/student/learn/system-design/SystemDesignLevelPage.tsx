@@ -1,5 +1,5 @@
 import { Link, Navigate, useParams } from "react-router";
-import { motion, MotionConfig, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle2, Lock, Play } from "lucide-react";
 import { SEO } from "../../../../components/SEO";
 import { canonicalUrl } from "../../../../lib/seo.utils";
@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { findLevel, LEVELS } from "./curriculum";
 import { getLevelStats, useProgressMap } from "./progress";
+import { AccessibleVisualizer } from "../../../../components/shared/AccessibleVisualizer";
 
 const FREE_LIMIT = 6;
 
@@ -16,9 +17,6 @@ export default function SystemDesignLevelPage() {
   const { user } = useAuthStore();
   const progress = useProgressMap();
   const [showGate, setShowGate] = useState(false);
-  
-  // 1. Initialize the reduced motion hook
-  const prefersReducedMotion = useReducedMotion();
 
   const level = findLevel(levelId);
   if (!level) return <Navigate to="/learn/system-design" replace />;
@@ -30,8 +28,7 @@ export default function SystemDesignLevelPage() {
   const completedSlugs = progress[level.id] ?? {};
 
   return (
-    // 2. Wrap the entire page in MotionConfig to instantly disable all child animations on low power mode
-    <MotionConfig reducedMotion="user">
+    <AccessibleVisualizer>
       <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
         <SEO
           title={`${level.title} - System Design Level ${level.number}`}
@@ -40,15 +37,6 @@ export default function SystemDesignLevelPage() {
         />
 
         <div className="max-w-4xl mx-auto px-3 sm:px-8 py-8">
-          
-          {/* 3. The requested accessibility/battery-saver banner */}
-          {prefersReducedMotion && (
-            <div className="mb-6 p-4 text-sm text-yellow-800 bg-yellow-50 rounded-lg border border-yellow-200 flex justify-between items-center shadow-sm">
-              <span>Animations have been disabled to save battery or respect accessibility preferences.</span>
-              <span className="text-xs font-mono uppercase tracking-widest opacity-70">Safe Mode</span>
-            </div>
-          )}
-
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -301,6 +289,6 @@ export default function SystemDesignLevelPage() {
 
         <LoginGate open={showGate} onClose={() => setShowGate(false)} />
       </div>
-    </MotionConfig>
+    </AccessibleVisualizer>
   );
 }

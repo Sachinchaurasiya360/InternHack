@@ -1,5 +1,6 @@
 import React from 'react';
 import { useReducedMotion, MotionConfig } from 'framer-motion';
+import { Button } from '../ui/button';
 
 interface AccessibleVisualizerProps {
   children: React.ReactNode;
@@ -10,34 +11,31 @@ export const AccessibleVisualizer: React.FC<AccessibleVisualizerProps> = ({
   children, 
   onSwitchToTextMode 
 }) => {
-  // 1. Centralized check
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    // 2. MotionConfig automatically forces all nested Framer Motion 
-    // components to use instant transitions if prefersReducedMotion is true!
     <MotionConfig reducedMotion="user">
-      <div className="visualizer-container relative">
+      <div className="visualizer-container">
         
-        {/* 3. The Centralized Fallback UI Banner */}
         {prefersReducedMotion && (
-          <div className="absolute top-0 left-0 w-full z-10 p-3 mb-4 text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-md flex justify-between items-center shadow-sm">
-            <span>Animations disabled to save battery.</span>
-            {onSwitchToTextMode && (
-              <button 
+          <div className="mb-4 p-4 text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-md flex justify-between items-center shadow-sm">
+            <span>Animations are disabled to save battery or respect accessibility preferences.</span>
+            {onSwitchToTextMode ? (
+              <Button 
                 onClick={onSwitchToTextMode} 
-                className="font-semibold underline hover:text-yellow-900 transition-colors"
+                variant="ghost"
+                className="font-semibold underline hover:text-yellow-900"
               >
                 Switch to step-by-step text mode →
-              </button>
+              </Button>
+            ) : (
+              <span className="text-xs font-mono uppercase tracking-widest opacity-70">Safe Mode</span>
             )}
           </div>
         )}
 
-        {/* The actual lesson content and animations */}
-        <div className={prefersReducedMotion ? 'mt-14' : ''}>
-          {children}
-        </div>
+        {children}
+        
       </div>
     </MotionConfig>
   );

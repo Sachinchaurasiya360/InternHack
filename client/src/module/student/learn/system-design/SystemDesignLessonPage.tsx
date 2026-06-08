@@ -1,21 +1,19 @@
 import { Suspense, useCallback } from "react";
 import { Link, Navigate, useParams } from "react-router";
-import { motion, MotionConfig, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SEO } from "../../../../components/SEO";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import { LoadingScreen } from "../../../../components/LoadingScreen";
 import { findLesson, getNeighbours } from "./curriculum";
 import { markLessonComplete } from "./progress";
+import { AccessibleVisualizer } from "../../../../components/shared/AccessibleVisualizer";
 
 export default function SystemDesignLessonPage() {
   const { levelId = "", lessonSlug = "" } = useParams<{
     levelId: string;
     lessonSlug: string;
   }>();
-
-  // 1. Initialize the reduced motion hook
-  const prefersReducedMotion = useReducedMotion();
 
   const found = findLesson(levelId, lessonSlug);
   const handleQuizComplete = useCallback(
@@ -33,8 +31,7 @@ export default function SystemDesignLessonPage() {
   const LessonComponent = lesson.load;
 
   return (
-    // 2. Wrap the layout in MotionConfig so ALL child lesson animations instantly respect Low Power Mode
-    <MotionConfig reducedMotion="user">
+    <AccessibleVisualizer>
       <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
         <SEO
           title={`${lesson.title} - System Design Level ${level.number}`}
@@ -43,14 +40,6 @@ export default function SystemDesignLessonPage() {
         />
 
         <div className="max-w-5xl mx-auto px-3 sm:px-8 py-8">
-          
-          {/* 3. The requested accessibility/battery-saver banner for the visualizer */}
-          {prefersReducedMotion && (
-            <div className="mb-8 p-4 text-sm text-yellow-800 bg-yellow-50 rounded-lg border border-yellow-200 flex justify-between items-center shadow-sm">
-              <span>Animations are disabled to save battery. The lesson will display in a step-by-step static mode.</span>
-            </div>
-          )}
-
           <Suspense fallback={<LoadingScreen />}>
             <motion.div
               key={`${level.id}/${lesson.slug}`}
@@ -124,6 +113,6 @@ export default function SystemDesignLessonPage() {
           </motion.div>
         </div>
       </div>
-    </MotionConfig>
+    </AccessibleVisualizer>
   );
 }

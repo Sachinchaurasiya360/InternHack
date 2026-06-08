@@ -1,5 +1,5 @@
 import { Link, Navigate, useParams } from "react-router";
-import { motion, MotionConfig, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle2, Lock, Play } from "lucide-react";
 import { SEO } from "../../../../components/SEO";
 import { canonicalUrl } from "../../../../lib/seo.utils";
@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { findLevel, LEVELS } from "./curriculum";
 import { getLevelStats, useProgressMap } from "./progress";
+import { AccessibleVisualizer } from "../../../../components/shared/AccessibleVisualizer";
 
 const FREE_LIMIT = 6;
 
@@ -16,9 +17,6 @@ export default function DsaFoundationsLevelPage() {
   const { user } = useAuthStore();
   const progress = useProgressMap();
   const [showGate, setShowGate] = useState(false);
-
-  // 1. Initialize the reduced motion hook
-  const prefersReducedMotion = useReducedMotion();
 
   const level = findLevel(levelId);
   if (!level) return <Navigate to="/learn/dsa-foundations" replace />;
@@ -30,8 +28,7 @@ export default function DsaFoundationsLevelPage() {
   const completedSlugs = progress[level.id] ?? {};
 
   return (
-    // 2. Wrap the entire page in MotionConfig to instantly disable all child animations on low power mode
-    <MotionConfig reducedMotion="user">
+    <AccessibleVisualizer>
       <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
         <SEO
           title={`${level.title} - DSA Foundations Level ${level.number}`}
@@ -40,16 +37,6 @@ export default function DsaFoundationsLevelPage() {
         />
 
         <div className="max-w-4xl mx-auto px-3 sm:px-8 py-8">
-          
-          {/* 3. The requested accessibility/battery-saver banner */}
-          {prefersReducedMotion && (
-            <div className="mb-6 p-4 text-sm text-yellow-800 bg-yellow-50 rounded-lg border border-yellow-200 flex justify-between items-center shadow-sm">
-              <span>Animations have been disabled to save battery or respect accessibility preferences.</span>
-              <span className="text-xs font-mono uppercase tracking-widest opacity-70">Safe Mode</span>
-            </div>
-          )}
-
-          {/* Editorial header */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -100,7 +87,6 @@ export default function DsaFoundationsLevelPage() {
             </div>
           </motion.div>
 
-          {/* Section header */}
           <div className="flex items-center gap-2 mb-3">
             <div className="h-1 w-1 bg-lime-400" />
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -108,7 +94,6 @@ export default function DsaFoundationsLevelPage() {
             </span>
           </div>
 
-          {/* Lesson list */}
           <div className="space-y-2">
             {level.lessons.map((lesson, idx) => {
               const num = String(idx + 1).padStart(2, "0");
@@ -189,7 +174,6 @@ export default function DsaFoundationsLevelPage() {
             })}
           </div>
 
-          {/* Level navigation */}
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
             {prevLevel ? (
               <Link
@@ -243,6 +227,6 @@ export default function DsaFoundationsLevelPage() {
 
         <LoginGate open={showGate} onClose={() => setShowGate(false)} />
       </div>
-    </MotionConfig>
+    </AccessibleVisualizer>
   );
 }
