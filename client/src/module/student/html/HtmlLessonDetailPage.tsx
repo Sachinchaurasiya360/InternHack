@@ -14,6 +14,8 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
+import { Button } from "../../../components/ui/button";
+
 
 const FREE_LIMIT = 5;
 
@@ -488,12 +490,13 @@ export default function HtmlLessonDetailPage() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold">HTML Playground</h3>
 
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setShowPlayground(false)}
-                className="text-sm text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
               >
                 Close
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-4">
