@@ -181,7 +181,7 @@ export default function RoadmapsLandingPage() {
         if (!matchesText) return false;
       }
       if (level && level !== "ALL_LEVELS" && r.level && r.level !== level) return false;
-      if (tag && !(r.tags ?? []).includes(tag)) return false;
+      if (tag && !(r.tags ?? []).map(t => t.toLowerCase()).includes(tag.toLowerCase())) return false;
       if (category && !(r.tags ?? []).map(t => t.toLowerCase()).includes(category.toLowerCase())) return false;
       return true;
     });
