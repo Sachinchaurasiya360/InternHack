@@ -467,7 +467,7 @@ const fetchDetail = useCallback(async (signal?: AbortSignal) => {
 
 function getStatusIcon(status: string) {
   switch (status) {
-case "COMPLETED":
+    case "COMPLETED":
       return <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />;
     case "IN_PROGRESS":
       return <Clock className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />;
