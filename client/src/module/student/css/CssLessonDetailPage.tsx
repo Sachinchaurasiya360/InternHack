@@ -264,6 +264,9 @@ export default function CssLessonDetailPage() {
     return !!p[lessonId ?? ""]?.completed;
   });
 
+  const [playgroundCode, setPlaygroundCode] = useState("");
+  const [showPlayground, setShowPlayground] = useState(false);
+
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
   const sectionLessons = useMemo(
@@ -445,7 +448,24 @@ export default function CssLessonDetailPage() {
             </div>
             <div className="space-y-3">
               {content.codeExamples.map((example, i) => (
-                <CodeBlock key={i} example={example} language="css" />
+                <CodeBlock
+                  key={i}
+                  example={example}
+                  language="css"
+                  onTryIt={(code) => {
+                    setPlaygroundCode(code);
+                    setShowPlayground(true);
+
+                    setTimeout(() => {
+                      document
+                        .getElementById("lesson-playground")
+                        ?.scrollIntoView({
+                         behavior: "smooth",
+                         block: "start",
+                        });
+                    }, 100);
+                  }}
+                />
               ))}
             </div>
           </motion.div>
@@ -534,6 +554,36 @@ export default function CssLessonDetailPage() {
             </motion.div>
           )}
 
+          {showPlayground && (
+            <div
+              id="lesson-playground"
+              className="mb-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold">CSS Playground</h3>
+
+                <button
+                  onClick={() => setShowPlayground(false)}
+                  className="text-sm text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <CssEditor
+                  value={playgroundCode}
+                  onChange={setPlaygroundCode}
+                />
+
+                <LivePreview
+                  html="<div><h1>Hello World</h1><p>Edit the CSS and see changes.</p></div>"
+                  css={playgroundCode}
+                  height="250px"
+                />
+              </div>
+            </div>
+          )}
           {/* Practice exercises */}
           {exercises.length > 0 && (
             <>

@@ -267,6 +267,10 @@ export default function ReactLessonDetailPage() {
     return !!p[lessonId ?? ""]?.completed;
   });
 
+  const [playgroundCode, setPlaygroundCode] = useState("");
+  const [showPlayground, setShowPlayground] = useState(false);
+  const [playgroundResult, setPlaygroundResult] = useState<ReactRunResult | null>(null);
+
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
   const sectionLessons = useMemo(
@@ -448,7 +452,24 @@ export default function ReactLessonDetailPage() {
             </div>
             <div className="space-y-3">
               {content.codeExamples.map((example, i) => (
-                <CodeBlock key={i} example={example} language="tsx" />
+                <CodeBlock
+                  key={i}
+                  example={example}
+                  language="tsx"
+                  onTryIt={(code) => {
+                   setPlaygroundCode(code);
+                   setShowPlayground(true);
+
+                   setTimeout(() => {
+                    document
+                      .getElementById("lesson-playground")
+                      ?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }, 100);
+                  }}
+                />
               ))}
             </div>
           </motion.div>
@@ -537,6 +558,42 @@ export default function ReactLessonDetailPage() {
             </motion.div>
           )}
 
+          {showPlayground && (
+            <div
+              id="lesson-playground"
+              className="mb-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold">React Playground</h3>
+
+                <button
+                  onClick={() => setShowPlayground(false)}
+                  className="text-sm text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <ReactEditor
+                  value={playgroundCode}
+                  onChange={setPlaygroundCode}
+                  onRun={async () => {
+                    const result = await reactEngine.execute(playgroundCode);
+                    setPlaygroundResult(result);
+                  }}
+                />
+
+                {playgroundResult && (
+                  <JsConsoleOutput
+                    result={playgroundResult}
+                    expectedOutput=""
+                    isCorrect={null}
+                  />
+                )}
+              </div>
+            </div>
+          )}
           {/* Practice exercises */}
           {exercises.length > 0 && (
             <>

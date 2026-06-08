@@ -227,6 +227,8 @@ export default function HtmlLessonDetailPage() {
     const p = getLocalProgress();
     return !!p[lessonId ?? ""]?.completed;
   });
+  const [playgroundCode, setPlaygroundCode] = useState("");
+  const [showPlayground, setShowPlayground] = useState(false);
 
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionLessons = useMemo(
@@ -378,7 +380,21 @@ export default function HtmlLessonDetailPage() {
             </div>
             <div className="space-y-4">
               {content.codeExamples.map((example, i) => (
-                <CodeBlock key={i} example={example} language="html" />
+                <CodeBlock
+                  key={i}
+                  example={example}
+                  language="html"
+                  onTryIt={(code) => {
+                    setPlaygroundCode(code);
+                    setShowPlayground(true);
+
+                    setTimeout(() => {
+                      document
+                         .getElementById("lesson-playground")
+                         ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 100);
+                  }}
+                />
               ))}
             </div>
           </motion.div>
@@ -464,7 +480,35 @@ export default function HtmlLessonDetailPage() {
             </div>
           </motion.div>
         )}
+        {showPlayground && (
+          <div
+            id="lesson-playground"
+            className="mb-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold">HTML Playground</h3>
 
+              <button
+                onClick={() => setShowPlayground(false)}
+                className="text-sm text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <HtmlEditor
+                value={playgroundCode}
+                onChange={setPlaygroundCode}
+              />
+
+              <LivePreview
+                html={playgroundCode}
+                height="250px"
+              />
+            </div>
+          </div>
+        )}
         {exercises.length > 0 && (
           <div className="mb-8">
             <ExerciseSection exercises={exercises} lessonId={lessonId!} />
