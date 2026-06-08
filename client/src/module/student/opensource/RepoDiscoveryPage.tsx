@@ -290,7 +290,6 @@ export default function RepoDiscoveryPage() {
 
   useEffect(() => {
     if (deepLinkData) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedRepo(deepLinkData);
     }
   }, [deepLinkData]);
@@ -307,7 +306,6 @@ export default function RepoDiscoveryPage() {
   }, [deepLinkError, setSearchParams]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (showSaved && bookmarks.length === 0) setShowSaved(false);
   }, [bookmarks, showSaved]);
 
@@ -369,7 +367,7 @@ export default function RepoDiscoveryPage() {
     if (sortOpt) params.sortOrder = sortOpt.order;
 
     return params;
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, goodFirstOnly, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, goodFirstOnly, hacktoberfestOnly, page]);
 
   const { data: recommendedData, isFetching: isFetchingRec } = useQuery({
     queryKey: [...queryKeys.opensource.recommended(recommendationRefreshToken), viewedIds.join(",")],
@@ -442,9 +440,6 @@ export default function RepoDiscoveryPage() {
     if (viewedOnly) return recentlyViewed;
     return data?.repos ?? [];
   })();
-  const displayedRepos = showSaved
-    ? bookmarkedData ?? EMPTY_OPEN_SOURCE_REPOS
-    : repos;
 
   // Global stats fetched independently so the header strip stays accurate
   // regardless of active filters or page (replaces the old useMemo approach).

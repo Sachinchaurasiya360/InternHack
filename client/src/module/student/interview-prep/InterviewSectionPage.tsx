@@ -16,12 +16,6 @@ const DIFF_STYLE: Record<string, string> = {
   Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
 
-const FILTER_STYLE: Record<string, string> = {
-  Beginner: "text-green-700 dark:text-green-400 border-green-200 dark:border-green-900/60 bg-green-50 dark:bg-green-900/20",
-  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-900/20",
-  Advanced: "text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-900/20",
-};
-
 const TYPE_STYLE: Record<string, string> = {
   Theory:      "text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-900/60",
   Coding:      "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
