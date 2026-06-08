@@ -34,7 +34,7 @@ export class LeaveController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
       const employeeId = req.user.id;
-      const query = leaveQuerySchema.parse(req.query);
+      const { employeeId: _ignoredEmployeeId, ...query } = leaveQuerySchema.parse(req.query);
       const data = await this.leaveService.getMyRequests(employeeId, query);
       return res.json(data);
     } catch (error) {
