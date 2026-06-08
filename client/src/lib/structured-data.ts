@@ -119,9 +119,19 @@ export function courseSchema(course: {
     },
     url: course.url,
     isAccessibleForFree: true,
+    numberOfCredits: "0",
+    educationalLevel: "Beginner to Advanced",
+    inLanguage: "en",
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "Online",
+      courseSchedule: {
+        "@type": "Schedule",
+        repeatFrequency: "P1D",
+      },
+    },
   };
 }
-
 export function breadcrumbSchema(
   items: { name: string; url: string }[],
 ): JsonLd {
