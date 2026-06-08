@@ -1,11 +1,13 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";
+import { OpensourceProgramController } from "./opensource-program.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 
 export const opensourceRouter = Router();
 const controller = new OpensourceController();
+const programController = new OpensourceProgramController();
 
 // ─── Public Routes ─────────────────────────────────────────────
 
@@ -147,6 +149,43 @@ opensourceRouter.get("/first-pr/progress", authMiddleware, requireRole("STUDENT"
 
 opensourceRouter.patch("/first-pr/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.patchFirstPrProgress(req, res, next),
+);
+
+// ─── Programs ────────────────────────────────────────────────────
+
+// Public program listing (no auth required)
+opensourceRouter.get("/programs", (req, res, next) =>
+  programController.listPrograms(req, res, next),
+);
+
+opensourceRouter.get("/programs/:slug", (req, res, next) =>
+  programController.getProgram(req, res, next),
+);
+
+opensourceRouter.get("/programs/:slug/ics", (req, res, next) =>
+  programController.downloadIcs(req, res, next),
+);
+
+// Student program tracking
+opensourceRouter.post("/programs/track", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  programController.toggleProgram(req, res, next),
+);
+
+opensourceRouter.get("/programs/tracked/mine", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  programController.getTrackedPrograms(req, res, next),
+);
+
+// Admin program management
+opensourceRouter.post("/programs/manage", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
+  programController.createProgram(req, res, next),
+);
+
+opensourceRouter.put("/programs/manage/:id", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
+  programController.updateProgram(req, res, next),
+);
+
+opensourceRouter.delete("/programs/manage/:id", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
+  programController.deleteProgram(req, res, next),
 );
 
 // ─── Admin: Manage Repo Requests ───────────────────────────────

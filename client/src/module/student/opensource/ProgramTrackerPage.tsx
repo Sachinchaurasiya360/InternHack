@@ -1,13 +1,19 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
   Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus,
+  Bookmark, Download,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { markLearningPathMilestone } from "./learning-paths.data";
+import api from "../../../lib/axios";
+import { useAuthStore } from "../../../lib/auth.store";
+import toast from "../../../components/ui/toast";
+import { queryKeys } from "../../../lib/query-keys";
 
 function nextDate(month: number, day: number, hour = 23, minute = 59): string {
   const now = new Date();
@@ -19,6 +25,7 @@ function nextDate(month: number, day: number, hour = 23, minute = 59): string {
 // ─── Data ──────────────────────────────────────────────────────
 interface Program {
   id: number;
+  slug: string;
   name: string;
   short: string;
   description: string;
@@ -48,6 +55,7 @@ interface Program {
 const PROGRAMS: Program[] = [
   {
     id: 1,
+    slug: "google-summer-of-code",
     name: "Google Summer of Code",
     short: "GSoC",
     description:
@@ -97,6 +105,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 2,
+    slug: "lfx-mentorship",
     name: "LFX Mentorship",
     short: "LFX",
     description:
@@ -143,6 +152,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 3,
+    slug: "mlh-fellowship",
     name: "MLH Fellowship",
     short: "MLH Fellowship",
     description:
@@ -189,6 +199,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 4,
+    slug: "outreachy",
     name: "Outreachy",
     short: "Outreachy",
     description:
@@ -245,6 +256,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 5,
+    slug: "hacktoberfest",
     name: "Hacktoberfest",
     short: "Hacktoberfest",
     description:
@@ -287,6 +299,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 6,
+    slug: "girlscript-summer-of-code",
     name: "GirlScript Summer of Code",
     short: "GSSoC",
     description:
@@ -330,6 +343,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 7,
+    slug: "season-of-docs",
     name: "Season of Docs",
     short: "GSoD",
     description:
@@ -373,6 +387,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 8,
+    slug: "hyperledger-mentorship",
     name: "Hyperledger Mentorship",
     short: "Hyperledger",
     description:
@@ -410,6 +425,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 9,
+    slug: "mlh-localhost",
     name: "MLH Localhost",
     short: "MLH Localhost",
     description:
@@ -442,6 +458,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 10,
+    slug: "rails-girls-summer-of-code",
     name: "Rails Girls Summer of Code",
     short: "RGSoC",
     description:
@@ -483,6 +500,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 11,
+    slug: "open-mainframe-project-mentorship",
     name: "Open Mainframe Project Mentorship",
     short: "OMP",
     description:
@@ -514,6 +532,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 12,
+    slug: "kubernetes-release-team-shadow",
     name: "Kubernetes Release Team Shadow",
     short: "K8s Shadow",
     description:
@@ -725,10 +744,36 @@ const getGoogleCalendarUrl = (program: Program) => {
 };
 
 // ─── Program Card ─────────────────────────────────────────────
-function ProgramCard({ program }: { program: Program }) {
+function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tracked: boolean; onToggleTrack: (slug: string, track: boolean) => void }) {
   const [expanded, setExpanded] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const localStipendEstimate = program.stipendPaid ? getLocalStipendEstimate(program.stipend) : null;
   const urgency = getUrgency(program);
+
+  const handleDownloadIcs = async () => {
+    setDownloading(true);
+    try {
+      const res = await api.get(`/opensource/programs/${program.slug}/ics`);
+      const data = res.data;
+      if (data.events) {
+        for (const event of data.events) {
+          const blob = new Blob([event.content], { type: "text/calendar;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = event.filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+      }
+    } catch {
+      toast.error("Could not download calendar file");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <div
@@ -875,6 +920,27 @@ function ProgramCard({ program }: { program: Program }) {
                 <Calendar className="w-3 h-3" /> Deadline: TBA
               </div>
             )}
+            <button
+              type="button"
+              onClick={handleDownloadIcs}
+              disabled={downloading}
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer disabled:opacity-50"
+              title="Download .ics calendar file"
+            >
+              <Download className="w-3 h-3" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onToggleTrack(program.slug, !tracked)}
+              className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
+                tracked
+                  ? "text-lime-700 dark:text-lime-400 bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800/30"
+                  : "text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
+              title={tracked ? "Stop tracking" : "Track this program"}
+            >
+              <Bookmark className={`w-3 h-3 ${tracked ? "fill-current" : ""}`} />
+            </button>
             <a href={program.website} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 no-underline transition-colors">
               <Globe className="w-3 h-3" /> Website <ExternalLink className="w-3 h-3 opacity-60" />
@@ -996,11 +1062,44 @@ export default function ProgramTrackerPage() {
 
   const savedFilters = getSavedFilters();
 
+  const { user } = useAuthStore();
+  const queryClient = useQueryClient();
+
+  const { data: serverPrograms } = useQuery({
+    queryKey: ["opensource-programs"],
+    queryFn: () => api.get("/opensource/programs").then((r) => r.data.programs),
+    staleTime: 600000,
+  });
+
+  const { data: trackedData } = useQuery({
+    queryKey: ["opensource-programs-tracked"],
+    queryFn: () => api.get("/opensource/programs/tracked/mine").then((r) => r.data.programs),
+    staleTime: 60000,
+    enabled: !!user,
+  });
+
+  const trackMutation = useMutation({
+    mutationFn: (body: { slug: string; tracked: boolean }) =>
+      api.post("/opensource/programs/track", body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["opensource-programs-tracked"] });
+    },
+    onError: () => {
+      toast.error("Failed to update tracking");
+    },
+  });
+
+  const trackedSlugs = useMemo(() => {
+    if (!trackedData) return new Set<string>();
+    return new Set(trackedData.map((p: any) => p.slug));
+  }, [trackedData]);
+
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
   const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
   const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
   const [sortBy, setSortBy] = useState<string>(savedFilters.sortBy);
+  const [showTrackedOnly, setShowTrackedOnly] = useState(false);
 
   // Save filters to localStorage whenever they change
   useEffect(() => {
@@ -1019,15 +1118,36 @@ export default function ProgramTrackerPage() {
     }
   }, [selectedStatus, selectedEligibility, selectedStipend, sortBy]);
 
+  const programsSource = useMemo(() => {
+    if (serverPrograms && serverPrograms.length > 0) {
+      return serverPrograms.map((p: any) => ({
+        ...p,
+        status: p.window === "Ongoing" ? "Ongoing" : "Annual",
+        eligibilityType: p.eligibilityType || "Open to All",
+        stipendPaid: !!p.stipend,
+        stipendRange: p.stipendRange || "Medium",
+        startDate: p.applicationStart,
+        website: p.website || "",
+        applyUrl: p.applyUrl || "",
+        timeline: p.timeline || [],
+        howToApply: p.howToApply || "",
+      }));
+    }
+    return PROGRAMS;
+  }, [serverPrograms]);
+
   const filtered = useMemo(() => {
-    let list = [...PROGRAMS];
+    let list = [...programsSource];
+    if (showTrackedOnly) {
+      list = list.filter((p) => trackedSlugs.has(p.slug));
+    }
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.description.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.toLowerCase().includes(q)),
+          (p.tags && p.tags.some((t: string) => t.toLowerCase().includes(q))),
       );
     }
     if (selectedStatus !== "All")
@@ -1047,10 +1167,10 @@ export default function ProgramTrackerPage() {
       });
     }
     return list;
-  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy]);
+  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy, showTrackedOnly, programsSource, trackedSlugs]);
 
-  const totalStipend = PROGRAMS.filter((p) => p.stipendPaid).length;
-  const highStipend = PROGRAMS.filter((p) => p.stipendRange === "High").length;
+  const totalStipend = programsSource.filter((p) => p.stipendPaid).length;
+  const highStipend = programsSource.filter((p) => p.stipendRange === "High").length;
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -1086,13 +1206,13 @@ export default function ProgramTrackerPage() {
           </p>
           <div className="flex flex-wrap gap-3">
             {[
-              { label: "Programs Listed", value: PROGRAMS.length },
+              { label: "Programs Listed", value: programsSource.length },
               { label: "Paid Programs", value: totalStipend },
               { label: "High Stipend ($5k+)", value: highStipend },
               {
                 label: "Diversity Programs",
-                value: PROGRAMS.filter(
-                  (p) => p.eligibilityType === "Diversity-focused",
+                value: programsSource.filter(
+                  (p: any) => p.eligibilityType === "Diversity-focused",
                 ).length,
               },
             ].map((s) => (
@@ -1167,6 +1287,17 @@ export default function ProgramTrackerPage() {
               </div>
             </div>
           ))}
+          {!!user && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowTrackedOnly((prev) => !prev)}
+              className={showTrackedOnly ? "bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800 text-lime-700 dark:text-lime-400 font-medium" : "text-gray-600 dark:text-gray-300"}
+            >
+              <Bookmark className={`w-3.5 h-3.5 mr-1.5 ${showTrackedOnly ? "fill-current" : ""}`} />
+              Tracked only
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -1176,11 +1307,11 @@ export default function ProgramTrackerPage() {
             <Calendar className="w-3.5 h-3.5 mr-1.5" />
             Sort by deadline
           </Button>
-          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default") && (
+          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default" || showTrackedOnly) && (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); }}
+              onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); setShowTrackedOnly(false); }}
               className="text-gray-500"
             >
               <X className="w-3.5 h-3.5" /> Clear
@@ -1194,7 +1325,7 @@ export default function ProgramTrackerPage() {
         <span className="font-semibold text-gray-900 dark:text-white">
           {filtered.length}
         </span>{" "}
-        of {PROGRAMS.length} programs
+        of {programsSource.length} programs
       </p>
 
       {/* List */}
@@ -1214,7 +1345,11 @@ export default function ProgramTrackerPage() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <ProgramCard program={program} />
+              <ProgramCard
+                program={program}
+                tracked={trackedSlugs.has(program.slug)}
+                onToggleTrack={(slug, track) => trackMutation.mutate({ slug, tracked: track })}
+              />
             </motion.div>
           ))}
         </div>
