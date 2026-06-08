@@ -24,6 +24,7 @@ export interface OpenSourceRepo {
   lastUpdated: string;
   createdAt: string;
   updatedAt: string;
+  healthScore: number;
   matchedSkills?: string[];
 }
 

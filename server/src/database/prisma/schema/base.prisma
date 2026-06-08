@@ -493,6 +493,8 @@ model opensourceRepo {
   trending      Boolean        @default(false)
   hacktoberfest Boolean        @default(false)
   lastUpdated   DateTime       @default(now())
+  githubStatsUpdatedAt DateTime?
+  healthScore          Int            @default(0)
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
 

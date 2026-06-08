@@ -118,6 +118,7 @@ export default function RepoDiscoveryPage() {
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
   const hacktoberfestOnly = searchParams.get("hacktoberfest") === "true";
+  const highlyActiveOnly = searchParams.get("highlyActive") === "true";
   const showHacktoberfestFilter = isHacktoberfestMode();
 
   // Debounced search state & ref
@@ -316,6 +317,7 @@ export default function RepoDiscoveryPage() {
     
     if (trendingOnly) params.trending = "true";
     if (hacktoberfestOnly) params.hacktoberfest = "true";
+    if (highlyActiveOnly) params.highlyActive = "true";
 
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
@@ -714,9 +716,27 @@ export default function RepoDiscoveryPage() {
               }`}
             >
               <GitPullRequest className="w-3 h-3" />
-              Hacktoberfest repos only
+              Hacktoberfest
             </button>
           )}
+
+          {/* Highly Active toggle */}
+          <button
+            type="button"
+            onClick={() => updateFilter("highlyActive", highlyActiveOnly ? "" : "true")}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              highlyActiveOnly
+                ? "bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+            }`}
+          >
+            <div
+              className={`h-1.5 w-1.5 rounded-full ${
+                highlyActiveOnly ? "bg-emerald-500" : "bg-stone-400"
+              }`}
+            />
+            Highly Active
+          </button>
 
           {inferredLanguages.length > 0 && (
             <button
