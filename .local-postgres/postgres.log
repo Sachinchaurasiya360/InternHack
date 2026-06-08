@@ -1,0 +1,60 @@
+2026-06-08 08:06:42.106 UTC [60458] LOG:  starting PostgreSQL 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+2026-06-08 08:06:42.107 UTC [60458] LOG:  listening on IPv6 address "::1", port 55432
+2026-06-08 08:06:42.107 UTC [60458] LOG:  listening on IPv4 address "127.0.0.1", port 55432
+2026-06-08 08:06:42.110 UTC [60458] FATAL:  could not create lock file "/var/run/postgresql/.s.PGSQL.55432.lock": Permission denied
+2026-06-08 08:06:42.113 UTC [60458] LOG:  database system is shut down
+2026-06-08 08:06:58.341 UTC [60752] LOG:  starting PostgreSQL 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+2026-06-08 08:06:58.342 UTC [60752] LOG:  listening on IPv6 address "::1", port 55432
+2026-06-08 08:06:58.342 UTC [60752] LOG:  listening on IPv4 address "127.0.0.1", port 55432
+2026-06-08 08:06:58.344 UTC [60752] LOG:  listening on Unix socket "/workspaces/InternHack/.local-postgres/socket/.s.PGSQL.55432"
+2026-06-08 08:06:58.350 UTC [60755] LOG:  database system was shut down at 2026-06-08 08:06:41 UTC
+2026-06-08 08:06:58.360 UTC [60752] LOG:  database system is ready to accept connections
+2026-06-08 08:07:15.168 UTC [61025] ERROR:  relation "_prisma_migrations" does not exist at character 126
+2026-06-08 08:07:15.168 UTC [61025] STATEMENT:  SELECT "id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count" FROM "_prisma_migrations" ORDER BY "started_at" ASC
+2026-06-08 08:07:15.496 UTC [61027] FATAL:  terminating connection due to administrator command
+2026-06-08 08:07:15.600 UTC [60753] LOG:  checkpoint starting: immediate force wait
+2026-06-08 08:07:16.077 UTC [60753] LOG:  checkpoint complete: wrote 924 buffers (5.6%); 1 WAL file(s) added, 0 removed, 0 recycled; write=0.070 s, sync=0.124 s, total=0.478 s; sync files=301, longest=0.102 s, average=0.001 s; distance=8535 kB, estimate=8535 kB; lsn=0/1D45680, redo lsn=0/1D45648
+2026-06-08 08:07:18.734 UTC [61028] ERROR:  column "aiRegeneratedAt" of relation "roadmapSection" already exists
+2026-06-08 08:07:18.734 UTC [61028] STATEMENT:  -- AlterTable
+	ALTER TABLE "roadmapSection" ADD COLUMN     "aiRegeneratedAt" TIMESTAMP(3);
+2026-06-08 08:07:18.739 UTC [60753] LOG:  checkpoint starting: immediate force wait
+2026-06-08 08:07:18.747 UTC [60753] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.002 s, sync=0.002 s, total=0.008 s; sync files=4, longest=0.001 s, average=0.001 s; distance=8197 kB, estimate=8502 kB; lsn=0/2546E00, redo lsn=0/2546DC8
+2026-06-08 08:07:19.760 UTC [61074] LOG:  invalid length of startup packet
+2026-06-08 08:07:19.801 UTC [61075] LOG:  invalid length of startup packet
+2026-06-08 08:07:19.832 UTC [61076] LOG:  invalid length of startup packet
+2026-06-08 08:07:19.867 UTC [61077] LOG:  invalid length of startup packet
+2026-06-08 08:09:13.023 UTC [62485] LOG:  invalid length of startup packet
+2026-06-08 08:09:13.051 UTC [62486] LOG:  invalid length of startup packet
+2026-06-08 08:09:13.080 UTC [62487] LOG:  invalid length of startup packet
+2026-06-08 08:09:13.099 UTC [62488] LOG:  invalid length of startup packet
+2026-06-08 08:09:15.340 UTC [62498] LOG:  invalid length of startup packet
+2026-06-08 08:09:15.357 UTC [62499] LOG:  invalid length of startup packet
+2026-06-08 08:09:15.383 UTC [62500] LOG:  invalid length of startup packet
+2026-06-08 08:09:15.403 UTC [62501] LOG:  invalid length of startup packet
+2026-06-08 08:12:18.813 UTC [60753] LOG:  checkpoint starting: time
+2026-06-08 08:13:15.562 UTC [60753] LOG:  checkpoint complete: wrote 563 buffers (3.4%); 0 WAL file(s) added, 0 removed, 0 recycled; write=56.391 s, sync=0.319 s, total=56.749 s; sync files=823, longest=0.018 s, average=0.001 s; distance=4621 kB, estimate=8114 kB; lsn=0/29CA468, redo lsn=0/29CA430
+2026-06-08 09:00:00.061 UTC [90123] WARNING:  you don't own a lock of type ExclusiveLock
+2026-06-08 09:59:07.629 UTC [11604] LOG:  starting PostgreSQL 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+2026-06-08 09:59:07.629 UTC [11604] LOG:  listening on IPv6 address "::1", port 55432
+2026-06-08 09:59:07.629 UTC [11604] LOG:  listening on IPv4 address "127.0.0.1", port 55432
+2026-06-08 09:59:07.634 UTC [11604] LOG:  listening on Unix socket "/workspaces/InternHack/.local-postgres/socket/.s.PGSQL.55432"
+2026-06-08 09:59:07.642 UTC [11608] LOG:  database system was interrupted; last known up at 2026-06-08 08:13:15 UTC
+2026-06-08 09:59:07.864 UTC [11608] LOG:  database system was not properly shut down; automatic recovery in progress
+2026-06-08 09:59:07.884 UTC [11608] LOG:  redo starts at 0/29CA430
+2026-06-08 09:59:07.884 UTC [11608] LOG:  invalid record length at 0/29CA518: expected at least 24, got 0
+2026-06-08 09:59:07.884 UTC [11608] LOG:  redo done at 0/29CA4E0 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2026-06-08 09:59:07.894 UTC [11606] LOG:  checkpoint starting: end-of-recovery immediate wait
+2026-06-08 09:59:07.900 UTC [11606] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.013 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/29CA518, redo lsn=0/29CA518
+2026-06-08 09:59:07.907 UTC [11604] LOG:  database system is ready to accept connections
+2026-06-08 09:59:20.809 UTC [12030] ERROR:  relation "_prisma_migrations" does not exist at character 126
+2026-06-08 09:59:20.809 UTC [12030] STATEMENT:  SELECT "id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count" FROM "_prisma_migrations" ORDER BY "started_at" ASC
+2026-06-08 10:19:08.288 UTC [11606] LOG:  checkpoint starting: time
+2026-06-08 10:19:09.405 UTC [11606] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.105 s, sync=0.003 s, total=1.118 s; sync files=11, longest=0.002 s, average=0.001 s; distance=3 kB, estimate=3 kB; lsn=0/29CB1B0, redo lsn=0/29CB178
+2026-06-08 10:34:08.674 UTC [11606] LOG:  checkpoint starting: time
+2026-06-08 10:34:08.893 UTC [11606] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.202 s, sync=0.003 s, total=0.219 s; sync files=3, longest=0.002 s, average=0.001 s; distance=2 kB, estimate=2 kB; lsn=0/29CBA20, redo lsn=0/29CB9E8
+2026-06-08 10:39:08.993 UTC [11606] LOG:  checkpoint starting: time
+2026-06-08 10:39:09.912 UTC [11606] LOG:  checkpoint complete: wrote 10 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.904 s, sync=0.004 s, total=0.919 s; sync files=7, longest=0.003 s, average=0.001 s; distance=5 kB, estimate=5 kB; lsn=0/29CCF70, redo lsn=0/29CCF38
+2026-06-08 10:54:09.210 UTC [11606] LOG:  checkpoint starting: time
+2026-06-08 10:54:09.727 UTC [11606] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.502 s, sync=0.005 s, total=0.518 s; sync files=6, longest=0.003 s, average=0.001 s; distance=5 kB, estimate=5 kB; lsn=0/29CE548, redo lsn=0/29CE510
+2026-06-08 10:59:09.822 UTC [11606] LOG:  checkpoint starting: time
+2026-06-08 10:59:12.558 UTC [11606] LOG:  checkpoint complete: wrote 28 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.713 s, sync=0.011 s, total=2.736 s; sync files=18, longest=0.008 s, average=0.001 s; distance=13 kB, estimate=13 kB; lsn=0/29D1BA8, redo lsn=0/29D1B70
