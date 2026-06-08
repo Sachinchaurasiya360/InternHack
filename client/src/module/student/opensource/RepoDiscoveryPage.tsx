@@ -71,6 +71,7 @@ const isGoodFirstRepo = (repo: OpenSourceRepo | RecommendedRepo) => {
     labels.some((label) => GOOD_FIRST_LABELS.some((goodLabel) => label.includes(goodLabel)))
   );
 };
+const EMPTY_OPEN_SOURCE_REPOS: OpenSourceRepo[] = [];
 
 const getBookmarks = (): number[] => {
   try {
@@ -433,6 +434,7 @@ export default function RepoDiscoveryPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const repos = data?.repos ?? EMPTY_OPEN_SOURCE_REPOS;
   const pagination = data?.pagination;
 
   const displayedRepos = (() => {
@@ -440,6 +442,9 @@ export default function RepoDiscoveryPage() {
     if (viewedOnly) return recentlyViewed;
     return data?.repos ?? [];
   })();
+  const displayedRepos = showSaved
+    ? bookmarkedData ?? EMPTY_OPEN_SOURCE_REPOS
+    : repos;
 
   // Global stats fetched independently so the header strip stays accurate
   // regardless of active filters or page (replaces the old useMemo approach).

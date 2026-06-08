@@ -28,6 +28,7 @@ import type { TableInfo } from "./lib/sql-engine";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
+import { toast } from "react-hot-toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
@@ -63,6 +64,7 @@ function useSqlProgress() {
     mutationFn: (vars: { exerciseId: string; solved: boolean; code: string }) =>
       api.post("/sql/progress", vars),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.sql.progress() }),
+    onError: () => toast.error("Failed to save progress. Please try again."),
   });
 
   const progress: SqlProgress = isAuthenticated ? (serverProgress ?? {}) : getLocalProgress();
