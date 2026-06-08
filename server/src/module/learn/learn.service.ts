@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
-import type { InterviewProgressAction, BulkInterviewProgressInput } from "./learn.validation.js";
+import type { InterviewProgressAction, BulkInterviewProgressInput, ExecuteCodeInput } from "./learn.validation.js";
+import { executeCode as judge0Exec, LANGUAGE_IDS } from "../../utils/judge0.utils.js";
 
 export interface InterviewProgressDto {
   completedIds: string[];
@@ -159,5 +160,22 @@ export class LearnService {
   async resetInterviewProgress(userId: number): Promise<InterviewProgressDto> {
     await prisma.userInterviewProgress.deleteMany({ where: { userId } });
     return EMPTY_PROGRESS;
+  }
+
+  async executeCode(input: ExecuteCodeInput) {
+    const languageId = LANGUAGE_IDS[input.language];
+    if (!languageId) {
+      throw new Error(`Unsupported language: ${input.language}`);
+    }
+
+    const result = await judge0Exec(input.code, languageId, input.stdin ?? "");
+    return {
+      stdout: result.stdout ?? "",
+      stderr: result.stderr ?? "",
+      compileOutput: result.compile_output ?? "",
+      status: result.status.description,
+      time: result.time,
+      memory: result.memory,
+    };
   }
 }

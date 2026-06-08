@@ -13,5 +13,12 @@ export const bulkInterviewProgressSchema = z.object({
   lastVisitedId: questionIdSchema.nullish(),
 });
 
+export const executeCodeSchema = z.object({
+  language: z.enum(["python", "cpp", "java", "javascript", "typescript", "go", "rust", "ruby", "swift", "kotlin", "php", "csharp", "scala", "r"]),
+  code: z.string().min(1, "Code is required").max(50000, "Code too long"),
+  stdin: z.string().max(10000).optional().default(""),
+});
+
 export type InterviewProgressAction = z.infer<typeof interviewProgressActionSchema>["action"];
 export type BulkInterviewProgressInput = z.infer<typeof bulkInterviewProgressSchema>;
+export type ExecuteCodeInput = z.infer<typeof executeCodeSchema>;

@@ -5,6 +5,17 @@ export const LANGUAGE_IDS: Record<string, number> = {
   python: 71,
   cpp: 54,
   java: 62,
+  javascript: 63,
+  typescript: 74,
+  go: 60,
+  rust: 73,
+  ruby: 72,
+  swift: 83,
+  kotlin: 78,
+  php: 68,
+  csharp: 51,
+  scala: 81,
+  r: 80,
 };
 
 function getRandomApiKey(): string {

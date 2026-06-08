@@ -13,8 +13,10 @@ import {
   Lightbulb,
   Eye,
   Code2,
+  Terminal,
 } from "lucide-react";
 import { CodeBlock } from "../../../components/ui/CodeBlock";
+import LessonCodeRunner from "../../../components/LessonCodeRunner";
 import { sections, lessons } from "./data";
 import type { JsProgress, PracticeExercise } from "./data/types";
 import { jsEngine } from "./lib/js-engine";
@@ -549,6 +551,17 @@ export default function JsLessonDetailPage() {
               <ExerciseSection exercises={exercises} lessonId={lessonId!} />
             </>
           )}
+
+          {/* Code Runner */}
+          <div className="mt-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Terminal className="w-4 h-4 text-stone-500" />
+              <span className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                Code Playground
+              </span>
+            </div>
+            <LessonCodeRunner />
+          </div>
 
           {/* Footer actions */}
           <motion.div
