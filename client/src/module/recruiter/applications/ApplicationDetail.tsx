@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import toast from "../../../components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate } from "react-router";
@@ -99,8 +99,9 @@ export default function ApplicationDetail() {
     null,
   );
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
+  const evalTriggerRef = useRef<HTMLButtonElement | null>(null);
 
-const fetchDetail = useCallback(async (signal) => {
+const fetchDetail = useCallback(async (signal?: AbortSignal) => {
     try {
       const res = await api.get(
         `/recruiter/applications/${applicationId}`,
@@ -108,7 +109,7 @@ const fetchDetail = useCallback(async (signal) => {
       );
       return res.data.application;
     } catch (err) {
-      if (err.name !== "CanceledError" && err.name !== "AbortError") {
+      if ((err as any)?.name !== "CanceledError" && (err as any)?.name !== "AbortError") {
         console.error(err);
       }
       throw err;
@@ -116,7 +117,7 @@ const fetchDetail = useCallback(async (signal) => {
   }, [applicationId]);
 
   const loadData = useCallback(async () => {
-    const applicationData = await fetchDetail();
+    const applicationData = await fetchDetail(undefined);
     if (applicationData) {
       setApplication(applicationData);
     }
@@ -181,6 +182,12 @@ const fetchDetail = useCallback(async (signal) => {
       toast.error("Failed to update status");
     }
   };
+
+  useEffect(() => {
+    if (evaluatingRoundId === null && evalTriggerRef.current) {
+      evalTriggerRef.current.focus();
+    }
+  }, [evaluatingRoundId]);
 
   if (loading)
     return (
@@ -395,11 +402,12 @@ const fetchDetail = useCallback(async (signal) => {
                     </span>
                   )}
                   <Button
-                    onClick={() =>
+                    onClick={(e) => {
+                      evalTriggerRef.current = e.currentTarget;
                       setEvaluatingRoundId(
                         evaluatingRoundId === sub.roundId ? null : sub.roundId,
-                      )
-                    }
+                      );
+                    }}
                     className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-300"
                   >
                     {evaluatingRoundId === sub.roundId ? "Close" : "Evaluate"}
@@ -441,6 +449,7 @@ const fetchDetail = useCallback(async (signal) => {
                     criteria={sub.round?.evaluationCriteria || []}
                     onComplete={() => {
                       setEvaluatingRoundId(null);
+                      evalTriggerRef.current?.focus();
                       loadData();
                     }}
                   />
