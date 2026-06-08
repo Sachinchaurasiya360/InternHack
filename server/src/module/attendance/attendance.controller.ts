@@ -93,8 +93,12 @@ export class AttendanceController {
     } catch (error) {
       if (error instanceof Error) {
         const msg = error.message;
-        if (msg.includes("must be after") || msg.includes("must not exceed") || msg.includes("Cannot regularize") || msg.includes("cannot be in the future"))
-          return res.status(400).json({ message: msg });
+        if (
+          msg === "Cannot regularize attendance for future dates" ||
+          msg === "Check-in time cannot be in the future" ||
+          msg === "Check-out time cannot be in the future" ||
+          msg === "Check-out time must be after check-in time"
+        ) return res.status(400).json({ message: msg });
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
