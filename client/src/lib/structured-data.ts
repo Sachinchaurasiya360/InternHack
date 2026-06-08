@@ -2,6 +2,11 @@ import { SITE_URL } from "./seo.utils";
 
 type JsonLd = Record<string, unknown>;
 
+function parseSalaryValue(salary: string): number | null {
+  const match = salary.replace(/,/g, "").match(/\d+/);
+  return match ? parseInt(match[0], 10) : null;
+}
+
 export function jobPostingSchema(job: {
   title: string;
   description: string;
@@ -11,7 +16,10 @@ export function jobPostingSchema(job: {
   deadline?: string | null;
   createdAt?: string;
   id: number;
+  isRemote?: boolean;
+  employmentType?: string;
 }): JsonLd {
+  const parsedSalary = job.salary ? parseSalaryValue(job.salary) : null;
   return {
     "@context": "https://schema.org",
     "@type": "JobPosting",
@@ -28,7 +36,19 @@ export function jobPostingSchema(job: {
         addressLocality: job.location,
       },
     },
-    ...(job.salary && { baseSalary: job.salary }),
+    ...(parsedSalary && {
+      baseSalary: {
+        "@type": "MonetaryAmount",
+        currency: "INR",
+        value: {
+          "@type": "QuantitativeValue",
+          value: parsedSalary,
+          unitText: "MONTH",
+        },
+      },
+    }),
+    employmentType: job.employmentType || "INTERN",
+    ...(job.isRemote && { jobLocationType: "TELECOMMUTE" }),
     ...(job.deadline && { validThrough: job.deadline }),
     datePosted: job.createdAt || new Date().toISOString(),
     url: `${SITE_URL}/jobs/${job.id}`,
@@ -46,6 +66,7 @@ export function blogPostingSchema(post: {
   featuredImage?: string | null;
   tags?: string[];
 }): JsonLd {
+  const postUrl = `${SITE_URL}/blog/${post.slug}`;
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -56,11 +77,18 @@ export function blogPostingSchema(post: {
       "@type": "Organization",
       name: "InternHack",
       url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+      },
     },
-    ...(post.publishedAt && { datePublished: post.publishedAt }),
+    datePublished: post.publishedAt || new Date().toISOString(),
     ...(post.updatedAt && { dateModified: post.updatedAt }),
     ...(post.featuredImage && { image: post.featuredImage }),
-    url: `${SITE_URL}/blog/${post.slug}`,
+    url: postUrl,
+    mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
     ...(post.tags?.length && { keywords: post.tags.join(", ") }),
   };
 }
@@ -122,14 +150,21 @@ export function courseSchema(course: {
     numberOfCredits: "0",
     educationalLevel: "Beginner to Advanced",
     inLanguage: "en",
-    hasCourseInstance: {
-      "@type": "CourseInstance",
-      courseMode: "Online",
-      courseSchedule: {
-        "@type": "Schedule",
-        repeatFrequency: "P1D",
+    hasCourseInstance: [
+      {
+        "@type": "CourseInstance",
+        courseMode: "Online",
+        instructor: {
+          "@type": "Organization",
+          name: "InternHack",
+          url: SITE_URL,
+        },
+        courseSchedule: {
+          "@type": "Schedule",
+          repeatFrequency: "P1D",
+        },
       },
-    },
+    ],
   };
 }
 export function breadcrumbSchema(
@@ -184,15 +219,21 @@ export function platformOrganizationSchema(): JsonLd {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": `${SITE_URL}/#organization`,
     name: "InternHack",
     url: SITE_URL,
-    logo: `${SITE_URL}/og-image.png`,
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/og-image.png`,
+      width: 1200,
+      height: 630,
+    },
     description:
       "AI-powered career platform for students and recruiters, internships, ATS resume scoring, learning tracks, open source, skill verification.",
     sameAs: [
       "https://twitter.com/internhack",
       "https://www.linkedin.com/company/internhack",
-      "https://github.com/internhack",
+      "https://github.com/SachinChaurasiya/InternHack",
     ],
   };
 }

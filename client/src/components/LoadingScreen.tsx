@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { LumaSpin } from "./ui/luma-spin";
 
 const QUOTES = [
@@ -29,8 +28,11 @@ const QUOTES = [
   { text: "Simplicity is the soul of efficiency.", author: "Austin Freeman" },
 ];
 
+// Pick a random quote once at module load time (stable across renders)
+const INITIAL_QUOTE = QUOTES[Math.floor(Math.random() * QUOTES.length)]!;
+
 export function LoadingScreen({ compact = false }: { compact?: boolean }) {
-  const quote = useMemo(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]!, []);
+  const quote = INITIAL_QUOTE;
 
   return (
     <div className={`flex flex-col items-center justify-center ${compact ? "py-16" : "min-h-[60vh]"} gap-5 px-4 animate-in fade-in duration-500`}>

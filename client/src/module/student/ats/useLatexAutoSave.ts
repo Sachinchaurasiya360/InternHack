@@ -73,11 +73,19 @@ export function useLatexAutoSave(
     [flush],
   );
 
+  // Flush on unmount (React navigation)
   useEffect(() => {
     return () => {
       clearTimeout(timeoutRef.current);
       flush();
     };
+  }, [flush]);
+
+  // Flush on browser refresh/tab close — beforeunload fires synchronously
+  useEffect(() => {
+    const handleBeforeUnload = () => flush();
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [flush]);
 
   return { code, setCode, supportingFiles, setSupportingFiles };

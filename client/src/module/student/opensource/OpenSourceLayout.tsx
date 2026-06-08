@@ -1,6 +1,9 @@
 import { Fragment } from "react";
 import { Outlet, useLocation, Link } from "react-router";
 import { ChevronRight } from "lucide-react";
+import ContributionCoachPanel from "./ContributionCoachPanel";
+import CoachFloatingButton from "./CoachFloatingButton";
+import { LearningPathProvider } from "./learning-paths.context";
 
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
@@ -65,9 +68,15 @@ function OpenSourceBreadcrumb() {
 
 export default function OpenSourceLayout() {
   return (
-    <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
-      <OpenSourceBreadcrumb />
-      <Outlet />
-    </div>
+    <LearningPathProvider>
+      <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
+        <main>
+          <OpenSourceBreadcrumb />
+          <Outlet />
+        </main>
+        <ContributionCoachPanel />
+        <CoachFloatingButton />
+      </div>
+    </LearningPathProvider>
   );
 }

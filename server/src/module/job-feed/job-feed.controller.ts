@@ -11,8 +11,9 @@ export class JobFeedController {
         res.status(403).json({ message: "InternHack AI is a premium feature. Upgrade to access personalized job recommendations.", upgradeUrl: "/student/checkout" });
         return;
       }
-      const query = feedQuerySchema.parse(req.query);
-      const result = await jobFeedService.getFeed(req.user.id, query.page, query.limit);
+      const parsed = feedQuerySchema.safeParse(req.query);
+      if (!parsed.success) { res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() }); return; }
+      const result = await jobFeedService.getFeed(req.user.id, parsed.data.page, parsed.data.limit);
       res.json(result);
     } catch (err) { next(err); }
   };
@@ -41,7 +42,6 @@ export class JobFeedController {
         res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
         return;
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const pref = await jobFeedService.updatePreferences(req.user.id, parsed.data as any);
       res.json(pref);
     } catch (err) { next(err); }

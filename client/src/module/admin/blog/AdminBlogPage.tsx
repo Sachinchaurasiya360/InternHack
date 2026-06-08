@@ -20,7 +20,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
-import type { BlogPost } from "../../blog/components/BlogCard";
+import type { BlogPost } from "@/lib/types";
 import { CATEGORY_LABELS } from "../../blog/components/BlogCard";
 import { SEO } from "../../../components/SEO";
 

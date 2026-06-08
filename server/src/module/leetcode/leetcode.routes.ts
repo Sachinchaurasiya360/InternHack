@@ -96,10 +96,14 @@ router.get("/calendar/:username", async (req, res) => {
 
     const activities = Object.entries(submissions)
       .map(([epoch, count]) => {
-        const date = new Date(Number(epoch) * 1000);
+        const timestamp = Number(epoch) * 1000;
+        if (isNaN(timestamp)) return null;
+        const date = new Date(timestamp);
+        if (isNaN(date.getTime())) return null;
         const dateStr = date.toISOString().split("T")[0]!;
         return { date: dateStr, count, level: getLevel(count) };
       })
+      .filter((act): act is { date: string; count: number; level: number } => act !== null)
       .sort((a, b) => a.date.localeCompare(b.date));
 
     const data = {
@@ -111,11 +115,20 @@ router.get("/calendar/:username", async (req, res) => {
 
     cache.set(cacheKey, { data, expiresAt: Date.now() + CACHE_TTL });
 
-    // Evict stale entries periodically
+    // Evict stale entries or cap cache size to prevent memory leaks
     if (cache.size > 200) {
       const now = Date.now();
       for (const [key, entry] of cache) {
         if (entry.expiresAt < now) cache.delete(key);
+      }
+      // If cache is still too large, evict the oldest entries to enforce strict limit (JS Map preserves insertion order)
+      while (cache.size > 200) {
+        const oldestKey = cache.keys().next().value;
+        if (oldestKey !== undefined) {
+          cache.delete(oldestKey);
+        } else {
+          break;
+        }
       }
     }
 

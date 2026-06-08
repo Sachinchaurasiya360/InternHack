@@ -79,6 +79,7 @@ export default function JobAnalyticsPage() {
 
             {data.roundAnalytics.map((round, i) => {
               const pct = (round.totalSubmissions / maxSubmissions) * 100;
+              const passRate = round.totalSubmissions > 0 ? ((round.completed / round.totalSubmissions) * 100).toFixed(1) : "0";
               const dropRate = i === 0
                 ? data.totalApplications > 0 ? ((data.totalApplications - round.totalSubmissions) / data.totalApplications * 100).toFixed(0) : "0"
                 : data.roundAnalytics[i - 1]!.totalSubmissions > 0
@@ -103,6 +104,7 @@ export default function JobAnalyticsPage() {
                     <span>{round.completed} completed</span>
                     <span>{round.inProgress} in progress</span>
                     <span>{round.pending} pending</span>
+                    <span className="text-green-600 dark:text-green-400 font-medium">{passRate}% pass rate</span>
                   </div>
                 </div>
               );

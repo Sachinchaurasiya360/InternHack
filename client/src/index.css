@@ -33,6 +33,9 @@
   --secondary: #f3f4f6;
   --muted-fg: #6b7280;
   --border-clr: #e5e7eb;
+  --scrollbar-track: #f3f4f6;
+  --scrollbar-thumb: #a3e635;
+  --scrollbar-thumb-hover: #84cc16;
 
   /* Engineering / System Design lesson tokens (used by sd lessons) */
   --eng-font: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -51,6 +54,9 @@
   --secondary: #1f2937;
   --muted-fg: #9ca3af;
   --border-clr: #374151;
+  --scrollbar-track: #111827;
+  --scrollbar-thumb: #84cc16;
+  --scrollbar-thumb-hover: #65a30d;
 
   --eng-bg: #0c0a09;
   --eng-bg-subtle: #1c1917;
@@ -81,6 +87,78 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
+html[data-theme-transition="running"]::view-transition-group(root) {
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html[data-theme-transition="running"]::view-transition-old(root),
+html[data-theme-transition="running"]::view-transition-new(root) {
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  mix-blend-mode: normal;
+}
+
+html[data-theme-transition="running"]::view-transition-old(root) {
+  animation-name: none;
+}
+
+html[data-theme-transition="running"]::view-transition-new(root) {
+  animation-name: theme-reveal;
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--theme-transition-x) var(--theme-transition-y));
+  }
+
+  to {
+    clip-path: circle(var(--theme-transition-radius) at var(--theme-transition-x) var(--theme-transition-y));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme-transition="running"]::view-transition-group(root),
+  html[data-theme-transition="running"]::view-transition-old(root),
+  html[data-theme-transition="running"]::view-transition-new(root) {
+    animation-duration: 1ms;
+  }
+
+  html[data-theme-transition="running"]::view-transition-new(root) {
+    animation-name: none;
+  }
+}
+
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-gutter: stable;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid var(--scrollbar-track);
+  border-radius: 999px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
 .dark body {
   background-color: #030712;
   color: #f3f4f6;
@@ -90,9 +168,14 @@ body {
 @utility no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+@utility h-screen-minus-180 {
+  height: calc(100vh - 180px);
 }
 
 /* Glass card utility */
@@ -115,8 +198,13 @@ body {
 
 /* Animated gradient border */
 @keyframes border-rotate {
-  0% { --angle: 0deg; }
-  100% { --angle: 360deg; }
+  0% {
+    --angle: 0deg;
+  }
+
+  100% {
+    --angle: 360deg;
+  }
 }
 
 /* Noise texture overlay */
@@ -153,15 +241,41 @@ body {
 
 /* Luma spin loader */
 @keyframes loaderAnim {
-  0% { inset: 0 35px 35px 0; }
-  12.5% { inset: 0 35px 0 0; }
-  25% { inset: 35px 35px 0 0; }
-  37.5% { inset: 35px 0 0 0; }
-  50% { inset: 35px 0 0 35px; }
-  62.5% { inset: 0 0 0 35px; }
-  75% { inset: 0 0 35px 35px; }
-  87.5% { inset: 0 0 35px 0; }
-  100% { inset: 0 35px 35px 0; }
+  0% {
+    inset: 0 35px 35px 0;
+  }
+
+  12.5% {
+    inset: 0 35px 0 0;
+  }
+
+  25% {
+    inset: 35px 35px 0 0;
+  }
+
+  37.5% {
+    inset: 35px 0 0 0;
+  }
+
+  50% {
+    inset: 35px 0 0 35px;
+  }
+
+  62.5% {
+    inset: 0 0 0 35px;
+  }
+
+  75% {
+    inset: 0 0 35px 35px;
+  }
+
+  87.5% {
+    inset: 0 0 35px 0;
+  }
+
+  100% {
+    inset: 0 35px 35px 0;
+  }
 }
 
 /* Proctored test, lock down the page */
@@ -182,8 +296,106 @@ body {
   -webkit-user-drag: none;
 }
 
+.job-agent-copy-button {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .job-agent-copy-button {
+    opacity: 0;
+  }
+
+  .job-agent-copy-group:hover .job-agent-copy-button,
+  .job-agent-copy-button:focus-visible {
+    opacity: 1;
+  }
+}
+
 @media print {
   .proctored-test {
     display: none !important;
+  }
+
+  /* ATS Print Report Styles */
+  body {
+    background: white;
+    color: #030712;
+  }
+
+  /* Hide navigation, sidebar, and print-hidden elements */
+  nav,
+  aside,
+  .navbar,
+  .sidebar,
+  .student-sidebar,
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  /* Hide print button and other action buttons */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Show link URLs after anchor text */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+  a[href^="#"]::after,
+  a[href^="javascript"]::after {
+    content: none;
+  }
+
+  /* ATS Report section — full width and clean */
+  #ats-print-section {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Card styling for print */
+  .bg-white.dark\:bg-stone-900,
+  [class*="bg-stone-50"] {
+    background-color: white !important;
+    border-color: #000000 !important;
+  }
+
+  /* Text colors */
+  [class*="text-stone-"],
+  [class*="dark:text-stone-"] {
+    color: #030712 !important;
+  }
+
+  /* Accent colors */
+  .text-lime-600.dark\:text-lime-400 {
+    color: #15803d !important;
+  }
+
+  /* Score circle and chart improvements */
+  [class*="dark:stroke-"] {
+    stroke: #030712 !important;
+  }
+
+  /* Page breaks */
+  .bg-white.dark\:bg-stone-900 {
+    page-break-inside: avoid;
+  }
+
+  /* Hide decorative elements */
+  [aria-hidden="true"] {
+    display: none !important;
+  }
+
+  /* Improve readability */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Header and footer margins */
+  @page {
+    margin: 0.5in;
   }
 }

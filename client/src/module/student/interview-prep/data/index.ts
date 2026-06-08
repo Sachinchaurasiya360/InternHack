@@ -12,6 +12,13 @@ import behavioralData from "./lessons/behavioral-interview.json";
 import htmlCssData from "./lessons/html-css-interview.json";
 import gitDevopsData from "./lessons/git-devops-interview.json";
 import fastapiData from "./lessons/fastapi-interview.json";
+import dockerData from "./lessons/docker-containers.json";
+import k8sData from "./lessons/kubernetes-orchestration.json";
+import awsData from "./lessons/aws-cloud-fundamentals.json";
+import redisData from "./lessons/redis-caching.json";
+import securityData from "./lessons/web-security.json";
+import dbDesignData from "./lessons/database-design.json";
+import ossData from "./lessons/open-source-interview.json";
 
 export const sections: InterviewSection[] = interviewSections;
 
@@ -27,4 +34,11 @@ export const questions: InterviewQuestion[] = [
   ...(htmlCssData as InterviewQuestion[]),
   ...(gitDevopsData as InterviewQuestion[]),
   ...(fastapiData as InterviewQuestion[]),
+  ...(dockerData as InterviewQuestion[]),
+  ...(k8sData as InterviewQuestion[]),
+  ...(awsData as InterviewQuestion[]),
+  ...(redisData as InterviewQuestion[]),
+  ...(securityData as InterviewQuestion[]),
+  ...(dbDesignData as InterviewQuestion[]),
+  ...(ossData as InterviewQuestion[]),
 ];

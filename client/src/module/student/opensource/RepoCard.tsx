@@ -1,19 +1,28 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, GitFork, CircleDot, Flame, ArrowRight } from "lucide-react";
+import { Star, GitFork, CircleDot, Flame, ArrowRight, Bookmark, BookmarkCheck, GitPullRequest } from "lucide-react";
 import type { OpenSourceRepo } from "../../../lib/types";
 import { LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
+import { Button } from "../../../components/ui/button";
 
 interface RepoCardProps {
   repo: OpenSourceRepo;
   index: number;
   onSelect: (repo: OpenSourceRepo) => void;
+  bookmarked?: boolean;
+  onToggleBookmark?: () => void;
 }
 
 const MAX_STAGGER_INDEX = 8;
 
-export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: RepoCardProps) {
+export const RepoCard = React.memo(function RepoCard({
+  repo,
+  index,
+  onSelect,
+  bookmarked,
+  onToggleBookmark,
+}: RepoCardProps) {
   const badge = difficultyBadge(repo.difficulty);
   const delay = Math.min(index, MAX_STAGGER_INDEX) * 0.04;
 
@@ -26,32 +35,73 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
       transition={{ delay, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className="h-full"
     >
-      <button
-        onClick={() => onSelect(repo)}
-        className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
-      >
-        {repo.trending && (
-          <div className="absolute -top-2 right-4 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
-            <Flame size={10} aria-hidden />
-            trending
-          </div>
-        )}
+      <div className="group relative flex flex-col h-full w-full">
+        <Button
+          mode="icon"
+          variant="ghost"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            onToggleBookmark?.();
+          }}
+          aria-label={bookmarked ? "Remove bookmark" : "Bookmark this repo"}
+          className="absolute top-3 right-3 z-10"
+        >
+          {bookmarked ? (
+            <BookmarkCheck className="w-4 h-4 text-lime-500" />
+          ) : (
+            <Bookmark className="w-4 h-4" />
+          )}
+        </Button>
+
+        <button
+          onClick={() => onSelect(repo)}
+          className="flex flex-col flex-1 text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
+        >
+          {repo.trending && (
+            <div className="absolute -top-2 right-12 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
+              <Flame size={10} aria-hidden />
+              trending
+            </div>
+          )}
+          {repo.hacktoberfest && (
+            <div className="absolute -top-2 left-3 inline-flex items-center gap-1 rounded-md bg-orange-600 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-white">
+              <GitPullRequest size={10} aria-hidden />
+              hacktoberfest
+            </div>
+          )}
 
         <div className="flex flex-col flex-1 p-5">
           <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <div
                 className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-sm font-bold text-stone-700 dark:text-stone-200"
                 aria-hidden
               >
                 {repo.owner[0].toUpperCase()}
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <div className="h-1 w-1 bg-lime-400"></div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
-                    {repo.owner}
-                  </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 justify-between">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <div className="h-1 w-1 bg-lime-400"></div>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
+                      {repo.owner}
+                    </span>
+                  </div>
+                  {repo.matchedSkills && repo.matchedSkills.length > 0 && (
+                    <div className="relative group/why shrink-0">
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-lime-400/10 text-lime-600 dark:text-lime-400 text-[9px] font-bold uppercase tracking-tighter">
+                        Why?
+                      </span>
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover/why:block z-50 w-48 p-2 bg-stone-900 border border-white/10 rounded-md shadow-xl pointer-events-none">
+                        <div className="text-[10px] text-white leading-snug">
+                          <span className="text-stone-400 block mb-1">Recommended for you</span>
+                          Matches your stack: <span className="text-lime-400">{repo.matchedSkills.join(", ")}</span>
+                        </div>
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-4 border-x-transparent border-t-4 border-t-stone-900"></div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -109,7 +159,8 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect }: 
           </div>
         </div>
       </button>
-    </motion.div>
+    </div>
+  </motion.div>
   );
 });
 

@@ -181,8 +181,7 @@ function BTreeViz({ frame }: { frame: BFrame }) {
 
 function BTreeVisualizer() {
   const [src, setSrc] = useState("10, 20, 5, 6, 12, 30, 7, 17");
-  const keys = parseInts(src) ?? [10, 20, 5, 6, 12, 30, 7, 17];
-  const frames = useMemo(() => buildBFrames(keys), [keys]);
+  const frames = useMemo(() => buildBFrames(parseInts(src) ?? [10, 20, 5, 6, 12, 30, 7, 17]), [src]);
   const player = useStepPlayer(frames);
   const frame = player.current;
   return (
@@ -377,8 +376,7 @@ function RBTreeViz({ frame }: { frame: RBFrame }) {
 
 function RBTreeVisualizer() {
   const [src, setSrc] = useState("10, 20, 30, 15, 25, 5, 35");
-  const keys = parseInts(src, 12) ?? [10, 20, 30, 15, 25, 5, 35];
-  const frames = useMemo(() => buildRBFrames(keys), [keys]);
+  const frames = useMemo(() => buildRBFrames(parseInts(src, 12) ?? [10, 20, 30, 15, 25, 5, 35]), [src]);
   const player = useStepPlayer(frames);
   const frame = player.current;
   return (
@@ -736,9 +734,10 @@ function parseBloomOps(s: string): { kind: "insert" | "query"; item: string }[] 
 
 function BloomVisualizer() {
   const [src, setSrc] = useState("insert(apple); insert(banana); insert(cherry); query(apple); query(grape)");
-  const parsed = parseBloomOps(src);
-  const ops = parsed ?? [];
-  const frames = useMemo(() => buildBloomFrames(ops.length ? ops : [{ kind: "insert", item: "apple" }]), [ops]);
+  const frames = useMemo(() => {
+    const ops = parseBloomOps(src) ?? [];
+    return buildBloomFrames(ops.length ? ops : [{ kind: "insert", item: "apple" }]);
+  }, [src]);
   const player = useStepPlayer(frames);
   const frame = player.current;
   return (

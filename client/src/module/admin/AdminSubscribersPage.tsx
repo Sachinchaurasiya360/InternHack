@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Trash2, Users } from "lucide-react";
 import { SEO } from "../../components/SEO";
 import { PaginationControls } from "../../components/ui/PaginationControls";
 import { Button } from "../../components/ui/button";
 import api from "../../lib/axios";
+import toast from "../../components/ui/toast";
 
 interface Subscriber {
   id: number;
@@ -19,7 +20,7 @@ export default function AdminSubscribersPage() {
   const [page, setPage] = useState(1);
   const limit = 50;
 
-  const fetchSubscribers = () => {
+  const fetchSubscribers = useCallback(() => {
     setLoading(true);
     api
       .get(`/newsletter/subscribers?page=${page}&limit=${limit}`)
@@ -27,13 +28,15 @@ export default function AdminSubscribersPage() {
         setSubscribers(res.data.subscribers);
         setTotal(res.data.total);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error("Failed to fetch subscribers:", err);
+        toast.error("Failed to fetch subscribers");
+      })
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchSubscribers();
   }, [page]);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchSubscribers(); }, [fetchSubscribers]);
 
   const handleDelete = async (id: number) => {
     try {

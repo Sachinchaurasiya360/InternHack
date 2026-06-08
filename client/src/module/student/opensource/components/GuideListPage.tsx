@@ -1,15 +1,15 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  CheckCircle2, ArrowRight, Trophy,
-} from "lucide-react";
+import {CheckCircle2, ArrowRight, Trophy,} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
+import { notifyLearningPathProgressChanged } from "../learning-paths.data";
+import { NextInPathCard } from "./NextInPathCard";
 
-interface Step { step: number; id: string; title: string; description: string }
+interface Step { step: number; id: string; title: string; description: string ; estimatedMinutes?: number; }
 
 interface Props {
   steps: Step[];
@@ -21,6 +21,7 @@ interface Props {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
+  ogImage?: string;
   icon: LucideIcon;
   iconColor: string;         // e.g. "text-emerald-500"
 }
@@ -28,6 +29,7 @@ interface Props {
 export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
+  ogImage,
 }: Props) {
   const [completed, setCompleted] = useState<Set<string>>(() => {
     try {
@@ -39,8 +41,9 @@ export default function GuideListPage({
   const toggle = useCallback((id: string) => {
     setCompleted((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
+      notifyLearningPathProgressChanged();
       return next;
     });
   }, [storageKey]);
@@ -48,9 +51,15 @@ export default function GuideListPage({
   const totalSteps = steps.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
+  const totalEstimatedTime = steps.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+  const completedMinutes = steps
+    .filter((s) => completed.has(s.id))
+    .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
+  const remainingMinutes = totalEstimatedTime - completedMinutes;
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
+  const currentSlug = basePath.split("/").pop() as "git-guide" | "communication" | "read-codebase" | "cicd";
 
   return (
     <div className="relative pb-12">
@@ -59,6 +68,7 @@ export default function GuideListPage({
         description={seoDescription}
         keywords={seoKeywords}
         canonicalUrl={canonicalUrl(basePath)}
+        ogImage={ogImage}
       />
 
       {/* Atmospheric background */}
@@ -94,12 +104,13 @@ export default function GuideListPage({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-3 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
       >
         {[
           { icon: Icon, value: totalSteps, label: "Sections", iconColor },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
+          { icon: ArrowRight, value: allDone ? "Done!" : completed.size > 0 ? `${remainingMinutes} min left` : `${totalEstimatedTime} min total`, label: "Est. Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -163,17 +174,22 @@ export default function GuideListPage({
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   ) : (
                     <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
+                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
                     </div>
                   )}
                 </Button>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className={`text-sm font-bold mb-0.5 ${
-                    done ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-950 dark:text-white"
-                  }`}>
-                    {step.title}
-                  </h3>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className={`text-sm font-bold ${
+                      done ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-950 dark:text-white"
+                    }`}>
+                      {step.title}
+                    </h3>
+                    {step.estimatedMinutes != null && (
+                      <span className="text-xs font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>
+                      )}
+                  </div>
                   <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
                     {step.description}
                   </p>
@@ -185,6 +201,8 @@ export default function GuideListPage({
           );
         })}
       </div>
+
+      <NextInPathCard currentSlug={currentSlug} completed={allDone} />
     </div>
   );
 }
