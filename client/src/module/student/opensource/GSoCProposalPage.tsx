@@ -4,6 +4,9 @@ import {
   CheckCircle2, Award, ArrowRight,
   Trophy,
   Clock,
+  Copy,
+  Linkedin,
+  Check
 } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
@@ -12,6 +15,10 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
 import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 import { NextInPathCard } from "./components/NextInPathCard";
+import { issueCertificate, type Certificate } from "./api/opensource.api";
+import { useAuthStore } from "../../../lib/auth.store";
+import { useEffect } from "react";
+import toast from "../../../components/ui/toast";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -56,6 +63,10 @@ export default function GSoCProposalPage() {
     }
   });
 
+  const [cert, setCert] = useState<Certificate | null>(null);
+  const [copying, setCopying] = useState(false);
+  const { user } = useAuthStore();
+
   const toggle = useCallback((id: string) => {
     setCompleted((prev) => {
       const next = new Set(prev);
@@ -87,6 +98,31 @@ export default function GSoCProposalPage() {
       "name": s.title,
       "text": s.description || "Follow the visual walkthrough steps."
     }))
+  };
+
+
+  useEffect(() => {
+    if (allDone && !cert && user) {
+      issueCertificate("GSoC Proposal Guide")
+        .then(setCert)
+        .catch(console.error);
+    }
+  }, [allDone, cert, user]);
+
+  const copyCertLink = () => {
+    if (!cert) return;
+    const url = `${window.location.origin}/certificate/${cert.token}`;
+    navigator.clipboard.writeText(url);
+    setCopying(true);
+    toast.success("Certificate link copied!");
+    setTimeout(() => setCopying(false), 2000);
+  };
+
+  const shareLinkedIn = () => {
+    if (!cert) return;
+    const url = `${window.location.origin}/certificate/${cert.token}`;
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    window.open(linkedInUrl, "_blank", "width=600,height=600");
   };
 
   return (
@@ -168,6 +204,19 @@ export default function GSoCProposalPage() {
             <div>
               <p className="text-base font-bold text-green-900 dark:text-green-300">You've completed the guide!</p>
               <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline.</p>
+
+              {cert && (
+                <div className="flex gap-3 mt-4 flex-wrap">
+                  <Button variant="secondary" size="sm" onClick={copyCertLink} className="bg-white dark:bg-green-900/40">
+                    {copying ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                    {copying ? "Copied" : "Copy Certificate"}
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={shareLinkedIn} className="bg-white dark:bg-green-900/40">
+                    <Linkedin className="w-4 h-4 mr-2 fill-current" />
+                    Share on LinkedIn
+                  </Button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

@@ -103,6 +103,7 @@ model user {
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
   ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
+  guideCertificates         guideCertificate[]           @relation("UserCertificates")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -1548,5 +1549,18 @@ model coachAdvice {
 
   @@index([userId])
   @@index([createdAt])
+}
+
+model guideCertificate {
+  id          Int      @id @default(autoincrement())
+  token       String   @unique @default(cuid())
+  userId      Int
+  guideName   String
+  issuedAt    DateTime @default(now())
+  studentName String
+  user        user     @relation("UserCertificates", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
 }
 

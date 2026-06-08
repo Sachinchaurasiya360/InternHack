@@ -698,4 +698,32 @@ where["OR"] = [
 
     return this.getBookmarkedRepoIds(userId);
   }
+
+  async getCertificate(token: string) {
+    return prisma.guideCertificate.findUnique({
+      where: { token },
+    });
+  }
+
+  async issueCertificate(userId: number, guideName: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true },
+    });
+    if (!user) throw new Error("User not found");
+
+    // Check if exactly this guide certificate already exists for this user
+    const existing = await prisma.guideCertificate.findFirst({
+      where: { userId, guideName },
+    });
+    if (existing) return existing;
+
+    return prisma.guideCertificate.create({
+      data: {
+        userId,
+        guideName,
+        studentName: user.name,
+      },
+    });
+  }
 }

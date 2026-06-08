@@ -66,6 +66,7 @@ const YCCompanyDetailPage = lazyWithRetry(() => import("./module/student/compani
 const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/GovInternshipsPage"));
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
+const CertificateViewPage = lazyWithRetry(() => import("./module/student/opensource/CertificateViewPage"));
 
 // Legal pages
 const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
@@ -347,6 +348,7 @@ function App() {
             <Route path="/companies" element={<CompanyListOrRedirect />} />
             <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
             <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
+            <Route path="/certificate/:token" element={<CertificateViewPage />} />
 
 
             <Route path="/ats-score" element={<PublicAtsPage />} />

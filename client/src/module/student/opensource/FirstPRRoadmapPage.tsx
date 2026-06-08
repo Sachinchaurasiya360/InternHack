@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, GitPullRequest, ArrowRight, Trophy, Clock } from "lucide-react";
+import { CheckCircle2, GitPullRequest, ArrowRight, Trophy, Clock, Copy, Linkedin, Check } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -10,6 +10,8 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import {
   fetchFirstPRProgress,
   patchFirstPRProgress,
+  issueCertificate,
+  type Certificate
 } from "./api/opensource.api";
 import guideData from "./data/open-source-guide.json";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -43,6 +45,8 @@ export default function FirstPRRoadmapPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuthStore();
   const triggerCoach = useCoachStore((s) => s.triggerCoach);
+  const [cert, setCert] = useState<Certificate | null>(null);
+  const [copying, setCopying] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -58,6 +62,23 @@ export default function FirstPRRoadmapPage() {
       });
     return () => { isMounted = false; };
   }, []);
+
+
+  const copyCertLink = () => {
+    if (!cert) return;
+    const url = `${window.location.origin}/certificate/${cert.token}`;
+    navigator.clipboard.writeText(url);
+    setCopying(true);
+    toast.success("Certificate link copied!");
+    setTimeout(() => setCopying(false), 2000);
+  };
+
+  const shareLinkedIn = () => {
+    if (!cert) return;
+    const url = `${window.location.origin}/certificate/${cert.token}`;
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
+  };
 
   const toggle = useCallback(
     (id: string) => {
@@ -100,7 +121,19 @@ export default function FirstPRRoadmapPage() {
   const allDone = completed.size === totalSteps;
   const totalEstimatedMinutes = STEPS.reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
   const currentStep = STEPS.find((s) => !completed.has(s.id));
-  const completedMinutes = STEPS.filter((s) => completed.has(s.id)).reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
+
+  useEffect(() => {
+    if (allDone && !cert && user) {
+      issueCertificate("First Pull Request Roadmap")
+        .then(setCert)
+        .catch(console.error);
+    }
+  }, [allDone, cert, user]);
+
+  const completedMinutes = STEPS.filter((s) => completed.has(s.id)).reduce(
+    (sum, s) => sum + (s.estimatedMinutes || 0),
+    0,
+  );
   const remainingMinutes = totalEstimatedMinutes - completedMinutes;
 
   const howToSchema = {
@@ -293,6 +326,19 @@ export default function FirstPRRoadmapPage() {
                   </button>
                 </div>
               </div>
+
+              {cert && (
+                <div className="flex gap-3 mt-4 flex-wrap">
+                  <Button variant="secondary" size="sm" onClick={copyCertLink}>
+                    {copying ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                    {copying ? "Copied" : "Copy Certificate"}
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={shareLinkedIn}>
+                    <Linkedin className="w-4 h-4 mr-2 fill-current" />
+                    Share on LinkedIn
+                  </Button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
