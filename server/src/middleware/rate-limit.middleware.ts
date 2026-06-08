@@ -29,7 +29,7 @@ export const contactLimiter = rateLimit({
   legacyHeaders: false,
   store: createRateLimitStore("contact"),
   keyGenerator: (req) => {
-    return req.ip || "unknown_ip";
+    return ipKeyGenerator(req.ip || "unknown_ip");
   },
   message: {
     message: "Too many contact submissions. Please try again later."
