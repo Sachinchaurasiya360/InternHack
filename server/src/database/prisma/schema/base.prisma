@@ -49,6 +49,7 @@ model user {
   achievements          Json                        @default("[]")
   leetcodeUrl           String?
   unsubscribeDigest     Boolean                     @default(false)
+  trackedPrograms       String[]                    @default([])
   tokenVersion          Int                         @default(0)
   ossTier               String?
   adminProfile          adminProfile?               @relation("AdminProfile")
@@ -1535,6 +1536,41 @@ model contentView {
   @@index([contentType, contentId])
   @@index([userId])
   @@index([createdAt])
+}
+
+model ossProgram {
+  id                  Int       @id @default(autoincrement())
+  slug                String    @unique
+  name                String
+  short               String
+  description         String
+  fullDescription     String?
+  eligibility         String?
+  eligibilityType     String?
+  stipend             String?
+  stipendPaid         String?
+  stipendRange        String?
+  window              String?
+  region              String?
+  website             String?
+  applyUrl            String?
+  color               String?
+  bgColor             String?
+  tags                String[]  @default([])
+  requirements        String[]  @default([])
+  timeline            Json?
+  howToApply          String?
+  applicationStart    DateTime?
+  applicationDeadline DateTime?
+  resultsDate         DateTime?
+  programStart        DateTime?
+  programEnd          DateTime?
+  active              Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([active])
+  @@index([slug])
 }
 
 model coachAdvice {

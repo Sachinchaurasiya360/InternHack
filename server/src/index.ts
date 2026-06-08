@@ -76,7 +76,7 @@ import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
-import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
+import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
@@ -434,12 +434,12 @@ const server = app.listen(PORT, async () => {
     fn: () => stopAnalyticsReportCron(),
   });
 
-  // Start signals cleanup cron (weekly Sunday at 2 AM)
-  startSignalsCleanupCron();
+  // Start OSS deadline alert cron (daily at 9 AM)
+  startDeadlineAlertCron();
   shutdownManager.register({
-    name: "Signals Cleanup Cron",
+    name: "Deadline Alert Cron",
     priority: 10,
-    fn: () => stopSignalsCleanupCron(),
+    fn: () => stopDeadlineAlertCron(),
   });
 
   // Register Redis disconnect
