@@ -50,6 +50,7 @@ model user {
   leetcodeUrl           String?
   unsubscribeDigest     Boolean                     @default(false)
   tokenVersion          Int                         @default(0)
+  ossTier               String?
   adminProfile          adminProfile?               @relation("AdminProfile")
   applications          application[]               @relation("StudentApplications")
   atsScores             atsScore[]                  @relation("StudentAtsScores")

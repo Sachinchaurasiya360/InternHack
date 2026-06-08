@@ -41,7 +41,17 @@ interface PublicProfile {
   bestAtsScore: number | null;
   verifiedSkills: VerifiedSkill[];
   createdAt: string;
+  ossTier?: string;
 }
+
+// ─── TIER COLORS ────────────────────────────────────────────────
+const OSS_TIER_COLORS: Record<string, string> = {
+  "First Steps": "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900",
+  "Contributor": "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 border-blue-200 dark:border-blue-900",
+  "Active Contributor": "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900",
+  "OSS Leader": "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 border-amber-400 dark:border-amber-900",
+  "Ambassador": "bg-lime-50 text-lime-700 dark:bg-lime-950/30 dark:text-lime-400 border-lime-400",
+};
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -152,6 +162,12 @@ export default function PublicProfilePage() {
                 <h1 className="text-xl font-bold text-gray-950 dark:text-white">{profile.name}</h1>
                 {jobStatusInfo && (
                   <span className={`text-xs font-medium px-2.5 py-0.5 rounded-lg ${jobStatusInfo.cls}`}>{jobStatusInfo.label}</span>
+                )}
+                {profile.ossTier && (
+                  <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-lg border ${OSS_TIER_COLORS[profile.ossTier] || OSS_TIER_COLORS["First Steps"]}`}>
+                    <Trophy className="w-3 h-3" />
+                    {profile.ossTier}
+                  </span>
                 )}
               </div>
               {(profile.designation || profile.company) && (

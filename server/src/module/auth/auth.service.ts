@@ -5,7 +5,10 @@ import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
+import { UserService } from "../user/user.service.js";
 import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+
+const userService = new UserService();
 
 // TTL shorter than S3 presigned URL expiry (S3 default â‰¥15 min)
 const PROFILE_TTL = 300;
@@ -442,6 +445,10 @@ export class AuthService {
       (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
     }
 
+    if (user.role === "STUDENT") {
+      (user as Record<string, unknown>).ossTier = await userService.calculateOssTier(userId);
+    }
+
     await cacheSet(cacheKey, user, PROFILE_TTL);
     return user;
   }
@@ -571,9 +578,13 @@ export class AuthService {
     if (rest.coverImage) {
       (rest as Record<string, unknown>).coverImage = await signUrl(rest.coverImage);
     }
+
+    const ossTier = await userService.calculateOssTier(rest.id);
+
     const result = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
+      ossTier,
     };
     await cacheSet(cacheKey, result, PROFILE_TTL);
     return result;

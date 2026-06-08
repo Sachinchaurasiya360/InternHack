@@ -51,6 +51,7 @@ interface TalentSearchFilter {
   location?: string;
   search?: string;
   jobStatus?: string;
+  ossTier?: string;
 }
 
 interface CreateRoundData {
@@ -741,6 +742,9 @@ export class RecruiterService {
     }
     if (filter.jobStatus) {
       where.jobStatus = filter.jobStatus;
+    }
+    if (filter.ossTier) {
+      where.ossTier = { equals: filter.ossTier, mode: "insensitive" };
     }
 
     const skip = (filter.page - 1) * filter.limit;
