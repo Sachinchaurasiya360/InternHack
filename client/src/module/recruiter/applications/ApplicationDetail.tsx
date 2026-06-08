@@ -11,6 +11,7 @@ import {
   Clock,
   FileText,
   ShieldCheck,
+  Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import api, { SERVER_URL } from "../../../lib/axios";
@@ -99,8 +100,9 @@ export default function ApplicationDetail() {
     null,
   );
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
+  const [isAdvancing, setIsAdvancing] = useState(false);
 
-const fetchDetail = useCallback(async (signal) => {
+const fetchDetail = useCallback(async (signal?: AbortSignal) => {
     try {
       const res = await api.get(
         `/recruiter/applications/${applicationId}`,
@@ -108,7 +110,7 @@ const fetchDetail = useCallback(async (signal) => {
       );
       return res.data.application;
     } catch (err) {
-      if (err.name !== "CanceledError" && err.name !== "AbortError") {
+      if (err instanceof Error && err.name !== "CanceledError" && err.name !== "AbortError") {
         console.error(err);
       }
       throw err;
@@ -162,11 +164,14 @@ const fetchDetail = useCallback(async (signal) => {
 
   const handleAdvance = async () => {
     try {
+      setIsAdvancing(true);
       await api.patch(`/recruiter/applications/${applicationId}/advance`);
       await loadData();
       toast.success("Application advanced");
     } catch {
       toast.error("Failed to advance");
+    } finally {
+      setIsAdvancing(false);
     }
   };
 
@@ -246,9 +251,15 @@ const fetchDetail = useCallback(async (signal) => {
             </select>
             <Button
               onClick={handleAdvance}
-              className="px-4 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200"
+              disabled={isAdvancing}
+              className={`flex items-center gap-2 px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors ${
+                isAdvancing 
+                  ? "bg-black/50 dark:bg-white/50 text-white dark:text-gray-950 cursor-not-allowed" 
+                  : "bg-black dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-200"
+              }`}
             >
-              Advance
+              {isAdvancing && <Loader2 className="w-4 h-4 animate-spin" />}
+              {isAdvancing ? "Advancing..." : "Advance"}
             </Button>
           </div>
         </div>
