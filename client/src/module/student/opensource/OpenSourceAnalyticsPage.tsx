@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ArrowLeft,
   BarChart3,
+  Flame,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
@@ -48,6 +49,7 @@ import type {
 } from "../../../lib/types";
 import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
 import { HacktoberfestTracker } from "./HacktoberfestTracker";
+import type { OpenSourceStreak } from "../../../lib/types";
 
 // ─── Theme ──────────────────────────────────────────────────────
 const CHART_COLORS = [
@@ -310,6 +312,12 @@ export default function OpenSourceAnalyticsPage() {
     queryKey: queryKeys.opensource.trend(startMonth, endMonth),
     queryFn: () => api.get("/opensource/analytics/trend", { params: { startDate: startMonth, endDate: endMonth } }).then((r) => r.data),
     staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: streakData } = useQuery({
+    queryKey: queryKeys.opensource.streak(),
+    queryFn: () => api.get("/opensource/streak").then((r) => r.data.streak as OpenSourceStreak),
+    staleTime: 60000,
   });
 
   const allOrgs = useMemo(() => orgsData ?? [], [orgsData]);
@@ -575,6 +583,64 @@ export default function OpenSourceAnalyticsPage() {
               JSON
             </button>
           </div>
+        </div>
+
+        {/* ── Streak ──────────────────────────────────────────── */}
+        <div className="mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.03, duration: 0.4 }}
+            className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5"
+          >
+            <div className="flex items-center gap-1.5 mb-4">
+              <div className="h-1 w-1 bg-lime-400" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                streak
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-8">
+              <div className="flex items-center gap-3">
+                <Flame className={`w-8 h-8 ${streakData && streakData.currentStreak > 0 ? "text-lime-500" : "text-stone-400"}`} />
+                <div>
+                  <p className="text-2xl font-bold text-stone-900 dark:text-stone-50">
+                    {streakData?.currentStreak ?? 0}
+                  </p>
+                  <p className="text-xs text-stone-500">day streak</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-6 text-sm">
+                <div>
+                  <p className="font-bold text-stone-900 dark:text-stone-50">{streakData?.longestStreak ?? 0}</p>
+                  <p className="text-xs text-stone-500">longest</p>
+                </div>
+                <div>
+                  <p className="font-bold text-stone-900 dark:text-stone-50">{streakData?.totalDays ?? 0}</p>
+                  <p className="text-xs text-stone-500">total days</p>
+                </div>
+                {streakData?.lastActivityAt && (
+                  <div>
+                    <p className="font-bold text-stone-900 dark:text-stone-50">
+                      {Math.floor((Date.now() - new Date(streakData.lastActivityAt).getTime()) / 3600000)}h
+                    </p>
+                    <p className="text-xs text-stone-500">since last activity</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            {streakData && streakData.currentStreak > 0 && streakData.lastActivityAt && (() => {
+              const hoursSince = (Date.now() - new Date(streakData.lastActivityAt).getTime()) / 3600000;
+              if (hoursSince >= 18) {
+                return (
+                  <div className="mt-4 flex items-center gap-2 text-xs text-orange-500 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/30 rounded-md px-3 py-2">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>Your streak is at risk. Contribute within the next {Math.ceil(24 - hoursSince)} hours to keep it alive.</span>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+          </motion.div>
         </div>
 
         {/* ── Monthly Contribution Activity ────────────────── */}

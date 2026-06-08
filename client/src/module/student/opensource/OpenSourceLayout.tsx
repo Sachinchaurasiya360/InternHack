@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import ContributionCoachPanel from "./ContributionCoachPanel";
 import CoachFloatingButton from "./CoachFloatingButton";
 import { LearningPathProvider } from "./learning-paths.context";
+import StreakFlame from "./StreakFlame";
 
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
@@ -63,6 +64,9 @@ function OpenSourceBreadcrumb() {
           )}
         </Fragment>
       ))}
+      <div className="ml-auto">
+        <StreakFlame />
+      </div>
     </nav>
   );
 }
