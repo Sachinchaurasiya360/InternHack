@@ -201,6 +201,22 @@ export interface DsaCodeReview {
   suggestions: string[];
 }
 
+export interface DsaLeaderboardEntry {
+  rank: number;
+  userId: number;
+  name: string;
+  profilePic: string | null;
+  college: string | null;
+  totalSolved: number;
+  byDifficulty: { easy: number; medium: number; hard: number };
+}
+
+export interface DsaLeaderboardResponse {
+  leaderboard: DsaLeaderboardEntry[];
+  myRank: number | null;
+  totalParticipants: number;
+}
+
 export interface DsaStreak {
   currentStreak: number;
   longestStreak: number;

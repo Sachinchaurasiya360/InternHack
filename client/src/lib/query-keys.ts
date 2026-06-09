@@ -238,6 +238,8 @@ export const queryKeys = {
     streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
+    leaderboard: (limit?: number) => ["dsa", "leaderboard", limit] as const,
+    leaderboardAiTips: () => ["dsa", "leaderboard-ai-tips"] as const,
   },
 
   // Roadmaps

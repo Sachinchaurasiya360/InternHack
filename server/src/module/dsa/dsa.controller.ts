@@ -378,4 +378,27 @@ export class DsaController {
       next(err);
     }
   }
+
+  async getLeaderboard(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 200);
+      const data = await this.dsaService.getLeaderboard(userId, limit);
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getLeaderboardAiTips(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const tips = await this.dsaService.getLeaderboardAiTips(userId);
+      res.json(tips);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

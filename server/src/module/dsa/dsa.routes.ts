@@ -30,6 +30,8 @@ dsaRouter.get("/my-progress", authMiddleware, requireRole("STUDENT"), (req, res,
 dsaRouter.get("/activity", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getActivity(req, res, next));
 dsaRouter.get("/daily", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getDailyProblem(req, res, next));
 dsaRouter.get("/streak", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getUserDsaStreak(req, res, next));
+dsaRouter.get("/leaderboard", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getLeaderboard(req, res, next));
+dsaRouter.get("/leaderboard/ai-tips", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getLeaderboardAiTips(req, res, next));
 
 dsaRouter.post("/problems/:problemId/hints", authMiddleware, requireRole("STUDENT"), usageLimit("CODE_RUN"), (req, res, next) => dsaController.generateHint(req, res, next));
 dsaRouter.post("/problems/:problemId/execute", authMiddleware, requireRole("STUDENT"), usageLimit("CODE_RUN"), (req, res, next) => dsaController.executeCode(req, res, next));

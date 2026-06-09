@@ -690,6 +690,127 @@ export class DsaService {
     };
   }
 
+  // ── Leaderboard ─────────────────────────────────────────────────────────
+
+  async getLeaderboard(studentId: number, limit = 50) {
+    const allProblems = await prisma.dsaProblem.findMany({
+      select: { id: true, difficulty: true },
+    });
+
+    const aggregated = await prisma.studentDsaProgress.groupBy({
+      by: ["studentId"],
+      where: { solved: true },
+      _count: { id: true },
+    });
+
+    const studentIds = aggregated.map((a) => a.studentId);
+    const users = await prisma.user.findMany({
+      where: { id: { in: studentIds }, isActive: true },
+      select: { id: true, name: true, profilePic: true, college: true },
+    });
+    const userMap = new Map(users.map((u) => [u.id, u]));
+
+    const rows = await Promise.all(
+      aggregated
+        .sort((a, b) => b._count.id - a._count.id)
+        .slice(0, limit)
+        .map(async (entry, index) => {
+          const user = userMap.get(entry.studentId);
+          const difficultyBreakdown = { easy: 0, medium: 0, hard: 0 };
+          const solvedIds = (
+            await prisma.studentDsaProgress.findMany({
+              where: { studentId: entry.studentId, solved: true },
+              select: { problemId: true },
+            })
+          ).map((s) => s.problemId);
+          const solvedSet = new Set(solvedIds);
+          for (const p of allProblems) {
+            const key = p.difficulty.toLowerCase() as "easy" | "medium" | "hard";
+            if (difficultyBreakdown[key] !== undefined && solvedSet.has(p.id)) {
+              difficultyBreakdown[key]++;
+            }
+          }
+          return {
+            rank: index + 1,
+            userId: entry.studentId,
+            name: user?.name ?? "Unknown",
+            profilePic: user?.profilePic ?? null,
+            college: user?.college ?? null,
+            totalSolved: entry._count.id,
+            byDifficulty: difficultyBreakdown,
+          };
+        }),
+    );
+
+    let myRank: number | null = null;
+    const myIndex = aggregated.findIndex((a) => a.studentId === studentId);
+    if (myIndex !== -1) myRank = myIndex + 1;
+
+    return { leaderboard: rows, myRank, totalParticipants: aggregated.length };
+  }
+
+  async getLeaderboardAiTips(studentId: number): Promise<{ tips: string[] }> {
+    const progress = await this.getMyProgress(studentId);
+
+    const problems = await prisma.dsaProblem.findMany({
+      select: { id: true, tags: true, difficulty: true },
+    });
+    const solved = await prisma.studentDsaProgress.findMany({
+      where: { studentId, solved: true },
+      select: { problemId: true },
+    });
+    const solvedSet = new Set(solved.map((s) => s.problemId));
+
+    const tagCounts: Record<string, { total: number; solved: number }> = {};
+    for (const p of problems) {
+      for (const tag of p.tags) {
+        if (!tagCounts[tag]) tagCounts[tag] = { total: 0, solved: 0 };
+        tagCounts[tag].total++;
+        if (solvedSet.has(p.id)) tagCounts[tag].solved++;
+      }
+    }
+
+    const weakTopics = Object.entries(tagCounts)
+      .filter(([, v]) => v.total >= 3 && v.solved / v.total < 0.4)
+      .sort(([, a], [, b]) => a.solved / a.total - b.solved / b.total)
+      .slice(0, 3);
+
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    if (geminiApiKey) {
+      try {
+        const genAI = new GoogleGenerativeAI(geminiApiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+        const prompt = `You are a DSA mentor. Based on this student's progress, give 3 concise, actionable tips to improve.
+Progress: ${JSON.stringify(progress)}. Weak topics: ${JSON.stringify(weakTopics)}.
+Return as a JSON array of strings, e.g. ["tip1", "tip2", "tip3"]. No markdown.`;
+
+        const result = await model.generateContent(prompt);
+        const text = result.response.text().trim();
+        const parsed = JSON.parse(text);
+        return { tips: Array.isArray(parsed) ? parsed.slice(0, 3) : ["Keep practicing consistently!"] };
+      } catch {
+        return { tips: this.buildFallbackTips(weakTopics, progress) };
+      }
+    }
+
+    return { tips: this.buildFallbackTips(weakTopics, progress) };
+  }
+
+  private buildFallbackTips(
+    weakTopics: [string, { total: number; solved: number }][],
+    progress: { totalSolved: number; byDifficulty: { easy: { solved: number; total: number }; medium: { solved: number; total: number }; hard: { solved: number; total: number } } },
+  ): string[] {
+    const tips: string[] = [];
+    if (weakTopics.length > 0) {
+      tips.push(`Focus on ${weakTopics.map(([t]) => t).join(", ")} — you've solved fewer than 40% of problems in these topics.`);
+    }
+    if (progress.byDifficulty.hard.total > 0 && progress.byDifficulty.hard.solved / progress.byDifficulty.hard.total < 0.2) {
+      tips.push("Try more Hard problems to build advanced problem-solving skills.");
+    }
+    tips.push("Consistency is key — solve at least one problem daily to maintain your streak.");
+    return tips;
+  }
+
   // ── Test case generation (cached permanently) ──
 
   async getOrGenerateTestCases(problemId: number) {

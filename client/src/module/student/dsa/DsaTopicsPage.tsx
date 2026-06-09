@@ -274,7 +274,12 @@ const clearFilters = () => {
     { to: "/learn/dsa/companies", icon: Building2, label: "companies" },
     { to: "/learn/dsa/patterns", icon: Puzzle, label: "patterns" },
     { to: "/learn/dsa/lists", icon: List, label: "lists" },
-    ...(user ? [{ to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" }] : []),
+    ...(user
+      ? [
+          { to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" },
+          { to: "/learn/dsa/leaderboard", icon: TrendingUp, label: "leaderboard" },
+        ]
+      : []),
   ];
 
   return (
