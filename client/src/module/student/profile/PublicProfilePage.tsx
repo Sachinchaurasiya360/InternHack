@@ -46,11 +46,11 @@ interface PublicProfile {
 
 // ─── TIER COLORS ────────────────────────────────────────────────
 const OSS_TIER_COLORS: Record<string, string> = {
-  "First Steps": "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900",
-  "Contributor": "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 border-blue-200 dark:border-blue-900",
-  "Active Contributor": "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900",
-  "OSS Leader": "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 border-amber-400 dark:border-amber-900",
-  "Ambassador": "bg-lime-50 text-lime-700 dark:bg-lime-950/30 dark:text-lime-400 border-lime-400",
+  "First Steps": "bg-stone-50 text-stone-600 border-stone-200",
+  "Contributor": "bg-stone-100 text-stone-700 border-stone-300",
+  "Active Contributor": "bg-stone-200 text-stone-800 border-stone-400",
+  "OSS Leader": "bg-stone-300 text-stone-900 border-stone-500",
+  "Ambassador": "bg-lime-400 text-stone-900 border-lime-500",
 };
 
 const fadeInUp = {
@@ -116,12 +116,12 @@ export default function PublicProfilePage() {
   return (
     <div className="relative pb-12 max-w-5xl mx-auto">
       <SEO
-  title={`${profile.name} — InternHack Profile`}
-  description={`${profile.name}'s skills: ${profile.skills.slice(0, 5).join(", ")}${profile.skills.length > 5 ? " and more" : ""}. ${profile.bio ? profile.bio.slice(0, 100) : "View their projects, achievements, and verified skills on InternHack."}`}
-  ogImage={profile.profilePic || undefined}
-  ogType="profile"
-  canonicalUrl={`https://internhack.xyz/student/profile/${profile.id}`}
-/>
+        title={`${profile.name} — InternHack Profile`}
+        description={`${profile.name}'s skills: ${profile.skills.slice(0, 5).join(", ")}${profile.skills.length > 5 ? " and more" : ""}. ${profile.bio ? profile.bio.slice(0, 100) : "View their projects, achievements, and verified skills on InternHack."}`}
+        ogImage={profile.profilePic || undefined}
+        ogType="profile"
+        canonicalUrl={`https://internhack.xyz/student/profile/${profile.id}`}
+      />
 
       {/* Back button */}
       <motion.button
@@ -164,7 +164,7 @@ export default function PublicProfilePage() {
                   <span className={`text-xs font-medium px-2.5 py-0.5 rounded-lg ${jobStatusInfo.cls}`}>{jobStatusInfo.label}</span>
                 )}
                 {profile.ossTier && (
-                  <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-lg border ${OSS_TIER_COLORS[profile.ossTier] || OSS_TIER_COLORS["First Steps"]}`}>
+                  <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border ${OSS_TIER_COLORS[profile.ossTier] || OSS_TIER_COLORS["First Steps"]}`}>
                     <Trophy className="w-3 h-3" />
                     {profile.ossTier}
                   </span>

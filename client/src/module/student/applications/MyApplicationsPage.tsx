@@ -308,7 +308,7 @@ export default function MyApplicationsPage() {
       );
 
     if (statusFilter !== "ALL") {
-      base = base.filter((a: any) => a.status === undefined || a.status === statusFilter);
+      base = base.filter((a) => a.status === statusFilter);
     }
 
     return [...base].sort((a, b) => {
