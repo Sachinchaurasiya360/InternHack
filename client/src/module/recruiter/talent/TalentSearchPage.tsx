@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search as SearchIcon,
@@ -49,6 +49,44 @@ const JOB_STATUS_OPTIONS = [
   { key: "NO_OFFER", label: "Not looking" },
 ];
 
+// Build the committed filter set from URL query params, falling back to defaults.
+function filtersFromParams(sp: URLSearchParams): TalentFilters {
+  return {
+    search: sp.get("search") ?? "",
+    skills: sp.get("skills") ?? "",
+    verifiedSkills: sp.get("verifiedSkills") ?? "",
+    college: sp.get("college") ?? "",
+    graduationYearMin: sp.get("graduationYearMin") ?? "",
+    graduationYearMax: sp.get("graduationYearMax") ?? "",
+    minAtsScore: Number(sp.get("minAtsScore")) || 0,
+    location: sp.get("location") ?? "",
+    jobStatus: sp.get("jobStatus") ?? "",
+  };
+}
+
+// Serialize committed filters + page into URL query params (only non-default values).
+function paramsFromState(
+  filters: TalentFilters,
+  page: number,
+): URLSearchParams {
+  const next = new URLSearchParams();
+  if (filters.search) next.set("search", filters.search);
+  if (filters.skills) next.set("skills", filters.skills);
+  if (filters.verifiedSkills)
+    next.set("verifiedSkills", filters.verifiedSkills);
+  if (filters.college) next.set("college", filters.college);
+  if (filters.graduationYearMin)
+    next.set("graduationYearMin", filters.graduationYearMin);
+  if (filters.graduationYearMax)
+    next.set("graduationYearMax", filters.graduationYearMax);
+  if (filters.minAtsScore > 0)
+    next.set("minAtsScore", String(filters.minAtsScore));
+  if (filters.location) next.set("location", filters.location);
+  if (filters.jobStatus) next.set("jobStatus", filters.jobStatus);
+  if (page > 1) next.set("page", String(page));
+  return next;
+}
+
 interface TalentSearchResponse {
   students: TalentResult[];
   pagination: Pagination;
@@ -61,9 +99,29 @@ const labelClass =
   "block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5";
 
 export default function TalentSearchPage() {
-  const [filters, setFilters] = useState<TalentFilters>(defaultFilters);
-  const [appliedFilters, setAppliedFilters] = useState<TalentFilters>(defaultFilters);
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL query params are the source of truth for committed filters + page, so
+  // browser Back/Forward, refresh, and shared links all restore search context.
+  const appliedFilters = useMemo(
+    () => filtersFromParams(searchParams),
+    [searchParams],
+  );
+  const page = useMemo(
+    () => Number(searchParams.get("page")) || 1,
+    [searchParams],
+  );
+
+  // Draft inputs mirror the committed filters; re-seed them whenever the URL
+  // changes (Back/Forward, refresh) using the store-previous-value pattern so
+  // no effect is needed.
+  const [filters, setFilters] = useState<TalentFilters>(appliedFilters);
+  const [prevParams, setPrevParams] = useState(searchParams);
+  if (searchParams !== prevParams) {
+    setPrevParams(searchParams);
+    setFilters(appliedFilters);
+  }
+
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: savedIdsData } = useQuery({
@@ -83,13 +141,19 @@ export default function TalentSearchPage() {
       const params = new URLSearchParams({ page: String(page), limit: "12" });
       if (appliedFilters.search) params.set("search", appliedFilters.search);
       if (appliedFilters.skills) params.set("skills", appliedFilters.skills);
-      if (appliedFilters.verifiedSkills) params.set("verifiedSkills", appliedFilters.verifiedSkills);
+      if (appliedFilters.verifiedSkills)
+        params.set("verifiedSkills", appliedFilters.verifiedSkills);
       if (appliedFilters.college) params.set("college", appliedFilters.college);
-      if (appliedFilters.graduationYearMin) params.set("graduationYearMin", appliedFilters.graduationYearMin);
-      if (appliedFilters.graduationYearMax) params.set("graduationYearMax", appliedFilters.graduationYearMax);
-      if (appliedFilters.minAtsScore > 0) params.set("minAtsScore", String(appliedFilters.minAtsScore));
-      if (appliedFilters.location) params.set("location", appliedFilters.location);
-      if (appliedFilters.jobStatus) params.set("jobStatus", appliedFilters.jobStatus);
+      if (appliedFilters.graduationYearMin)
+        params.set("graduationYearMin", appliedFilters.graduationYearMin);
+      if (appliedFilters.graduationYearMax)
+        params.set("graduationYearMax", appliedFilters.graduationYearMax);
+      if (appliedFilters.minAtsScore > 0)
+        params.set("minAtsScore", String(appliedFilters.minAtsScore));
+      if (appliedFilters.location)
+        params.set("location", appliedFilters.location);
+      if (appliedFilters.jobStatus)
+        params.set("jobStatus", appliedFilters.jobStatus);
 
       const res = await api.get(`/recruiter/talent-search?${params}`);
       return res.data as TalentSearchResponse;
@@ -99,25 +163,29 @@ export default function TalentSearchPage() {
   });
 
   const applyFilters = useCallback(() => {
-    setAppliedFilters({ ...filters });
-    setPage(1);
-  }, [filters]);
+    setSearchParams(paramsFromState(filters, 1));
+  }, [filters, setSearchParams]);
 
   const clearFilters = useCallback(() => {
     setFilters(defaultFilters);
-    setAppliedFilters(defaultFilters);
-    setPage(1);
-  }, []);
+    setSearchParams(new URLSearchParams());
+  }, [setSearchParams]);
 
-  const updateFilter = <K extends keyof TalentFilters>(key: K, value: TalentFilters[K]) => {
+  const updateFilter = <K extends keyof TalentFilters>(
+    key: K,
+    value: TalentFilters[K],
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const setJobStatus = (status: string) => {
     const next = { ...filters, jobStatus: status };
     setFilters(next);
-    setAppliedFilters(next);
-    setPage(1);
+    setSearchParams(paramsFromState(next, 1));
+  };
+
+  const goToPage = (nextPage: number) => {
+    setSearchParams(paramsFromState(appliedFilters, nextPage));
   };
 
   const students = data?.students ?? [];
@@ -159,12 +227,16 @@ export default function TalentSearchPage() {
               </span>
             </h1>
             <p className="mt-2 text-sm text-stone-600 dark:text-stone-400 max-w-xl">
-              Filter by verified skills, college, graduation year, and ATS score. Save anyone worth following up.
+              Filter by verified skills, college, graduation year, and ATS
+              score. Save anyone worth following up.
             </p>
           </div>
 
           <Button asChild variant="secondary" size="sm">
-            <Link to="/recruiters/saved" className="no-underline inline-flex items-center gap-2">
+            <Link
+              to="/recruiters/saved"
+              className="no-underline inline-flex items-center gap-2"
+            >
               <Bookmark className="w-4 h-4" />
               Saved
             </Link>
@@ -175,7 +247,10 @@ export default function TalentSearchPage() {
         <div className="mt-6 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
           <Stat label="candidates" value={pagination?.total ?? 0} />
           <Stat label="showing" value={students.length} />
-          <Stat label="page" value={`${pagination?.page ?? page} / ${pagination?.totalPages ?? 1}`} />
+          <Stat
+            label="page"
+            value={`${pagination?.page ?? page} / ${pagination?.totalPages ?? 1}`}
+          />
         </div>
       </header>
 
@@ -194,7 +269,12 @@ export default function TalentSearchPage() {
             className="w-full pl-9 pr-3 py-2.5 rounded-md bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-stone-900 dark:focus:border-stone-50 transition-colors"
           />
         </div>
-        <Button variant="primary" size="md" onClick={applyFilters} disabled={isFetching}>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={applyFilters}
+          disabled={isFetching}
+        >
           {isFetching ? "Searching..." : "Search"}
         </Button>
       </div>
@@ -207,10 +287,11 @@ export default function TalentSearchPage() {
             <button
               key={opt.key}
               onClick={() => setJobStatus(opt.key)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${active
-                ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-                }`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                active
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                  : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+              }`}
             >
               {opt.label}
             </button>
@@ -221,10 +302,11 @@ export default function TalentSearchPage() {
 
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${activeFilterCount > 0
-            ? "bg-lime-400 text-stone-900 border-lime-400"
-            : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-            }`}
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+            activeFilterCount > 0
+              ? "bg-lime-400 text-stone-900 border-lime-400"
+              : "bg-white dark:bg-stone-950 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+          }`}
         >
           <SlidersHorizontal className="w-3.5 h-3.5" />
           Filters
@@ -233,7 +315,9 @@ export default function TalentSearchPage() {
               {activeFilterCount}
             </span>
           )}
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showFilters ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`w-3.5 h-3.5 transition-transform ${showFilters ? "rotate-180" : ""}`}
+          />
         </button>
 
         {(activeFilterCount > 0 || appliedFilters.search) && (
@@ -259,7 +343,9 @@ export default function TalentSearchPage() {
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md">
               <div>
-                <label htmlFor="skills" className={labelClass}>skills</label>
+                <label htmlFor="skills" className={labelClass}>
+                  skills
+                </label>
                 <input
                   id="skills"
                   type="text"
@@ -269,24 +355,34 @@ export default function TalentSearchPage() {
                   className={inputClass}
                   placeholder="React, Node.js"
                 />
-                <p className="mt-1 text-[10px] font-mono text-stone-400">comma-separated</p>
+                <p className="mt-1 text-[10px] font-mono text-stone-400">
+                  comma-separated
+                </p>
               </div>
 
               <div>
-                <label htmlFor="verifiedSkills" className={labelClass}>verified skills</label>
+                <label htmlFor="verifiedSkills" className={labelClass}>
+                  verified skills
+                </label>
                 <input
                   id="verifiedSkills"
                   type="text"
                   value={filters.verifiedSkills}
-                  onChange={(e) => updateFilter("verifiedSkills", e.target.value)}
+                  onChange={(e) =>
+                    updateFilter("verifiedSkills", e.target.value)
+                  }
                   className={inputClass}
                   placeholder="javascript, react"
                 />
-                <p className="mt-1 text-[10px] font-mono text-stone-400">test-verified only</p>
+                <p className="mt-1 text-[10px] font-mono text-stone-400">
+                  test-verified only
+                </p>
               </div>
 
               <div>
-                <label htmlFor="college" className={labelClass}>college</label>
+                <label htmlFor="college" className={labelClass}>
+                  college
+                </label>
                 <input
                   id="college"
                   type="text"
@@ -298,7 +394,9 @@ export default function TalentSearchPage() {
               </div>
 
               <div>
-                <label htmlFor="location" className={labelClass}>location</label>
+                <label htmlFor="location" className={labelClass}>
+                  location
+                </label>
                 <input
                   id="location"
                   type="text"
@@ -314,12 +412,16 @@ export default function TalentSearchPage() {
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label htmlFor="gradYearMin" className={labelClass}>from</label>
+                    <label htmlFor="gradYearMin" className={labelClass}>
+                      from
+                    </label>
                     <input
                       id="gradYearMin"
                       type="number"
                       value={filters.graduationYearMin}
-                      onChange={(e) => updateFilter("graduationYearMin", e.target.value)}
+                      onChange={(e) =>
+                        updateFilter("graduationYearMin", e.target.value)
+                      }
                       className={inputClass}
                       placeholder="From"
                       min={2000}
@@ -328,12 +430,16 @@ export default function TalentSearchPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="gradYearMax" className={labelClass}>to</label>
+                    <label htmlFor="gradYearMax" className={labelClass}>
+                      to
+                    </label>
                     <input
                       id="gradYearMax"
                       type="number"
                       value={filters.graduationYearMax}
-                      onChange={(e) => updateFilter("graduationYearMax", e.target.value)}
+                      onChange={(e) =>
+                        updateFilter("graduationYearMax", e.target.value)
+                      }
                       className={inputClass}
                       placeholder="To"
                       min={2000}
@@ -356,7 +462,9 @@ export default function TalentSearchPage() {
                   max={100}
                   step={5}
                   value={filters.minAtsScore}
-                  onChange={(e) => updateFilter("minAtsScore", Number(e.target.value))}
+                  onChange={(e) =>
+                    updateFilter("minAtsScore", Number(e.target.value))
+                  }
                   className="w-full h-1 bg-stone-200 dark:bg-white/10 rounded appearance-none cursor-pointer accent-lime-400"
                 />
                 <div className="flex justify-between text-[10px] font-mono text-stone-400 mt-1">
@@ -367,7 +475,12 @@ export default function TalentSearchPage() {
               </div>
 
               <div className="flex items-end sm:col-span-2 gap-2">
-                <Button variant="primary" size="sm" onClick={applyFilters} className="flex-1">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={applyFilters}
+                  className="flex-1"
+                >
                   Apply filters
                 </Button>
                 {activeFilterCount > 0 && (
@@ -403,7 +516,7 @@ export default function TalentSearchPage() {
             <PaginationControls
               currentPage={page}
               totalPages={pagination.totalPages}
-              onPageChange={setPage}
+              onPageChange={goToPage}
               showingInfo={{ total: pagination.total, limit: 12 }}
             />
           )}
