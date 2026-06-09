@@ -217,6 +217,16 @@ export default function RegisterPage() {
       } else {
         delete newErrors.password;
       }
+
+      // Re-validate confirmPassword against new password value
+      if (form.confirmPassword) {
+        const confirmPasswordError = validateConfirmPassword(value, form.confirmPassword);
+        if (confirmPasswordError) {
+          newErrors.confirmPassword = confirmPasswordError;
+        } else {
+          delete newErrors.confirmPassword;
+        }
+      }
     } else if (field === "confirmPassword") {
       const confirmPasswordError = validateConfirmPassword(form.password, value);
       if (confirmPasswordError) {
