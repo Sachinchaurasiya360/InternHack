@@ -99,11 +99,19 @@ export interface DsaSimilarProblem {
 export interface DsaCompany {
   name: string;
   count: number;
+  solved: number;
 }
 
 export interface DsaPattern {
   name: string;
   count: number;
+}
+
+export interface DsaCompanyTrackStats {
+  company: string;
+  total: number;
+  solved: number;
+  difficultyBreakdown: Record<string, { total: number; solved: number }>;
 }
 
 export interface DsaSheetStats {

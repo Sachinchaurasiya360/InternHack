@@ -344,28 +344,43 @@ export class DsaService {
     });
   }
 
-  async getCompanies() {
-    if (companiesCache && companiesCache.expiresAt > Date.now()) {
+  async getCompanies(studentId?: number) {
+    if (companiesCache && companiesCache.expiresAt > Date.now() && !studentId) {
       return companiesCache.data;
     }
 
     const problems = await prisma.dsaProblem.findMany({
       where: { companies: { isEmpty: false } },
-      select: { companies: true },
+      select: { id: true, companies: true },
     });
 
     const countMap = new Map<string, number>();
+    const problemIdsByCompany = new Map<string, number[]>();
     for (const p of problems) {
       for (const c of p.companies) {
         countMap.set(c, (countMap.get(c) || 0) + 1);
+        if (!problemIdsByCompany.has(c)) problemIdsByCompany.set(c, []);
+        problemIdsByCompany.get(c)!.push(p.id);
+      }
+    }
+
+    let solvedByCompany = new Map<string, number>();
+    if (studentId) {
+      const solved = await prisma.studentDsaProgress.findMany({
+        where: { studentId, solved: true },
+        select: { problemId: true },
+      });
+      const solvedIds = new Set(solved.map((s) => s.problemId));
+      for (const [company, pIds] of problemIdsByCompany) {
+        solvedByCompany.set(company, pIds.filter((id) => solvedIds.has(id)).length);
       }
     }
 
     const result = Array.from(countMap.entries())
-      .map(([name, count]) => ({ name, count }))
+      .map(([name, count]) => ({ name, count, solved: solvedByCompany.get(name) ?? 0 }))
       .sort((a, b) => b.count - a.count);
 
-    companiesCache = { data: result, expiresAt: Date.now() + AGG_CACHE_TTL };
+    if (!studentId) companiesCache = { data: result, expiresAt: Date.now() + AGG_CACHE_TTL };
     return result;
   }
 
@@ -430,6 +445,47 @@ export class DsaService {
       total,
       totalPages: Math.ceil(total / limit),
       page,
+    };
+  }
+
+  async getCompanyTrackStats(company: string, studentId?: number) {
+    const problems = await prisma.dsaProblem.findMany({
+      where: { companies: { has: company } },
+      select: { id: true, difficulty: true },
+    });
+
+    const diffCount = { Easy: 0, Medium: 0, Hard: 0 };
+    for (const p of problems) {
+      const d = p.difficulty as keyof typeof diffCount;
+      if (d in diffCount) diffCount[d]++;
+    }
+
+    let solvedIds = new Set<number>();
+    if (studentId) {
+      const solved = await prisma.studentDsaProgress.findMany({
+        where: { studentId, solved: true, problemId: { in: problems.map((p) => p.id) } },
+        select: { problemId: true },
+      });
+      solvedIds = new Set(solved.map((s) => s.problemId));
+    }
+
+    const diffSolved = { Easy: 0, Medium: 0, Hard: 0 };
+    for (const p of problems) {
+      if (solvedIds.has(p.id)) {
+        const d = p.difficulty as keyof typeof diffCount;
+        if (d in diffSolved) diffSolved[d]++;
+      }
+    }
+
+    return {
+      company,
+      total: problems.length,
+      solved: solvedIds.size,
+      difficultyBreakdown: {
+        Easy: { total: diffCount.Easy, solved: diffSolved.Easy },
+        Medium: { total: diffCount.Medium, solved: diffSolved.Medium },
+        Hard: { total: diffCount.Hard, solved: diffSolved.Hard },
+      },
     };
   }
 
