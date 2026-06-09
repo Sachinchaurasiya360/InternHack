@@ -1,3 +1,4 @@
+import { SELECT_CLASS } from "@/lib/form-styles";
 import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
@@ -245,7 +246,7 @@ export default function InterviewSectionPage() {
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className="text-sm bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-lime-400 cursor-pointer"
+                className="${SELECT_CLASS}"
               >
                 <option value="All">All Companies</option>
                 {availableCompanies.map((company) => (
@@ -263,7 +264,7 @@ export default function InterviewSectionPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="text-sm bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-lime-400 cursor-pointer"
+              className="${SELECT_CLASS}"
             >
               <option value="frequency">Most Frequent</option>
               <option value="order">Curated Order</option>
