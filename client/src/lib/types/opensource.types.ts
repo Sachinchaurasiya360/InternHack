@@ -25,6 +25,9 @@ export interface OpenSourceRepo {
   createdAt: string;
   updatedAt: string;
   healthScore: number;
+  // Phase 3: AI-powered recommendation metadata
+  matchReason?: string;
+  aiRanked?: boolean;
   matchedSkills?: string[];
 }
 
