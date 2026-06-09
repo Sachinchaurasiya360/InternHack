@@ -308,7 +308,7 @@ export default function MyApplicationsPage() {
       );
 
     if (statusFilter !== "ALL") {
-      base = statusFilter === "APPLIED" ? base : [];
+      base = base.filter((a: any) => a.status === statusFilter);
     }
 
     return [...base].sort((a, b) => {
