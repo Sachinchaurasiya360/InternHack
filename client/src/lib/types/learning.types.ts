@@ -209,6 +209,36 @@ export interface DsaStreak {
   activeDays: string[];
 }
 
+export interface DsaTopicAccuracy {
+  topic: string;
+  total: number;
+  solved: number;
+  percentage: number;
+}
+
+export interface DsaWeeklyTrend {
+  weekStart: string;
+  count: number;
+}
+
+export interface DsaMonthlyTrend {
+  month: string;
+  count: number;
+}
+
+export interface DsaAnalytics {
+  totalSolved: number;
+  totalProblems: number;
+  byDifficulty: {
+    easy: { total: number; solved: number };
+    medium: { total: number; solved: number };
+    hard: { total: number; solved: number };
+  };
+  topicAccuracy: DsaTopicAccuracy[];
+  weeklyTrend: DsaWeeklyTrend[];
+  monthlyTrend: DsaMonthlyTrend[];
+}
+
 export interface DsaSubmissionSummary {
   id: number;
   language: DsaLanguage;

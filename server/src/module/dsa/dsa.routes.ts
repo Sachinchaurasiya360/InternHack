@@ -28,6 +28,7 @@ dsaRouter.post("/problems/:problemId/report", authMiddleware, requireRole("STUDE
 dsaRouter.get("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getBookmarks(req, res, next));
 dsaRouter.get("/my-progress", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getMyProgress(req, res, next));
 dsaRouter.get("/activity", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getActivity(req, res, next));
+dsaRouter.get("/analytics", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getAnalytics(req, res, next));
 dsaRouter.get("/daily", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getDailyProblem(req, res, next));
 dsaRouter.get("/streak", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getUserDsaStreak(req, res, next));
 

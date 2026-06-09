@@ -293,6 +293,17 @@ export class DsaController {
     }
   }
 
+  async getAnalytics(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const data = await this.dsaService.getAnalytics(userId);
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getDailyProblem(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
