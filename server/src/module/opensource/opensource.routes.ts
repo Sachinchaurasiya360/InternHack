@@ -18,6 +18,11 @@ opensourceRouter.get("/", (req, res, next) => controller.listRepos(req, res, nex
 // Get all unique languages
 opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(req, res, next));
 
+// Community feed (public, cached 60s)
+opensourceRouter.get("/community-feed", (req, res, next) =>
+  controller.getCommunityFeed(req, res, next),
+);
+
 // Get GSoC organizations
 opensourceRouter.get("/gsoc/orgs", (req, res, next) => controller.getGsocOrgs(req, res, next));
 

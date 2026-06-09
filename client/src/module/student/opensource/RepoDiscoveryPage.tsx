@@ -44,6 +44,7 @@ import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 import { useCoachStore } from "./stores/coach.store";
 import { markLearningPathMilestone } from "./learning-paths.data";
+import { CommunityFeed } from "./CommunityFeed";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -632,6 +633,9 @@ export default function RepoDiscoveryPage() {
 
         {/* Guidance Cards */}
         <GuidanceCards />
+
+        {/* Community feed */}
+        <CommunityFeed />
 
         {/* Recently viewed & recommended */}
         <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />

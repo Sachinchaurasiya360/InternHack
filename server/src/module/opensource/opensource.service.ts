@@ -587,6 +587,80 @@ where["OR"] = [
     return repos;
   }
 
+  // ─── Community Feed ───────────────────────────────────────────
+
+  async getCommunityFeed(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const [contributions, bookmarkGroups] = await Promise.all([
+      prisma.repoRequest.findMany({
+        where: { status: "APPROVED", updatedAt: { gte: thirtyDaysAgo } },
+        select: {
+          updatedAt: true,
+          name: true,
+          owner: true,
+          user: { select: { id: true, name: true } },
+        },
+        orderBy: { updatedAt: "desc" },
+        take: limit,
+      }),
+      prisma.opensourceBookmark.groupBy({
+        by: ["repoId"],
+        where: { createdAt: { gte: thirtyDaysAgo } },
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+        take: limit,
+      }),
+    ]);
+
+    const bookmarkRepos =
+      bookmarkGroups.length > 0
+        ? await prisma.opensourceRepo.findMany({
+            where: { id: { in: bookmarkGroups.map((b) => b.repoId) } },
+            select: { id: true, name: true, owner: true },
+          })
+        : [];
+
+    const repoMap = new Map(bookmarkRepos.map((r) => [r.id, r]));
+
+    const raw: {
+      type: "repo_contribution" | "repo_bookmarked";
+      message: string;
+      timestamp: Date;
+      sortKey: string;
+    }[] = [];
+
+    for (const c of contributions) {
+      const firstName = c.user.name.split(" ")[0] ?? c.user.name;
+      raw.push({
+        type: "repo_contribution",
+        message: `${firstName} just made their first contribution to ${c.owner}/${c.name}`,
+        timestamp: c.updatedAt,
+        sortKey: c.updatedAt.toISOString(),
+      });
+    }
+
+    for (const g of bookmarkGroups) {
+      const repo = repoMap.get(g.repoId);
+      if (!repo) continue;
+      raw.push({
+        type: "repo_bookmarked",
+        message: `${g._count.id} student${g._count.id > 1 ? "s" : ""} bookmarked ${repo.owner}/${repo.name} this week`,
+        timestamp: new Date(),
+        sortKey: `B${String(g._count.id).padStart(6, "0")}`,
+      });
+    }
+
+    raw.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+
+    const total = raw.length;
+    const events = raw.slice(skip, skip + limit);
+
+    return { events, total, page, totalPages: Math.ceil(total / limit), limit };
+  }
+
   // ─── Bookmarks ────────────────────────────────────────────────
 
   async getBookmarkedRepoIds(userId: number): Promise<number[]> {

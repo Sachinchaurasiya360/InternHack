@@ -83,6 +83,23 @@ export interface HacktoberfestProgressResponse {
   };
 }
 
+// Community Feed
+export type CommunityFeedEventType = "repo_contribution" | "repo_bookmarked";
+
+export interface CommunityFeedEvent {
+  type: CommunityFeedEventType;
+  message: string;
+  timestamp: string;
+}
+
+export interface CommunityFeedResponse {
+  events: CommunityFeedEvent[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
+
 // GSoC Organizations
 export interface GSoCOrganization {
   id: number;

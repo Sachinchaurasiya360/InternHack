@@ -328,6 +328,20 @@ export class OpensourceController {
     }
   }
 
+  // ─── Community Feed ───────────────────────────────────────────
+
+  async getCommunityFeed(req: Request, res: Response, next: NextFunction) {
+    try {
+      const page = Math.max(1, Number(req.query.page) || 1);
+      const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20));
+      const result = await service.getCommunityFeed(page, limit);
+      res.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   // ─── Bookmarks ─────────────────────────────────────────────────
 
   async getBookmarks(req: Request, res: Response, next: NextFunction) {
