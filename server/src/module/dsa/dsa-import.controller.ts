@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { DsaImportService } from "./dsa-import.service.js";
-import { leetcodeImportSchema, csvImportSchema, confirmImportSchema } from "./dsa-import.validation.js";
+import { leetcodeImportSchema, csvImportSchema, confirmImportSchema, bulkVideoImportSchema } from "./dsa-import.validation.js";
 
 // Feature flag — defaults ON; set LEETCODE_IMPORT_ENABLED=false to disable
 function isEnabled(): boolean {
@@ -114,6 +114,21 @@ export class DsaImportController {
       } else {
         next(err);
       }
+    }
+  }
+
+  // POST /api/dsa/import/bulk-videos
+  async bulkImportVideos(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = bulkVideoImportSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ message: parsed.error.issues[0]?.message ?? "Invalid input" });
+        return;
+      }
+      const result = await this.importService.bulkImportVideos(parsed.data.entries);
+      res.json(result);
+    } catch (err) {
+      next(err);
     }
   }
 

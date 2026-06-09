@@ -408,6 +408,29 @@ export class DsaImportService {
     });
     return { lastImport: last ?? null };
   }
+
+  // ── Admin: Bulk-import video URLs ─────────────────────────────────────────
+  async bulkImportVideos(
+    entries: Array<{ slug: string; videoUrl: string }>,
+  ): Promise<{ updated: number; failed: { slug: string; reason: string }[] }> {
+    const failed: { slug: string; reason: string }[] = [];
+    let updated = 0;
+
+    for (const entry of entries) {
+      const problem = await prisma.dsaProblem.findUnique({ where: { slug: entry.slug }, select: { id: true } });
+      if (!problem) {
+        failed.push({ slug: entry.slug, reason: "Problem not found" });
+        continue;
+      }
+      await prisma.dsaProblem.update({
+        where: { id: problem.id },
+        data: { videoUrl: entry.videoUrl },
+      });
+      updated++;
+    }
+
+    return { updated, failed };
+  }
 }
 
 // ── Utility: simple CSV line parser (handles quoted fields) ───────────────

@@ -20,6 +20,7 @@ dsaRouter.post("/import/leetcode", authMiddleware, requireRole("STUDENT"), (req,
 dsaRouter.post("/import/csv", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.previewCsv(req, res, next));
 dsaRouter.post("/import/confirm", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.confirm(req, res, next));
 dsaRouter.get("/import/status", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaImportController.status(req, res, next));
+dsaRouter.post("/import/bulk-videos", authMiddleware, requireRole("ADMIN"), (req, res, next) => dsaImportController.bulkImportVideos(req, res, next));
 
 dsaRouter.post("/problems/:problemId/toggle", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.toggleProblem(req, res, next));
 dsaRouter.put("/problems/:problemId/notes", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.updateNotes(req, res, next));

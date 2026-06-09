@@ -1441,12 +1441,39 @@ async function seedGsocOrgs() {
   log("GSoC Organizations", count);
 }
 
+// ─── 16. DSA Video URLs (curated NeetCode walkthroughs) ───────────────
+const DSA_VIDEOS: Record<string, string> = {
+  "two-sum": "https://youtu.be/KLlXCFG5TnA",
+  "best-time-to-buy-sell-stock": "https://youtu.be/1pkOgXD63yU",
+  "valid-parentheses": "https://youtu.be/WTzjTskDFMg",
+  "merge-two-sorted-lists": "https://youtu.be/XIdigk956u0",
+  "maximum-subarray": "https://youtu.be/5WZl3MMT0Eg",
+  "3sum": "https://youtu.be/jzZsG8n2R9A",
+  "binary-tree-level-order-traversal": "https://youtu.be/6ZnyEApgFYg",
+  "number-of-islands": "https://youtu.be/pV2kpPD66nE",
+  "longest-increasing-subsequence": "https://youtu.be/cjWnW0hdF1Y",
+  "trapping-rain-water": "https://youtu.be/ZI2z5pq0TqA",
+};
+
+async function seedDsaVideoUrls() {
+  let count = 0;
+  for (const [slug, videoUrl] of Object.entries(DSA_VIDEOS)) {
+    const existing = await prisma.dsaProblem.findUnique({ where: { slug } });
+    if (existing && !existing.videoUrl) {
+      await prisma.dsaProblem.update({ where: { slug }, data: { videoUrl } });
+      count++;
+    }
+  }
+  log("DSA Video URLs", count);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────
 async function main() {
   console.log("\n🌱 Seeding InternHack database...\n");
 
   await seedUsers();
   await seedDsa();
+  await seedDsaVideoUrls();
   await seedAptitude();
   await seedCompanies();
   await seedBadges();
