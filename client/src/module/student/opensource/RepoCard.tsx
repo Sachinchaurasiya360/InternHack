@@ -88,20 +88,38 @@ export const RepoCard = React.memo(function RepoCard({
                       {repo.owner}
                     </span>
                   </div>
-                  {repo.matchedSkills && repo.matchedSkills.length > 0 && (
+                  {(repo.matchedSkills && repo.matchedSkills.length > 0) || repo.matchReason ? (
                     <div className="relative group/why shrink-0">
                       <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-lime-400/10 text-lime-600 dark:text-lime-400 text-[9px] font-bold uppercase tracking-tighter">
+                        {repo.aiRanked && <span className="inline-block w-1 h-1 rounded-full bg-lime-500 animate-pulse" />}
                         Why?
                       </span>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover/why:block z-50 w-48 p-2 bg-stone-900 border border-white/10 rounded-md shadow-xl pointer-events-none">
-                        <div className="text-[10px] text-white leading-snug">
-                          <span className="text-stone-400 block mb-1">Recommended for you</span>
-                          Matches your stack: <span className="text-lime-400">{repo.matchedSkills.join(", ")}</span>
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover/why:block z-50 w-56 p-2.5 bg-stone-900 border border-white/10 rounded-md shadow-xl pointer-events-none">
+                        <div className="text-[11px] text-white leading-relaxed">
+                          {repo.matchReason ? (
+                            <>
+                              <span className="text-stone-400 block mb-1.5 text-[9px] uppercase tracking-wider">
+                                {repo.aiRanked ? "AI Recommendation" : "Match Reason"}
+                              </span>
+                              <p className="text-stone-100">{repo.matchReason}</p>
+                              {repo.matchedSkills && repo.matchedSkills.length > 0 && (
+                                <div className="mt-2 pt-2 border-t border-white/10">
+                                  <span className="text-stone-400 text-[9px] uppercase tracking-wider block mb-1">Your Skills</span>
+                                  <span className="text-lime-400 text-[10px]">{repo.matchedSkills.join(", ")}</span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-stone-400 block mb-1">Recommended for you</span>
+                              Matches your stack: <span className="text-lime-400">{repo.matchedSkills!.join(", ")}</span>
+                            </>
+                          )}
                         </div>
                         <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-4 border-x-transparent border-t-4 border-t-stone-900"></div>
                       </div>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>

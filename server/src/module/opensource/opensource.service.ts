@@ -584,11 +584,19 @@ where["OR"] = [
 
     if (!student) {
       // Return trending repos as fallback
-      return prisma.opensourceRepo.findMany({
+      const repos = await prisma.opensourceRepo.findMany({
         where: { trending: true },
         take: 6,
         orderBy: { stars: "desc" },
       });
+      
+      // Add metadata without AI ranking
+      return repos.map(repo => ({
+        ...repo,
+        matchReason: "Trending repository with high community engagement",
+        aiRanked: false,
+        matchedSkills: [],
+      }));
     }
 
     // 2. Extract skills and job-related tags
@@ -612,11 +620,18 @@ where["OR"] = [
 
     // 3. If no data, return trending repos
     if (allKeywords.length === 0) {
-      return prisma.opensourceRepo.findMany({
+      const repos = await prisma.opensourceRepo.findMany({
         where: { trending: true },
         take: 6,
         orderBy: { stars: "desc" },
       });
+      
+      return repos.map(repo => ({
+        ...repo,
+        matchReason: "Trending repository - great for exploration",
+        aiRanked: false,
+        matchedSkills: [],
+      }));
     }
 
     // 4. Fetch repos with enhanced matching criteria
@@ -654,17 +669,17 @@ where["OR"] = [
       new Map(repos.map((repo) => [repo.id, repo])).values()
     );
 
-    // Phase 2: AI-Powered Ranking
-    // Use Gemini to rank repos based on user profile
-    const rankedRepos = await this.rankReposWithAI(student, uniqueRepos);
+    // Phase 2 & 3: AI-Powered Ranking with Match Reasons
+    // Use Gemini to rank repos and generate match reasons
+    const rankedReposWithReasons = await this.rankReposWithAIAndReasons(student, uniqueRepos, allKeywords);
 
-    return rankedRepos.slice(0, 8);
+    return rankedReposWithReasons.slice(0, 8);
   }
 
   /**
-   * Phase 2: Use Gemini AI to rank repositories based on user profile
+   * Phase 2 & 3: Use Gemini AI to rank repositories and generate match reasons
    */
-  private async rankReposWithAI(
+  private async rankReposWithAIAndReasons(
     student: {
       skills: string[];
       college: string | null;
@@ -672,46 +687,122 @@ where["OR"] = [
       projects: any;
       achievements: any;
     },
-    repos: any[]
+    repos: any[],
+    userKeywords: string[]
   ): Promise<any[]> {
     const apiKey = process.env["GEMINI_API_KEY"];
     
-    // Fallback to basic ranking if no API key
+    // Fallback to basic ranking with simple match reasons if no API key
     if (!apiKey || repos.length === 0) {
-      return repos;
+      return this.addBasicMatchReasons(repos, userKeywords);
     }
 
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
-      // Build prompt for AI ranking
-      const prompt = this.buildRankingPrompt(student, repos);
+      // Build prompt for AI ranking with reasons
+      const prompt = this.buildRankingPromptWithReasons(student, repos);
       
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
       
       // Parse AI response
-      const rankings = this.parseRankingResponse(text);
+      const rankingsWithReasons = this.parseRankingResponseWithReasons(text);
       
-      if (!rankings || rankings.length === 0) {
-        return repos; // Fallback to original order
+      if (!rankingsWithReasons || rankingsWithReasons.length === 0) {
+        // Fallback to basic match reasons
+        return this.addBasicMatchReasons(repos, userKeywords);
       }
 
-      // Reorder repos based on AI rankings
-      const rankedRepos = this.applyRankings(repos, rankings);
+      // Reorder repos and add match reasons and metadata
+      const rankedRepos = this.applyRankingsWithReasons(repos, rankingsWithReasons, userKeywords);
       return rankedRepos;
       
     } catch (error) {
-      console.error("AI ranking failed:", error);
-      return repos; // Fallback to original order
+      console.error("AI ranking with reasons failed:", error);
+      // Fallback to basic match reasons
+      return this.addBasicMatchReasons(repos, userKeywords);
     }
   }
 
   /**
-   * Build prompt for Gemini AI to rank repositories
+   * Add basic match reasons without AI (fallback)
    */
-  private buildRankingPrompt(
+  private addBasicMatchReasons(repos: any[], userKeywords: string[]): any[] {
+    return repos.map(repo => {
+      const matchedSkills = this.findMatchedSkills(repo, userKeywords);
+      const reason = this.generateBasicMatchReason(repo, matchedSkills);
+      
+      return {
+        ...repo,
+        matchReason: reason,
+        aiRanked: false,
+        matchedSkills,
+      };
+    });
+  }
+
+  /**
+   * Find which user skills match the repo
+   */
+  private findMatchedSkills(repo: any, userKeywords: string[]): string[] {
+    const matched = new Set<string>();
+    
+    userKeywords.forEach(keyword => {
+      const keywordLower = keyword.toLowerCase();
+      
+      // Check language
+      if (repo.language.toLowerCase() === keywordLower) {
+        matched.add(repo.language);
+      }
+      
+      // Check tech stack
+      repo.techStack.forEach((tech: string) => {
+        if (tech.toLowerCase() === keywordLower) {
+          matched.add(tech);
+        }
+      });
+      
+      // Check tags
+      repo.tags.forEach((tag: string) => {
+        if (tag.toLowerCase() === keywordLower) {
+          matched.add(tag);
+        }
+      });
+    });
+    
+    return Array.from(matched);
+  }
+
+  /**
+   * Generate a basic match reason without AI
+   */
+  private generateBasicMatchReason(repo: any, matchedSkills: string[]): string {
+    if (matchedSkills.length > 0) {
+      const skillsText = matchedSkills.slice(0, 2).join(", ");
+      return `Matches your skills in ${skillsText}${matchedSkills.length > 2 ? " and more" : ""}`;
+    }
+    
+    if (repo.trending) {
+      return "Trending repository with active community";
+    }
+    
+    if (repo.difficulty === "BEGINNER") {
+      return "Great for beginners with good first issues";
+    }
+    
+    if (repo.openIssues > 50) {
+      return "Active project with many contribution opportunities";
+    }
+    
+    return "Recommended repository for your profile";
+  }
+
+  /**
+   * Build prompt for Gemini AI to rank repositories with match reasons
+   */
+  private buildRankingPromptWithReasons(
     student: {
       skills: string[];
       college: string | null;
@@ -751,33 +842,48 @@ ${userProfile}
 Available Repositories:
 ${repoList}
 
-Task: Rank these repositories from MOST to LEAST suitable for this user. Consider:
+Task: Rank these repositories from MOST to LEAST suitable for this user and provide a brief reason for each match.
+
+Consider:
 1. Skill match (languages, tech stack alignment)
 2. Difficulty appropriateness (beginner-friendly for new contributors)
 3. Activity level (open issues, trending status)
 4. Learning potential (exposure to new technologies)
 5. Domain relevance (based on user interests)
 
-Return ONLY a valid JSON array of repository indices in ranked order (most suitable first):
-[0, 5, 2, 1, 3, 4, ...]
+Return ONLY a valid JSON array with this structure:
+[
+  {"index": 0, "reason": "Perfect match for your React skills with active beginner issues"},
+  {"index": 5, "reason": "Great to learn TypeScript while contributing to trending project"},
+  {"index": 2, "reason": "Aligns with your Node.js experience and web domain"}
+]
 
 Rules:
 - Return ONLY the JSON array, no markdown fences, no extra text
 - Use the exact indices from the repository list above
 - Include ALL repository indices exactly once
-- Most suitable repos should come first`;
+- Each reason should be 8-15 words explaining why it's suitable
+- Most suitable repos should come first
+- Focus on skills match, learning opportunities, and contribution potential`;
   }
 
   /**
-   * Parse AI ranking response
+   * Parse AI ranking response with match reasons
    */
-  private parseRankingResponse(text: string): number[] | null {
+  private parseRankingResponseWithReasons(text: string): Array<{ index: number; reason: string }> | null {
     try {
       // Remove markdown fences if present
       const cleaned = text.replace(/```json\s*|\s*```/g, "").trim();
       const parsed = JSON.parse(cleaned);
       
-      if (Array.isArray(parsed) && parsed.every((item) => typeof item === "number")) {
+      if (
+        Array.isArray(parsed) &&
+        parsed.every((item) => 
+          typeof item === "object" && 
+          typeof item.index === "number" && 
+          typeof item.reason === "string"
+        )
+      ) {
         return parsed;
       }
       
@@ -788,24 +894,45 @@ Rules:
   }
 
   /**
-   * Apply AI rankings to repository list
+   * Apply AI rankings with reasons to repository list
    */
-  private applyRankings(repos: any[], rankings: number[]): any[] {
+  private applyRankingsWithReasons(
+    repos: any[],
+    rankingsWithReasons: Array<{ index: number; reason: string }>,
+    userKeywords: string[]
+  ): any[] {
     const rankedRepos: any[] = [];
     const usedIndices = new Set<number>();
 
-    // Add repos in ranked order
-    for (const index of rankings) {
+    // Add repos in ranked order with AI-generated reasons
+    for (const { index, reason } of rankingsWithReasons) {
       if (index >= 0 && index < repos.length && !usedIndices.has(index)) {
-        rankedRepos.push(repos[index]);
+        const repo = repos[index];
+        const matchedSkills = this.findMatchedSkills(repo, userKeywords);
+        
+        rankedRepos.push({
+          ...repo,
+          matchReason: reason,
+          aiRanked: true,
+          matchedSkills,
+        });
         usedIndices.add(index);
       }
     }
 
-    // Add any missing repos at the end (shouldn't happen, but safety fallback)
+    // Add any missing repos at the end with basic reasons
     for (let i = 0; i < repos.length; i++) {
       if (!usedIndices.has(i)) {
-        rankedRepos.push(repos[i]);
+        const repo = repos[i];
+        const matchedSkills = this.findMatchedSkills(repo, userKeywords);
+        const reason = this.generateBasicMatchReason(repo, matchedSkills);
+        
+        rankedRepos.push({
+          ...repo,
+          matchReason: reason,
+          aiRanked: false,
+          matchedSkills,
+        });
       }
     }
 
