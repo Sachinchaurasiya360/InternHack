@@ -14,6 +14,8 @@ import {
   BarChart3,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
+import { useAuthStore } from "../../../lib/auth.store";
 import {
   PieChart,
   Pie,
@@ -258,12 +260,26 @@ export default function OpenSourceAnalyticsPage() {
     markLearningPathMilestone("leaderboard");
   }, []);
 
+  const { user } = useAuthStore();
+  const isPremium =
+    user?.subscriptionStatus === "ACTIVE" &&
+    user?.subscriptionPlan !== "FREE" &&
+    user?.subscriptionEndDate &&
+    new Date(user.subscriptionEndDate) > new Date();
   const showHacktoberfestTracker = isHacktoberfestMode();
+
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [filterYear, setFilterYear] = useState<string>("ALL");
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
   const [filterTech, setFilterTech] = useState<string>("ALL");
   const [showFilters, setShowFilters] = useState(false);
+
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  const defaultStart = sixMonthsAgo.toISOString().slice(0, 7);
+  const today = new Date().toISOString().slice(0, 7);
+  const [startMonth, setStartMonth] = useState(defaultStart);
+  const [endMonth, setEndMonth] = useState(today);
 
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
@@ -291,8 +307,8 @@ export default function OpenSourceAnalyticsPage() {
   });
 
   const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
-    queryKey: queryKeys.opensource.trend(),
-    queryFn: () => api.get("/opensource/analytics/trend").then((r) => r.data),
+    queryKey: queryKeys.opensource.trend(startMonth, endMonth),
+    queryFn: () => api.get("/opensource/analytics/trend", { params: { startDate: startMonth, endDate: endMonth } }).then((r) => r.data),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -305,22 +321,29 @@ export default function OpenSourceAnalyticsPage() {
   contributionTrend.length > 0 &&
   contributionTrend.every((entry) => entry.count === 0);
 
-  const handleExportCSV = () => {
-    if (!contributionTrend || contributionTrend.length === 0) return;
-
-    const header = "Month,Label,Contributions";
-    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
-    const csv = [header, ...rows].join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const downloadBlob = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "my-oss-contributions.csv";
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportCSV = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+    const header = "Month,Label,Contributions";
+    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
+    downloadBlob([header, ...rows].join("\n"), `oss-contributions-${startMonth}-${endMonth}.csv`, "text/csv;charset=utf-8;");
+  };
+
+  const handleExportJSON = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+    const json = JSON.stringify({ range: { start: startMonth, end: endMonth }, contributions: contributionTrend }, null, 2);
+    downloadBlob(json, `oss-contributions-${startMonth}-${endMonth}.json`, "application/json");
   };
 
   const years = useMemo(() => {
@@ -438,6 +461,14 @@ export default function OpenSourceAnalyticsPage() {
     );
   };
 
+  if (!isPremium) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16">
+        <PremiumUpgradeCTA feature="Open Source Analytics" />
+      </div>
+    );
+  }
+
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -508,14 +539,40 @@ export default function OpenSourceAnalyticsPage() {
           </div>
           <OssContributionHeatmap />
 
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
+              From
+              <input
+                type="month"
+                value={startMonth}
+                onChange={(e) => setStartMonth(e.target.value)}
+                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
+              />
+            </label>
+            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
+              To
+              <input
+                type="month"
+                value={endMonth}
+                onChange={(e) => setEndMonth(e.target.value)}
+                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
+              />
+            </label>
             <button
               onClick={handleExportCSV}
               disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
               className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
-              Export CSV
+              CSV
+            </button>
+            <button
+              onClick={handleExportJSON}
+              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
+              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              JSON
             </button>
           </div>
         </div>
@@ -527,7 +584,7 @@ export default function OpenSourceAnalyticsPage() {
             subtitle={
               trendIsLoading
                 ? "loading your approved open source contribution history"
-                : `approved repo requests in the last 6 months${contributionTotal ? ` · ${contributionTotal} total` : ""}`
+                : `approved repo requests ${startMonth}–${endMonth}${contributionTotal ? ` · ${contributionTotal} total` : ""}`
             }
             index={0}
             expandedChildren={

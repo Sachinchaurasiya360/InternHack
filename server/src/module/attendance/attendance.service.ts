@@ -138,9 +138,13 @@ export class AttendanceService {
 
     const checkIn = new Date(data.checkIn);
     const checkOut = new Date(data.checkOut);
+    const now = new Date();
+    if (checkIn > now) throw new Error("Check-in time cannot be in the future");
+    if (checkOut > now) throw new Error("Check-out time cannot be in the future");
     if (checkOut <= checkIn) {
       throw new Error("Check-out time must be after check-in time");
     }
+
     const workHours = (checkOut.getTime() - checkIn.getTime()) / 3600000;
 
     return prisma.attendanceRecord.upsert({

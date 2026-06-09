@@ -57,6 +57,21 @@ export default function GuideListPage({
     .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
   const remainingMinutes = totalEstimatedTime - completedMinutes;
 
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": seoTitle,
+    "description": seoDescription,
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+    "totalTime": `PT${totalEstimatedTime}M`,
+    "step": steps.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.title,
+      "text": s.description || "Follow the visual walkthrough steps."
+    }))
+  };
+
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
   const currentSlug = basePath.split("/").pop() as "git-guide" | "communication" | "read-codebase" | "cicd";
@@ -69,6 +84,7 @@ export default function GuideListPage({
         keywords={seoKeywords}
         canonicalUrl={canonicalUrl(basePath)}
         ogImage={ogImage}
+        structuredData={howToSchema}
       />
 
       {/* Atmospheric background */}

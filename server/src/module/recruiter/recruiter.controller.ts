@@ -294,7 +294,11 @@ export class RecruiterController {
       const result = talentSearchSchema.safeParse(req.query);
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
 
-      const data = await this.recruiterService.searchTalent(result.data);
+      const filters = { ...result.data };
+      const q = (req.query as Record<string, unknown>).q as string | undefined;
+      if (q && !filters.search) filters.search = q;
+
+      const data = await this.recruiterService.searchTalent(filters);
       return res.status(200).json(data);
     } catch (error) {
       logger.error("Failed to search talent", error);

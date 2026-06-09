@@ -188,6 +188,28 @@ export class DsaController {
     }
   }
 
+  async getLists(req: Request, res: Response, next: NextFunction) {
+    try {
+      const studentId = req.user?.id;
+      const lists = await this.dsaService.getLists(studentId);
+      res.json(lists);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getListProblems(req: Request, res: Response, next: NextFunction) {
+    try {
+      const list = req.params.name as string;
+      const studentId = req.user?.id;
+      const { page, limit } = parsePagination(req, { defaultLimit: 50 });
+      const result = await this.dsaService.getListProblems(list, studentId, page, limit);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getMyProgress(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
@@ -335,6 +357,24 @@ export class DsaController {
           return;
         }
       }
+      next(err);
+    }
+  }
+
+  async generateHint(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      const { level } = req.body;
+      if (!["conceptual", "algorithmic", "code"].includes(level)) {
+        res.status(400).json({ message: "Invalid hint level. Must be: conceptual, algorithmic, or code" });
+        return;
+      }
+      const hint = await this.dsaService.generateHint(userId, problemId, level);
+      res.json(hint);
+    } catch (err) {
       next(err);
     }
   }

@@ -91,6 +91,15 @@ export class AttendanceController {
       const record = await this.attendanceService.regularize(result.data);
       return res.json({ message: "Attendance regularized", record });
     } catch (error) {
+      if (error instanceof Error) {
+        const msg = error.message;
+        if (
+          msg === "Cannot regularize attendance for future dates" ||
+          msg === "Check-in time cannot be in the future" ||
+          msg === "Check-out time cannot be in the future" ||
+          msg === "Check-out time must be after check-in time"
+        ) return res.status(400).json({ message: msg });
+      }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
     }

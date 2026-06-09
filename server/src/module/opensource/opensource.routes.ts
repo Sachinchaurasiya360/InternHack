@@ -71,7 +71,6 @@ opensourceRouter.get("/analytics/hacktoberfest", authMiddleware, requireRole("ST
   controller.getHacktoberfestProgress(req, res, next),
 );
 
-// Get open source activity
 opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
   try {
     const queryStudentId = req.query.studentId as string | undefined;
@@ -125,12 +124,48 @@ opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
   }
 });
 
+opensourceRouter.get("/premium/status", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
+    });
+    const isPremium =
+      user !== null &&
+      (user.subscriptionPlan === "MONTHLY" || user.subscriptionPlan === "YEARLY") &&
+      user.subscriptionStatus === "ACTIVE" &&
+      (!user.subscriptionEndDate || user.subscriptionEndDate > new Date());
+    res.json({ isPremium });
+  } catch (err) {
+    next(err);
+  }
+});
+
 opensourceRouter.get("/first-pr/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.getFirstPrProgress(req, res, next),
 );
 
 opensourceRouter.patch("/first-pr/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.patchFirstPrProgress(req, res, next),
+);
+
+// ─── Student: Bookmarks ─────────────────────────────────────────
+
+opensourceRouter.get("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.getBookmarks(req, res, next),
+);
+
+opensourceRouter.post("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.addBookmark(req, res, next),
+);
+
+// POST /bookmarks/migrate — bulk-import localStorage bookmarks to the server
+opensourceRouter.post("/bookmarks/migrate", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.bulkMigrateBookmarks(req, res, next),
+);
+
+opensourceRouter.delete("/bookmarks/:repoId", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.removeBookmark(req, res, next),
 );
 
 // ─── Admin: Manage Repo Requests ─────────────────────────────────

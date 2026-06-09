@@ -112,6 +112,15 @@ export interface DsaSheetStats {
   solved: number;
 }
 
+export interface DsaList {
+  slug: string;
+  title: string;
+  description: string;
+  total: number;
+  solved: number;
+  estimatedHours: number;
+}
+
 export interface DsaBookmarkItem {
   id: number;
   problemId: number;
@@ -190,6 +199,14 @@ export interface DsaCodeReview {
   };
   edgeCases: string[];
   suggestions: string[];
+}
+
+export interface DsaStreak {
+  currentStreak: number;
+  longestStreak: number;
+  solvedToday: boolean;
+  lastSolvedDate: string | null;
+  activeDays: string[];
 }
 
 export interface DsaSubmissionSummary {

@@ -1,4 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
+import { prisma } from "../../database/db.js";
 import { OpensourceService } from "./opensource.service.js";
 import {
   opensourceListQuerySchema,
@@ -8,6 +9,8 @@ import {
   repoIdSchema,
   repoOwnerNameSchema,
   firstPrProgressUpdateSchema,
+  bookmarkBodySchema,
+  bulkMigrateBookmarksSchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
@@ -143,10 +146,35 @@ export class OpensourceController {
         return;
       }
 
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const requestCount = await prisma.repoRequest.count({
+        where: {
+          userId: req.user!.id,
+          createdAt: { gte: twentyFourHoursAgo },
+        },
+      });
+
+      if (requestCount >= 5) {
+        res.setHeader("X-RateLimit-Remaining", "0");
+        res.setHeader(
+          "X-RateLimit-Reset",
+          new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        );
+        res.status(429).json({ message: "You have reached the limit of 5 suggestions per 24 hours. Please try again later." });
+        return;
+      }
+
       const request = await service.submitRepoRequest(
         req.user!.id,
         parsed.data,
       );
+
+      res.setHeader("X-RateLimit-Remaining", String(4 - requestCount));
+      res.setHeader(
+        "X-RateLimit-Reset",
+        new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      );
+
       res
         .status(201)
         .json({
@@ -255,7 +283,8 @@ export class OpensourceController {
     next: NextFunction,
   ) {
     try {
-      const result = await service.getStudentContributionTrend(req.user!.id);
+      const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
+      const result = await service.getStudentContributionTrend(req.user!.id, startDate, endDate);
       res.json(result);
     } catch (err) {
       next(err);
@@ -320,6 +349,72 @@ export class OpensourceController {
     try {
       const repos = await service.getRecommendedRepos(req.user!.id);
       res.json({ repos });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // ─── Bookmarks ─────────────────────────────────────────────────
+
+  async getBookmarks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const repoIds = await service.getBookmarkedRepoIds(req.user!.id);
+      res.json({ repoIds });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async addBookmark(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = bookmarkBodySchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+      const result = await service.addBookmark(req.user!.id, parsed.data.repoId);
+      res.status(201).json({ message: "Bookmark added", ...result });
+    } catch (err: any) {
+      if (err.message === "Repository not found") {
+        res.status(404).json({ message: err.message });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  async removeBookmark(req: Request, res: Response, next: NextFunction) {
+    try {
+      const repoId = Number(req.params.repoId);
+      if (isNaN(repoId) || repoId <= 0) {
+        res.status(400).json({ message: "Invalid repoId" });
+        return;
+      }
+      await service.removeBookmark(req.user!.id, repoId);
+      res.json({ message: "Bookmark removed" });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async bulkMigrateBookmarks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = bulkMigrateBookmarksSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+      const repoIds = await service.bulkMigrateBookmarks(
+        req.user!.id,
+        parsed.data.repoIds,
+      );
+      res.json({ message: "Bookmarks migrated", repoIds });
     } catch (err) {
       next(err);
     }

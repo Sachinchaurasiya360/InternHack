@@ -547,6 +547,121 @@ export class DsaService {
     });
   }
 
+  async getLists(studentId?: number) {
+    const allProblems = await prisma.dsaProblem.findMany({
+      select: { id: true, sheets: true },
+    });
+
+    const sheets = ["blind75", "neetcode150", "internhack100", "faang100"];
+    const sheetProblems = new Map<string, number[]>();
+    for (const s of sheets) {
+      sheetProblems.set(s, []);
+    }
+
+    for (const p of allProblems) {
+      for (const s of p.sheets) {
+        sheetProblems.get(s)?.push(p.id);
+      }
+    }
+
+    let solvedIds = new Set<number>();
+    if (studentId) {
+      const solved = await prisma.studentDsaProgress.findMany({
+        where: { studentId, solved: true },
+        select: { problemId: true },
+      });
+      solvedIds = new Set(solved.map((s) => s.problemId));
+    }
+
+    const listMeta: Record<string, { title: string; description: string; estimatedHours: number }> = {
+      blind75: {
+        title: "Blind 75",
+        description: "The most referenced DSA problem list for FAANG interview prep. Covers arrays, strings, trees, graphs, and more.",
+        estimatedHours: 75,
+      },
+      neetcode150: {
+        title: "NeetCode 150",
+        description: "Expanded version of Blind 75. Covers LeetCode's essential problem set grouped by patterns.",
+        estimatedHours: 150,
+      },
+      internhack100: {
+        title: "InternHack 100",
+        description: "InternHack's own curated list — handpicked problems that cover every must-know DSA concept.",
+        estimatedHours: 100,
+      },
+      faang100: {
+        title: "FAANG Hot 100",
+        description: "The 100 most frequently asked DSA problems at Facebook, Amazon, Apple, Netflix, and Google.",
+        estimatedHours: 100,
+      },
+    };
+
+    return sheets.map((name) => {
+      const ids = sheetProblems.get(name) || [];
+      const meta = listMeta[name];
+      return {
+        slug: name,
+        title: meta.title,
+        description: meta.description,
+        total: ids.length,
+        solved: ids.filter((id) => solvedIds.has(id)).length,
+        estimatedHours: meta.estimatedHours,
+      };
+    });
+  }
+
+  async getListProblems(list: string, studentId?: number, page = 1, limit = 50) {
+    const where = { sheets: { has: list } };
+
+    const [problems, total] = await Promise.all([
+      prisma.dsaProblem.findMany({
+        where,
+        orderBy: { difficulty: "asc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.dsaProblem.count({ where }),
+    ]);
+
+    let solvedIds = new Set<number>();
+    let bookmarkedIds = new Set<number>();
+    if (studentId) {
+      const pIds = problems.map((p) => p.id);
+      const [progress, bookmarks] = await Promise.all([
+        prisma.studentDsaProgress.findMany({
+          where: { studentId, problemId: { in: pIds }, solved: true },
+          select: { problemId: true },
+        }),
+        prisma.dsaBookmark.findMany({
+          where: { studentId, problemId: { in: pIds } },
+          select: { problemId: true },
+        }),
+      ]);
+      solvedIds = new Set(progress.map((p) => p.problemId));
+      bookmarkedIds = new Set(bookmarks.map((b) => b.problemId));
+    }
+
+    return {
+      problems: problems.map((p) => ({
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        difficulty: p.difficulty,
+        leetcodeUrl: p.leetcodeUrl,
+        gfgUrl: p.gfgUrl,
+        tags: p.tags,
+        companies: p.companies,
+        sheets: p.sheets,
+        acceptanceRate: p.acceptanceRate,
+        solved: solvedIds.has(p.id),
+        bookmarked: bookmarkedIds.has(p.id),
+      })),
+      total,
+      totalPages: Math.ceil(total / limit),
+      page,
+    };
+  }
+
   async getMyProgress(studentId: number) {
     const allProblems = await prisma.dsaProblem.findMany({
       select: { id: true, difficulty: true },
@@ -892,13 +1007,126 @@ Return ONLY a JSON array, no markdown fences:
 
   async getUserDsaStreak(userId: number) {
     const today = new Date().toISOString().slice(0, 10);
-    const daily = await this.getDailyProblem(userId);
+
+    const submissions = await prisma.dsaSubmission.findMany({
+      where: { studentId: userId },
+      select: { createdAt: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const uniqueDays = new Set<string>();
+    for (const s of submissions) {
+      uniqueDays.add(s.createdAt.toISOString().slice(0, 10));
+    }
+
+    const sortedDays = Array.from(uniqueDays).sort().reverse();
+
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+
+    const todayDate = new Date(today);
+
+    for (const dayStr of sortedDays) {
+      const dayDate = new Date(dayStr + "T00:00:00Z");
+      const diffDays = Math.round(
+        (todayDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
+
+      if (diffDays === currentStreak) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    const allDays = [...uniqueDays].sort();
+    for (let i = 0; i < allDays.length; i++) {
+      if (i === 0) {
+        tempStreak = 1;
+      } else {
+        const prev = new Date(allDays[i - 1] + "T00:00:00Z");
+        const curr = new Date(allDays[i] + "T00:00:00Z");
+        const diff = Math.round(
+          (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        if (diff === 1) {
+          tempStreak++;
+        } else {
+          tempStreak = 1;
+        }
+      }
+      longestStreak = Math.max(longestStreak, tempStreak);
+    }
 
     return {
-      currentStreak: daily.solvedToday ? 1 : 0,
-      longestStreak: daily.solvedToday ? 1 : 0,
-      solvedToday: daily.solvedToday,
-      lastSolvedDate: daily.solvedToday ? today : null,
+      currentStreak,
+      longestStreak,
+      solvedToday: uniqueDays.has(today),
+      lastSolvedDate: sortedDays[0] || null,
+      activeDays: sortedDays.slice(0, 30),
+    };
+  }
+
+  private static HINT_TEMPLATES: Record<string, string[]> = {
+    conceptual: [
+      "Think about what data structure naturally maps to this problem. What operations are you performing on the input?",
+      "Consider the constraints — what is the expected time complexity? O(n), O(n log n), or O(n²)?",
+      "This problem can be reduced to a classic algorithm. Think about which one.",
+      "Try to express the problem in terms of simpler sub-problems. What would make the problem trivial?",
+      "What information do you need to track as you process the input? Can you use a hash map for O(1) lookups?",
+    ],
+    algorithmic: [
+      "Consider using the two-pointer technique — one fast, one slow — to traverse the input in a single pass.",
+      "A sliding window approach might work here. Expand the window when the condition holds, shrink it when it doesn't.",
+      "Try sorting the input first — many problems become straightforward once the data is ordered.",
+      "Think about using a monotonic stack to track the nearest greater/smaller element.",
+      "A binary search over the answer space could work if the problem has a monotonic property.",
+      "Consider using BFS for shortest-path problems or DFS when you need to explore all possibilities.",
+      "Use a prefix sum or running sum to avoid recalculating subarray totals repeatedly.",
+      "This can be solved with dynamic programming — define dp[i] as the optimal solution for the first i elements.",
+    ],
+    code: [
+      "Start by setting up your edge cases: empty input, single element, already sorted, etc.",
+      "Initialize your result variable and iterate through the input. Update the result as you go.",
+      "Use early termination — if you find the answer before processing all input, return immediately.",
+      "Consider using a min-heap or max-heap to keep track of the k largest/smallest elements.",
+      "For recursion, define your base case first, then the recursive step. Use memoization for overlapping subproblems.",
+      "Use a set to track visited elements and avoid duplicates. This is especially useful for graph/cycle detection.",
+      "If using binary search, remember to update left = mid + 1 and right = mid - 1, not left = mid.",
+      "For linked list problems, use a dummy head node to simplify edge cases involving the head.",
+    ],
+  };
+
+  async generateHint(userId: number, problemId: number, level: "conceptual" | "algorithmic" | "code") {
+    const problem = await prisma.dsaProblem.findUnique({
+      where: { id: problemId },
+      select: { id: true, title: true, tags: true, difficulty: true, hints: true },
+    });
+    if (!problem) throw new Error("Problem not found");
+
+    const templates = DsaService.HINT_TEMPLATES[level] ?? DsaService.HINT_TEMPLATES.conceptual;
+    const seed = problemId + level.charCodeAt(0) + (problem.tags[0]?.length ?? 0);
+    const idx = seed % templates.length;
+    const baseHint = templates[idx];
+
+    const tagContext = problem.tags.length > 0
+      ? ` This problem relates to: ${problem.tags.join(", ")}.`
+      : "";
+
+    const hint = `${baseHint}${tagContext} (level: ${level})`;
+
+    await prisma.usageLog.create({
+      data: { userId, action: "CODE_RUN" },
+    });
+
+    return {
+      hint,
+      level,
+      problemId,
+      problemTitle: problem.title,
+      difficulty: problem.difficulty,
+      hintIndex: idx,
     };
   }
 

@@ -241,12 +241,45 @@ where["OR"] = [
     };
   }
 
+  private FREE_MONTHLY_REPO_SUGGESTIONS = 3;
+
   async submitRepoRequest(userId: number, data: any) {
     const existing = await prisma.repoRequest.findFirst({
       where: { url: data.url, status: { in: ["PENDING", "APPROVED"] } },
     });
     if (existing) {
       throw new Error("This repository has already been submitted");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
+    });
+
+    if (user) {
+      const isPremium =
+        (user.subscriptionPlan === "MONTHLY" || user.subscriptionPlan === "YEARLY") &&
+        user.subscriptionStatus === "ACTIVE" &&
+        (!user.subscriptionEndDate || user.subscriptionEndDate > new Date());
+
+      if (!isPremium) {
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        const monthlyCount = await prisma.repoRequest.count({
+          where: {
+            userId,
+            createdAt: { gte: startOfMonth },
+          },
+        });
+
+        if (monthlyCount >= this.FREE_MONTHLY_REPO_SUGGESTIONS) {
+          throw new Error(
+            "You've used all your free repo suggestions this month. Upgrade to Pro for unlimited suggestions.",
+          );
+        }
+      }
     }
     const request = await prisma.repoRequest.create({
       data: { ...data, userId },
@@ -427,13 +460,13 @@ where["OR"] = [
     };
   }
 
-  async getStudentContributionTrend(userId: number) {
+  async getStudentContributionTrend(userId: number, startDate?: string, endDate?: string) {
     const now = new Date();
     const currentMonthStart = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
     );
-    const startMonth = this.addMonthsUTC(currentMonthStart, -5);
-    const endMonth = this.addMonthsUTC(currentMonthStart, 1);
+    const startMonth = startDate ? new Date(startDate) : this.addMonthsUTC(currentMonthStart, -5);
+    const endMonth = endDate ? new Date(endDate) : this.addMonthsUTC(currentMonthStart, 1);
     const approvedRequests = await prisma.repoRequest.findMany({
       where: {
         userId,
@@ -449,7 +482,10 @@ where["OR"] = [
       countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
     }
 
-    const trend = Array.from({ length: 6 }, (_, index) => {
+    const monthDiff = (endMonth.getUTCFullYear() - startMonth.getUTCFullYear()) * 12
+      + (endMonth.getUTCMonth() - startMonth.getUTCMonth());
+    const numMonths = Math.max(monthDiff, 1);
+    const trend = Array.from({ length: numMonths }, (_, index) => {
       const monthStart = this.addMonthsUTC(startMonth, index);
       const monthKey = this.getMonthKeyUTC(monthStart);
       return {
@@ -549,5 +585,59 @@ where["OR"] = [
     });
 
     return repos;
+  }
+
+  // ─── Bookmarks ────────────────────────────────────────────────
+
+  async getBookmarkedRepoIds(userId: number): Promise<number[]> {
+    const bookmarks = await prisma.opensourceBookmark.findMany({
+      where: { userId },
+      select: { repoId: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return bookmarks.map((b) => b.repoId);
+  }
+
+  async addBookmark(userId: number, repoId: number): Promise<{ repoId: number }> {
+    const repo = await prisma.opensourceRepo.findUnique({
+      where: { id: repoId },
+      select: { id: true },
+    });
+    if (!repo) throw new Error("Repository not found");
+
+    await prisma.opensourceBookmark.upsert({
+      where: { userId_repoId: { userId, repoId } },
+      create: { userId, repoId },
+      update: {}, // no-op if already bookmarked
+    });
+    return { repoId };
+  }
+
+  async removeBookmark(userId: number, repoId: number): Promise<void> {
+    await prisma.opensourceBookmark.deleteMany({
+      where: { userId, repoId },
+    });
+  }
+
+  async bulkMigrateBookmarks(userId: number, repoIds: number[]): Promise<number[]> {
+    // Resolve only IDs that actually exist in the DB
+    const validRepos = await prisma.opensourceRepo.findMany({
+      where: { id: { in: repoIds } },
+      select: { id: true },
+    });
+    const validIds = validRepos.map((r) => r.id);
+    if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
+
+    await prisma.$transaction(
+      validIds.map((repoId) =>
+        prisma.opensourceBookmark.upsert({
+          where: { userId_repoId: { userId, repoId } },
+          create: { userId, repoId },
+          update: {},
+        }),
+      ),
+    );
+
+    return this.getBookmarkedRepoIds(userId);
   }
 }

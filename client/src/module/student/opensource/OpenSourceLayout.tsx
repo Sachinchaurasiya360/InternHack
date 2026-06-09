@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import ContributionCoachPanel from "./ContributionCoachPanel";
 import CoachFloatingButton from "./CoachFloatingButton";
 import { LearningPathProvider } from "./learning-paths.context";
-import { LearningPathSidebar } from "./components/LearningPathSidebar.tsx";
+
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
   "first-pr": "First PR",
