@@ -1,3 +1,4 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
 import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -642,6 +643,10 @@ export class OpensourceService {
       where: { id: userId },
       select: {
         skills: true,
+        college: true,
+        graduationYear: true,
+        projects: true,
+        achievements: true,
         applications: {
           take: 10,
           orderBy: { createdAt: "desc" },
@@ -716,7 +721,7 @@ export class OpensourceService {
           { trending: true },
         ],
       },
-      take: 12,
+      take: 20, // Fetch more repos for AI ranking
       orderBy: [
         { trending: "desc" },
         { openIssues: "desc" }, // Prioritize repos with more open issues (more opportunities)
@@ -724,12 +729,167 @@ export class OpensourceService {
       ],
     });
 
-    // 5. Remove duplicates and return top matches
+    // 5. Remove duplicates
     const uniqueRepos = Array.from(
       new Map(repos.map((repo) => [repo.id, repo])).values()
     );
 
-    return uniqueRepos.slice(0, 8);
+    // Phase 2: AI-Powered Ranking
+    // Use Gemini to rank repos based on user profile
+    const rankedRepos = await this.rankReposWithAI(student, uniqueRepos);
+
+    return rankedRepos.slice(0, 8);
+  }
+
+  /**
+   * Phase 2: Use Gemini AI to rank repositories based on user profile
+   */
+  private async rankReposWithAI(
+    student: {
+      skills: string[];
+      college: string | null;
+      graduationYear: number | null;
+      projects: any;
+      achievements: any;
+    },
+    repos: any[]
+  ): Promise<any[]> {
+    const apiKey = process.env["GEMINI_API_KEY"];
+    
+    // Fallback to basic ranking if no API key
+    if (!apiKey || repos.length === 0) {
+      return repos;
+    }
+
+    try {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+
+      // Build prompt for AI ranking
+      const prompt = this.buildRankingPrompt(student, repos);
+      
+      const result = await model.generateContent(prompt);
+      const text = result.response.text().trim();
+      
+      // Parse AI response
+      const rankings = this.parseRankingResponse(text);
+      
+      if (!rankings || rankings.length === 0) {
+        return repos; // Fallback to original order
+      }
+
+      // Reorder repos based on AI rankings
+      const rankedRepos = this.applyRankings(repos, rankings);
+      return rankedRepos;
+      
+    } catch (error) {
+      console.error("AI ranking failed:", error);
+      return repos; // Fallback to original order
+    }
+  }
+
+  /**
+   * Build prompt for Gemini AI to rank repositories
+   */
+  private buildRankingPrompt(
+    student: {
+      skills: string[];
+      college: string | null;
+      graduationYear: number | null;
+      projects: any;
+      achievements: any;
+    },
+    repos: any[]
+  ): string {
+    const userProfile = `
+User Profile:
+- Skills: ${student.skills.join(", ") || "Not specified"}
+- College: ${student.college || "Not specified"}
+- Graduation Year: ${student.graduationYear || "Not specified"}
+- Number of Projects: ${Array.isArray(student.projects) ? student.projects.length : 0}
+- Number of Achievements: ${Array.isArray(student.achievements) ? student.achievements.length : 0}
+    `.trim();
+
+    const repoList = repos.map((repo, index) => `
+[${index}] ${repo.name}
+- Owner: ${repo.owner}
+- Description: ${repo.description}
+- Language: ${repo.language}
+- Tech Stack: ${repo.techStack.join(", ")}
+- Difficulty: ${repo.difficulty}
+- Domain: ${repo.domain}
+- Stars: ${repo.stars}
+- Open Issues: ${repo.openIssues}
+- Tags: ${repo.tags.join(", ")}
+- Trending: ${repo.trending}
+    `.trim()).join("\n\n");
+
+    return `You are an expert open source advisor helping students find the best repositories to contribute to.
+
+${userProfile}
+
+Available Repositories:
+${repoList}
+
+Task: Rank these repositories from MOST to LEAST suitable for this user. Consider:
+1. Skill match (languages, tech stack alignment)
+2. Difficulty appropriateness (beginner-friendly for new contributors)
+3. Activity level (open issues, trending status)
+4. Learning potential (exposure to new technologies)
+5. Domain relevance (based on user interests)
+
+Return ONLY a valid JSON array of repository indices in ranked order (most suitable first):
+[0, 5, 2, 1, 3, 4, ...]
+
+Rules:
+- Return ONLY the JSON array, no markdown fences, no extra text
+- Use the exact indices from the repository list above
+- Include ALL repository indices exactly once
+- Most suitable repos should come first`;
+  }
+
+  /**
+   * Parse AI ranking response
+   */
+  private parseRankingResponse(text: string): number[] | null {
+    try {
+      // Remove markdown fences if present
+      const cleaned = text.replace(/```json\s*|\s*```/g, "").trim();
+      const parsed = JSON.parse(cleaned);
+      
+      if (Array.isArray(parsed) && parsed.every((item) => typeof item === "number")) {
+        return parsed;
+      }
+      
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Apply AI rankings to repository list
+   */
+  private applyRankings(repos: any[], rankings: number[]): any[] {
+    const rankedRepos: any[] = [];
+    const usedIndices = new Set<number>();
+
+    // Add repos in ranked order
+    for (const index of rankings) {
+      if (index >= 0 && index < repos.length && !usedIndices.has(index)) {
+        rankedRepos.push(repos[index]);
+        usedIndices.add(index);
+      }
+    }
+
+    // Add any missing repos at the end (shouldn't happen, but safety fallback)
+    for (let i = 0; i < repos.length; i++) {
+      if (!usedIndices.has(i)) {
+        rankedRepos.push(repos[i]);
+      }
+    }
+
+    return rankedRepos;
   }
 
   async getCertificate(token: string) {
