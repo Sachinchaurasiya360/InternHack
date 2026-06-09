@@ -555,15 +555,30 @@ where["OR"] = [
   }
 
   async getRecommendedRepos(userId: number) {
-    // 1. Get student profile with skills
+    // Phase 1: Enhanced Data Collection
+    
+    // 1. Get student profile with skills, recent applications, and job preferences
     const student = await prisma.user.findUnique({
       where: { id: userId },
-      select: { skills: true },
+      select: {
+        skills: true,
+        applications: {
+          take: 10,
+          orderBy: { createdAt: "desc" },
+          select: {
+            job: {
+              select: {
+                tags: true,
+                title: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    const skills = student?.skills || [];
-    if (skills.length === 0) {
-      // Return trending repos as default fallback
+    if (!student) {
+      // Return trending repos as fallback
       return prisma.opensourceRepo.findMany({
         where: { trending: true },
         take: 6,
@@ -571,19 +586,69 @@ where["OR"] = [
       });
     }
 
-    // 2. Fetch repos matching skills (language or techStack subset)
-    // We search for repos where the primary language is in the student's skills
+    // 2. Extract skills and job-related tags
+    const skills = student.skills || [];
+    const jobTags = new Set<string>();
+    
+    // Extract tags from recent job applications
+    student.applications.forEach((app) => {
+      app.job.tags.forEach((tag) => jobTags.add(tag.toLowerCase()));
+      
+      // Extract keywords from job titles (e.g., "Frontend Developer" → ["frontend", "developer"])
+      const titleWords = app.job.title
+        .toLowerCase()
+        .split(/[\s-_]+/)
+        .filter((word) => word.length > 3);
+      titleWords.forEach((word) => jobTags.add(word));
+    });
+
+    // Combine skills and job tags for matching
+    const allKeywords = [...new Set([...skills.map((s) => s.toLowerCase()), ...Array.from(jobTags)])];
+
+    // 3. If no data, return trending repos
+    if (allKeywords.length === 0) {
+      return prisma.opensourceRepo.findMany({
+        where: { trending: true },
+        take: 6,
+        orderBy: { stars: "desc" },
+      });
+    }
+
+    // 4. Fetch repos with enhanced matching criteria
     const repos = await prisma.opensourceRepo.findMany({
       where: {
         OR: [
-          { language: { in: skills, mode: "insensitive" } },
+          // Match by primary language
+          { language: { in: allKeywords, mode: "insensitive" } },
+          // Match by tech stack
+          {
+            techStack: {
+              hasSome: allKeywords,
+            },
+          },
+          // Match by tags
+          {
+            tags: {
+              hasSome: allKeywords,
+            },
+          },
+          // Include trending repos for discovery
           { trending: true },
         ],
       },
-      take: 8,
-      orderBy: [{ trending: "desc" }, { stars: "desc" }],
+      take: 12,
+      orderBy: [
+        { trending: "desc" },
+        { openIssues: "desc" }, // Prioritize repos with more open issues (more opportunities)
+        { stars: "desc" },
+      ],
     });
 
-    return repos;
+    // 5. Remove duplicates and return top matches
+    const uniqueRepos = Array.from(
+      new Map(repos.map((repo) => [repo.id, repo])).values()
+    );
+
+    return uniqueRepos.slice(0, 8);
   }
 }
