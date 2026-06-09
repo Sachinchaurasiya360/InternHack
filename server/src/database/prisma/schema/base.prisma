@@ -1358,6 +1358,7 @@ enum UsageAction {
   CODE_RUN
   GITHUB_STATS
   ROADMAP_GENERATION
+  STREAK_TICK
 }
 
 enum EmailCampaignStatus {
@@ -1550,7 +1551,6 @@ model opensourceStreak {
 
   user user @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
 }
 
 model coachAdvice {

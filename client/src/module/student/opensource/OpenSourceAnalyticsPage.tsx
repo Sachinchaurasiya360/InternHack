@@ -50,6 +50,7 @@ import type {
 import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
 import { HacktoberfestTracker } from "./HacktoberfestTracker";
 import type { OpenSourceStreak } from "../../../lib/types";
+import { STREAK_RESET_HOURS, STREAK_RISK_HOURS } from "./streakConstants";
 
 // ─── Theme ──────────────────────────────────────────────────────
 const CHART_COLORS = [
@@ -123,7 +124,7 @@ function ChartModal({ open, onClose, title, subtitle, children }: { open: boolea
               <div>
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <div className="h-1 w-1 bg-lime-400" />
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400">{subtitle}</p>
+                  <p className="text-xs font-mono uppercase tracking-widest text-stone-400">{subtitle}</p>
                 </div>
                 <h3 className="text-base font-bold text-stone-50">{title}</h3>
               </div>
@@ -188,7 +189,7 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
           <div>
             <div className="flex items-center gap-1.5 mb-0.5">
               <div className="h-1 w-1 bg-lime-400" />
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{subtitle}</p>
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{subtitle}</p>
             </div>
             <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50">{title}</h3>
           </div>
@@ -275,6 +276,8 @@ export default function OpenSourceAnalyticsPage() {
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
   const [filterTech, setFilterTech] = useState<string>("ALL");
   const [showFilters, setShowFilters] = useState(false);
+
+  const now = Date.now(); // eslint-disable-line react-hooks/purity
 
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -528,7 +531,7 @@ export default function OpenSourceAnalyticsPage() {
           </div>
           <Link
             to="/student/opensource"
-            className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline shrink-0"
+            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline shrink-0"
           >
             <ArrowLeft className="w-3 h-3" />
             back to repos
@@ -541,7 +544,7 @@ export default function OpenSourceAnalyticsPage() {
         <div className="mb-8">
           <div className="flex items-center gap-1.5 mb-3">
             <div className="h-1 w-1 bg-lime-400" />
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
               your contributions
             </p>
           </div>
@@ -595,7 +598,7 @@ export default function OpenSourceAnalyticsPage() {
           >
             <div className="flex items-center gap-1.5 mb-4">
               <div className="h-1 w-1 bg-lime-400" />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                 streak
               </span>
             </div>
@@ -621,7 +624,7 @@ export default function OpenSourceAnalyticsPage() {
                 {streakData?.lastActivityAt && (
                   <div>
                     <p className="font-bold text-stone-900 dark:text-stone-50">
-                      {Math.floor((Date.now() - new Date(streakData.lastActivityAt).getTime()) / 3600000)}h
+                      {Math.floor((now - new Date(streakData.lastActivityAt).getTime()) / 3600000)}h
                     </p>
                     <p className="text-xs text-stone-500">since last activity</p>
                   </div>
@@ -629,12 +632,13 @@ export default function OpenSourceAnalyticsPage() {
               </div>
             </div>
             {streakData && streakData.currentStreak > 0 && streakData.lastActivityAt && (() => {
-              const hoursSince = (Date.now() - new Date(streakData.lastActivityAt).getTime()) / 3600000;
-              if (hoursSince >= 18) {
+              const hoursSince = (now - new Date(streakData.lastActivityAt).getTime()) / 3600000;
+              const hoursRemaining = Math.max(0, STREAK_RESET_HOURS - hoursSince);
+              if (hoursSince >= STREAK_RISK_HOURS) {
                 return (
                   <div className="mt-4 flex items-center gap-2 text-xs text-orange-500 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/30 rounded-md px-3 py-2">
                     <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    <span>Your streak is at risk. Contribute within the next {Math.ceil(24 - hoursSince)} hours to keep it alive.</span>
+                    <span>Your streak is at risk. Contribute within the next {Math.ceil(hoursRemaining)} hours to keep it alive.</span>
                   </div>
                 );
               }
@@ -720,7 +724,7 @@ export default function OpenSourceAnalyticsPage() {
             >
               <div className="flex items-center gap-1.5 mb-4">
                 <div className="h-1 w-1 bg-lime-400" />
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                   contributions / by domain
                 </span>
               </div>
@@ -792,7 +796,7 @@ export default function OpenSourceAnalyticsPage() {
                   <Filter className="w-3 h-3" />
                   Filters
                   {activeFilterCount > 0 && (
-                    <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-md bg-stone-950 text-lime-400 text-[10px] font-mono">
+                    <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-md bg-stone-950 text-lime-400 text-xs font-mono">
                       {activeFilterCount}
                     </span>
                   )}
@@ -803,7 +807,7 @@ export default function OpenSourceAnalyticsPage() {
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
+                    className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
                   >
                     / clear all
                   </button>
@@ -820,7 +824,7 @@ export default function OpenSourceAnalyticsPage() {
                   >
                     <div className="flex flex-wrap gap-4 mt-3 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
                       <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Year</label>
+                        <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Year</label>
                         <select
                           value={filterYear}
                           onChange={(e) => setFilterYear(e.target.value)}
@@ -831,7 +835,7 @@ export default function OpenSourceAnalyticsPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Category</label>
+                        <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Category</label>
                         <select
                           value={filterCategory}
                           onChange={(e) => setFilterCategory(e.target.value)}
@@ -842,7 +846,7 @@ export default function OpenSourceAnalyticsPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Technology</label>
+                        <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Technology</label>
                         <select
                           value={filterTech}
                           onChange={(e) => setFilterTech(e.target.value)}
@@ -860,7 +864,7 @@ export default function OpenSourceAnalyticsPage() {
 
             {/* ── Results label ───────────────────────────────── */}
             <div className="mb-4">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                 <span className="text-stone-900 dark:text-stone-50">{orgs.length}</span>
                 {" "}organization{orgs.length !== 1 ? "s" : ""}
                 {hasActiveFilter && " (filtered)"}
@@ -878,7 +882,7 @@ export default function OpenSourceAnalyticsPage() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="mt-3 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline cursor-pointer bg-transparent border-0"
+                  className="mt-3 text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline cursor-pointer bg-transparent border-0"
                 >
                   / clear filters
                 </button>
@@ -890,7 +894,7 @@ export default function OpenSourceAnalyticsPage() {
               <>
                 <div className="flex items-center gap-1.5 mb-4">
                   <div className="h-1 w-1 bg-lime-400" />
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                     gsoc organization charts
                   </p>
                 </div>
@@ -1088,7 +1092,7 @@ export default function OpenSourceAnalyticsPage() {
                 <div className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <div className="h-1 w-1 bg-lime-400" />
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">comparison</p>
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">comparison</p>
                   </div>
                   <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50 mb-4">Organization Comparison</h3>
                   <div className="flex flex-wrap gap-1.5 mb-5 max-h-24 overflow-y-auto">

@@ -4,8 +4,10 @@ import { Link } from "react-router";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { OpenSourceStreak } from "../../../lib/types";
+import { STREAK_RISK_HOURS } from "./streakConstants";
 
 export default function StreakFlame() {
+  const now = Date.now(); // eslint-disable-line react-hooks/purity
   const { data } = useQuery({
     queryKey: queryKeys.opensource.streak(),
     queryFn: () => api.get("/opensource/streak").then((r) => r.data.streak as OpenSourceStreak),
@@ -16,7 +18,7 @@ export default function StreakFlame() {
   if (!data || data.currentStreak === 0) return null;
 
   const isAtRisk = data.lastActivityAt
-    ? (Date.now() - new Date(data.lastActivityAt).getTime()) > 72000000
+    ? (now - new Date(data.lastActivityAt).getTime()) > STREAK_RISK_HOURS * 3600000
     : false;
 
   return (

@@ -5,15 +5,11 @@ const badgeService = new BadgeService();
 
 export class OpensourceStreakService {
   async getStreak(userId: number) {
-    let streak = await prisma.opensourceStreak.findUnique({
+    const streak = await prisma.opensourceStreak.upsert({
       where: { userId },
+      update: {},
+      create: { userId },
     });
-
-    if (!streak) {
-      streak = await prisma.opensourceStreak.create({
-        data: { userId },
-      });
-    }
 
     return streak;
   }
@@ -23,15 +19,11 @@ export class OpensourceStreakService {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayEnd = new Date(todayStart.getTime() + 86400000);
 
-    let streak = await prisma.opensourceStreak.findUnique({
+    const streak = await prisma.opensourceStreak.upsert({
       where: { userId },
+      update: {},
+      create: { userId },
     });
-
-    if (!streak) {
-      await prisma.opensourceStreak.create({
-        data: { userId },
-      });
-    }
 
     const lastActivity = streak?.lastActivityAt;
 
