@@ -13,7 +13,7 @@ interface SEOProps {
   ogImageDark?: string;
   ogType?: string;
   noIndex?: boolean;
-  structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  structuredData?: Record<string, any> | Record<string, any>[];
 }
 
 const SITE_NAME = "InternHack";
@@ -71,18 +71,11 @@ export function SEO({
       />
 
       {/* Structured Data (JSON-LD) */}
-      {structuredData &&
-        (Array.isArray(structuredData)
-          ? structuredData.map((sd, i) => (
-              <script key={i} type="application/ld+json">
-                {JSON.stringify(sd)}
-              </script>
-            ))
-          : (
-            <script type="application/ld+json">
-              {JSON.stringify(structuredData)}
-            </script>
-          ))}
+      {structuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      )}
     </Helmet>
   );
 }

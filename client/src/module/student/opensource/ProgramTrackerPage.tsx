@@ -1094,6 +1094,19 @@ export default function ProgramTrackerPage() {
   const totalStipend = PROGRAMS.filter((p) => p.stipendPaid).length;
   const highStipend = PROGRAMS.filter((p) => p.stipendRange === "High").length;
 
+  const programEventsSchema = PROGRAMS.map((p) => ({
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": `${p.name} 2026 Cohort Application Timeline`,
+    "description": `Deadlines and tracking rules for the ${p.name} program application window.`,
+    "startDate": p.startDate ?? p.applicationStart ?? "2026-01-15T00:00:00Z",
+    "endDate": p.deadline ? `${p.deadline}T23:59:59Z` : p.applicationDeadline ?? "2026-11-30T23:59:59Z",
+    "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "location": { "@type": "VirtualLocation", "url": "https://internhack.io/student/opensource" },
+    "organizer": { "@type": "Organization", "name": p.name }
+  }));
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <SEO
@@ -1102,6 +1115,7 @@ export default function ProgramTrackerPage() {
         keywords="GSoC tracker, LFX mentorship, open source internships, Outreachy deadline, paid open source"
         canonicalUrl={canonicalUrl("/student/opensource/programs")}
         ogImage="/og/og-programs.png"
+        structuredData={programEventsSchema}
       />
       {/* Hero */}
       <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
