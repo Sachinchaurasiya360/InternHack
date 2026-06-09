@@ -10,6 +10,7 @@ import {
   Lock,
 } from "lucide-react";
 import { sections, lessons } from "./data";
+import { getReadingMinutes } from "../../../utils/lessonMetadata";
 import type { FlaskProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
@@ -95,9 +96,18 @@ export default function FlaskLessonsPage() {
     (p) => p.completed,
   ).length;
   const totalLessons = lessons.length;
-  const overallPct =
-    totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
-
+const totalTrackMinutes = lessons.reduce((acc, l) => acc + getReadingMinutes(l.content?.explanation || ""), 0);
+  const totalTrackHours = (totalTrackMinutes / 60).toFixed(1);
+  const overallPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+  const sectionMinutes = useMemo(() => {
+    const map: Record<string, number> = {};
+    sections.forEach((s) => {
+      map[s.id] = lessons
+        .filter((l) => l.sectionId === s.id)
+        .reduce((acc, l) => acc + getReadingMinutes(l.content?.explanation || ""), 0);
+    });
+    return map;
+  }, []);
   return (
     <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
       <SEO
@@ -172,9 +182,9 @@ export default function FlaskLessonsPage() {
                 </span>
               </span>
               <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-              <span className="text-lime-600 dark:text-lime-400">
-                {overallPct}% complete
-              </span>
+<span className="text-lime-600 dark:text-lime-400">{overallPct}% complete</span>
+              <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+              <span>Complete Flask: ~{totalTrackHours}h total</span>
             </div>
           </div>
         </motion.div>
@@ -292,9 +302,9 @@ export default function FlaskLessonsPage() {
                       )}
                     </span>
                     <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                    <span className={LEVEL_COLOR[section.level]}>
-                      {section.level.toLowerCase()}
-                    </span>
+<span className={LEVEL_COLOR[section.level]}>{section.level.toLowerCase()}</span>
+                    <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                    <span>🕐 {sectionMinutes[section.id] ?? 0} min</span>
                   </div>
                 </div>
 

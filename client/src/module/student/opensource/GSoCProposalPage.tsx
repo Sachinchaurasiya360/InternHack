@@ -74,6 +74,21 @@ export default function GSoCProposalPage() {
     .filter((s) => completed.has(s.id))
     .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
   const remainingMinutes = totalEstimatedMinutes - completedMinutes;
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "GSoC Proposal Writing Guide - Step by Step",
+    "description": "Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure.",
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+    "totalTime": `PT${totalEstimatedMinutes}M`,
+    "step": STEPS.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.title,
+      "text": s.description || "Follow the visual walkthrough steps."
+    }))
+  };
+
   return (
     <div className="relative pb-12">
       <SEO
@@ -82,6 +97,7 @@ export default function GSoCProposalPage() {
         keywords="GSoC proposal guide, Google Summer of Code, GSoC tips, open source proposal, GSoC application"
         canonicalUrl={canonicalUrl("/student/opensource/gsoc-proposal")}
         ogImage="/og/og-gsoc-proposal.png"
+        structuredData={howToSchema}
       />
 
       {/* Atmospheric background */}

@@ -8,12 +8,15 @@ const SENSITIVE_KEYS = new Set([
 ]);
 
 function sanitizeBody(body: unknown): Prisma.InputJsonValue | null {
-  if (!body || typeof body !== "object") return null;
+  if (body === undefined) return null;
+  if (body === null || typeof body !== "object") return body as Prisma.InputJsonValue | null;
+  if (Array.isArray(body)) return body.map(sanitizeBody) as Prisma.InputJsonValue;
+  
   const sanitized: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
     if (SENSITIVE_KEYS.has(key)) {
       sanitized[key] = "[REDACTED]";
-    } else if (value && typeof value === "object" && !Array.isArray(value)) {
+    } else if (typeof value === "object" && value !== null) {
       sanitized[key] = sanitizeBody(value);
     } else {
       sanitized[key] = value;
