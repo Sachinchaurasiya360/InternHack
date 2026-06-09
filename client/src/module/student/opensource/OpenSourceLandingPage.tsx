@@ -1,9 +1,10 @@
-﻿import { useRef } from "react";
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
+import { SEO } from "../../../components/SEO";
 import {
   ArrowRight,
   CheckCircle,
@@ -217,12 +218,26 @@ export default function OpenSourceLandingPage() {
   });
   const orgCount = gsocStats?.total ?? 520;
 
+  const hubArticleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Find a repo, ship your first PR.",
+    "description": "Beginner-friendly open-source projects, curated by engineers for students. Learn Git pipelines and open source workflows.",
+    "author": { "@type": "Organization", "name": "InternHack", "url": "https://internhack.io" },
+    "publisher": { "@type": "Organization", "name": "InternHack" }
+  };
+
   const handleExplore = () => {
     navigate(isAuthenticated ? "/student/opensource" : "/login");
   };
 
   return (
     <div className="font-sans bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
+      <SEO
+        title="Open Source Hub | Repos, Guides & Programs | InternHack"
+        description="Discover beginner-friendly open-source projects, master Git workflows, and apply to GSoC, LFX, Outreachy, and more. Your complete guide to open-source contribution."
+        structuredData={hubArticleSchema}
+      />
 
       {/* ── Hero ── */}
       <section className="relative w-full overflow-hidden bg-stone-50 dark:bg-stone-950 border-b border-stone-200 dark:border-white/10">
