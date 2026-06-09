@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useParams, Link, Navigate } from "react-router";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Circle, ExternalLink,
-  Bookmark, BookmarkCheck, StickyNote, ChevronDown, ChevronLeft, ChevronRight,
+  Bookmark, BookmarkCheck, StickyNote, ChevronDown,
   Lightbulb, BookOpen, TrendingUp, Search,
 } from "lucide-react";
 import toast from "@/components/ui/toast";
@@ -17,7 +18,6 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import { sanitizeHtml } from "../../../lib/sanitize";
 import { Button } from "../../../components/ui/button";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
@@ -29,7 +29,7 @@ export default function DsaTopicDetailPage() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<DiffFilter>("All");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const page = 1; // virtual scroll replaces server-side pagination
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
   const [noteValues, setNoteValues] = useState<Record<number, string>>({});
@@ -43,7 +43,7 @@ export default function DsaTopicDetailPage() {
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
-      params.set("limit", "50");
+      params.set("limit", "200"); // covers all current topics; virtualizer handles render performance
       if (diffParam) params.set("difficulty", diffParam);
       if (searchParam) params.set("search", searchParam);
       return api.get<DsaTopicDetail>(`/dsa/topics/${slug}?${params}`).then((r) => r.data);
@@ -148,6 +148,15 @@ export default function DsaTopicDetailPage() {
       return next;
     });
   };
+
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const virtualizer = useWindowVirtualizer({
+    count: topic?.problems.length ?? 0,
+    estimateSize: () => 76,
+    overscan: 8,
+    scrollMargin: listRef.current?.offsetTop ?? 0,
+  });
 
   if (!user && topic && topic.orderIndex >= 5) {
     return <Navigate to="/learn/dsa" replace />;
@@ -278,7 +287,7 @@ export default function DsaTopicDetailPage() {
               type="text"
               placeholder="Search problems..."
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              onChange={(e) => { setSearch(e.target.value); }}
               className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
             />
           </div>
@@ -292,7 +301,7 @@ export default function DsaTopicDetailPage() {
               return (
                 <button
                   key={d}
-                  onClick={() => { setFilter(d); setPage(1); }}
+                  onClick={() => { setFilter(d); }}
                   className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
                     active
                       ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
@@ -314,65 +323,63 @@ export default function DsaTopicDetailPage() {
           </span>
         </div>
 
-        {/* Problem list */}
-        <div className="space-y-2">
-          {topic.problems.map((problem, pIdx) => (
-            <DsaProblemCard
-              key={problem.id}
-              problem={problem}
-              pIdx={pIdx}
-              user={user}
-              isExpanded={expandedId === problem.id}
-              toggleMutation={toggleMutation}
-              bookmarkMutation={bookmarkMutation}
-              expandedNotes={expandedNotes}
-              savingNotes={savingNotes}
-              noteValues={noteValues}
-              setNoteValues={setNoteValues}
-              saveNotes={saveNotes}
-              toggleNotes={toggleNotes}
-              setExpandedId={setExpandedId}
-              cleanHint={cleanHint}
-            />
-          ))}
-
-          {topic.problems.length === 0 && (
-            <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-              <Search className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-              <p className="text-sm text-stone-600 dark:text-stone-400">No problems found.</p>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
-                try a different filter
-              </p>
+        {/* Problem list — virtualized for performance with dynamic height measurement */}
+        {topic.problems.length === 0 ? (
+          <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
+            <Search className="w-8 h-8 text-stone-400 mx-auto mb-3" />
+            <p className="text-sm text-stone-600 dark:text-stone-400">No problems found.</p>
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
+              try a different filter
+            </p>
+          </div>
+        ) : (
+          <div ref={listRef}>
+            <div
+              style={{
+                height: `${virtualizer.getTotalSize()}px`,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              {virtualizer.getVirtualItems().map((virtualItem) => {
+                const problem = topic.problems[virtualItem.index];
+                return (
+                  <div
+                    key={problem.id}
+                    data-index={virtualItem.index}
+                    ref={virtualizer.measureElement}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      transform: `translateY(${
+                        virtualItem.start - virtualizer.options.scrollMargin
+                      }px)`,
+                    }}
+                  >
+                    <div className="pb-2">
+                      <DsaProblemCard
+                        problem={problem}
+                        pIdx={virtualItem.index}
+                        user={user}
+                        isExpanded={expandedId === problem.id}
+                        toggleMutation={toggleMutation}
+                        bookmarkMutation={bookmarkMutation}
+                        expandedNotes={expandedNotes}
+                        savingNotes={savingNotes}
+                        noteValues={noteValues}
+                        setNoteValues={setNoteValues}
+                        saveNotes={saveNotes}
+                        toggleNotes={toggleNotes}
+                        setExpandedId={setExpandedId}
+                        cleanHint={cleanHint}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
-
-        {/* Pagination */}
-        {topic.totalPages > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-8 flex-wrap">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
-              className="rounded-md border border-stone-300 dark:border-white/10"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Prev
-            </Button>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums">
-              page {page} / {topic.totalPages}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setPage((p) => Math.min(topic.totalPages, p + 1))}
-              disabled={page >= topic.totalPages}
-              className="rounded-md border border-stone-300 dark:border-white/10"
-            >
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </Button>
           </div>
         )}
       </div>
@@ -553,7 +560,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                             {i + 1}.
                           </span>
                         )}
-                        <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanHint(hint)) }} />
+                        <span dangerouslySetInnerHTML={{ __html: cleanHint(hint) }} />
                       </div>
                     ))}
                   </div>
