@@ -213,6 +213,8 @@ const RoadmapsLandingPage = lazyWithRetry(() => import("./module/student/roadmap
 const RoadmapDetailPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapDetailPage"));
 const RoadmapEnrollPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapEnrollPage"));
 const RoadmapCanvasPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapCanvasPage"));
+const RoadmapCertificatePage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapCertificatePage"));
+const RoadmapCertificatesGalleryPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapCertificatesGalleryPage"));
 const RoadmapTopicPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapTopicPage"));
 const RoadmapDashboardPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapDashboardPage"));
 const AiRoadmapWizardPage = lazyWithRetry(() => import("./module/student/roadmap/AiRoadmapWizardPage"));

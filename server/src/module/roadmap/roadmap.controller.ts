@@ -75,7 +75,12 @@ export async function getRoadmaps(req: Request, res: Response, next: NextFunctio
 
 export async function getRoadmap(req: Request, res: Response, next: NextFunction) {
   try {
-    const parsed = roadmapSlugParam.safeParse(req.params);
+    const slug =
+  Array.isArray(req.params.slug)
+    ? req.params.slug[0]
+    : req.params.slug;
+
+const parsed = roadmapSlugParam.safeParse({ slug });
     if (!parsed.success) {
       validationError(res, parsed.error.flatten().fieldErrors);
       return;
@@ -912,6 +917,246 @@ export async function downloadCertificate(req: Request, res: Response, next: Nex
       `attachment; filename="${enrollment.roadmap.slug}-certificate${suffix}.pdf"`,
     );
     res.send(pdfBuffer);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getPublicCertificateMeta(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const rawSlug = Array.isArray(req.params.slug)
+  ? req.params.slug[0]
+  : req.params.slug;
+
+const parsed = roadmapSlugParam.safeParse({
+  slug: rawSlug,
+});
+
+    if (!parsed.success) {
+      validationError(res, parsed.error.flatten().fieldErrors);
+      return;
+    }
+
+    const roadmap = await prisma.roadmap.findUnique({
+      where: {
+        slug: parsed.data.slug,
+      },
+      include: {
+        enrollments: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+            topicProgress: true,
+          },
+          take: 1,
+          orderBy: {
+            updatedAt: "desc",
+          },
+        },
+      },
+    });
+
+    if (!roadmap) {
+      res.status(404).json({
+        message: "Roadmap not found",
+      });
+      return;
+    }
+
+    const enrollment = roadmap.enrollments[0];
+
+    if (!enrollment) {
+      res.status(404).json({
+        message: "Certificate not found",
+      });
+      return;
+    }
+
+    const completedTopics = enrollment.topicProgress.filter(
+      (p) => p.status === "COMPLETED",
+    );
+
+    const percentComplete =
+      roadmap.topicCount === 0
+        ? 0
+        : Math.round(
+            (completedTopics.length / roadmap.topicCount) * 100,
+          );
+
+    if (percentComplete < 100) {
+      res.status(403).json({
+        message: "Certificate unavailable",
+      });
+      return;
+    }
+
+    const latestCompletion =
+      completedTopics[completedTopics.length - 1]?.completedAt ??
+      new Date();
+
+    res.json({
+      userName: enrollment.user.name ?? "Learner",
+      roadmapTitle: roadmap.title,
+      roadmapSlug: roadmap.slug,
+      completedAt: latestCompletion,
+      certificateUrl: `/api/roadmaps/certificates/${roadmap.slug}/${enrollment.id}`,
+      shareUrl: `/learn/roadmaps/certificates/${roadmap.slug}/${enrollment.id}`,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getPublicCertificate(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const slug = Array.isArray(req.params.slug)
+  ? req.params.slug[0]
+  : req.params.slug;
+
+const enrollmentId = Number(req.params.enrollmentId);
+
+    const enrollment = await prisma.roadmapEnrollment.findFirst({
+      where: {
+        id: enrollmentId,
+        roadmap: {
+          slug,
+        },
+      },
+      include: {
+        roadmap: {
+          include: {
+            sections: {
+              include: {
+                topics: true,
+              },
+            },
+          },
+        },
+        topicProgress: true,
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!enrollment) {
+      res.status(404).json({
+        message: "Certificate not found",
+      });
+      return;
+    }
+
+    // Only allow completed roadmaps
+    const summary = summarizeProgress(enrollment);
+
+    if (summary.percentComplete < 100) {
+      res.status(403).json({
+        message: "Certificate unavailable until roadmap completion",
+      });
+      return;
+    }
+
+    const completedTopics = enrollment.topicProgress
+      .filter((p) => p.status === "COMPLETED" && p.completedAt)
+      .sort(
+        (a, b) =>
+          b.completedAt!.getTime() - a.completedAt!.getTime()
+      );
+
+    const actualCompletedAt =
+      completedTopics[0]?.completedAt ?? new Date();
+
+    const pdfBuffer = await generateCertificatePdf({
+      theme: "light",
+      userName: enrollment.user.name ?? "Learner",
+      roadmapTitle: enrollment.roadmap.title,
+      completedAt: actualCompletedAt,
+    });
+
+    res.setHeader("Content-Type", "application/pdf");
+
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${enrollment.roadmap.slug}-certificate.pdf"`,
+    );
+
+    res.send(pdfBuffer);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getMyCertificates(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const enrollments = await prisma.roadmapEnrollment.findMany({
+      where: {
+        userId: req.user!.id,
+      },
+      include: {
+        roadmap: true,
+        topicProgress: true,
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    const certificates = enrollments
+      .map((enrollment) => {
+        const completedTopics = enrollment.topicProgress.filter(
+          (p) => p.status === "COMPLETED",
+        );
+
+        const percentComplete =
+          enrollment.roadmap.topicCount === 0
+            ? 0
+            : Math.round(
+                (completedTopics.length /
+                  enrollment.roadmap.topicCount) *
+                  100,
+              );
+
+        if (percentComplete < 100) {
+          return null;
+        }
+
+        const latestCompletion =
+          completedTopics[completedTopics.length - 1]
+            ?.completedAt ?? new Date();
+
+        return {
+          enrollmentId: enrollment.id,
+          roadmapTitle: enrollment.roadmap.title,
+          roadmapSlug: enrollment.roadmap.slug,
+          completedAt: latestCompletion,
+          certificateUrl:
+            `/api/roadmaps/me/enrollments/${enrollment.id}/certificate`,
+          shareUrl:
+            `/learn/roadmaps/certificates/${enrollment.roadmap.slug}`,
+        };
+      })
+      .filter(Boolean);
+
+    res.json({
+      certificates,
+    });
   } catch (err) {
     next(err);
   }
