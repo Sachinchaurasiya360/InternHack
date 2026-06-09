@@ -1,7 +1,9 @@
 import { Link } from "react-router";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, CheckCircle2, Code2 } from "lucide-react";
 import { SEO } from "../../../../components/SEO";
+import { CompletionCelebration } from "../../../../components/CompletionCelebration";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import { LEVELS } from "./curriculum";
 import { getLevelStats, useProgressMap } from "./progress";
@@ -16,6 +18,16 @@ export default function DsaFoundationsHubPage() {
     0,
   );
   const overallPct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  useEffect(() => {
+    if (overallPct === 100 && !localStorage.getItem("dsa-foundations:celebrated")) {
+      localStorage.setItem("dsa-foundations:celebrated", "true");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowCelebration(true);
+    }
+  }, [overallPct]);
 
   return (
     <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
@@ -201,6 +213,16 @@ export default function DsaFoundationsHubPage() {
           </p>
         </div>
       </div>
+
+      <CompletionCelebration
+        open={showCelebration}
+        onClose={() => setShowCelebration(false)}
+        trackName="DSA Foundations"
+        lessonCount={totalLessons}
+        estimatedHours={18}
+        badgeLabel="DSA Foundations — Animated"
+        userName="there"
+      />
     </div>
   );
 }

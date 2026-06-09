@@ -1,0 +1,920 @@
+[
+  {
+    "id": "docker-images-vs-containers",
+    "sectionId": "docker-containers",
+    "orderIndex": 0,
+    "title": "Images vs. Containers",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Image", "Container", "Layer", "Storage"],
+    "content": {
+      "question": "What is the difference between a Docker Image and a Docker Container?",
+      "answer": "A **Docker Image** is a read-only template with instructions for creating a Docker container. It's like a class in OOP. \n\nA **Docker Container** is a runnable instance of an image. You can create, start, stop, move, or delete a container using the Docker API or CLI. It's like an object (instance of a class) in OOP.",
+      "codeExamples": [
+        {
+          "title": "Basic Commands",
+          "code": "# Build an image\ndocker build -t my-app .\n\n# Run a container from that image\ndocker run -d --name my-running-container my-app",
+          "explanation": "The 'build' command creates the image (template), and the 'run' command creates a live instance (container) from that template."
+        }
+      ],
+      "notes": [
+        "Images are immutable (read-only), while containers have a thin writable layer on top."
+      ],
+      "followUps": [
+        "What happens to the data when a container is deleted?",
+        "Can a single image be used for multiple containers?"
+      ],
+      "interviewTips": [
+        "Use the 'Class vs. Object' analogy; recruiters love clear, conceptual explanations."
+      ]
+    }
+  },
+  {
+    "id": "docker-cmd-vs-entrypoint",
+    "sectionId": "docker-containers",
+    "orderIndex": 1,
+    "title": "CMD vs. ENTRYPOINT",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Dockerfile", "Startup", "Default Commands"],
+    "content": {
+      "question": "Explain the difference between CMD and ENTRYPOINT in a Dockerfile.",
+      "answer": "- **ENTRYPOINT**: Defines the main command of the image. It makes the container behave like an executable. It cannot be easily overridden during `docker run` (unless using `--entrypoint`).\n- **CMD**: Provides default arguments for the ENTRYPOINT. If you pass arguments to `docker run`, they completely replace the CMD values.",
+      "codeExamples": [
+        {
+          "title": "Using both together",
+          "code": "FROM alpine\nENTRYPOINT [\"echo\"]\nCMD [\"Hello World\"]",
+          "explanation": "If run as 'docker run my-img', it prints 'Hello World'. If run as 'docker run my-img Hi', it prints 'Hi'."
+        }
+      ],
+      "notes": [
+        "Always use the 'exec form' (JSON array) instead of 'shell form' for these instructions to handle OS signals (like SIGTERM) correctly."
+      ],
+      "followUps": [
+        "What happens if you have multiple CMD instructions?",
+        "How do you override an ENTRYPOINT at runtime?"
+      ],
+      "interviewTips": [
+        "Specify that ENTRYPOINT is for the 'what' and CMD is for the 'default' inputs."
+      ]
+    }
+  },
+  {
+    "id": "docker-multi-stage-builds",
+    "sectionId": "docker-containers",
+    "orderIndex": 2,
+    "title": "Multi-stage Builds",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Optimization", "Storage", "Build Pipeline"],
+    "content": {
+      "question": "What are multi-stage builds and why should you use them?",
+      "answer": "Multi-stage builds allow you to use multiple `FROM` statements in a single Dockerfile. You can compile your code in one stage and 'copy' only the necessary binaries into a tiny final production image.",
+      "codeExamples": [
+        {
+          "title": "Go App Example",
+          "code": "# Stage 1: Build\nFROM golang:alpine AS builder\nCOPY . .\nRUN go build -o main .\n\n# Stage 2: Final\nFROM alpine\nCOPY --from=builder /main .\nCMD [\"./main\"]",
+          "explanation": "The final image won't contain the Go compiler or source code, only the 10MB binary, keeping the image small and secure."
+        }
+      ],
+      "notes": [
+        "This is the best way to keep production images minimal and reduce the attack surface."
+      ],
+      "followUps": [
+        "Can you copy from an external image instead of a previous stage?",
+        "How do you name a stage for easier reference?"
+      ],
+      "interviewTips": [
+        "Mention 'reduced attack surface' and 'faster deployments' as key benefits of smaller images."
+      ]
+    }
+  },
+  {
+    "id": "docker-volumes-vs-bind-mounts",
+    "sectionId": "docker-containers",
+    "orderIndex": 3,
+    "title": "Volumes vs. Bind Mounts",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Persistence", "Storage", "Mounting"],
+    "content": {
+      "question": "Compare Docker Volumes and Bind Mounts.",
+      "answer": "- **Volumes**: Managed by Docker in a specific part of the host filesystem (`/var/lib/docker/volumes`). Recommended for production because they are isolated from host OS specifics.\n- **Bind Mounts**: A directory or file on the host machine is mounted into a container. They depend on the host's directory structure and are great for local development (e.g., hot-reloading code).",
+      "codeExamples": [
+        {
+          "title": "Mounting syntax",
+          "code": "# Volume (recommended)\ndocker run -v my-vol:/app nginx\n\n# Bind Mount (dev only)\ndocker run -v $(pwd):/app nginx",
+          "explanation": "Volumes are abstract and managed; Bind Mounts are direct links to host files."
+        }
+      ],
+      "notes": [
+        "Volumes can be managed via 'docker volume' commands and support drivers for cloud storage (NFS, S3, etc.)."
+      ],
+      "followUps": [
+        "What happens to a volume if the container is deleted?",
+        "Can multiple containers share the same volume?"
+      ],
+      "interviewTips": [
+        "Describe Volumes as 'internal' and Bind Mounts as 'external' to Docker's management."
+      ]
+    }
+  },
+  {
+    "id": "docker-copy-vs-add",
+    "sectionId": "docker-containers",
+    "orderIndex": 4,
+    "title": "COPY vs. ADD",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Dockerfile", "Filesystem"],
+    "content": {
+      "question": "When should you use ADD instead of COPY in a Dockerfile?",
+      "answer": "Generally, **always use COPY**. It is more transparent and only supports the basic copying of local files into the container. \n\nUse **ADD** only when you need its extra features: \n1. Downloading files from a URL. \n2. Automatically extracting local tarballs/archives into the image.",
+      "codeExamples": [
+        {
+          "title": "Examples",
+          "code": "# Standard usage\nCOPY app.js /app/\n\n# Specific ADD usage (extracting)\nADD source.tar.gz /app/",
+          "explanation": "ADD will detect the .tar.gz and extract its contents automatically."
+        }
+      ],
+      "notes": [
+        "If you use ADD to download a file from a URL, you'll end up with an extra layer. It's often better to use 'RUN curl ...' instead."
+      ],
+      "followUps": [
+        "Why is COPY preferred over ADD for most cases?",
+        "How do you keep image layers small when downloading files?"
+      ],
+      "interviewTips": [
+        "The standard answer is 'COPY is for local files, ADD is for extra magic you usually don't need'."
+      ]
+    }
+  },
+  {
+    "id": "docker-compose-purpose",
+    "sectionId": "docker-containers",
+    "orderIndex": 5,
+    "title": "Docker Compose",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Orchestration", "YAML", "Microservices"],
+    "content": {
+      "question": "What is Docker Compose and why is it used?",
+      "answer": "Docker Compose is a tool for defining and running multi-container applications. You use a YAML file to configure your application's services, networks, and volumes, then start them all with a single command.",
+      "codeExamples": [
+        {
+          "title": "Simple docker-compose.yml",
+          "code": "version: '3.8'\nservices:\n  web:\n    build: .\n    ports:\n      - \"5000:5000\"\n  redis:\n    image: \"redis:alpine\"",
+          "explanation": "This defines a web service and a redis database that can talk to each other automatically."
+        }
+      ],
+      "notes": [
+        "Compose is perfect for dev, test, and staging environments."
+      ],
+      "followUps": [
+        "How do two services in a compose file communicate with each other?",
+        "What does 'docker compose up' do?"
+      ],
+      "interviewTips": [
+        "Highlight 'infrastructure as code'—it allows you to share your entire environment setup in a single file."
+      ]
+    }
+  },
+  {
+    "id": "docker-networking-drivers",
+    "sectionId": "docker-containers",
+    "orderIndex": 6,
+    "title": "Networking Drivers",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Bridge", "Host", "Overlay", "None"],
+    "content": {
+      "question": "Explain the common Docker networking drivers.",
+      "answer": "1. **Bridge (Default)**: Private network on the host. Containers communicate via IP or name if on the same user-defined bridge.\n2. **Host**: Container shares the host's network namespace directly (no isolation, best performance).\n3. **Overlay**: Connects multiple Docker daemons together (used in Swarm). \n4. **None**: Disables all networking for the container.",
+      "codeExamples": [
+        {
+          "title": "Creating a network",
+          "code": "docker network create my-net\ndocker run -d --name db --network my-net redis\ndocker run -it --network my-net alpine ping db",
+          "explanation": "Standard bridge networking allows 'alpine' to find 'db' by its container name."
+        }
+      ],
+      "notes": [
+        "User-defined bridge networks provide automatic DNS resolution between containers."
+      ],
+      "followUps": [
+        "What is the disadvantage of using the 'host' network?",
+        "How does 'overlay' networking work across different physical servers?"
+      ],
+      "interviewTips": [
+        "Mention that 'Bridge' is for a single host, and 'Overlay' is for multi-host (Swarm/K8s)."
+      ]
+    }
+  },
+  {
+    "id": "docker-container-killing-graceful",
+    "sectionId": "docker-containers",
+    "orderIndex": 7,
+    "title": "Graceful Shutdown (Stop vs Kill)",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Lifecycle", "Signals", "SIGTERM", "SIGKILL"],
+    "content": {
+      "question": "What is the difference between 'docker stop' and 'docker kill'?",
+      "answer": "- **docker stop**: Sends a `SIGTERM` signal to the process, giving it time to shut down gracefully (close DB connections, finish tasks). After a timeout (default 10s), it sends `SIGKILL`.\n- **docker kill**: Sends `SIGKILL` immediately. The process is terminated abruptly without a chance to clean up.",
+      "codeExamples": [
+        {
+          "title": "Custom timeout",
+          "code": "# Give the app 30 seconds to stop gracefully\ndocker stop -t 30 my-container",
+          "explanation": "Useful for apps that need more time to finish background jobs during deployment."
+        }
+      ],
+      "notes": [
+        "If you use 'shell form' (CMD node index.js) instead of 'exec form' (CMD [\"node\", \"index.js\"]), the shell doesn't always pass signals to the app, making 'docker stop' behave like 'docker kill'."
+      ],
+      "followUps": [
+        "How can you verify if your app received the SIGTERM signal?",
+        "What is Pid 1 in a container?"
+      ],
+      "interviewTips": [
+        "Explain that graceful shutdowns are critical for preventing data corruption in production."
+      ]
+    }
+  },
+  {
+    "id": "dockerize-node-app-best-practices",
+    "sectionId": "docker-containers",
+    "orderIndex": 8,
+    "title": "Dockerizing Node.js Apps",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Layer Caching", "Node.js", "Optimization"],
+    "content": {
+      "question": "How do you optimize a Dockerfile for a Node.js application to speed up builds?",
+      "answer": "The most important trick is **Layer Caching**. You should copy `package.json` and run `npm install` *before* copying the rest of your source code. This way, Docker only re-runs `npm install` if your dependencies change, not every time you edit a line of code.",
+      "codeExamples": [
+        {
+          "title": "Optimized Dockerfile",
+          "code": "FROM node:18-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nCMD [\"node\", \"index.js\"]",
+          "explanation": "If only source files changed, Docker skips 'npm install' and uses the cached layer, saving minutes."
+        }
+      ],
+      "notes": [
+        "Using alpine images specifically for Node reduces image size from ~900MB to ~100MB."
+      ],
+      "followUps": [
+        "What should go in a .dockerignore file for a Node project?",
+        "Why use 'npm ci' instead of 'npm install' in Docker?"
+      ],
+      "interviewTips": [
+        "Layer caching is a favorite interview topic—be ready to explain the order of commands."
+      ]
+    }
+  },
+  {
+    "id": "docker-security-best-practices",
+    "sectionId": "docker-containers",
+    "orderIndex": 9,
+    "title": "Container Security",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Security", "User", "Scanning", "Read-only"],
+    "content": {
+      "question": "What are the top security best practices for Docker images?",
+      "answer": "1. **Don't run as root**: Always use a non-privileged USER in the Dockerfile.\n2. **Scan for vulnerabilities**: Use tools like Snyk or Docker Scout.\n3. **Use small base images**: Alpine or Distroless reduce the attack surface.\n4. **Don't store secrets**: Never hardcode API keys or credentials in an image.\n5. **Read-only filesystem**: Use `--read-only` flag at runtime to prevent attackers from writing to the disk.",
+      "codeExamples": [
+        {
+          "title": "Setting a non-root user",
+          "code": "FROM node:18-alpine\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\nUSER appuser\nWORKDIR /home/appuser/app\n# ... rest of Dockerfile",
+          "explanation": "If the container is compromised, the attacker only has access to the 'appuser' permissions, not the whole host."
+        }
+      ],
+      "notes": [
+        "Secrets should be injected via environment variables or secret management systems (Vault, AWS Secrets Manager) at runtime."
+      ],
+      "followUps": [
+        "What is a Distroless image?",
+        "How do you pass secrets securely to a container?"
+      ],
+      "interviewTips": [
+        "Mentioning 'Principle of Least Privilege' shows deep security awareness."
+      ]
+    }
+  },
+  {
+    "id": "docker-logs-troubleshooting",
+    "sectionId": "docker-containers",
+    "orderIndex": 10,
+    "title": "Troubleshooting & Logs",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["CLI", "Logs", "Debugging"],
+    "content": {
+      "question": "How do you troubleshoot a container that starts and immediately exits?",
+      "answer": "1. **Check Logs**: `docker logs <container_id>` is the first step.\n2. **Inspect**: `docker inspect` to see exit codes and status.\n3. **Override Command**: Try running with an interactive shell: `docker run -it my-image /bin/sh` to manually test the environment.",
+      "codeExamples": [
+        {
+          "title": "Viewing logs",
+          "code": "# Tailing logs to see issues in real-time\ndocker logs -f --tail 100 my-app",
+          "explanation": "-f follows the log, --tail 100 shows the last 100 lines."
+        }
+      ],
+      "notes": [
+        "Most crashes are due to missing environment variables or network connection failures to databases."
+      ],
+      "followUps": [
+        "How do you check current resource usage (CPU/RAM) of a container?",
+        "What does the '--rm' flag do in docker run?"
+      ],
+      "interviewTips": [
+        "Talk about 'Exit 0' vs 'Exit 1' or 'Exit 137' (OOM Killed)—it shows practical experience."
+      ]
+    }
+  },
+  {
+    "id": "docker-storage-layers-copy-on-write",
+    "sectionId": "docker-containers",
+    "orderIndex": 11,
+    "title": "Layering & Copy-on-Write",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Filesystem", "OverlayFS", "Efficiency"],
+    "content": {
+      "question": "How does Docker's layering and Copy-on-Write (CoW) mechanism work?",
+      "answer": "Docker images are a stack of read-only layers. When a container is started, a new writable 'container layer' is added on top. \n\nIf you modify a file from the image, Docker copies the file from the read-only layer into the writable layer (Copy-on-Write) and applies the change there. This allows multiple containers to share the same base image layers without conflict.",
+      "codeExamples": [
+        {
+          "title": "Visualizing layers",
+          "code": "# See the size and command of each layer\ndocker history my-image",
+          "explanation": "Each line in 'history' corresponds to an instruction in the Dockerfile that created a layer."
+        }
+      ],
+      "notes": [
+        "This is why 'docker pull' is remarkably fast if you already have pieces of the image."
+      ],
+      "followUps": [
+        "What is the maximum number of layers allowed in Docker?",
+        "How do you combine multiple RUN instructions to reduce layers?"
+      ],
+      "interviewTips": [
+        "Explain CoW as 'Efficient resource sharing'—it's how Docker starts hundreds of containers in seconds."
+      ]
+    }
+  },
+  {
+    "id": "docker-ignore-file",
+    "sectionId": "docker-containers",
+    "orderIndex": 12,
+    "title": ".dockerignore",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Dockerfile", "Build Context", "Optimization"],
+    "content": {
+      "question": "What is a .dockerignore file and why is it important for build performance?",
+      "answer": "It works exactly like `.gitignore`. It prevents specific files/directories from being sent to the Docker daemon as part of the 'build context'. \n\n**Commonly ignored**: `node_modules`, `.git`, `.env`, and documentation.",
+      "codeExamples": [
+        {
+          "title": "Typical .dockerignore",
+          "code": "# .dockerignore\nnode_modules\n.git\n.env\ndist\nnpm-debug.log\nDockerfile\n.dockerignore",
+          "explanation": "By ignoring 'node_modules', the 'COPY . .' command won't copy your local, probably OS-specific modules into the Linux-based container."
+        }
+      ],
+      "notes": [
+        "The Dockerfile is usually the first thing listed in the context, but it's often ignored if it doesn't need to be part of the final image."
+      ],
+      "followUps": [
+        "What happens if you don't have a .dockerignore file?",
+        "How can you check what is being sent in the build context?"
+      ],
+      "interviewTips": [
+        "Mention that a missing .dockerignore is the #1 cause of slow Docker builds."
+      ]
+    }
+  },
+  {
+    "id": "docker-exec-vs-shell-form",
+    "sectionId": "docker-containers",
+    "orderIndex": 13,
+    "title": "Exec Form vs. Shell Form",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["Signals", "PID 1", "Dockerfile"],
+    "content": {
+      "question": "Explain the difference between the 'Exec form' and 'Shell form' of instructions like CMD and RUN.",
+      "answer": "- **Exec form** (JSON): `[\"executable\", \"param\"]`. Recommended. It runs the executable directly without a shell wrapper. It receives OS signals properly (SIGTERM).\n- **Shell form**: `executable param`. It runs the command as `/bin/sh -c executable param`. \n\n**Why it matters**: In the shell form, the shell process becomes PID 1, not your application. Shells often don't pass OS signals to their children. This means when you run `docker stop`, your app won't get the 'graceful shutdown' signal and will be killed abruptly after 10 seconds.",
+      "codeExamples": [
+        {
+          "title": "Exec vs Shell",
+          "code": "# EXEC FORM (Recommended)\nCMD [\"node\", \"server.js\"]\n\n# SHELL FORM (Avoid for entry/cmd)\nCMD node server.js\n# Internally runs as: /bin/sh -c 'node server.js'",
+          "explanation": "The JSON array syntax ensures your app is PID 1 and shuts down gracefully."
+        }
+      ],
+      "notes": [
+        "Exec form does NOT do variable expansion (e.g., $HOME won't work). If you need shell features, you can do: CMD [\"/bin/sh\", \"-c\", \"echo $HOME\"]."
+      ],
+      "followUps": [
+        "What is the 'init' flag (--init) in docker run?",
+        "How do you handle zombie processes in Docker?"
+      ],
+      "interviewTips": [
+        "Explain 'Graceful Shutdown'—it shows you care about data integrity and smooth deployments."
+      ]
+    }
+  },
+  {
+    "id": "docker-bind-mount-permissions",
+    "sectionId": "docker-containers",
+    "orderIndex": 14,
+    "title": "Bind Mount Permissions",
+    "difficulty": "Advanced",
+    "type": "Situational",
+    "concepts": ["UID/GID", "User mapping", "Permission denied"],
+    "content": {
+      "question": "How do you handle 'Permission Denied' errors when using bind mounts between Linux hosts and containers?",
+      "answer": "This is a common issue because Docker doesn't automatically map UIDs (User IDs) between host and container. If a file on the host is owned by UID 1000 and the container user is UID 0 (root), it works. But if your container user is 1001, it will fail.\n\n**Solutions**:\n1. **Matching UID**: Ensure the container user has the same UID as the host user.\n2. **Entrypoint Script**: Use a script that changes the ownership of mounted volumes at runtime (requires root to start).\n3. **User Namespaces**: Enable user namespace remapping in the Docker daemon (most secure).\n4. **Lazy Fix**: Change host file permissions to 777 (dangerous/not recommended).",
+      "codeExamples": [
+        {
+          "title": "Passing UID/GID at runtime",
+          "code": "# Pass the current user's UID and GID to the container\ndocker run -u $(id -u):$(id -g) -v $(pwd):/app node:alpine npm install",
+          "explanation": "This tells Docker to run the process as the exact same user that owns the files on the host, preventing all permission issues."
+        }
+      ],
+      "notes": [
+        "On Docker Desktop (Windows/Mac), Docker performs a magic translation for you, so this is rarely an issue there. It mostly affects raw Linux servers."
+      ],
+      "followUps": [
+        "What is 'chown' vs 'chmod'?",
+        "How do you verify the UID of a user inside a container?"
+      ],
+      "interviewTips": [
+        "This is a 'battle-tested' question. It shows you've worked in production Linux environments."
+      ]
+    }
+  },
+  {
+    "id": "docker-prune-cleanup",
+    "sectionId": "docker-containers",
+    "orderIndex": 15,
+    "title": "Cleanup Commands",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Prune", "Storage", "Cleanup"],
+    "content": {
+      "question": "How do you clean up unused Docker images, containers, and volumes?",
+      "answer": "Use `docker system prune`. To remove everything including unused images and volumes, use `docker system prune -a --volumes`."
+    }
+  },
+  {
+    "id": "docker-container-restart-policy",
+    "sectionId": "docker-containers",
+    "orderIndex": 16,
+    "title": "Restart Policies",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Restart", "Always", "Unless-stopped"],
+    "content": {
+      "question": "What are the different Docker restart policies?",
+      "answer": "`no` (default), `on-failure` (only if exit code non-zero), `always` (always restarts), `unless-stopped` (restarts unless manually stopped)."
+    }
+  },
+  {
+    "id": "docker-inspect-network",
+    "sectionId": "docker-containers",
+    "orderIndex": 17,
+    "title": "Inspecting Network",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Network", "Inspect"],
+    "content": {
+      "question": "How do you find the IP address of a running container?",
+      "answer": "Use `docker inspect <container_id>` and look under the `NetworkSettings` section, or run `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container_id>`."
+    }
+  },
+  {
+    "id": "docker-build-args-vs-env",
+    "sectionId": "docker-containers",
+    "orderIndex": 18,
+    "title": "ARG vs. ENV",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["ARG", "ENV", "Build Time", "Runtime"],
+    "content": {
+      "question": "What is the difference between ARG and ENV?",
+      "answer": "`ARG` is only available during the build process and is not available in the running container. `ENV` is available both during build and at runtime inside the container."
+    }
+  },
+  {
+    "id": "docker-diff-command",
+    "sectionId": "docker-containers",
+    "orderIndex": 19,
+    "title": "Docker Diff",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Filesystem", "Diff"],
+    "content": {
+      "question": "What does the 'docker diff' command do?",
+      "answer": "It shows the changes made to the container's filesystem since it was created from the image (Additions, Deletions, Modifications)."
+    }
+  },
+  {
+    "id": "docker-save-vs-export",
+    "sectionId": "docker-containers",
+    "orderIndex": 20,
+    "title": "Save vs. Export",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Export", "Save", "Image", "Container"],
+    "content": {
+      "question": "What is the difference between 'docker save' and 'docker export'?",
+      "answer": "`docker save` saves an **image** with its history and layers. `docker export` exports a **running container's** filesystem as a flat tarball, losing all history and layers."
+    }
+  },
+  {
+    "id": "docker-top-command",
+    "sectionId": "docker-containers",
+    "orderIndex": 21,
+    "title": "Docker Top",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Processes", "Top"],
+    "content": {
+      "question": "How do you see the processes running inside a container?",
+      "answer": "Use the `docker top <container_id>` command."
+    }
+  },
+  {
+    "id": "docker-volume-prune",
+    "sectionId": "docker-containers",
+    "orderIndex": 22,
+    "title": "Pruning Volumes",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Volume", "Cleanup"],
+    "content": {
+      "question": "How do you remove all unused local volumes?",
+      "answer": "Run `docker volume prune`."
+    }
+  },
+  {
+    "id": "docker-cp-command",
+    "sectionId": "docker-containers",
+    "orderIndex": 23,
+    "title": "Copying Files",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Copy", "CLI"],
+    "content": {
+      "question": "How do you copy a file from the host to a running container?",
+      "answer": "Use `docker cp <host_path> <container_id>:<container_path>`."
+    }
+  },
+  {
+    "id": "docker-commit-command",
+    "sectionId": "docker-containers",
+    "orderIndex": 24,
+    "title": "Docker Commit",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Commit", "Image Creation"],
+    "content": {
+      "question": "What is 'docker commit' and is it recommended?",
+      "answer": "It creates a new image from a container's current state. It is generally **not recommended** because it's not reproducible; the best practice is to use a Dockerfile."
+    }
+  },
+  {
+    "id": "docker-history-command",
+    "sectionId": "docker-containers",
+    "orderIndex": 25,
+    "title": "Image History",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Layers", "History"],
+    "content": {
+      "question": "How do you see the layers and commands used to build an image?",
+      "answer": "Use `docker history <image_name>`."
+    }
+  },
+  {
+    "id": "docker-user-namespace-remapping",
+    "sectionId": "docker-containers",
+    "orderIndex": 26,
+    "title": "User Namespaces",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Security", "User Namespace"],
+    "content": {
+      "question": "What is User Namespace Remapping?",
+      "answer": "It maps the root user inside a container to a non-privileged user on the host, preventing the container-root from having host-root powers if it escapes."
+    }
+  },
+  {
+    "id": "docker-healthcheck-instruction",
+    "sectionId": "docker-containers",
+    "orderIndex": 27,
+    "title": "HEALTHCHECK",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Health", "Dockerfile"],
+    "content": {
+      "question": "What is the HEALTHCHECK instruction in a Dockerfile?",
+      "answer": "It tells Docker how to test if the container is still working (e.g., by running a `curl` command against the app's health endpoint)."
+    }
+  },
+  {
+    "id": "docker-tmpfs-mounts",
+    "sectionId": "docker-containers",
+    "orderIndex": 28,
+    "title": "Tmpfs Mounts",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["RAM", "Performance"],
+    "content": {
+      "question": "What is a tmpfs mount?",
+      "answer": "A mount that lives only in the host's memory (RAM), not on disk. Useful for sensitive data or high-speed temporary files."
+    }
+  },
+  {
+    "id": "docker-compose-scaling",
+    "sectionId": "docker-containers",
+    "orderIndex": 29,
+    "title": "Compose Scaling",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Scaling", "Compose"],
+    "content": {
+      "question": "How do you scale a service in Docker Compose?",
+      "answer": "Use `docker compose up --scale web=5` to run 5 instances of the 'web' service."
+    }
+  },
+  {
+    "id": "docker-context-management",
+    "sectionId": "docker-containers",
+    "orderIndex": 30,
+    "title": "Docker Context",
+    "difficulty": "Advanced",
+    "type": "Experience",
+    "concepts": ["Context", "Remote Docker"],
+    "content": {
+      "question": "What is a Docker Context?",
+      "answer": "A way to manage different Docker environments (e.g., local, remote server, cloud) and switch between them easily using `docker context use`."
+    }
+  },
+  {
+    "id": "docker-storage-drivers",
+    "sectionId": "docker-containers",
+    "orderIndex": 31,
+    "title": "Storage Drivers",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Overlay2", "Aufs", "Storage"],
+    "content": {
+      "question": "What is a storage driver (e.g., overlay2)?",
+      "answer": "The technology that manages how image layers are stored and combined. `overlay2` is the current modern standard for Linux."
+    }
+  },
+  {
+    "id": "docker-kill-vs-stop",
+    "sectionId": "docker-containers",
+    "orderIndex": 32,
+    "title": "Kill vs. Stop",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Signals", "Lifecycle"],
+    "content": {
+      "question": "What is the difference between 'docker stop' and 'docker kill'?",
+      "answer": "`stop` sends SIGTERM and waits for graceful shutdown; `kill` sends SIGKILL for immediate termination."
+    }
+  },
+  {
+    "id": "docker-rename-container",
+    "sectionId": "docker-containers",
+    "orderIndex": 33,
+    "title": "Renaming Containers",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Rename", "CLI"],
+    "content": {
+      "question": "How do you rename an existing container?",
+      "answer": "Use `docker rename <old_name> <new_name>`."
+    }
+  },
+  {
+    "id": "docker-pause-unpause",
+    "sectionId": "docker-containers",
+    "orderIndex": 34,
+    "title": "Pause/Unpause",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Signals", "Status"],
+    "content": {
+      "question": "What do 'docker pause' and 'docker unpause' do?",
+      "answer": "They suspend all processes in the container using the cgroups freezer, stopping execution without killing the container."
+    }
+  },
+  {
+    "id": "docker-onbuild-instruction",
+    "sectionId": "docker-containers",
+    "orderIndex": 35,
+    "title": "ONBUILD",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Dockerfile", "Automation"],
+    "content": {
+      "question": "What is the ONBUILD instruction?",
+      "answer": "It adds a trigger instruction to an image that will be executed when the image is used as a base for another build."
+    }
+  },
+  {
+    "id": "docker-multi-platform-builds",
+    "sectionId": "docker-containers",
+    "orderIndex": 36,
+    "title": "Multi-platform Build",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Buildx", "ARM", "AMD64"],
+    "content": {
+      "question": "How do you build a Docker image for multiple architectures (e.g., ARM64 and AMD64)?",
+      "answer": "Use `docker buildx build --platform linux/amd64,linux/arm64 -t tag .`."
+    }
+  },
+  {
+    "id": "docker-volume-drivers",
+    "sectionId": "docker-containers",
+    "orderIndex": 37,
+    "title": "Volume Drivers",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Volume", "NFS", "EBS"],
+    "content": {
+      "question": "What are Docker volume drivers?",
+      "answer": "Plugins that allow Docker to store volume data on external systems like NFS, AWS EBS, or Azure Files."
+    }
+  },
+  {
+    "id": "docker-network-prune",
+    "sectionId": "docker-containers",
+    "orderIndex": 38,
+    "title": "Pruning Networks",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Network", "Cleanup"],
+    "content": {
+      "question": "How do you remove all unused networks?",
+      "answer": "Run `docker network prune`."
+    }
+  },
+  {
+    "id": "docker-container-stats-stream",
+    "sectionId": "docker-containers",
+    "orderIndex": 39,
+    "title": "Stats Streaming",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Metrics", "Monitoring"],
+    "content": {
+      "question": "How do you get a live stream of CPU and Memory usage for all containers?",
+      "answer": "Run `docker stats`."
+    }
+  },
+  {
+    "id": "docker-logging-drivers",
+    "sectionId": "docker-containers",
+    "orderIndex": 40,
+    "title": "Logging Drivers",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Logs", "Json-file", "Syslog", "Fluentd"],
+    "content": {
+      "question": "What are Docker logging drivers?",
+      "answer": "They determine how container logs are handled (e.g., `json-file`, `syslog`, `journald`, `fluentd`, `awslogs`)."
+    }
+  },
+  {
+    "id": "docker-run-it-meaning",
+    "sectionId": "docker-containers",
+    "orderIndex": 41,
+    "title": "Interactive Terminal",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["CLI", "Terminal"],
+    "content": {
+      "question": "What do the '-i' and '-t' flags do in 'docker run -it'?",
+      "answer": "`-i` (interactive) keeps STDIN open; `-t` (tty) allocates a pseudo-TTY (terminal)."
+    }
+  },
+  {
+    "id": "docker-rm-v-flag",
+    "sectionId": "docker-containers",
+    "orderIndex": 42,
+    "title": "Removing Volumes with Containers",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Cleanup", "Volumes"],
+    "content": {
+      "question": "How do you remove a container and its associated anonymous volumes at once?",
+      "answer": "Use `docker rm -v <container_id>`."
+    }
+  },
+  {
+    "id": "docker-env-file-loading",
+    "sectionId": "docker-containers",
+    "orderIndex": 43,
+    "title": "ENV File",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Env", "Security"],
+    "content": {
+      "question": "How do you pass an environment variable file to a container?",
+      "answer": "Use `docker run --env-file <path_to_file> <image>`."
+    }
+  },
+  {
+    "id": "docker-shm-size",
+    "sectionId": "docker-containers",
+    "orderIndex": 44,
+    "title": "Shared Memory",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Memory", "Performance"],
+    "content": {
+      "question": "How do you increase the shared memory size (/dev/shm) for a container?",
+      "answer": "Use the `--shm-size` flag (e.g., `--shm-size=2g`). Useful for heavy browser-based workloads or certain databases."
+    }
+  },
+  {
+    "id": "docker-search-command",
+    "sectionId": "docker-containers",
+    "orderIndex": 45,
+    "title": "Searching Hub",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Registry", "Search"],
+    "content": {
+      "question": "How do you search for an image on Docker Hub from the CLI?",
+      "answer": "Use `docker search <image_name>`."
+    }
+  },
+  {
+    "id": "docker-update-running-container",
+    "sectionId": "docker-containers",
+    "orderIndex": 46,
+    "title": "Updating Limits",
+    "difficulty": "Advanced",
+    "type": "Experience",
+    "concepts": ["Resource", "Hot Update"],
+    "content": {
+      "question": "Can you update resource limits (CPU/Memory) of a running container?",
+      "answer": "Yes, using the `docker update` command (e.g., `docker update --cpu-shares 512 <id>`)."
+    }
+  },
+  {
+    "id": "docker-wait-command",
+    "sectionId": "docker-containers",
+    "orderIndex": 47,
+    "title": "Wait Command",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Scripts", "Lifecycle"],
+    "content": {
+      "question": "What does 'docker wait' do?",
+      "answer": "It blocks until a container stops, then prints its exit code. Useful for automation scripts."
+    }
+  },
+  {
+    "id": "docker-port-mapping-check",
+    "sectionId": "docker-containers",
+    "orderIndex": 48,
+    "title": "Checking Ports",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Network", "Ports"],
+    "content": {
+      "question": "How do you see all port mappings for a specific container?",
+      "answer": "Run `docker port <container_id>`."
+    }
+  },
+  {
+    "id": "docker-image-filtering",
+    "sectionId": "docker-containers",
+    "orderIndex": 49,
+    "title": "Filtering Images",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Dangling", "Filtering"],
+    "content": {
+      "question": "How do you list only 'dangling' (untagged) images?",
+      "answer": "Run `docker images -f dangling=true`."
+    }
+  },
+  {
+    "id": "docker-user-id-check",
+    "sectionId": "docker-containers",
+    "orderIndex": 50,
+    "title": "User Check",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Security", "User"],
+    "content": {
+      "question": "How do you check which user is running inside a container without opening a shell?",
+      "answer": "Run `docker exec <id> whoami`."
+    }
+  }
+]

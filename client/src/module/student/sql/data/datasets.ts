@@ -1,4 +1,92 @@
 export const datasets: Record<string, string> = {
+  // No-table dataset for exercises that only need a fresh SQLite connection.
+  utility: `
+PRAGMA user_version = 0;
+`,
+
+  store: `
+CREATE TABLE customers (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  region TEXT,
+  signup_date TEXT
+);
+
+CREATE TABLE orders (
+  id INTEGER PRIMARY KEY,
+  customer_id INTEGER,
+  order_date TEXT,
+  status TEXT,
+  total REAL
+);
+
+CREATE TABLE products (
+  sku TEXT PRIMARY KEY,
+  name TEXT,
+  category TEXT
+);
+
+CREATE TABLE order_items (
+  order_id INTEGER,
+  sku TEXT,
+  quantity INTEGER,
+  unit_price REAL
+);
+
+INSERT INTO customers VALUES (1, 'Ava North', 'East', '2024-01-05');
+INSERT INTO customers VALUES (2, 'Ben Ortiz', 'West', '2024-01-18');
+INSERT INTO customers VALUES (3, 'Chloe Singh', 'East', '2024-02-02');
+INSERT INTO customers VALUES (4, 'Diego Kim', 'South', '2024-02-15');
+INSERT INTO customers VALUES (5, 'Emma Rossi', 'West', '2024-03-01');
+INSERT INTO customers VALUES (6, 'Finn Lee', 'North', '2024-03-12');
+INSERT INTO customers VALUES (7, 'Grace Hall', 'East', '2024-03-18');
+INSERT INTO customers VALUES (8, 'Hugo Park', 'South', '2024-04-01');
+
+INSERT INTO orders VALUES (1001, 1, '2024-01-10', 'completed', 120.00);
+INSERT INTO orders VALUES (1002, 1, '2024-02-05', 'completed', 80.00);
+INSERT INTO orders VALUES (1003, 2, '2024-01-25', 'completed', 220.00);
+INSERT INTO orders VALUES (1004, 2, '2024-03-02', 'refunded', 60.00);
+INSERT INTO orders VALUES (1005, 3, '2024-02-20', 'completed', 150.00);
+INSERT INTO orders VALUES (1006, 3, '2024-03-14', 'completed', 75.00);
+INSERT INTO orders VALUES (1007, 4, '2024-03-01', 'completed', 310.00);
+INSERT INTO orders VALUES (1008, 5, '2024-03-20', 'completed', 45.00);
+INSERT INTO orders VALUES (1009, 5, '2024-04-03', 'completed', 135.00);
+INSERT INTO orders VALUES (1010, 6, '2024-04-09', 'pending', 90.00);
+INSERT INTO orders VALUES (1011, 8, '2024-04-15', 'completed', 180.00);
+INSERT INTO orders VALUES (1012, 1, '2024-04-20', 'completed', 95.00);
+
+INSERT INTO products VALUES ('P100', 'Solar Kit', 'Energy');
+INSERT INTO products VALUES ('P200', 'Battery Pack', 'Energy');
+INSERT INTO products VALUES ('P300', 'Water Filter', 'Utilities');
+INSERT INTO products VALUES ('P400', 'Sensor Mesh', 'Electronics');
+INSERT INTO products VALUES ('P500', 'Repair Drone', 'Robotics');
+INSERT INTO products VALUES ('P600', 'Cable Bundle', 'Utilities');
+INSERT INTO products VALUES ('P700', 'Field Tablet', 'Electronics');
+
+INSERT INTO order_items VALUES (1001, 'P100', 1, 70.00);
+INSERT INTO order_items VALUES (1001, 'P300', 2, 25.00);
+INSERT INTO order_items VALUES (1002, 'P200', 1, 80.00);
+INSERT INTO order_items VALUES (1003, 'P400', 2, 60.00);
+INSERT INTO order_items VALUES (1003, 'P500', 1, 100.00);
+INSERT INTO order_items VALUES (1004, 'P300', 2, 30.00);
+INSERT INTO order_items VALUES (1005, 'P100', 1, 70.00);
+INSERT INTO order_items VALUES (1005, 'P200', 1, 80.00);
+INSERT INTO order_items VALUES (1006, 'P300', 3, 25.00);
+INSERT INTO order_items VALUES (1007, 'P500', 2, 100.00);
+INSERT INTO order_items VALUES (1007, 'P400', 1, 60.00);
+INSERT INTO order_items VALUES (1007, 'P300', 2, 25.00);
+INSERT INTO order_items VALUES (1008, 'P600', 1, 20.00);
+INSERT INTO order_items VALUES (1008, 'P300', 1, 25.00);
+INSERT INTO order_items VALUES (1009, 'P100', 1, 70.00);
+INSERT INTO order_items VALUES (1009, 'P300', 1, 25.00);
+INSERT INTO order_items VALUES (1009, 'P600', 2, 20.00);
+INSERT INTO order_items VALUES (1010, 'P200', 1, 90.00);
+INSERT INTO order_items VALUES (1011, 'P500', 1, 100.00);
+INSERT INTO order_items VALUES (1011, 'P200', 1, 80.00);
+INSERT INTO order_items VALUES (1012, 'P100', 1, 70.00);
+INSERT INTO order_items VALUES (1012, 'P300', 1, 25.00);
+`,
+
   world: `
 CREATE TABLE world (
   name TEXT,

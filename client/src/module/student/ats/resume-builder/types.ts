@@ -59,7 +59,7 @@ export interface TemplateConfig {
   name: string;
   description: string;
   accent: string;
-  component: React.ComponentType<{ data: ResumeData }>;
+  component: React.ComponentType<{ data: ResumeData; sectionOrder?: string[] }>;
 }
 
 export const defaultResumeData: ResumeData = {

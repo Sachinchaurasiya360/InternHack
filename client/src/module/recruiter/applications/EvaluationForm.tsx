@@ -16,9 +16,20 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
   );
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
+    const outOfRange = criteria.filter((c) => {
+      const s = scores[c.id]?.score ?? 0;
+      return s < 0 || s > c.maxScore;
+    });
+    if (outOfRange.length > 0) {
+      toast.error(`Scores out of range: ${outOfRange.map((c) => c.criterion).join(", ")}`);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
+    setSaveError(null);
     try {
       await api.put(`/recruiter/applications/${applicationId}/rounds/${roundId}/evaluate`, {
         evaluationScores: scores,
@@ -27,6 +38,7 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
       onComplete();
     } catch {
       toast.error("Failed to save evaluation");
+      setSaveError("Failed to save evaluation. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -41,9 +53,14 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-white" rows={3} placeholder="Add evaluation notes..." />
         </div>
+        {saveError && (
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
+            {saveError}
+          </div>
+        )}
         <button onClick={handleSubmit} disabled={loading}
           className="px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50">
-          {loading ? "Saving..." : "Save Notes"}
+          {loading ? "Saving..." : saveError ? "Retry" : "Save Notes"}
         </button>
       </div>
     );
@@ -64,7 +81,8 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
               max={crit.maxScore}
               value={scores[crit.id]?.score || 0}
               onChange={(e) => setScores({ ...scores, [crit.id]: { ...scores[crit.id]!, score: Number(e.target.value) } })}
-              className="flex-1"
+              aria-valuetext={`${scores[crit.id]?.score || 0} out of ${crit.maxScore}`}
+              className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded appearance-none cursor-pointer accent-blue-600"
             />
             <span className="text-sm font-bold w-10 text-right dark:text-white">{scores[crit.id]?.score || 0}</span>
           </div>
@@ -84,9 +102,15 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-white" rows={2} placeholder="Add notes..." />
       </div>
 
+      {saveError && (
+        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
+          {saveError}
+        </div>
+      )}
+
       <button onClick={handleSubmit} disabled={loading}
         className="px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50">
-        {loading ? "Saving..." : "Save Evaluation"}
+        {loading ? "Saving..." : saveError ? "Retry" : "Save Evaluation"}
       </button>
     </div>
   );

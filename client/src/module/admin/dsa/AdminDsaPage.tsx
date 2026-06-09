@@ -47,9 +47,8 @@ export default function AdminDsaPage() {
       .catch(() => setLoading(false));
   }, [search]);
 
-  useEffect(() => {
-    fetchTopics();
-  }, [fetchTopics]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchTopics(); }, [fetchTopics]);
 
   const handleEdit = async (id: number) => {
     try {

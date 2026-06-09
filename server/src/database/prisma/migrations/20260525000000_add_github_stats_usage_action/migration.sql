@@ -1,0 +1,1 @@
+ALTER TYPE "UsageAction" ADD VALUE 'GITHUB_STATS';

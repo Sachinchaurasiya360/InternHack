@@ -630,12 +630,12 @@ function GraphSVG({
 
 function SCCSection() {
   const { ids, edges } = FIXED_SCC_GRAPH;
-  const frames = useMemo(() => buildTarjanFrames(ids, edges), []);
+  const frames = useMemo(() => buildTarjanFrames(ids, edges), [ids, edges]);
   const player = useStepPlayer(frames);
   const frame = player.current;
   const pos = useMemo(
     () => circleLayout(ids, SVG_W / 2, SVG_H / 2 - 10, 100),
-    [],
+    [ids],
   );
 
   const sccColors = frame
@@ -798,12 +798,12 @@ function SCCSection() {
 
 function BridgeSection() {
   const { ids, edges } = FIXED_BRIDGE_GRAPH;
-  const frames = useMemo(() => buildBridgeFrames(ids, edges), []);
+  const frames = useMemo(() => buildBridgeFrames(ids, edges), [ids, edges]);
   const player = useStepPlayer(frames);
   const frame = player.current;
   const pos = useMemo(
     () => circleLayout(ids, SVG_W / 2, SVG_H / 2, 100),
-    [],
+    [ids],
   );
 
   return (

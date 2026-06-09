@@ -253,8 +253,8 @@ function VisualizeTab() {
   const [newVal, setNewVal] = useState(77);
   const [cycleStart, setCycleStart] = useState(1);
 
-  const values = parseList(listStr);
   const frames = useMemo(() => {
+    const values = parseList(listStr);
     if (mode === "floyd") return buildFloyd(values, Math.min(cycleStart, values.length - 1));
     if (mode === "circular") {
       return [{ line: 0, vars: { head: values[0], tail: values[values.length - 1] }, message: "Circular list, last node's next wraps to head", values, hasCycle: true } as Frame];
@@ -300,7 +300,7 @@ function VisualizeTab() {
               <label className="flex items-center gap-2 text-xs text-stone-500 font-medium">
                 Insert after index:
                 <input type="number" value={afterIdx} onChange={(e) => setAfterIdx(Number(e.target.value) || 0)}
-                  min={0} max={values.length - 1}
+                  min={0} max={parseList(listStr).length - 1}
                   className="w-16 px-2 py-1 border border-stone-200 dark:border-white/10 rounded-md font-mono text-sm bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50" />
               </label>
               <label className="flex items-center gap-2 text-xs text-stone-500 font-medium">
@@ -314,7 +314,7 @@ function VisualizeTab() {
             <label className="flex items-center gap-2 text-xs text-stone-500 font-medium">
               Cycle starts at index (-1 = no cycle):
               <input type="number" value={cycleStart} onChange={(e) => setCycleStart(Number(e.target.value))}
-                min={-1} max={values.length - 1}
+                min={-1} max={parseList(listStr).length - 1}
                 className="w-16 px-2 py-1 border border-stone-200 dark:border-white/10 rounded-md font-mono text-sm bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50" />
             </label>
           )}

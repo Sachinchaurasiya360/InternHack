@@ -14,6 +14,7 @@ export default function CICDGuidePage() {
       seoTitle="CI/CD Basics for Open Source Contributors"
       seoDescription="Learn to fix CI/CD failures in open source: lint errors, test failures, type check errors, and build errors. Read CI logs and debug pipeline issues like a pro."
       seoKeywords="CI/CD open source, fix CI failure, lint errors, test failure, GitHub Actions, build errors"
+      ogImage="/og/og-cicd.png"
       icon={Settings}
       iconColor="text-cyan-500"
     />

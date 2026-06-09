@@ -433,6 +433,7 @@ function LinkCompanyModal({
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!query.trim()) { setResults([]); return; }
     const t = setTimeout(async () => {
       try {

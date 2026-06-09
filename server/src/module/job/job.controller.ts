@@ -1,7 +1,8 @@
 import type { Request, Response } from "express";
-import { createJobSchema, updateJobSchema, updateJobStatusSchema, jobQuerySchema } from "./types.validation.js";
+import { createJobSchema, updateJobSchema, updateJobStatusSchema, jobQuerySchema } from "./job.validation.js";
 import { JobService } from "./job.service.js";
 import { createLogger } from "../../utils/logger.js";
+import { clearCache } from "../../middleware/cache.middleware.js";
 
 const logger = createLogger("JobController");
 
@@ -20,8 +21,12 @@ export class JobController {
       }
 
       const job = await this.jobService.createJob({ ...result.data, recruiterId: req.user.id });
+      clearCache("jobs:list");
       return res.status(201).json({ message: "Job created successfully", job });
     } catch (error) {
+      if (error instanceof Error && error.message === "Deadline must be in the future") {
+        return res.status(422).json({ message: error.message });
+      }
       logger.error("Failed to create job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
@@ -29,7 +34,9 @@ export class JobController {
 
   async getJobs(req: Request, res: Response) {
     try {
-      const query = jobQuerySchema.parse(req.query);
+      const result = jobQuerySchema.safeParse(req.query);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+      const query = result.data;
       const data = await this.jobService.getJobs(query);
       return res.status(200).json(data);
     } catch (error) {
@@ -71,13 +78,36 @@ export class JobController {
     }
   }
 
+  async getRelatedJobs(req: Request, res: Response) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid job ID" });
+      }
+
+      const rawLimit = Number.parseInt(String(req.query["limit"] ?? "4"), 10);
+      const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(rawLimit, 1), 4) : 4;
+      const jobs = await this.jobService.getRelatedJobs(id, limit);
+      if (!jobs) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+
+      return res.status(200).json({ jobs });
+    } catch (error) {
+      logger.error("Failed to get related jobs", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   async getRecruiterJobs(req: Request, res: Response) {
     try {
       if (!req.user) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const query = jobQuerySchema.parse(req.query);
+      const result = jobQuerySchema.safeParse(req.query);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+      const query = result.data;
       const data = await this.jobService.getRecruiterJobs(req.user.id, query);
       return res.status(200).json(data);
     } catch (error) {
@@ -103,6 +133,9 @@ export class JobController {
       }
 
       const job = await this.jobService.updateJob(id, req.user.id, result.data);
+      clearCache("jobs:list");
+      clearCache("jobs:detail");
+      clearCache("jobs:related");
       return res.status(200).json({ message: "Job updated successfully", job });
     } catch (error) {
       if (error instanceof Error) {
@@ -131,6 +164,8 @@ export class JobController {
       }
 
       const job = await this.jobService.updateJobStatus(id, req.user.id, result.data.status);
+      clearCache("jobs:list");
+      clearCache("jobs:detail");
       return res.status(200).json({ message: "Job status updated", job });
     } catch (error) {
       if (error instanceof Error) {
@@ -154,6 +189,9 @@ export class JobController {
       }
 
       await this.jobService.deleteJob(id, req.user.id);
+      clearCache("jobs:list");
+      clearCache("jobs:detail");
+      clearCache("jobs:related");
       return res.status(200).json({ message: "Job deleted successfully" });
     } catch (error) {
       if (error instanceof Error) {

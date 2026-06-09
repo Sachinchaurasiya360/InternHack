@@ -5,6 +5,9 @@ import toast, { Toaster } from "./components/ui/toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
+import BackToTopButton from "./components/common/BackToTopButton";
+import ScrollToTop from "./components/common/ScrollToTop";
+const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
 function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
   return lazy(() =>
@@ -30,6 +33,7 @@ const ForgotPasswordPage = lazyWithRetry(() => import("./module/auth/ForgotPassw
 const JobBrowsePage = lazyWithRetry(() => import("./module/student/jobs/JobBrowsePage"));
 const JobDetailPage = lazyWithRetry(() => import("./module/student/jobs/JobDetailPage"));
 const JobLandingPage = lazyWithRetry(() => import("./module/student/jobs/JobLandingPage"));
+const SavedJobsPage = lazyWithRetry(() => import("./module/student/jobs/SavedJobsPage"));
 const ScrapedJobsPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobsPage"));
 const ScrapedJobDetailPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobDetailPage"));
 const CompanyListPage = lazyWithRetry(() => import("./module/student/companies/CompanyListPage"));
@@ -37,6 +41,7 @@ const CompanyDetailPage = lazyWithRetry(() => import("./module/student/companies
 const PublicAtsPage = lazyWithRetry(() => import("./module/student/ats/PublicAtsPage"));
 const GrantsPage = lazyWithRetry(() => import("./module/student/grants/GrantsPage"));
 const PublicOpenSourcePage = lazyWithRetry(() => import("./module/student/opensource/PublicOpenSourcePage"));
+const RepoPublicPage = lazyWithRetry(() => import("./module/student/opensource/RepoPublicPage"));
 const BlogListPage = lazyWithRetry(() => import("./module/blog/BlogListPage"));
 const BlogPostPage = lazyWithRetry(() => import("./module/blog/BlogPostPage"));
 const RecruiterLandingPage = lazyWithRetry(() => import("./module/recruiter/RecruiterLandingPage"));
@@ -47,6 +52,7 @@ const DsaTopicsPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopics
 const DsaTopicDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicDetailPage"));
 const DsaCompaniesPage = lazyWithRetry(() => import("./module/student/dsa/DsaCompaniesPage"));
 const DsaPatternsPage = lazyWithRetry(() => import("./module/student/dsa/DsaPatternsPage"));
+const DsaListsPage = lazyWithRetry(() => import("./module/student/dsa/DsaListsPage"));
 const DsaBookmarksPage = lazyWithRetry(() => import("./module/student/dsa/DsaBookmarksPage"));
 const DsaProblemDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaProblemDetailPage"));
 const DsaFoundationsHubPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsHubPage"));
@@ -65,6 +71,7 @@ const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
 const PrivacyPage = lazyWithRetry(() => import("./module/legal/PrivacyPage"));
 const ShippingPage = lazyWithRetry(() => import("./module/legal/ShippingPage"));
 const ContactPage = lazyWithRetry(() => import("./module/legal/ContactPage"));
+const AboutPage = lazyWithRetry(() => import("./module/legal/AboutPage"));
 const RefundPage = lazyWithRetry(() => import("./module/legal/RefundPage"));
 
 // Student pages
@@ -99,6 +106,7 @@ const CommTemplatesSectionPage = lazyWithRetry(() => import("./module/student/op
 const CICDGuidePage = lazyWithRetry(() => import("./module/student/opensource/CICDGuidePage"));
 const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/CICDGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
+const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
@@ -109,6 +117,8 @@ const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPl
 const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewPage"));
 const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
+const BuildChallengesPage = lazyWithRetry(() => import("./module/student/learn/challenges/BuildChallengesPage"));
+const MentorMatchingPage = lazyWithRetry(() => import("./module/student/learn/mentors/MentorMatchingPage"));
 const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
 const ExamDetailPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamDetailPage"));
 const ExamMockPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamRunnerPage").then((m) => ({ default: m.ExamMockPage })));
@@ -154,8 +164,8 @@ const DataAnalyticsSectionPage = lazyWithRetry(() => import("./module/student/da
 const DataAnalyticsLessonDetailPage = lazyWithRetry(() => import("./module/student/data-analytics/DataAnalyticsLessonDetailPage"));
 
 // Recruiter auth pages
-const RecruiterLoginPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterLoginPage"));
-const RecruiterRegisterPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterRegisterPage"));
+// Redirected to unified auth pages
+
 
 // Recruiter pages
 const RecruiterLayout = lazyWithRetry(() => import("./module/recruiter/RecruiterLayout"));
@@ -165,6 +175,7 @@ const CreateJobPage = lazyWithRetry(() => import("./module/recruiter/jobs/Create
 const EditJobPage = lazyWithRetry(() => import("./module/recruiter/jobs/EditJobPage"));
 const ApplicationsList = lazyWithRetry(() => import("./module/recruiter/applications/ApplicationsList"));
 const ApplicationDetail = lazyWithRetry(() => import("./module/recruiter/applications/ApplicationDetail"));
+const CandidateImportPage = lazyWithRetry(() => import("./module/recruiter/applications/CandidateImportPage"));
 const JobAnalyticsPage = lazyWithRetry(() => import("./module/recruiter/analytics/JobAnalyticsPage"));
 const TalentSearchPage = lazyWithRetry(() => import("./module/recruiter/talent/TalentSearchPage"));
 const SavedCandidatesPage = lazyWithRetry(() => import("./module/recruiter/talent/SavedCandidatesPage"));
@@ -306,9 +317,11 @@ function AuthExpiredRedirect() {
 function App() {
   return (
     <>
+      <ScrollToTop />
       <AuthExpiredRedirect />
       <Toaster />
       <ErrorBoundary>
+      <BackToTopButton />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           {/* Public routes */}
@@ -327,12 +340,17 @@ function App() {
           <Route path="/companies" element={<CompanyListOrRedirect />} />
           <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
           <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
-          <Route path="/ats-score" element={<PublicAtsPage />} />
-          <Route path="/grants" element={<GrantsPage />} />
+
+
+ <Route path="/ats-score" element={<PublicAtsPage />} />
+<Route path="/grants" element={<GrantsPage />} />
+
+
           <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
-          <Route path="/recruiter/login" element={<RecruiterLoginPage />} />
-          <Route path="/recruiter/register" element={<RecruiterRegisterPage />} />
+          <Route path="/recruiter/login" element={<Navigate to="/login?role=RECRUITER" replace />} />
+          <Route path="/recruiter/register" element={<Navigate to="/register?role=RECRUITER" replace />} />
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
+          <Route path="/opensource/:owner/:name" element={<RepoPublicPage />} />
           {/* Roadmaps (public + auth) */}
           <Route path="/roadmaps" element={<RoadmapsLandingPage />} />
           <Route path="/roadmaps/:slug" element={<RoadmapDetailPage />} />
@@ -342,16 +360,20 @@ function App() {
           <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
           <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
           <Route path="/blog" element={<BlogListPage />} />
+          <Route path="/contributors" element={<ContributorsPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
           {/* Legal Pages */}
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/shipping" element={<ShippingPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/refund" element={<RefundPage />} />
           {/* Learning Hub - all learning content under /learn */}
           <Route path="/learn" element={<LearnLayout />}>
             <Route index element={<LearnHubPage />} />
+            <Route path="challenges" element={<BuildChallengesPage />} />
+            <Route path="mentors" element={<MentorMatchingPage />} />
             <Route path="javascript" element={<JsLessonsPage />} />
             <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
             <Route path="javascript/:sectionSlug/:lessonId" element={<JsLessonDetailPage />} />
@@ -389,6 +411,7 @@ function App() {
             <Route path="dsa" element={<DsaTopicsPage />} />
             <Route path="dsa/companies" element={<DsaCompaniesPage />} />
             <Route path="dsa/patterns" element={<DsaPatternsPage />} />
+            <Route path="dsa/lists" element={<DsaListsPage />} />
             <Route path="dsa/bookmarks" element={<ProtectedRoute role="STUDENT"><DsaBookmarksPage /></ProtectedRoute>} />
             <Route path="dsa/problem" element={<Navigate to="/learn/dsa" replace />} />
             <Route path="dsa/problem/:slug" element={<DsaProblemDetailPage />} />
@@ -451,6 +474,7 @@ function App() {
           <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
             <Route index element={<Navigate to="applications" replace />} />
             <Route path="jobs" element={<JobBrowsePage />} />
+            <Route path="jobs/saved" element={<SavedJobsPage />} />
             <Route path="jobs/:id" element={<JobDetailPage />} />
             <Route path="jobs/:id/apply" element={<ApplyPage />} />
             <Route path="internships" element={<GovInternshipsPage />} />
@@ -488,6 +512,7 @@ function App() {
               <Route path="communication/:sectionSlug" element={<CommTemplatesSectionPage />} />
               <Route path="cicd" element={<CICDGuidePage />} />
               <Route path="cicd/:sectionSlug" element={<CICDGuideSectionPage />} />
+              <Route path="my-submissions" element={<MySubmissionsPage />} />
             </Route>
             <Route path="ai-agent" element={<JobAgentPage />} />
             <Route path="signals" element={<SignalsPage />} />
@@ -507,12 +532,13 @@ function App() {
             <Route path="jobs/create" element={<CreateJobPage />} />
             <Route path="jobs/:id/edit" element={<EditJobPage />} />
             <Route path="jobs/:id/applications" element={<ApplicationsList />} />
+            <Route path="jobs/:id/import-candidates" element={<CandidateImportPage />} />
             <Route path="jobs/:id/analytics" element={<JobAnalyticsPage />} />
             <Route path="applications/:applicationId" element={<ApplicationDetail />} />
             <Route path="talent-search" element={<TalentSearchPage />} />
             <Route path="saved" element={<SavedCandidatesPage />} />
             <Route path="profile" element={<RecruiterProfilePage />} />
-            <Route path="profile/:id" element={<PublicProfilePage />} />
+            <Route path="profile/:identifier" element={<PublicProfilePage />} />
             {/* HR Management */}
             <Route path="hr" element={<HRDashboardPage />} />
             <Route path="hr/employees" element={<EmployeesPage />} />
@@ -561,7 +587,7 @@ function App() {
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
-            <Route path="profile/:id" element={<PublicProfilePage />} />
+            <Route path="profile/:identifier" element={<PublicProfilePage />} />
           </Route>
 
           {/* 404 catch-all */}
