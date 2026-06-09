@@ -928,49 +928,50 @@ export async function getPublicCertificateMeta(
   next: NextFunction,
 ) {
   try {
-    const rawSlug = Array.isArray(req.params.slug)
-  ? req.params.slug[0]
-  : req.params.slug;
+    const slug = Array.isArray(req.params.slug)
+      ? req.params.slug[0]
+      : req.params.slug;
 
-const parsed = roadmapSlugParam.safeParse({
-  slug: rawSlug,
-});
+    const enrollmentId = Number(req.params.enrollmentId);
 
-    if (!parsed.success) {
-      validationError(res, parsed.error.flatten().fieldErrors);
+    const parsed = roadmapSlugParam.safeParse({
+      slug,
+    });
+
+    if (!parsed.success || Number.isNaN(enrollmentId)) {
+      validationError(
+        res,
+        parsed.success
+          ? { enrollmentId: ["Invalid enrollment id"] }
+          : parsed.error.flatten().fieldErrors,
+      );
       return;
     }
 
-    const roadmap = await prisma.roadmap.findUnique({
+    const enrollment = await prisma.roadmapEnrollment.findFirst({
       where: {
-        slug: parsed.data.slug,
+        id: enrollmentId,
+        roadmap: {
+          slug: parsed.data.slug,
+        },
       },
       include: {
-        enrollments: {
-          include: {
-            user: {
-              select: {
-                name: true,
-              },
-            },
-            topicProgress: true,
+        roadmap: true,
+        user: {
+          select: {
+            name: true,
           },
-          take: 1,
+        },
+        topicProgress: {
+          where: {
+            status: "COMPLETED",
+          },
           orderBy: {
-            updatedAt: "desc",
+            completedAt: "desc",
           },
         },
       },
     });
-
-    if (!roadmap) {
-      res.status(404).json({
-        message: "Roadmap not found",
-      });
-      return;
-    }
-
-    const enrollment = roadmap.enrollments[0];
 
     if (!enrollment) {
       res.status(404).json({
@@ -984,10 +985,12 @@ const parsed = roadmapSlugParam.safeParse({
     );
 
     const percentComplete =
-      roadmap.topicCount === 0
+      enrollment.roadmap.topicCount === 0
         ? 0
         : Math.round(
-            (completedTopics.length / roadmap.topicCount) * 100,
+            (completedTopics.length /
+              enrollment.roadmap.topicCount) *
+              100,
           );
 
     if (percentComplete < 100) {
@@ -998,16 +1001,15 @@ const parsed = roadmapSlugParam.safeParse({
     }
 
     const latestCompletion =
-      completedTopics[completedTopics.length - 1]?.completedAt ??
-      new Date();
+      completedTopics[0]?.completedAt ?? new Date();
 
     res.json({
       userName: enrollment.user.name ?? "Learner",
-      roadmapTitle: roadmap.title,
-      roadmapSlug: roadmap.slug,
+      roadmapTitle: enrollment.roadmap.title,
+      roadmapSlug: enrollment.roadmap.slug,
       completedAt: latestCompletion,
-      certificateUrl: `/api/roadmaps/certificates/${roadmap.slug}/${enrollment.id}`,
-      shareUrl: `/learn/roadmaps/certificates/${roadmap.slug}/${enrollment.id}`,
+      certificateUrl: `/api/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.id}`,
+      shareUrl: `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.id}`,
     });
   } catch (err) {
     next(err);
@@ -1138,7 +1140,7 @@ export async function getMyCertificates(
         }
 
         const latestCompletion =
-          completedTopics[completedTopics.length - 1]
+          completedTopics.sort((a, b) => b.completedAt!.getTime() - a.completedAt!.getTime())[0]
             ?.completedAt ?? new Date();
 
         return {
@@ -1149,7 +1151,7 @@ export async function getMyCertificates(
           certificateUrl:
             `/api/roadmaps/me/enrollments/${enrollment.id}/certificate`,
           shareUrl:
-            `/learn/roadmaps/certificates/${enrollment.roadmap.slug}`,
+            `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.id}`,
         };
       })
       .filter(Boolean);

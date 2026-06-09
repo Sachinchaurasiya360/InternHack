@@ -158,7 +158,7 @@ export default function RoadmapDashboardPage() {
         className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
       >
         <div>
-          <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
             <span className="h-1.5 w-1.5 bg-lime-400" />
             learning / roadmaps
           </div>
@@ -191,7 +191,7 @@ export default function RoadmapDashboardPage() {
             className="group flex items-center justify-between gap-4 rounded-2xl border border-lime-400/30 bg-lime-400/10 hover:bg-lime-400/15 px-5 py-4 no-underline transition-colors"
           >
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 mb-1">
+              <p className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 mb-1">
                 certificates
               </p>
 
@@ -218,7 +218,7 @@ export default function RoadmapDashboardPage() {
         >
           <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-stone-200 dark:border-white/10">
             <div className="flex flex-col gap-1 min-w-0">
-              <span className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                 <span className="h-1 w-1 bg-lime-400" />
                 ai-powered
               </span>
@@ -226,7 +226,7 @@ export default function RoadmapDashboardPage() {
                 Skill gaps to address
               </span>
             </div>
-            <div className="shrink-0 flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-400">
+            <div className="shrink-0 flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-400">
               <Zap className="w-3 h-3 text-lime-500" />
               {weakAreas.length} area{weakAreas.length !== 1 ? "s" : ""}
             </div>

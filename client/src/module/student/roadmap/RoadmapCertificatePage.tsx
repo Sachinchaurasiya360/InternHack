@@ -12,7 +12,7 @@ interface CertificateMeta {
 }
 
 export default function RoadmapCertificatePage() {
-  const { slug } = useParams();
+  const { slug, enrolledId } = useParams();
 
   const [data, setData] = useState<CertificateMeta | null>(null);
   const [copied, setCopied] = useState(false);
@@ -20,7 +20,7 @@ export default function RoadmapCertificatePage() {
   useEffect(() => {
     async function fetchCertificate() {
       const res = await fetch(
-        `/api/roadmaps/certificates/${slug}/meta`,
+        `/api/roadmaps/certificates/${slug}/${enrolledId}/meta`,
       );
 
       if (!res.ok) return;
@@ -30,7 +30,7 @@ export default function RoadmapCertificatePage() {
     }
 
     fetchCertificate();
-  }, [slug]);
+  }, [slug, enrolledId]);
 
   if (!data) {
     return (

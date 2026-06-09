@@ -102,6 +102,7 @@ export default function RoadmapsLandingPage() {
   const completedEnrollments = useMemo(
     () =>
       enrollments.filter((e) =>
+        e.topicProgress.length > 0 &&
         e.topicProgress.every((p) => p.status === "COMPLETED")
       ),
     [enrollments]
