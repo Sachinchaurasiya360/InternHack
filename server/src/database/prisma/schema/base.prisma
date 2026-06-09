@@ -68,6 +68,7 @@ model user {
   createdSkillTests     skillTest[]                 @relation("SkillTestCreator")
   skillTestAttempts     skillTestAttempt[]          @relation("StudentSkillTestAttempts")
   aptitudeProgress      studentAptitudeProgress[]   @relation("StudentAptitudeProgress")
+  aptitudeTopicProgress studentAptitudeTopicProgress[] @relation("StudentAptitudeTopicProgress")
   studentBadges         studentBadge[]              @relation("StudentBadges")
   dsaProgress           studentDsaProgress[]        @relation("StudentDsaProgress")
   dsaSubmissions        dsaSubmission[]             @relation("StudentDsaSubmissions")
@@ -100,6 +101,7 @@ model user {
   contentViews              contentView[]                @relation("UserContentViews")
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
+  ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -180,16 +182,15 @@ model round {
   timeLimitSecs       Int?
   autoGrade           Boolean           @default(false)
   activateAt          DateTime?
-  isArchived          Boolean           @default(false)
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   job                 job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   roundSubmissions    roundSubmission[]
 
+  @@unique([jobId, orderIndex])
   @@unique([jobId, name])
   @@index([jobId])
 }
-
 
 model application {
   id                 Int               @id @default(autoincrement())
@@ -490,14 +491,28 @@ model opensourceRepo {
   logo        String?
   tags        String[]       @default([])
   highlights  String[]       @default([])
-  trending    Boolean        @default(false)
-  lastUpdated DateTime       @default(now())
+  trending      Boolean        @default(false)
+  hacktoberfest Boolean        @default(false)
+  lastUpdated   DateTime       @default(now())
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
+  bookmarks   opensourceBookmark[]
 
   @@index([domain])
   @@index([difficulty])
   @@index([language])
+}
+
+model opensourceBookmark {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  repoId    Int
+  createdAt DateTime        @default(now())
+  user      user            @relation("UserOssBookmarks", fields: [userId], references: [id], onDelete: Cascade)
+  repo      opensourceRepo  @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, repoId])
+  @@index([userId])
 }
 
 model repoRequest {
@@ -766,16 +781,17 @@ model aptitudeCategory {
 }
 
 model aptitudeTopic {
-  id          Int                @id @default(autoincrement())
+  id          Int                            @id @default(autoincrement())
   categoryId  Int
   name        String
-  slug        String             @unique
+  slug        String                         @unique
   description String?
-  orderIndex  Int                @default(0)
+  orderIndex  Int                            @default(0)
   sourceUrl   String?
-  createdAt   DateTime           @default(now())
+  createdAt   DateTime                       @default(now())
   questions   aptitudeQuestion[]
-  category    aptitudeCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  topicProgress studentAptitudeTopicProgress[]
+  category    aptitudeCategory               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model aptitudeQuestion {
@@ -789,12 +805,28 @@ model aptitudeQuestion {
   optionE       String?
   correctAnswer String
   explanation   String?
-  difficulty    String                    @default("MEDIUM")
+  difficulty    AptitudeDifficulty        @default(MEDIUM)
   companies     String[]                  @default([])
   sourceUrl     String?
   createdAt     DateTime                  @default(now())
   topic         aptitudeTopic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
   progress      studentAptitudeProgress[]
+
+  @@index([topicId, difficulty])
+}
+
+model studentAptitudeTopicProgress {
+  id                Int                @id @default(autoincrement())
+  studentId         Int
+  topicId           Int
+  currentDifficulty AptitudeDifficulty @default(MEDIUM)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  student           user               @relation("StudentAptitudeTopicProgress", fields: [studentId], references: [id], onDelete: Cascade)
+  topic             aptitudeTopic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, topicId])
+  @@index([studentId])
 }
 
 model studentAptitudeProgress {
@@ -1304,6 +1336,12 @@ enum TestDifficulty {
   BEGINNER
   INTERMEDIATE
   ADVANCED
+}
+
+enum AptitudeDifficulty {
+  EASY
+  MEDIUM
+  HARD
 }
 
 enum UsageAction {

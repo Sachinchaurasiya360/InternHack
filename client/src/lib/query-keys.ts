@@ -108,6 +108,7 @@ export const queryKeys = {
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
+    bookmarks: () => ["opensource", "bookmarks"] as const,
   },
 
   // Blog
