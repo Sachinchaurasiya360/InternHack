@@ -6,8 +6,9 @@ import {
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
-  History, Terminal, Lock, Crown, Code2,
+  History, Terminal, Lock, Crown, Code2, ChevronLeft, ChevronRight, Play,
 } from "lucide-react";
+import type { SolutionStep } from "../../../lib/types";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -521,7 +522,20 @@ export default function DsaProblemDetailPage() {
                   </div>
                 </div>
               )}
-
+              {/* Solution Walkthrough */}
+              {problem.solutionSteps && problem.solutionSteps.length > 0 && (
+                <div>
+                  <SectionLabel dot="bg-lime-400">
+                    <Play className="w-3 h-3" /> solution walkthrough
+                  </SectionLabel>
+                  <div className="mt-2">
+                    <SolutionWalkthrough
+                      steps={problem.solutionSteps}
+                      code={problem.solutionCode}
+                    />
+                  </div>
+                </div>
+              )}
               {/* Similar questions */}
               {problem.similarQuestions && problem.similarQuestions.length > 0 && (
                 <div>
@@ -709,6 +723,125 @@ export default function DsaProblemDetailPage() {
         </div>
       </div>
     </>
+  );
+}
+function SolutionWalkthrough({ steps, code }: { steps: SolutionStep[]; code?: string | null }) {
+  const [current, setCurrent] = useState(0);
+  const step = steps[current];
+
+  return (
+    <div className="space-y-3">
+      {/* Step nav */}
+      <div className="flex items-center justify-between gap-3">
+        <button
+          onClick={() => setCurrent((c) => Math.max(0, c - 1))}
+          disabled={current === 0}
+          className="w-8 h-8 inline-flex items-center justify-center border border-stone-200 dark:border-white/10 rounded-md text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </button>
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+          step {current + 1} / {steps.length}
+        </span>
+        <button
+          onClick={() => setCurrent((c) => Math.min(steps.length - 1, c + 1))}
+          disabled={current === steps.length - 1}
+          className="w-8 h-8 inline-flex items-center justify-center border border-stone-200 dark:border-white/10 rounded-md text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Step dots */}
+      <div className="flex items-center gap-1 flex-wrap">
+        {steps.map((s, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`h-1.5 rounded-full transition-all ${
+              i === current
+                ? "w-4 bg-lime-400"
+                : s.isKeyStep
+                  ? "w-2 bg-amber-400"
+                  : "w-2 bg-stone-300 dark:bg-stone-700"
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Step card */}
+      <motion.div
+        key={current}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className={`bg-white dark:bg-stone-900 border rounded-md p-4 ${
+          step.isKeyStep
+            ? "border-amber-300 dark:border-amber-900/60"
+            : "border-stone-200 dark:border-white/10"
+        }`}
+      >
+        <div className="flex items-start gap-3 mb-3">
+          <span className={`text-[10px] font-mono font-bold tabular-nums shrink-0 mt-0.5 ${
+            step.isKeyStep ? "text-amber-600 dark:text-amber-400" : "text-lime-600 dark:text-lime-400"
+          }`}>
+            {String(step.stepNumber).padStart(2, "0")}
+          </span>
+          <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
+            {step.description}
+          </p>
+        </div>
+
+        {/* Variables table */}
+        {Object.keys(step.variables).length > 0 && (
+          <div className="border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+            <div className="px-3 py-1.5 bg-stone-50 dark:bg-stone-800 border-b border-stone-200 dark:border-white/10">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                variable state
+              </span>
+            </div>
+            <table className="w-full text-xs font-mono">
+              <tbody>
+                {Object.entries(step.variables).map(([key, val]) => (
+                  <tr key={key} className="border-b border-stone-100 dark:border-white/5 last:border-0">
+                    <td className="px-3 py-2 text-stone-500 dark:text-stone-400 w-1/3">{key}</td>
+                    <td className="px-3 py-2 text-lime-600 dark:text-lime-400">{val}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </motion.div>
+
+      {/* Code with highlighted line */}
+      {code && step.highlightLine && (
+        <div className="border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+          <div className="px-3 py-1.5 bg-stone-50 dark:bg-stone-800 border-b border-stone-200 dark:border-white/10">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              code / line {step.highlightLine} active
+            </span>
+          </div>
+          <pre className="p-4 bg-stone-950 text-stone-100 text-xs leading-relaxed overflow-x-auto">
+            {code.split("\n").map((line, i) => (
+              <div
+                key={i}
+                className={`px-2 -mx-2 ${
+                  i + 1 === step.highlightLine
+                    ? "bg-lime-400/20 border-l-2 border-lime-400"
+                    : ""
+                }`}
+              >
+                <span className="select-none text-stone-600 mr-3 tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {line}
+              </div>
+            ))}
+          </pre>
+        </div>
+      )}
+    </div>
   );
 }
 
