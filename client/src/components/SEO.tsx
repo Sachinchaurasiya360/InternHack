@@ -13,7 +13,7 @@ interface SEOProps {
   ogImageDark?: string;
   ogType?: string;
   noIndex?: boolean;
-  structuredData?: Record<string, any> | Record<string, any>[];
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const SITE_NAME = "InternHack";

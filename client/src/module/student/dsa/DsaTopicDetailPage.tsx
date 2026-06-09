@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useLayoutEffect } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useParams, Link, Navigate } from "react-router";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
@@ -150,12 +150,16 @@ export default function DsaTopicDetailPage() {
   };
 
   const listRef = useRef<HTMLDivElement>(null);
+  const [scrollMargin, setScrollMargin] = useState(0);
+  useLayoutEffect(() => {
+    setScrollMargin(listRef.current?.offsetTop ?? 0);
+  }, []);
 
   const virtualizer = useWindowVirtualizer({
     count: topic?.problems.length ?? 0,
     estimateSize: () => 76,
     overscan: 8,
-    scrollMargin: listRef.current?.offsetTop ?? 0,
+    scrollMargin,
   });
 
   if (!user && topic && topic.orderIndex >= 5) {

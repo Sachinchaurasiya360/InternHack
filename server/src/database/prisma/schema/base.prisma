@@ -182,12 +182,12 @@ model round {
   timeLimitSecs       Int?
   autoGrade           Boolean           @default(false)
   activateAt          DateTime?
+  isArchived          Boolean           @default(false)
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   job                 job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   roundSubmissions    roundSubmission[]
 
-  @@unique([jobId, orderIndex])
   @@unique([jobId, name])
   @@index([jobId])
 }
