@@ -3,22 +3,34 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import type { Track } from "./tracks";
+import { TRACKS } from "./tracks";
 import { getLessonCount } from "./lesson-counts";
 
 interface TrackCardProps {
   track: Track;
   index: number;
+  completedTrackIds?: string[];
 }
 
 const MAX_STAGGER_INDEX = 8;
 const STAGGER_STEP = 0.04;
 const BASE_DELAY = 0.05;
 
-export const TrackCard = React.memo(function TrackCard({ track, index }: TrackCardProps) {
+export const TrackCard = React.memo(function TrackCard({
+  track,
+  index,
+  completedTrackIds = [],
+}: TrackCardProps) {
   const delay = BASE_DELAY + Math.min(index, MAX_STAGGER_INDEX) * STAGGER_STEP;
   const liveCount = getLessonCount(track.lessonCountKey);
   const statLabel = liveCount != null ? `${liveCount} lessons` : track.stat;
 
+  const prereqs = (track.prerequisites ?? []).map((id) => ({
+    id,
+    title: TRACKS.find((t) => t.id === id)?.title ?? id,
+    done: completedTrackIds.includes(id),
+  }));
+  const hasUnmet = prereqs.some((p) => !p.done);
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -54,6 +66,37 @@ export const TrackCard = React.memo(function TrackCard({ track, index }: TrackCa
         <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
           {track.description}
         </p>
+
+        {prereqs.length > 0 && (
+          <div className={`mb-4 px-3 py-2.5 rounded-md border text-xs ${
+            hasUnmet
+              ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800"
+              : "bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800"
+          }`}>
+            <p className="font-mono uppercase tracking-widest text-[10px] text-stone-500 mb-1.5">
+              prerequisites
+            </p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {prereqs.map((p) => (
+                <span
+                  key={p.id}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-mono ${
+                    p.done
+                      ? "text-lime-700 dark:text-lime-400 border-lime-300 dark:border-lime-800 bg-lime-50 dark:bg-lime-900/30"
+                      : "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30"
+                  }`}
+                >
+                  {p.done ? "✓" : "✗"} {p.title}
+                </span>
+              ))}
+            </div>
+            {hasUnmet && track.prerequisiteText && (
+              <p className="mt-1.5 text-[11px] text-amber-700 dark:text-amber-400">
+                {track.prerequisiteText}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
           <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">

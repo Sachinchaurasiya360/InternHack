@@ -7,8 +7,26 @@ import { itemListSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import { TRACKS, CATEGORY_LABEL, CATEGORY_ORDER, type TrackCategory } from "./tracks";
 import { TrackCard } from "./TrackCard";
 
+function getCompletedTrackIds(): string[] {
+  const completed: string[] = [];
+  const trackIds = TRACKS.map((t) => t.id);
+  for (const id of trackIds) {
+    try {
+      const raw = localStorage.getItem(`${id}-progress`);
+      if (!raw) continue;
+      const progress = JSON.parse(raw);
+      const values = Object.values(progress) as { completed?: boolean }[];
+      if (values.length > 0 && values.every((v) => v?.completed)) completed.push(id);
+    } catch {
+      // ignore
+    }
+  }
+  return completed;
+}
+
 export default function LearnHubPage() {
   const [search, setSearch] = useState("");
+  const completedTrackIds = useMemo(() => getCompletedTrackIds(), []);
 
   const grouped = useMemo(() => {
     const needle = search.trim().toLowerCase();
@@ -162,7 +180,7 @@ export default function LearnHubPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {group.tracks.map((track, idx) => (
-                  <TrackCard key={track.id} track={track} index={idx} />
+                  <TrackCard key={track.id} track={track} index={idx} completedTrackIds={completedTrackIds} />
                 ))}
               </div>
             </section>
