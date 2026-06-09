@@ -308,7 +308,7 @@ export default function MyApplicationsPage() {
       );
 
     if (statusFilter !== "ALL") {
-      base = base.filter((a: any) => a.status === statusFilter);
+      base = base.filter((a: any) => a.status === undefined || a.status === statusFilter);
     }
 
     return [...base].sort((a, b) => {
@@ -490,24 +490,7 @@ export default function MyApplicationsPage() {
         </select>
       </div>
 
-      <div className="mb-5 flex flex-wrap gap-2">
-  {STATUS_TABS.map((status) => (
-    <button
-      key={status}
-      onClick={() => {
-        setStatusFilter(status);
-        setPage(1);
-      }}
-      className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
-        statusFilter === status
-          ? "bg-lime-400 text-stone-900 border-lime-400"
-          : "border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-      }`}
-    >
-      {status.replace("_", " ")}
-    </button>
-  ))}
-</div>
+
       {/* Search */}
 
       

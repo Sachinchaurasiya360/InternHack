@@ -160,6 +160,7 @@ export class AuthService {
         subscriptionPlan: true,
         subscriptionStatus: true,
         subscriptionEndDate: true,
+        ossTier: true,
       },
     });
 
@@ -302,7 +303,7 @@ export class AuthService {
     invalidateVersionCache(user.id);
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
-    const ossTier = user.role === "STUDENT" ? await this.calculateOssTier(user.id) : undefined;
+    const ossTier = user.ossTier;
 
     return {
       user: {
@@ -370,7 +371,7 @@ export class AuthService {
     invalidateVersionCache(user.id);
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
-    const ossTier = user.role === "STUDENT" ? await this.calculateOssTier(user.id) : undefined;
+    const ossTier = user.ossTier;
 
     return {
       user: {
@@ -423,6 +424,7 @@ export class AuthService {
     subscriptionPlan: true,
     subscriptionStatus: true,
     subscriptionEndDate: true,
+    ossTier: true,
   } as const;
 
   async getProfile(userId: number) {
@@ -449,9 +451,6 @@ export class AuthService {
       (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
     }
 
-    if (user.role === "STUDENT") {
-      (user as Record<string, unknown>).ossTier = await this.calculateOssTier(userId);
-    }
 
     await cacheSet(cacheKey, user, PROFILE_TTL);
     return user;
@@ -535,9 +534,6 @@ export class AuthService {
       await cacheDel(`profile:public:${user.profileSlug}`);
     }
 
-    if (user.role === "STUDENT") {
-      (user as Record<string, unknown>).ossTier = await this.calculateOssTier(userId);
-    }
 
     return user;
   }
@@ -587,12 +583,9 @@ export class AuthService {
       (rest as Record<string, unknown>).coverImage = await signUrl(rest.coverImage);
     }
 
-    const ossTier = await this.calculateOssTier(rest.id);
-
     const result = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
-      ossTier,
     };
     await cacheSet(cacheKey, result, PROFILE_TTL);
     return result;
@@ -674,6 +667,7 @@ export class AuthService {
         subscriptionPlan: true,
         subscriptionStatus: true,
         subscriptionEndDate: true,
+        ossTier: true,
       },
     });
 
@@ -692,8 +686,8 @@ export class AuthService {
     });
     invalidateVersionCache(updated.id);
 
-    const token = generateToken({ id: updated.id, email: updated.email, role: updated.role, tokenVersion: versionUpdate.tokenVersion });
-    const ossTier = updated.role === "STUDENT" ? await this.calculateOssTier(updated.id) : undefined;
+	    const token = generateToken({ id: updated.id, email: updated.email, role: updated.role, tokenVersion: versionUpdate.tokenVersion });
+    const ossTier = updated.ossTier;
 
     return { user: { ...updated, ossTier }, token };
   }
@@ -963,44 +957,6 @@ export class AuthService {
     }
 
     return data;
-  }
-
-  private async calculateOssTier(userId: number): Promise<string | null> {
-    const [approvedRequests, firstPrProgress, guideFeedbacks, badges] = await Promise.all([
-      prisma.repoRequest.count({
-        where: { userId, status: "APPROVED" }
-      }),
-      prisma.studentFirstPrProgress.findUnique({
-        where: { userId },
-        select: { completedStepIds: true }
-      }),
-      prisma.guideFeedback.groupBy({
-        by: ["guideId"],
-        where: { userId }
-      }),
-      prisma.studentBadge.findMany({
-        where: { studentId: userId },
-        include: { badge: true }
-      })
-    ]);
-
-    const completedGuidesCount = guideFeedbacks.length;
-    const repoContributions = approvedRequests;
-    const isFirstPrRoadmapCompleted = (firstPrProgress?.completedStepIds.length ?? 0) >= 7;
-
-    const isAmbassador = badges.some(b => b.badge.slug === "verified_ambassador");
-    const isProgramParticipant = badges.some(b => 
-      ["gsoc_participant", "outreachy_participant", "lfx_participant", "gsoc"].includes(b.badge.slug.toLowerCase())
-    );
-
-    // Tier Priority (Highest to Lowest)
-    if (isAmbassador) return "Ambassador";
-    if (isProgramParticipant && repoContributions >= 10) return "OSS Leader";
-    if (repoContributions >= 5 && completedGuidesCount >= 3) return "Active Contributor";
-    if (isFirstPrRoadmapCompleted && repoContributions >= 1) return "Contributor";
-    if (completedGuidesCount >= 1) return "First Steps";
-    
-    return "Tier 1";
   }
 }
 

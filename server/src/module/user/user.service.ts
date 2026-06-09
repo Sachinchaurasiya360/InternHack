@@ -29,25 +29,19 @@ export class UserService {
       ["gsoc_participant", "outreachy_participant", "lfx_participant", "gsoc"].includes(b.badge.slug.toLowerCase())
     );
 
-    // Tier Priority (Highest to Lowest)
-    if (isAmbassador) return "Ambassador";
+    let tier: string | null = null;
     
-    if (isProgramParticipant && repoContributions >= 10) {
-      return "OSS Leader";
-    }
-    
-    if (repoContributions >= 5 && completedGuidesCount >= 3) {
-      return "Active Contributor";
-    }
-    
-    if (isFirstPrRoadmapCompleted && repoContributions >= 1) {
-      return "Contributor";
-    }
-    
-    if (completedGuidesCount >= 1) {
-      return "First Steps";
-    }
+    if (isAmbassador) tier = "Ambassador";
+    else if (isProgramParticipant && repoContributions >= 10) tier = "OSS Leader";
+    else if (repoContributions >= 5 && completedGuidesCount >= 3) tier = "Active Contributor";
+    else if (isFirstPrRoadmapCompleted && repoContributions >= 1) tier = "Contributor";
+    else if (completedGuidesCount >= 1) tier = "First Steps";
 
-    return null;
+    await prisma.user.update({
+      where: { id: userId },
+      data: { ossTier: tier }
+    });
+
+    return tier;
   }
 }
