@@ -1,5 +1,1 @@
--- DropForeignKey
-ALTER TABLE "adminActivityLog" DROP CONSTRAINT "adminActivityLog_adminId_fkey";
-
--- DropTable
-DROP TABLE "adminActivityLog";
+-- Already dropped in 20260603055814_add_first_pr_progress

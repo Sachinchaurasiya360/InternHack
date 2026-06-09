@@ -4,26 +4,13 @@
 -- CreateEnum
 CREATE TYPE "ContentType" AS ENUM ('LESSON', 'DSA', 'INTERVIEW_QUESTION');
 
--- AlterTable
-ALTER TABLE "roadmapSection" ADD COLUMN     "aiRegeneratedAt" TIMESTAMP(3);
-
 -- AlterTable (Safe changes only)
 -- userInterviewProgress changes handled in separate migration or safe add if missing
 -- (Assuming user wants to keep analytics changes only here)
 
 -- Migration safe block - removed drops of production tables
 
--- CreateTable
-CREATE TABLE "dsaProblemReport" (
-    "id" SERIAL NOT NULL,
-    "reason" TEXT NOT NULL,
-    "message" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "userId" INTEGER NOT NULL,
-    "problemId" INTEGER NOT NULL,
-
-    CONSTRAINT "dsaProblemReport_pkey" PRIMARY KEY ("id")
-);
+-- Table dsaProblemReport creation removed because it was already created in 20260603055814_add_first_pr_progress
 
 -- CreateTable
 CREATE TABLE "contentView" (
@@ -47,11 +34,7 @@ CREATE INDEX "contentView_userId_idx" ON "contentView"("userId");
 -- CreateIndex
 CREATE INDEX "contentView_createdAt_idx" ON "contentView"("createdAt");
 
--- AddForeignKey
-ALTER TABLE "dsaProblemReport" ADD CONSTRAINT "dsaProblemReport_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "dsaProblemReport" ADD CONSTRAINT "dsaProblemReport_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "dsaProblem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- Foreign keys for dsaProblemReport removed because they were already created in 20260603055814_add_first_pr_progress
 
 -- AddForeignKey
 ALTER TABLE "contentView" ADD CONSTRAINT "contentView_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
