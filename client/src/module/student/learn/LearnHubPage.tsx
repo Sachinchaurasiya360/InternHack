@@ -180,7 +180,7 @@ export default function LearnHubPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {group.tracks.map((track, idx) => (
-                  <TrackCard key={track.id} track={track} index={idx} completedTrackIds={completedTrackIds} />
+                 <TrackCard key={track.id} track={track} index={idx} completedTrackIds={completedTrackIds} />
                 ))}
               </div>
             </section>
