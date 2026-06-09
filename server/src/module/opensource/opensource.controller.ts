@@ -1,4 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
+import { prisma } from "../../database/db.js";
 import { OpensourceService } from "./opensource.service.js";
 import {
   opensourceListQuerySchema,
@@ -145,10 +146,35 @@ export class OpensourceController {
         return;
       }
 
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const requestCount = await prisma.repoRequest.count({
+        where: {
+          userId: req.user!.id,
+          createdAt: { gte: twentyFourHoursAgo },
+        },
+      });
+
+      if (requestCount >= 5) {
+        res.setHeader("X-RateLimit-Remaining", "0");
+        res.setHeader(
+          "X-RateLimit-Reset",
+          new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        );
+        res.status(429).json({ message: "You have reached the limit of 5 suggestions per 24 hours. Please try again later." });
+        return;
+      }
+
       const request = await service.submitRepoRequest(
         req.user!.id,
         parsed.data,
       );
+
+      res.setHeader("X-RateLimit-Remaining", String(4 - requestCount));
+      res.setHeader(
+        "X-RateLimit-Reset",
+        new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      );
+
       res
         .status(201)
         .json({
