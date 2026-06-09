@@ -15,16 +15,16 @@ export const AccessibleVisualizer: React.FC<AccessibleVisualizerProps> = ({
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="visualizer-container">
+      <div>
         
         {prefersReducedMotion && (
-          <div className="mb-4 p-4 text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-md flex justify-between items-center shadow-sm">
+          <div className="mb-4 p-4 text-sm text-stone-700 bg-stone-100 dark:bg-white/5 border border-stone-300 dark:border-white/10 rounded-md flex justify-between items-center">
             <span>Animations are disabled to save battery or respect accessibility preferences.</span>
             {onSwitchToTextMode ? (
               <Button 
                 onClick={onSwitchToTextMode} 
                 variant="ghost"
-                className="font-semibold underline hover:text-yellow-900"
+                className="font-semibold underline hover:text-stone-900 dark:hover:text-stone-100"
               >
                 Switch to step-by-step text mode →
               </Button>
