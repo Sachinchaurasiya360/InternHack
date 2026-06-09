@@ -30,7 +30,11 @@ export default function RecruiterRegisterPage() {
 
   const validatePassword = (password: string): string => {
     if (!password) return "Password is required";
-    if (password.length < 6) return "Password must be at least 6 characters";
+    if (password.length < 8) return "Password must be at least 8 characters";
+    if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter";
+    if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter";
+    if (!/[0-9]/.test(password)) return "Password must contain at least one number";
+    if (!/[\W_]/.test(password)) return "Password must contain at least one special character";
     return "";
   };
 
@@ -248,8 +252,8 @@ export default function RecruiterRegisterPage() {
                         ? "border-red-300 dark:border-red-800 focus:border-red-400"
                         : "border-stone-300 dark:border-white/10 focus:border-lime-400"
                     }`}
-                    placeholder="Min. 6 characters"
-                    minLength={6}
+                    placeholder="Min. 8 chars (A-Z, a-z, 0-9, symbol)"
+                    minLength={8}
                   />
                   <button
                     type="button"

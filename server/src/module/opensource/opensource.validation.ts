@@ -113,3 +113,14 @@ export const firstPrProgressUpdateSchema = z.object({
   stepId: z.string().min(1, "Step ID is required").max(200),
   completed: z.boolean(),
 });
+
+export const bookmarkBodySchema = z.object({
+  repoId: z.number().int().positive("repoId must be a positive integer"),
+});
+
+export const bulkMigrateBookmarksSchema = z.object({
+  repoIds: z
+    .array(z.number().int().positive())
+    .min(1, "At least one repoId is required")
+    .max(500, "Cannot migrate more than 500 bookmarks at once"),
+});

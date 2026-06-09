@@ -101,6 +101,7 @@ model user {
   contentViews              contentView[]                @relation("UserContentViews")
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
+  ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -181,12 +182,12 @@ model round {
   timeLimitSecs       Int?
   autoGrade           Boolean           @default(false)
   activateAt          DateTime?
+  isArchived          Boolean           @default(false)
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   job                 job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   roundSubmissions    roundSubmission[]
 
-  @@unique([jobId, orderIndex])
   @@unique([jobId, name])
   @@index([jobId])
 }
@@ -497,10 +498,23 @@ model opensourceRepo {
   healthScore          Int            @default(0)
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
+  bookmarks   opensourceBookmark[]
 
   @@index([domain])
   @@index([difficulty])
   @@index([language])
+}
+
+model opensourceBookmark {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  repoId    Int
+  createdAt DateTime        @default(now())
+  user      user            @relation("UserOssBookmarks", fields: [userId], references: [id], onDelete: Cascade)
+  repo      opensourceRepo  @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, repoId])
+  @@index([userId])
 }
 
 model repoRequest {
@@ -1341,6 +1355,7 @@ enum UsageAction {
   AI_JOB_CHAT
   CODE_RUN
   GITHUB_STATS
+  ROADMAP_GENERATION
 }
 
 enum EmailCampaignStatus {

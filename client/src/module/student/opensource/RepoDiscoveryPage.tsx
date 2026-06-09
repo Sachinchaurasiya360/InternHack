@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,7 +24,6 @@ import {
   Check,
   Copy,
   Bookmark,
-  GitPullRequest,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
@@ -45,7 +44,6 @@ import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 import { useCoachStore } from "./stores/coach.store";
 import { markLearningPathMilestone } from "./learning-paths.data";
-import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -204,13 +202,7 @@ export default function RepoDiscoveryPage() {
     return Array.from(langs);
   }, [user]);
 
-  const handleRecentlyViewedOverflow = useCallback(() => {
-    toast.success("Oldest repo removed from recently viewed");
-  }, []);
-
-  const { recentlyViewed, addRepo, clearHistory } = useRecentlyViewedRepos({
-    onRepoRemoved: handleRecentlyViewedOverflow,
-  });
+  const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     addRepo(repo);
@@ -323,7 +315,7 @@ export default function RepoDiscoveryPage() {
     if (sortOpt) params.sortOrder = sortOpt.order;
 
     return params;
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, hacktoberfestOnly, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -559,14 +551,11 @@ export default function RepoDiscoveryPage() {
         {/* My Submissions */}
         {!!user && (
           <div className="mb-8">
-              <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 <div className="h-1 w-1 bg-lime-400" />
                 my submissions
               </div>
-              <Link to="/student/opensource/my-submissions" className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors no-underline">
-                View all &rarr;
-              </Link>
             </div>
 
             {isMyRequestsLoading && (
@@ -650,10 +639,14 @@ export default function RepoDiscoveryPage() {
         <GuidanceCards />
 
         {/* Recently viewed & recommended */}
-        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} onClear={clearHistory} />
+        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
 
         {user?.role === "STUDENT" && (
-          <RecommendedSection onSelect={handleOpenRepo} />
+          <RecommendedSection 
+            onSelect={handleOpenRepo} 
+            bookmarks={bookmarks}
+            onToggleBookmark={toggleBookmark}
+          />
         )}
 
         {/* Filter bar */}
@@ -1241,7 +1234,15 @@ export default function RepoDiscoveryPage() {
   );
 }
 
-function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
+function RecommendedSection({ 
+  onSelect,
+  bookmarks,
+  onToggleBookmark
+}: { 
+  onSelect: (repo: OpenSourceRepo) => void;
+  bookmarks: number[];
+  onToggleBookmark: (id: number) => void;
+}) {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.opensource.list({ recommended: "true" }),
     queryFn: async () => {
@@ -1290,7 +1291,13 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
         <div className="flex gap-4 min-w-full">
           {repos.map((repo, i) => (
             <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
-              <RepoCard repo={repo} index={i} onSelect={onSelect} />
+              <RepoCard 
+                repo={repo} 
+                index={i} 
+                onSelect={onSelect} 
+                bookmarked={bookmarks.includes(repo.id)}
+                onToggleBookmark={() => onToggleBookmark(repo.id)}
+              />
             </div>
           ))}
         </div>
