@@ -724,7 +724,7 @@ export default function DsaProblemDetailPage() {
                         <DsaSubmissionHistory submissions={submissions ?? []} onLoadCode={handleLoadSubmission} />
                       ) : (
                         <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-white dark:bg-stone-950">
-                          <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-4">
+                          <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-4">
                             <Lock className="w-5 h-5 text-amber-500" />
                           </div>
                           <h3 className="text-base font-bold text-stone-900 dark:text-stone-50">History Tracking Locked</h3>
@@ -744,7 +744,7 @@ export default function DsaProblemDetailPage() {
                         <DsaSubmissionHistory submissions={submissions ?? []} onLoadCode={handleLoadSubmission} />
                       ) : (
                         <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-white dark:bg-stone-950">
-                          <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-4">
+                          <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-4">
                             <Lock className="w-5 h-5 text-amber-500" />
                           </div>
                           <h3 className="text-base font-bold text-stone-900 dark:text-stone-50">History Tracking Locked</h3>
@@ -788,7 +788,7 @@ export default function DsaProblemDetailPage() {
                 /* ── Signed out lock ── */
                 <div className="relative flex-1 min-h-0 flex items-center justify-center bg-stone-950/10 backdrop-blur-xs">
                   <div className="text-center max-w-sm px-6 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-8">
-                    <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4">
                       <Lock className="w-5 h-5 text-stone-400" />
                     </div>
                     <SectionLabel dot="bg-stone-300">Sign in required</SectionLabel>
