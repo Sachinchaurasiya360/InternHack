@@ -109,6 +109,7 @@ export const queryKeys = {
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
     recommended: (refreshToken?: number) => ["opensource", "recommended", refreshToken] as const,
+    bookmarks: () => ["opensource", "bookmarks"] as const,
   },
 
   // Blog
