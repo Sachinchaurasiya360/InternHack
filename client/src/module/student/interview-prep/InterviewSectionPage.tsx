@@ -246,7 +246,7 @@ export default function InterviewSectionPage() {
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className="${SELECT_CLASS}"
+                className={SELECT_CLASS}
               >
                 <option value="All">All Companies</option>
                 {availableCompanies.map((company) => (
@@ -264,7 +264,7 @@ export default function InterviewSectionPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="${SELECT_CLASS}"
+              className={SELECT_CLASS}
             >
               <option value="frequency">Most Frequent</option>
               <option value="order">Curated Order</option>
