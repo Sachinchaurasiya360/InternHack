@@ -102,6 +102,9 @@ model user {
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
   recommendation            userRecommendation?          @relation("UserRecommendation")
   hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
+  teammateProfile      teammateProfile?
+  sentInvitations      hackathonTeamInvitation[] @relation("HackathonInviteSender")
+  receivedInvitations  hackathonTeamInvitation[] @relation("HackathonInviteReceiver")
   contentViews              contentView[]                @relation("UserContentViews")
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
@@ -990,6 +993,7 @@ model hackathon {
   createdAt      DateTime                 @default(now())
   updatedAt      DateTime                 @updatedAt
   participations hackathonParticipation[]
+  teamInvitations hackathonTeamInvitation[]
 
   @@index([status])
   @@index([ecosystem])
@@ -1014,6 +1018,53 @@ model hackathonParticipation {
   @@index([userId])
   @@index([hackathonId])
 }
+
+
+
+
+model teammateProfile {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+
+  preferredRole   String
+  availability    String
+  experienceLevel String
+
+  skills          String[] @default([])
+  techStack       String[] @default([])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([preferredRole])
+  @@index([experienceLevel])
+}
+
+model hackathonTeamInvitation {
+  id Int @id @default(autoincrement())
+
+  hackathonId Int
+
+  senderId Int
+  receiverId Int
+
+  status String @default("PENDING")
+
+  createdAt DateTime @default(now())
+
+  hackathon hackathon @relation(fields: [hackathonId], references: [id], onDelete: Cascade)
+
+  sender user @relation("HackathonInviteSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiver user @relation("HackathonInviteReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([hackathonId])
+  @@index([senderId])
+  @@index([receiverId])
+}
+
 model iitProfessor {
   id             Int      @id @default(autoincrement())
   collegeName    String

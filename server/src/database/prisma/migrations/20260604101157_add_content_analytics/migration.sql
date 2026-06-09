@@ -10,6 +10,7 @@ CREATE TYPE "ContentType" AS ENUM ('LESSON', 'DSA', 'INTERVIEW_QUESTION');
 
 -- Migration safe block - removed drops of production tables
 
+-- Table dsaProblemReport creation removed because it was already created in 20260603055814_add_first_pr_progress
 -- CreateTable
 CREATE TABLE "contentView" (
     "id" SERIAL NOT NULL,
@@ -32,5 +33,6 @@ CREATE INDEX "contentView_userId_idx" ON "contentView"("userId");
 -- CreateIndex
 CREATE INDEX "contentView_createdAt_idx" ON "contentView"("createdAt");
 
+-- Foreign keys for dsaProblemReport removed because they were already created in 20260603055814_add_first_pr_progress
 -- AddForeignKey
 ALTER TABLE "contentView" ADD CONSTRAINT "contentView_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;

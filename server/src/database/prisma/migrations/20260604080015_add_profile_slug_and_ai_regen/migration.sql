@@ -1,3 +1,4 @@
+
 -- AlterTable
 ALTER TABLE "user" ADD COLUMN     "profileSlug" TEXT;
 
