@@ -43,7 +43,9 @@ export default function AdminContributionsPage() {
     }
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setPage(1); }, [statusFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
   useEffect(() => { fetchContributions(); }, [statusFilter, page]);
 
   const handleStatus = async (id: number, status: "APPROVED" | "REJECTED") => {

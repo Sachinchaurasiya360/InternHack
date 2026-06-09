@@ -8,10 +8,19 @@ const SENSITIVE_KEYS = new Set([
 ]);
 
 function sanitizeBody(body: unknown): Prisma.InputJsonValue | null {
-  if (!body || typeof body !== "object") return null;
+  if (body === undefined) return null;
+  if (body === null || typeof body !== "object") return body as Prisma.InputJsonValue | null;
+  if (Array.isArray(body)) return body.map(sanitizeBody) as Prisma.InputJsonValue;
+  
   const sanitized: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
-    sanitized[key] = SENSITIVE_KEYS.has(key) ? "[REDACTED]" : value;
+    if (SENSITIVE_KEYS.has(key)) {
+      sanitized[key] = "[REDACTED]";
+    } else if (typeof value === "object" && value !== null) {
+      sanitized[key] = sanitizeBody(value);
+    } else {
+      sanitized[key] = value;
+    }
   }
   return sanitized as Prisma.InputJsonValue;
 }
@@ -44,7 +53,7 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
       userId: (req as unknown as { user?: { id: number } }).user?.id ?? null,
       ipAddress: (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.ip || null,
       userAgent: req.headers["user-agent"] || null,
-      requestBody: sanitizeBody(req.body),
+      requestBody: sanitizeBody(req.body) ?? Prisma.DbNull,
     },
   }).catch((dbErr) => {
     console.error("[ErrorLog] Failed to write:", dbErr);

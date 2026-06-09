@@ -1,0 +1,43 @@
+name: Feature Request
+description: Suggest a new feature
+title: "[FEATURE]: "
+labels: ["type:feature"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+
+        Please provide complete details so maintainers can triage quickly.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature Summary
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context

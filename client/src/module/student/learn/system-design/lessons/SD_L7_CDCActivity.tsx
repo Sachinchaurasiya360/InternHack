@@ -142,7 +142,7 @@ function CDCDemo() {
       });
     }, 1500);
     return () => clearInterval(handle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [running, tNow]);
 
   const reset = () => {

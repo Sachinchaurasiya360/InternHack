@@ -13,6 +13,7 @@ const SERVICE_LABELS: Record<AIServiceType, string> = {
   RESUME_GEN: "LaTeX Resume Generation",
   LATEX_CHAT: "LaTeX Chat Assistant",
   EMAIL_CHAT: "Email Chat Assistant",
+  AI_ROADMAP_GENERATION: "AI Roadmap Generation",
 };
 
 const PROVIDER_INFO: Record<AIProviderType, { label: string; color: string; models: string[] }> = {

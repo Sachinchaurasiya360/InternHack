@@ -1,0 +1,750 @@
+[
+  {
+    "id": "k8s-architecture-basics",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 0,
+    "title": "Architecture Overview",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Control Plane", "Worker Nodes", "kube-apiserver", "etcd", "Kubelet"],
+    "content": {
+      "question": "What are the main components of the Kubernetes Control Plane and Worker Nodes?",
+      "answer": "Kubernetes follows a master-slave architecture.\n\n**Control Plane (Master)**:\n1. **kube-apiserver**: The front end for the Kubernetes control plane. It's the central hub for all communication.\n2. **etcd**: Consistent and highly-available key-value store used for all cluster data.\n3. **kube-scheduler**: Watches for newly created Pods and selects a node for them to run on.\n4. **kube-controller-manager**: Runs controller processes (Node controller, Job controller, etc.).\n5. **cloud-controller-manager**: Integrates with your cloud provider (AWS/GCP/Azure).\n\n**Worker Nodes**:\n1. **kubelet**: An agent that runs on each node. It ensures that containers are running in a Pod.\n2. **kube-proxy**: Maintains network rules on nodes. These rules allow network communication to your Pods.\n3. **Container Runtime**: The software responsible for running containers (e.g., Docker, containerd).",
+      "codeExamples": [
+        {
+          "title": "Checking component health",
+          "code": "# View nodes and their status\nkubectl get nodes\n\n# View control plane components\nkubectl get pods -n kube-system\n\n# Summary of cluster health\nkubectl cluster-info",
+          "explanation": "These commands show the state of the infrastructure that manages your applications."
+        }
+      ],
+      "notes": [
+        "A cluster needs at least one Control Plane and one Worker Node to operate properly."
+      ],
+      "followUps": [
+        "What happens if 'etcd' goes down?",
+        "How do nodes communicate with the API server?"
+      ],
+      "interviewTips": [
+        "Be able to explain what happens when you run 'kubectl apply'. It starts at the apiserver, goes to etcd, then the scheduler, then the kubelet."
+      ]
+    }
+  },
+  {
+    "id": "k8s-pod-definition",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 1,
+    "title": "Pods",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Pod", "Container", "Sidecar", "Networking"],
+    "content": {
+      "question": "What is a Pod in Kubernetes, and why don't we run containers directly?",
+      "answer": "A **Pod** is the smallest deployable object in Kubernetes. It represents a single instance of a running process in your cluster.\n\n**Why Pods?**:\n- **Shared Resources**: Containers within a Pod share the same network IP and port space (localhost communication).\n- **Shared Storage**: Containers can share volumes mounted into the Pod.\n- **Lifecycle**: Pods provide a level of abstraction. Kubernetes manages Pods, not individual containers.\n\n**Sidecar Pattern**: A common practice where a primary container runs the application, and a 'sidecar' container handles logging, proxying (like Envoy), or configuration sync.",
+      "codeExamples": [
+        {
+          "title": "Multi-container Pod YAML",
+          "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: app-with-sidecar\nspec:\n  containers:\n  - name: main-app\n    image: my-app:v1\n  - name: logger-sidecar\n    image: fluentd\n    volumeMounts:\n    - name: shared-logs\n      mountPath: /var/log\n  volumes:\n  - name: shared-logs\n    emptyDir: {}",
+          "explanation": "Both containers share the 'shared-logs' volume and talk to each other via localhost."
+        }
+      ],
+      "notes": [
+        "Pods are ephemeral—they are created, they die, and they are replaced, but they are never healed."
+      ],
+      "followUps": [
+        "Can a Pod have containers from different images?",
+        "How do you enter a specific container in a multi-container Pod?"
+      ],
+      "interviewTips": [
+        "Mention the 'Sidecar Pattern'—it's the most common reason for having multiple containers in one Pod."
+      ]
+    }
+  },
+  {
+    "id": "k8s-deployment-vs-statefulset",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 2,
+    "title": "Deployments vs. StatefulSets",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Deployment", "StatefulSet", "Stateless", "Sticky Identity"],
+    "content": {
+      "question": "When would you use a Deployment vs. a StatefulSet?",
+      "answer": "- **Deployment**: Used for **stateless** applications (like web servers). Any Pod is interchangeable. Updates are rolling, and Pod names are random (e.g., `web-abcd-123`). Scaling is fast and non-sequential.\n\n- **StatefulSet**: Used for **stateful** applications (like databases or Kafka). Each Pod has a stable, unique network identifier and persistent storage that follows it (even if deleted/recreated). Pods are created and deleted in a strict, sequential order (e.g., `db-0`, `db-1`, `db-2`).\n\n**Rule of thumb**: Use Deployment for almost everything. Use StatefulSet only if you need stable hostnames or dedicated storage per pod.",
+      "codeExamples": [
+        {
+          "title": "Deployment Template",
+          "code": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: my-web-app\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: web\n  template:\n    metadata:\n      labels:\n        app: web\n    spec:\n      containers:\n      - name: nginx\n        image: nginx:alpine",
+          "explanation": "This creates 3 identical, interchangeable pods."
+        }
+      ],
+      "notes": [
+        "StatefulSets are significantly more complex to manage than Deployments."
+      ],
+      "followUps": [
+        "What is a Headless Service and why do StatefulSets need them?",
+        "How do updates work in a StatefulSet?"
+      ],
+      "interviewTips": [
+        "Emphasize 'Sticky Identity' and 'Ordered Deployment' when talking about StatefulSets."
+      ]
+    }
+  },
+  {
+    "id": "k8s-service-types",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 3,
+    "title": "Service Types",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"],
+    "content": {
+      "question": "What are the different types of Services in Kubernetes?",
+      "answer": "Services provide a stable IP/DNS name to reach a group of Pods.\n\n1. **ClusterIP (Default)**: Exposes the service on an internal IP in the cluster. It's only reachable from within the cluster.\n2. **NodePort**: Exposes the service on each Node's IP at a static port (30000-32767). Reachable from outside the cluster at `<NodeIP>:<NodePort>`.\n3. **LoadBalancer**: Exposes the service externally using a cloud provider's load balancer (AWS ELB, GCP LB). It automatically creates a NodePort and ClusterIP.\n4. **ExternalName**: Maps a service to a DNS name (e.g., `my-db.example.com`). It doesn't use selectors.",
+      "codeExamples": [
+        {
+          "title": "Service YAML",
+          "code": "apiVersion: v1\nkind: Service\nmetadata:\n  name: web-service\nspec:\n  type: LoadBalancer\n  selector:\n    app: web\n  ports:\n    - protocol: TCP\n      port: 80\n      targetPort: 3000",
+          "explanation": "External traffic hits port 80 and is routed to pod port 3000."
+        }
+      ],
+      "notes": [
+        "Pod IPs change, but Service IPs are stable for the life of the Service."
+      ],
+      "followUps": [
+        "What is the difference between port and targetPort?",
+        "How does kube-proxy handle these requests?"
+      ],
+      "interviewTips": [
+        "For production on cloud providers, LoadBalancer is the standard way to expose apps. ClusterIP is used for inter-microservice communication."
+      ]
+    }
+  },
+  {
+    "id": "k8s-ingress-controllers",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 4,
+    "title": "Ingress & Ingress Controllers",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Ingress", "Reverse Proxy", "Nginx Ingress", "SSL Termination"],
+    "content": {
+      "question": "What is Ingress and how does it differ from a LoadBalancer service?",
+      "answer": "A **LoadBalancer** service requires a physical cloud load balancer per service, which can be expensive. \n\n**Ingress** is an API object that manages external access to services, typically HTTP. It provides routing rules (host-based or path-based), SSL termination, and name-based virtual hosting. \n\nDirecting traffic to Ingress requires an **Ingress Controller** (like Nginx, Traefik, or Istio) to sit at the edge of the cluster, receive all traffic, and route it internally.\n\n**In short**: Ingress is the 'Rulebook', and Ingress Controller is the 'Traffic Cop'.",
+      "codeExamples": [
+        {
+          "title": "Ingress Routing Rules",
+          "code": "apiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: main-ingress\nspec:\n  rules:\n  - host: myapp.com\n    http:\n      paths:\n      - path: /api\n        pathType: Prefix\n        backend:\n          service:\n            name: api-service\n            port:\n              number: 80\n      - path: /\n        pathType: Prefix\n        backend:\n          service:\n            name: frontend-service\n            port:\n              number: 80",
+          "explanation": "This single Ingress object routes traffic to different services based on the URL path."
+        }
+      ],
+      "notes": [
+        "Ingress works at Layer 7 (HTTP/S), whereas Services mostly work at Layer 4 (TCP/UDP)."
+      ],
+      "followUps": [
+        "How do you handle certificates in Ingress?",
+        "What is Cert-Manager?"
+      ],
+      "interviewTips": [
+        "Mention 'cost-saving' as a primary reason to use Ingress over multiple LoadBalancer services."
+      ]
+    }
+  },
+  {
+    "id": "k8s-labels-and-selectors",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 5,
+    "title": "Labels & Selectors",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Labels", "Selectors", "MetaData", "Filtering"],
+    "content": {
+      "question": "Explain Labels and Selectors. How are they used in Kubernetes?",
+      "answer": "**Labels** are key-value pairs attached to objects (like Pods) to organize and select subsets of objects. They don't provide uniqueness but define attributes.\n\n**Selectors** are used to filter objects based on their labels. They are the 'glue' that connects components. For example, a Service uses a Selector to find which Pods to send traffic to.\n\nUsage:\n- **Equality-based**: `app=web`, `env!=prod`\n- **Set-based**: `env in (staging, qa)`, `tier notin (frontend)`"
+    }
+  },
+  {
+    "id": "k8s-configmaps-and-secrets",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 6,
+    "title": "ConfigMaps & Secrets",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["ConfigMap", "Secret", "Environmental Variables", "Volume Mounts"],
+    "content": {
+      "question": "What is the difference between a ConfigMap and a Secret?",
+      "answer": "- **ConfigMap**: Stores non-confidential configuration data in key-value pairs (e.g., app settings, database hostnames).\n- **Secret**: Stores sensitive data (e.g., passwords, API tokens, SSH keys). Secrets are base64 encoded by default in the API, and can be encrypted at rest in etcd."
+    }
+  },
+  {
+    "id": "k8s-liveness-readiness-probes",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 7,
+    "title": "Liveness & Readiness Probes",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Probes", "Self-healing", "Health Checks", "Startup Probe"],
+    "content": {
+      "question": "Explain Liveness, Readiness, and Startup probes.",
+      "answer": "1. **Liveness Probe**: Determines if a container is running. If it fails, Kubernetes kills the container and restarts it.\n2. **Readiness Probe**: Determines if a container is ready to accept traffic. If it fails, the Pod is removed from Service endpoints.\n3. **Startup Probe**: Used for slow-starting applications. It disables liveness/readiness checks until it succeeds."
+    }
+  },
+  {
+    "id": "k8s-hpa-basics",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 8,
+    "title": "Horizontal Pod Autoscaler (HPA)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Autoscaling", "Metrics", "CPU/Memory", "Metrics Server"],
+    "content": {
+      "question": "How does the Horizontal Pod Autoscaler (HPA) work?",
+      "answer": "HPA automatically scales the number of Pods in a Deployment based on observed CPU utilization. It queries the Metrics Server periodically and uses the formula: `Desired Replicas = Current Replicas * (Current Metric / Target Metric)`."
+    }
+  },
+  {
+    "id": "k8s-namespaces",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 9,
+    "title": "Namespaces",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Namespace", "Isolation", "Resource Quotas", "RBAC"],
+    "content": {
+      "question": "What is a Namespace and why are they used?",
+      "answer": "Namespaces are virtual clusters within a physical cluster. They provide scope for names and a mechanism for resource isolation and quotas between teams."
+    }
+  },
+  {
+    "id": "k8s-node-affinity-taints-tolerations",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 10,
+    "title": "Schedules: Affinity & Taints",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Node Affinity", "Taints", "Tolerations", "Scheduling"],
+    "content": {
+      "question": "What is the difference between Node Affinity and Taints/Tolerations?",
+      "answer": "Node Affinity is a property of Pods that attracts them to nodes. Taints are a property of Nodes that repel Pods. Tolerations are Pod properties that allow them to land on tainted nodes."
+    }
+  },
+  {
+    "id": "k8s-persistent-volumes",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 11,
+    "title": "PV, PVC, & StorageClasses",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["PersistentVolume", "PersistentVolumeClaim", "StorageClass", "Dynamic Provisioning"],
+    "content": {
+      "question": "Explain PersistentVolume (PV), PersistentVolumeClaim (PVC), and StorageClass.",
+      "answer": "PV is the actual storage resource. PVC is a user's request for storage. StorageClass allows for dynamic provisioning of PVs based on a template."
+    }
+  },
+  {
+    "id": "k8s-rolling-updates",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 12,
+    "title": "Rolling Updates & Rollbacks",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["RollingUpdate", "Rollback", "Strategy", "Revision History"],
+    "content": {
+      "question": "How do you perform a zero-downtime update and a rollback in Kubernetes?",
+      "answer": "Updates are handled by the Deployment controller using a RollingUpdate strategy. Rollbacks are performed via `kubectl rollout undo`, which reverts to a previous revision maintained in history."
+    }
+  },
+  {
+    "id": "k8s-daemonsets-vs-jobs",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 13,
+    "title": "DaemonSets, Jobs, & CronJobs",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["DaemonSet", "Job", "CronJob", "Parallelism"],
+    "content": {
+      "question": "When would you use a DaemonSet vs. a Job vs. a CronJob?",
+      "answer": "DaemonSet runs a pod on every node (logs/monitoring). Job runs a task until completion. CronJob runs Jobs on a schedule."
+    }
+  },
+  {
+    "id": "k8s-rbac-basics",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 14,
+    "title": "Role-Based Access Control (RBAC)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["RBAC", "Role", "RoleBinding", "ServiceAccount", "ClusterRole"],
+    "content": {
+      "question": "What is RBAC and how do you secure a cluster with it?",
+      "answer": "RBAC uses Roles (permissions) and RoleBindings (assigning roles to users/groups/ServiceAccounts) to control access to API resources based on the principle of least privilege."
+    }
+  },
+  {
+    "id": "k8s-kubectl-get-vs-describe",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 15,
+    "title": "Get vs. Describe",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["CLI", "Debugging"],
+    "content": {
+      "question": "What is the difference between 'kubectl get' and 'kubectl describe'?",
+      "answer": "'get' lists resources and their basic status. 'describe' provides detailed information, including events and internal state, which is vital for debugging."
+    }
+  },
+  {
+    "id": "k8s-pod-states",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 16,
+    "title": "Pod Lifecycle States",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Pending", "Running", "Succeeded", "Failed", "Unknown"],
+    "content": {
+      "question": "What are the possible states of a Pod?",
+      "answer": "Pending, Running, Succeeded (Job finished), Failed, and Unknown (Node communication lost)."
+    }
+  },
+  {
+    "id": "k8s-resource-requests-limits",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 17,
+    "title": "Requests vs. Limits",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["CPU", "Memory", "Scheduling"],
+    "content": {
+      "question": "Explain Resource Requests vs. Resource Limits.",
+      "answer": "Requests are the minimum resources guaranteed to a container (used for scheduling). Limits are the maximum resources a container can consume before being throttled (CPU) or killed (Memory)."
+    }
+  },
+  {
+    "id": "k8s-headless-service",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 18,
+    "title": "Headless Service",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["DNS", "StatefulSet"],
+    "content": {
+      "question": "What is a Headless Service?",
+      "answer": "A Service with `clusterIP: None`. It doesn't provide a load balancer; instead, DNS queries return the IPs of the individual Pods directly. Often used with StatefulSets."
+    }
+  },
+  {
+    "id": "k8s-replica-set-role",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 19,
+    "title": "ReplicaSet",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Replicas", "Controller"],
+    "content": {
+      "question": "What is a ReplicaSet?",
+      "answer": "A controller that ensures a specified number of pod replicas are running at any given time. Deployments manage ReplicaSets internally."
+    }
+  },
+  {
+    "id": "k8s-taint-effects",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 20,
+    "title": "Taint Effects",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["NoSchedule", "PreferNoSchedule", "NoExecute"],
+    "content": {
+      "question": "What are the three Taint effects?",
+      "answer": "1. NoSchedule: Prevents new pods. 2. PreferNoSchedule: Avoids if possible. 3. NoExecute: Evicts existing pods that don't tolerate the taint."
+    }
+  },
+  {
+    "id": "k8s-context-switching",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 21,
+    "title": "Kubeconfig Contexts",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Kubeconfig", "Context"],
+    "content": {
+      "question": "How do you switch between different Kubernetes clusters?",
+      "answer": "Use `kubectl config use-context <context-name>`. Contexts are defined in the `~/.kube/config` file."
+    }
+  },
+  {
+    "id": "k8s-logs-tailing",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 22,
+    "title": "Viewing Logs",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Logs", "Debugging"],
+    "content": {
+      "question": "How do you see the logs of a Pod, including streaming?",
+      "answer": "Use `kubectl logs <pod-name>` or `kubectl logs -f <pod-name>` for a continuous stream."
+    }
+  },
+  {
+    "id": "k8s-exec-shell",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 23,
+    "title": "Executing in Pod",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Terminal", "Exec"],
+    "content": {
+      "question": "How do you get a shell inside a running Pod?",
+      "answer": "Run `kubectl exec -it <pod-name> -- /bin/sh` or `/bin/bash`."
+    }
+  },
+  {
+    "id": "k8s-drain-node",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 24,
+    "title": "Node Maintenance",
+    "difficulty": "Advanced",
+    "type": "Experience",
+    "concepts": ["Drain", "Maintenance"],
+    "content": {
+      "question": "How do you safely prepare a node for maintenance?",
+      "answer": "1. `kubectl cordon <node>` (stop new pods). 2. `kubectl drain <node>` (evict existing pods to other nodes)."
+    }
+  },
+  {
+    "id": "k8s-static-pods",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 25,
+    "title": "Static Pods",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Kubelet", "Control Plane"],
+    "content": {
+      "question": "What are Static Pods?",
+      "answer": "Pods managed directly by the kubelet on a node, rather than by the API server. They are defined via local files on the node (e.g., in `/etc/kubernetes/manifests`)."
+    }
+  },
+  {
+    "id": "k8s-service-discovery",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 26,
+    "title": "Service Discovery",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["CoreDNS", "DNS"],
+    "content": {
+      "question": "How does service discovery work in Kubernetes?",
+      "answer": "Kubernetes uses internal DNS (CoreDNS). Every Service gets a DNS name like `<service>.<namespace>.svc.cluster.local`, which resolves to the Service's ClusterIP."
+    }
+  },
+  {
+    "id": "k8s-init-containers",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 27,
+    "title": "Init Containers",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Lifecycle", "Setup"],
+    "content": {
+      "question": "What is an Init Container?",
+      "answer": "A container that runs before the app containers in a Pod. It must finish successfully before the app starts. Used for setup tasks like waiting for a DB or downloading configs."
+    }
+  },
+  {
+    "id": "k8s-affinity-soft-hard",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 28,
+    "title": "Soft vs. Hard Affinity",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Scheduling", "Soft/Hard"],
+    "content": {
+      "question": "What is 'requiredDuringSchedulingIgnoredDuringExecution' vs 'preferredDuringSchedulingIgnoredDuringExecution'?",
+      "answer": "The first is 'Hard' affinity (must match or pod won't schedule). The second is 'Soft' affinity (Kubernetes will try to match, but will schedule elsewhere if it can't)."
+    }
+  },
+  {
+    "id": "k8s-metric-server-role",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 29,
+    "title": "Metrics Server",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["Metrics", "HPA"],
+    "content": {
+      "question": "What is the role of the Metrics Server?",
+      "answer": "It's a cluster-wide aggregator of resource usage data. It provides metrics to tools like `kubectl top` and is required for HPA to work."
+    }
+  },
+  {
+    "id": "k8s-kubectl-top",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 30,
+    "title": "Checking Resource Usage",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["CPU", "Memory", "Metrics"],
+    "content": {
+      "question": "How do you check real-time CPU/Memory usage of your nodes or pods?",
+      "answer": "Use `kubectl top nodes` or `kubectl top pods`."
+    }
+  },
+  {
+    "id": "k8s-pod-eviction",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 31,
+    "title": "Pod Eviction",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Node Pressure", "Out of Memory"],
+    "content": {
+      "question": "What causes a Pod to be evicted from a node?",
+      "answer": "Resource pressure (Node is out of memory or disk), node failure, or manual `kubectl drain`."
+    }
+  },
+  {
+    "id": "k8s-pvc-access-modes",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 32,
+    "title": "PVC Access Modes",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["RWO", "ROX", "RWX"],
+    "content": {
+      "question": "List the three common PVC access modes.",
+      "answer": "1. ReadWriteOnce (RWO): One node can mount as read-write. 2. ReadOnlyMany (ROX): Many nodes can mount as read-only. 3. ReadWriteMany (RWX): Many nodes can mount as read-write."
+    }
+  },
+  {
+    "id": "k8s-secret-security",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 33,
+    "title": "Secret Security",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Encryption", "Vault", "Etcd"],
+    "content": {
+      "question": "Are Kubernetes Secrets secure by default?",
+      "answer": "No. By default, they are stored as unencrypted base64 in etcd. You must enable 'Encryption at Rest' in etcd or use external tools like HashiCorp Vault."
+    }
+  },
+  {
+    "id": "k8s-pod-preset",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 34,
+    "title": "PodPresets (Legacy)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Injection", "Automation"],
+    "content": {
+      "question": "What were PodPresets used for?",
+      "answer": "To automatically inject information (secrets, volume mounts, env vars) into pods at creation time without user intervention."
+    }
+  },
+  {
+    "id": "k8s-api-groups",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 35,
+    "title": "API Groups",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["API", "GVD"],
+    "content": {
+      "question": "What are API Groups in Kubernetes?",
+      "answer": "Versions of the Kubernetes API grouped by functionality (e.g., `apps`, `batch`, `networking.k8s.io`). They allow the API to evolve without breaking older client versions."
+    }
+  },
+  {
+    "id": "k8s-service-account-token",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 36,
+    "title": "ServiceAccount Token",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Identity", "Auth"],
+    "content": {
+      "question": "How does a Pod authenticate to the Kubernetes API?",
+      "answer": "Kubernetes automatically mounts a ServiceAccount token inside the Pod at `/var/run/secrets/kubernetes.io/serviceaccount/token`."
+    }
+  },
+  {
+    "id": "k8s-helm-charts",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 37,
+    "title": "Helm Charts",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["Templates", "Package Manager"],
+    "content": {
+      "question": "What is Helm?",
+      "answer": "Helm is a package manager for Kubernetes. It uses 'Charts' (templates) to manage complex application deployments with variable parameters."
+    }
+  },
+  {
+    "id": "k8s-kustomize",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 38,
+    "title": "Kustomize",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["Overlays", "Manifests"],
+    "content": {
+      "question": "What is Kustomize?",
+      "answer": "A tool built into `kubectl` that allows you to customize YAML manifests (e.g., changing images for different environments) without using templates."
+    }
+  },
+  {
+    "id": "k8s-node-selector",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 39,
+    "title": "NodeSelector",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Scheduling", "Labels"],
+    "content": {
+      "question": "What is a nodeSelector?",
+      "answer": "The simplest form of node selection constraint. It tells Kubernetes to only schedule a Pod on nodes that have a specific label."
+    }
+  },
+  {
+    "id": "k8s-pod-security-policies",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 40,
+    "title": "Pod Security (Admission)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Admission Controllers", "PSA"],
+    "content": {
+      "question": "What is Pod Security Admission (PSA)?",
+      "answer": "The successor to Pod Security Policies. It allows you to enforce 'Privileged', 'Baseline', or 'Restricted' security standards at the namespace level."
+    }
+  },
+  {
+    "id": "k8s-dry-run",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 41,
+    "title": "Dry Run",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["CLI", "Validation"],
+    "content": {
+      "question": "How do you test a command with kubectl without actually creating the resource?",
+      "answer": "Use the `--dry-run=client` or `--dry-run=server` flag combined with `-o yaml`."
+    }
+  },
+  {
+    "id": "k8s-delete-force",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 42,
+    "title": "Force Delete",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Cleanup", "Stuck Pods"],
+    "content": {
+      "question": "How do you force delete a Pod that is stuck in 'Terminating' status?",
+      "answer": "Run `kubectl delete pod <name> --force --grace-period=0`."
+    }
+  },
+  {
+    "id": "k8s-port-forwarding",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 43,
+    "title": "Port Forwarding",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Local Access", "Debugging"],
+    "content": {
+      "question": "How do you access a private cluster pod from your local machine directly?",
+      "answer": "Use `kubectl port-forward <pod-name> 8080:80`."
+    }
+  },
+  {
+    "id": "k8s-custom-resource-definitions",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 44,
+    "title": "CRDs",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Extension", "Custom Resource"],
+    "content": {
+      "question": "What are CRDs and why are they used?",
+      "answer": "Custom Resource Definitions allow you to extend the Kubernetes API with your own object types (e.g., 'Database', 'Certificate')."
+    }
+  },
+  {
+    "id": "k8s-operators-pattern",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 45,
+    "title": "Operators",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Automation", "Controllers"],
+    "content": {
+      "question": "What is the Operator pattern?",
+      "answer": "It combines CRDs with custom controllers to automate the lifecycle of complex, stateful applications (e.g., managing database backups and upgrades automatically)."
+    }
+  },
+  {
+    "id": "k8s-etcd-role",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 46,
+    "title": "Etcd Role",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["Storage", "State"],
+    "content": {
+      "question": "Why is etcd so critical in Kubernetes?",
+      "answer": "It is the single source of truth for the entire cluster state. If etcd is lost or corrupted, the cluster cannot recover its desired state."
+    }
+  },
+  {
+    "id": "k8s-vertical-pod-autoscaler",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 47,
+    "title": "VPA",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Autoscaling", "Resources"],
+    "content": {
+      "question": "What is the Vertical Pod Autoscaler (VPA)?",
+      "answer": "A tool that automatically adjusts the CPU and Memory 'requests' of your pods based on historical usage, ensuring pods aren't over or under-provisioned."
+    }
+  },
+  {
+    "id": "k8s-cluster-autoscaler",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 48,
+    "title": "Cluster Autoscaler",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Infrastructure Scaling", "Cloud"],
+    "content": {
+      "question": "What is the Cluster Autoscaler?",
+      "answer": "A tool that automatically adds or removes **Nodes** from your cluster depending on whether your pods have enough space to be scheduled."
+    }
+  },
+  {
+    "id": "k8s-sidecar-container",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 49,
+    "title": "Sidecar Definition",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Architecture", "Patterns"],
+    "content": {
+      "question": "Define the Sidecar pattern.",
+      "answer": "Running a helper container alongside the main application container in the same Pod to handle peripheral tasks like logging, proxying, or config sync."
+    }
+  },
+  {
+    "id": "k8s-anti-affinity",
+    "sectionId": "kubernetes-orchestration",
+    "orderIndex": 50,
+    "title": "Anti-Affinity",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["High Availability", "Scheduling"],
+    "content": {
+      "question": "What is Pod Anti-Affinity used for?",
+      "answer": "To ensure that pods of the same application are NOT scheduled on the same host, which prevents a single node failure from taking down the whole service."
+    }
+  }
+]

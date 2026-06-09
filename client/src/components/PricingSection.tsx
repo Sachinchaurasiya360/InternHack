@@ -45,11 +45,13 @@ export function PricingSection() {
         { text: "Browse job listings", included: true },
         { text: "Basic career roadmaps", included: true },
         { text: "1 ATS resume scan per day", included: true },
-        { text: "Company explorer", included: true },
-        { text: "Core subject interview prep", included: false },
+        { text: "Open source repo discovery (paginated)", included: true },
+        { text: "GSoC org browser", included: true },
+        { text: "First PR & Git guides", included: true },
+        { text: "3 repo suggestions / month", included: true },
         { text: "Unlimited ATS scans", included: false },
-        { text: "Mini projects & exercises", included: false },
-        { text: "Priority job recommendations", included: false },
+        { text: "Full OSS analytics & trends", included: false },
+        { text: "Unlimited repo suggestions", included: false },
       ],
       buttonText: "Sign Up Free",
       onAction: () => navigate("/register"),
@@ -62,7 +64,7 @@ export function PricingSection() {
       title: "Pro",
       desc: "Full access to all premium features",
       monthlyPrice: 249,
-      annuallyPrice: 2999,
+      annuallyPrice: 2499,
       priceSuffix: "",
       features: [
         { text: "Everything in Free plan", included: true },
@@ -71,8 +73,10 @@ export function PricingSection() {
         { text: "Full DSA, SQL & aptitude practice", included: true },
         { text: "Proctored skill verification tests", included: true },
         { text: "Career roadmaps with progress tracking", included: true },
-        { text: "Open source tools & GSoC guides", included: true },
-        { text: "Priority job recommendations", included: true },
+        { text: "Full OSS analytics & contribution trends", included: true },
+        { text: "Unlimited repo suggestions", included: true },
+        { text: "GSoC proposal builder & program tracker", included: true },
+        { text: "Verified certificate with badge URL", included: true },
       ],
       buttonText: "Get Pro",
       highlighted: true,
@@ -177,12 +181,12 @@ export function PricingSection() {
             >
               <motion.div
                 whileHover={{ y: -4 }}
-                className={cn(
-                  "relative rounded-2xl h-full flex flex-col transition-all",
-                  plan.highlighted
-                    ? "border-2 border-lime-400/50 shadow-2xl shadow-lime-400/10 bg-white dark:bg-stone-900"
-                    : "border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900"
-                )}
+className={cn(
+  "relative rounded-2xl h-full flex flex-col transition-all duration-300",
+  plan.highlighted
+    ? "border-2 border-lime-400/50 shadow-2xl shadow-lime-400/10 bg-white dark:bg-stone-900"
+    : "border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 hover:border-lime-400/40 hover:shadow-2xl hover:shadow-lime-400/10 hover:-translate-y-1"
+)}
               >
                 {plan.highlighted && (
                   <div className="absolute top-1/2 inset-x-0 mx-auto h-12 w-full bg-lime-400/40 rounded-2xl blur-3xl -z-10" />
@@ -258,37 +262,6 @@ export function PricingSection() {
                   </div>
                 </div>
 
-                {/* Button + billing note */}
-                <div className="px-6 md:px-8 pt-4 pb-2">
-                  <button
-                    onClick={plan.onAction}
-                    className={cn(
-                      "block w-full text-center py-3.5 px-6 rounded-xl text-sm font-semibold transition-all cursor-pointer border-0",
-                      plan.btnClass
-                    )}
-                  >
-                    {plan.buttonText}
-                  </button>
-                  {plan.id !== "free" && (
-                    <div className="h-7 overflow-hidden w-full">
-                      <AnimatePresence mode="wait">
-                        <motion.span
-                          key={billPlan}
-                          initial={{ y: 16, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          exit={{ y: -16, opacity: 0 }}
-                          transition={{ duration: 0.2, ease: "easeOut" }}
-                          className="text-xs text-center text-gray-400 dark:text-white/30 mt-2 block"
-                        >
-                          {billPlan === "monthly"
-                            ? "Billed monthly"
-                            : "Billed in one annual payment"}
-                        </motion.span>
-                      </AnimatePresence>
-                    </div>
-                  )}
-                </div>
-
                 {/* Features */}
                 <div className="px-6 md:px-8 pt-4 pb-8 flex-1">
                   <span className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wider mb-3 block">
@@ -318,6 +291,37 @@ export function PricingSection() {
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                {/* Button + billing note */}
+                <div className="px-6 md:px-8 pb-8 mt-auto">
+                  <button
+                    onClick={plan.onAction}
+                    className={cn(
+                      "block w-full text-center py-3.5 px-6 rounded-xl text-sm font-semibold transition-all cursor-pointer border-0",
+                      plan.btnClass
+                    )}
+                  >
+                    {plan.buttonText}
+                  </button>
+                  {plan.id !== "free" && (
+                    <div className="h-7 overflow-hidden w-full">
+                      <AnimatePresence mode="wait">
+                        <motion.span
+                          key={billPlan}
+                          initial={{ y: 16, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: -16, opacity: 0 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="text-xs text-center text-gray-400 dark:text-white/30 mt-2 block"
+                        >
+                          {billPlan === "monthly"
+                            ? "Billed monthly"
+                            : "Billed in one annual payment"}
+                        </motion.span>
+                      </AnimatePresence>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </motion.div>

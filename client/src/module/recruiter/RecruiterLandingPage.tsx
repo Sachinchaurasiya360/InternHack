@@ -30,7 +30,7 @@ const FEATURES: {
   desc: string;
   icon: typeof Briefcase;
   stat: string;
-  span?: "single" | "double";
+  span?: "single" | "double" | "full";
 }[] = [
   {
     title: "Hiring pipelines",
@@ -68,6 +68,7 @@ const FEATURES: {
     desc: "Cycles from draft to completion, measurable goals, self and manager assessments.",
     icon: TrendingUp,
     stat: "review cycles",
+    span: "double",
   },
   {
     title: "Compliance and workflows",
@@ -80,7 +81,7 @@ const FEATURES: {
     desc: "Real-time headcount, attrition, leave patterns, attendance trends, payroll summaries.",
     icon: BarChart3,
     stat: "live dashboard",
-    span: "double",
+    span: "full",
   },
 ];
 
@@ -157,8 +158,8 @@ export default function RecruiterLandingPage() {
   return (
     <div className="font-sans bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
-        title="For Recruiters and HR Teams"
-        description="Post jobs, manage employees, run payroll, track performance, and automate HR workflows. A complete HR platform built into InternHack."
+        title="Hire from IITs, NITs & Top Colleges"
+        description="Post internships and jobs to 200,000+ verified students. ATS-scored pipelines, interview scheduling, payroll, and HR workflows in one platform. Free for the first two seats."
         keywords="HR platform, recruiter dashboard, post jobs, hire students, employee management, payroll, attendance, performance reviews, HR analytics, hiring pipeline"
         canonicalUrl={canonicalUrl("/for-recruiters")}
       />
@@ -359,7 +360,7 @@ export default function RecruiterLandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.4 }}
-                className={f.span === "double" ? "md:col-span-2" : ""}
+                className={f.span === "full" ? "md:col-span-3" : f.span === "double" ? "md:col-span-2" : ""}
               >
                 <div className="relative h-full flex flex-col p-8 bg-white dark:bg-stone-950 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors">
                   <div className="flex items-center justify-between mb-8">
@@ -473,7 +474,7 @@ export default function RecruiterLandingPage() {
                 className={
                   plan.highlighted
                     ? "relative rounded-2xl border-2 border-lime-400/50 shadow-2xl shadow-lime-400/10 bg-white dark:bg-stone-900 flex flex-col"
-                    : "relative rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 flex flex-col"
+                    : "relative rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 flex flex-col hover:border-lime-400 hover:shadow-2xl hover:shadow-lime-400/10 hover:-translate-y-1 transition-all duration-300"
                 }
               >
                 {plan.highlighted && (
@@ -534,21 +535,6 @@ export default function RecruiterLandingPage() {
                   )}
                 </div>
 
-                <div className="px-8">
-                  <Link to={plan.cta.href} className="no-underline block">
-                    <button
-                      className={
-                        plan.highlighted
-                          ? "group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0"
-                          : "group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-lg text-sm font-bold hover:bg-stone-800 dark:hover:bg-stone-100 transition-colors cursor-pointer border-0"
-                      }
-                    >
-                      {plan.cta.label}
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  </Link>
-                </div>
-
                 <div className="p-8 pt-6 flex-1">
                   <div className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-4">
                     Includes
@@ -579,6 +565,21 @@ export default function RecruiterLandingPage() {
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                <div className="px-8 pb-8 mt-auto">
+                  <Link to={plan.cta.href} className="no-underline block">
+                    <button
+                      className={
+                        plan.highlighted
+                          ? "group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0"
+                          : "group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-lg text-sm font-bold hover:bg-stone-800 dark:hover:bg-stone-100 transition-colors cursor-pointer border-0"
+                      }
+                    >
+                      {plan.cta.label}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </button>
+                  </Link>
                 </div>
               </motion.div>
             ))}

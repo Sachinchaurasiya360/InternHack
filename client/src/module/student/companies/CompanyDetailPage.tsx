@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
+import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
 import {
   MapPin,
@@ -16,7 +18,7 @@ import {
   Star,
   Briefcase,
   ArrowUpRight,
-} from "lucide-react";
+} from "lucide-react"; 
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -42,6 +44,40 @@ const SIZE_LABELS: Record<string, string> = {
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 const stagger = { show: { transition: { staggerChildren: 0.07 } } };
+
+
+
+
+const getSocialIcon = (platform: string) => {
+  const p = platform.toLowerCase();
+  const cls = "w-4 h-4 text-stone-400 group-hover:text-lime-500 transition-colors";
+
+  if (p.includes("github")) return (
+    <svg className={cls} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.03c-3.34.72-4.04-1.6-4.04-1.6-.55-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.72.08-.72 1.2.08 1.83 1.23 1.83 1.23 1.07 1.83 2.8 1.3 3.48 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.28-1.23 3.28-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
+    </svg>
+  );
+
+  if (p.includes("dribbble")) return (
+    <svg className={cls} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm7.97 5.54a10.17 10.17 0 0 1 2.3 6.35c-.33-.07-3.67-.75-7.02-.32-.08-.18-.15-.37-.23-.55-.22-.52-.46-1.04-.7-1.54 3.7-1.51 5.38-3.68 5.65-3.94zM12 1.8a10.17 10.17 0 0 1 6.84 2.64c-.24.23-1.73 2.27-5.3 3.6A45.6 45.6 0 0 0 9.6 2.13 10.23 10.23 0 0 1 12 1.8zm-2.38.37a43.7 43.7 0 0 1 3.9 5.76c-4.9 1.3-9.23 1.28-9.68 1.27A10.21 10.21 0 0 1 9.62 2.17zM1.8 12.02v-.26c.43.01 5.5.08 10.73-1.49.3.58.58 1.17.84 1.77l-.4.11c-5.4 1.75-8.27 6.52-8.52 6.96A10.18 10.18 0 0 1 1.8 12zm10.2 10.2a10.17 10.17 0 0 1-6.27-2.14c.2-.43 2.56-4.96 8.52-7.03l.07-.02a36.8 36.8 0 0 1 1.9 6.73 10.18 10.18 0 0 1-4.22 2.46zm5.94-1.64a38.5 38.5 0 0 0-1.77-6.28c2.9-.46 5.45.3 5.76.39a10.21 10.21 0 0 1-4 5.89z"/>
+    </svg>
+  );
+
+  if (p.includes("linkedin")) return (
+    <svg className={cls} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.55V9h3.57v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0z"/>
+    </svg>
+  );
+
+  if (p.includes("twitter") || p.includes("x")) return (
+    <svg className={cls} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    </svg>
+  );
+
+  return <Globe className={cls} />;
+};
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -82,35 +118,42 @@ export default function CompanyDetailPage() {
   const { user, isAuthenticated } = useAuthStore();
   const location = useLocation();
   const isInsideLayout = location.pathname.startsWith("/student/");
-  const [company, setCompany] = useState<Company | null>(null);
-  const [reviews, setReviews] = useState<CompanyReview[]>([]);
   const [sortBy, setSortBy] = useState("latest");
-  const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  useEffect(() => {
-    if (!slug) return;
-    setLoading(true);
-    Promise.all([
-      api.get(`/companies/${slug}`),
-      api.get(`/companies/${slug}/reviews?sort=${sortBy}`),
-    ])
-      .then(([companyRes, reviewsRes]) => {
-        setCompany(companyRes.data.company);
-        setReviews(reviewsRes.data.reviews);
-      })
-      .catch(() => setCompany(null))
-      .finally(() => setLoading(false));
-  }, [slug, sortBy]);
+  const { 
+    data: company, 
+    isLoading: companyLoading,
+    isError: companyIsError,
+    error: companyError 
+  } = useQuery<Company>({
+    queryKey: queryKeys.companies.detail(slug!),
+    queryFn: () => api.get(`/companies/${slug}`).then((r) => r.data.company),
+    enabled: !!slug,
+    staleTime: 15 * 60 * 1000,
+  });
+
+  const {
+    data: reviewsData,
+    isLoading: reviewsLoading,
+    isError: reviewsIsError,
+    error: reviewsError,
+    refetch: refetchReviews,
+  } = useQuery<{ reviews: CompanyReview[] }>({
+    queryKey: [...queryKeys.companies.reviews(slug!), sortBy],
+    queryFn: () => api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data),
+    enabled: !!slug,
+    placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const reviews = reviewsData?.reviews || [];
+  const loading = companyLoading || reviewsLoading;
 
   const refreshReviews = () => {
-    if (!slug) return;
     setShowReviewForm(false);
-    api
-      .get(`/companies/${slug}/reviews?sort=${sortBy}`)
-      .then((res) => setReviews(res.data.reviews))
-      .catch(() => {});
+    refetchReviews();
   };
 
   const backPath = isInsideLayout ? "/student/companies" : "/companies";
@@ -124,7 +167,38 @@ export default function CompanyDetailPage() {
     );
   }
 
-  if (!company) {
+  if (companyIsError || reviewsIsError) {
+    const errorMsg = companyIsError
+      ? (companyError as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || companyError?.message || "Failed to load company"
+      : (reviewsError as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || reviewsError?.message || "Failed to load reviews";
+      
+    const errorContent = (
+      <div className="max-w-6xl mx-auto px-6 pt-24 text-center">
+        <Kicker>error / api</Kicker>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-red-500">
+          Something went wrong
+        </h1>
+        <p className="mt-2 text-stone-500">{errorMsg}</p>
+        <Link
+          to={backPath}
+          className="mt-4 inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to companies
+        </Link>
+      </div>
+    );
+    
+    if (isInsideLayout) return errorContent;
+    return (
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <Navbar />
+        {errorContent}
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!companyIsError && !company) {
     const notFound = (
       <div className="max-w-6xl mx-auto px-6 pt-24 text-center">
         <Kicker>error / 404</Kicker>
@@ -229,7 +303,7 @@ export default function CompanyDetailPage() {
                   <div className="flex items-center gap-2">
                     <StarRating rating={Math.round(company.avgRating)} size="sm" />
                     <span className="text-sm font-bold text-stone-900 dark:text-stone-50 tabular-nums">
-                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : ","}
+                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : "—"}
                     </span>
                     <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                       {company.reviewCount} review{company.reviewCount === 1 ? "" : "s"}
@@ -440,7 +514,7 @@ export default function CompanyDetailPage() {
                       Rating
                     </dt>
                     <dd className="text-stone-900 dark:text-stone-50 text-right tabular-nums">
-                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : ","}
+                      {company.avgRating > 0 ? company.avgRating.toFixed(1) : "—"}
                       <span className="text-stone-500 ml-1">/ 5</span>
                     </dd>
                   </div>
@@ -455,42 +529,46 @@ export default function CompanyDetailPage() {
                 </dl>
               </motion.div>
 
-              {/* Links */}
-              {hasLinks && (
-                <motion.div
-                  variants={fadeUp}
-                  className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-6"
-                >
-                  <Kicker>links</Kicker>
-                  <div className="mt-4 space-y-2">
-                    {company.website && (
-                      <a
-                        href={company.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-center gap-3 px-3 py-2.5 rounded-md border border-stone-200 dark:border-white/10 text-sm text-stone-700 dark:text-stone-300 hover:border-stone-400 dark:hover:border-white/30 no-underline transition-colors"
-                      >
-                        <Globe className="w-4 h-4 text-stone-400 group-hover:text-lime-500 transition-colors" />
-                        <span className="flex-1">Website</span>
-                        <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
-                      </a>
-                    )}
-                    {Object.entries(socialLinks).map(([platform, url]) => (
-                      <a
-                        key={platform}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-center gap-3 px-3 py-2.5 rounded-md border border-stone-200 dark:border-white/10 text-sm text-stone-700 dark:text-stone-300 hover:border-stone-400 dark:hover:border-white/30 no-underline capitalize transition-colors"
-                      >
-                        <Linkedin className="w-4 h-4 text-stone-400 group-hover:text-lime-500 transition-colors" />
-                        <span className="flex-1">{platform}</span>
-                        <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
-                      </a>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
+            
+{/* Links */}
+{hasLinks && (
+  <motion.div
+    variants={fadeUp}
+    className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-6"
+  >
+    <Kicker>links</Kicker>
+
+    <div className="mt-4 space-y-2">
+      {company.website && (
+        <a
+          href={company.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-3 px-3 py-2.5 rounded-md border border-stone-200 dark:border-white/10 text-sm text-stone-700 dark:text-stone-300 hover:border-stone-400 dark:hover:border-white/30 no-underline transition-colors"
+        >
+          <Globe className="w-4 h-4 text-stone-400 group-hover:text-lime-500 transition-colors" />
+          <span className="flex-1">Website</span>
+          <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
+        </a>
+      )}
+
+      {Object.entries(socialLinks).map(([platform, url]) => (
+        <a
+          key={platform}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-3 px-3 py-2.5 rounded-md border border-stone-200 dark:border-white/10 text-sm text-stone-700 dark:text-stone-300 hover:border-stone-400 dark:hover:border-white/30 no-underline capitalize transition-colors"
+        >
+          {getSocialIcon(platform)}
+          <span className="flex-1">{platform}</span>
+          <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
+        </a>
+      ))}
+    </div>
+  </motion.div>
+)}
+
 
               {/* Key People */}
               {company.contacts && company.contacts.length > 0 && (

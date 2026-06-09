@@ -1,7 +1,10 @@
-﻿import { useRef } from "react";
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
+import api from "../../../lib/axios";
+import { SEO } from "../../../components/SEO";
 import {
   ArrowRight,
   CheckCircle,
@@ -208,12 +211,33 @@ export default function OpenSourceLandingPage() {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
 
+  const { data: gsocStats } = useQuery({
+    queryKey: ["gsoc-stats"],
+    queryFn: () => api.get("/gsoc/stats").then((r) => r.data),
+    staleTime: 24 * 60 * 60 * 1000,
+  });
+  const orgCount = gsocStats?.total ?? 520;
+
+  const hubArticleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Find a repo, ship your first PR.",
+    "description": "Beginner-friendly open-source projects, curated by engineers for students. Learn Git pipelines and open source workflows.",
+    "author": { "@type": "Organization", "name": "InternHack", "url": "https://internhack.io" },
+    "publisher": { "@type": "Organization", "name": "InternHack" }
+  };
+
   const handleExplore = () => {
     navigate(isAuthenticated ? "/student/opensource" : "/login");
   };
 
   return (
     <div className="font-sans bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
+      <SEO
+        title="Open Source Hub | Repos, Guides & Programs | InternHack"
+        description="Discover beginner-friendly open-source projects, master Git workflows, and apply to GSoC, LFX, Outreachy, and more. Your complete guide to open-source contribution."
+        structuredData={hubArticleSchema}
+      />
 
       {/* ── Hero ── */}
       <section className="relative w-full overflow-hidden bg-stone-50 dark:bg-stone-950 border-b border-stone-200 dark:border-white/10">
@@ -253,25 +277,19 @@ export default function OpenSourceLandingPage() {
           </motion.div>
 
           {/* Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.12 }}
-            className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-none text-stone-900 dark:text-stone-50"
-          >
-            Discover &amp;
-            <br />
+          <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Discover and{" "}
             <span className="relative inline-block align-baseline">
-              <span className="relative z-10">Contribute.</span>
+              <span className="relative z-10">contribute.</span>
               <motion.span
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 0.7, delay: 0.9, ease: "easeOut" }}
+                transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
                 aria-hidden
-                className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+                className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
               />
             </span>
-          </motion.h1>
+          </h1>
 
           {/* Body */}
           <motion.p
@@ -314,7 +332,7 @@ export default function OpenSourceLandingPage() {
             className="grid grid-cols-2 sm:grid-cols-4 gap-8 mt-16 pt-10 border-t border-stone-200 dark:border-white/10 max-w-lg"
           >
             {[
-              { value: "520", suffix: "+", label: "GSoC Orgs" },
+              { value: String(orgCount), suffix: "+", label: "GSoC Orgs" },
               { value: "20", suffix: "+", label: "Programs" },
               { value: "30", suffix: "+", label: "Hidden Gems" },
               { value: "100", suffix: "%", label: "Free to Use" },
@@ -431,20 +449,21 @@ export default function OpenSourceLandingPage() {
             ))}
 
             {/* Add Your Repo */}
-            <motion.a
-              href="mailto:mrsachinchaurasiya@gmail.com?subject=Add%20My%20Repo%20to%20InternHack%20Open%20Source&body=Hi%20InternHack%20Team%2C%0A%0AI%27d%20like%20to%20submit%20my%20open-source%20repo%20for%20listing%20on%20the%20platform.%0A%0ARepo%20Name%3A%20%0AGitHub%20URL%3A%20%0ALanguage%3A%20%0AShort%20Description%3A%20%0AWhy%20it%27s%20great%20for%20contributors%3A%20%0A%0AThanks!"
+            <motion.button
+              type="button"
+              onClick={() => navigate(isAuthenticated ? "/student/opensource" : "/login?redirectTo=/student/opensource")}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.5, duration: 0.4 }}
-              className="rounded-xl border border-dashed border-stone-300 dark:border-white/15 p-4 hover:border-lime-400 dark:hover:border-lime-400 transition-all flex flex-col items-center justify-center gap-2 no-underline cursor-pointer group"
+              className="rounded-xl border border-dashed border-stone-300 dark:border-white/15 p-4 hover:border-lime-400 dark:hover:border-lime-400 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer group text-left"
             >
               <div className="w-9 h-9 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center group-hover:bg-lime-400/20 transition-colors">
                 <Plus className="w-4 h-4 text-stone-400 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors" />
               </div>
               <h4 className="text-xs font-semibold text-stone-500 group-hover:text-stone-900 dark:group-hover:text-stone-50 transition-colors text-center">Add Your Repo</h4>
               <p className="text-[10px] text-stone-400 text-center">Request to list your project</p>
-            </motion.a>
+            </motion.button>
           </div>
         </div>
       </section>
@@ -600,7 +619,7 @@ export default function OpenSourceLandingPage() {
 
               <div className="md:col-span-2 p-10 md:p-16 flex flex-col justify-center gap-8">
                 {[
-                  { value: "520", suffix: "+", label: "GSoC orgs indexed" },
+                  { value: String(orgCount), suffix: "+", label: "GSoC orgs indexed" },
                   { value: "20", suffix: "+", label: "programs tracked" },
                   { value: "100", suffix: "%", label: "free forever" },
                 ].map((s) => (

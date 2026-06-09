@@ -7,26 +7,31 @@ import {
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
   History, Terminal, Lock, Crown, Code2, ChevronLeft, ChevronRight, Play,
+  History, Terminal, Lock, Crown, Flag, X, Sparkles,
 } from "lucide-react";
 import type { SolutionStep } from "../../../lib/types";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary } from "../../../lib/types";
+import type { DsaProblemDetail, DsaLanguage, DsaExecutionResult, DsaSubmissionSummary, DsaSimilarProblem, DsaCodeReview } from "../../../lib/types";
+import { DsaAiReviewPanel } from "./components/DsaAiReviewPanel";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { AiHintPanel } from "./components/AiHintPanel";
+import { sanitizeHtml } from "../../../lib/sanitize";
 import { DsaCodeEditor } from "./components/DsaCodeEditor";
 import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
+import { Button } from "@/components/ui/button";
 
 const DIFF_STYLE: Record<string, string> = {
-  Easy:   "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
+  Easy: "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
   Medium: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
-  Hard:   "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
+  Hard: "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
 
 const DEFAULT_CODE: Record<DsaLanguage, string> = {
@@ -107,10 +112,14 @@ export default function DsaProblemDetailPage() {
   const [showAllCompanies, setShowAllCompanies] = useState(false);
   const [expandedHint, setExpandedHint] = useState<number | null>(null);
   const [showNotes, setShowNotes] = useState(false);
+  const [showNextPanel, setShowNextPanel] = useState(false);
   const [noteValue, setNoteValue] = useState("");
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportMessage, setReportMessage] = useState("");
 
   const [activeTab, setActiveTab] = useState<"problem" | "code">("problem");
-  const [rightTab, setRightTab] = useState<"results" | "history" | "output">("results");
+  const [rightTab, setRightTab] = useState<"results" | "history" | "output" | "ai-review">("results");
   const [language, setLanguage] = useState<DsaLanguage>("python");
   const [codeMap, setCodeMap] = useState<Record<DsaLanguage, string>>({
     python: DEFAULT_CODE.python,
@@ -122,6 +131,7 @@ export default function DsaProblemDetailPage() {
     if (!slug) return;
     for (const lang of ["python", "cpp", "java"] as DsaLanguage[]) {
       const saved = localStorage.getItem(`dsa-code-${slug}-${lang}`);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (saved) setCodeMap((prev) => ({ ...prev, [lang]: saved }));
     }
   }, [slug]);
@@ -156,6 +166,18 @@ export default function DsaProblemDetailPage() {
     staleTime: 60 * 1000,
   });
 
+  const { data: similarProblems = [] } = useQuery({
+    queryKey: queryKeys.dsa.similar(problem?.id ?? 0),
+    queryFn: () =>
+      api.get<DsaSimilarProblem[]>(`/dsa/problems/${problem!.id}/similar?limit=3`)
+        .then((r) => r.data),
+    enabled: !!problem && showNextPanel,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setShowNextPanel(false); }, [slug]);
+
   const toggleMutation = useMutation({
     mutationFn: (problemId: number) => api.post(`/dsa/problems/${problemId}/toggle`).then((r) => r.data),
     onSuccess: () => {
@@ -179,6 +201,34 @@ export default function DsaProblemDetailPage() {
       toast.success("Notes saved");
     },
   });
+  // Report issue mutation
+  const reportIssueMutation = useMutation({
+    mutationFn: ({
+      problemId,
+      reason,
+      message,
+    }: {
+      problemId: number;
+      reason: string;
+      message: string;
+    }) =>
+      api.post(`/dsa/problems/${problemId}/report`, {
+        reason,
+        message,
+      }),
+
+    onSuccess: () => {
+      toast.success("Issue reported successfully");
+
+      setShowReportModal(false);
+      setReportReason("");
+      setReportMessage("");
+    },
+
+    onError: () => {
+      toast.error("Failed to report issue");
+    },
+  });
 
   const executeMutation = useMutation({
     mutationFn: ({ problemId, lang, code }: { problemId: number; lang: string; code: string }) =>
@@ -189,17 +239,32 @@ export default function DsaProblemDetailPage() {
         toast.success("All test cases passed!");
         queryClient.invalidateQueries({ queryKey: queryKeys.dsa.problem(slug!) });
         queryClient.invalidateQueries({ queryKey: queryKeys.dsa.progress() });
+        setShowNextPanel(true);
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.dsa.submissions(problem!.id) });
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { status?: number; data?: { message?: string } } }) => {
       if (err?.response?.status === 429) {
-        toast.error(err.response.data?.message ?? "Daily limit reached");
+        toast.error(err.response?.data?.message ?? "Daily limit reached");
       } else {
         toast.error(err?.response?.data?.message ?? "Execution failed");
       }
     },
   });
+
+  const aiReviewMutation = useMutation({
+    mutationFn: (submissionId: number) =>
+      api.post<DsaCodeReview>(`/dsa/submissions/${submissionId}/review`).then((r) => r.data),
+    onError: (err: { response?: { status?: number; data?: { message?: string } } }) => {
+      if (err?.response?.status === 429) {
+        toast.error(err.response?.data?.message ?? "Daily limit reached");
+      } else {
+        toast.error(err?.response?.data?.message ?? "AI review failed");
+      }
+    },
+  });
+
+  useEffect(() => { aiReviewMutation.reset(); }, [problem?.id, aiReviewMutation]);
 
   const handleRun = useCallback(() => {
     if (!problem || !user || !isPremium) return;
@@ -266,24 +331,25 @@ export default function DsaProblemDetailPage() {
                 <button
                   onClick={() => toggleMutation.mutate(problem.id)}
                   title={problem.solved ? "Mark unsolved" : "Mark solved"}
-                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${
-                    problem.solved
+                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${problem.solved
                       ? "text-lime-600 dark:text-lime-400 border-lime-300 dark:border-lime-900/60 bg-lime-50 dark:bg-lime-900/10"
                       : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-                  }`}
+                    }`}
                 >
                   {problem.solved ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
                 </button>
                 <button
                   onClick={() => bookmarkMutation.mutate(problem.id)}
                   title={problem.bookmarked ? "Remove bookmark" : "Bookmark"}
-                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${
-                    problem.bookmarked
+                  className={`w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors ${problem.bookmarked
                       ? "text-stone-900 dark:text-stone-50 border-stone-900 dark:border-stone-50"
                       : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-                  }`}
+                    }`}
                 >
                   {problem.bookmarked ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                </button>
+                <button onClick={() => setShowReportModal(true)} title="Report issue" className="w-9 h-9 inline-flex items-center justify-center border rounded-md transition-colors text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30">
+                    <Flag className="w-4 h-4" />
                 </button>
               </>
             )}
@@ -306,11 +372,10 @@ export default function DsaProblemDetailPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 relative py-3 text-[10px] font-mono uppercase tracking-widest transition-colors ${
-                activeTab === tab
+              className={`flex-1 relative py-3 text-[10px] font-mono uppercase tracking-widest transition-colors ${activeTab === tab
                   ? "text-stone-900 dark:text-stone-50"
                   : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
-              }`}
+                }`}
             >
               {tab}
               {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
@@ -322,11 +387,20 @@ export default function DsaProblemDetailPage() {
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-[45fr_55fr] min-h-0">
           {/* LEFT: Problem details */}
           <div
-            className={`overflow-y-auto border-r border-stone-200 dark:border-white/10 ${
-              activeTab !== "problem" ? "hidden lg:block" : ""
-            }`}
+            className={`overflow-y-auto border-r border-stone-200 dark:border-white/10 ${activeTab !== "problem" ? "hidden lg:block" : ""
+              }`}
           >
             <div className="p-5 space-y-5">
+              {/* Mobile test results */}
+              {executeMutation.data && (
+                <div className="lg:hidden border border-stone-200 dark:border-white/10 rounded-md overflow-hidden bg-white dark:bg-stone-950 flex flex-col">
+                  <div className="p-3 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900/50">
+                    <SectionLabel>latest run results</SectionLabel>
+                  </div>
+                  <DsaTestResults result={executeMutation.data} isRunning={executeMutation.isPending} />
+                </div>
+              )}
+
               {/* Stats row */}
               {(problem.acceptanceRate || problem.totalSubmissions) && (
                 <div className="flex flex-wrap items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
@@ -393,7 +467,7 @@ export default function DsaProblemDetailPage() {
                   <div className="mt-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
                     <div
                       className="prose dark:prose-invert max-w-none text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-wrap"
-                      dangerouslySetInnerHTML={{ __html: formatDescription(problem.description) }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatDescription(problem.description)) }}
                     />
                   </div>
                 </div>
@@ -413,7 +487,7 @@ export default function DsaProblemDetailPage() {
                   <div className="mt-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
                     <div
                       className="text-sm text-stone-700 dark:text-stone-300 whitespace-pre-wrap leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: formatDescription(problem.constraints) }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatDescription(problem.constraints)) }}
                     />
                   </div>
                 </div>
@@ -442,9 +516,8 @@ export default function DsaProblemDetailPage() {
                             </span>
                           </span>
                           <ChevronDown
-                            className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${
-                              expandedHint === i ? "rotate-180" : ""
-                            }`}
+                            className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${expandedHint === i ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
                         <AnimatePresence>
@@ -458,7 +531,7 @@ export default function DsaProblemDetailPage() {
                             >
                               <div
                                 className="px-4 pb-4 pl-11 text-sm text-stone-700 dark:text-stone-300 leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: cleanHint(hint) }}
+                                dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanHint(hint)) }}
                               />
                             </motion.div>
                           )}
@@ -467,6 +540,11 @@ export default function DsaProblemDetailPage() {
                     ))}
                   </div>
                 </div>
+              )}
+
+              {/* AI Hints */}
+              {user && (
+                <AiHintPanel problemId={problem.id} />
               )}
 
               {/* Notes */}
@@ -485,9 +563,8 @@ export default function DsaProblemDetailPage() {
                         {problem.notes && !showNotes && <span className="h-1 w-1 bg-lime-400" />}
                       </span>
                       <ChevronDown
-                        className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${
-                          showNotes ? "rotate-180" : ""
-                        }`}
+                        className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${showNotes ? "rotate-180" : ""
+                          }`}
                       />
                     </button>
                     <AnimatePresence>
@@ -580,40 +657,52 @@ export default function DsaProblemDetailPage() {
 
           {/* ── RIGHT: Code editor + results ── */}
           <div
-            className={`flex flex-col min-h-0 bg-stone-50 dark:bg-stone-900/50 ${
-              activeTab !== "code" ? "hidden lg:flex" : "flex"
-            }`}
+            className={`flex flex-col min-h-0 bg-stone-50 dark:bg-stone-900/50 pb-16 lg:pb-0 ${activeTab !== "code" ? "hidden lg:flex" : "flex"
+              }`}
           >
-            {isPremium ? (
+            {user ? (
               <>
                 {/* Editor */}
-                <div className="h-[55%] min-h-0 border-b border-stone-200 dark:border-white/10">
-                  <DsaCodeEditor
-                    value={codeMap[language]}
-                    onChange={handleCodeChange}
-                    onRun={handleRun}
-                    language={language}
-                    onLanguageChange={setLanguage}
-                    isRunning={executeMutation.isPending}
-                  />
+                <div className="h-[55%] max-lg:h-screen-minus-180 min-h-0 border-b border-stone-200 dark:border-white/10 relative overflow-hidden">
+                  {isPremium ? (
+                    <DsaCodeEditor
+                      value={codeMap[language]}
+                      onChange={handleCodeChange}
+                      onRun={handleRun}
+                      language={language}
+                      onLanguageChange={setLanguage}
+                      isRunning={executeMutation.isPending}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-stone-950/40 backdrop-blur-[2px] z-10 transition-all">
+                      <div className="text-center max-w-xs px-6">
+                        <Lock className="w-5 h-5 text-amber-500 mx-auto mb-2 opacity-80" />
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-stone-900 dark:text-stone-50">Premium Feature</h4>
+                        <p className="mt-1 text-[10px] text-stone-600 dark:text-stone-400">Upgrade to run and test your code against cases.</p>
+                        <Link to="/student/checkout" className="mt-4 px-3 py-1.5 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-[9px] font-mono uppercase tracking-widest hover:bg-lime-400 hover:text-stone-900 transition-colors inline-block no-underline">
+                          Subscribe
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Results / Output / History tabs */}
-                <div className="flex-1 min-h-0 flex flex-col">
+                <div className="hidden lg:flex flex-1 min-h-0 flex-col">
                   <div className="flex items-center border-b border-stone-200 dark:border-white/10 bg-white dark:bg-stone-950 shrink-0">
                     {([
                       { key: "results" as const, label: "test results", icon: null },
                       { key: "output" as const, label: "output", icon: Terminal },
                       { key: "history" as const, label: "history", icon: History },
+                      { key: "ai-review" as const, label: "ai review", icon: Sparkles },
                     ]).map(({ key, label, icon: Icon }) => (
                       <button
                         key={key}
                         onClick={() => setRightTab(key)}
-                        className={`relative inline-flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-mono uppercase tracking-widest transition-colors ${
-                          rightTab === key
+                        className={`relative inline-flex items-center gap-1.5 px-4 py-2.5 text-[10px] font-mono uppercase tracking-widest transition-colors ${rightTab === key
                             ? "text-stone-900 dark:text-stone-50"
                             : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
-                        }`}
+                          }`}
                       >
                         {Icon && <Icon className="w-3 h-3" />}
                         {label}
@@ -634,94 +723,225 @@ export default function DsaProblemDetailPage() {
                       <DsaTestResults result={executeMutation.data ?? null} isRunning={executeMutation.isPending} />
                     ) : rightTab === "output" ? (
                       <DsaConsoleOutput result={executeMutation.data ?? null} isRunning={executeMutation.isPending} />
+                    ) : rightTab === "ai-review" ? (
+                      <DsaAiReviewPanel
+                        review={aiReviewMutation.data ?? null}
+                        isLoading={aiReviewMutation.isPending}
+                        error={aiReviewMutation.error}
+                        onRequestReview={() => {
+                          if (executeMutation.data?.submissionId) {
+                            aiReviewMutation.mutate(executeMutation.data.submissionId);
+                          }
+                        }}
+                        hasSubmission={!!executeMutation.data?.submissionId}
+                      />
+                    ) : rightTab === "history" ? (
+                      isPremium ? (
+                        <DsaSubmissionHistory submissions={submissions ?? []} onLoadCode={handleLoadSubmission} />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-white dark:bg-stone-950">
+                          <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-4">
+                            <Lock className="w-5 h-5 text-amber-500" />
+                          </div>
+                          <h3 className="text-base font-bold text-stone-900 dark:text-stone-50">History Tracking Locked</h3>
+                          <p className="mt-2 text-xs text-stone-600 dark:text-stone-400 max-w-[240px] leading-relaxed">
+                            Upgrade to track your submission history and review past solutions over time.
+                          </p>
+                          <Link
+                            to="/student/checkout"
+                            className="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-[10px] font-mono uppercase tracking-widest hover:bg-lime-400 hover:text-stone-900 transition-colors no-underline"
+                          >
+                            <Crown className="w-3.5 h-3.5" /> Upgrade Now
+                          </Link>
+                        </div>
+                      )
                     ) : (
-                      <DsaSubmissionHistory submissions={submissions ?? []} onLoadCode={handleLoadSubmission} />
+                      isPremium ? (
+                        <DsaSubmissionHistory submissions={submissions ?? []} onLoadCode={handleLoadSubmission} />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-white dark:bg-stone-950">
+                          <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-4">
+                            <Lock className="w-5 h-5 text-amber-500" />
+                          </div>
+                          <h3 className="text-base font-bold text-stone-900 dark:text-stone-50">History Tracking Locked</h3>
+                          <p className="mt-2 text-xs text-stone-600 dark:text-stone-400 max-w-[240px] leading-relaxed">
+                            Upgrade to track your submission history and review past solutions over time.
+                          </p>
+                          <Link
+                            to="/student/checkout"
+                            className="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-[10px] font-mono uppercase tracking-widest hover:bg-lime-400 hover:text-stone-900 transition-colors no-underline"
+                          >
+                            <Crown className="w-3.5 h-3.5" /> Upgrade Now
+                          </Link>
+                        </div>
+                      )
                     )}
-                  </div>
-                </div>
-              </>
-            ) : (
-              /* ── Premium lock overlay with blurred editor bg ── */
-              <div className="relative flex-1 min-h-0 overflow-hidden">
-                <div className="absolute inset-0 blur-sm opacity-60 pointer-events-none select-none">
-                  <div className="h-full bg-stone-950 p-4 font-mono text-xs leading-relaxed text-stone-400">
-                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-800">
-                      <span className="px-2 py-1 bg-stone-800 rounded-md text-stone-300 text-xs">Python 3</span>
-                      <span className="ml-auto px-3 py-1 bg-lime-400 rounded-md text-stone-950 text-xs font-bold">Run</span>
-                    </div>
-                    <p><span className="text-purple-400">import</span> sys</p>
-                    <p><span className="text-purple-400">from</span> typing <span className="text-purple-400">import</span> List</p>
-                    <p className="mt-2"><span className="text-blue-400">class</span> <span className="text-yellow-300">Solution</span>:</p>
-                    <p className="pl-6"><span className="text-blue-400">def</span> <span className="text-lime-300">solve</span>(self):</p>
-                    <p className="pl-12 text-stone-500"># Read input from stdin</p>
-                    <p className="pl-12"><span className="text-stone-500">n = </span><span className="text-blue-300">int</span>(<span className="text-blue-300">input</span>())</p>
-                    <p className="pl-12"><span className="text-stone-500">arr = </span><span className="text-blue-300">list</span>(<span className="text-blue-300">map</span>(<span className="text-blue-300">int</span>, <span className="text-blue-300">input</span>().split()))</p>
-                    <p className="mt-2 pl-12 text-stone-500"># Write your solution here</p>
-                    <p className="pl-12"><span className="text-blue-300">print</span>(result)</p>
-                    <p className="mt-4 text-stone-600"># --- Do not modify below ---</p>
-                    <p><span className="text-yellow-300">Solution</span>().solve()</p>
-                    <div className="mt-6 pt-3 border-t border-stone-800">
-                      <p className="text-stone-500">Test Results</p>
-                      <div className="mt-2 flex items-center gap-2">
-                        <span className="h-2 w-2 bg-lime-500/60" />
-                        <span>Test Case 1: Passed</span>
-                      </div>
-                      <div className="mt-1 flex items-center gap-2">
-                        <span className="h-2 w-2 bg-lime-500/60" />
-                        <span>Test Case 2: Passed</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
-                {/* Lock overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-stone-950/50 backdrop-blur-xs z-10">
-                  <div className="text-center max-w-sm px-6 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6">
-                    <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4">
-                      <Lock className="w-5 h-5 text-amber-500" />
+                {/* Mobile Floating Action Bar */}
+                <div className="fixed bottom-0 left-0 right-0 z-10 lg:hidden flex items-center p-3 bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-white/10 gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setActiveTab("problem")}
+                  >
+                    results
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="flex-1"
+                    onClick={handleRun}
+                    disabled={executeMutation.isPending}
+                  >
+                    {executeMutation.isPending ? "running" : "run code"}
+                  </Button>
+                </div>
+              </>
+              ) : (
+                /* ── Signed out lock ── */
+                <div className="relative flex-1 min-h-0 flex items-center justify-center bg-stone-950/10 backdrop-blur-xs">
+                  <div className="text-center max-w-sm px-6 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-8">
+                    <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4">
+                      <Lock className="w-5 h-5 text-stone-400" />
                     </div>
-                    <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
-                      <span className="h-1 w-1 bg-lime-400" />
-                      {user ? "premium required" : "sign in required"}
-                    </div>
-                    <h3 className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
-                      {user ? "Upgrade to run code." : "Sign in to continue."}
+                    <SectionLabel dot="bg-stone-300">Sign in required</SectionLabel>
+                    <h3 className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mt-2 mb-2">
+                      Sign in to continue.
                     </h3>
-                    <p className="text-sm text-stone-600 dark:text-stone-400 mb-5 leading-relaxed">
-                      {user
-                        ? "Run code, test solutions against test cases, and track your submission history."
-                        : "Sign in and upgrade to Premium to access the built-in code editor."}
+                    <p className="text-sm text-stone-600 dark:text-stone-400 mb-6 font-mono leading-tight">
+                      Access the code editor, test benchmarks, and track your history by signing in.
                     </p>
-                    {user ? (
-                      <Link
-                        to="/student/checkout"
-                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-900 dark:bg-stone-50 border border-stone-900 dark:border-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-xs font-mono uppercase tracking-widest hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 dark:hover:text-stone-900 transition-colors no-underline"
-                      >
-                        <Crown className="w-3.5 h-3.5" /> upgrade now
-                      </Link>
-                    ) : (
-                      <Link
-                        to="/login"
-                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-900 dark:bg-stone-50 border border-stone-900 dark:border-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-xs font-mono uppercase tracking-widest hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 dark:hover:text-stone-900 transition-colors no-underline"
-                      >
-                        sign in
-                      </Link>
-                    )}
-                    <div className="mt-4 flex items-center justify-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Code2 className="w-3 h-3" /> python / cpp / java
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <Terminal className="w-3 h-3" /> 50 runs/day
-                      </span>
-                    </div>
+                    <Link
+                      to="/login"
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-900 dark:bg-stone-50 border border-stone-900 dark:border-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-xs font-mono uppercase tracking-widest hover:bg-lime-400 hover:text-stone-900 transition-colors no-underline"
+                    >
+                      sign in
+                    </Link>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
       </div>
+      {/* ── Report Issue Modal ── */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
+            <h2 className="text-sm font-bold uppercase tracking-widest mb-4">
+              Report Issue
+            </h2>
+            <div className="space-y-4">
+              <select
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+                className="w-full px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 text-sm"
+              >
+                <option value="">Select a reason</option>
+                <option value="Wrong test case">Wrong test case</option>
+                <option value="Unclear statement">Unclear statement</option>
+                <option value="Broken editor">Broken editor</option>
+                <option value="Other">Other</option>
+              </select>
+              <textarea
+                value={reportMessage}
+                onChange={(e) => setReportMessage(e.target.value)}
+                placeholder="Additional details (optional)"
+                className="w-full h-28 px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 text-sm resize-none"
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="px-3 py-2 text-xs font-mono uppercase border border-stone-300 dark:border-white/10 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={!reportReason || reportIssueMutation.isPending}
+                  onClick={() =>
+                    reportIssueMutation.mutate({
+                      problemId: problem.id,
+                      reason: reportReason,
+                      message: reportMessage,
+                    })
+                  }
+                  className="px-3 py-2 text-xs font-mono uppercase bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md disabled:opacity-50"
+                >
+                  {reportIssueMutation.isPending ? "Submitting" : "Submit"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── "Try Next" slide-up panel ── */}
+      <AnimatePresence>
+        {showNextPanel && isPremium && similarProblems.length > 0 && (
+          <motion.div
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10 shadow-2xl"
+          >
+            <div className="max-w-5xl mx-auto px-4 py-4 pb-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+                  <span className="h-1.5 w-1.5 bg-lime-400 rounded-full animate-pulse" />
+                  try next
+                </div>
+                <button
+                  onClick={() => setShowNextPanel(false)}
+                  className="w-7 h-7 inline-flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {similarProblems.map((sp) => (
+                  <Link
+                    key={sp.id}
+                    to={`/learn/dsa/problem/${sp.slug}`}
+                    className="group block border border-stone-200 dark:border-white/10 rounded-md p-3.5 hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline bg-stone-50 dark:bg-stone-950"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider border rounded-md ${DIFF_STYLE[sp.difficulty] || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
+                        {sp.difficulty}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-stone-900 dark:text-stone-50 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors leading-snug truncate">
+                      {sp.title}
+                    </p>
+                    <div className="mt-2 flex gap-1.5 overflow-hidden">
+                      {sp.tags.slice(0, 2).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[9px] font-mono uppercase tracking-wider text-stone-500 bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded-sm truncate"
+                        >
+                          {tag.replace(/-/g, " ")}
+                        </span>
+                      ))}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              {problem.tags[0] && (
+                <div className="mt-3 text-center">
+                  <Link
+                    to={`/learn/dsa/${problem.tags[0]}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-lime-600 dark:hover:text-lime-400 transition-colors no-underline"
+                  >
+                    back to topic
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

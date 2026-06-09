@@ -9,6 +9,8 @@ interface SEOProps {
   keywords?: string;
   canonicalUrl?: string;
   ogImage?: string;
+  /** Dark-mode OG image used for twitter:image (Discord fallback). Defaults to /og-image-dark.png. */
+  ogImageDark?: string;
   ogType?: string;
   noIndex?: boolean;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
@@ -18,13 +20,14 @@ const SITE_NAME = "InternHack";
 const DEFAULT_DESCRIPTION =
   "InternHack is an AI-powered career platform for students. Browse curated internships, score your resume with ATS AI, follow career roadmaps, and connect directly with recruiters.";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
+const DEFAULT_OG_IMAGE_DARK = `${SITE_URL}/og-image-dark.png`;
 
 export function SEO({
   title,
   description = DEFAULT_DESCRIPTION,
-  keywords: _keywords,
   canonicalUrl,
   ogImage = DEFAULT_OG_IMAGE,
+  ogImageDark = DEFAULT_OG_IMAGE_DARK,
   ogType = "website",
   noIndex = false,
   structuredData,
@@ -33,45 +36,46 @@ export function SEO({
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - AI-Powered Career Platform for Students`;
   const effectiveCanonical = canonicalUrl || `${SITE_URL}${pathname}`;
   const absoluteOgImage = ogImage.startsWith("http") ? ogImage : `${SITE_URL}${ogImage}`;
+  const absoluteOgImageDark = ogImageDark.startsWith("http") ? ogImageDark : `${SITE_URL}${ogImageDark}`;
 
   return (
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
 
-      {/* Open Graph */}
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content={ogType} />
+      <meta property="og:url" content={effectiveCanonical} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:type" content={ogType} />
       <meta property="og:image" content={absoluteOgImage} />
       <meta property="og:site_name" content={SITE_NAME} />
-      <meta property="og:url" content={effectiveCanonical} />
+      <meta property="og:locale" content="en_US" />
 
-      {/* Twitter Card */}
+      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@internhack" />
+      <meta name="twitter:creator" content="@internhack" />
+      <meta name="twitter:url" content={effectiveCanonical} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={absoluteOgImage} />
+      <meta name="twitter:image" content={absoluteOgImageDark} />
 
-      {/* Canonical, always present */}
+      {/* Canonical URL */}
       <link rel="canonical" href={effectiveCanonical} />
 
       {/* Robots */}
-      {noIndex && <meta name="robots" content="noindex,nofollow" />}
+      <meta
+        name="robots"
+        content={noIndex ? "noindex,nofollow" : "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"}
+      />
 
       {/* Structured Data (JSON-LD) */}
-      {structuredData &&
-        (Array.isArray(structuredData)
-          ? structuredData.map((sd, i) => (
-              <script key={i} type="application/ld+json">
-                {JSON.stringify(sd)}
-              </script>
-            ))
-          : (
-            <script type="application/ld+json">
-              {JSON.stringify(structuredData)}
-            </script>
-          ))}
+      {structuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      )}
     </Helmet>
   );
 }

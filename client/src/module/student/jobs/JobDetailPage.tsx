@@ -1,7 +1,7 @@
 import { useParams, Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, IndianRupee, Users, Send, Check, Building2, Clock, ArrowUpRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, MapPin, IndianRupee, Users, Send, Check, Building2, Clock, ArrowUpRight, Share2, Bookmark } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -11,6 +11,8 @@ import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { Job } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
+import toast from "../../../components/ui/toast";
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 const stagger = { show: { transition: { staggerChildren: 0.07 } } };
@@ -53,20 +55,23 @@ export default function JobDetailPage() {
     queryKey: queryKeys.jobs.detail(id!),
     queryFn: () => api.get(`/jobs/${id}`).then((res) => res.data.job as Job),
     enabled: !!id,
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: applicationStatus } = useQuery({
     queryKey: queryKeys.applications.statusByJob(id!),
     queryFn: () => api.get(`/student/jobs/${id}/application-status`).then((res) => res.data as { applied: boolean; application: { id: number; status: string } | null }),
     enabled: !!id && isAuthenticated && user?.role === "STUDENT",
+    staleTime: 2 * 60 * 1000,
   });
 
-  const { data: relatedJobs = [] } = useQuery({
-    queryKey: queryKeys.jobs.list({ related: id!, tags: job?.tags?.join(",") || "" }),
+  const { data: relatedJobs = [], isLoading: isRelatedJobsLoading } = useQuery({
+    queryKey: queryKeys.jobs.related(id!),
     queryFn: () =>
-      api.get("/jobs", { params: { tags: job!.tags.join(","), limit: 4 } })
-        .then((res) => (res.data.jobs as Job[]).filter((j) => j.id !== Number(id))),
-    enabled: !!job && job.tags.length > 0,
+      api.get(`/jobs/${id}/related`, { params: { limit: 4 } })
+        .then((res) => res.data.jobs as Job[]),
+    enabled: !!id && !!job,
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: relatedPosts = [] } = useQuery({
@@ -75,6 +80,30 @@ export default function JobDetailPage() {
       api.get("/blog/by-tags", { params: { tags: job!.tags.join(",") } })
         .then((res) => res.data.posts as { id: number; title: string; slug: string; excerpt: string; readingTime: number; featuredImage?: string }[]),
     enabled: !!job && job.tags.length > 0,
+    staleTime: 30 * 60 * 1000,
+  });
+
+  const queryClient = useQueryClient();
+
+  const { data: isSaved } = useQuery({
+    queryKey: queryKeys.savedJobs.check(id!),
+    queryFn: () => api.get(`/student/jobs/${id}/save`).then((res) => res.data.saved as boolean),
+    enabled: !!id && isAuthenticated && user?.role === "STUDENT",
+    staleTime: 30_000,
+  });
+
+  const { mutate: toggleSave } = useMutation({
+    mutationFn: async () => {
+      if (isSaved) {
+        await api.delete(`/student/jobs/${id}/save`);
+      } else {
+        await api.post(`/student/jobs/${id}/save`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.check(id!) });
+    },
   });
 
   const backPath = inStudentLayout ? "/student/jobs" : "/jobs";
@@ -110,6 +139,39 @@ export default function JobDetailPage() {
   }
 
   const deadlineInfo = job.deadline ? getDeadlineInfo(job.deadline) : null;
+  const shareUrl = canonicalUrl(`/jobs/${id}`);
+
+  const copyJobLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copied!");
+    } catch {
+      toast.error("Failed to copy link");
+    }
+  };
+
+  const handleShareJob = async () => {
+    const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
+    if (canShare) {
+      try {
+        await navigator.share({
+          title: `${job.title} at ${job.company}`,
+          text: `Check out this role: ${job.title} at ${job.company}`,
+          url: shareUrl,
+        });
+      } catch (e) {
+        if (
+          (e instanceof DOMException || e instanceof Error) &&
+          e.name === "AbortError"
+        ) {
+          return;
+        }
+        await copyJobLink();
+      }
+      return;
+    }
+    await copyJobLink();
+  };
 
   const ctaButton = isAuthenticated && user?.role === "STUDENT" ? (
     applicationStatus?.applied ? (
@@ -128,13 +190,18 @@ export default function JobDetailPage() {
       </Link>
     )
   ) : !isAuthenticated ? (
+  <div className="flex flex-col items-start gap-2">
     <Link
-      to="/login"
+      to={`/login?from=${encodeURIComponent(inStudentLayout ? `/student/jobs/${id}` : `/jobs/${Number(id)}`)}`}
       className="inline-flex items-center gap-2 px-6 py-3 bg-lime-400 text-stone-900 font-semibold rounded-md hover:bg-lime-500 transition-colors no-underline text-sm"
     >
       Sign in to apply <ArrowUpRight className="w-4 h-4" />
     </Link>
-  ) : null;
+    <p className="text-xs text-stone-500 dark:text-stone-400">
+      Create a free account to apply for this role.
+    </p>
+  </div>
+) : null;
 
   const page = (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -161,7 +228,31 @@ export default function JobDetailPage() {
                 </h1>
                 <p className="mt-2 text-sm text-stone-500">{job.company}</p>
               </div>
-              <div className="shrink-0">{ctaButton}</div>
+              <div className="shrink-0 flex flex-wrap items-center gap-2 sm:justify-end">
+                {isAuthenticated && user?.role === "STUDENT" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    mode="icon"
+                    size="lg"
+                    aria-label={isSaved ? "Remove from saved" : "Save job"}
+                    onClick={() => toggleSave()}
+                  >
+                    <Bookmark className={isSaved ? "fill-lime-600 dark:fill-lime-400 text-lime-600 dark:text-lime-400" : ""} />
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  mode="icon"
+                  size="lg"
+                  aria-label="Share job"
+                  onClick={() => void handleShareJob()}
+                >
+                  <Share2 />
+                </Button>
+                {ctaButton}
+              </div>
             </div>
 
             {/* Meta row */}
@@ -308,14 +399,30 @@ export default function JobDetailPage() {
           </div>
 
           {/* Related jobs */}
-          {relatedJobs.length > 0 && (
+          {(isRelatedJobsLoading || relatedJobs.length > 0) && (
             <motion.div variants={fadeUp}>
               <Kicker>related / similar roles</Kicker>
               <h2 className="mt-3 text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-5">
-                Similar positions.
+                Similar Jobs
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {relatedJobs.slice(0, 4).map((rj) => (
+                {isRelatedJobsLoading &&
+                  Array.from({ length: 4 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="animate-pulse rounded-md border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900"
+                    >
+                      <div className="mb-3 flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-md bg-stone-200 dark:bg-stone-800" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 w-2/3 rounded bg-stone-200 dark:bg-stone-800" />
+                          <div className="h-3 w-1/3 rounded bg-stone-200 dark:bg-stone-800" />
+                        </div>
+                      </div>
+                      <div className="h-3 w-1/2 rounded bg-stone-200 dark:bg-stone-800" />
+                    </div>
+                  ))}
+                {!isRelatedJobsLoading && relatedJobs.slice(0, 4).map((rj) => (
                   <Link
                     key={rj.id}
                     to={inStudentLayout ? `/student/jobs/${rj.id}` : `/jobs/${rj.id}`}
