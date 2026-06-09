@@ -72,8 +72,21 @@ export default function RoadmapDashboardPage() {
     staleTime: 5 * 60 * 1000,
     enabled: enrollments.length > 0,
   });
-  const analyticsMap = new Map(
-    (batchAnalytics?.analytics ?? []).map((a) => [a.enrollmentId, a]),
+  const analyticsMap = new globalThis.Map(
+    (batchAnalytics?.analytics ?? []).map((a) => [a.enrollmentId, a])
+  );
+  const completedEnrollments = enrollments.filter(
+    (e) =>
+      e.topicProgress.length > 0 &&
+      e.topicProgress.every((p) => p.status === "COMPLETED")
+  );
+
+  const activeEnrollments = enrollments.filter(
+    (e) =>
+      !(
+        e.topicProgress.length > 0 &&
+        e.topicProgress.every((p) => p.status === "COMPLETED")
+      )
   );
 
   const downloadPdf = async (id: number, slug: string) => {
@@ -166,6 +179,36 @@ export default function RoadmapDashboardPage() {
         </button>
       </motion.div>
 
+      {completedEnrollments.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mb-6"
+        >
+          <Link
+            to="/learn/roadmaps/certificates"
+            className="group flex items-center justify-between gap-4 rounded-2xl border border-lime-400/30 bg-lime-400/10 hover:bg-lime-400/15 px-5 py-4 no-underline transition-colors"
+          >
+            <div>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 mb-1">
+                certificates
+              </p>
+
+              <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">
+                View completed certificates
+              </h2>
+
+              <p className="text-sm text-stone-500 dark:text-stone-400">
+                You have {completedEnrollments.length} completed roadmap{completedEnrollments.length !== 1 ? "s" : ""}.
+              </p>
+            </div>
+
+            <ArrowRight className="w-5 h-5 text-lime-600 dark:text-lime-400 group-hover:translate-x-1 transition-transform shrink-0" />
+          </Link>
+        </motion.div>
+      )}
+
       {weakAreas.length > 0 && (
         <motion.section
           initial={{ opacity: 0, y: 10 }}
@@ -229,7 +272,7 @@ export default function RoadmapDashboardPage() {
             Retry
           </Button>
         </div>
-      ) : enrollments.length === 0 ? (
+      ) : activeEnrollments.length === 0 ? (
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-10 text-center">
           <MapIcon
             className="w-10 h-10 text-gray-300 mx-auto mb-3"
@@ -247,7 +290,7 @@ export default function RoadmapDashboardPage() {
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
-          {enrollments.map((e, i) => {
+          {activeEnrollments.map((e, i) => {
             const completed = e.topicProgress.filter(
               (p) => p.status === "COMPLETED",
             ).length;
