@@ -71,18 +71,11 @@ export function SEO({
       />
 
       {/* Structured Data (JSON-LD) */}
-      {structuredData &&
-        (Array.isArray(structuredData)
-          ? structuredData.map((sd, i) => (
-              <script key={i} type="application/ld+json">
-                {JSON.stringify(sd)}
-              </script>
-            ))
-          : (
-            <script type="application/ld+json">
-              {JSON.stringify(structuredData)}
-            </script>
-          ))}
+      {structuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      )}
     </Helmet>
   );
 }

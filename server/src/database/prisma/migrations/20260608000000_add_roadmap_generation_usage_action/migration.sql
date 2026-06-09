@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "UsageAction" ADD VALUE 'ROADMAP_GENERATION';
