@@ -88,6 +88,20 @@ export interface DsaProgress {
   };
 }
 
+export interface DsaRecommendationProblem {
+  id: number;
+  title: string;
+  slug: string;
+  difficulty: string;
+  tags: string[];
+}
+
+export interface DsaRecommendationsResponse {
+  recommendations: DsaRecommendationProblem[];
+  weakTopics: string[];
+  totalUnsolved: number;
+}
+
 export interface DsaSimilarProblem {
   id: number;
   title: string;

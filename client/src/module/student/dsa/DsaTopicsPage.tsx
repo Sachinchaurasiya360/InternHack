@@ -20,6 +20,7 @@ import { LeetCodeSync } from "./components/LeetCodeSync";
 import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 import { DsaHeatmap } from "./components/DsaHeatmap";
 import { DsaStreakWidget } from "./components/DsaStreakWidget";
+import { DsaRecommendationsWidget } from "./components/DsaRecommendationsWidget";
 import { ResultCount } from "../../../components/ui/ResultCount";
 import { buildTopicAccuracy } from "./topic-accuracy";
 
@@ -442,6 +443,16 @@ const clearFilters = () => {
             className="mb-4"
           >
             <DsaStreakWidget />
+          </motion.div>
+        )}
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.085 }}
+            className="mb-4"
+          >
+            <DsaRecommendationsWidget />
           </motion.div>
         )}
         {user && (

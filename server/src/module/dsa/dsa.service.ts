@@ -175,6 +175,54 @@ export class DsaService {
     };
   }
 
+  async getRecommendations(studentId: number, limit = 5) {
+    const allProblems = await prisma.dsaProblem.findMany({
+      select: { id: true, title: true, slug: true, difficulty: true, tags: true },
+    });
+    const solved = await prisma.studentDsaProgress.findMany({
+      where: { studentId, solved: true },
+      select: { problemId: true },
+    });
+    const solvedIds = new Set(solved.map((s) => s.problemId));
+
+    const tagCounts: Record<string, { total: number; solved: number }> = {};
+    for (const p of allProblems) {
+      for (const tag of p.tags) {
+        if (!tagCounts[tag]) tagCounts[tag] = { total: 0, solved: 0 };
+        tagCounts[tag].total++;
+        if (solvedIds.has(p.id)) tagCounts[tag].solved++;
+      }
+    }
+
+    const weakTopics = Object.entries(tagCounts)
+      .filter(([, v]) => v.total >= 3 && v.solved / v.total < 0.4)
+      .sort(([, a], [, b]) => a.solved / a.total - b.solved / b.total)
+      .map(([tag]) => tag);
+
+    const DIFF_ORDER: Record<string, number> = { Easy: 1, Medium: 2, Hard: 3 };
+    const unsolved = allProblems
+      .filter((p) => !solvedIds.has(p.id))
+      .map((p) => {
+        let score = 0;
+        const weakMatch = p.tags.filter((t) => weakTopics.includes(t)).length;
+        score += weakMatch * 100;
+        score += 10 - (DIFF_ORDER[p.difficulty] ?? 3);
+        for (const tag of p.tags) {
+          if (tagCounts[tag] && tagCounts[tag].total >= 3) {
+            const pct = tagCounts[tag].solved / tagCounts[tag].total;
+            if (pct < 0.4) score += 20;
+            else if (pct < 0.7) score += 10;
+          }
+        }
+        return { ...p, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
+
+    const weakReasons = weakTopics.slice(0, 3);
+    return { recommendations: unsolved.map((p) => ({ id: p.id, title: p.title, slug: p.slug, difficulty: p.difficulty, tags: p.tags })), weakTopics: weakReasons, totalUnsolved: allProblems.length - solvedIds.size };
+  }
+
   async getProblemBySlug(slug: string, studentId?: number) {
     const problem = await prisma.dsaProblem.findUnique({ where: { slug } });
     if (!problem) throw new Error("Problem not found");

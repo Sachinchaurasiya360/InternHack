@@ -303,6 +303,18 @@ export class DsaController {
     }
   }
 
+  async getRecommendations(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 5, 1), 20);
+      const data = await this.dsaService.getRecommendations(userId, limit);
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getUserDsaStreak(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;

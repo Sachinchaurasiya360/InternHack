@@ -29,6 +29,7 @@ dsaRouter.get("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, n
 dsaRouter.get("/my-progress", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getMyProgress(req, res, next));
 dsaRouter.get("/activity", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getActivity(req, res, next));
 dsaRouter.get("/daily", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getDailyProblem(req, res, next));
+dsaRouter.get("/recommendations", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getRecommendations(req, res, next));
 dsaRouter.get("/streak", authMiddleware, requireRole("STUDENT"), (req, res, next) => dsaController.getUserDsaStreak(req, res, next));
 
 dsaRouter.post("/problems/:problemId/hints", authMiddleware, requireRole("STUDENT"), usageLimit("CODE_RUN"), (req, res, next) => dsaController.generateHint(req, res, next));
