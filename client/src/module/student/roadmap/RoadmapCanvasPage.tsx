@@ -1649,6 +1649,8 @@ export default function RoadmapCanvasPage() {
         {showCompletionModal && (
           <RoadmapCompletionModal
             roadmapName={data.enrollment.roadmap.title}
+            enrollmentId={String(data.enrollment.id)}
+            roadmapSlug={data.enrollment.roadmap.slug}
             onClose={() => setShowCompletionModal(false)}
           />
         )}

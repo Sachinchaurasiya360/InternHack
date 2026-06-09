@@ -65,6 +65,8 @@ function Particle({
 // ── Main modal component ────────────────────────────────────────────────────
 interface RoadmapCompletionModalProps {
   roadmapName: string;
+  enrollmentId: string;
+  roadmapSlug: string;
   onClose: () => void;
 }
 
@@ -85,8 +87,10 @@ const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
   y: 10 + (i * 67) % 60,
 }));
 
-export function RoadmapCompletionModal({
+export default function RoadmapCompletionModal({
   roadmapName,
+  enrollmentId,
+  roadmapSlug,
   onClose,
 }: RoadmapCompletionModalProps) {
   // Close on Escape
@@ -105,17 +109,32 @@ export function RoadmapCompletionModal({
   }, []);
 
   // ── Share text builders ──────────────────────────────────────────────────
-  const tag = roadmapName.replace(/\s+/g, "");
+  const safeRoadmapName = roadmapName || "Roadmap";
+
+  const tag = safeRoadmapName.replace(/\s+/g, "");
   const twitterText = encodeURIComponent(
-    `🎉 Just completed the ${roadmapName} roadmap on InternHack! #InternHack #CareerGrowth #${tag}`
+    `🎉 Just completed the ${safeRoadmapName} roadmap on InternHack! #InternHack #CareerGrowth #${tag}`
   );
   const linkedInText = encodeURIComponent(
-    `I just completed the ${roadmapName} roadmap on InternHack! Check it out at https://www.internhack.xyz #InternHack #CareerGrowth`
+    `I just completed the ${safeRoadmapName} roadmap on InternHack! Check it out at https://www.internhack.xyz #InternHack #CareerGrowth`
   );
   const linkedInUrl = encodeURIComponent("https://www.internhack.xyz");
 
+  const certificateUrl =
+  `${window.location.origin}/api/roadmaps/me/enrollments/${enrollmentId}/certificate`;
+
+  const shareableCertificateUrl =
+    `${window.location.origin}/learn/roadmaps/certificates/${roadmapSlug}/${enrollmentId}`;
+
+  const linkedInAddToProfileUrl =
+    `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME` +
+    `&name=${encodeURIComponent(`${safeRoadmapName} Roadmap`)}` +
+    `&organizationName=${encodeURIComponent("InternHack")}` +
+    `&issueYear=${new Date().getFullYear()}` +
+    `&certUrl=${encodeURIComponent(shareableCertificateUrl)}`;
+
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${twitterText}`;
-  const linkedInShareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${linkedInUrl}&summary=${linkedInText}&title=${encodeURIComponent(`I completed the ${roadmapName} roadmap!`)}`;
+  const linkedInShareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${linkedInUrl}&summary=${linkedInText}&title=${encodeURIComponent(`I completed the ${safeRoadmapName} roadmap!`)}`;
 
   const openShare = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer,width=600,height=500");
@@ -127,8 +146,8 @@ export function RoadmapCompletionModal({
   const handleNativeShare = async () => {
     try {
       await navigator.share({
-        title: `Completed: ${roadmapName} Roadmap`,
-        text: `🎉 Just completed the ${roadmapName} roadmap on InternHack! #InternHack #CareerGrowth`,
+        title: `Completed: ${safeRoadmapName} Roadmap`,
+        text: `🎉 Just completed the ${safeRoadmapName} roadmap on InternHack! #InternHack #CareerGrowth`,
         url: "https://www.internhack.xyz",
       });
     } catch {
@@ -230,7 +249,7 @@ export function RoadmapCompletionModal({
               </h2>
               <p className="text-stone-400 text-sm leading-relaxed mt-2">
                 You've completed the{" "}
-                <span className="text-stone-200 font-semibold">{roadmapName}</span>{" "}
+                <span className="text-stone-200 font-semibold">{safeRoadmapName}</span>{" "}
                 roadmap. Share your achievement with the world!
               </p>
             </motion.div>
@@ -253,6 +272,28 @@ export function RoadmapCompletionModal({
               <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-stone-500 mb-4">
                 share your achievement
               </p>
+
+              {/* Download Certificate */}
+              <button
+                id="download-certificate-btn"
+                type="button"
+                onClick={() => window.open(certificateUrl, "_blank")}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-stone-950 font-bold text-sm transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+              >
+                <Trophy className="w-4 h-4 shrink-0" aria-hidden="true" />
+                <span>Download Certificate</span>
+              </button>
+
+              {/* LinkedIn Add to Profile */}
+              <button
+                id="linkedin-add-profile-btn"
+                type="button"
+                onClick={() => openShare(linkedInAddToProfileUrl)}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 font-semibold text-sm transition-all duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+              >
+                <LinkedInIcon className="w-4 h-4 shrink-0" aria-hidden="true" />
+                <span>Add Certificate to LinkedIn</span>
+              </button>
 
               {/* Twitter/X */}
               <button
