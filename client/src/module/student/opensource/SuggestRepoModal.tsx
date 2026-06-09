@@ -237,7 +237,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
             </h2>
             {typeof remaining === 'number' && (
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Suggestions remaining today: <span className="font-semibold text-indigo-600 dark:text-indigo-400">{remaining}/5</span>
+                Suggestions remaining today: <span className="font-semibold text-lime-600 dark:text-lime-400">{remaining}/5</span>
               </p>
             )}
           </div>
@@ -264,7 +264,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               You'll receive an email once it's reviewed.
             </p>
             {remaining !== null && (
-              <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 inline-block px-3 py-1 rounded-full">
+              <p className="text-xs font-medium inline-block px-3 py-1 rounded-md bg-stone-100 dark:bg-white/5 text-stone-700 dark:text-stone-300">
                 {remaining} of 5 suggestions remaining today
               </p>
             )}
@@ -492,7 +492,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               )}
             </Button>
             {remaining === 0 && (
-              <p className="text-center text-xs font-medium text-amber-600 dark:text-amber-400">
+              <p className="text-center text-xs font-medium text-stone-500 dark:text-stone-400">
                 Daily limit reached. Come back tomorrow.
               </p>
             )}
