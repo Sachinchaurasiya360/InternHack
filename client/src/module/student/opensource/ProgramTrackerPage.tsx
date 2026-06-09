@@ -17,6 +17,9 @@ function nextDate(month: number, day: number, hour = 23, minute = 59): string {
 }
 
 // ─── Data ──────────────────────────────────────────────────────
+export type FocusArea = "DEVELOPMENT" | "TECHNICAL_WRITING" | "DESIGN" | "RESEARCH";
+export type ProgramDifficulty = "Beginner" | "Intermediate" | "Advanced";
+
 interface Program {
   id: number;
   name: string;
@@ -43,6 +46,8 @@ interface Program {
   howToApply: string[];
   applicationStart?: string;
   applicationDeadline?: string;
+  difficulty: ProgramDifficulty;
+  focusArea: FocusArea;
 }
 
 const PROGRAMS: Program[] = [
@@ -50,12 +55,9 @@ const PROGRAMS: Program[] = [
     id: 1,
     name: "Google Summer of Code",
     short: "GSoC",
-    description:
-      "The world's largest open source mentorship program. Students work 12–22 weeks on a coding project for an accepted organization, guided by expert mentors.",
-    fullDescription:
-      "Google Summer of Code (GSoC) is a global, online mentoring program focused on introducing new contributors to open source software development. GSoC contributors work with an open source organization on a 12+ week programming project under the guidance of mentors. Since 2005, more than 20,000 contributors have participated.",
-    eligibility:
-      "18+ years old, enrolled in an accredited institution or recently graduated within 1 year",
+    description: "The world's largest open source mentorship program. Students work 12–22 weeks on a coding project for an accepted organization, guided by expert mentors.",
+    fullDescription: "Google Summer of Code (GSoC) is a global, online mentoring program focused on introducing new contributors to open source software development. GSoC contributors work with an open source organization on a 12+ week programming project under the guidance of mentors. Since 2005, more than 20,000 contributors have participated.",
+    eligibility: "18+ years old, enrolled in an accredited institution or recently graduated within 1 year",
     eligibilityType: "Students",
     stipend: "$1,500 – $6,600",
     stipendPaid: true,
@@ -64,7 +66,7 @@ const PROGRAMS: Program[] = [
     status: "Annual",
     region: "Global",
     website: "https://summerofcode.withgoogle.com",
-    applyUrl: "https://summerofcode.withgoogle.com/how-it-works",
+    applyUrl: "https://summerofcode.withgoogle.com",
     deadline: "2026-04-08",
     color: "text-red-700",
     bgColor: "bg-red-50 border-red-200",
@@ -94,15 +96,15 @@ const PROGRAMS: Program[] = [
       "Submit via the GSoC portal before the deadline",
     ],
     applicationDeadline: nextDate(4, 19),
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT",
   },
   {
     id: 2,
     name: "LFX Mentorship",
     short: "LFX",
-    description:
-      "Linux Foundation's mentorship program connecting contributors to CNCF, Hyperledger, and other LF projects. Three cohorts per year with competitive stipends.",
-    fullDescription:
-      "LFX Mentorship (formerly Community Bridge) is a platform that connects aspiring open source developers with mentors in 100+ Linux Foundation projects. It runs three cohorts annually (Spring, Summer, Fall) across CNCF, Hyperledger, OpenMainframe, and more.",
+    description: "Linux Foundation's mentorship program connecting contributors to CNCF, Hyperledger, and other LF projects. Three cohorts per year with competitive stipends.",
+    fullDescription: "LFX Mentorship (formerly Community Bridge) is a platform that connects aspiring open source developers with mentors in 100+ Linux Foundation projects. It runs three cohorts annually (Spring, Summer, Fall) across CNCF, Hyperledger, OpenMainframe, and more.",
     eligibility: "Open to anyone 18+ years old globally",
     eligibilityType: "Students",
     stipend: "$3,000 – $6,600 per term",
@@ -140,21 +142,21 @@ const PROGRAMS: Program[] = [
       "Wait for mentor selection notification",
     ],
     applicationDeadline: nextDate(5, 15),
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT",
   },
   {
     id: 3,
     name: "MLH Fellowship",
-    short: "MLH Fellowship",
-    description:
-      "A 12-week remote internship alternative where participants contribute to open source projects used by real companies, earning a stipend and career coaching.",
-    fullDescription:
-      "The MLH Fellowship is a remote internship alternative for software engineers. Fellows contribute to open source projects that are used by companies around the world, guided by mentors from top tech companies. It runs in Spring, Summer, and Fall batches.",
+    short: "MLH",
+    description: "A 12-week remote internship alternative where participants contribute to open source projects used by real companies, earning a stipend and career coaching.",
+    fullDescription: "The MLH Fellowship is a remote internship alternative for software engineers. Fellows contribute to open source projects that are used by companies around the world, guided by mentors from top tech companies. It runs in Spring, Summer, and Fall batches.",
     eligibility: "University students and recent graduates globally",
     eligibilityType: "Students",
     stipend: "$5,000 – $6,000",
     stipendPaid: true,
     stipendRange: "High",
-    window: "Spring / Summer / Fall batches",
+    window: "Spring / Summer / Fall",
     status: "Batch",
     region: "Global",
     website: "https://fellowship.mlh.io",
@@ -172,10 +174,7 @@ const PROGRAMS: Program[] = [
     timeline: [
       { phase: "Applications Open", dates: "2–3 months before batch start" },
       { phase: "Technical Interview", dates: "Rolling after submission" },
-      {
-        phase: "Fellowship Start",
-        dates: "Jan (Spring) / Jun (Summer) / Sep (Fall)",
-      },
+      { phase: "Fellowship Start", dates: "Jan (Spring) / Jun (Summer) / Sep (Fall)" },
       { phase: "Open Source Contributions", dates: "Weeks 1–12" },
       { phase: "Graduation & Demo Day", dates: "End of batch" },
     ],
@@ -186,26 +185,25 @@ const PROGRAMS: Program[] = [
       "Attend a technical interview with an MLH reviewer",
       "If accepted, onboard and join your pod (group of 5-6 fellows)",
     ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT",
   },
   {
     id: 4,
     name: "Outreachy",
     short: "Outreachy",
-    description:
-      "Paid, remote internships in open source and open science for people subject to systemic bias in the tech industry. One of the highest stipends available.",
-    fullDescription:
-      "Outreachy provides internships in open source and open science for people who face under-representation, systemic bias, or discrimination in the technology industry. Two cohorts run per year (May–Aug and Dec–Mar). Participants must be in an eligible country and meet demographic requirements.",
-    eligibility:
-      "People subject to discrimination in tech - women, non-binary, LGBTQ+, racial/ethnic minorities, and others in eligible countries",
+    description: "Paid, remote internships in open source and open science for people subject to systemic bias in the tech industry. One of the highest stipends available.",
+    fullDescription: "Outreachy provides internships in open source and open science for people who face under-representation, systemic bias, or discrimination in the technology industry. Two cohorts run per year (May–Aug and Dec–Mar). Participants must be in an eligible country and meet demographic requirements.",
+    eligibility: "People subject to discrimination in tech - women, non-binary, LGBTQ+, racial/ethnic minorities, and others in eligible countries",
     eligibilityType: "Diversity-focused",
     stipend: "$7,000",
     stipendPaid: true,
     stipendRange: "High",
-    window: "May–Aug & Dec–Mar cohorts",
+    window: "May-Aug & Dec-Mar",
     status: "Batch",
-    region: "Global (eligible countries)",
+    region: "Global",
     website: "https://outreachy.org",
-    applyUrl: "https://www.outreachy.org/apply",
+    applyUrl: "https://outreachy.org/apply",
     deadline: "2026-08-22",
     startDate: "2026-05-20",
     color: "text-teal-700",
@@ -219,18 +217,9 @@ const PROGRAMS: Program[] = [
       "No previous Outreachy internship",
     ],
     timeline: [
-      {
-        phase: "Initial Application",
-        dates: "Jan (for May cohort) / Aug (for Dec cohort)",
-      },
-      {
-        phase: "Contribution Period",
-        dates: "Feb–Mar (for May) / Sep–Oct (for Dec)",
-      },
-      {
-        phase: "Intern Selections Announced",
-        dates: "Mar (for May) / Oct (for Dec)",
-      },
+      { phase: "Initial Application", dates: "Jan (for May cohort) / Aug (for Dec cohort)" },
+      { phase: "Contribution Period", dates: "Feb–Mar (for May) / Sep–Oct (for Dec)" },
+      { phase: "Intern Selections Announced", dates: "Mar (for May) / Oct (for Dec)" },
       { phase: "Internship", dates: "May–Aug or Dec–Mar" },
     ],
     howToApply: [
@@ -242,111 +231,25 @@ const PROGRAMS: Program[] = [
     ],
     applicationStart: nextDate(2, 6, 16, 0),
     applicationDeadline: nextDate(2, 13, 16, 0),
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT",
   },
   {
     id: 5,
-    name: "Hacktoberfest",
-    short: "Hacktoberfest",
-    description:
-      "DigitalOcean's annual October celebration of open source. Complete 4 PRs/MRs during October to earn a digital badge and swag from sponsors.",
-    fullDescription:
-      "Hacktoberfest is a month-long celebration of open source software run by DigitalOcean every October. Participants who submit 4 qualifying pull requests to any participating GitHub or GitLab repositories earn a digital badge and may qualify for limited-edition physical swag.",
-    eligibility: "Anyone globally, 18+ or with parental consent",
-    eligibilityType: "Open to All",
-    stipend: "Digital badge + limited swag",
-    stipendPaid: false,
-    stipendRange: "Low/None",
-    window: "October (every year)",
-    status: "Annual",
-    region: "Global",
-    website: "https://hacktoberfest.com",
-    applyUrl: "https://hacktoberfest.com",
-    startDate: "2026-10-01",
-    color: "text-orange-700",
-    bgColor: "bg-orange-50 border-orange-200",
-    tags: ["beginner-friendly", "open-source", "october", "swag"],
-    requirements: [
-      "Register at hacktoberfest.com in October",
-      "Submit 4 pull requests to participating repos",
-      "PRs must be accepted/approved (not spam or trivial)",
-      "GitHub or GitLab account required",
-    ],
-    timeline: [
-      { phase: "Registration Opens", dates: "September / early October" },
-      { phase: "Contribution Period", dates: "October 1–31" },
-      { phase: "Review Period", dates: "November (14 days after Oct 31)" },
-      { phase: "Swag Orders", dates: "November–January" },
-    ],
-    howToApply: [
-      "Create an account on hacktoberfest.com during October",
-      "Link your GitHub or GitLab account",
-      "Find repos with the 'hacktoberfest' topic label",
-      "Submit 4 quality pull requests during October",
-      "Wait for your PRs to be reviewed and accepted",
-    ],
-  },
-  {
-    id: 6,
-    name: "GirlScript Summer of Code",
-    short: "GSSoC",
-    description:
-      "India's largest open source program, inspired by GSoC. Runs March–May connecting Indian students with mentors from 100+ open source projects.",
-    fullDescription:
-      "GirlScript Summer of Code (GSSoC) is a 3-month open source program conducted by the GirlScript Foundation. It is primarily focused on Indian students and aims to help them get started with contributing to open source. Top contributors receive certificates, swag, and job referrals.",
-    eligibility: "Open to all - primarily Indian students but anyone can join",
-    eligibilityType: "Open to All",
-    stipend: "Certificates + swag + job referrals for top contributors",
-    stipendPaid: false,
-    stipendRange: "Low/None",
-    window: "March – May",
-    status: "Annual",
-    region: "India (open globally)",
-    website: "https://gssoc.girlscript.tech",
-    applyUrl: "https://gssoc.girlscript.tech",
-    deadline: "2026-05-31",
-    color: "text-pink-700",
-    bgColor: "bg-pink-50 border-pink-200",
-    tags: ["india", "beginner-friendly", "certificates", "gssoc"],
-    requirements: [
-      "No strict eligibility - students and beginners welcome",
-      "GitHub account required",
-      "Commit to contributing throughout March–May",
-      "Register on the GSSoC portal before the deadline",
-    ],
-    timeline: [
-      { phase: "Registrations (Contributors)", dates: "February" },
-      { phase: "Project Registrations (Orgs)", dates: "January–February" },
-      { phase: "Coding Period Begins", dates: "March 1" },
-      { phase: "Coding Period Ends", dates: "May 31" },
-      { phase: "Results & Certificates", dates: "June" },
-    ],
-    howToApply: [
-      "Register at gssoc.girlscript.tech as a contributor",
-      "Browse listed projects and choose 2–3 to contribute to",
-      "Introduce yourself in the project's communication channel",
-      "Start picking up issues labeled 'gssoc' or 'good first issue'",
-      "Submit PRs and earn points based on issue difficulty",
-    ],
-  },
-  {
-    id: 7,
     name: "Season of Docs",
     short: "GSoD",
-    description:
-      "Google's program pairing technical writers with open source orgs to improve documentation. Organizations receive funds to pay writers directly.",
-    fullDescription:
-      "Google Season of Docs gives technical writers an opportunity to gain experience in open source, while giving open source projects improved documentation and the resources to improve processes. Organizations apply for grant money to pay technical writers.",
+    description: "Google's program pairing technical writers with open source orgs to improve documentation. Organizations receive funds to pay writers directly.",
+    fullDescription: "Google Season of Docs gives technical writers an opportunity to gain experience in open source, while giving open source projects improved documentation and the resources to improve processes. Organizations apply for grant money to pay technical writers.",
     eligibility: "Experienced technical writers (freelance or otherwise)",
     eligibilityType: "Open to All",
-    stipend: "$5,000 – $15,000 (org-dependent)",
+    stipend: "$5,000 – $15,000",
     stipendPaid: true,
     stipendRange: "High",
-    window: "Feb – Apr (organization applications)",
+    window: "Feb – April",
     status: "Annual",
     region: "Global",
     website: "https://developers.google.com/season-of-docs",
-    applyUrl:
-      "https://developers.google.com/season-of-docs/docs/tech-writer-guide",
+    applyUrl: "https://developers.google.com/season-of-docs",
     color: "text-amber-700",
     bgColor: "bg-amber-50 border-amber-200",
     tags: ["documentation", "technical-writing", "google", "paid"],
@@ -370,15 +273,105 @@ const PROGRAMS: Program[] = [
       "Submit a statement of interest to the org",
       "Orgs select and contract their writers directly",
     ],
+    difficulty: "Intermediate",
+    focusArea: "TECHNICAL_WRITING",
+  },
+  {
+    id: 6,
+    name: "Rails Girls Summer of Code",
+    short: "RGSoC",
+    description: "A fellowship program for women and non-binary coders contributing to Rails projects.",
+    fullDescription: "Awards teams of two students a monthly stipend to work on Ruby on Rails projects.",
+    eligibility: "Women and non-binary individuals.",
+    eligibilityType: "Diversity-focused",
+    stipend: "$1,500/month",
+    stipendPaid: true,
+    stipendRange: "Medium",
+    window: "Mar – July",
+    status: "Annual",
+    region: "Global",
+    website: "https://railsgirlssummerofcode.org",
+    applyUrl: "https://railsgirlssummerofcode.org",
+    color: "text-rose-700",
+    bgColor: "bg-rose-50 border-rose-200",
+    tags: ["ruby", "diversity", "paid"],
+    requirements: [
+      "Identify as a woman or non-binary individual",
+      "Formation of a team of two students applying together",
+      "Appointment of a local coach to support your learning",
+      "Basic proficiency in Ruby, Rails, or the project's primary language",
+      "Ability to commit full-time (40h/week) for the 3-month duration",
+      "Verified enrollment in a university or bootcamp at the time of application",
+    ],
+    timeline: [
+      { phase: "Team Formation & Application", dates: "January – February" },
+      { phase: "Selection & Project Matching", dates: "March – April" },
+      { phase: "Program Launch & Kick-off", dates: "June" },
+      { phase: "Coding & Community Building", dates: "July – September" },
+      { phase: "Final Reports & Performance Review", dates: "October" },
+    ],
+    howToApply: [
+      "Find a coding partner and form a team of two",
+      "Locate a local coach or mentor to supervise your work",
+      "Browse the project list on the RGSoC website",
+      "Write a joint proposal detailing your interest and project choice",
+      "Submit the application via the official RGSoC platform",
+      "Participate in an interview process if your proposal is shortlisted",
+    ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT",
+  },
+  {
+    id: 7,
+    name: "KDE Season of Kode",
+    short: "SoK",
+    description: "KDE's mentorship program for students to work on open source projects.",
+    fullDescription: "KDE project-focused mentorship for students to learn software development.",
+    eligibility: "Students globally.",
+    eligibilityType: "Students",
+    stipend: "Swag and Certificate",
+    stipendPaid: false,
+    stipendRange: "Low/None",
+    window: "December – February",
+    status: "Annual",
+    region: "Global",
+    website: "https://sok.kde.org",
+    applyUrl: "https://sok.kde.org",
+    color: "text-blue-700",
+    bgColor: "bg-blue-50 border-blue-200",
+    tags: ["kde", "cpp", "mentorship"],
+    requirements: [
+      "Status as an active student (high school, college, or university)",
+      "Fundamental knowledge of C++ and the Qt framework",
+      "Familiarity with development tools like Git and CMake",
+      "Ability to communicate effectively in English on mailing lists/IRC",
+      "Contribution of at least 15-20 hours per week during the program",
+      "Proof of student eligibility and age verification (18+)",
+    ],
+    timeline: [
+      { phase: "Project Listing & Mentor Sign-up", dates: "October" },
+      { phase: "Student Application Window", dates: "November" },
+      { phase: "Mentorship & Selection Period", dates: "December" },
+      { phase: "Active Development Period", dates: "January – February" },
+      { phase: "Final Evaluation & Certification", dates: "March" },
+    ],
+    howToApply: [
+      "Browse the SOK projects on the KDE wiki or sok.kde.org",
+      "Join the KDE developer mailing lists and IRC channels",
+      "Discuss potential project ideas with designated mentors",
+      "Prepare a detailed project plan and timeline for your work",
+      "Submit your application through the KDE SoK portal",
+      "Start making small contributions to prove your skills before selection",
+    ],
+    difficulty: "Beginner",
+    focusArea: "DEVELOPMENT",
   },
   {
     id: 8,
     name: "Hyperledger Mentorship",
     short: "Hyperledger",
-    description:
-      "Linux Foundation's blockchain project offers mentorships for contributors to Hyperledger Fabric, Besu, Aries, and other enterprise blockchain frameworks.",
-    fullDescription:
-      "Hyperledger Mentorship is part of LFX Mentorship focused specifically on Hyperledger projects. Mentees contribute to enterprise blockchain projects like Fabric, Besu, Aries, and Firefly while earning a stipend and gaining deep expertise in distributed ledger technology.",
+    description: "Linux Foundation's blockchain project offers mentorships for contributors to Hyperledger Fabric, Besu, Aries, and other enterprise blockchain frameworks.",
+    fullDescription: "Hyperledger Mentorship is part of LFX Mentorship focused specifically on Hyperledger projects. Mentees contribute to enterprise blockchain projects like Fabric, Besu, Aries, and Firefly while earning a stipend and gaining deep expertise in distributed ledger technology.",
     eligibility: "Students and developers 18+ with some programming experience",
     eligibilityType: "Students",
     stipend: "$3,000 – $6,600",
@@ -393,171 +386,583 @@ const PROGRAMS: Program[] = [
     bgColor: "bg-gray-50 border-gray-200",
     tags: ["blockchain", "hyperledger", "go", "enterprise", "lfx"],
     requirements: [
-      "Basic Go, Java, or TypeScript skills",
-      "Interest in blockchain and distributed systems",
-      "Ability to commit 20+ hours/week for 3 months",
+      "Students and developers 18+ with some programming experience",
+      "Interest in blockchain and distributed ledger technologies",
+      "C++, Go, Java, or JavaScript knowledge depending on the project",
+      "Strong understanding of distributed systems or blockchain concepts",
+      "Commitment to specific cohort dates (Spring, Summer, or Fall)",
+      "Ability to provide a resume and professional references if requested",
     ],
     timeline: [
-      { phase: "Applications via LFX", dates: "Jan, May, Sep" },
-      { phase: "Selection", dates: "2–4 weeks after deadline" },
-      { phase: "Mentorship Term", dates: "3 months" },
+      { phase: "Project Proposal Submission (Mentors)", dates: "2 mo prior" },
+      { phase: "Mentee Application Window", dates: "1 mo prior" },
+      { phase: "Interview & Selection Round", dates: "2 weeks prior" },
+      { phase: "12-Week Mentorship Execution", dates: "Cohort Start" },
+      { phase: "Mid-term & Final Evaluations", dates: "Week 6 & 12" },
+      { phase: "Presentation & Graduation", dates: "Finale" },
     ],
     howToApply: [
-      "Search Hyperledger projects on mentorship.lfx.linuxfoundation.org",
-      "Apply to a specific Hyperledger project listing",
-      "Demonstrate familiarity with the project via a contribution",
+      "Create an account on the LFX Mentorship platform",
+      "Browse opportunities tagged with 'Hyperledger' or blockchain",
+      "Research specific projects (Fabric, Besu, Sawtooth, etc.)",
+      "Tailor your resume to highlight relevant distributed systems work",
+      "Submit a detailed statement of interest for up to 3 projects",
+      "Prepare for technical interviews and coding challenges with mentors",
     ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT",
   },
   {
     id: 9,
-    name: "MLH Localhost",
-    short: "MLH Localhost",
-    description:
-      "Hands-on technical workshops by Major League Hacking helping students learn new technologies through building. Free to attend, no stipend.",
-    fullDescription:
-      "MLH Localhost is a series of free technical workshops focused on helping students learn new technologies by building projects. Topics span Git, APIs, ML, security, and more. Hosted in partnership with GitHub, Google, and other tech companies.",
-    eligibility: "Students globally",
-    eligibilityType: "Students",
-    stipend: "Free learning + digital certificates",
-    stipendPaid: false,
-    stipendRange: "Low/None",
-    window: "Year-round, multiple events",
-    status: "Ongoing",
-    region: "Global (virtual)",
-    website: "https://mlh.io",
-    applyUrl: "https://mlh.io/events",
-    color: "text-violet-700",
-    bgColor: "bg-violet-50 border-violet-200",
-    tags: ["workshops", "learning", "free", "beginner"],
+    name: "GNOME Internship",
+    short: "GNOME",
+    description: "Internship program for GNOME project development and UX.",
+    fullDescription: "GNOME internships focus on improving the Linux desktop ecosystem.",
+    eligibility: "Open to students and newcomers.",
+    eligibilityType: "Open to All",
+    stipend: "$6,000",
+    stipendPaid: true,
+    stipendRange: "High",
+    window: "May - August",
+    status: "Annual",
+    region: "Global",
+    website: "https://www.gnome.org",
+    applyUrl: "https://www.gnome.org",
+    color: "text-indigo-600",
+    bgColor: "bg-indigo-50 border-indigo-200",
+    tags: ["gnome", "linux", "desktop"],
     requirements: [
-      "Student or recent graduate",
-      "Register for individual events",
+      "Open to students and newcomers to open source development",
+      "Proficiency in C, Rust, or Python (primary GNOME languages)",
+      "Familiarity with the GTK toolkit and GNOME desktop environment",
+      "Valid residence and permission to work (if applicable for stipend)",
+      "Commitment to contribute 20-30 hours per week during the summer",
+      "Willingness to participate in daily stand-ups and blog updates",
     ],
-    timeline: [{ phase: "Events Run", dates: "Year-round" }],
+    timeline: [
+      { phase: "Project Application (Mentors)", dates: "January – February" },
+      { phase: "Mentee Application Period", dates: "March – April" },
+      { phase: "Community Bonding & Setup", dates: "May" },
+      { phase: "Active Internship Duration", dates: "June – August" },
+      { phase: "Final Project Demos & GUADEC Presentation", dates: "September" },
+    ],
     howToApply: [
-      "Browse upcoming events at mlh.io/events",
-      "Register for free",
-      "Attend and build along",
+      "Browse projects on GNOME's GitLab and identify areas of interest",
+      "Join the GNOME Matrix/IRC channels to introduce yourself",
+      "Make a small 'Good First Issue' contribution to a GNOME sub-project",
+      "Draft a project proposal using the official GNOME template",
+      "Submit your formal application to the GNOME Foundation",
+      "Interview with potential mentors to discuss technical implementation",
     ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT"
   },
   {
     id: 10,
-    name: "Rails Girls Summer of Code",
-    short: "RGSoC",
-    description:
-      "A fellowship program for women and non-binary coders contributing to open source Ruby on Rails projects with coaching support and a monthly stipend.",
-    fullDescription:
-      "Rails Girls Summer of Code is a fellowship program that awards teams of two students a monthly stipend to work on open source Ruby on Rails projects. Participants also receive coaching from local tech companies. The program aims to increase diversity in open source.",
-    eligibility:
-      "Women, non-binary people, and transgender individuals who can code",
-    eligibilityType: "Diversity-focused",
-    stipend: "$1,500/month (3 months)",
+    name: "X.Org Foundation Mentorship",
+    short: "X.Org",
+    description: "Mentorship for graphics stack development and infrastructure.",
+    fullDescription: "Focuses on lower-level graphics drivers and core Linux graphics infrastructure.",
+    eligibility: "Advanced developers/students.",
+    eligibilityType: "Students",
+    stipend: "$5,000",
     stipendPaid: true,
-    stipendRange: "Medium",
-    window: "Mar – Jul (applications), Jul – Sep (program)",
-    status: "Annual",
+    stipendRange: "High",
+    window: "Flexible",
+    status: "Ongoing",
     region: "Global",
-    website: "https://railsgirlssummerofcode.org",
-    applyUrl: "https://railsgirlssummerofcode.org/students/application",
-    color: "text-rose-700",
-    bgColor: "bg-rose-50 border-rose-200",
-    tags: ["ruby", "rails", "diversity", "women", "paid"],
+    website: "https://www.x.org",
+    applyUrl: "https://www.x.org",
+    color: "text-slate-700",
+    bgColor: "bg-slate-50 border-slate-200",
+    tags: ["graphics", "linux", "drivers"],
     requirements: [
-      "Identify as a woman, non-binary, or transgender",
-      "Team of 2 students",
-      "At least 3 months of learning to code",
-      "Access to a local coach",
+      "Strong proficiency in C/C++ and low-level system programming",
+      "Understanding of Linux kernel architectures and graphics stacks",
+      "Prior experience with X11, Wayland, Mesa, or DRM drivers",
+      "Ability to work independently with minimal daily supervision",
+      "Enrollment in a technical degree program (CS, EE, or related)",
+      "Availability for 12 weeks of full-time focused development work",
     ],
     timeline: [
-      { phase: "Project Submissions", dates: "Mar" },
-      { phase: "Team Applications", dates: "Apr – May" },
-      { phase: "Selections Announced", dates: "Jun" },
-      { phase: "Program Runs", dates: "Jul – Sep" },
+      { phase: "Initial Project Pitch & Feedback", dates: "Year-round" },
+      { phase: "Formal Proposal Submission", dates: "4 weeks prior" },
+      { phase: "Evaluation & Financial Setup", dates: "2 weeks prior" },
+      { phase: "12-Week Implementation Window", dates: "Variable" },
+      { phase: "Peer Code Review & Upstreaming", dates: "Ongoing" },
+      { phase: "Final Report & Payment Disbursement", dates: "Conclusion" },
     ],
     howToApply: [
-      "Find a partner to form a team of two",
-      "Recruit a coach from your local tech community",
-      "Apply at railsgirlssummerofcode.org with your team details",
-      "Submit a project proposal for a chosen open source project",
+      "Identify a critical issue or feature in the Linux graphics stack",
+      "Contact the X.Org developer mailing list with your idea",
+      "Find an X.Org developer willing to act as your primary mentor",
+      "Create a comprehensive project roadmap with weekly milestones",
+      "Submit your EVoC proposal to the X.Org Board of Directors",
+      "Set up your development environment and upstream tracking repo",
     ],
+    difficulty: "Advanced",
+    focusArea: "DEVELOPMENT"
   },
   {
     id: 11,
-    name: "Open Mainframe Project Mentorship",
+    name: "FreeBSD Foundation Internships",
+    short: "FreeBSD",
+    description: "Working on one of the oldest and most mature open source OS projects.",
+    fullDescription: "Internships focused on the FreeBSD kernel and documentation.",
+    eligibility: "CS/EE students.",
+    eligibilityType: "Students",
+    stipend: "$5,000 - $6,000",
+    stipendPaid: true,
+    stipendRange: "High",
+    window: "Summer",
+    status: "Annual",
+    region: "Global",
+    website: "https://freebsdfoundation.org",
+    applyUrl: "https://freebsdfoundation.org",
+    color: "text-red-600",
+    bgColor: "bg-red-50 border-red-200",
+    tags: ["os", "kernel", "unix"],
+    requirements: [
+      "Enrolled student in Computer Science, Engineering, or IT",
+      "Strong understanding of Operating Systems theory and C",
+      "Comfort working with Unix-like command-line environments",
+      "Basic knowledge of kernel internals, networking, or file systems",
+      "Legal eligibility to receive stipends (US or international status)",
+      "Ability to work remotely and coordinate according to UTC timezones",
+    ],
+    timeline: [
+      { phase: "Project Idea Posting", dates: "February – March" },
+      { phase: "Application & Interview Round", dates: "April" },
+      { phase: "Internship Start & Tools Training", dates: "May" },
+      { phase: "Summer Research & Development", dates: "June – August" },
+      { phase: "Final Documentation & Porting", dates: "September" },
+    ],
+    howToApply: [
+      "Review the FreeBSD Project Ideas page at freebsdfoundation.org",
+      "Reach out to the Foundation with your resume and interests",
+      "Participate in technical interviews focusing on OS concepts",
+      "Draft a specific scope of work for the summer internship",
+      "Complete any pre-internship screening tasks (compiling kernel, etc.)",
+      "Formalize the internship agreement and start your project",
+    ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT"
+  },
+  {
+    id: 12,
+    name: "Open Mainframe Project",
     short: "OMP",
-    description:
-      "LFX-hosted mentorship for mainframe and enterprise-scale computing. Projects use z/OS, COBOL, Java on IBM Z systems.",
-    fullDescription:
-      "The Open Mainframe Project Mentorship is hosted via LFX Mentorship and focuses on bringing new contributors to mainframe technologies including z/OS, Linux on Z, Zowe, and COBOL modernization projects.",
-    eligibility: "Students 18+ interested in enterprise/mainframe computing",
+    description: "Bringing newcomers to mainframe and enterprise computing.",
+    fullDescription: "Mentorship focused on enterprise Linux, Zowe, and mainframe projects.",
+    eligibility: "Enrolled students.",
     eligibilityType: "Students",
     stipend: "$3,000 – $6,600",
     stipendPaid: true,
     stipendRange: "High",
-    window: "3 cohorts/year via LFX",
+    window: "3 cohorts/year",
     status: "Ongoing",
     region: "Global",
-    website: "https://www.openmainframeproject.org/projects/mentorship-program",
+    website: "https://www.openmainframeproject.org",
     applyUrl: "https://mentorship.lfx.linuxfoundation.org",
-    color: "text-slate-700",
+    color: "text-slate-800",
     bgColor: "bg-slate-50 border-slate-200",
-    tags: ["mainframe", "enterprise", "cobol", "java", "lfx"],
+    tags: ["mainframe", "enterprise", "cobol"],
     requirements: [
-      "Basic Java or Python",
-      "Curiosity about enterprise computing",
-    ],
-    timeline: [{ phase: "Via LFX Mentorship cycles", dates: "Jan, May, Sep" }],
-    howToApply: [
-      "Search Open Mainframe on LFX Mentorship",
-      "Apply to a listed project",
-    ],
-  },
-  {
-    id: 12,
-    name: "Kubernetes Release Team Shadow",
-    short: "K8s Shadow",
-    description:
-      "Shadow members in the Kubernetes release team, contributing to one of the most critical CI/CD cycles in cloud native software. Unpaid but extremely prestigious.",
-    fullDescription:
-      "The Kubernetes Release Team Shadow Program allows contributors to shadow members of the Kubernetes release team. Shadows assist with documentation, communication, CI signal, and release notes across each 3-month Kubernetes release cycle.",
-    eligibility: "Kubernetes contributors with some prior contribution history",
-    eligibilityType: "Open to All",
-    stipend: "Unpaid - strong resume credential",
-    stipendPaid: false,
-    stipendRange: "Low/None",
-    window: "3 times/year (aligned with K8s releases)",
-    status: "Ongoing",
-    region: "Global (remote)",
-    website: "https://github.com/kubernetes/sig-release",
-    applyUrl:
-      "https://github.com/kubernetes/sig-release/tree/master/release-team",
-    color: "text-sky-700",
-    bgColor: "bg-sky-50 border-sky-200",
-    tags: ["kubernetes", "cloud-native", "prestigious", "go", "devops"],
-    requirements: [
-      "Prior Kubernetes contributions (even small PRs count)",
-      "Familiarity with Go and Kubernetes concepts",
-      "Ability to attend weekly release team meetings",
-      "Available ~5 hours/week for 3 months",
+      "Student enrollment or recent graduation within the last year",
+      "Interest in enterprise computing, COBOL, Zowe, or Linux on Z",
+      "Proficiency in Python, Java, or C depending on project choice",
+      "Ability to work in a diverse, global team across timezones",
+      "Commitment to the 12-week program duration (Spring or Summer)",
+      "Completion of the 'Mainframe 101' basics or equivalent training",
     ],
     timeline: [
-      { phase: "Shadow Applications", dates: "Before each K8s release cycle" },
-      { phase: "Selection", dates: "Within 2–4 weeks" },
-      { phase: "Release Cycle", dates: "~3 months per release" },
+      { phase: "LFX Mentorship Cycle Opening", dates: "Quarterly" },
+      { phase: "Project Choice & Application", dates: "Month 1" },
+      { phase: "Admissions & Onboarding", dates: "Month 2" },
+      { phase: "Active Mainframe Mentorship", dates: "Month 3 – 5" },
+      { phase: "Final Evaluation & Demo Day", dates: "Month 6" },
     ],
     howToApply: [
-      "Join the Kubernetes Slack at slack.k8s.io, specifically #sig-release",
-      "Make a few contributions to Kubernetes repos",
-      "Apply when shadow applications open (announced in #sig-release)",
-      "Fill out the application form linked in the shadow application issue",
+      "Create a profile on the LFX Mentorship platform",
+      "Filter projects using the 'Open Mainframe Project' tag",
+      "Choose 1-3 specific projects (Zowe, COBOL Check, etc.)",
+      "Submit a resume and statement on enterprise computing interest",
+      "Attend Open Mainframe community meetings for visibility",
+      "Complete technical tests or screening interviews with OMP mentors",
     ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT"
   },
+  {
+    id: 13,
+    name: "Julia Summer of Code",
+    short: "JSoC",
+    description: "Mentorship for the Julia programming language ecosystem.",
+    fullDescription: "Working on the Julia language and related scientific libraries.",
+    eligibility: "Students and researchers.",
+    eligibilityType: "Students",
+    stipend: "$1,500 - $3,000",
+    stipendPaid: true,
+    stipendRange: "Medium",
+    window: "Summer",
+    status: "Annual",
+    region: "Global",
+    website: "https://julialang.org",
+    applyUrl: "https://julialang.org",
+    color: "text-purple-600",
+    bgColor: "bg-purple-50 border-purple-200",
+    tags: ["julia", "research", "math"],
+    requirements: [
+      "Proficiency in the Julia programming language",
+      "Enrollment in a university or research institution program",
+      "Background in mathematics, physics, or scientific computation",
+      "Familiarity with Git, GitHub, and Julia's package manager (Pkg)",
+      "Clear project goal (adding features or a new library)",
+      "Ability to blog about progress and participate in forums",
+    ],
+    timeline: [
+      { phase: "Scientific Organization Sign-up", dates: "January" },
+      { phase: "Student Proposal Preparation", dates: "February – March" },
+      { phase: "Application Review & Interviews", dates: "April" },
+      { phase: "Intensive Julia Development", dates: "May – August" },
+      { phase: "Project Merging & Documentation", dates: "September" },
+    ],
+    howToApply: [
+      "Browse official Julia project ideas or propose your own",
+      "Engage with the community on Julia's Discourse or Slack",
+      "Find a Julia package maintainer to support your proposal",
+      "Write a detailed proposal including Julia code samples",
+      "Submit application through the NumFOCUS or GSoC portal",
+      "Fix bugs in the core Julia repo to demonstrate proficiency",
+    ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT"
+  },
+  {
+    id: 14,
+    name: "Python Summer of Code",
+    short: "PSoC",
+    description: "Developing core Python and scientific libraries.",
+    fullDescription: "Working on projects within the Python Software Foundation umbrella.",
+    eligibility: "Anyone globally.",
+    eligibilityType: "Open to All",
+    stipend: "$1,500 - $6,000",
+    stipendPaid: true,
+    stipendRange: "Medium",
+    window: "via GSoC or PSF direct",
+    status: "Annual",
+    region: "Global",
+    website: "https://www.python.org",
+    applyUrl: "https://www.python.org",
+    color: "text-blue-900",
+    bgColor: "bg-blue-50 border-blue-200",
+    tags: ["python", "software", "development"],
+    requirements: [
+      "Advanced proficiency in Python (3.x) and PEP standards",
+      "Knowledge of C (if applying for CPython core) or spec. libs",
+      "Strong understanding of open source licensing and Git",
+      "Participation in Python community forums or local user groups",
+      "Availability of 30+ hours per week for full-time tracks",
+      "Proven track record of 2-3 previous open source PRs",
+    ],
+    timeline: [
+      { phase: "Project Proposal (Sub-orgs)", dates: "January" },
+      { phase: "Developer Application Period", dates: "March" },
+      { phase: "Community Bonding & Prep", dates: "April – May" },
+      { phase: "First Coding Milestone", dates: "June" },
+      { phase: "Final Release & Review", dates: "August" },
+    ],
+    howToApply: [
+      "Identify a sub-org under the Python Software Foundation (PSF)",
+      "Join the mailing list or chat for your chosen library",
+      "Submit a high-quality PR to demonstrate technical competence",
+      "Draft a proposal following PSF student application guidelines",
+      "Record a short video introduction if required by the sub-org",
+      "Submit final proposal via the Google Summer of Code portal",
+    ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT"
+  },
+  {
+    id: 15,
+    name: "R Project GSoC",
+    short: "R-GSoC",
+    description: "Developing for the R ecosystem and statistical tools.",
+    fullDescription: "Mentorship for R packages and core statistical libraries.",
+    eligibility: "Students and graduates.",
+    eligibilityType: "Students",
+    stipend: "$1,500 - $6,000",
+    stipendPaid: true,
+    stipendRange: "Medium",
+    window: "Summer",
+    status: "Annual",
+    region: "Global",
+    website: "https://www.r-project.org",
+    applyUrl: "https://www.r-project.org",
+    color: "text-blue-800",
+    bgColor: "bg-blue-50 border-blue-200",
+    tags: ["stats", "R", "data-science"],
+    requirements: [
+      "Proficiency in R and RStudio for statistical programming",
+      "Understanding of R package structure (DESCRIPTION, NAMESPACE)",
+      "Background in statistics, data science, or bioinformatics",
+      "Ability to write high-quality documentation using roxygen2",
+      "Git and GitHub knowledge for version control and PRs",
+      "Student status at an accredited university (for GSoC)",
+    ],
+    timeline: [
+      { phase: "R Organization Selection", dates: "February" },
+      { phase: "Project Browsing & Mentoring", dates: "March" },
+      { phase: "Portal Application Window", dates: "April" },
+      { phase: "Primary Statistical Coding", dates: "June – August" },
+      { phase: "CRAN Preparation & Submission", dates: "September" },
+    ],
+    howToApply: [
+      "Browse the R Project ideas list on the R-GSoC wiki",
+      "Contribute small patches to existing R packages or 'r-devel'",
+      "Discuss proposals with R mentors via R-help mailing list",
+      "Detailed proposal submission including statistical methodology",
+      "Complete screening tasks like creating a minimal R package",
+      "Finalize application on GSoC portal under R Project umbrella",
+    ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT"
+  },
+  {
+    id: 16,
+    name: "AOSSIE (Design focused)",
+    short: "AOSSIE",
+    description: "Australian Open Source Software Innovation and Education design projects.",
+    fullDescription: "Contribute to UI/UX and visual design for scientific software tools.",
+    eligibility: "Designers and developers.",
+    eligibilityType: "Open to All",
+    stipend: "$1,500 - $3,000",
+    stipendPaid: true,
+    stipendRange: "Medium",
+    window: "via GSoC",
+    status: "Annual",
+    region: "Australia/Global",
+    website: "https://aossie.org",
+    applyUrl: "https://aossie.org",
+    color: "text-teal-800",
+    bgColor: "bg-teal-50 border-teal-200",
+    tags: ["design", "uiux", "australia"],
+    requirements: [
+      "Proficiency in UI/UX design and prototyping (Figma, Sketch)",
+      "Understanding of UCD principles for scientific software",
+      "Basic knowledge of HTML/CSS or frontend frameworks",
+      "Portfolio showcasing previous design work or case studies",
+      "Ability to create accessible designs (WCAG standards)",
+      "Excellent communication skills for presenting design decisions",
+    ],
+    timeline: [
+      { phase: "AOSSIE Design Project Reveal", dates: "February" },
+      { phase: "Mentee Selection & Portfolio Review", dates: "March – April" },
+      { phase: "Requirement Gathering & UX Research", dates: "May" },
+      { phase: "Iterative Prototyping & Testing", dates: "June – July" },
+      { phase: "Final Hand-off & Developer Liaison", dates: "August" },
+    ],
+    howToApply: [
+      "Review AOSSIE project list for design-centric opportunities",
+      "Prepare a portfolio PDF or link highlighting UI/UX expertise",
+      "Propose a specific UI overhaul or a new feature's language",
+      "Join AOSSIE communication channels (Gitter or Slack)",
+      "Submit formal proposal on GSoC portal (AOSSIE umbrella)",
+      "Participate in interview focusing on design process & tools",
+    ],
+    difficulty: "Intermediate",
+    focusArea: "DESIGN"
+  },
+  {
+    id: 17,
+    name: "DrivenData Research",
+    short: "DrivenData",
+    description: "Social impact research through data science and open competitions.",
+    fullDescription: "Apply machine learning and data science to high-impact social challenges.",
+    eligibility: "Data scientists and researchers.",
+    eligibilityType: "Open to All",
+    stipend: "Competition Prizes ($1,000 - $50,000)",
+    stipendPaid: true,
+    stipendRange: "High",
+    window: "Ongoing Competitions",
+    status: "Ongoing",
+    region: "Global",
+    website: "https://www.drivendata.org",
+    applyUrl: "https://www.drivendata.org",
+    color: "text-emerald-900",
+    bgColor: "bg-emerald-50 border-emerald-200",
+    tags: ["research", "data-science", "social-impact"],
+    requirements: [
+      "Strong background in Machine Learning and Data Science",
+      "Proficiency in Python (scikit-learn, PyTorch) or R",
+      "Ability to clean and process massive structured datasets",
+      "Focus on social impact and open research methodologies",
+      "Commitment to competing and publishing findings as OS",
+      "Verification of identity and eligibility for prize payouts",
+    ],
+    timeline: [
+      { phase: "Competition Launch & Documentation", dates: "Varies" },
+      { phase: "Exploratory Data Analysis Phase", dates: "Month 1" },
+      { phase: "Modeling & Optimization Sprint", dates: "Month 2" },
+      { phase: "Final Leaderboard Submission", dates: "Conclusion" },
+      { phase: "Winner Code Verification & Interview", dates: "Post-Event" },
+    ],
+    howToApply: [
+      "Create a researcher profile on DrivenData.org",
+      "Browse active competitions for social good",
+      "Download the competition datasets and starter notebooks",
+      "Form a team or compete individually following rules",
+      "Submit your predictive models to the public leaderboard",
+      "Document approach and prepare code for final verification",
+    ],
+    difficulty: "Advanced",
+    focusArea: "RESEARCH"
+  },
+  {
+    id: 18,
+    name: "Hacktoberfest",
+    short: "Hacktober",
+    description: "DigitalOcean's annual October celebration of open source. Complete 4 PRs/MRs during October to earn a digital badge and swag from sponsors.",
+    fullDescription: "Hacktoberfest is a month-long celebration of open source software run by DigitalOcean every October. Participants who submit 4 qualifying pull requests to any participating GitHub or GitLab repositories earn a digital badge and may qualify for limited-edition physical swag.",
+    eligibility: "Anyone globally, 18+ or with parental consent",
+    eligibilityType: "Open to All",
+    stipend: "Digital badge + limited swag",
+    stipendPaid: false,
+    stipendRange: "Low/None",
+    window: "October (every year)",
+    status: "Annual",
+    region: "Global",
+    website: "https://hacktoberfest.com",
+    applyUrl: "https://hacktoberfest.com",
+    startDate: "2026-10-01",
+    color: "text-orange-700",
+    bgColor: "bg-orange-50 border-orange-200",
+    tags: ["beginner-friendly", "open-source", "october", "swag"],
+    requirements: [
+      "Register at hacktoberfest.com during the month of October",
+      "Linking of valid GitHub or GitLab account to registration",
+      "Proper tagging of Pull/Merge Requests for the current year",
+      "Contributions must be to repos with 'hacktoberfest' topic",
+      "PRs must pass 'spam' check by maintainers",
+      "Adherence to Hacktoberfest Values (Quantity < Quality)",
+    ],
+    timeline: [
+      { phase: "Early Bird Registration", dates: "Late September" },
+      { phase: "Official Kick-off Event", dates: "October 1" },
+      { phase: "The 4-PR Contribution Sprint", dates: "October 1 – 31" },
+      { phase: "7-Day Review & Holding Period", dates: "Ongoing" },
+      { phase: "Validation & Swag Logistics", dates: "Nov – Jan" },
+    ],
+    howToApply: [
+      "Visit hacktoberfest.com and sign up with your Dev account",
+      "Use 'hacktoberfest' search filter on GitHub/GitLab",
+      "Submit 4 quality contributions (bug fixes, docs, or features)",
+      "Ensure PR is not marked as 'invalid' or 'spam' by maintainer",
+      "Track progress on official Hacktoberfest dashboard",
+      "Claim digital badge and rewards once requirements are met",
+    ],
+    difficulty: "Beginner",
+    focusArea: "DEVELOPMENT",
+  },
+  {
+    id: 19,
+    name: "GirlScript Summer of Code",
+    short: "GSSoC",
+    description: "India's largest open source program, inspired by GSoC. Runs March–May connecting Indian students with mentors from 100+ open source projects.",
+    fullDescription: "GirlScript Summer of Code (GSSoC) is a 3-month open source program conducted by the GirlScript Foundation. It is primarily focused on Indian students and aims to help them get started with contributing to open source. Top contributors receive certificates, swag, and job referrals.",
+    eligibility: "Open to all - primarily Indian students but anyone can join",
+    eligibilityType: "Open to All",
+    stipend: "Certificates + swag + job referrals for top contributors",
+    stipendPaid: false,
+    stipendRange: "Low/None",
+    window: "March – May",
+    status: "Annual",
+    region: "India (open globally)",
+    website: "https://gssoc.girlscript.tech",
+    applyUrl: "https://gssoc.girlscript.tech",
+    deadline: "2026-05-31",
+    color: "text-pink-700",
+    bgColor: "bg-pink-50 border-pink-200",
+    tags: ["india", "beginner-friendly", "certificates", "gssoc"],
+    requirements: [
+      "Active registration on the GSSoC participant portal",
+      "Basic knowledge of Git and GitHub (Fork, Clone, PR)",
+      "Willingness to participate in point-based leaderboard",
+      "Engage with mentors and contributors via Discord",
+      "No age or educational barrier - open to all learners",
+      "Commitment to professional conduct and guidelines",
+    ],
+    timeline: [
+      { phase: "Project & Mentor Onboarding", dates: "January" },
+      { phase: "Contributor Registration Sprint", dates: "February" },
+      { phase: "Coding Period Launch", dates: "March 1" },
+      { phase: "Leaderboard Mid-term Evaluation", dates: "April 15" },
+      { phase: "Final Contribution Wrap-up", dates: "May 31" },
+      { phase: "Results & Job Referral Drive", dates: "June – July" },
+    ],
+    howToApply: [
+      "Complete the registration form at gssoc.girlscript.tech",
+      "Join the official GSSoC Discord server for announcements",
+      "Explore project repo and find issues labeled 'GSSoC'",
+      "Comment on an issue to get it assigned by a mentor",
+      "Solve issue, submit PR, and link it to GSSoC dashboard",
+      "Repeat process to earn points and climb the leaderboard",
+    ],
+    difficulty: "Beginner",
+    focusArea: "DEVELOPMENT",
+  },
+  {
+    id: 20,
+    name: "MLH Localhost Workshops",
+    short: "Localhost",
+    description: "Free technical workshops and learning resources.",
+    fullDescription: "Learn from industry experts through hands-on workshops.",
+    eligibility: "Students.",
+    eligibilityType: "Students",
+    stipend: "Learning resources",
+    stipendPaid: false,
+    stipendRange: "Low/None",
+    window: "Year-round",
+    status: "Ongoing",
+    region: "Global",
+    website: "https://mlh.io",
+    applyUrl: "https://mlh.io",
+    color: "text-violet-700",
+    bgColor: "bg-violet-50 border-violet-200",
+    tags: ["learning", "workshop"],
+    requirements: [
+      "Status as a student or lifelong learner interested in tech",
+      "Access to a computer with a stable internet connection",
+      "Willingness to participate in instructor-led sessions",
+      "Basic environmental setup (VS Code, Git) per workshop",
+      "No prior experience required for 'Intro' level modules",
+      "Commitment to complete the workshop project in 60-90 min",
+    ],
+    timeline: [
+      { phase: "Workshop Calendar Release", dates: "Weekly" },
+      { phase: "Individual Event Registration", dates: "Ongoing" },
+      { phase: "Live Workshop Session", dates: "Scheduled Time" },
+      { phase: "Hands-on Project Lab", dates: "Post-Lecture" },
+      { phase: "Achievement Badge Issuance", dates: "Conclusion" },
+    ],
+    howToApply: [
+      "Visit mlh.io/localhost to browse upcoming workshop list",
+      "Filter events by topic (Web, AI, Cloud) or timezone",
+      "Register for a specific live session or on-demand module",
+      "Follow the 'Pre-requisites' guide sent to your email",
+      "Join the live stream or room at the scheduled time",
+      "Participate in builds and claim MLH digital rewards",
+    ],
+    difficulty: "Beginner",
+    focusArea: "DEVELOPMENT"
+  }
 ];
 
 const STORAGE_KEY = "program_tracker_filters";
 
 const ELIGIBILITY_OPTIONS = ["All", "Students", "Open to All", "Diversity-focused"];
 const STATUS_OPTIONS = ["All", "Annual", "Ongoing", "Batch"];
+const FOCUS_AREA_OPTIONS = ["All", "DEVELOPMENT", "TECHNICAL_WRITING", "DESIGN", "RESEARCH"];
 const STIPEND_OPTIONS = [
   "All",
   "Paid",
@@ -726,6 +1131,7 @@ const getLocalStipendEstimate = (stipend: string): string | null => {
 
   return `~${converted.join(" - ")}${spacedSuffix}`;
 };
+
 const getGoogleCalendarUrl = (program: Program) => {
   if (!program.applicationDeadline) return "";
 
@@ -738,7 +1144,7 @@ const getGoogleCalendarUrl = (program: Program) => {
   }
 
   const pad = (n: number) => (n < 10 ? "0" + n : n);
-  const formatUTC = (d: Date) => 
+  const formatUTC = (d: Date) =>
     `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
 
   const startDate = formatUTC(startDateObj);
@@ -746,7 +1152,7 @@ const getGoogleCalendarUrl = (program: Program) => {
 
   const text = encodeURIComponent(`${program.name} Application`);
   const details = encodeURIComponent(`Apply here: ${program.website}`);
-  
+
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${startDate}/${endDate}&details=${details}`;
 };
 
@@ -768,17 +1174,17 @@ function ProgramCard({ program }: { program: Program }) {
       {/* Header */}
       <div className="p-5">
         <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              {urgency?.level === "closed" && (
-                <span className="px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 bg-gray-500 text-white">
-                  Closed
-                </span>
-              )}
-              <div
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}
-              >
-                {program.short}
-              </div>
+          <div className="flex items-center gap-3 min-w-0">
+            {urgency?.level === "closed" && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 bg-gray-500 text-white">
+                Closed
+              </span>
+            )}
+            <div
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}
+            >
+              {program.short}
+            </div>
             <div className="min-w-0">
               <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight">
                 {program.name}
@@ -888,7 +1294,7 @@ function ProgramCard({ program }: { program: Program }) {
           </Button>
           <div className="flex gap-2">
             {program.applicationDeadline ? (
-              <a 
+              <a
                 href={getGoogleCalendarUrl(program)}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -1001,30 +1407,31 @@ export default function ProgramTrackerPage() {
 
   // Load saved filters from localStorage on mount, fall back to defaults
   const getSavedFilters = () => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed && typeof parsed === "object") {
-        return {
-          status: STATUS_OPTIONS.includes(parsed.status) ? parsed.status : "All",
-          eligibility: ELIGIBILITY_OPTIONS.includes(parsed.eligibility) ? parsed.eligibility : "All",
-          stipend: STIPEND_OPTIONS.includes(parsed.stipend) ? parsed.stipend : "All",
-          sortBy: SORT_OPTIONS.some((o) => o.value === parsed.sortBy) ? parsed.sortBy : "default",
-        };
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === "object") {
+          return {
+            status: STATUS_OPTIONS.includes(parsed.status) ? parsed.status : "All",
+            eligibility: ELIGIBILITY_OPTIONS.includes(parsed.eligibility) ? parsed.eligibility : "All",
+            stipend: STIPEND_OPTIONS.includes(parsed.stipend) ? parsed.stipend : "All",
+            sortBy: SORT_OPTIONS.some((o) => o.value === parsed.sortBy) ? parsed.sortBy : "default",
+          };
+        }
       }
+    } catch {
+      // ignore errors
     }
-  } catch {
-    // ignore errors
-  }
-  return { status: "All", eligibility: "All", stipend: "All", sortBy: "default" };
-};
+    return { status: "All", eligibility: "All", stipend: "All", sortBy: "default" };
+  };
 
   const savedFilters = getSavedFilters();
 
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
   const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
+  const [activeFocus, setActiveFocus] = useState<string>("All");
   const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
   const [sortBy, setSortBy] = useState<string>(savedFilters.sortBy);
 
@@ -1060,6 +1467,8 @@ export default function ProgramTrackerPage() {
       list = list.filter((p) => p.status === selectedStatus);
     if (selectedEligibility !== "All")
       list = list.filter((p) => p.eligibilityType === selectedEligibility);
+    if (activeFocus !== "All")
+      list = list.filter((p) => p.focusArea === activeFocus);
     if (selectedStipend === "Paid") list = list.filter((p) => p.stipendPaid);
     if (selectedStipend === "High ($5k+)") list = list.filter((p) => p.stipendRange === "High");
     if (selectedStipend === "Medium ($1k–5k)") list = list.filter((p) => p.stipendRange === "Medium");
@@ -1213,6 +1622,12 @@ export default function ProgramTrackerPage() {
               value: selectedEligibility,
               options: ELIGIBILITY_OPTIONS,
               set: setSelectedEligibility,
+            },
+            {
+              label: "Focus",
+              value: activeFocus,
+              options: FOCUS_AREA_OPTIONS,
+              set: setActiveFocus,
             },
             {
               label: "Stipend",
