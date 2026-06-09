@@ -4,6 +4,7 @@ import { executeCode, LANGUAGE_IDS } from "../../utils/judge0.utils.js";
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
 import { codeReviewResponseSchema, type CodeReviewResponse } from "./dsa.validation.js";
+import { getApproaches } from "./dsa-approaches.data.js";
 
 interface TestCaseResult {
   input: string;
@@ -1162,6 +1163,10 @@ Return ONLY a JSON array, no markdown fences:
     });
 
     return similar.slice(0, limit);
+  }
+
+  async getApproaches(slug: string) {
+    return getApproaches(slug);
   }
 
   // ── AI Code Review ──

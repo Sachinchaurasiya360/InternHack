@@ -238,6 +238,7 @@ export const queryKeys = {
     streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
+    approaches: (slug: string) => ["dsa", "approaches", slug] as const,
   },
 
   // Roadmaps

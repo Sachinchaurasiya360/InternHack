@@ -88,6 +88,12 @@ export interface DsaProgress {
   };
 }
 
+export interface DsaApproachEntry {
+  title: string;
+  complexity: string;
+  content: string;
+}
+
 export interface DsaSimilarProblem {
   id: number;
   title: string;
