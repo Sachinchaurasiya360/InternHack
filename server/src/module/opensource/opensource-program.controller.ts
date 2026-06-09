@@ -22,7 +22,8 @@ export class OpensourceProgramController {
 
   async getProgram(req: Request, res: Response, next: NextFunction) {
     try {
-      const program = await service.getProgram(req.params.slug);
+      const slug = String(req.params.slug);
+      const program = await service.getProgram(slug);
       if (!program) {
         res.status(404).json({ message: "Program not found" });
         return;
@@ -105,7 +106,8 @@ export class OpensourceProgramController {
 
   async downloadIcs(req: Request, res: Response, next: NextFunction) {
     try {
-      const program = await service.getProgram(req.params.slug);
+      const slug = String(req.params.slug);
+      const program = await service.getProgram(slug);
       if (!program) {
         res.status(404).json({ message: "Program not found" });
         return;

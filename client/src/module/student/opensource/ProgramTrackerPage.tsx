@@ -333,7 +333,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 7,
-    slug: "season-of-docs", (feat: add program deadline alerts & calendar integration)
+    slug: "season-of-docs",
     name: "Season of Docs",
     short: "GSoD",
     description: "Google's program pairing technical writers with open source orgs to improve documentation. Organizations receive funds to pay writers directly.",
@@ -481,8 +481,8 @@ const PROGRAMS: Program[] = [
     region: "Global",
     website: "https://wiki.hyperledger.org/display/INTERN",
     applyUrl: "https://mentorship.lfx.linuxfoundation.org",
-    color: "text-gray-700",
-    bgColor: "bg-gray-50 border-gray-200",
+    color: "text-stone-700",
+    bgColor: "bg-stone-50 border-stone-200",
     tags: ["blockchain", "hyperledger", "go", "enterprise", "lfx"],
     requirements: [
       "Students and developers 18+ with some programming experience",
@@ -553,7 +553,7 @@ const PROGRAMS: Program[] = [
     applyUrl: "https://www.gnome.org",
     color: "text-indigo-600",
     bgColor: "bg-indigo-50 border-indigo-200",
-    tags: ["gnome", "linux", "desktop"], (feat: add program deadline alerts & calendar integration)
+    tags: ["gnome", "linux", "desktop"],
     requirements: [
       "Open to students and newcomers to open source development",
       "Proficiency in C, Rust, or Python (primary GNOME languages)",
@@ -603,7 +603,7 @@ const PROGRAMS: Program[] = [
     fullDescription: "Focuses on lower-level graphics drivers and core Linux graphics infrastructure.",
     eligibility: "Advanced developers/students.",
     eligibilityType: "Students",
-    stipend: "$5,000", (feat: add program deadline alerts & calendar integration)
+    stipend: "$5,000",
     stipendPaid: true,
     stipendRange: "High",
     window: "Flexible",
@@ -689,7 +689,7 @@ const PROGRAMS: Program[] = [
   {
     id: 12,
     name: "Open Mainframe Project",
-    slug: "open-mainframe-project", (feat: add program deadline alerts & calendar integration)
+    slug: "open-mainframe-project",
     short: "OMP",
     description: "Bringing newcomers to mainframe and enterprise computing.",
     fullDescription: "Mentorship focused on enterprise Linux, Zowe, and mainframe projects.",
@@ -1420,8 +1420,9 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
   };
 
   return (
-    <div className="bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors overflow-hidden rounded-md">
-      {/* Closing soon indicator */}
+    <div
+      className={`bg-white dark:bg-stone-900 rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${program.bgColor}`}
+    >
       {urgency?.level === "critical" && (
         <div className="flex items-center gap-2 px-5 py-2 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900">
           <motion.span
@@ -1438,20 +1439,30 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
       <div className="p-5">
         {/* Header row */}
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3 min-w-0">
-            <div className="inline-flex items-center justify-center h-10 w-10 rounded-md bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 shrink-0 text-xs font-bold">
-              {program.short.slice(0, 4)}
+          <div className="flex items-center gap-3 min-w-0">
+            {urgency?.level === "closed" && (
+              <span className="px-2.5 py-1 rounded-md text-xs font-bold shrink-0 bg-stone-500 text-white">
+                Closed
+              </span>
+            )}
+            <div
+              className={`px-2.5 py-1 rounded-md text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}
+            >
+              {program.short}
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 leading-tight">
+              <h3 className="text-base font-bold text-stone-900 dark:text-white leading-tight">
                 {program.name}
               </h3>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                <span
+                  className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${STATUS_STYLE[program.status]}`}
+                >
                   {program.status}
                 </span>
-                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700 shrink-0" />
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <span
+                  className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${ELIGIBILITY_STYLE[program.eligibilityType]}`}
+                >
                   {program.eligibilityType}
                 </span>
                 {urgency?.level === "closed" && (
@@ -1467,14 +1478,20 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
           {/* Stipend */}
           <div className="text-right shrink-0">
             {program.stipendPaid ? (
+              <div className="flex items-center justify-end gap-1 text-emerald-700">
+                <DollarSign className="w-3.5 h-3.5" />
+                <span className="text-sm font-bold">
+                  {program.stipend.split(" ")[0]}
+                </span>
+              </div>
+            ) : (
+              <span className="text-xs text-stone-400 font-medium">
+                No stipend
+              </span>
+            )}
+            {program.stipendPaid && (
               <>
-                <div className="flex items-center justify-end gap-1">
-                  <DollarSign className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
-                  <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
-                    {program.stipend.split(" ")[0]}
-                  </span>
-                </div>
-                <p className="text-[10px] font-mono text-stone-500 mt-0.5">{program.stipend}</p>
+                <p className="text-xs text-stone-400 mt-0.5">USD {program.stipend}</p>
                 {localStipendEstimate && (
                   <p
                     className="text-[10px] font-mono text-lime-600 dark:text-lime-400 mt-0.5"
@@ -1492,49 +1509,59 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
           </div>
         </div>
 
-        <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-4">
+        <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-3">
           {program.description}
         </p>
 
-        {/* Meta row */}
-        <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-4">
-          <span className="flex items-center gap-1.5 text-xs text-stone-500">
+        {/* Key info row */}
+        <div className="flex flex-wrap gap-4 mt-3 text-xs text-stone-500">
+          <span className="flex items-center gap-1">
             <Calendar className="w-3.5 h-3.5 text-stone-400" />
             {program.window}
           </span>
-          <span className="flex items-center gap-1.5 text-xs text-stone-500">
+          <span className="flex items-center gap-1">
             <Globe className="w-3.5 h-3.5 text-stone-400" />
             {program.region}
           </span>
-          <span className="flex items-center gap-1.5 text-xs text-stone-500">
+          <span className="flex items-center gap-1">
             <Users className="w-3.5 h-3.5 text-stone-400" />
-            {program.eligibility.length > 50 ? program.eligibility.slice(0, 50) + "…" : program.eligibility}
+            {program.eligibility.length > 50
+              ? program.eligibility.slice(0, 50) + "…"
+              : program.eligibility}
           </span>
         </div>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-x-3 gap-y-1 mt-3">
           {program.tags.slice(0, 4).map((t) => (
-            <span key={t} className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+            <span
+              key={t}
+              className="px-2 py-0.5 bg-stone-50 dark:bg-stone-800 text-stone-500 text-[10px] rounded-md border border-stone-100 dark:border-stone-700"
+            >
               #{t}
             </span>
           ))}
         </div>
 
         {/* Countdown */}
-        {cd && (
-          <div className="flex items-center gap-1.5 mt-3 text-xs font-mono text-stone-500">
-            <span className="h-1.5 w-1.5 bg-lime-400 shrink-0" />
-            {cd.text}
-          </div>
-        )}
-
-        {/* Action row */}
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-stone-100 dark:border-white/5">
-          <button
-            type="button"
+        {(() => {
+          const cd = getCountdown(program);
+          return cd ? (
+            <div
+              className={`flex items-center gap-1 mt-2 text-xs ${cd.className}`}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              {cd.text}
+            </div>
+          ) : null;
+        })()}
+        {/* Expand / CTA row */}
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-100 dark:border-stone-800">
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setExpanded(!expanded)}
-            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
+            className="text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
           >
             {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             {expanded ? "less" : "full details"}
@@ -1546,20 +1573,20 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
                 href={getGoogleCalendarUrl(program)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-white/5 hover:bg-stone-100 dark:hover:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md transition-colors no-underline"
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-md border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer no-underline"
               >
                 <CalendarPlus className="w-3 h-3" /> Calendar
               </a>
             ) : (
-              <div className="inline-flex items-center gap-1 px-3 py-1.5 text-xs text-stone-400 bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md">
-                <Calendar className="w-3 h-3" /> TBA
+              <div className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-stone-500 dark:text-stone-400 bg-stone-50 dark:bg-stone-800/50 rounded-md border border-stone-200 dark:border-stone-800">
+                <Calendar className="w-3 h-3" /> Deadline: TBA
               </div>
             )}
             <button
               type="button"
               onClick={handleDownloadIcs}
               disabled={downloading}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-md border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer disabled:opacity-50"
               title="Download .ics calendar file"
             >
               <Download className="w-3 h-3" />
@@ -1567,24 +1594,24 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
             <button
               type="button"
               onClick={() => onToggleTrack(program.slug, !tracked)}
-              className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
+              className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-md border transition-colors cursor-pointer ${
                 tracked
                   ? "text-lime-700 dark:text-lime-400 bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800/30"
-                  : "text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  : "text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700"
               }`}
               title={tracked ? "Stop tracking" : "Track this program"}
             >
               <Bookmark className={`w-3 h-3 ${tracked ? "fill-current" : ""}`} />
             </button>
             <a href={program.website} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 no-underline transition-colors">
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-md border border-stone-200 dark:border-stone-700 no-underline transition-colors">
               <Globe className="w-3 h-3" /> Website <ExternalLink className="w-3 h-3 opacity-60" />
             </a>
             <a
               href={program.applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 rounded-md no-underline transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white dark:text-stone-950 bg-stone-950 dark:bg-white hover:bg-stone-800 dark:hover:bg-stone-200 rounded-md no-underline transition-colors"
             >
               Apply <ExternalLink className="w-3 h-3 opacity-70" />
             </a>
@@ -1599,19 +1626,22 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="overflow-hidden border-t border-stone-100 dark:border-white/5"
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden border-t border-stone-100 dark:border-stone-800"
           >
-            <div className="p-5 bg-stone-50 dark:bg-stone-900/50 grid md:grid-cols-3 gap-6">
+            <div className="p-5 bg-stone-50 dark:bg-stone-950 grid md:grid-cols-3 gap-6">
+              {/* Requirements */}
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">
-                  <span className="h-1.5 w-1.5 bg-lime-400" />
-                  requirements
-                </div>
-                <ul className="space-y-2.5">
+                <h4 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wide mb-3">
+                  Requirements
+                </h4>
+                <ul className="space-y-2">
                   {program.requirements.map((r, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 dark:text-lime-400 shrink-0 mt-0.5" />
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                       {r}
                     </li>
                   ))}
@@ -1619,17 +1649,18 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">
-                  <span className="h-1.5 w-1.5 bg-lime-400" />
-                  timeline
-                </div>
-                <div className="space-y-2.5">
+                <h4 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wide mb-3">
+                  Timeline
+                </h4>
+                <div className="space-y-2">
                   {program.timeline.map((t, i) => (
-                    <div key={i} className="flex items-start gap-2.5">
-                      <div className="w-1.5 h-1.5 bg-stone-300 dark:bg-stone-600 mt-1.5 shrink-0" />
+                    <div key={i} className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 rounded-md bg-stone-400 mt-1.5 shrink-0" />
                       <div>
-                        <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">{t.phase}</p>
-                        <p className="text-[10px] font-mono text-stone-500">{t.dates}</p>
+                        <p className="text-xs font-medium text-stone-900 dark:text-white">
+                          {t.phase}
+                        </p>
+                        <p className="text-[10px] text-stone-500">{t.dates}</p>
                       </div>
                     </div>
                   ))}
@@ -1637,15 +1668,17 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">
-                  <span className="h-1.5 w-1.5 bg-lime-400" />
-                  how to apply
-                </div>
-                <ol className="space-y-2.5">
+                <h4 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wide mb-3">
+                  How to Apply
+                </h4>
+                <ol className="space-y-2">
                   {program.howToApply.map((step, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400">
-                      <span className="text-[10px] font-bold tabular-nums text-lime-600 dark:text-lime-400 shrink-0 mt-0.5 w-4">
-                        {i + 1}.
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400"
+                    >
+                      <span className="w-4 h-4 rounded-md bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                        {i + 1}
                       </span>
                       {step}
                     </li>
@@ -1842,15 +1875,14 @@ export default function ProgramTrackerPage() {
         structuredData={programEventsSchema}
       />
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
-        <div className="absolute top-0 right-0 w-56 h-56 bg-linear-to-bl from-emerald-200/30 to-transparent rounded-bl-full pointer-events-none" />
+      <section className="relative overflow-hidden rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 mb-8 p-8">
         <div className="relative">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 rounded-md bg-emerald-500 flex items-center justify-center shadow-lg">
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
                 Open Source Program Tracker
               </h1>
               <p className="text-sm text-emerald-700">
@@ -1859,7 +1891,7 @@ export default function ProgramTrackerPage() {
               </p>
             </div>
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mb-6 leading-relaxed">
+          <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl mb-6 leading-relaxed">
             All major open source programs in one place - with deadlines,
             stipends, eligibility, and step-by-step application guides. Set
             reminders and apply before windows close.
@@ -1878,12 +1910,12 @@ export default function ProgramTrackerPage() {
             ].map((s) => (
               <div
                 key={s.label}
-                className="bg-white/70 dark:bg-gray-900/70 rounded-xl px-4 py-2 border border-emerald-100 dark:border-emerald-800"
+                className="bg-white/70 dark:bg-stone-900/70 rounded-md px-4 py-2 border border-emerald-100 dark:border-emerald-800"
               >
-                <p className="text-lg font-bold text-gray-900 dark:text-white leading-none">
+                <p className="text-lg font-bold text-stone-900 dark:text-white leading-none">
                   {s.value}
                 </p>
-                <p className="text-[11px] text-gray-500 mt-0.5">{s.label}</p>
+                <p className="text-[11px] text-stone-500 mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
@@ -1970,14 +2002,10 @@ export default function ProgramTrackerPage() {
 
       {/* ── Next deadline sticky bar ───────────────────────── */}
       {NEXT_DEADLINE && (
-        <div className="sticky top-0 z-10 mb-6 bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-4 py-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <motion.span
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              className="h-1.5 w-1.5 bg-lime-400 shrink-0"
-            />
-            <p className="text-xs font-mono text-stone-600 dark:text-stone-400">
+        <div className="sticky top-0 z-10 mb-5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 rounded-md px-4 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <p className="text-xs font-medium text-stone-700 dark:text-stone-300">
               Next deadline:{" "}
               <span className="font-bold text-stone-900 dark:text-stone-50">{NEXT_DEADLINE.program.name}</span>
               {" "}closes in{" "}
@@ -2004,7 +2032,7 @@ export default function ProgramTrackerPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search programs..."
-            className="w-full pl-9 pr-4 py-2.5 border border-stone-200 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 dark:focus:border-lime-400 bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 transition-colors"
+            className="w-full pl-9 pr-4 py-2.5 border border-stone-200 dark:border-stone-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 bg-white dark:bg-stone-800 dark:text-white dark:placeholder-gray-500"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -2015,26 +2043,21 @@ export default function ProgramTrackerPage() {
             { label: "Stipend", value: selectedStipend, options: STIPEND_OPTIONS, set: setSelectedStipend },
           ].map(({ label, value, options, set }) => (
             <div key={label} className="relative group">
-              <button
-                type="button"
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 hover:border-stone-400 dark:hover:border-white/30 transition-colors cursor-pointer"
-              >
-                <Filter className="w-3 h-3 text-stone-400" />
-                <span className="text-stone-400 font-mono">{label}:</span>
-                <span className="font-bold text-stone-900 dark:text-stone-50">{value}</span>
-                <ChevronDown className="w-3 h-3 text-stone-400" />
-              </button>
-              <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[170px] max-h-[200px] overflow-y-auto rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
+              <Button variant="secondary" size="sm">
+                <Filter className="w-3 h-3" />
+                <span className="text-stone-400">{label}:</span>
+                <span className="font-semibold text-stone-900 dark:text-white">
+                  {value}
+                </span>
+                <ChevronDown className="w-3 h-3 opacity-50" />
+              </Button>
+              <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[170px] max-h-[200px] overflow-y-auto rounded-md border border-stone-100 dark:border-stone-700 bg-white dark:bg-stone-800 p-1 shadow-xl group-hover:block">
                 {options.map((opt) => (
                   <button
                     key={opt}
                     type="button"
                     onClick={() => set(opt)}
-                    className={`w-full text-left px-3 py-1.5 text-xs rounded transition-colors cursor-pointer border-0 ${
-                      value === opt
-                        ? "bg-lime-400/15 text-lime-700 dark:text-lime-400 font-bold"
-                        : "text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5"
-                    }`}
+                    className={`w-full justify-start ${value === opt ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-stone-600 dark:text-stone-300"}`}
                   >
                     {opt}
                   </button>
@@ -2047,7 +2070,7 @@ export default function ProgramTrackerPage() {
               variant="outline"
               size="sm"
               onClick={() => setShowTrackedOnly((prev) => !prev)}
-              className={showTrackedOnly ? "bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800 text-lime-700 dark:text-lime-400 font-medium" : "text-gray-600 dark:text-gray-300"}
+              className={showTrackedOnly ? "bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800 text-lime-700 dark:text-lime-400 font-medium" : "text-stone-600 dark:text-stone-300"}
             >
               <Bookmark className={`w-3.5 h-3.5 mr-1.5 ${showTrackedOnly ? "fill-current" : ""}`} />
               Tracked only
@@ -2057,17 +2080,17 @@ export default function ProgramTrackerPage() {
             variant="outline"
             size="sm"
             onClick={() => setSortBy((prev) => (prev === "deadline" ? "default" : "deadline"))}
-            className={sortBy === "deadline" ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}
+            className={sortBy === "deadline" ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-medium" : "text-stone-600 dark:text-stone-300"}
           >
             <Calendar className="w-3.5 h-3.5 mr-1.5" />
             Sort by deadline
           </Button>
-          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default" || showTrackedOnly) && ( (feat: add program deadline alerts & calendar integration)
+          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default" || showTrackedOnly) && (
             <Button
               variant="secondary"
               size="sm"
               onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); setShowTrackedOnly(false); }}
-              className="text-gray-500"
+              className="text-stone-500"
             >
               <X className="w-3.5 h-3.5" /> Clear
             </button>
@@ -2075,9 +2098,9 @@ export default function ProgramTrackerPage() {
         </div>
       </div>
 
-      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-5">
+      <p className="text-sm text-stone-400 mb-5">
         Showing{" "}
-        <span className="font-bold text-stone-900 dark:text-stone-50">
+        <span className="font-semibold text-stone-900 dark:text-white">
           {filtered.length}
         </span>{" "}
         of {programsSource.length} programs
@@ -2085,9 +2108,9 @@ export default function ProgramTrackerPage() {
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 border border-stone-200 dark:border-white/10 rounded-md bg-stone-50 dark:bg-stone-950">
-          <GraduationCap className="w-10 h-10 text-stone-200 dark:text-stone-700 mx-auto mb-3" />
-          <p className="text-xs font-mono uppercase tracking-widest text-stone-400">
+        <div className="text-center py-16 bg-stone-50 dark:bg-stone-950 rounded-2xl">
+          <GraduationCap className="w-10 h-10 text-stone-200 mx-auto mb-3" />
+          <p className="text-sm text-stone-500 font-medium">
             No programs match your filters
           </p>
         </div>
