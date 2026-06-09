@@ -25,7 +25,11 @@ export function DsaConsoleOutput({ result, isRunning }: Props) {
   }
 
   const firstResult = result.results[0];
-  const hasCompileError = firstResult && firstResult.compileOutput && firstResult.statusId !== 3 && firstResult.statusId !== 4;
+  const hasCompileError =
+    firstResult &&
+    firstResult.compileOutput &&
+    firstResult.statusId !== 3 &&
+    firstResult.statusId !== 4;
 
   return (
     <div className="bg-gray-950 text-gray-200 font-mono text-xs h-full overflow-y-auto">
@@ -34,9 +38,13 @@ export function DsaConsoleOutput({ result, isRunning }: Props) {
         <div className="border-b border-red-900/50 p-3">
           <div className="flex items-center gap-2 mb-1.5">
             <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
-            <span className="text-red-400 font-semibold text-xs">Compilation Error</span>
+            <span className="text-red-400 font-semibold text-xs">
+              Compilation Error
+            </span>
           </div>
-          <pre className="text-red-400 whitespace-pre-wrap">{firstResult.compileOutput}</pre>
+          <pre className="text-red-400 whitespace-pre-wrap">
+            {firstResult.compileOutput}
+          </pre>
         </div>
       )}
 
@@ -46,13 +54,17 @@ export function DsaConsoleOutput({ result, isRunning }: Props) {
           <div className="text-gray-500 mb-1">
             {tc.label || `Test Case ${idx + 1}`}
             {tc.statusId !== -1 && tc.statusId !== 3 && tc.statusId !== 4 && (
-              <span className="ml-2 text-yellow-500">[{tc.statusDescription}]</span>
+              <span className="ml-2 text-yellow-500">
+                [{tc.statusDescription}]
+              </span>
             )}
           </div>
 
           {/* stdout */}
           {tc.actual ? (
-            <pre className={`whitespace-pre-wrap ${tc.passed ? "text-green-400" : "text-gray-200"}`}>
+            <pre
+              className={`whitespace-pre-wrap ${tc.passed ? "text-green-400" : "text-gray-200"}`}
+            >
               {tc.actual}
             </pre>
           ) : tc.statusId !== -1 ? (
@@ -63,7 +75,9 @@ export function DsaConsoleOutput({ result, isRunning }: Props) {
 
           {/* stderr */}
           {tc.stderr && (
-            <pre className="text-red-400 whitespace-pre-wrap mt-1">{tc.stderr}</pre>
+            <pre className="text-red-400 whitespace-pre-wrap mt-1">
+              {tc.stderr}
+            </pre>
           )}
         </div>
       ))}

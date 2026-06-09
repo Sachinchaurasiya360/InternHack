@@ -61,7 +61,8 @@ model user {
   contributions         companyContribution[]       @relation("UserContributions")
   companyReviews        companyReview[]             @relation("UserReviews")
   dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
-  dsaProblemReports     dsaProblemReport[]          
+  dsaProblemLabels      dsaProblemLabel[]           @relation("StudentDsaProblemLabels")
+  dsaProblemReports     dsaProblemReport[]
   emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
   employeeProfile       employee?                   @relation("EmployeeUser")
   postedJobs            job[]                       @relation("RecruiterJobs")
@@ -683,6 +684,7 @@ model dsaProblem {
   testCases        dsaTestCase[]
   submissions      dsaSubmission[]
   reports          dsaProblemReport[]
+  labels           dsaProblemLabel[]
 
   @@index([difficulty])
   @@index([leetcodeId])
@@ -724,6 +726,20 @@ model dsaBookmark {
 
   @@unique([studentId, problemId])
   @@index([studentId])
+}
+
+model dsaProblemLabel {
+  id        Int        @id @default(autoincrement())
+  userId    Int
+  problemId Int
+  label     String
+  createdAt DateTime   @default(now())
+  user      user       @relation("StudentDsaProblemLabels", fields: [userId], references: [id], onDelete: Cascade)
+  problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId, label])
+  @@index([userId])
+  @@index([problemId])
 }
 
 model dsaTestCase {
