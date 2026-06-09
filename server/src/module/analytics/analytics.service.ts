@@ -34,22 +34,30 @@ export class AnalyticsService {
     };
   }
 
-  private async getLessonAnalytics() {
+  private async getContentStats(contentType: ContentType) {
     const [totalStats, completedStats] = await Promise.all([
       prisma.contentView.groupBy({
         by: ["contentId"],
-        where: { contentType: "LESSON" },
+        where: { contentType },
         _avg: { timeSpentMs: true },
         _count: { _all: true },
       }),
       prisma.contentView.groupBy({
         by: ["contentId"],
-        where: { contentType: "LESSON", completed: true },
+        where: { contentType, completed: true },
         _count: { _all: true },
       }),
     ]);
 
-    const completedMap = new Map(completedStats.map((s) => [s.contentId, s._count._all]));
+    const completedMap = new Map(
+      completedStats.map((s) => [s.contentId, s._count._all])
+    );
+
+    return { totalStats, completedMap };
+  }
+
+  private async getLessonAnalytics() {
+    const { totalStats, completedMap } = await this.getContentStats("LESSON");
 
     return totalStats.map((s) => {
       const completedCount = completedMap.get(s.contentId) || 0;
@@ -63,21 +71,7 @@ export class AnalyticsService {
   }
 
   private async getDsaAnalytics() {
-    const [totalStats, completedStats] = await Promise.all([
-      prisma.contentView.groupBy({
-        by: ["contentId"],
-        where: { contentType: "DSA" },
-        _avg: { timeSpentMs: true },
-        _count: { _all: true },
-      }),
-      prisma.contentView.groupBy({
-        by: ["contentId"],
-        where: { contentType: "DSA", completed: true },
-        _count: { _all: true },
-      }),
-    ]);
-
-    const completedMap = new Map(completedStats.map((s) => [s.contentId, s._count._all]));
+    const { totalStats, completedMap } = await this.getContentStats("DSA");
 
     return totalStats.map((s) => {
       const completedCount = completedMap.get(s.contentId) || 0;
@@ -91,20 +85,7 @@ export class AnalyticsService {
   }
 
   private async getInterviewAnalytics() {
-    const [totalStats, completedStats] = await Promise.all([
-      prisma.contentView.groupBy({
-        by: ["contentId"],
-        where: { contentType: "INTERVIEW_QUESTION" },
-        _count: { _all: true },
-      }),
-      prisma.contentView.groupBy({
-        by: ["contentId"],
-        where: { contentType: "INTERVIEW_QUESTION", completed: true },
-        _count: { _all: true },
-      }),
-    ]);
-
-    const completedMap = new Map(completedStats.map((s) => [s.contentId, s._count._all]));
+    const { totalStats, completedMap } = await this.getContentStats("INTERVIEW_QUESTION");
 
     return totalStats.map((s) => {
       const completedCount = completedMap.get(s.contentId) || 0;
@@ -121,14 +102,14 @@ export class AnalyticsService {
     // Example: Find bottom 5 lessons by completion rate
     // This would be called by a cron job
     const analytics = await this.getLearnAnalytics();
-    
+
     const underperformingLessons = analytics.lessons
-      .filter(l => l.totalViews > 10) // Minimum sample size
+      .filter((l) => l.totalViews > 10)
       .sort((a, b) => a.completionRate - b.completionRate)
       .slice(0, 5);
 
     const underperformingDsa = analytics.dsa
-      .filter(p => p.attemptCount > 10)
+      .filter((p) => p.attemptCount > 10)
       .sort((a, b) => a.solveRate - b.solveRate)
       .slice(0, 5);
 
