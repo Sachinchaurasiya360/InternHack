@@ -711,6 +711,32 @@ const STIPEND_OPTIONS = [
   "Medium ($1k–5k)",
   "Low/None",
 ];
+const SORT_OPTIONS = [
+  { value: "default", label: "Default order" },
+  { value: "deadline-asc", label: "Deadline: Soonest First" },
+  { value: "deadline-desc", label: "Deadline: Latest First" },
+  { value: "stipend-desc", label: "Stipend: Highest First" },
+  { value: "name-asc", label: "Alphabetical" },
+];
+
+function computeNextDeadline() {
+  const now = Date.now();
+  const withDeadlines = PROGRAMS.filter(
+    (p) => p.applicationDeadline && new Date(p.applicationDeadline).getTime() > now,
+  );
+  if (withDeadlines.length === 0) return null;
+  const earliest = withDeadlines.reduce(
+    (acc, p) => {
+      const d = new Date(p.applicationDeadline!).getTime();
+      return d < acc.time ? { program: p, time: d } : acc;
+    },
+    { program: withDeadlines[0], time: Infinity },
+  );
+  if (!earliest.program) return null;
+  return { program: earliest.program, days: Math.ceil((earliest.time - now) / 86400000) };
+}
+
+const NEXT_DEADLINE = computeNextDeadline();
 
 type LocalCurrencyConfig = {
   currency: string;
@@ -1122,18 +1148,17 @@ export default function ProgramTrackerPage() {
 
   // Load saved filters from localStorage on mount, fall back to defaults
   const getSavedFilters = () => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed && typeof parsed === "object") {
-          return {
-            status: STATUS_OPTIONS.includes(parsed.status) ? parsed.status : "All",
-            eligibility: ELIGIBILITY_OPTIONS.includes(parsed.eligibility) ? parsed.eligibility : "All",
-            stipend: STIPEND_OPTIONS.includes(parsed.stipend) ? parsed.stipend : "All",
-            sortBy: ["default", "deadline"].includes(parsed.sortBy) ? parsed.sortBy : "default",
-          };
-        }
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === "object") {
+        return {
+          status: STATUS_OPTIONS.includes(parsed.status) ? parsed.status : "All",
+          eligibility: ELIGIBILITY_OPTIONS.includes(parsed.eligibility) ? parsed.eligibility : "All",
+          stipend: STIPEND_OPTIONS.includes(parsed.stipend) ? parsed.stipend : "All",
+          sortBy: SORT_OPTIONS.some((o) => o.value === parsed.sortBy) ? parsed.sortBy : "default",
+        };
       }
     } catch {
       // ignore errors
@@ -1189,18 +1214,47 @@ export default function ProgramTrackerPage() {
     if (selectedStipend === "Medium ($1k–5k)") list = list.filter((p) => p.stipendRange === "Medium");
     if (selectedStipend === "Low/None") list = list.filter((p) => p.stipendRange === "Low/None");
 
-    if (sortBy === "deadline") {
+    if (sortBy === "deadline-asc") {
       list.sort((a, b) => {
         const dateA = a.applicationDeadline ? new Date(a.applicationDeadline).getTime() : Infinity;
         const dateB = b.applicationDeadline ? new Date(b.applicationDeadline).getTime() : Infinity;
         return dateA - dateB;
       });
+    } else if (sortBy === "deadline-desc") {
+      list.sort((a, b) => {
+        const dateA = a.applicationDeadline ? new Date(a.applicationDeadline).getTime() : -Infinity;
+        const dateB = b.applicationDeadline ? new Date(b.applicationDeadline).getTime() : -Infinity;
+        return dateB - dateA;
+      });
+    } else if (sortBy === "stipend-desc") {
+      const rank = { High: 3, Medium: 2, "Low/None": 1 };
+      list.sort((a, b) => {
+        const aVal = rank[a.stipendRange] || 0;
+        const bVal = rank[b.stipendRange] || 0;
+        if (bVal !== aVal) return bVal - aVal;
+        return Number(b.stipendPaid) - Number(a.stipendPaid);
+      });
+    } else if (sortBy === "name-asc") {
+      list.sort((a, b) => a.name.localeCompare(b.name));
     }
     return list;
   }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy]);
 
   const totalStipend = PROGRAMS.filter((p) => p.stipendPaid).length;
   const highStipend = PROGRAMS.filter((p) => p.stipendRange === "High").length;
+
+  const programEventsSchema = PROGRAMS.map((p) => ({
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": `${p.name} 2026 Cohort Application Timeline`,
+    "description": `Deadlines and tracking rules for the ${p.name} program application window.`,
+    "startDate": p.startDate ?? p.applicationStart ?? "2026-01-15T00:00:00Z",
+    "endDate": p.deadline ? `${p.deadline}T23:59:59Z` : p.applicationDeadline ?? "2026-11-30T23:59:59Z",
+    "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "location": { "@type": "VirtualLocation", "url": "https://internhack.io/student/opensource" },
+    "organizer": { "@type": "Organization", "name": p.name }
+  }));
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -1210,10 +1264,11 @@ export default function ProgramTrackerPage() {
         keywords="GSoC tracker, LFX mentorship, open source internships, Outreachy deadline, paid open source"
         canonicalUrl={canonicalUrl("/student/opensource/programs")}
         ogImage="/og/og-programs.png"
+        structuredData={programEventsSchema}
       />
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
-        <div className="absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl from-emerald-200/30 to-transparent rounded-bl-full pointer-events-none" />
+      <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
+        <div className="absolute top-0 right-0 w-56 h-56 bg-linear-to-bl from-emerald-200/30 to-transparent rounded-bl-full pointer-events-none" />
         <div className="relative">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg">
@@ -1260,6 +1315,28 @@ export default function ProgramTrackerPage() {
         </div>
       </section>
 
+      {/* Next Deadline badge */}
+      {NEXT_DEADLINE && (
+        <div className="sticky top-0 z-10 mb-5 bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-lg px-4 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <p className="text-xs font-medium text-stone-700 dark:text-stone-300">
+              Next deadline:{" "}
+              <span className="font-bold">{NEXT_DEADLINE.program.name}</span> closes in{" "}
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">{NEXT_DEADLINE.days} days</span>
+            </p>
+          </div>
+          <a
+            href={NEXT_DEADLINE.program.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 px-3 py-1.5 rounded-md transition-colors no-underline"
+          >
+            View &rarr;
+          </a>
+        </div>
+      )}
+
       {/* Filter bar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
@@ -1300,7 +1377,7 @@ export default function ProgramTrackerPage() {
             },
           ].map(({ label, value, options, set }) => (
             <div key={label} className="relative group">
-              <Button variant="outline" size="sm">
+              <Button variant="secondary" size="sm">
                 <Filter className="w-3 h-3" />
                 <span className="text-gray-400">{label}:</span>
                 <span className="font-semibold text-gray-900 dark:text-white">
@@ -1323,18 +1400,30 @@ export default function ProgramTrackerPage() {
               </div>
             </div>
           ))}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setSortBy((prev) => (prev === "deadline" ? "default" : "deadline"))}
-            className={sortBy === "deadline" ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}
-          >
-            <Calendar className="w-3.5 h-3.5 mr-1.5" />
-            Sort by deadline
-          </Button>
+          <div className="relative group">
+            <Button variant="secondary" size="sm">
+              <Calendar className="w-3.5 h-3.5" />
+              <span className="text-gray-400">Sort:</span>
+              <span className="font-semibold text-gray-900 dark:text-white">{SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? "Default order"}</span>
+              <ChevronDown className="w-3 h-3 opacity-50" />
+            </Button>
+            <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:block">
+              {SORT_OPTIONS.map((opt) => (
+                <Button
+                  key={opt.value}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSortBy(opt.value)}
+                  className={`w-full justify-start ${sortBy === opt.value ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}`}
+                >
+                  {opt.label}
+                </Button>
+              ))}
+            </div>
+          </div>
           {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default") && (
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); }}
               className="text-gray-500"

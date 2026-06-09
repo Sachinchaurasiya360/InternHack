@@ -41,28 +41,14 @@ function repoPagePath(owner: string, name: string): string {
 }
 
 function buildStructuredData(repo: OpenSourceRepo) {
-  const difficultyRating =
-    repo.difficulty === "BEGINNER" ? "5" : repo.difficulty === "INTERMEDIATE" ? "3" : "1";
-
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
-    name: repo.name,
-    description: repo.description,
-    programmingLanguage: repo.language,
-    codeRepository: repo.url,
-    url: canonicalUrl(repoPagePath(repo.owner, repo.name)),
-    maintainer: {
-      "@type": "Organization",
-      name: repo.owner,
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: difficultyRating,
-      bestRating: "5",
-      worstRating: "1",
-      ratingCount: repo.stars,
-    },
+    "name": repo.name,
+    "description": repo.description,
+    "codeRepository": repo.url,
+    "programmingLanguage": repo.language,
+    "runtimePlatform": repo.domain
   };
 }
 
