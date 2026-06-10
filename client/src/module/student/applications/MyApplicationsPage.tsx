@@ -1,4 +1,5 @@
 import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
+import { BadgeProgressWidget } from "../opensource/components/BadgeProgressWidget";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
@@ -486,26 +487,13 @@ export default function MyApplicationsPage() {
         </select>
       </div>
 
-      <div className="mb-5 flex flex-wrap gap-2">
-  {STATUS_TABS.map((status) => (
-    <button
-      key={status}
-      onClick={() => {
-        setStatusFilter(status);
-        setPage(1);
-      }}
-      className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
-        statusFilter === status
-          ? "bg-lime-400 text-stone-900 border-lime-400"
-          : "border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-      }`}
-    >
-      {status.replace("_", " ")}
-    </button>
-  ))}
-</div>
+
       {/* Search */}
 
+      
+      <div className="mb-6">
+        <BadgeProgressWidget />
+      </div>
       
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">

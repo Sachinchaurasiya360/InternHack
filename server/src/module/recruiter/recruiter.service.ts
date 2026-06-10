@@ -8,9 +8,14 @@ import {
   isEmailableStatus,
 } from "../../utils/email-templates.js";
 import { createLogger } from "../../utils/logger.js";
+import { cacheGet, cacheSet } from "../../utils/cache.js";
 
 const S3_BUCKET = process.env["AWS_S3_BUCKET"] || "";
-// validating the URL
+
+// isArchived and ossTier exist in the Prisma schema but the IDE's @prisma/client typegen
+// may be stale until TS server restarts. Cast narrowly to bypass IDE errors.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const anyRound = prisma.round as any;
 function isValidS3Url(url: string) {
   try {
     const parsed = new URL(url);
@@ -51,6 +56,7 @@ interface TalentSearchFilter {
   location?: string;
   search?: string;
   jobStatus?: string;
+  ossTier?: string;
 }
 
 interface CreateRoundData {
@@ -153,13 +159,13 @@ export class RecruiterService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    return prisma.round.findMany({
+    return anyRound.findMany({
       where: { jobId, isArchived: false },
       orderBy: { orderIndex: "asc" },
       include: {
         _count: { select: { roundSubmissions: true } },
       },
-    });
+    }) as ReturnType<typeof prisma.round.findMany>;
   }
 
   async updateRound(jobId: number, roundId: number, recruiterId: number, data: UpdateRoundData) {
@@ -205,16 +211,16 @@ export class RecruiterService {
 
     await prisma.$transaction(async (tx) => {
       // Archive the round and then re-index the remaining active rounds atomically.
-      await tx.round.update({
+      await anyRound.update({
         where: { id: roundId },
         data: { isArchived: true },
       });
 
-      const remainingRounds = await tx.round.findMany({
+      const remainingRounds = await (anyRound.findMany({
         where: { jobId, isArchived: false },
         orderBy: { orderIndex: "asc" },
         select: { id: true, orderIndex: true },
-      });
+      })) as { id: number; orderIndex: number }[];
 
       for (let i = 0; i < remainingRounds.length; i++) {
         const r = remainingRounds[i]!;
@@ -233,14 +239,14 @@ export class RecruiterService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const existingRounds = await prisma.round.findMany({
+    const existingRounds = await (anyRound.findMany({
       where: {
         id: { in: rounds.map((r) => r.roundId) },
         jobId,
         isArchived: false,
       },
       select: { id: true },
-    });
+    })) as { id: number }[];
 
     if (existingRounds.length !== rounds.length) {
       throw new Error("Invalid round IDs");
@@ -264,10 +270,10 @@ export class RecruiterService {
       }
     });
 
-    return prisma.round.findMany({
+    return anyRound.findMany({
       where: { jobId, isArchived: false },
       orderBy: { orderIndex: "asc" },
-    });
+    }) as ReturnType<typeof prisma.round.findMany>;
   }
 
   // ==================== APPLICATION MANAGEMENT ====================
@@ -443,10 +449,10 @@ export class RecruiterService {
         );
       }
 
-      const rounds = await tx.round.findMany({
+      const rounds = (await anyRound.findMany({
           where: { jobId: application.jobId, isArchived: false },
         orderBy: { orderIndex: "asc" },
-      });
+      })) as Awaited<ReturnType<typeof prisma.round.findMany>>;
 
       if (rounds.length === 0) throw new Error("No rounds are configured for this job. Please add at least one round before advancing applicants.");
 
@@ -580,15 +586,32 @@ export class RecruiterService {
     }
 
     // Top verified skills among applicants
-    const topVerifiedSkills = await prisma.verifiedSkill.groupBy({
-      by: ["skillName"],
-      where: {
-        student: { applications: { some: { job: { recruiterId } } } },
-      },
-      _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
-      take: 5,
-    });
+    let topVerifiedSkills: { skillName: string; _count: { id: number } }[] | null = null;
+    const CACHE_KEY = `dashboard:topVerifiedSkills:${recruiterId}`;
+
+    try {
+      topVerifiedSkills = await cacheGet<{ skillName: string; _count: { id: number } }[]>(CACHE_KEY);
+    } catch (error) {
+      logger.error(`Cache read failed for key ${CACHE_KEY}`, error);
+    }
+
+    if (!topVerifiedSkills) {
+      topVerifiedSkills = await prisma.verifiedSkill.groupBy({
+        by: ["skillName"],
+        where: {
+          student: { applications: { some: { job: { recruiterId } } } },
+        },
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+        take: 5,
+      });
+
+      try {
+        await cacheSet(CACHE_KEY, topVerifiedSkills, 300);
+      } catch (error) {
+        logger.error(`Cache write failed for key ${CACHE_KEY}`, error);
+      }
+    }
 
     return {
       totalJobs,
@@ -615,31 +638,31 @@ export class RecruiterService {
         prisma.application.groupBy({
           by: ["status"],
           where: { jobId },
-          _count: { id: true },
+          _count: true,
         }),
-        prisma.round.findMany({
+        (anyRound.findMany({
           where: { jobId, isArchived: false },
           orderBy: { orderIndex: "asc" },
           include: {
             _count: { select: { roundSubmissions: true } },
           },
-        }),
+        }) as Awaited<ReturnType<typeof prisma.round.findMany>>),
         prisma.roundSubmission.groupBy({
           by: ["roundId", "status"],
-          where: { round: { jobId, isArchived: false } },
-          _count: { id: true },
+          where: { round: { jobId } } as Prisma.roundSubmissionWhereInput,
+          _count: true,
         }),
       ]);
 
     const statusCounts: Record<string, number> = {};
     for (const s of applicationsByStatus) {
-      statusCounts[s.status] = s._count.id;
+      statusCounts[s.status] = (s._count as unknown as { _all: number })._all;
     }
 
     const submissionLookup = new Map(
       submissionsByRoundAndStatus.map((s) => [
         `${s.roundId}:${s.status}`,
-        s._count.id,
+        (s._count as unknown as { _all: number })._all,
       ]),
     );
 
@@ -651,7 +674,7 @@ export class RecruiterService {
         id: round.id,
         name: round.name,
         orderIndex: round.orderIndex,
-        totalSubmissions: round._count.roundSubmissions,
+        totalSubmissions: (round as unknown as { _count?: { roundSubmissions: number } })._count?.roundSubmissions ?? 0,
         completed: lookup("COMPLETED"),
         inProgress: lookup("IN_PROGRESS"),
         pending: lookup("PENDING"),
@@ -710,6 +733,9 @@ export class RecruiterService {
     }
     if (filter.jobStatus) {
       where.jobStatus = filter.jobStatus;
+    }
+    if (filter.ossTier) {
+      (where as Record<string, unknown>).ossTier = { equals: filter.ossTier, mode: "insensitive" };
     }
 
     const skip = (filter.page - 1) * filter.limit;

@@ -6,7 +6,7 @@ import { sections, lessons } from "./data";
 import type { HtmlProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
-import { courseSchema, breadcrumbSchema } from "../../../lib/structured-data";
+import { courseSchema, breadcrumbSchema,faqSchema } from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -91,6 +91,11 @@ export default function HtmlLessonsPage() {
             { name: "Home", url: SITE_URL },
             { name: "Learn", url: `${SITE_URL}/learn` },
             { name: "HTML", url: `${SITE_URL}/learn/html` },
+          ]),
+          faqSchema([
+            { question: "Is this HTML course free?", answer: "Yes, the HTML course on InternHack is completely free with no sign-up required." },
+            { question: "What will I learn in this HTML course?", answer: "You will learn semantic markup, forms, tables, accessibility, and HTML5 APIs from beginner to advanced level." },
+            { question: "Is this HTML course suitable for beginners?", answer: "Yes, it starts from absolute basics and progresses to advanced HTML5 concepts." },
           ]),
         ]}
       />

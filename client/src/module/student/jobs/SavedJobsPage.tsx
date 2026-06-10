@@ -1,31 +1,25 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Bookmark, MapPin, IndianRupee, Clock, Trash2, ArrowUpRight, Briefcase } from "lucide-react";
 import { Link } from "react-router";
 import api from "../../../lib/axios";
+import { MetaChip } from "../../../components/ui/MetaChip";
+
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job } from "../../../lib/types";
-import toast from "../../../components/ui/toast";
+import { useSaveJob } from "../../../hooks/useSaveJob";
 
 const cardBase =
   "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
 
 export default function SavedJobsPage() {
-  const queryClient = useQueryClient();
-
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.savedJobs.list(),
     queryFn: () => api.get("/student/saved-jobs").then((res) => res.data.jobs as Job[]),
     staleTime: 30_000,
   });
 
-  const { mutate: unsave } = useMutation({
-    mutationFn: (jobId: number) => api.delete(`/student/jobs/${jobId}/save`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
-      toast.success("Job removed from saved");
-    },
-  });
+  const { toggleSave: unsave } = useSaveJob({ successToast: "Job removed from saved" });
 
   const savedJobs = data ?? [];
 
@@ -130,24 +124,17 @@ export default function SavedJobsPage() {
                   </p>
                 )}
                 <div className="flex flex-wrap gap-1.5 mb-4">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-                    <MapPin className="w-3 h-3 text-stone-400" />
-                    {job.location}
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-                    <IndianRupee className="w-3 h-3 text-stone-400" />
-                    {job.salary}
-                  </span>
+                  <MetaChip icon={<MapPin className="w-3 h-3 text-stone-400" />}>{job.location}</MetaChip>
+                  <MetaChip icon={<IndianRupee className="w-3 h-3 text-stone-400" />}>{job.salary}</MetaChip>
                   {job.deadline && (
                     new Date(job.deadline) < new Date() ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
-                        <Clock className="w-3 h-3" /> expired
-                      </span>
+                      <MetaChip icon={<Clock className="w-3 h-3" />} className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40">
+                        expired
+                      </MetaChip>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-                        <Clock className="w-3 h-3 text-stone-400" />
+                      <MetaChip icon={<Clock className="w-3 h-3 text-stone-400" />}>
                         {new Date(job.deadline).toLocaleDateString()}
-                      </span>
+                      </MetaChip>
                     )
                   )}
                 </div>
@@ -165,7 +152,7 @@ export default function SavedJobsPage() {
               </Link>
               <button
                 type="button"
-                onClick={(e) => { e.preventDefault(); unsave(job.id); }}
+                onClick={(e) => { e.preventDefault(); unsave({ jobId: job.id, isSaved: true }); }}
                 className="absolute top-3 right-3 p-1.5 rounded-md text-stone-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-0 bg-transparent cursor-pointer z-10"
                 title="Remove from saved"
               >
