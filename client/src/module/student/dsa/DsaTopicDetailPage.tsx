@@ -1,3 +1,4 @@
+import { ProgressBar } from "../../../components/ui/ProgressBar";
 import React, { useState, useCallback, useRef, useLayoutEffect } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useParams, Link, Navigate } from "react-router";
@@ -224,27 +225,16 @@ export default function DsaTopicDetailPage() {
               )}
             </div>
             {user && (
-              <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap">
-                <span>
-                  <span className="text-stone-900 dark:text-stone-50 tabular-nums">{topic.totalSolved}</span>
-                  <span className="text-stone-400 dark:text-stone-600"> / {topic.totalProblems} solved</span>
-                </span>
-                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                <span className="text-lime-600 dark:text-lime-400 tabular-nums">{pct}% complete</span>
+              <div className="mt-4">
+                <ProgressBar
+                  value={topic.totalSolved}
+                  max={topic.totalProblems}
+                  height="thin"
+                  activeColor={pct === 100 ? "bg-lime-400" : "bg-stone-900 dark:bg-stone-50"}
+                />
               </div>
             )}
-          </div>
-
-          {user && (
-            <div className="mt-4 w-full h-0.5 bg-stone-200 dark:bg-white/10 overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${pct}%` }}
-                transition={{ duration: 0.6, delay: 0.15 }}
-                className={`h-full ${pct === 100 ? "bg-lime-400" : "bg-stone-900 dark:bg-stone-50"}`}
-              />
             </div>
-          )}
         </motion.div>
 
         {/* Stats strip */}
