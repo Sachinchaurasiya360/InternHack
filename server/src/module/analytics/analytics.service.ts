@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
 import { ContentType } from "@prisma/client";
+import { toPercentage } from "../../lib/analytics.js";
 
 export class AnalyticsService {
   async trackContentView(data: {
@@ -57,7 +58,7 @@ export class AnalyticsService {
         lessonId: s.contentId,
         avgTimeSpent: s._avg.timeSpentMs,
         totalViews: s._count._all,
-        completionRate: s._count._all > 0 ? (completedCount / s._count._all) * 100 : 0,
+        completionRate: toPercentage(completedCount, s._count._all),
       };
     });
   }
@@ -111,7 +112,7 @@ export class AnalyticsService {
       return {
         questionId: s.contentId,
         viewCount: s._count._all,
-        completionRate: s._count._all > 0 ? (completedCount / s._count._all) * 100 : 0,
+        completionRate: toPercentage(completedCount, s._count._all),
       };
     });
   }
