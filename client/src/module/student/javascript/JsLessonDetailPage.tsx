@@ -15,6 +15,7 @@ import {
   Code2,
 } from "lucide-react";
 import { CodeBlock } from "../../../components/ui/CodeBlock";
+import LessonCodeRunner from "../../../components/LessonCodeRunner";
 import { sections, lessons } from "./data";
 import type { JsProgress, PracticeExercise } from "./data/types";
 import { jsEngine } from "./lib/js-engine";
@@ -41,7 +42,7 @@ function toggleProgress(lessonId: string): boolean {
   const progress = getLocalProgress();
   const current = progress[lessonId]?.completed ?? false;
   progress[lessonId] = { ...progress[lessonId], completed: !current };
-  localStorage.setItem("js-progress", JSON.stringify(progress));
+  try { localStorage.setItem("js-progress", JSON.stringify(progress)); } catch { console.warn("Failed to persist to localStorage: js-progress"); }
   return !current;
 }
 
@@ -448,7 +449,10 @@ export default function JsLessonDetailPage() {
             </div>
             <div className="space-y-3">
               {content.codeExamples.map((example, i) => (
-                <CodeBlock key={`${lesson.id}-${example.title || i}`} example={example} language="javascript" />
+                <div key={`${lesson.id}-${example.title || i}`} className="space-y-3">
+                  <CodeBlock example={example} language="javascript" />
+                  <LessonCodeRunner initialCode={example.code} language="javascript" />
+                </div>
               ))}
             </div>
           </motion.div>

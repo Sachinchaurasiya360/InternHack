@@ -13,7 +13,6 @@ import {
 import type { z } from "zod";
 import { AuthService } from "./auth.service.js";
 import { setTokenCookie, clearTokenCookie } from "../../utils/cookie.utils.js";
-
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
