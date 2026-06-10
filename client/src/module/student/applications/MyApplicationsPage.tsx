@@ -371,7 +371,7 @@ export default function MyApplicationsPage() {
 
   const { pendingItem: pendingDelete, confirm: confirmDeleteItem, execute: confirmDelete, cancel: cancelDelete } =
     useConfirmDelete<PendingDelete>(async (item) => {
-      deleteMutation.mutate(item);
+      await deleteMutation.mutateAsync(item);
     });
 
   const handleWithdraw = useCallback((id: number) => {

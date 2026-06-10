@@ -38,12 +38,15 @@ export default function RecruiterJobsList() {
   const [tab, setTab] = useState<StatusFilter>("ALL");
   const [search, setSearch] = useState("");
 
-  const { pendingItem: jobToDelete, confirm: setJobToDelete, execute: handleDelete, cancel: cancelDelete } =
-    useConfirmDelete<Job>(async (job) => {
-      await api.delete(`/jobs/${job.id}`);
-      setJobs((prev) => prev.filter((j) => j.id !== job.id));
-      toast.success("Job deleted");
-    });
+  const { pendingItem: jobToDelete, confirm: setJobToDelete, execute: handleDelete, cancel: cancelDelete, isPending: isDeleting } =
+    useConfirmDelete<Job>(
+      async (job) => {
+        await api.delete(`/jobs/${job.id}`);
+        setJobs((prev) => prev.filter((j) => j.id !== job.id));
+        toast.success("Job deleted");
+      },
+      { onError: () => toast.error("Failed to delete job") },
+    );
 
   useEffect(() => {
     api
@@ -108,6 +111,7 @@ export default function RecruiterJobsList() {
         confirmLabel="Delete"
         cancelLabel="Cancel"
         confirmVariant="danger"
+        loading={isDeleting}
         onCancel={cancelDelete}
         onConfirm={handleDelete}
       >
