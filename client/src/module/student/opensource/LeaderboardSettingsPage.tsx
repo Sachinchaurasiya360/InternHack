@@ -34,6 +34,7 @@ export default function LeaderboardSettingsPage() {
   // Sync state with myRank when it loads or changes
   useEffect(() => {
     if (myRank?.privacy) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsPublic(myRank.privacy.isPublic);
       setShowRealName(myRank.privacy.showRealName);
     }
