@@ -30,5 +30,6 @@ export function getPlanTier(
 }
 
 export const MONTHLY_LIMITS: Partial<Record<UsageAction, Record<PlanTier, number>>> = {
+  ATS_SCORE: { FREE: 3, PREMIUM: 20 },
   ROADMAP_GENERATION: { FREE: 5, PREMIUM: 50 },
 };
