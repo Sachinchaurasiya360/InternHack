@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const createProfileSchema = z.object({
-  preferredRole: z.string().min(1),
-  availability: z.string().min(1),
-  experienceLevel: z.string().min(1),
+  preferredRole: z.string().optional().default(''),
+  availability: z.string().optional().default(''),
+  experienceLevel: z.string().optional().default(''),
   skills: z.array(z.string()).default([]),
   techStack: z.array(z.string()).default([]),
 });
