@@ -55,7 +55,7 @@ export const GuidanceCards = React.memo(function GuidanceCards() {
             <Link
               to={card.to}
               aria-label={`Open guide: ${card.title}`}
-              className="group relative flex flex-col gap-3 p-4 h-full bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-50 transition-colors"
+              className="group relative flex flex-col gap-3 p-4 h-full bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
             >
               <div className="flex items-center justify-between" aria-hidden="true">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-500">
@@ -68,13 +68,13 @@ export const GuidanceCards = React.memo(function GuidanceCards() {
               
               {/* Hide the visual text from screen readers so they only hear the cleaner aria-label on the Link */}
               <div className="flex flex-col gap-1" aria-hidden="true">
-                <p className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                <p className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-stone-100">
                   {card.title}
                 </p>
-                <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2">
+                <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2 group-hover:text-stone-700 dark:group-hover:text-stone-300">
                   {card.desc}
                 </p>
-                <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 mt-1">
+                <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 mt-1 group-hover:text-stone-500 dark:group-hover:text-stone-400">
                   ~{card.minutes} min &middot; {card.steps} steps
                 </span>
               </div>
