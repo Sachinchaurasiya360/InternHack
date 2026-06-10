@@ -26,6 +26,7 @@ import toast from "../../../components/ui/toast";
 import type { DayOfWeek, RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { Kicker } from "../../../components/ui/Kicker";
 
 interface RoadmapPreview {
   slug: string;
@@ -677,10 +678,7 @@ const res = await api.post<{
           transition={{ duration: 0.4 }}
           className="mt-2 mb-6"
         >
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-3">
-            <span className="h-1.5 w-1.5 bg-lime-400" />
-            generate with ai
-          </div>
+          <Kicker className="mb-3">generate with ai</Kicker>
           <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 leading-tight">
             Build a roadmap that fits you.
           </h1>
