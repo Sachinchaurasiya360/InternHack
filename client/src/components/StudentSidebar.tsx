@@ -138,9 +138,8 @@ export function useStudentSidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-stone-50 dark:bg-stone-950 border-r border-stone-200 dark:border-white/10 flex flex-col transition-all duration-300 z-50 ${
-          collapsed ? "w-18" : "w-64"
-        } ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+        className={`fixed top-0 left-0 h-screen bg-stone-50 dark:bg-stone-950 border-r border-stone-200 dark:border-white/10 flex flex-col transition-all duration-300 z-50 ${collapsed ? "w-18" : "w-64"
+          } ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         {/* Mobile close button */}
         <div className="flex items-center justify-end px-5 pt-4 pb-2 lg:hidden border-b border-stone-200 dark:border-white/10">
@@ -219,12 +218,10 @@ export function useStudentSidebar() {
                         title={collapsed ? (isLocked ? `${item.label} (Pro)` : item.label) : undefined}
                         onClick={() => setMobileOpen(false)}
                         className={({ isActive }) =>
-                          `relative flex items-center gap-3 rounded-md text-sm transition-colors no-underline ${
-                            collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
-                          } ${
-                            isActive && !isLocked
-                              ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 font-bold"
-                              : "text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-900 hover:text-stone-900 dark:hover:text-stone-50 font-medium"
+                          `relative flex items-center gap-3 rounded-md text-sm transition-colors no-underline ${collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
+                          } ${isActive && !isLocked
+                            ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 font-bold"
+                            : "text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-900 hover:text-stone-900 dark:hover:text-stone-50 font-medium"
                           }`
                         }
                       >
@@ -263,9 +260,8 @@ export function useStudentSidebar() {
           <button
             onClick={handleLogout}
             title={collapsed ? "Logout" : undefined}
-            className={`w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-stone-600 dark:text-stone-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors border-0 bg-transparent cursor-pointer ${
-              collapsed ? "justify-center px-2" : ""
-            }`}
+            className={`w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-stone-600 dark:text-stone-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors border-0 bg-transparent cursor-pointer ${collapsed ? "justify-center px-2" : ""
+              }`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
             {!collapsed && <span className="truncate">Logout</span>}
