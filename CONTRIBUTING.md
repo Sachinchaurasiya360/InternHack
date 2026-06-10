@@ -43,7 +43,7 @@ This guide walks you through everything from setting up the project to submittin
 | PostgreSQL | 14+ | Database |
 | Git | 2.30+ | Version control |
 
-**Docker Compose shortcut:** You can run Postgres + API + client with only Docker by following the README “Docker Compose (alternative)” section (root `.env.example` plus `docker compose up`). That path does **not** use Redis — the app stack is PostgreSQL only.
+**Docker Compose shortcut:** You can run Postgres + API + client with only Docker by following the README “Docker Compose (alternative)” section (root `.env.example` plus `docker compose up`). Redis is **optional** — the Compose stack does not include a Redis container, but the app gracefully falls back to in-memory stores for rate limiting and caching when `REDIS_URL` is not set.
 
 You'll also need:
 - A **Google Cloud Console** project for OAuth (client ID)

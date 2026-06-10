@@ -143,8 +143,8 @@ export async function listPublishedRoadmaps(opts: {
   }
 
   const tagFilters: string[] = [];
-  if (opts.tag) tagFilters.push(opts.tag);
-  if (opts.category) tagFilters.push(opts.category);
+  if (opts.tag) tagFilters.push(opts.tag.toLowerCase());
+  if (opts.category) tagFilters.push(opts.category.toLowerCase());
   if (tagFilters.length > 0) {
     andConditions.push({ tags: { hasSome: tagFilters } });
   }
@@ -202,6 +202,35 @@ export async function listPublishedRoadmaps(opts: {
       totalPages: Math.ceil(total / opts.limit),
     },
   };
+}
+
+export async function listCommunityRoadmaps(limit = 24) {
+  const rows = await prisma.roadmap.findMany({
+    where: { isPubliclyShared: true, isAiGenerated: true },
+    orderBy: { updatedAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      shortDescription: true,
+      level: true,
+      estimatedHours: true,
+      coverImage: true,
+      ogImage: true,
+      topicCount: true,
+      enrolledCount: true,
+      tags: true,
+      updatedAt: true,
+      isAiGenerated: true,
+      ownerUserId: true,
+      owner: { select: { name: true } },
+    },
+  });
+  return rows.map(({ owner, ...r }) => ({
+    ...r,
+    creatorName: owner?.name ?? null,
+  }));
 }
 
 export async function getRoadmapBySlug(slug: string) {
@@ -420,6 +449,38 @@ export async function listEnrollmentsForUser(userId: number) {
 
 type TopicStatusValue = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
 
+async function updateEnrollmentStreak(enrollmentId: number) {
+  const completedTopics = await prisma.roadmapTopicProgress.findMany({
+    where: {
+      enrollmentId,
+      status: "COMPLETED",
+      completedAt: { not: null },
+    },
+    select: { completedAt: true },
+    orderBy: { completedAt: "asc" },
+  });
+
+  const completedDayKeys = getCompletedUtcDays(
+    completedTopics.map((topic) => ({
+      completedAt: topic.completedAt!,
+    })),
+  );
+
+  const { currentStreak, longestStreak } = calculateStreaks(completedDayKeys);
+  const lastCompletedAt = completedTopics.at(-1)?.completedAt ?? null;
+
+  await prisma.roadmapEnrollment.update({
+    where: { id: enrollmentId },
+    data: {
+      currentStreak,
+      bestStreak: longestStreak,
+      lastStreakDate: lastCompletedAt,
+      weeklyStreak: currentStreak >= 7 ? Math.floor(currentStreak / 7) : 0,
+      lastWeeklyStreakAt: currentStreak >= 7 ? lastCompletedAt : null,
+    },
+  });
+}
+
 export async function updateTopicProgress(args: {
   userId: number;
   enrollmentId: number;
@@ -476,6 +537,10 @@ export async function updateTopicProgress(args: {
     update: data,
     create,
   });
+
+  if (args.status === "COMPLETED") {
+  await updateEnrollmentStreak(enrollment.id);
+}
 
   // Check if all topics are now complete
   let roadmapCompleted = false;

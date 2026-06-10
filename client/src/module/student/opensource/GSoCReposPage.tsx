@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,6 +19,7 @@ import {
   Lightbulb,
   BookOpen,
   ArrowUpRight,
+  Heart,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -27,6 +28,33 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
+import { markLearningPathMilestone } from "./learning-paths.data";
+
+const WISHLIST_KEY = "gsoc_wishlist";
+
+function useWishlist() {
+  const [wishlist, setWishlist] = useState<number[]>(() => {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(WISHLIST_KEY) ?? "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const toggle = useCallback((id: number) => {
+    setWishlist((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : [...prev, id];
+      localStorage.setItem(WISHLIST_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const has = useCallback((id: number) => wishlist.includes(id), [wishlist]);
+  return { wishlist, toggle, has };
+}
 
 const cardBase =
   "group relative flex h-full w-full flex-col rounded-md border border-stone-200 bg-white p-5 text-left transition-colors hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:hover:border-white/30";
@@ -58,7 +86,13 @@ function OrgMark({ org }: { org: GSoCOrganization }) {
   );
 }
 
-function MetaChip({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+function MetaChip({
+  icon,
+  children,
+}: {
+  icon: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:border-white/10 dark:text-stone-400">
       <span className="text-stone-400">{icon}</span>
@@ -67,7 +101,13 @@ function MetaChip({ icon, children }: { icon: ReactNode; children: ReactNode }) 
   );
 }
 
-function PlainChip({ children, accent = false }: { children: ReactNode; accent?: boolean }) {
+function PlainChip({
+  children,
+  accent = false,
+}: {
+  children: ReactNode;
+  accent?: boolean;
+}) {
   return (
     <span
       className={
@@ -88,7 +128,9 @@ function EmptyState() {
         <div className="flex h-12 w-12 items-center justify-center rounded-md border border-stone-200 bg-white text-stone-400 dark:border-white/10 dark:bg-stone-900">
           <Trophy className="h-5 w-5" />
         </div>
-        <p className="text-sm font-medium text-stone-700 dark:text-stone-300">No organizations found</p>
+        <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
+          No organizations found
+        </p>
         <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
           try different search criteria
         </p>
@@ -146,8 +188,7 @@ function FilterDropdown({
   );
 }
 
-const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }) => {
-  // Show participation from 2016 to current year
+function ParticipationBar({ participatedYears }: { participatedYears: number[] }) {
   const currentYear = new Date().getFullYear();
   const yearsRange = Array.from({ length: currentYear - 2015 }, (_, i) => 2016 + i);
 
@@ -159,7 +200,7 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
           <div
             key={year}
             title={participated ? `${year}: Participated` : `${year}: Did not participate`}
-            className={`h-1.5 w-1.5 rounded-sm transition-transform duration-200 hover:scale-125 cursor-help ${
+            className={`h-1.5 w-1.5 cursor-help rounded-sm transition-transform duration-200 hover:scale-125 ${
               participated
                 ? "bg-lime-500"
                 : "bg-stone-200 dark:bg-stone-700"
@@ -169,13 +210,39 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
       })}
     </div>
   );
-};
+}
 
-function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => void }) {
+const GSoCOrgCard = memo(function GSoCOrgCard({
+  org,
+  onSelect,
+  wishlisted,
+  onWishlistToggle,
+}: {
+  org: GSoCOrganization;
+  onSelect: (org: GSoCOrganization) => void;
+  wishlisted: boolean;
+  onWishlistToggle: (orgId: number, event: React.MouseEvent) => void;
+}) {
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
+  const handleSelect = () => onSelect(org);
+  const handleWishlistClick = (event: React.MouseEvent) => onWishlistToggle(org.id, event);
 
   return (
-    <button type="button" onClick={onClick} className={cardBase}>
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleSelect}
+      onKeyDown={(e) => {
+        const isSpace = e.key === " " || e.key === "Spacebar" || e.code === "Space";
+        if (isSpace) {
+          e.preventDefault();
+        }
+        if (e.key === "Enter" || isSpace) {
+          handleSelect();
+        }
+      }}
+      className={cardBase}
+    >
       <div className="mb-3 flex items-start gap-3">
         <OrgMark org={org} />
         <div className="min-w-0 flex-1">
@@ -196,7 +263,9 @@ function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => v
       <div className="mb-3 flex flex-wrap gap-1.5">
         <MetaChip icon={<Calendar className="h-3 w-3" />}>
           {years[0] ?? "new"}
-          {years.length > 1 && <span className="ml-1 text-stone-400">+{years.length - 1}</span>}
+          {years.length > 1 && (
+            <span className="ml-1 text-stone-400">+{years.length - 1}</span>
+          )}
         </MetaChip>
         <MetaChip icon={<Layers className="h-3 w-3" />}>
           {org.technologies.length || 0} tech
@@ -208,10 +277,29 @@ function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => v
           {org.technologies.slice(0, 4).map((tech) => (
             <PlainChip key={tech}>{tech}</PlainChip>
           ))}
-          {org.technologies.length > 4 && <PlainChip>+{org.technologies.length - 4}</PlainChip>}
+          {org.technologies.length > 4 && (
+            <PlainChip>+{org.technologies.length - 4}</PlainChip>
+          )}
         </div>
       )}
 
+      <button
+        type="button"
+        onClick={handleWishlistClick}
+        className="mb-3 flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest transition-colors"
+        aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+      >
+        <Heart
+          className={`h-4 w-4 transition-colors ${wishlisted ? "fill-lime-400 text-lime-400" : "text-stone-400 hover:text-lime-400"}`}
+        />
+        <span
+          className={
+            wishlisted ? "text-lime-600 dark:text-lime-400" : "text-stone-400"
+          }
+        >
+          {wishlisted ? "wishlisted" : "wishlist"}
+        </span>
+      </button>
       <ParticipationBar participatedYears={org.yearsParticipated} />
 
       <div className="mt-auto flex items-center justify-between border-t border-stone-100 pt-3 dark:border-white/5">
@@ -220,9 +308,9 @@ function GSoCOrgCard({ org, onClick }: { org: GSoCOrganization; onClick: () => v
         </span>
         <ArrowUpRight className="h-4 w-4 text-stone-400 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-lime-500" />
       </div>
-    </button>
+    </div>
   );
-}
+});
 
 interface GSoCOrgModalProps {
   org: GSoCOrganization;
@@ -230,13 +318,23 @@ interface GSoCOrgModalProps {
   githubRepos: { title: string; url: string }[];
   gsocPageUrl: string | null;
   reposLoading: boolean;
+  wishlisted: boolean;
+  onWishlistToggle: () => void;
 }
-
-function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: GSoCOrgModalProps) {
+function GSoCOrgModal({
+  org,
+  onClose,
+  githubRepos,
+  gsocPageUrl,
+  reposLoading,
+  wishlisted,
+  onWishlistToggle,
+}: GSoCOrgModalProps) {
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
   const activeYear = selectedYear || (years[0] ? String(years[0]) : null);
-  const yearData = activeYear && org.projectsData ? org.projectsData[activeYear] : null;
+  const yearData =
+    activeYear && org.projectsData ? org.projectsData[activeYear] : null;
 
   return (
     <motion.div
@@ -269,6 +367,16 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
           </div>
           <button
             type="button"
+            onClick={onWishlistToggle}
+            aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-stone-500 transition-colors hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5"
+          >
+            <Heart
+              className={`h-4 w-4 ${wishlisted ? "fill-lime-400 text-lime-400" : ""}`}
+            />
+          </button>
+          <button
+            type="button"
             onClick={onClose}
             aria-label="Close"
             className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-stone-500 transition-colors hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5"
@@ -278,11 +386,17 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
         </div>
 
         <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
-          <p className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">{org.description}</p>
+          <p className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">
+            {org.description}
+          </p>
 
           <div className="flex flex-wrap gap-1.5">
-            <MetaChip icon={<Globe className="h-3 w-3" />}>{org.category}</MetaChip>
-            <MetaChip icon={<Trophy className="h-3 w-3" />}>{org.totalProjects} projects</MetaChip>
+            <MetaChip icon={<Globe className="h-3 w-3" />}>
+              {org.category}
+            </MetaChip>
+            <MetaChip icon={<Trophy className="h-3 w-3" />}>
+              {org.totalProjects} projects
+            </MetaChip>
           </div>
 
           {org.technologies.length > 0 && (
@@ -313,7 +427,10 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {org.topics.map((topic) => (
-                  <span key={topic} className="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-mono text-stone-600 dark:bg-white/5 dark:text-stone-400">
+                  <span
+                    key={topic}
+                    className="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-mono text-stone-600 dark:bg-white/5 dark:text-stone-400"
+                  >
                     #{topic}
                   </span>
                 ))}
@@ -343,7 +460,8 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
                         : "border-stone-200 bg-white text-stone-600 hover:border-stone-400 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
                         }`}
                     >
-                      {year} ({org.projectsData?.[String(year)]?.num_projects || 0})
+                      {year} (
+                      {org.projectsData?.[String(year)]?.num_projects || 0})
                     </button>
                   );
                 })}
@@ -352,7 +470,10 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
               {yearData?.projects && yearData.projects.length > 0 && (
                 <div className="max-h-52 space-y-2 overflow-y-auto">
                   {yearData.projects.map((project, index) => (
-                    <div key={`${project.title}-${index}`} className="rounded-md border border-stone-200 bg-stone-50 p-3 dark:border-white/10 dark:bg-stone-950">
+                    <div
+                      key={`${project.title}-${index}`}
+                      className="rounded-md border border-stone-200 bg-stone-50 p-3 dark:border-white/10 dark:bg-stone-950"
+                    >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <h5 className="text-sm font-bold text-stone-900 dark:text-stone-50">
@@ -389,25 +510,43 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
 
           <div className="flex flex-wrap gap-2">
             {org.contactEmail && (
-              <a href={`mailto:${org.contactEmail}`} className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+              <a
+                href={`mailto:${org.contactEmail}`}
+                className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30"
+              >
                 <Mail className="h-3 w-3" />
                 Contact
               </a>
             )}
             {org.mailingList && (
-              <a href={org.mailingList} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+              <a
+                href={org.mailingList}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30"
+              >
                 <MessageSquare className="h-3 w-3" />
                 Mailing List
               </a>
             )}
             {org.ideasUrl && (
-              <a href={org.ideasUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+              <a
+                href={org.ideasUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30"
+              >
                 <Lightbulb className="h-3 w-3" />
                 Project Ideas
               </a>
             )}
             {org.guideUrl && (
-              <a href={org.guideUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30">
+              <a
+                href={org.guideUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 px-2.5 py-1 text-xs text-stone-600 no-underline transition-colors hover:border-stone-400 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/30"
+              >
                 <BookOpen className="h-3 w-3" />
                 Contributor Guide
               </a>
@@ -475,6 +614,10 @@ function GSoCOrgModal({ org, onClose, githubRepos, gsocPageUrl, reposLoading }: 
 }
 
 export default function GSoCReposPage() {
+  useEffect(() => {
+    markLearningPathMilestone("gsoc-orgs");
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   // 1. Initialize state strictly from URL params
@@ -494,6 +637,9 @@ export default function GSoCReposPage() {
 
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
+  const { wishlist, toggle, has } = useWishlist();
+  const [showWishlist, setShowWishlist] = useState(false);
+
   
   // ---> CHANGED TO useRef TO FIX STALE CLOSURES <---
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -502,13 +648,26 @@ export default function GSoCReposPage() {
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
     };
+  }, []);
+
+  const clearPendingSearchTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
   }, []);
 
   // FIX 2: Functional updater.
   // This ensures that delayed debounced calls always use the freshest URL state.
   const updateFilter = (key: string, value: string) => {
+    if (key === "q") {
+      clearPendingSearchTimer();
+    }
     setSearchParams(
       (prev) => {
         const newParams = new URLSearchParams(prev);
@@ -527,7 +686,7 @@ export default function GSoCReposPage() {
   // ---> UPDATED TO USE timerRef <---
   const handleSearch = (value: string) => {
     setSearch(value);
-    if (timerRef.current) clearTimeout(timerRef.current);
+    clearPendingSearchTimer();
     
     timerRef.current = setTimeout(() => {
       updateFilter("q", value);
@@ -535,10 +694,23 @@ export default function GSoCReposPage() {
   };
 
   const clearFilters = () => {
+    clearPendingSearchTimer();
     setSearch("");
     setSearchParams({}, { replace: true });
     setPage(1);
   };
+
+  const handleOrgClick = useCallback((org: GSoCOrganization) => {
+    setSelectedOrg(org);
+  }, [setSelectedOrg]);
+
+  const handleWishlistToggle = useCallback(
+    (orgId: number, event: React.MouseEvent) => {
+      event.stopPropagation();
+      toggle(orgId);
+    },
+    [toggle]
+  );
 
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
@@ -555,32 +727,52 @@ export default function GSoCReposPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.gsoc.list(params),
-    queryFn: () => api.get("/gsoc/organizations", { params }).then((res) => res.data),
+    queryFn: () =>
+      api.get("/gsoc/organizations", { params }).then((res) => res.data),
   });
 
   const organizations: GSoCOrganization[] = data?.organizations ?? [];
+  const filteredOrganizations = showWishlist
+    ? organizations.filter((org) => has(org.id))
+    : organizations;
   const pagination = data?.pagination ?? { page: 1, total: 0, totalPages: 1 };
 
   const { data: detailData } = useQuery({
     queryKey: queryKeys.gsoc.detail(selectedOrg?.slug ?? ""),
-    queryFn: () => api.get(`/gsoc/organizations/${selectedOrg!.slug}`).then((res) => res.data),
+    queryFn: () =>
+      api
+        .get(`/gsoc/organizations/${selectedOrg!.slug}`)
+        .then((res) => res.data),
     enabled: !!selectedOrg,
   });
 
-  const detailOrg: GSoCOrganization | null = detailData?.organization ?? selectedOrg;
+  const detailOrg: GSoCOrganization | null =
+    detailData?.organization ?? selectedOrg;
 
   const { data: reposData, isLoading: reposLoading } = useQuery({
     queryKey: queryKeys.gsoc.repos(selectedOrg?.slug ?? ""),
-    queryFn: () => api.get(`/gsoc/organizations/${selectedOrg!.slug}/repos`).then((res) => res.data),
+    queryFn: () =>
+      api
+        .get(`/gsoc/organizations/${selectedOrg!.slug}/repos`)
+        .then((res) => res.data),
     enabled: !!selectedOrg,
     staleTime: 1000 * 60 * 60,
   });
 
   const githubRepos: { title: string; url: string }[] = reposData?.githubRepos ?? [];
   const gsocPageUrl: string | null = reposData?.gsocPageUrl ?? null;
-  const categoryOptions = ["All", ...(stats?.categories.map((category) => category.name) ?? [])];
-  const yearOptions = ["All", ...(stats?.years.map((year) => String(year.year)) ?? [])];
-  const techOptions = ["All", ...(stats?.technologies.slice(0, 30).map((tech) => tech.name) ?? [])];
+  const categoryOptions = [
+    "All",
+    ...(stats?.categories.map((category) => category.name) ?? []),
+  ];
+  const yearOptions = [
+    "All",
+    ...(stats?.years.map((year) => String(year.year)) ?? []),
+  ];
+  const techOptions = [
+    "All",
+    ...(stats?.technologies.slice(0, 30).map((tech) => tech.name) ?? []),
+  ];
 
   const hasFilters =
     Boolean(initialQ) || selectedCategory !== "All" || selectedTech !== "All" || selectedYear !== "All";
@@ -592,6 +784,7 @@ export default function GSoCReposPage() {
         description="Browse Google Summer of Code organizations, past projects, technologies, topics, and contributor links."
         keywords="GSoC, Google Summer of Code, open source organizations, student open source"
         canonicalUrl={canonicalUrl("/student/opensource/gsoc")}
+        ogImage="/og/og-gsoc.png"
       />
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
@@ -613,16 +806,23 @@ export default function GSoCReposPage() {
                 </span>
               </h1>
               <p className="max-w-2xl text-sm text-stone-600 dark:text-stone-400">
-                Search accepted organizations, study their past projects, and find a community where your stack fits.
+                Search accepted organizations, study their past projects, and
+                find a community where your stack fits.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
               <span>
-                <span className="text-stone-900 dark:text-stone-50">{stats?.total ?? "-"}</span> orgs
+                <span className="text-stone-900 dark:text-stone-50">
+                  {stats?.total ?? "-"}
+                </span>{" "}
+                orgs
               </span>
               <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
               <span>
-                <span className="text-stone-900 dark:text-stone-50">{stats?.categories.length ?? "-"}</span> categories
+                <span className="text-stone-900 dark:text-stone-50">
+                  {stats?.categories.length ?? "-"}
+                </span>{" "}
+                categories
               </span>
               <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
               <span>
@@ -674,17 +874,43 @@ export default function GSoCReposPage() {
               clear
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => setShowWishlist((prev) => !prev)}
+            className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-mono uppercase tracking-widest transition-colors ${
+              showWishlist
+                ? "border-lime-400 bg-lime-400 text-stone-950"
+                : "border-stone-300 bg-white text-stone-600 hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400"
+            }`}
+          >
+            <Heart
+              className={`h-3.5 w-3.5 ${showWishlist ? "fill-stone-950" : ""}`}
+            />
+            Wishlist {wishlist.length > 0 && `(${wishlist.length})`}
+          </button>
         </div>
 
         <div className="mb-4 flex items-center justify-between">
           <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-            <span className="text-stone-900 dark:text-stone-50">{pagination.total}</span> organizations
+            <span className="text-stone-900 dark:text-stone-50">
+              {pagination.total}
+            </span>{" "}
+            organizations
             {hasFilters && (
               <>
-                {" "} / <span className="text-stone-900 dark:text-stone-50">filtered</span>
+                {" "}
+                /{" "}
+                <span className="text-stone-900 dark:text-stone-50">
+                  filtered
+                </span>
               </>
             )}
-            {pagination.totalPages > 1 && <> / page {pagination.page} of {pagination.totalPages}</>}
+            {pagination.totalPages > 1 && (
+              <>
+                {" "}
+                / page {pagination.page} of {pagination.totalPages}
+              </>
+            )}
           </p>
         </div>
 
@@ -693,9 +919,12 @@ export default function GSoCReposPage() {
         ) : organizations.length === 0 ? (
           <EmptyState />
         ) : (
-          <motion.div layout className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <motion.div
+            layout
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+          >
             <AnimatePresence mode="popLayout">
-              {organizations.map((org, index) => (
+              {filteredOrganizations.map((org, index) => (
                 <motion.div
                   key={org.id}
                   layout
@@ -704,7 +933,12 @@ export default function GSoCReposPage() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: index * 0.02, duration: 0.25 }}
                 >
-                  <GSoCOrgCard org={org} onClick={() => setSelectedOrg(org)} />
+                  <GSoCOrgCard
+                    org={org}
+                    onSelect={handleOrgClick}
+                    wishlisted={has(org.id)}
+                    onWishlistToggle={handleWishlistToggle}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -717,7 +951,6 @@ export default function GSoCReposPage() {
           onPageChange={setPage}
           showingInfo={{ total: pagination.total, limit }}
         />
-
       </div>
 
       <AnimatePresence>
@@ -728,6 +961,8 @@ export default function GSoCReposPage() {
             githubRepos={githubRepos}
             gsocPageUrl={gsocPageUrl}
             reposLoading={reposLoading}
+            wishlisted={has(detailOrg.id)}
+            onWishlistToggle={() => toggle(detailOrg.id)}
           />
         )}
       </AnimatePresence>

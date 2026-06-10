@@ -8,7 +8,6 @@ import {
   Clock,
   Map as MapIcon,
   Search,
-  Sparkles,
   Users,
   Wand2,
 } from "lucide-react";
@@ -88,6 +87,12 @@ export default function RoadmapsLandingPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: communityData } = useQuery({
+    queryKey: queryKeys.roadmaps.community(),
+    queryFn: () => api.get<{ roadmaps: RoadmapListItem[] }>("/roadmaps/community").then(res => res.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const roadmaps = useMemo(() => roadmapsData?.roadmaps || [], [roadmapsData]);
   const enrollments = useMemo(() => {
     if (enrollmentsError) return []; // Fallback to empty but we'll show error below
@@ -148,11 +153,14 @@ export default function RoadmapsLandingPage() {
     }
     
     if (tag) {
-      result = result.filter(r => r.tags.includes(tag));
+      result = result.filter(r =>
+        r.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
+      );
     }
-
     if (category) {
-      result = result.filter(r => r.tags.includes(category));
+      result = result.filter(r =>
+        r.tags.map(t => t.toLowerCase()).includes(category.toLowerCase())
+      );
     }
     
     return result;
@@ -173,8 +181,8 @@ export default function RoadmapsLandingPage() {
         if (!matchesText) return false;
       }
       if (level && level !== "ALL_LEVELS" && r.level && r.level !== level) return false;
-      if (tag && !(r.tags ?? []).includes(tag)) return false;
-      if (category && !(r.tags ?? []).includes(category)) return false;
+      if (tag && !(r.tags ?? []).map(t => t.toLowerCase()).includes(tag.toLowerCase())) return false;
+      if (category && !(r.tags ?? []).map(t => t.toLowerCase()).includes(category.toLowerCase())) return false;
       return true;
     });
   }, [enrollments, debouncedSearch, level, tag, category]);
@@ -458,6 +466,19 @@ export default function RoadmapsLandingPage() {
                 ))}
               </RoadmapSection>
 
+              {communityData && communityData.roadmaps.length > 0 && (
+                <RoadmapSection
+                  label="community"
+                  title="Made by the community"
+                  count={communityData.roadmaps.length}
+                  className="mt-14"
+                >
+                  {communityData.roadmaps.map((r, idx) => (
+                    <CommunityRoadmapCard key={r.id} roadmap={r} index={idx} />
+                  ))}
+                </RoadmapSection>
+              )}
+
               {/* Footer hint */}
               {isStudent && enrollments.length > 0 && (
                 <motion.div
@@ -702,6 +723,82 @@ function RoadmapCard({
                 <span className="inline-flex items-center gap-1">
                   <Users className="w-3 h-3" aria-hidden="true" />
                   <span>{roadmap.enrolledCount} enrolled</span>
+                </span>
+              )}
+            </div>
+            <ArrowUpRight
+              className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all"
+              aria-hidden="true"
+            />
+          </div>
+        </Link>
+      </motion.div>
+    </li>
+  );
+}
+
+function CommunityRoadmapCard({
+  roadmap,
+  index,
+}: {
+  roadmap: RoadmapListItem;
+  index: number;
+}) {
+  const MAX_STAGGER = 8;
+  const delay = 0.05 + Math.min(index, MAX_STAGGER) * 0.04;
+
+  return (
+    <li>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay, duration: 0.4 }}
+      >
+        <Link
+          to={`/roadmaps/${roadmap.slug}`}
+          aria-label={roadmap.title}
+          className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2"
+        >
+          <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5" aria-hidden="true">
+            <span className="h-1 w-1 bg-lime-400" />
+            ai
+          </span>
+
+          <div className="flex items-start gap-3 mb-3 pr-16">
+            <div
+              className="w-10 h-10 rounded-md bg-lime-50 dark:bg-lime-900/20 border border-lime-200 dark:border-lime-800/40 flex items-center justify-center shrink-0"
+              aria-hidden="true"
+            >
+              <Wand2 className="w-5 h-5 text-lime-600 dark:text-lime-500" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
+                {roadmap.title}
+              </h3>
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+                {roadmap.level.replace("_", " ").toLowerCase()}
+              </span>
+            </div>
+          </div>
+
+          <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+            {roadmap.shortDescription}
+          </p>
+
+          <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+            <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <span className="inline-flex items-center gap-1">
+                <Clock className="w-3 h-3" aria-hidden="true" />
+                <span>{roadmap.estimatedHours}h</span>
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <BookOpen className="w-3 h-3" aria-hidden="true" />
+                <span>{roadmap.topicCount} topics</span>
+              </span>
+              {roadmap.creatorName && (
+                <span className="inline-flex items-center gap-1">
+                  <Users className="w-3 h-3" aria-hidden="true" />
+                  <span className="truncate max-w-24">{roadmap.creatorName}</span>
                 </span>
               )}
             </div>

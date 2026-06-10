@@ -14,6 +14,7 @@ export default function ReadCodebasePage() {
       seoTitle="How to Read a Codebase - Open Source Guide"
       seoDescription="Learn how to navigate and understand any unfamiliar codebase systematically. Trace features, read tests, understand data models, and use debugging as a reading tool."
       seoKeywords="read codebase, understand code, navigate code, code reading, open source contribution"
+      ogImage="/og/og-read-codebase.png"
       icon={BookOpen}
       iconColor="text-emerald-500"
     />

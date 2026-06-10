@@ -1,6 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
 import { executeCode, LANGUAGE_IDS } from "../../utils/judge0.utils.js";
+import { getProviderForService } from "../../lib/ai-provider-registry.js";
+import { logAIRequest } from "../../lib/ai-request-logger.js";
+import { codeReviewResponseSchema, type CodeReviewResponse } from "./dsa.validation.js";
 
 interface TestCaseResult {
   input: string;
@@ -330,7 +333,7 @@ export class DsaService {
     }));
   }
 
-  async reportProblem({userId, problemId, reason, message,}: { userId: number; problemId: number; reason: string; message?: string;}) {
+  async reportProblem({ userId, problemId, reason, message, }: { userId: number; problemId: number; reason: string; message?: string; }) {
     return prisma.dsaProblemReport.create({
       data: {
         userId,
@@ -542,6 +545,121 @@ export class DsaService {
         solved: ids.filter((id) => solvedIds.has(id)).length,
       };
     });
+  }
+
+  async getLists(studentId?: number) {
+    const allProblems = await prisma.dsaProblem.findMany({
+      select: { id: true, sheets: true },
+    });
+
+    const sheets = ["blind75", "neetcode150", "internhack100", "faang100"];
+    const sheetProblems = new Map<string, number[]>();
+    for (const s of sheets) {
+      sheetProblems.set(s, []);
+    }
+
+    for (const p of allProblems) {
+      for (const s of p.sheets) {
+        sheetProblems.get(s)?.push(p.id);
+      }
+    }
+
+    let solvedIds = new Set<number>();
+    if (studentId) {
+      const solved = await prisma.studentDsaProgress.findMany({
+        where: { studentId, solved: true },
+        select: { problemId: true },
+      });
+      solvedIds = new Set(solved.map((s) => s.problemId));
+    }
+
+    const listMeta: Record<string, { title: string; description: string; estimatedHours: number }> = {
+      blind75: {
+        title: "Blind 75",
+        description: "The most referenced DSA problem list for FAANG interview prep. Covers arrays, strings, trees, graphs, and more.",
+        estimatedHours: 75,
+      },
+      neetcode150: {
+        title: "NeetCode 150",
+        description: "Expanded version of Blind 75. Covers LeetCode's essential problem set grouped by patterns.",
+        estimatedHours: 150,
+      },
+      internhack100: {
+        title: "InternHack 100",
+        description: "InternHack's own curated list — handpicked problems that cover every must-know DSA concept.",
+        estimatedHours: 100,
+      },
+      faang100: {
+        title: "FAANG Hot 100",
+        description: "The 100 most frequently asked DSA problems at Facebook, Amazon, Apple, Netflix, and Google.",
+        estimatedHours: 100,
+      },
+    };
+
+    return sheets.map((name) => {
+      const ids = sheetProblems.get(name) || [];
+      const meta = listMeta[name];
+      return {
+        slug: name,
+        title: meta.title,
+        description: meta.description,
+        total: ids.length,
+        solved: ids.filter((id) => solvedIds.has(id)).length,
+        estimatedHours: meta.estimatedHours,
+      };
+    });
+  }
+
+  async getListProblems(list: string, studentId?: number, page = 1, limit = 50) {
+    const where = { sheets: { has: list } };
+
+    const [problems, total] = await Promise.all([
+      prisma.dsaProblem.findMany({
+        where,
+        orderBy: { difficulty: "asc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.dsaProblem.count({ where }),
+    ]);
+
+    let solvedIds = new Set<number>();
+    let bookmarkedIds = new Set<number>();
+    if (studentId) {
+      const pIds = problems.map((p) => p.id);
+      const [progress, bookmarks] = await Promise.all([
+        prisma.studentDsaProgress.findMany({
+          where: { studentId, problemId: { in: pIds }, solved: true },
+          select: { problemId: true },
+        }),
+        prisma.dsaBookmark.findMany({
+          where: { studentId, problemId: { in: pIds } },
+          select: { problemId: true },
+        }),
+      ]);
+      solvedIds = new Set(progress.map((p) => p.problemId));
+      bookmarkedIds = new Set(bookmarks.map((b) => b.problemId));
+    }
+
+    return {
+      problems: problems.map((p) => ({
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        difficulty: p.difficulty,
+        leetcodeUrl: p.leetcodeUrl,
+        gfgUrl: p.gfgUrl,
+        tags: p.tags,
+        companies: p.companies,
+        sheets: p.sheets,
+        acceptanceRate: p.acceptanceRate,
+        solved: solvedIds.has(p.id),
+        bookmarked: bookmarkedIds.has(p.id),
+      })),
+      total,
+      totalPages: Math.ceil(total / limit),
+      page,
+    };
   }
 
   async getMyProgress(studentId: number) {
@@ -782,11 +900,6 @@ Return ONLY a JSON array, no markdown fences:
       });
     }
 
-    // Log usage for rate limiting
-    await prisma.usageLog.create({
-      data: { userId: studentId, action: "CODE_RUN" },
-    });
-
     // Track engagement — fire-and-forget, never blocks the submission response
     void prisma.contentView.create({
       data: {
@@ -894,13 +1007,126 @@ Return ONLY a JSON array, no markdown fences:
 
   async getUserDsaStreak(userId: number) {
     const today = new Date().toISOString().slice(0, 10);
-    const daily = await this.getDailyProblem(userId);
+
+    const submissions = await prisma.dsaSubmission.findMany({
+      where: { studentId: userId },
+      select: { createdAt: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const uniqueDays = new Set<string>();
+    for (const s of submissions) {
+      uniqueDays.add(s.createdAt.toISOString().slice(0, 10));
+    }
+
+    const sortedDays = Array.from(uniqueDays).sort().reverse();
+
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+
+    const todayDate = new Date(today);
+
+    for (const dayStr of sortedDays) {
+      const dayDate = new Date(dayStr + "T00:00:00Z");
+      const diffDays = Math.round(
+        (todayDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
+
+      if (diffDays === currentStreak) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    const allDays = [...uniqueDays].sort();
+    for (let i = 0; i < allDays.length; i++) {
+      if (i === 0) {
+        tempStreak = 1;
+      } else {
+        const prev = new Date(allDays[i - 1] + "T00:00:00Z");
+        const curr = new Date(allDays[i] + "T00:00:00Z");
+        const diff = Math.round(
+          (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        if (diff === 1) {
+          tempStreak++;
+        } else {
+          tempStreak = 1;
+        }
+      }
+      longestStreak = Math.max(longestStreak, tempStreak);
+    }
 
     return {
-      currentStreak: daily.solvedToday ? 1 : 0,
-      longestStreak: daily.solvedToday ? 1 : 0,
-      solvedToday: daily.solvedToday,
-      lastSolvedDate: daily.solvedToday ? today : null,
+      currentStreak,
+      longestStreak,
+      solvedToday: uniqueDays.has(today),
+      lastSolvedDate: sortedDays[0] || null,
+      activeDays: sortedDays.slice(0, 30),
+    };
+  }
+
+  private static HINT_TEMPLATES: Record<string, string[]> = {
+    conceptual: [
+      "Think about what data structure naturally maps to this problem. What operations are you performing on the input?",
+      "Consider the constraints — what is the expected time complexity? O(n), O(n log n), or O(n²)?",
+      "This problem can be reduced to a classic algorithm. Think about which one.",
+      "Try to express the problem in terms of simpler sub-problems. What would make the problem trivial?",
+      "What information do you need to track as you process the input? Can you use a hash map for O(1) lookups?",
+    ],
+    algorithmic: [
+      "Consider using the two-pointer technique — one fast, one slow — to traverse the input in a single pass.",
+      "A sliding window approach might work here. Expand the window when the condition holds, shrink it when it doesn't.",
+      "Try sorting the input first — many problems become straightforward once the data is ordered.",
+      "Think about using a monotonic stack to track the nearest greater/smaller element.",
+      "A binary search over the answer space could work if the problem has a monotonic property.",
+      "Consider using BFS for shortest-path problems or DFS when you need to explore all possibilities.",
+      "Use a prefix sum or running sum to avoid recalculating subarray totals repeatedly.",
+      "This can be solved with dynamic programming — define dp[i] as the optimal solution for the first i elements.",
+    ],
+    code: [
+      "Start by setting up your edge cases: empty input, single element, already sorted, etc.",
+      "Initialize your result variable and iterate through the input. Update the result as you go.",
+      "Use early termination — if you find the answer before processing all input, return immediately.",
+      "Consider using a min-heap or max-heap to keep track of the k largest/smallest elements.",
+      "For recursion, define your base case first, then the recursive step. Use memoization for overlapping subproblems.",
+      "Use a set to track visited elements and avoid duplicates. This is especially useful for graph/cycle detection.",
+      "If using binary search, remember to update left = mid + 1 and right = mid - 1, not left = mid.",
+      "For linked list problems, use a dummy head node to simplify edge cases involving the head.",
+    ],
+  };
+
+  async generateHint(userId: number, problemId: number, level: "conceptual" | "algorithmic" | "code") {
+    const problem = await prisma.dsaProblem.findUnique({
+      where: { id: problemId },
+      select: { id: true, title: true, tags: true, difficulty: true, hints: true },
+    });
+    if (!problem) throw new Error("Problem not found");
+
+    const templates = DsaService.HINT_TEMPLATES[level] ?? DsaService.HINT_TEMPLATES.conceptual;
+    const seed = problemId + level.charCodeAt(0) + (problem.tags[0]?.length ?? 0);
+    const idx = seed % templates.length;
+    const baseHint = templates[idx];
+
+    const tagContext = problem.tags.length > 0
+      ? ` This problem relates to: ${problem.tags.join(", ")}.`
+      : "";
+
+    const hint = `${baseHint}${tagContext} (level: ${level})`;
+
+    await prisma.usageLog.create({
+      data: { userId, action: "CODE_RUN" },
+    });
+
+    return {
+      hint,
+      level,
+      problemId,
+      problemTitle: problem.title,
+      difficulty: problem.difficulty,
+      hintIndex: idx,
     };
   }
 
@@ -936,5 +1162,151 @@ Return ONLY a JSON array, no markdown fences:
     });
 
     return similar.slice(0, limit);
+  }
+
+  // ── AI Code Review ──
+
+  async generateCodeReview(submissionId: number, studentId: number): Promise<CodeReviewResponse> {
+    // 1. Fetch submission and verify ownership
+    const submission = await prisma.dsaSubmission.findUnique({
+      where: { id: submissionId },
+    });
+    if (!submission) throw new Error("Submission not found");
+    if (submission.studentId !== studentId) throw new Error("Not authorized to review this submission");
+
+    // 2. Fetch problem context
+    const problem = await prisma.dsaProblem.findUnique({
+      where: { id: submission.problemId },
+      select: {
+        title: true,
+        description: true,
+        constraints: true,
+        difficulty: true,
+        tags: true,
+      },
+    });
+    if (!problem) throw new Error("Problem not found");
+
+    // 3. Call AI via provider registry
+    const provider = getProviderForService("DSA_CODE_REVIEW");
+    const prompt = this.buildCodeReviewPrompt(submission, problem);
+    const response = await provider.generateText(prompt);
+
+    // 4. Parse and validate
+    try {
+      const parsed = this.parseCodeReviewResponse(response.text);
+      // 5. Log success
+      logAIRequest("DSA_CODE_REVIEW", response, true, undefined, studentId);
+      
+      await prisma.usageLog.create({
+        data: { userId: studentId, action: "CODE_RUN" },
+      });
+
+      return parsed;
+    } catch (err) {
+      logAIRequest("DSA_CODE_REVIEW", response, false, err instanceof Error ? err.message : "Parse failed", studentId);
+      throw err;
+    }
+  }
+
+  private buildCodeReviewPrompt(
+    submission: { code: string; language: string; passed: number; total: number; allPassed: boolean },
+    problem: { title: string; description: string | null; constraints: string | null; difficulty: string; tags: string[] },
+  ): string {
+    return `You are an expert DSA code reviewer. Analyze the following student submission and provide structured feedback.
+
+PROBLEM: ${problem.title}
+DIFFICULTY: ${problem.difficulty}
+TAGS: ${problem.tags.join(", ")}
+
+${problem.description ? `DESCRIPTION:\n${problem.description}` : ""}
+
+${problem.constraints ? `CONSTRAINTS:\n${problem.constraints}` : ""}
+
+STUDENT'S CODE (${submission.language}):
+\`\`\`${submission.language}
+${submission.code}
+\`\`\`
+
+TEST RESULTS: ${submission.passed}/${submission.total} passed${submission.allPassed ? " (All passed)" : ""}
+
+Analyze the code and respond with ONLY valid JSON (no markdown formatting, no code blocks, no explanation) in this exact structure:
+{
+  "timeComplexity": "<Big-O time complexity with brief justification, e.g. 'O(n log n) — sorting dominates'>",
+  "spaceComplexity": "<Big-O space complexity with brief justification, e.g. 'O(n) — hash map stores at most n entries'>",
+  "readability": {
+    "score": <number 1-10>,
+    "feedback": "<specific readability feedback: variable naming, structure, comments, etc.>"
+  },
+  "edgeCases": [
+    "<edge case the solution might miss or handles well, be specific to this problem>",
+    "<another edge case>"
+  ],
+  "suggestions": [
+    "<specific, actionable improvement suggestion>",
+    "<another suggestion>"
+  ]
+}
+
+Rules:
+1. Be specific to THIS problem and THIS code — avoid generic advice
+2. If all tests passed, focus on optimization and code quality
+3. If tests failed, prioritize correctness issues
+4. Provide 2-4 edge cases and 2-5 suggestions
+5. For readability score: 1-3 = poor, 4-6 = decent, 7-8 = good, 9-10 = excellent`;
+  }
+
+  private parseCodeReviewResponse(responseText: string): CodeReviewResponse {
+    let jsonStr = responseText.trim();
+
+    // Strip markdown code fences if present
+    const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch?.[1]) {
+      jsonStr = jsonMatch[1].trim();
+    }
+
+    // Strip trailing commas before ] or } (common AI quirk)
+    jsonStr = jsonStr.replace(/,\s*([\]}])/g, "$1");
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(jsonStr);
+    } catch {
+      // Try to extract just the JSON object if there's surrounding text
+      const objMatch = jsonStr.match(/\{[\s\S]*\}/);
+      if (objMatch) {
+        const cleaned = objMatch[0].replace(/,\s*([\]}])/g, "$1");
+        parsed = JSON.parse(cleaned);
+      } else {
+        parsed = {};
+      }
+    }
+
+    // Validate with Zod
+    const result = codeReviewResponseSchema.safeParse(parsed);
+    if (result.success) {
+      return result.data;
+    }
+
+    // Fallback: return a best-effort response from the raw parsed data
+    const obj = parsed as Record<string, unknown>;
+    return {
+      timeComplexity: typeof obj["timeComplexity"] === "string" ? obj["timeComplexity"] : "Unable to determine",
+      spaceComplexity: typeof obj["spaceComplexity"] === "string" ? obj["spaceComplexity"] : "Unable to determine",
+      readability: {
+        score: typeof (obj["readability"] as Record<string, unknown>)?.["score"] === "number"
+          ? Math.max(1, Math.min(10, Math.round((obj["readability"] as Record<string, unknown>)["score"] as number)))
+          : 5,
+        feedback: typeof (obj["readability"] as Record<string, unknown>)?.["feedback"] === "string"
+          ? (obj["readability"] as Record<string, unknown>)["feedback"] as string
+          : "No feedback available",
+      },
+      edgeCases: Array.isArray(obj["edgeCases"])
+        ? obj["edgeCases"].filter((s): s is string => typeof s === "string")
+        : [],
+      suggestions: Array.isArray(obj["suggestions"])
+        ? obj["suggestions"].filter((s): s is string => typeof s === "string")
+        : [],
+    };
   }
 }

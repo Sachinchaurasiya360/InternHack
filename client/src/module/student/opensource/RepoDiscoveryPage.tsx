@@ -42,6 +42,8 @@ import { SuggestRepoModal } from "./SuggestRepoModal";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
+import { useCoachStore } from "./stores/coach.store";
+import { markLearningPathMilestone } from "./learning-paths.data";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -98,7 +100,12 @@ const SKILL_LANGUAGE_MAP: Record<string, string[]> = {
 };
 
 export default function RepoDiscoveryPage() {
+  useEffect(() => {
+    markLearningPathMilestone("repo-discovery");
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
+  const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
   // Initialize filter states directly from the URL
   const search = searchParams.get("q") || "";
@@ -248,11 +255,32 @@ export default function RepoDiscoveryPage() {
   }, [bookmarks, showSaved]);
 
   const toggleBookmark = (id: number) => {
+    const isBookmarking = !bookmarks.includes(id);
+
     setBookmarks((prev) => {
-      const next = prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id];
+      const next = isBookmarking ? [...prev, id] : prev.filter((b) => b !== id);
       saveBookmarks(next);
       return next;
     });
+
+    if (isBookmarking) {
+      const repo = data?.repos?.find((r) => r.id === id);
+      if (repo) {
+        triggerCoach({
+          trigger: "REPO_BOOKMARKED",
+          context: {
+            skills: user?.skills || [],
+            bookmarkedRepos: [
+              {
+                name: repo.name,
+                language: repo.language,
+                domain: repo.domain || undefined,
+              },
+            ],
+          },
+        });
+      }
+    }
   };
 
   const handleShare = () => {
@@ -328,13 +356,8 @@ export default function RepoDiscoveryPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const repos = useMemo(() => data?.repos ?? [], [data?.repos]);
   const pagination = data?.pagination;
-
-  const displayedRepos = useMemo(() => {
-    if (showSaved) return bookmarkedData || [];
-    return repos;
-  }, [repos, showSaved, bookmarkedData]);
+  const displayedRepos = showSaved ? (bookmarkedData ?? []) : (data?.repos ?? []);
 
   // Global stats fetched independently so the header strip stays accurate
   // regardless of active filters or page (replaces the old useMemo approach).
@@ -614,7 +637,11 @@ export default function RepoDiscoveryPage() {
         <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} />
 
         {user?.role === "STUDENT" && (
-          <RecommendedSection onSelect={handleOpenRepo} />
+          <RecommendedSection 
+            onSelect={handleOpenRepo} 
+            bookmarks={bookmarks}
+            onToggleBookmark={toggleBookmark}
+          />
         )}
 
         {/* Filter bar */}
@@ -1169,7 +1196,15 @@ export default function RepoDiscoveryPage() {
   );
 }
 
-function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
+function RecommendedSection({ 
+  onSelect,
+  bookmarks,
+  onToggleBookmark
+}: { 
+  onSelect: (repo: OpenSourceRepo) => void;
+  bookmarks: number[];
+  onToggleBookmark: (id: number) => void;
+}) {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.opensource.list({ recommended: "true" }),
     queryFn: async () => {
@@ -1218,7 +1253,13 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
         <div className="flex gap-4 min-w-full">
           {repos.map((repo, i) => (
             <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
-              <RepoCard repo={repo} index={i} onSelect={onSelect} />
+              <RepoCard 
+                repo={repo} 
+                index={i} 
+                onSelect={onSelect} 
+                bookmarked={bookmarks.includes(repo.id)}
+                onToggleBookmark={() => onToggleBookmark(repo.id)}
+              />
             </div>
           ))}
         </div>

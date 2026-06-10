@@ -28,6 +28,7 @@ import type { TableInfo } from "./lib/sql-engine";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
+import { toast } from "react-hot-toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
@@ -63,6 +64,7 @@ function useSqlProgress() {
     mutationFn: (vars: { exerciseId: string; solved: boolean; code: string }) =>
       api.post("/sql/progress", vars),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.sql.progress() }),
+    onError: () => toast.error("Failed to save progress. Please try again."),
   });
 
   const progress: SqlProgress = isAuthenticated ? (serverProgress ?? {}) : getLocalProgress();
@@ -118,6 +120,21 @@ export default function SqlExercisePage() {
   const [dbReady, setDbReady] = useState(false);
   const [solved, setSolved] = useState(false);
 
+  const [prevExerciseId, setPrevExerciseId] = useState(exercise?.id);
+
+  if (exercise?.id !== prevExerciseId) {
+    setPrevExerciseId(exercise?.id);
+    setDbReady(false);
+    setResult(null);
+    setValidation(null);
+    setShowHints(0);
+    setShowExpected(false);
+
+    const savedEntry = exercise ? progress[exercise.id] : undefined;
+    setCode(savedEntry?.code || exercise?.starterCode || "");
+    setSolved(!!savedEntry?.solved);
+  }
+
   // Load database and exercise
   useEffect(() => {
     if (!exercise || !section) return;
@@ -131,27 +148,8 @@ export default function SqlExercisePage() {
       setDbReady(true);
     };
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDbReady(false);
-     
-    setResult(null);
-     
-    setValidation(null);
-     
-    setShowHints(0);
-     
-    setShowExpected(false);
-
-    // Restore saved code or use starter
-    const savedEntry = progress[exercise.id];
-     
-    setCode(savedEntry?.code || exercise.starterCode);
-     
-    setSolved(!!savedEntry?.solved);
-
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exercise?.id, section?.id, progress]);
+  }, [exercise, section]);
 
   const handleRun = useCallback(async () => {
     if (!exercise || !dbReady) return;
