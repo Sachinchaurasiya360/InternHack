@@ -43,7 +43,6 @@ import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
 import { SuggestRepoModal } from "./SuggestRepoModal";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
-import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 import { useCoachStore } from "./stores/coach.store";
 import { markLearningPathMilestone } from "./learning-paths.data";
@@ -205,7 +204,7 @@ export default function RepoDiscoveryPage() {
     return Array.from(langs);
   }, [user]);
 
-  const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
+  const { addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     addRepo(repo);
@@ -640,8 +639,6 @@ export default function RepoDiscoveryPage() {
         {/* Guidance Cards */}
         <GuidanceCards />
 
-        {/* Recently viewed & recommended */}
-        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} onClear={() => { }} />
 
         {user?.role === "STUDENT" && (
           <RecommendedSection

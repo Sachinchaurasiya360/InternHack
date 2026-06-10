@@ -307,10 +307,6 @@ export default function MyApplicationsPage() {
           a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
 
-    if (statusFilter !== "ALL") {
-      base = base.filter((a) => a.status === statusFilter);
-    }
-
     return [...base].sort((a, b) => {
       if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
