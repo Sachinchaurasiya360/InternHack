@@ -95,6 +95,8 @@ const StudentProfilePage = lazyWithRetry(() => import("./module/student/profile/
 const PublicProfilePage = lazyWithRetry(() => import("./module/student/profile/PublicProfilePage"));
 const RepoDiscoveryPage = lazyWithRetry(() => import("./module/student/opensource/RepoDiscoveryPage"));
 const OpenSourceDashboardPage = lazyWithRetry(() => import("./module/student/opensource/OpenSourceDashboardPage"));
+const LeaderboardPage = lazyWithRetry(() => import("./module/student/opensource/LeaderboardPage"));
+const LeaderboardSettingsPage = lazyWithRetry(() => import("./module/student/opensource/LeaderboardSettingsPage"));
 const GSoCReposPage = lazyWithRetry(() => import("./module/student/opensource/GSoCReposPage"));
 const ProgramTrackerPage = lazyWithRetry(() => import("./module/student/opensource/ProgramTrackerPage"));
 const OrgBrowserPage = lazy(
@@ -464,6 +466,7 @@ function App() {
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
             </Route>
+            </Route>
 
             {/* Legacy redirects */}
             <Route path="/dsa/*" element={<Navigate to="/learn/dsa" replace />} />
@@ -521,6 +524,8 @@ function App() {
               <Route path="opensource" element={<OpenSourceLayout />}>
                 <Route index element={<OpenSourceDashboardPage />} />
                 <Route path="discover" element={<RepoDiscoveryPage />} />
+                <Route path="leaderboard" element={<LeaderboardPage />} />
+                <Route path="leaderboard/settings" element={<LeaderboardSettingsPage />} />
                 <Route path="gsoc" element={<GSoCReposPage />} />
                 <Route path="programs" element={<ProgramTrackerPage />} />
                 <Route path="outreachy-orgs" element={<OrgBrowserPage key="OUTREACHY" programType="OUTREACHY" />} />

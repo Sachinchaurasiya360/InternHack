@@ -238,7 +238,7 @@ function LeaderboardEntryCard({ entry, index }: { entry: LeaderboardEntry; index
 
 // ─── Main Component ────────────────────────────────────────────
 
-export function LeaderboardPage() {
+export default function LeaderboardPage() {
   const [view, setView] = useState<LeaderboardView>("global");
   const [selectedDomain, setSelectedDomain] = useState<RepoDomain | "">("");
   const [page, setPage] = useState(1);
