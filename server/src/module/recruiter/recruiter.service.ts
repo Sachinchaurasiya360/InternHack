@@ -11,7 +11,7 @@ import { createLogger } from "../../utils/logger.js";
 import { cacheGet, cacheSet } from "../../utils/cache.js";
 
 const S3_BUCKET = process.env["AWS_S3_BUCKET"] || "";
-// validating the URL
+
 function isValidS3Url(url: string) {
   try {
     const parsed = new URL(url);
@@ -207,7 +207,7 @@ export class RecruiterService {
 
     await prisma.$transaction(async (tx) => {
       // Archive the round and then re-index the remaining active rounds atomically.
-      await tx.round.update({
+      await prisma.round.update({
         where: { id: roundId },
         data: { isArchived: true },
       });
@@ -634,7 +634,7 @@ export class RecruiterService {
         prisma.application.groupBy({
           by: ["status"],
           where: { jobId },
-          _count: { id: true },
+          _count: true,
         }),
         prisma.round.findMany({
           where: { jobId, isArchived: false },
@@ -646,19 +646,19 @@ export class RecruiterService {
         prisma.roundSubmission.groupBy({
           by: ["roundId", "status"],
           where: { round: { jobId, isArchived: false } },
-          _count: { id: true },
+          _count: true,
         }),
       ]);
 
     const statusCounts: Record<string, number> = {};
     for (const s of applicationsByStatus) {
-      statusCounts[s.status] = s._count.id;
+      statusCounts[s.status] = (s._count as unknown as { _all: number })._all;
     }
 
     const submissionLookup = new Map(
       submissionsByRoundAndStatus.map((s) => [
         `${s.roundId}:${s.status}`,
-        s._count.id,
+        (s._count as unknown as { _all: number })._all,
       ]),
     );
 
@@ -670,7 +670,7 @@ export class RecruiterService {
         id: round.id,
         name: round.name,
         orderIndex: round.orderIndex,
-        totalSubmissions: round._count.roundSubmissions,
+        totalSubmissions: (round as unknown as { _count?: { roundSubmissions: number } })._count?.roundSubmissions ?? 0,
         completed: lookup("COMPLETED"),
         inProgress: lookup("IN_PROGRESS"),
         pending: lookup("PENDING"),
