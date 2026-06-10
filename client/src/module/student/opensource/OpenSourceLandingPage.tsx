@@ -1,4 +1,4 @@
-import { useRef } from "react";
+﻿import { useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -22,7 +22,7 @@ import {
   Plus,
 } from "lucide-react";
 
-// ─── Features ─────────────────────────────────────────────────
+// â”€â”€â”€ Features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const features = [
   {
     icon: <BookOpen className="w-4.5 h-4.5" />,
@@ -56,7 +56,7 @@ const features = [
   },
 ];
 
-// ─── Programs ─────────────────────────────────────────────────
+// â”€â”€â”€ Programs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const programs = [
   {
     name: "Google Summer of Code",
@@ -102,7 +102,7 @@ const programs = [
   },
 ];
 
-// ─── Steps ────────────────────────────────────────────────────
+// â”€â”€â”€ Steps â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const steps = [
   {
     icon: <BookOpen className="w-4.5 h-4.5" />,
@@ -121,7 +121,7 @@ const steps = [
   },
 ];
 
-// ─── Hidden-Gem Repos ────────────────────────────────────────
+// â”€â”€â”€ Hidden-Gem Repos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const hiddenGemRepos = [
   { name: "Cal.com", lang: "TypeScript", domain: "Scheduling", yc: "W21" },
   { name: "Infisical", lang: "TypeScript", domain: "Secret Management", yc: "W23" },
@@ -137,7 +137,7 @@ const hiddenGemRepos = [
   { name: "Khoj", lang: "Python", domain: "AI Assistant" },
 ];
 
-// ─── Shared card animation variant ───────────────────────────
+// â”€â”€â”€ Shared card animation variant â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const cardVariants = {
   hidden: { opacity: 0, y: 16 },
   visible: {
@@ -147,7 +147,7 @@ const cardVariants = {
   },
 };
 
-// ─── Sticky Horizontal Scroll: Programs ──────────────────────
+// â”€â”€â”€ Sticky Horizontal Scroll: Programs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function StickyProgramsSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -206,7 +206,7 @@ function StickyProgramsSection() {
   );
 }
 
-// ─── Main Landing Page ────────────────────────────────────────
+// â”€â”€â”€ Main Landing Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function OpenSourceLandingPage() {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
@@ -239,9 +239,9 @@ export default function OpenSourceLandingPage() {
         structuredData={hubArticleSchema}
       />
 
-      {/* ── Hero ── */}
+      {/* â”€â”€ Hero â”€â”€ */}
       <section className="relative w-full overflow-hidden bg-stone-50 dark:bg-stone-950 border-b border-stone-200 dark:border-white/10">
-        {/* Vertical grid lines — light */}
+        {/* Vertical grid lines â€” light */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none dark:hidden"
@@ -250,7 +250,7 @@ export default function OpenSourceLandingPage() {
             backgroundSize: "140px 100%",
           }}
         />
-        {/* Vertical grid lines — dark */}
+        {/* Vertical grid lines â€” dark */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none hidden dark:block"
@@ -298,7 +298,7 @@ export default function OpenSourceLandingPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-8 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-2xl leading-relaxed"
           >
-            Your complete guide to open-source — find beginner-friendly repositories, track GSoC orgs,
+            Your complete guide to open-source â€” find beginner-friendly repositories, track GSoC orgs,
             discover programs like LFX and Outreachy, and make your first pull request with confidence.
           </motion.p>
 
@@ -348,7 +348,7 @@ export default function OpenSourceLandingPage() {
         </div>
       </section>
 
-      {/* ── Features Grid ── */}
+      {/* â”€â”€ Features Grid â”€â”€ */}
       <section className="py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -369,7 +369,7 @@ export default function OpenSourceLandingPage() {
               </span>
             </h2>
             <p className="mt-6 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-xl leading-relaxed">
-              From zero knowledge to merged pull requests — every step covered.
+              From zero knowledge to merged pull requests â€” every step covered.
             </p>
           </motion.div>
 
@@ -399,7 +399,7 @@ export default function OpenSourceLandingPage() {
         </div>
       </section>
 
-      {/* ── Hidden Gem Repos ── */}
+      {/* â”€â”€ Hidden Gem Repos â”€â”€ */}
       <section className="py-24 md:py-32 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -468,7 +468,7 @@ export default function OpenSourceLandingPage() {
         </div>
       </section>
 
-      {/* ── How It Works ── */}
+      {/* â”€â”€ How It Works â”€â”€ */}
       <section className="py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -515,10 +515,10 @@ export default function OpenSourceLandingPage() {
         </div>
       </section>
 
-      {/* ── Sticky Scroll: Programs ── */}
+      {/* â”€â”€ Sticky Scroll: Programs â”€â”€ */}
       <StickyProgramsSection />
 
-      {/* ── Why Contribute ── */}
+      {/* â”€â”€ Why Contribute â”€â”€ */}
       <section className="py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -549,7 +549,7 @@ export default function OpenSourceLandingPage() {
               { icon: <Flame className="w-4.5 h-4.5" />, title: "Build Real-World Skills", desc: "Work on production-level codebases used by millions. Code reviews from top engineers sharpen your skills faster than tutorials." },
               { icon: <Users className="w-4.5 h-4.5" />, title: "Grow Your Network", desc: "Collaborate with developers worldwide, get noticed by companies, and build relationships that open doors to jobs and mentorships." },
               { icon: <FileCode2 className="w-4.5 h-4.5" />, title: "Strengthen Your Resume", desc: "Merged PRs to popular repos are the best proof of skill. Recruiters at FAANG and startups actively look for open-source contributors." },
-              { icon: <GraduationCap className="w-4.5 h-4.5" />, title: "Land Paid Programs", desc: "GSoC, LFX, Outreachy, and MLH offer stipends of $1,500–$6,600. Prior open-source contributions are the #1 factor in selection." },
+              { icon: <GraduationCap className="w-4.5 h-4.5" />, title: "Land Paid Programs", desc: "GSoC, LFX, Outreachy, and MLH offer stipends of $1,500â€“$6,600. Prior open-source contributions are the #1 factor in selection." },
             ].map((reason) => (
               <motion.div key={reason.title} variants={cardVariants}>
                 <div className="h-full flex flex-col p-8 bg-white dark:bg-stone-950 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors">
@@ -565,7 +565,7 @@ export default function OpenSourceLandingPage() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
+      {/* â”€â”€ CTA â”€â”€ */}
       <section className="py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -606,7 +606,7 @@ export default function OpenSourceLandingPage() {
                     onClick={handleExplore}
                     className="group inline-flex items-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0"
                   >
-                    {isAuthenticated ? "Explore Repositories" : "Get Started — It's Free"}
+                    {isAuthenticated ? "Explore Repositories" : "Get Started â€” It's Free"}
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </button>
                   <Link to={isAuthenticated ? "/student/opensource" : "/register"} className="no-underline">
@@ -639,3 +639,4 @@ export default function OpenSourceLandingPage() {
     </div>
   );
 }
+

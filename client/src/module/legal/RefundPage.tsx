@@ -1,4 +1,4 @@
-import { motion, type Variants } from "framer-motion";
+﻿import { motion, type Variants } from "framer-motion";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
@@ -252,3 +252,4 @@ export default function RefundPage() {
     </div>
   );
 }
+
