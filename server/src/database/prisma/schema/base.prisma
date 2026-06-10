@@ -103,7 +103,6 @@ model user {
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
   ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
-  guideCertificates         guideCertificate[]           @relation("UserCertificates")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])

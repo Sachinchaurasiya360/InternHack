@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Award, ArrowRight,
@@ -17,7 +17,6 @@ import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 import { NextInPathCard } from "./components/NextInPathCard";
 import { issueCertificate, type Certificate } from "./api/opensource.api";
 import { useAuthStore } from "../../../lib/auth.store";
-import { useEffect } from "react";
 import toast from "../../../components/ui/toast";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -85,21 +84,6 @@ export default function GSoCProposalPage() {
     .filter((s) => completed.has(s.id))
     .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
   const remainingMinutes = totalEstimatedMinutes - completedMinutes;
-  const howToSchema = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    "name": "GSoC Proposal Writing Guide - Step by Step",
-    "description": "Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure.",
-    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
-    "totalTime": `PT${totalEstimatedMinutes}M`,
-    "step": STEPS.map((s, i) => ({
-      "@type": "HowToStep",
-      "position": i + 1,
-      "name": s.title,
-      "text": s.description || "Follow the visual walkthrough steps."
-    }))
-  };
-
 
   useEffect(() => {
     if (allDone && !cert && user) {
@@ -122,7 +106,22 @@ export default function GSoCProposalPage() {
     if (!cert) return;
     const url = `${window.location.origin}/certificate/${cert.token}`;
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-    window.open(linkedInUrl, "_blank", "width=600,height=600");
+    window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
+  };
+
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "GSoC Proposal Writing Guide - Step by Step",
+    "description": "Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure.",
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+    "totalTime": `PT${totalEstimatedMinutes}M`,
+    "step": STEPS.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.title,
+      "text": s.description || "Follow the visual walkthrough steps."
+    }))
   };
 
   return (
@@ -292,3 +291,4 @@ export default function GSoCProposalPage() {
     </div>
   );
 }
+
