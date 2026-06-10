@@ -182,7 +182,9 @@ export class AdminOpensourceService {
     const globalSatisfactionRate = totalFeedback > 0 ? (thumbsUp / totalFeedback) * 100 : 0;
 
     // 2. Aggregate by guide and step using raw feed
-    const feedback = await prisma.guideFeedback.findMany();
+    const feedback = await prisma.guideFeedback.findMany({
+      select: { guideId: true, stepId: true, rating: true, reason: true },
+    });
 
     const statsMap = new Map<string, { total: number; up: number; reasons: Record<string, number> }>();
 
@@ -194,8 +196,8 @@ export class AdminOpensourceService {
       const s = statsMap.get(key)!;
       s.total++;
       if (f.rating === "up") s.up++;
-      if ((f as any).reason) {
-        s.reasons[(f as any).reason] = (s.reasons[(f as any).reason] || 0) + 1;
+      if (f.reason) {
+        s.reasons[f.reason] = (s.reasons[f.reason] || 0) + 1;
       }
     });
 
@@ -217,18 +219,11 @@ export class AdminOpensourceService {
       .sort((a, b) => a.satisfactionRate - b.satisfactionRate)
       .slice(0, 5);
 
-    // 4. Feedback Density (Heatmap data)
-    const densityMap: Record<string, number> = {};
-    feedback.forEach((f) => {
-      const key = `${f.guideId}:${f.stepId}`;
-      densityMap[key] = (densityMap[key] || 0) + 1;
-    });
-
-    // 5. Preset Drop-off Reasons Global Summary
+    // 4. Preset Drop-off Reasons Global Summary
     const reasonSummary: Record<string, number> = {};
     feedback.forEach((f) => {
-      if ((f as any).reason) {
-        reasonSummary[(f as any).reason] = (reasonSummary[(f as any).reason] || 0) + 1;
+      if (f.reason) {
+        reasonSummary[f.reason] = (reasonSummary[f.reason] || 0) + 1;
       }
     });
 
@@ -238,7 +233,6 @@ export class AdminOpensourceService {
         satisfactionRate: globalSatisfactionRate,
       },
       bottom5Steps,
-      feedbackDensity: densityMap,
       reasonSummary,
     };
   }

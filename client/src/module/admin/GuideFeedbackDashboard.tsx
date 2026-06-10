@@ -37,7 +37,6 @@ interface AnalyticsData {
     satisfactionRate: number;
   };
   bottom5Steps: StepStat[];
-  feedbackDensity: Record<string, number>;
   reasonSummary: Record<string, number>;
 }
 
@@ -116,7 +115,7 @@ export default function GuideFeedbackDashboard() {
         >
           <div className="flex justify-between mb-2">
             <span className="text-gray-400 text-sm font-medium">Total Feedback</span>
-            <MessageSquare className="w-4 h-4 text-indigo-400" />
+            <MessageSquare className="w-4 h-4 text-stone-400" />
           </div>
           <div className="text-3xl font-bold text-white tabular-nums">
             {data.global.totalFeedback}
@@ -132,14 +131,14 @@ export default function GuideFeedbackDashboard() {
         >
           <div className="flex justify-between mb-2">
             <span className="text-gray-400 text-sm font-medium">Avg. Satisfaction</span>
-            <ThumbsUp className="w-4 h-4 text-green-400" />
+            <ThumbsUp className="w-4 h-4 text-stone-400" />
           </div>
           <div className="text-3xl font-bold text-white tabular-nums">
             {data.global.satisfactionRate.toFixed(1)}%
           </div>
           <div className="mt-2 h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-green-500" 
+              className="h-full bg-stone-500" 
               style={{ width: `${data.global.satisfactionRate}%` }}
             />
           </div>
@@ -225,7 +224,7 @@ export default function GuideFeedbackDashboard() {
         <div className="bg-gray-900 border border-gray-800 rounded-2xl flex flex-col shadow-xl">
           <div className="p-6 border-b border-gray-800 bg-gray-900/50">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-indigo-500" />
+              <BarChart3 className="w-5 h-5 text-stone-500" />
               Reasons for Confusion
             </h2>
           </div>
@@ -251,7 +250,7 @@ export default function GuideFeedbackDashboard() {
                   />
                   <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                     {reasonChartData.map((_entry, index) => (
-                      <Cell key={`cell-${index}`} fill={index === 0 ? '#6366f1' : '#4b5563'} />
+                      <Cell key={`cell-${index}`} fill={index === 0 ? '#a8a29e' : '#4b5563'} />
                     ))}
                   </Bar>
                 </BarChart>

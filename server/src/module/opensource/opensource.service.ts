@@ -599,14 +599,14 @@ where["OR"] = [
       update: {
         rating: data.rating,
         reason: data.reason,
-      } as any,
+      },
       create: {
         userId,
         guideId: data.guideId,
         stepId: data.stepId,
         rating: data.rating,
         reason: data.reason,
-      } as any,
+      },
     });
   }
 

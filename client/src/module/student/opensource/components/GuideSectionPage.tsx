@@ -91,12 +91,12 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
 if (!step) return <Navigate to={basePath} replace />;
 
   const handleThumbsDown = () => {
-    if (submitted) return;
+    if (!step || submitted) return;
     setShowReasons(true);
   };
 
   const submitFeedback = async (value: "up" | "down", reason?: string) => {
-    if (!step || (submitted && !reason)) return;
+    if (!step || submitted) return;
 
     try {
       await api.post("/opensource/guide-feedback", {
