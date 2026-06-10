@@ -3,13 +3,7 @@ import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { CARD_BASE } from "../../../../lib/card-styles";
 
-function CompanyMark({ label }: { label: string }) {
-  return (
-    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../../components/ui/CompanyMark";
 
 export interface JobCardProps {
   /** Internal route (use `to`) or external URL (use `href`) */
@@ -51,7 +45,7 @@ const JobCard = React.memo(function JobCard({
 
       {/* Header row */}
       <div className={`flex items-start gap-3 mb-3 ${badge ? "pr-16" : ""}`}>
-        <CompanyMark label={company} />
+        <CompanyMark name={company} />
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
             {title}
