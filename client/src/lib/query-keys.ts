@@ -228,6 +228,7 @@ export const queryKeys = {
     bookmarks: () => ["dsa", "bookmarks"] as const,
     companies: () => ["dsa", "companies"] as const,
     company: (name: string, page?: number) => ["dsa", "company", name, page] as const,
+    companyTrackStats: (name: string) => ["dsa", "company", name, "track-stats"] as const,
     patterns: () => ["dsa", "patterns"] as const,
     pattern: (name: string, page?: number) => ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
@@ -238,6 +239,7 @@ export const queryKeys = {
     streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
+    approaches: (slug: string) => ["dsa", "approaches", slug] as const,
   },
 
   // Roadmaps
