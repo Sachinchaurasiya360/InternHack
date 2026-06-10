@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useLayoutEffect } from "react";
-import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { useWindowVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
 import { useParams, Link, Navigate } from "react-router";
 import {
   useQuery,
@@ -465,7 +465,7 @@ export default function DsaTopicDetailPage() {
                 position: "relative",
               }}
             >
-              {virtualizer.getVirtualItems().map((virtualItem) => {
+              {virtualizer.getVirtualItems().map((virtualItem: VirtualItem) => {
                 const problem = filteredProblems[virtualItem.index];
                 return (
                   <div
