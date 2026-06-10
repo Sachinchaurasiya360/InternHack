@@ -85,6 +85,7 @@ model roadmapResource {
 
   @@index([topicId])
 }
+
 model roadmapEnrollment {
   id                 Int                    @id @default(autoincrement())
   userId             Int

@@ -9,11 +9,11 @@ enum JobSourceType {
 }
 
 model jobIndex {
-  id              Int            @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   // ── Source tracking ──
-  sourceType      JobSourceType
-  sourceId        Int
+  sourceType JobSourceType
+  sourceId   Int
 
   // ── Normalized fields ──
   title           String
@@ -23,25 +23,25 @@ model jobIndex {
   salaryMin       Int?
   salaryMax       Int?
   description     String
-  tags            String[]       @default([])
-  skills          String[]       @default([])
+  tags            String[]  @default([])
+  skills          String[]  @default([])
   experienceLevel String?
   workMode        String?
   domain          String?
   applicationUrl  String?
   deadline        DateTime?
-  isActive        Boolean        @default(true)
+  isActive        Boolean   @default(true)
 
   // ── Enrichment tracking ──
-  isEnriched      Boolean        @default(false)
-  hasEmbedding    Boolean        @default(false)
-  lastEnrichedAt  DateTime?
+  isEnriched     Boolean   @default(false)
+  hasEmbedding   Boolean   @default(false)
+  lastEnrichedAt DateTime?
 
   // ── Relations ──
-  matches         jobMatch[]
+  matches jobMatch[]
 
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([sourceType, sourceId])
   @@index([isActive])
@@ -54,9 +54,9 @@ model jobIndex {
 }
 
 model userJobPreference {
-  id               Int      @id @default(autoincrement())
-  userId           Int      @unique
-  user             user     @relation("UserJobPreferences", fields: [userId], references: [id], onDelete: Cascade)
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   user @relation("UserJobPreferences", fields: [userId], references: [id], onDelete: Cascade)
 
   desiredRoles     String[] @default([])
   desiredSkills    String[] @default([])
@@ -66,39 +66,39 @@ model userJobPreference {
   experienceLevel  String[] @default([])
   domains          String[] @default([])
 
-  profileSkills    String[] @default([])
-  profileSummary   String?
+  profileSkills  String[] @default([])
+  profileSummary String?
 
-  viewedJobIds     Int[]    @default([])
-  appliedJobIds    Int[]    @default([])
-  dismissedJobIds  Int[]    @default([])
-  savedJobIds      Int[]    @default([])
+  viewedJobIds    Int[] @default([])
+  appliedJobIds   Int[] @default([])
+  dismissedJobIds Int[] @default([])
+  savedJobIds     Int[] @default([])
 
-  hasEmbedding     Boolean  @default(false)
+  hasEmbedding Boolean @default(false)
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model jobMatch {
-  id            Int      @id @default(autoincrement())
-  userId        Int
-  user          user     @relation("UserJobMatches", fields: [userId], references: [id], onDelete: Cascade)
-  jobIndexId    Int
-  jobIndex      jobIndex @relation(fields: [jobIndexId], references: [id], onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       user     @relation("UserJobMatches", fields: [userId], references: [id], onDelete: Cascade)
+  jobIndexId Int
+  jobIndex   jobIndex @relation(fields: [jobIndexId], references: [id], onDelete: Cascade)
 
   score         Float
-  skillMatch    Float    @default(0)
-  locationMatch Float    @default(0)
-  salaryMatch   Float    @default(0)
-  vectorScore   Float    @default(0)
+  skillMatch    Float @default(0)
+  locationMatch Float @default(0)
+  salaryMatch   Float @default(0)
+  vectorScore   Float @default(0)
 
-  seen          Boolean  @default(false)
-  dismissed     Boolean  @default(false)
-  saved         Boolean  @default(false)
-  applied       Boolean  @default(false)
+  seen      Boolean @default(false)
+  dismissed Boolean @default(false)
+  saved     Boolean @default(false)
+  applied   Boolean @default(false)
 
-  createdAt     DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([userId, jobIndexId])
   @@index([userId, score])
@@ -120,21 +120,22 @@ model jobAgentConversation {
 }
 
 model generatedResume {
-  id           Int      @id @default(autoincrement())
-  userId       Int
-  title        String   @default("Untitled Resume")
-  jobTitle     String?
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  title          String   @default("Untitled Resume")
+  jobTitle       String?
   jobDescription String?
-  keySkills    String?
-  latexContent String
-  source       String   @default("AI_GENERATED")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         user     @relation("UserGeneratedResumes", fields: [userId], references: [id], onDelete: Cascade)
+  keySkills      String?
+  latexContent   String
+  source         String   @default("AI_GENERATED")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           user     @relation("UserGeneratedResumes", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt])
 }
+
 model generatedCoverLetter {
   id             Int      @id @default(autoincrement())
   studentId      Int
