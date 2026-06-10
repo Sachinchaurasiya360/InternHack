@@ -545,22 +545,24 @@ export default function MyApplicationsPage() {
           </Link>
         </div>
       ) : filtered.length === 0 && filteredExternal.length === 0 ? (
-        <EmptyState
-          icon={<Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
-          title="No applications match your current filters"
-          action={
-            <button
-              type="button"
-              onClick={() => {
-                setSearch("");
-                setStatusFilter("ALL");
-              }}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer mt-2"
-            >
-              Clear all filters
-            </button>
-          }
-        />
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <EmptyState
+            icon={<Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+            title="No applications match your current filters"
+            action={
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setStatusFilter("ALL");
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer mt-2"
+              >
+                Clear all filters
+              </button>
+            }
+          />
+        </motion.div>
       ) : (
         (() => {
           const combined: Array<

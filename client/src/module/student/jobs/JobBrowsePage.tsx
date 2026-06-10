@@ -772,21 +772,23 @@ export default function JobBrowsePage() {
             </div>
           </div>
         ) : (data?.jobs ?? []).length === 0 ? (
-          <EmptyState
-            title="No jobs match your filters"
-            description="try adjusting your search or filters"
-            action={
-              hasFilters ? (
-                <button
-                  type="button"
-                  onClick={clearAll}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
-                >
-                  <X className="w-3.5 h-3.5" /> Clear filters
-                </button>
-              ) : undefined
-            }
-          />
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <EmptyState
+              title="No jobs match your filters"
+              description="try adjusting your search or filters"
+              action={
+                hasFilters ? (
+                  <button
+                    type="button"
+                    onClick={clearAll}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" /> Clear filters
+                  </button>
+                ) : undefined
+              }
+            />
+          </motion.div>
         ) : (
           <>
             <div className="flex items-end justify-between gap-4 mb-6">

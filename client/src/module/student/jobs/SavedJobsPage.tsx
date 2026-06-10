@@ -73,19 +73,21 @@ export default function SavedJobsPage() {
           </div>
         </div>
       ) : savedJobs.length === 0 ? (
-        <EmptyState
-          icon={<Bookmark className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
-          title="No saved jobs yet"
-          description="Browse jobs and tap the bookmark icon to save them for later."
-          action={
-            <Link
-              to="/student/jobs"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors no-underline mt-2"
-            >
-              <Briefcase className="w-3.5 h-3.5" /> Browse jobs
-            </Link>
-          }
-        />
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <EmptyState
+            icon={<Bookmark className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+            title="No saved jobs yet"
+            description="Browse jobs and tap the bookmark icon to save them for later."
+            action={
+              <Link
+                to="/student/jobs"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors no-underline mt-2"
+              >
+                <Briefcase className="w-3.5 h-3.5" /> Browse jobs
+              </Link>
+            }
+          />
+        </motion.div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {savedJobs.map((job, i) => (
