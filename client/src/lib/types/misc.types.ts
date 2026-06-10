@@ -7,7 +7,13 @@ export interface Pagination {
 }
 
 // ── Email Campaign ──
-export type EmailCampaignStatus = "DRAFT" | "QUEUED" | "SENDING" | "PAUSED" | "COMPLETED" | "FAILED";
+export type EmailCampaignStatus =
+  | "DRAFT"
+  | "QUEUED"
+  | "SENDING"
+  | "PAUSED"
+  | "COMPLETED"
+  | "FAILED";
 export type EmailLogStatus = "PENDING" | "SENT" | "FAILED";
 
 export interface EmailCampaign {
@@ -43,7 +49,13 @@ export interface EmailCampaignDetail extends EmailCampaign {
 }
 
 // ── Blog ──
-export type BlogCategory = "CAREER_ADVICE" | "INTERVIEW_TIPS" | "SALARY_GUIDE" | "INDUSTRY_INSIGHTS" | "RESUME_TIPS" | "TECH_TRENDS";
+export type BlogCategory =
+  | "CAREER_ADVICE"
+  | "INTERVIEW_TIPS"
+  | "SALARY_GUIDE"
+  | "INDUSTRY_INSIGHTS"
+  | "RESUME_TIPS"
+  | "TECH_TRENDS";
 export type BlogStatus = "DRAFT" | "PUBLISHED";
 
 export interface BlogPost {

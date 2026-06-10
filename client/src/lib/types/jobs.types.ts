@@ -7,9 +7,25 @@ export const JobStatus = {
   ARCHIVED: "ARCHIVED",
 } as const;
 export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus];
-export type ApplicationStatus = "APPLIED" | "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED" | "WITHDRAWN";
+export type ApplicationStatus =
+  | "APPLIED"
+  | "IN_PROGRESS"
+  | "SHORTLISTED"
+  | "REJECTED"
+  | "HIRED"
+  | "WITHDRAWN";
 export type RoundStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
-export type FieldType = "TEXT" | "TEXTAREA" | "DROPDOWN" | "MULTI_SELECT" | "FILE_UPLOAD" | "BOOLEAN" | "NUMERIC" | "DATE" | "EMAIL" | "URL";
+export type FieldType =
+  | "TEXT"
+  | "TEXTAREA"
+  | "DROPDOWN"
+  | "MULTI_SELECT"
+  | "FILE_UPLOAD"
+  | "BOOLEAN"
+  | "NUMERIC"
+  | "DATE"
+  | "EMAIL"
+  | "URL";
 
 export interface CustomFieldDefinition {
   id: string;
@@ -80,7 +96,12 @@ export interface Job {
   deadline?: string;
   tags: string[];
   recruiterId: number;
-  recruiter?: { id: number; name: string; company?: string; designation?: string };
+  recruiter?: {
+    id: number;
+    name: string;
+    company?: string;
+    designation?: string;
+  };
   rounds?: Round[];
   _count?: { applications: number; rounds: number };
   createdAt: string;
@@ -130,8 +151,23 @@ export interface AdminDashboardData {
   totalApplications: number;
   hiredCount: number;
   statusBreakdown: Record<string, number>;
-  recentUsers: { id: number; name: string; email: string; role: UserRole; isActive: boolean; createdAt: string }[];
-  recentJobs: { id: number; title: string; company: string; status: JobStatus; createdAt: string; recruiter: { id: number; name: string }; _count: { applications: number } }[];
+  recentUsers: {
+    id: number;
+    name: string;
+    email: string;
+    role: UserRole;
+    isActive: boolean;
+    createdAt: string;
+  }[];
+  recentJobs: {
+    id: number;
+    title: string;
+    company: string;
+    status: JobStatus;
+    createdAt: string;
+    recruiter: { id: number; name: string };
+    _count: { applications: number };
+  }[];
 }
 
 export interface ExternalJob {

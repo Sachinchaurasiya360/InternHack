@@ -1,6 +1,16 @@
 // Open Source Repos
 export type RepoDifficulty = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-export type RepoDomain = "AI" | "WEB" | "DEVOPS" | "MOBILE" | "BLOCKCHAIN" | "DATA" | "SECURITY" | "CLOUD" | "GAMING" | "OTHER";
+export type RepoDomain =
+  | "AI"
+  | "WEB"
+  | "DEVOPS"
+  | "MOBILE"
+  | "BLOCKCHAIN"
+  | "DATA"
+  | "SECURITY"
+  | "CLOUD"
+  | "GAMING"
+  | "OTHER";
 
 export interface OpenSourceRepo {
   id: number;
@@ -45,7 +55,12 @@ export interface RepoRequest {
   status: RepoRequestStatus;
   adminNote?: string | null;
   userId: number;
-  user?: { id: number; name: string; email: string; profilePic?: string | null };
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+    profilePic?: string | null;
+  };
   repoId?: number | null;
   createdAt: string;
   updatedAt: string;
@@ -97,18 +112,21 @@ export interface GSoCOrganization {
   technologies: string[];
   yearsParticipated: number[];
   totalProjects: number;
-  projectsData?: Record<string, {
-    projects_url: string;
-    num_projects: number;
-    projects: {
-      title: string;
-      short_description: string;
-      description: string;
-      student_name: string;
-      code_url: string;
-      project_url: string;
-    }[];
-  }>;
+  projectsData?: Record<
+    string,
+    {
+      projects_url: string;
+      num_projects: number;
+      projects: {
+        title: string;
+        short_description: string;
+        description: string;
+        student_name: string;
+        code_url: string;
+        project_url: string;
+      }[];
+    }
+  >;
   contactEmail?: string;
   mailingList?: string;
   ideasUrl?: string;

@@ -18,6 +18,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 import api from "../../../lib/axios";
+import { NotesWidget } from "../notes/NotesWidget";
 
 async function getServerProgress() {
   const { data } = await api.get("/interview-progress");
@@ -266,6 +267,14 @@ export default function InterviewQuestionPage() {
         description={content.answer?.slice(0, 160) || `Detailed answer for "${question.title}" interview question with code examples.`}
         canonicalUrl={canonicalUrl(`/learn/interview/${sectionSlug}/${questionId}`)}
       />
+
+      {questionId && (
+        <NotesWidget
+          contentType="interview-question"
+          contentId={questionId}
+          title={question.title}
+        />
+      )}
 
       <div
         aria-hidden

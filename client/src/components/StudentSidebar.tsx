@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Lock, BrainCircuit, Radar } from "lucide-react";
+import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Lock, BrainCircuit, Radar, Bookmark, NotebookPen } from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 
 type NavItem = {
@@ -31,6 +31,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/student/ai-agent", icon: BrainCircuit, label: "InternHack AI" },
       { to: "/student/ats/score", icon: ScanSearch, label: "Resume" },
       { to: "/learn", icon: GraduationCap, label: "Learning Hub" },
+      { to: "/learn/notes", icon: NotebookPen, label: "My Notes" },
       { to: "/student/skill-verification", icon: ShieldCheck, label: "Skill Tests" },
       { to: "/student/mock-interview", icon: Video, label: "Mock Interview", premium: true },
     ],

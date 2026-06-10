@@ -73,7 +73,11 @@ export interface ProctorLog {
   devtoolsAttempts: number;
   copyPasteAttempts: number;
   rightClickAttempts: number;
-  faceViolations: { type: "NO_FACE" | "MULTIPLE_FACES"; timestamp: string; duration?: number }[];
+  faceViolations: {
+    type: "NO_FACE" | "MULTIPLE_FACES";
+    timestamp: string;
+    duration?: number;
+  }[];
   warnings: { type: string; message: string; timestamp: string }[];
   terminated: boolean;
   terminationReason: string | null;
@@ -111,7 +115,12 @@ export interface SkillTestSubmitResult {
 }
 
 // Badges
-export type BadgeCategory = "CAREER" | "QUIZ" | "SKILL" | "CONTRIBUTION" | "MILESTONE";
+export type BadgeCategory =
+  | "CAREER"
+  | "QUIZ"
+  | "SKILL"
+  | "CONTRIBUTION"
+  | "MILESTONE";
 
 export interface Badge {
   id: number;

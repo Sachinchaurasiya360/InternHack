@@ -41,7 +41,15 @@ export interface UsageStats {
 }
 
 // Cover Letter
-export type CoverLetterTone = "professional" | "friendly" | "enthusiastic" | "technical" | "creative" | "formal" | "concise" | "startup";
+export type CoverLetterTone =
+  | "professional"
+  | "friendly"
+  | "enthusiastic"
+  | "technical"
+  | "creative"
+  | "formal"
+  | "concise"
+  | "startup";
 
 export interface CoverLetterInput {
   jobDescription: string;

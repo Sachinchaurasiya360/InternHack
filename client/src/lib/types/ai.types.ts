@@ -1,4 +1,9 @@
-export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL" | "CLAUDE";
+export type AIProviderType =
+  | "GEMINI"
+  | "GROQ"
+  | "OPENROUTER"
+  | "CODESTRAL"
+  | "CLAUDE";
 export type AIServiceType =
   | "ATS_SCORE"
   | "COVER_LETTER"
@@ -16,7 +21,11 @@ export interface AIServiceConfig {
 }
 
 export interface AIRequestStats {
-  byProvider: { provider: AIProviderType; count: number; avgLatencyMs: number }[];
+  byProvider: {
+    provider: AIProviderType;
+    count: number;
+    avgLatencyMs: number;
+  }[];
   byService: { service: AIServiceType; count: number }[];
   totalRequests: number;
   avgLatencyMs: number;

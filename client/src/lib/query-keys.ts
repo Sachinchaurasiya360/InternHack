@@ -248,6 +248,12 @@ export const queryKeys = {
     approaches: (slug: string) => ["dsa", "approaches", slug] as const,
   },
 
+  // Universal Study Notes
+  notes: {
+    all: ["notes"] as const,
+    list: (search?: string) => ["notes", "list", search ?? ""] as const,
+  },
+
   // Roadmaps
   roadmaps: {
     all: ["roadmaps"] as const,

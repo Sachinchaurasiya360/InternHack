@@ -16,6 +16,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import { sanitizeHtml } from "../../../lib/sanitize";
+import { NotesWidget } from "../notes/NotesWidget";
 
 type QuestionResult = AptitudeAnswerResult;
 
@@ -186,6 +187,14 @@ export default function AptitudeTopicPage() {
         keywords={`${topic.name}, aptitude practice, placement preparation`}
         canonicalUrl={canonicalUrl(`/learn/aptitude/${slug}/practice`)}
       />
+
+      {q && (
+        <NotesWidget
+          contentType="aptitude-question"
+          contentId={String(q.id)}
+          title={`${topic.name} · Question ${qNum}`}
+        />
+      )}
 
       <div
         aria-hidden

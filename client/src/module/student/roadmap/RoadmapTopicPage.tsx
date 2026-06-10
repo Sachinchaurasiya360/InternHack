@@ -25,6 +25,7 @@ import type {
 } from "../../../lib/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { NotesWidget } from "../notes/NotesWidget";
 
 interface TopicResponse {
   topic: RoadmapTopic & {
@@ -203,6 +204,12 @@ export default function RoadmapTopicPage() {
         ogType="article"
         noIndex={!topic.section.roadmap.isPublished}
         structuredData={learningResourceSchema ?? undefined}
+      />
+
+      <NotesWidget
+        contentType="roadmap-topic"
+        contentId={`${slug}/${topicSlug}`}
+        title={`${topic.section.roadmap.title} · ${topic.title}`}
       />
 
       <div className="max-w-4xl mx-auto px-6 pb-16">

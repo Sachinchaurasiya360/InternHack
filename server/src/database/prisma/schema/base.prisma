@@ -103,6 +103,7 @@ model user {
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
   ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
+  studyNotes                studentNote[]                @relation("UserStudyNotes")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -1546,5 +1547,22 @@ model coachAdvice {
 
   @@index([userId])
   @@index([createdAt])
+}
+
+// Universal study notes: one note per student per piece of learning content.
+// contentType is a free-form discriminator ('lesson', 'interview-question',
+// 'aptitude-question', 'roadmap-topic') paired with the content's own id.
+model studentNote {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  contentType String
+  contentId   String
+  note        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        user     @relation("UserStudyNotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentType, contentId])
+  @@index([userId])
 }
 

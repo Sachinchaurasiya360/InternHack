@@ -1,10 +1,29 @@
 // ── Roadmap ─────────────────────────────────────────────────────────────
-export type RoadmapLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS";
-export type ResourceKind = "VIDEO" | "ARTICLE" | "DOCS" | "COURSE" | "BOOK" | "PROJECT" | "OTHER";
+export type RoadmapLevel =
+  | "BEGINNER"
+  | "INTERMEDIATE"
+  | "ADVANCED"
+  | "ALL_LEVELS";
+export type ResourceKind =
+  | "VIDEO"
+  | "ARTICLE"
+  | "DOCS"
+  | "COURSE"
+  | "BOOK"
+  | "PROJECT"
+  | "OTHER";
 export type ExperienceLevel = "NEW" | "SOME" | "EXPERIENCED";
-export type EnrollmentGoal = "JOB_READY" | "SIDE_PROJECT" | "SCHOOL" | "CURIOUS";
+export type EnrollmentGoal =
+  | "JOB_READY"
+  | "SIDE_PROJECT"
+  | "SCHOOL"
+  | "CURIOUS";
 export type EnrollmentStatus = "ACTIVE" | "PAUSED" | "COMPLETED" | "ABANDONED";
-export type RoadmapTopicStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
+export type RoadmapTopicStatus =
+  | "NOT_STARTED"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "SKIPPED";
 export type DayOfWeek = "MON" | "TUE" | "WED" | "THU" | "FRI" | "SAT" | "SUN";
 
 export interface RoadmapResource {

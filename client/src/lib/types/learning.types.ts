@@ -70,7 +70,12 @@ export interface DsaProblemDetail {
   acceptanceRate?: string;
   totalAccepted?: number;
   totalSubmissions?: number;
-  similarQuestions?: { title: string; slug: string; difficulty: string; url: string }[];
+  similarQuestions?: {
+    title: string;
+    slug: string;
+    difficulty: string;
+    url: string;
+  }[];
   category?: string;
   isPremium: boolean;
   solved: boolean;
@@ -251,7 +256,11 @@ export interface LeetcodeImportPreview {
   newSolves: number;
   token: string;
   preview: LeetcodeImportPreviewItem[];
-  lastImport?: { importedAt: string; username: string | null; source: string } | null;
+  lastImport?: {
+    importedAt: string;
+    username: string | null;
+    source: string;
+  } | null;
 }
 
 export interface LeetcodeImportResult {

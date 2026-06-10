@@ -27,6 +27,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { NotesWidget } from "../notes/NotesWidget";
 
 const FREE_LIMIT = 5;
 
@@ -318,6 +319,12 @@ export default function JsLessonDetailPage() {
         description={`Learn about ${lesson.title} in JavaScript. Covers key concepts with code examples and practice exercises.`}
         keywords={`${lesson.title}, javascript, tutorial`}
         canonicalUrl={canonicalUrl(`/learn/javascript/${sectionSlug}/${lessonId}`)}
+      />
+
+      <NotesWidget
+        contentType="lesson"
+        contentId={`javascript/${sectionSlug ?? ""}/${lessonId ?? ""}`}
+        title={`JavaScript · ${lesson.title}`}
       />
 
       <div className="max-w-4xl mx-auto px-3 sm:px-8 py-6 sm:py-8">

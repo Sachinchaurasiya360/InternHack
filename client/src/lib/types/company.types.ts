@@ -1,7 +1,16 @@
-export type CompanySize = "STARTUP" | "SMALL" | "MEDIUM" | "LARGE" | "ENTERPRISE";
+export type CompanySize =
+  | "STARTUP"
+  | "SMALL"
+  | "MEDIUM"
+  | "LARGE"
+  | "ENTERPRISE";
 export type ReviewStatus = "PENDING" | "APPROVED" | "REJECTED";
 export type ContributionStatus = "PENDING" | "APPROVED" | "REJECTED";
-export type ContributionType = "NEW_COMPANY" | "EDIT_COMPANY" | "ADD_CONTACT" | "ADD_REVIEW";
+export type ContributionType =
+  | "NEW_COMPANY"
+  | "EDIT_COMPANY"
+  | "ADD_CONTACT"
+  | "ADD_REVIEW";
 
 export interface Company {
   id: number;
