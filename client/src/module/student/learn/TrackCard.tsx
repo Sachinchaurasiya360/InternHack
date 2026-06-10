@@ -108,14 +108,14 @@ export const TrackCard = React.memo(function TrackCard({ track, index, progress 
               ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800"
               : "bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800"
           }`}>
-            <p className="font-mono uppercase tracking-widest text-[10px] text-stone-500 mb-1.5">
+            <p className="font-mono uppercase tracking-widest text-xs text-stone-500 mb-1.5">
               prerequisites
             </p>
             <div className="flex items-center gap-1.5 flex-wrap">
               {prereqs.map((p) => (
                 <span
                   key={p.id}
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-mono ${
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-mono ${
                     p.done
                       ? "text-lime-700 dark:text-lime-400 border-lime-300 dark:border-lime-800 bg-lime-50 dark:bg-lime-900/30"
                       : "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30"
@@ -126,7 +126,7 @@ export const TrackCard = React.memo(function TrackCard({ track, index, progress 
               ))}
             </div>
             {hasUnmet && track.prerequisiteText && (
-              <p className="mt-1.5 text-[11px] text-amber-700 dark:text-amber-400">
+              <p className="mt-1.5 text-xs text-amber-700 dark:text-amber-400">
                 {track.prerequisiteText}
               </p>
             )}
