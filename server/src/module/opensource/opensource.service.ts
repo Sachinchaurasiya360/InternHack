@@ -96,25 +96,25 @@ export class OpensourceService {
         .filter((id: number) => !Number.isNaN(id));
       if (idList.length > 0) where["id"] = { in: idList };
     }
-const trimmedSearch = search?.trim();
+    const trimmedSearch = search?.trim();
 
-if (trimmedSearch) {
-  // Prisma's scalar-list filters can't do case-insensitive substring match
-  // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-  // subquery and merge the matching ids into the OR clause.
+    if (trimmedSearch) {
+      // Prisma's scalar-list filters can't do case-insensitive substring match
+      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+      // subquery and merge the matching ids into the OR clause.
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
           SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${trimmedSearch}%`}
         )
       `;
-    
+
       const tagMatchIds = tagMatches.map((r) => r.id);
-where["OR"] = [
-  { name: { contains: trimmedSearch, mode: "insensitive" } },
-  { owner: { contains: trimmedSearch, mode: "insensitive" } },
-  { description: { contains: trimmedSearch, mode: "insensitive" } },
-  { language: { contains: trimmedSearch, mode: "insensitive" } },
+      where["OR"] = [
+        { name: { contains: trimmedSearch, mode: "insensitive" } },
+        { owner: { contains: trimmedSearch, mode: "insensitive" } },
+        { description: { contains: trimmedSearch, mode: "insensitive" } },
+        { language: { contains: trimmedSearch, mode: "insensitive" } },
         ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
       ];
     }
@@ -186,7 +186,7 @@ where["OR"] = [
   private async updateGithubStats(id: number, url: string, name: string) {
     const [stats, health] = await Promise.all([
       fetchGithubStats(url),
-      this.getRepoOwnerAndNameFromUrl(url).then(parsed => 
+      this.getRepoOwnerAndNameFromUrl(url).then(parsed =>
         parsed ? fetchRepoHealthData(parsed.owner, parsed.name) : null
       )
     ]);
@@ -238,7 +238,7 @@ where["OR"] = [
 
     const trimmedSearch = search?.trim();
 
-      if (trimmedSearch) {
+    if (trimmedSearch) {
       where.OR = [
         { name: { contains: trimmedSearch, mode: "insensitive" } },
         { description: { contains: trimmedSearch, mode: "insensitive" } },
@@ -416,7 +416,7 @@ where["OR"] = [
       console.error("[github] approval stats fetch failed:", err),
     );
     // Re-sync stored ossTier for the contributor (fire-and-forget)
-    userService.calculateOssTier(request.userId).catch(() => {});
+    userService.calculateOssTier(request.userId).catch(() => { });
     return repo;
   }
 
@@ -585,7 +585,7 @@ where["OR"] = [
       select: { completedStepIds: true },
     });
     // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
-    userService.calculateOssTier(userId).catch(() => {});
+    userService.calculateOssTier(userId).catch(() => { });
     return progress.completedStepIds;
   }
 
@@ -622,83 +622,6 @@ where["OR"] = [
     return repos;
   }
 
-  async submitGuideFeedback(userId: number, data: { guideId: string; stepId: string; rating: string; reason?: string }) {
-    return prisma.guideFeedback.upsert({
-      where: {
-        userId_guideId_stepId: {
-          userId,
-          guideId: data.guideId,
-          stepId: data.stepId,
-        },
-      },
-      update: {
-        rating: data.rating,
-        reason: data.reason,
-      },
-      create: {
-        userId,
-        guideId: data.guideId,
-        stepId: data.stepId,
-        rating: data.rating,
-        reason: data.reason,
-      },
-    });
-  }
-
-  // ─── Bookmarks ────────────────────────────────────────────────
-
-  async getBookmarkedRepoIds(userId: number): Promise<number[]> {
-    const bookmarks = await prisma.opensourceBookmark.findMany({
-      where: { userId },
-      select: { repoId: true },
-      orderBy: { createdAt: "desc" },
-    });
-    return bookmarks.map((b) => b.repoId);
-  }
-
-  async addBookmark(userId: number, repoId: number): Promise<{ repoId: number }> {
-    const repo = await prisma.opensourceRepo.findUnique({
-      where: { id: repoId },
-      select: { id: true },
-    });
-    if (!repo) throw new Error("Repository not found");
-
-    await prisma.opensourceBookmark.upsert({
-      where: { userId_repoId: { userId, repoId } },
-      create: { userId, repoId },
-      update: {}, // no-op if already bookmarked
-    });
-    return { repoId };
-  }
-
-  async removeBookmark(userId: number, repoId: number): Promise<void> {
-    await prisma.opensourceBookmark.deleteMany({
-      where: { userId, repoId },
-    });
-  }
-
-  async bulkMigrateBookmarks(userId: number, repoIds: number[]): Promise<number[]> {
-    // Resolve only IDs that actually exist in the DB
-    const validRepos = await prisma.opensourceRepo.findMany({
-      where: { id: { in: repoIds } },
-      select: { id: true },
-    });
-    const validIds = validRepos.map((r) => r.id);
-    if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
-
-    await prisma.$transaction(
-      validIds.map((repoId) =>
-        prisma.opensourceBookmark.upsert({
-          where: { userId_repoId: { userId, repoId } },
-          create: { userId, repoId },
-          update: {},
-        }),
-      ),
-    );
-
-    return this.getBookmarkedRepoIds(userId);
-  }
-
   async getCertificate(token: string) {
     return prisma.guideCertificate.findUnique({
       where: { token },
@@ -726,4 +649,97 @@ where["OR"] = [
       },
     });
   }
+
+  async submitGuideFeedback(
+    userId: number,
+    data: {
+      guideId: string;
+      stepId: string;
+      rating: string;
+      reason?: string;
+    },
+  ) {
+    return prisma.guideFeedback.upsert({
+      where: {
+        userId_guideId_stepId: {
+          userId,
+          guideId: data.guideId,
+          stepId: data.stepId,
+        },
+      },
+      update: {
+        rating: data.rating,
+        reason: data.reason,
+      },
+      create: {
+        userId,
+        guideId: data.guideId,
+        stepId: data.stepId,
+        rating: data.rating,
+        reason: data.reason,
+      },
+    });
+  }
+  // ─── Bookmarks ────────────────────────────────────────────────
+
+  async getBookmarkedRepoIds(userId: number): Promise<number[]> {
+    const bookmarks = await prisma.opensourceBookmark.findMany({
+      where: { userId },
+      select: { repoId: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return bookmarks.map((b) => b.repoId);
+  }
+
+  async addBookmark(
+    userId: number,
+    repoId: number,
+  ): Promise<{ repoId: number }> {
+    const repo = await prisma.opensourceRepo.findUnique({
+      where: { id: repoId },
+      select: { id: true },
+    });
+    if (!repo) throw new Error("Repository not found");
+
+    await prisma.opensourceBookmark.upsert({
+      where: { userId_repoId: { userId, repoId } },
+      create: { userId, repoId },
+      update: {}, // no-op if already bookmarked
+    });
+    return { repoId };
+  }
+
+  async removeBookmark(userId: number, repoId: number): Promise<void> {
+    await prisma.opensourceBookmark.deleteMany({
+      where: { userId, repoId },
+    });
+  }
+
+  async bulkMigrateBookmarks(
+    userId: number,
+    repoIds: number[],
+  ): Promise<number[]> {
+    // Resolve only IDs that actually exist in the DB
+    const validRepos = await prisma.opensourceRepo.findMany({
+      where: { id: { in: repoIds } },
+      select: { id: true },
+    });
+    const validIds = validRepos.map((r) => r.id);
+    if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
+
+    await prisma.$transaction(
+      validIds.map((repoId) =>
+        prisma.opensourceBookmark.upsert({
+          where: { userId_repoId: { userId, repoId } },
+          create: { userId, repoId },
+          update: {},
+        }),
+      ),
+    );
+
+    return this.getBookmarkedRepoIds(userId);
+  }
+
 }
+
+
