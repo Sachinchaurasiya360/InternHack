@@ -12,6 +12,7 @@ import { SEO } from "../../../components/SEO";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { ApplicationNotes } from "./ApplicationNotes";
 import toast from "@/components/ui/toast";
+import { usePaginationReset } from "../../../hooks/usePaginationReset";
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -266,10 +267,7 @@ export default function MyApplicationsPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  useEffect(() => {
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  setPage(1);
-}, [debouncedSearch, statusFilter]);
+  usePaginationReset(setPage, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),

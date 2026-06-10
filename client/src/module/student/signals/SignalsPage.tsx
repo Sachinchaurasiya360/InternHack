@@ -20,6 +20,7 @@ import type {
   FundingSignalListResponse,
 } from "../../../lib/types";
 import { querySignals, type SignalKind } from "./signals-api";
+import { usePaginationReset } from "../../../hooks/usePaginationReset";
 
 const KIND_TABS: { id: SignalKind; label: string }[] = [
   { id: "all", label: "All" },
@@ -90,6 +91,8 @@ export default function SignalsPage() {
   const [sort, setSort] = useState<"recent" | "amount">("recent");
   const [page, setPage] = useState(1);
 
+  usePaginationReset(setPage, [search, source, sort, kind]);
+
   const copy = PAGE_COPY[kind];
   const showAmountSort = kind !== "hiring" && kind !== "product_launch";
 
@@ -125,19 +128,16 @@ export default function SignalsPage() {
 
   const submitSearch = () => {
     setSearch(searchInput.trim());
-    setPage(1);
   };
 
   const clearFilters = () => {
     setSearch("");
     setSearchInput("");
     setSource("");
-    setPage(1);
   };
 
   const changeKind = (next: SignalKind) => {
     setKind(next);
-    setPage(1);
     if ((next === "hiring" || next === "product_launch") && sort === "amount") {
       setSort("recent");
     }
