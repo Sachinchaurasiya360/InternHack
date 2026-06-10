@@ -441,7 +441,7 @@ export default function RepoDiscoveryPage() {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-1 w-1 bg-lime-400"></div>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
               learning / open source
             </span>
           </div>
@@ -465,7 +465,7 @@ export default function RepoDiscoveryPage() {
               </p>
             </div>
             {stats && (
-              <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                 <span>
                   <span className="text-stone-900 dark:text-stone-50">{stats.totalRepos}</span> repos
                 </span>
@@ -493,7 +493,7 @@ export default function RepoDiscoveryPage() {
             placeholder="Search repos, languages, tags..."
             className="w-full pl-10 pr-10 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:border-stone-400 dark:focus:border-white/25 transition-colors"
           />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-stone-200 dark:border-white/10 text-[10px] font-mono text-stone-400 dark:text-stone-500 bg-stone-50 dark:bg-stone-800">
+          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-stone-200 dark:border-white/10 text-xs font-mono text-stone-400 dark:text-stone-500 bg-stone-50 dark:bg-stone-800">
             /
           </kbd>
         </div>
@@ -510,7 +510,7 @@ export default function RepoDiscoveryPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-0.5">
                 <div className="h-1 w-1 bg-lime-400"></div>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
+                <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
                   analytics
                 </p>
               </div>
@@ -535,7 +535,7 @@ export default function RepoDiscoveryPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-0.5">
                 <div className="h-1 w-1 bg-lime-400"></div>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
+                <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
                   suggest
                 </p>
               </div>
@@ -551,7 +551,7 @@ export default function RepoDiscoveryPage() {
         {!!user && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                 <div className="h-1 w-1 bg-lime-400" />
                 my submissions
               </div>
@@ -574,7 +574,7 @@ export default function RepoDiscoveryPage() {
                 <button
                   type="button"
                   onClick={() => refetchMyRequests()}
-                  className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent"
+                  className="text-xs font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent"
                 >
                   Retry ↻
                 </button>
@@ -608,8 +608,9 @@ export default function RepoDiscoveryPage() {
                         </span>
                       </div>
                       <span
-                        className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-md border shrink-0 ml-3 ${STATUS_STYLE[req.status] ?? STATUS_STYLE.PENDING
-                          }`}
+                        className={`text-xs font-mono uppercase tracking-widest px-2 py-0.5 rounded-md border shrink-0 ml-3 ${
+                          STATUS_STYLE[req.status] ?? STATUS_STYLE.PENDING
+                        }`}
                       >
                         {req.status}
                       </span>
@@ -621,7 +622,7 @@ export default function RepoDiscoveryPage() {
                   <button
                     type="button"
                     onClick={() => setShowAllSubmissions((v) => !v)}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
+                    className="text-xs font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
                   >
                     {showAllSubmissions
                       ? "Show less ↑"
@@ -670,10 +671,11 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => setShowSaved((v) => !v)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${showSaved
-              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
-              }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              showSaved
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
+            }`}
           >
             <Bookmark className="w-3 h-3" />
             Saved {bookmarks.length > 0 && `(${bookmarks.length})`}
@@ -683,7 +685,7 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => updateFilter("gfi", gfiOnly ? "" : "true")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
               gfiOnly
                 ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
                 : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
@@ -697,10 +699,11 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => updateFilter("trending", trendingOnly ? "" : "true")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${trendingOnly
-              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-              }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              trendingOnly
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+            }`}
           >
             <Flame className="w-3 h-3" />
             Trending
@@ -780,7 +783,7 @@ export default function RepoDiscoveryPage() {
             <Filter className="w-3 h-3" />
             Filters
             {activeFilters > 0 && (
-              <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-md bg-stone-950 text-lime-400 text-[10px] font-mono">
+              <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-md bg-stone-950 text-lime-400 text-xs font-mono">
                 {activeFilters}
               </span>
             )}
@@ -848,7 +851,7 @@ export default function RepoDiscoveryPage() {
             >
               <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
                 <div>
-                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
+                  <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     difficulty
                   </label>
                   <select
@@ -862,7 +865,7 @@ export default function RepoDiscoveryPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
+                  <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
                     language
                   </label>
 
@@ -902,7 +905,7 @@ export default function RepoDiscoveryPage() {
                         setSearchParams(new URLSearchParams(), { replace: true });
                         setInputValue("");
                       }}
-                      className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer py-2"
+                      className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer py-2"
                     >
                       / clear all
                     </button>
@@ -915,7 +918,7 @@ export default function RepoDiscoveryPage() {
 
         {/* Results count */}
         <div className="flex items-center justify-between mb-4">
-          <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+          <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
             {pagination ? (
               <>
                 <span className="text-stone-900 dark:text-stone-50">{pagination.total}</span>
@@ -1021,7 +1024,7 @@ export default function RepoDiscoveryPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 mb-0.5">
                       <div className="h-1 w-1 bg-lime-400"></div>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                      <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                         repository
                       </span>
                     </div>
@@ -1065,10 +1068,10 @@ export default function RepoDiscoveryPage() {
               <div className="px-5 py-5 space-y-5">
                 {/* Status row */}
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className={`rounded-md px-2 py-0.5 text-[11px] font-medium ring-1 ${difficultyBadge(selectedRepo.difficulty).cls}`}>
+                  <span className={`rounded-md px-2 py-0.5 text-xs font-medium ring-1 ${difficultyBadge(selectedRepo.difficulty).cls}`}>
                     {difficultyBadge(selectedRepo.difficulty).label}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium bg-stone-100 dark:bg-white/5 text-stone-700 dark:text-stone-300">
+                  <span className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium bg-stone-100 dark:bg-white/5 text-stone-700 dark:text-stone-300">
                     <span
                       className="inline-block h-2 w-2 rounded-full"
                       style={{ backgroundColor: LANGUAGE_COLORS[selectedRepo.language] ?? "#888" }}
@@ -1076,7 +1079,7 @@ export default function RepoDiscoveryPage() {
                     {selectedRepo.language}
                   </span>
                   {selectedRepo.trending && (
-                    <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-stone-900 dark:bg-stone-50 text-lime-400">
+                    <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-mono uppercase tracking-widest bg-stone-900 dark:bg-stone-50 text-lime-400">
                       <Flame size={10} /> trending
                     </span>
                   )}
@@ -1086,7 +1089,7 @@ export default function RepoDiscoveryPage() {
                 <div>
                   <div className="flex items-center gap-1.5 mb-2">
                     <div className="h-1 w-1 bg-lime-400"></div>
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                       about
                     </p>
                   </div>
@@ -1111,7 +1114,7 @@ export default function RepoDiscoveryPage() {
                         <s.icon className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
                         <span className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">{s.value}</span>
                       </div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{s.label}</p>
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{s.label}</p>
                     </div>
                   ))}
                 </div>
@@ -1121,7 +1124,7 @@ export default function RepoDiscoveryPage() {
                   <div>
                     <div className="flex items-center gap-1.5 mb-2">
                       <div className="h-1 w-1 bg-lime-400"></div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
                         <Code2 className="w-3 h-3" />
                         tech stack
                       </p>
@@ -1141,7 +1144,7 @@ export default function RepoDiscoveryPage() {
                   <div>
                     <div className="flex items-center gap-1.5 mb-2">
                       <div className="h-1 w-1 bg-lime-400"></div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                         issue labels
                       </p>
                     </div>
@@ -1160,7 +1163,7 @@ export default function RepoDiscoveryPage() {
                   <div>
                     <div className="flex items-center gap-1.5 mb-2">
                       <div className="h-1 w-1 bg-lime-400"></div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
                         <Wand2 className="w-3 h-3" />
                         why contribute
                       </p>
@@ -1180,13 +1183,13 @@ export default function RepoDiscoveryPage() {
                 <div>
                   <div className="flex items-center gap-1.5 mb-2">
                     <div className="h-1 w-1 bg-lime-400"></div>
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                       tags
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedRepo.tags.map((tag) => (
-                      <span key={tag} className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-[11px] font-mono text-stone-600 dark:text-stone-400">
+                      <span key={tag} className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-xs font-mono text-stone-600 dark:text-stone-400">
                         #{tag}
                       </span>
                     ))}
@@ -1237,17 +1240,6 @@ export default function RepoDiscoveryPage() {
   );
 }
 
-<<<<<<< HEAD
-function RecommendedSection({ 
-  onSelect,
-  bookmarks,
-  onToggleBookmark
-}: {
-  onSelect: (repo: OpenSourceRepo) => void;
-  bookmarks: number[];
-  onToggleBookmark: (id: number) => void;
-}) {
-=======
 function GoodFirstIssuesSection({ repoId }: { repoId: number }) {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.opensource.goodFirstIssues(repoId),
@@ -1256,15 +1248,17 @@ function GoodFirstIssuesSection({ repoId }: { repoId: number }) {
     staleTime: 5 * 60 * 1000,
   });
 
+  const now = useMemo(() => Date.now(), []);
+
   return (
     <div>
       <div className="flex items-center gap-1.5 mb-2">
         <div className="h-1 w-1 bg-lime-400"></div>
-        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
+        <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5">
           <CircleDot className="w-3 h-3" />
           good first issues
           {data && !isLoading && (
-            <span className="ml-1 px-1.5 py-0.5 rounded bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-400 text-[9px] font-bold">
+            <span className="ml-1 px-1.5 py-0.5 rounded bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-400 text-xs font-bold">
               {data.count}
             </span>
           )}
@@ -1287,7 +1281,7 @@ function GoodFirstIssuesSection({ repoId }: { repoId: number }) {
         <div className="space-y-1.5">
           {data.issues.map((issue) => {
             const daysOpen = Math.floor(
-              (Date.now() - new Date(issue.created_at).getTime()) / (1000 * 60 * 60 * 24),
+              (now - new Date(issue.created_at).getTime()) / (1000 * 60 * 60 * 24),
             );
             return (
               <a
@@ -1300,14 +1294,14 @@ function GoodFirstIssuesSection({ repoId }: { repoId: number }) {
                 <div className="flex items-start gap-2 py-2 px-3 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[11px] font-mono text-stone-400 dark:text-stone-500 shrink-0">
+                      <span className="text-xs font-mono text-stone-400 dark:text-stone-500 shrink-0">
                         #{issue.number}
                       </span>
                       <span className="text-sm font-medium text-stone-900 dark:text-stone-50 truncate group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
                         {issue.title}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-[11px] text-stone-500 dark:text-stone-400">
+                    <div className="flex items-center gap-3 text-xs text-stone-500 dark:text-stone-400">
                       <span>{daysOpen}d ago</span>
                       <span className="flex items-center gap-1">
                         <CircleDot className="w-3 h-3" />
@@ -1319,7 +1313,7 @@ function GoodFirstIssuesSection({ repoId }: { repoId: number }) {
                         {issue.labels.map((label) => (
                           <span
                             key={label.name}
-                            className="inline-block px-1.5 py-0.5 rounded text-[10px] font-medium"
+                            className="inline-block px-1.5 py-0.5 rounded text-xs font-medium"
                             style={{
                               backgroundColor: `#${label.color}22`,
                               color: `#${label.color}`,
@@ -1345,8 +1339,11 @@ function GoodFirstIssuesSection({ repoId }: { repoId: number }) {
   );
 }
 
-function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
->>>>>>> 4076eb26 (chore: restore package files to upstream/main)
+function RecommendedSection({ onSelect, bookmarks, onToggleBookmark }: { 
+  onSelect: (repo: OpenSourceRepo) => void;
+  bookmarks: number[];
+  onToggleBookmark: (id: number) => void;
+}) {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.opensource.list({ recommended: "true" }),
     queryFn: async () => {
@@ -1386,7 +1383,7 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
           </h2>
           <div className="h-px w-8 bg-stone-200 dark:bg-white/10 group-hover/rec:w-16 transition-all" />
         </div>
-        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">
+        <span className="text-xs font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">
           Based on your stack
         </span>
       </div>

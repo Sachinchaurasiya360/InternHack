@@ -1,5 +1,5 @@
 import { prisma } from "../../database/db.js";
-import { fetchGithubStats, fetchGoodFirstIssues, fetchGithubGoodFirstIssues } from "../../lib/github.js";
+import { fetchGithubStats, fetchGoodFirstIssues } from "../../lib/github.js";
 import type { GoodFirstIssue } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
@@ -182,13 +182,6 @@ where["OR"] = [
       );
     }
     return repo;
-  }
-
-  async getGoodFirstIssues(owner: string, name: string) {
-    const repo = await this.getRepoByOwnerAndName(owner, name);
-    if (!repo) return null;
-    const issues = await fetchGithubGoodFirstIssues(owner, name);
-    return { repo, issues };
   }
 
   private async updateGithubStats(id: number, url: string, name: string) {
@@ -539,7 +532,7 @@ where["OR"] = [
     return { issues: result.issues, count: result.count, cachedAt: new Date().toISOString() };
   }
 
-  async getStudentContributionTrend(userId: number) {
+  async getStudentContributionTrend(userId: number, startDate?: string, endDate?: string) {
     const now = new Date();
     const currentMonthStart = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
