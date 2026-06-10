@@ -72,7 +72,7 @@ export default function RoadmapDashboardPage() {
     staleTime: 5 * 60 * 1000,
     enabled: enrollments.length > 0,
   });
-  const analyticsMap = new globalThis.Map(
+  const analyticsMap = new Map(
     (batchAnalytics?.analytics ?? []).map((a) => [a.enrollmentId, a])
   );
   const completedEnrollments = enrollments.filter(

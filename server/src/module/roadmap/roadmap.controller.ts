@@ -75,10 +75,7 @@ export async function getRoadmaps(req: Request, res: Response, next: NextFunctio
 
 export async function getRoadmap(req: Request, res: Response, next: NextFunction) {
   try {
-    const slug =
-  Array.isArray(req.params.slug)
-    ? req.params.slug[0]
-    : req.params.slug;
+    const slug = req.params.slug;
 
 const parsed = roadmapSlugParam.safeParse({ slug });
     if (!parsed.success) {
@@ -928,9 +925,7 @@ export async function getPublicCertificateMeta(
   next: NextFunction,
 ) {
   try {
-    const slug = Array.isArray(req.params.slug)
-      ? req.params.slug[0]
-      : req.params.slug;
+    const slug = req.params.slug;
 
     const enrollmentId = Number(req.params.enrollmentId);
 
@@ -1022,17 +1017,29 @@ export async function getPublicCertificate(
   next: NextFunction,
 ) {
   try {
-    const slug = Array.isArray(req.params.slug)
-  ? req.params.slug[0]
-  : req.params.slug;
+    const slug = req.params.slug;
 
-const enrollmentId = Number(req.params.enrollmentId);
+    const enrollmentId = Number(req.params.enrollmentId);
+
+    const parsed = roadmapSlugParam.safeParse({
+      slug: slug,
+    });
+
+    if (!parsed.success || Number.isNaN(enrollmentId)) {
+      validationError(
+        res,
+        parsed.success
+          ? { enrollmentId: ["Invalid enrollment id"] }
+          : parsed.error.flatten().fieldErrors,
+      );
+      return;
+    }
 
     const enrollment = await prisma.roadmapEnrollment.findFirst({
       where: {
         id: enrollmentId,
         roadmap: {
-          slug,
+          slug: parsed.data.slug,
         },
       },
       include: {

@@ -323,7 +323,7 @@ export default function RoadmapCompletionModal({
                   id="share-native-btn"
                   type="button"
                   onClick={handleNativeShare}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm rounded-xl bg-transparent hover:bg-white/5 border border-white/8 hover:border-white/15 text-stone-400 hover:text-stone-300 font-medium text-sm transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm rounded-xl bg-transparent hover:bg-white/5 border border-white/8 hover:border-white/15 text-stone-400 hover:text-stone-300 font-medium transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
                 >
                   <Share2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                   <span>More options</span>
