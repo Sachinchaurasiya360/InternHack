@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Bookmark, MapPin, IndianRupee, Clock, Trash2, ArrowUpRight, Briefcase } from "lucide-react";
 import { Link } from "react-router";
 import api from "../../../lib/axios";
+import { MetaChip } from "../../../components/ui/MetaChip";
+
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job } from "../../../lib/types";
 import toast from "../../../components/ui/toast";
@@ -130,24 +132,17 @@ export default function SavedJobsPage() {
                   </p>
                 )}
                 <div className="flex flex-wrap gap-1.5 mb-4">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-                    <MapPin className="w-3 h-3 text-stone-400" />
-                    {job.location}
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-                    <IndianRupee className="w-3 h-3 text-stone-400" />
-                    {job.salary}
-                  </span>
+                  <MetaChip icon={<MapPin className="w-3 h-3 text-stone-400" />}>{job.location}</MetaChip>
+                  <MetaChip icon={<IndianRupee className="w-3 h-3 text-stone-400" />}>{job.salary}</MetaChip>
                   {job.deadline && (
                     new Date(job.deadline) < new Date() ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
-                        <Clock className="w-3 h-3" /> expired
-                      </span>
+                      <MetaChip icon={<Clock className="w-3 h-3" />} className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40">
+                        expired
+                      </MetaChip>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-                        <Clock className="w-3 h-3 text-stone-400" />
+                      <MetaChip icon={<Clock className="w-3 h-3 text-stone-400" />}>
                         {new Date(job.deadline).toLocaleDateString()}
-                      </span>
+                      </MetaChip>
                     )
                   )}
                 </div>

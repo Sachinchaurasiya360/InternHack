@@ -19,6 +19,8 @@ import { ResultCount } from "../../../components/ui/ResultCount";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
+import { MetaChip } from "../../../components/ui/MetaChip";
+
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -55,20 +57,7 @@ function CompanyMark({ label }: { label: string }) {
   );
 }
 
-function MetaChip({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-      <span className="text-stone-400">{icon}</span>
-      {children}
-    </span>
-  );
-}
+
 
 const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: ExternalJob }) {
   const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
@@ -846,9 +835,9 @@ export default function JobBrowsePage() {
                                 <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
                                 {job.deadline && (
                                   new Date(job.deadline) < new Date() ? (
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
-                                      <Clock className="w-3 h-3" /> expired
-                                    </span>
+                                    <MetaChip icon={<Clock className="w-3 h-3" />} className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40">
+                                      expired
+                                    </MetaChip>
                                   ) : (
                                     <MetaChip icon={<Clock className="w-3 h-3" />}>
                                       {new Date(job.deadline).toLocaleDateString()}
