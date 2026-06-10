@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   Shield,
   Eye,
   EyeOff,
@@ -11,6 +10,8 @@ import {
   Info,
   Save,
   RefreshCw,
+  Trophy,
+  Code2,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -59,10 +60,10 @@ export default function LeaderboardSettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading settings...</p>
+          <div className="animate-spin w-8 h-8 border-4 border-lime-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-stone-600 dark:text-stone-400 text-sm">Loading settings...</p>
         </div>
       </div>
     );
@@ -76,85 +77,100 @@ export default function LeaderboardSettingsPage() {
         noIndex
       />
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-        {/* Header */}
-        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-          <div className="container mx-auto px-4 py-6">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8">
+          {/* Navigation Tabs */}
+          <div className="mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <Link
+              to="/student/opensource"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-lime-300 dark:hover:border-lime-700 no-underline"
+            >
+              <Code2 className="w-4 h-4" />
+              Discover Repos
+            </Link>
             <Link
               to="/student/opensource/leaderboard"
-              className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 text-sm"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-lime-300 dark:hover:border-lime-700 no-underline"
             >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Leaderboard
+              <Trophy className="w-4 h-4" />
+              Leaderboard
             </Link>
+          </div>
 
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                <Shield className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-1 w-1 bg-lime-400"></div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                learning / open source / leaderboard / settings
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-lime-100 dark:bg-lime-900/20 rounded-lg">
+                <Shield className="w-6 h-6 text-lime-600 dark:text-lime-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-50 mb-1">
                   Leaderboard Settings
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-stone-600 dark:text-stone-400">
                   Control your visibility and privacy preferences
                 </p>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="grid gap-6">
+          {/* Content */}
+          <div className="grid gap-6 max-w-4xl">
             {/* Current Stats */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6"
+              className="bg-white dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-white/10 p-6"
             >
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-4">
                 Your Current Stats
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
                     Global Rank
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-2xl font-bold text-stone-900 dark:text-stone-50">
                     {myRank?.rank.global ? `#${myRank.rank.global}` : "—"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
                     Total Score
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-2xl font-bold text-stone-900 dark:text-stone-50">
                     {myRank?.scores.total ? formatScore(myRank.scores.total) : "—"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
                     Current Streak
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-2xl font-bold text-stone-900 dark:text-stone-50">
                     {myRank?.metrics.currentStreak ?? 0}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
                     Contributions
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-2xl font-bold text-stone-900 dark:text-stone-50">
                     {(myRank?.metrics.guidesCompleted ?? 0) +
                       (myRank?.metrics.reposSuggestedApproved ?? 0)}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+              <div className="mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
                 <Button
                   variant="secondary"
+                  size="sm"
                   onClick={handleRefresh}
                   disabled={refreshScore.isPending}
                   className="w-full sm:w-auto"
@@ -172,7 +188,7 @@ export default function LeaderboardSettingsPage() {
                   )}
                 </Button>
                 {refreshScore.isSuccess && (
-                  <p className="text-sm text-green-600 dark:text-green-400 mt-2">
+                  <p className="text-xs text-lime-600 dark:text-lime-400 mt-2">
                     ✓ Score refreshed successfully!
                   </p>
                 )}
@@ -181,13 +197,13 @@ export default function LeaderboardSettingsPage() {
 
             {/* Privacy Settings */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6"
+              transition={{ delay: 0.05 }}
+              className="bg-white dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-white/10 p-6"
             >
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-blue-600" />
+              <h2 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-4 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-lime-600 dark:text-lime-400" />
                 Privacy Settings
               </h2>
 
@@ -198,23 +214,23 @@ export default function LeaderboardSettingsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {isPublic ? (
-                          <Eye className="w-4 h-4 text-green-600" />
+                          <Eye className="w-4 h-4 text-lime-600" />
                         ) : (
-                          <EyeOff className="w-4 h-4 text-gray-600" />
+                          <EyeOff className="w-4 h-4 text-stone-600" />
                         )}
-                        <label className="font-medium text-gray-900 dark:text-white">
+                        <label className="font-semibold text-sm text-stone-900 dark:text-stone-50">
                           Public Visibility
                         </label>
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-xs text-stone-600 dark:text-stone-400">
                         Show your profile on public leaderboards. When disabled, you
                         won't appear on any leaderboard view.
                       </p>
                     </div>
                     <button
                       onClick={() => setIsPublic(!isPublic)}
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ml-4 ${
-                        isPublic ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 ml-4 ${
+                        isPublic ? "bg-lime-600" : "bg-stone-200 dark:bg-stone-700"
                       }`}
                     >
                       <span
@@ -229,11 +245,11 @@ export default function LeaderboardSettingsPage() {
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg"
+                      className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg"
                     >
                       <div className="flex gap-2">
-                        <Info className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-amber-800 dark:text-amber-200">
+                        <Info className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                        <p className="text-xs text-amber-800 dark:text-amber-200">
                           You won't appear on any leaderboard, but you can still view
                           your own rank and scores.
                         </p>
@@ -248,15 +264,15 @@ export default function LeaderboardSettingsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {showRealName ? (
-                          <User className="w-4 h-4 text-blue-600" />
+                          <User className="w-4 h-4 text-lime-600" />
                         ) : (
-                          <Users className="w-4 h-4 text-gray-600" />
+                          <Users className="w-4 h-4 text-stone-600" />
                         )}
-                        <label className="font-medium text-gray-900 dark:text-white">
+                        <label className="font-semibold text-sm text-stone-900 dark:text-stone-50">
                           Show Real Name
                         </label>
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-xs text-stone-600 dark:text-stone-400">
                         Display your real name on leaderboards. When disabled, you'll
                         appear as "User{myRank?.user.name ? myRank.user.name.slice(0, 3) : "XXX"}".
                       </p>
@@ -264,10 +280,10 @@ export default function LeaderboardSettingsPage() {
                     <button
                       onClick={() => setShowRealName(!showRealName)}
                       disabled={!isPublic}
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ml-4 ${
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 ml-4 ${
                         showRealName && isPublic
-                          ? "bg-blue-600"
-                          : "bg-gray-200 dark:bg-gray-700"
+                          ? "bg-lime-600"
+                          : "bg-stone-200 dark:bg-stone-700"
                       } ${!isPublic ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       <span
@@ -282,11 +298,11 @@ export default function LeaderboardSettingsPage() {
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg"
+                      className="mt-3 p-3 bg-lime-50 dark:bg-lime-900/20 border border-lime-200 dark:border-lime-800 rounded-lg"
                     >
                       <div className="flex gap-2">
-                        <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-blue-800 dark:text-blue-200">
+                        <Info className="w-4 h-4 text-lime-600 dark:text-lime-400 shrink-0 mt-0.5" />
+                        <p className="text-xs text-lime-800 dark:text-lime-200">
                           You'll be shown with a pseudonym, but your achievements and
                           scores will still be visible.
                         </p>
@@ -297,15 +313,16 @@ export default function LeaderboardSettingsPage() {
               </div>
 
               {/* Save Button */}
-              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+              <div className="mt-6 pt-6 border-t border-stone-200 dark:border-white/10">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-stone-600 dark:text-stone-400">
                     {hasChanges
                       ? "You have unsaved changes"
                       : "All changes saved"}
                   </p>
                   <Button
                     variant="primary"
+                    size="sm"
                     onClick={handleSave}
                     disabled={!hasChanges || updatePrivacy.isPending}
                   >
@@ -327,7 +344,7 @@ export default function LeaderboardSettingsPage() {
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-sm text-green-600 dark:text-green-400 mt-2 text-right"
+                    className="text-xs text-lime-600 dark:text-lime-400 mt-2 text-right"
                   >
                     ✓ Settings saved successfully!
                   </motion.p>
@@ -337,7 +354,7 @@ export default function LeaderboardSettingsPage() {
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-sm text-red-600 dark:text-red-400 mt-2 text-right"
+                    className="text-xs text-red-600 dark:text-red-400 mt-2 text-right"
                   >
                     ✗ Failed to save settings. Please try again.
                   </motion.p>
@@ -347,14 +364,14 @@ export default function LeaderboardSettingsPage() {
 
             {/* Info Card */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6"
+              transition={{ delay: 0.1 }}
+              className="bg-lime-50 dark:bg-lime-900/20 border border-lime-200 dark:border-lime-800 rounded-lg p-6"
             >
               <div className="flex gap-3">
-                <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-blue-900 dark:text-blue-100">
+                <Info className="w-5 h-5 text-lime-600 dark:text-lime-400 shrink-0 mt-0.5" />
+                <div className="text-xs text-lime-900 dark:text-lime-100">
                   <p className="font-semibold mb-2">About Leaderboard Privacy</p>
                   <ul className="space-y-1 list-disc list-inside">
                     <li>Your own rank and scores are always visible to you</li>

@@ -26,6 +26,7 @@ import {
   Copy,
   Bookmark,
   GitPullRequest,
+  Trophy,
 } from "lucide-react";
 
 import api from "../../../lib/axios";
@@ -483,6 +484,24 @@ export default function RepoDiscoveryPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <Link
+            to="/student/opensource"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border bg-lime-600 text-white border-lime-600 shadow-sm no-underline"
+          >
+            <Code2 className="w-4 h-4" />
+            Discover Repos
+          </Link>
+          <Link
+            to="/student/opensource/leaderboard"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-lime-300 dark:hover:border-lime-700 no-underline"
+          >
+            <Trophy className="w-4 h-4" />
+            Leaderboard
+          </Link>
         </div>
 
         {/* Search bar */}
