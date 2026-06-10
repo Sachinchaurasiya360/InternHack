@@ -194,8 +194,19 @@ export default function ApplicationsList() {
                       className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                       <td className="px-6 py-4">
                         <Link to={`/recruiters/applications/${app.id}`} className="no-underline">
-                          <p className="font-medium text-gray-900 dark:text-white">{app.student?.name}</p>
-                          <p className="text-sm text-gray-500 dark:text-gray-500">{app.student?.email}</p>
+                        <p
+                          className="font-medium text-gray-900 dark:text-white block max-w-[200px] truncate"
+                          title={app.student?.name}
+                        >
+                          {app.student?.name}
+                        </p>
+
+                        <p
+                          className="text-sm text-gray-500 dark:text-gray-500 block max-w-[200px] truncate"
+                          title={app.student?.email}
+                        >
+                          {app.student?.email}
+                        </p>
                         </Link>
                       </td>
                       <td className="px-6 py-4">
