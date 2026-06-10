@@ -7,7 +7,7 @@ import {
 } from "./skill-test.validation.js";
 
 export class SkillTestController {
-  constructor(private readonly service: SkillTestService) {}
+  constructor(private readonly service: SkillTestService) { }
 
   async listTests(req: Request, res: Response, next: NextFunction) {
     try {
@@ -75,11 +75,11 @@ export class SkillTestController {
         return;
       }
       if (err instanceof Error && (err as any).status === 429) {
-  res.status(429).json({ 
-    error: err.message, 
-    retryAfter: (err as any).retryAfter 
-  }); return;
-}
+        res.status(429).json({
+          error: err.message,
+          retryAfter: (err as any).retryAfter
+        }); return;
+      }
       next(err);
     }
   }
@@ -132,6 +132,25 @@ export class SkillTestController {
           .json({
             error: "No active test session found. Please start the test first.",
           });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  async verifyBadge(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = String(req.params["token"] || "");
+      if (!token) {
+        res.status(400).json({ error: "Verification token is required" });
+        return;
+      }
+
+      const data = await this.service.verifyBadgeToken(token);
+      res.json(data);
+    } catch (err) {
+      if (err instanceof Error && err.message === "INVALID_VERIFICATION_TOKEN") {
+        res.status(404).json({ error: "Verification token is invalid or expired" });
         return;
       }
       next(err);

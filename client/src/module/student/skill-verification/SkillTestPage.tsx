@@ -18,6 +18,7 @@ import {
   Shield,
   FileText,
   Trophy,
+  Copy,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
@@ -83,7 +84,7 @@ export default function SkillTestPage() {
   const [started, setStarted] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [retryAfter, setRetryAfter] = useState<Date | null>(null); 
+  const [retryAfter, setRetryAfter] = useState<Date | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const submittingRef = useRef(false);
@@ -225,75 +226,75 @@ export default function SkillTestPage() {
      Keyboard shortcuts for test navigation and answer selection.
      Active only during an ongoing test 
    */
- useEffect(() => {
-  if (!started || result) return;
+  useEffect(() => {
+    if (!started || result) return;
 
- const handleKeyDown = (event: KeyboardEvent) => {
-  const target = event.target as HTMLElement | null;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
 
-  const isEditable =
-    !!target &&
-    (target.tagName === "INPUT" ||
-      target.tagName === "TEXTAREA" ||
-      target.isContentEditable);
+      const isEditable =
+        !!target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable);
 
-  if (
-    isEditable ||
-    event.ctrlKey ||
-    event.metaKey ||
-    event.altKey
-  ) {
-    return;
-  }
-
-  const key = event.key.toLowerCase();
-    const questions = questionsRef.current;
-    const qIndex = currentQRef.current;
-    const current = questions[qIndex];
-    if (!current) return;
-    if (
-      key === "arrowleft" ||
-      key === "arrowright" ||
-      key === "enter" ||
-      ["a", "d", "1", "2", "3", "4"].includes(key)
-    ) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    // LEFT
-    if (key === "arrowleft" || key === "a") {
-      setCurrentQ((p) => Math.max(0, p - 1));
-      return;
-    }
-
-    // RIGHT
-    if (key === "arrowright" || key === "d") {
-      setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
-      return;
-    }
-
-    // OPTIONS
-    if (key === "1") selectAnswer(current.id, 0);
-    if (key === "2") selectAnswer(current.id, 1);
-    if (key === "3") selectAnswer(current.id, 2);
-    if (key === "4") selectAnswer(current.id, 3);
-
-    // ENTER → only move if answer exists
-    if (key === "enter") {
-      const hasAnswered = answers[current.id] !== undefined;
-      if (hasAnswered) {
-        setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
+      if (
+        isEditable ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey
+      ) {
+        return;
       }
-    }
-  };
 
-  window.addEventListener("keydown", handleKeyDown, true);
+      const key = event.key.toLowerCase();
+      const questions = questionsRef.current;
+      const qIndex = currentQRef.current;
+      const current = questions[qIndex];
+      if (!current) return;
+      if (
+        key === "arrowleft" ||
+        key === "arrowright" ||
+        key === "enter" ||
+        ["a", "d", "1", "2", "3", "4"].includes(key)
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
 
-  return () => {
-    window.removeEventListener("keydown", handleKeyDown, true);
-  };
-}, [started, result, answers, selectAnswer]);
+      // LEFT
+      if (key === "arrowleft" || key === "a") {
+        setCurrentQ((p) => Math.max(0, p - 1));
+        return;
+      }
+
+      // RIGHT
+      if (key === "arrowright" || key === "d") {
+        setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
+        return;
+      }
+
+      // OPTIONS
+      if (key === "1") selectAnswer(current.id, 0);
+      if (key === "2") selectAnswer(current.id, 1);
+      if (key === "3") selectAnswer(current.id, 2);
+      if (key === "4") selectAnswer(current.id, 3);
+
+      // ENTER → only move if answer exists
+      if (key === "enter") {
+        const hasAnswered = answers[current.id] !== undefined;
+        if (hasAnswered) {
+          setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, true);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [started, result, answers, selectAnswer]);
 
   /* Timer ----------------------------------------------------------- */
 
@@ -457,56 +458,56 @@ export default function SkillTestPage() {
                 {test.skillName.replace(/-/g, " ")}
               </p>
             </div>
-                    
+
             {test.description && (
               <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                 {test.description}
               </p>
             )}
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-  {[
-    {
-      label: "Time Limit",
-      value: `${Math.ceil(test.timeLimitSecs / 60)} min`,
-      icon: Clock,
-    },
-    {
-      label: "Pass Score",
-      value: `${test.passThreshold}%`,
-      icon: CheckCircle2,
-    },
-    {
-      label: "Questions",
-      value: test.questionsPerSession ?? "—",
-      icon: FileText,
-    },
-    {
-      label: "Best Attempt",
-      value:
-  test.bestAttempt?.score !== undefined
-    ? `${test.bestAttempt.score}%`
-    : "—",
-      icon: Trophy,
-    },
-  ].map((item) => (
-    <div
-      key={item.label}
-      className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-center"
-    >
-      <item.icon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                {
+                  label: "Time Limit",
+                  value: `${Math.ceil(test.timeLimitSecs / 60)} min`,
+                  icon: Clock,
+                },
+                {
+                  label: "Pass Score",
+                  value: `${test.passThreshold}%`,
+                  icon: CheckCircle2,
+                },
+                {
+                  label: "Questions",
+                  value: test.questionsPerSession ?? "—",
+                  icon: FileText,
+                },
+                {
+                  label: "Best Attempt",
+                  value:
+                    test.bestAttempt?.score !== undefined
+                      ? `${test.bestAttempt.score}%`
+                      : "—",
+                  icon: Trophy,
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-center"
+                >
+                  <item.icon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
 
-      <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-        {item.value}
-      </p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                    {item.value}
+                  </p>
 
-      <p className="text-[11px] text-gray-500 dark:text-gray-400">
-        {item.label}
-      </p>
-    </div>
-  ))}
-</div>  
-             
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                    {item.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+
 
             {test.existingVerification && (
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-3 text-center">
@@ -540,19 +541,19 @@ export default function SkillTestPage() {
             </div>
 
             {retryAfter && new Date() < retryAfter ? (
-  <div className="w-full text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
-    ⏳ Cooldown active! Retry available at {retryAfter.toLocaleTimeString()}
-  </div>
-) : (
-  <Button
-    size="lg"
-    onClick={handleStart}
-    className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
-  >
-    <Maximize className="w-4 h-4" />
-    Start Proctored Test
-  </Button>
-)}
+              <div className="w-full text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
+                ⏳ Cooldown active! Retry available at {retryAfter.toLocaleTimeString()}
+              </div>
+            ) : (
+              <Button
+                size="lg"
+                onClick={handleStart}
+                className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
+              >
+                <Maximize className="w-4 h-4" />
+                Start Proctored Test
+              </Button>
+            )}
           </motion.div>
         </div>
       </div>
@@ -562,6 +563,17 @@ export default function SkillTestPage() {
   /* Result screen --------------------------------------------------- */
   if (result) {
     const log = proctor.getProctorLog();
+    const shareUrl = result.token ? `${window.location.origin}/verify/${result.token}` : null;
+    const handleCopyShareLink = async () => {
+      if (!shareUrl) return;
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Verification link copied to clipboard.");
+      } catch {
+        toast.error("Unable to copy the verification link.");
+      }
+    };
+
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
         <div className="max-w-3xl mx-auto space-y-5">
@@ -623,6 +635,27 @@ export default function SkillTestPage() {
             </div>
           </motion.div>
 
+          {result.passed && shareUrl ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5 text-sm text-gray-700 dark:text-gray-300"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">Shareable verification link</p>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Anyone can verify your skill using this public URL.</p>
+                </div>
+                <Button variant="secondary" size="sm" onClick={handleCopyShareLink} className="rounded-xl">
+                  <Copy className="w-4 h-4 mr-2" /> Copy Link
+                </Button>
+              </div>
+              <div className="mt-3 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950 px-3 py-2 break-all text-xs text-stone-800 dark:text-stone-200">
+                {shareUrl}
+              </div>
+            </motion.div>
+          ) : null}
+
           {/* Question review */}
           <div className="space-y-3">
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">
@@ -674,40 +707,40 @@ export default function SkillTestPage() {
             })}
           </div>
 
-        {/* Actions */}
-        {/* Actions */}
-        <div className="flex gap-3 pt-2 pb-8">
-          <Button
-            size="lg"
-            variant="secondary"
-            onClick={closeTab}
-            className="flex-1 rounded-xl"
-          >
-            Close Tab
-          </Button>
+          {/* Actions */}
+          {/* Actions */}
+          <div className="flex gap-3 pt-2 pb-8">
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={closeTab}
+              className="flex-1 rounded-xl"
+            >
+              Close Tab
+            </Button>
 
-          {!result.passed && (
-            retryAfter && new Date() < retryAfter ? (
-              <div className="flex-1 text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
-                ⏳ Retry available at {retryAfter.toLocaleTimeString()}
-              </div>
-            ) : (
-              <Button
-                size="lg"
-                onClick={() => {
-                  setResult(null);
-                  setAnswers({});
-                  setCurrentQ(0);
-                  setStarted(false);
-                  setRetryAfter(null);
-                }}
-                className="flex-1 bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
-              >
-                Try Again
-              </Button>
-            )
-          )}
-        </div>
+            {!result.passed && (
+              retryAfter && new Date() < retryAfter ? (
+                <div className="flex-1 text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
+                  ⏳ Retry available at {retryAfter.toLocaleTimeString()}
+                </div>
+              ) : (
+                <Button
+                  size="lg"
+                  onClick={() => {
+                    setResult(null);
+                    setAnswers({});
+                    setCurrentQ(0);
+                    setStarted(false);
+                    setRetryAfter(null);
+                  }}
+                  className="flex-1 bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
+                >
+                  Try Again
+                </Button>
+              )
+            )}
+          </div>
         </div>
       </div>
     );
