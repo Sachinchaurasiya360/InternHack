@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application, ExternalApplication } from "../../../lib/types";
@@ -254,22 +255,16 @@ type PendingDelete =
 
 export default function MyApplicationsPage() {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const { inputValue: search, setInputValue: setSearch, debouncedValue: debouncedSearch } =
+    useSearchWithDebounce({ delay: 200 });
   const [page, setPage] = useState(1);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 200);
-    return () => clearTimeout(t);
-  }, [search]);
-
-  useEffect(() => {
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  setPage(1);
-}, [debouncedSearch, statusFilter]);
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
