@@ -120,7 +120,7 @@ export default function RepoDiscoveryPage() {
   const trendingOnly = searchParams.get("trending") === "true";
   const hacktoberfestOnly = searchParams.get("hacktoberfest") === "true";
   const highlyActiveOnly = searchParams.get("highlyActive") === "true";
-  const showHacktoberfestFilter = hacktoberfestOnly;
+  const showHacktoberfestFilter = true;
 
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
@@ -648,7 +648,7 @@ export default function RepoDiscoveryPage() {
             onSelect={handleOpenRepo}
             bookmarks={bookmarks}
             onToggleBookmark={toggleBookmark}
-            
+
           />
         )}
 
@@ -663,8 +663,8 @@ export default function RepoDiscoveryPage() {
                 type="button"
                 onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
                 className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${active
-                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                    : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                  : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
                   }`}
               >
                 {d.label}
@@ -677,8 +677,8 @@ export default function RepoDiscoveryPage() {
             type="button"
             onClick={() => setShowSaved((v) => !v)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${showSaved
-                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
+              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
               }`}
           >
             <Bookmark className="w-3 h-3" />
@@ -690,8 +690,8 @@ export default function RepoDiscoveryPage() {
             type="button"
             onClick={() => updateFilter("trending", trendingOnly ? "" : "true")}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${trendingOnly
-                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
               }`}
           >
             <Flame className="w-3 h-3" />
@@ -703,8 +703,8 @@ export default function RepoDiscoveryPage() {
               type="button"
               onClick={() => updateFilter("hacktoberfest", hacktoberfestOnly ? "" : "true")}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${hacktoberfestOnly
-                  ? "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30"
-                  : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+                ? "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
                 }`}
             >
               <GitPullRequest className="w-3 h-3" />
@@ -717,12 +717,12 @@ export default function RepoDiscoveryPage() {
             type="button"
             onClick={() => updateFilter("highlyActive", highlyActiveOnly ? "" : "true")}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${highlyActiveOnly
-                ? "bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-400/30"
-                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
               }`}
           >
             <div
-              className={`h-1.5 w-1.5 rounded-full ${highlyActiveOnly ? "bg-emerald-500" : "bg-stone-400"
+              className={`h-1.5 w-1.5 rounded-full ${highlyActiveOnly ? "bg-lime-500" : "bg-stone-400"
                 }`}
             />
             Highly Active
@@ -752,8 +752,8 @@ export default function RepoDiscoveryPage() {
                 }, { replace: true });
               }}
               className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${languageMode === "auto"
-                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                  : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+                ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
                 }`}
             >
               My Languages
@@ -765,8 +765,8 @@ export default function RepoDiscoveryPage() {
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${activeFilters > 0
-                ? "bg-lime-400 text-stone-950 border-lime-400 hover:bg-lime-300"
-                : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              ? "bg-lime-400 text-stone-950 border-lime-400 hover:bg-lime-300"
+              : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
               }`}
           >
             <Filter className="w-3 h-3" />
@@ -816,8 +816,8 @@ export default function RepoDiscoveryPage() {
                         setSortOpen(false);
                       }}
                       className={`w-full justify-start text-left px-2.5 py-1.5 rounded-md text-xs font-normal transition-colors cursor-pointer ${sortKey === opt.key
-                          ? "bg-stone-900 dark:bg-stone-50 text-lime-400 hover:bg-stone-900 dark:hover:bg-stone-50 hover:text-lime-400"
-                          : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
+                        ? "bg-stone-900 dark:bg-stone-50 text-lime-400 hover:bg-stone-900 dark:hover:bg-stone-50 hover:text-lime-400"
+                        : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
                         }`}
                     >
                       {opt.label}
@@ -1027,8 +1027,8 @@ export default function RepoDiscoveryPage() {
                     type="button"
                     onClick={handleShare}
                     className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border ${copiedShareUrl
-                        ? "bg-lime-400 text-stone-950 border-lime-400"
-                        : "bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5"
+                      ? "bg-lime-400 text-stone-950 border-lime-400"
+                      : "bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5"
                       }`}
                   >
                     {copiedShareUrl ? (
@@ -1200,8 +1200,8 @@ export default function RepoDiscoveryPage() {
                     type="button"
                     onClick={() => copyCloneUrl(`${selectedRepo.url}.git`)}
                     className={`flex items-center justify-center gap-2 py-3 rounded-md text-sm font-bold transition-colors cursor-pointer ${copiedCloneUrl
-                        ? "bg-green-500 text-white"
-                        : "bg-stone-100 dark:bg-white/10 hover:bg-stone-200 dark:hover:bg-white/20 text-stone-700 dark:text-stone-300"
+                      ? "bg-green-500 text-white"
+                      : "bg-stone-100 dark:bg-white/10 hover:bg-stone-200 dark:hover:bg-white/20 text-stone-700 dark:text-stone-300"
                       }`}
                   >
                     {copiedCloneUrl ? (

@@ -148,18 +148,18 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bo
                 <div className="flex items-center gap-1.5 ml-1">
                   <div
                     className={`h-1.5 w-1.5 rounded-full ${repo.healthScore >= 75
-                        ? "bg-emerald-500 border border-emerald-400/30"
-                        : repo.healthScore >= 50
-                          ? "bg-amber-500 border border-amber-400/30"
-                          : "bg-rose-500 border border-rose-400/30"
+                      ? "bg-lime-500 border border-lime-400/30"
+                      : repo.healthScore >= 50
+                        ? "bg-stone-400 border border-stone-400/30"
+                        : "bg-rose-500 border border-rose-400/30"
                       }`}
                   />
                   <span
                     className={`text-[9px] font-bold uppercase tracking-tight ${repo.healthScore >= 75
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : repo.healthScore >= 50
-                          ? "text-amber-600 dark:text-amber-400"
-                          : "text-rose-600 dark:text-rose-400"
+                      ? "text-lime-600 dark:text-lime-400"
+                      : repo.healthScore >= 50
+                        ? "text-stone-600 dark:text-stone-400"
+                        : "text-rose-600 dark:text-rose-400"
                       }`}
                   >
                     {repo.healthScore >= 75
