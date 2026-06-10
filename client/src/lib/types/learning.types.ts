@@ -88,6 +88,12 @@ export interface DsaProgress {
   };
 }
 
+export interface DsaApproachEntry {
+  title: string;
+  complexity: string;
+  content: string;
+}
+
 export interface DsaSimilarProblem {
   id: number;
   title: string;
@@ -99,11 +105,19 @@ export interface DsaSimilarProblem {
 export interface DsaCompany {
   name: string;
   count: number;
+  solved: number;
 }
 
 export interface DsaPattern {
   name: string;
   count: number;
+}
+
+export interface DsaCompanyTrackStats {
+  company: string;
+  total: number;
+  solved: number;
+  difficultyBreakdown: Record<string, { total: number; solved: number }>;
 }
 
 export interface DsaSheetStats {

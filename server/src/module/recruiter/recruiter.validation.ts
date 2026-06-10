@@ -123,6 +123,7 @@ export const talentSearchSchema = z.object({
   location: z.string().optional(),
   search: z.string().optional(),
   jobStatus: z.string().optional(),
+  ossTier: z.string().optional(),
 });
 
 // ==================== SAVED CANDIDATES ====================
