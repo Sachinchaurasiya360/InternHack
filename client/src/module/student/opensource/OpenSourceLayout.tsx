@@ -14,7 +14,6 @@ const SEGMENT_NAMES: Record<string, string> = {
   "git-guide": "Git Guide",
   communication: "Communication",
   cicd: "CI/CD",
-  "hackathon-prep": "Hackathon Prep",
   programs: "Programs",
   analytics: "Analytics",
 };
