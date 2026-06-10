@@ -3,7 +3,6 @@ import rateLimit from "express-rate-limit";
 import { createRateLimitStore } from "../../utils/rate-limit-store.js";
 import { UploadController } from "./upload.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
-import { usageLimit } from "../../middleware/usage-limit.middleware.js";
 
 const uploadController = new UploadController();
 
@@ -23,19 +22,12 @@ const presignedUrlRateLimit = rateLimit({
 
 import { validateBody, presignRequestSchema, uploadProfilePicSchema, uploadCoverImageSchema, uploadResumeSchema } from "./upload.validation.js";
 
-const presignedUsageLimit = (req: any, res: any, next: any) => {
-  if (req.body && req.body.folder === "resumes") {
-    return usageLimit("GENERATE_RESUME")(req, res, next);
-  }
-  next();
-};
 
 // NEW: Route to generate pre-signed URL for direct client-to-S3 uploads
 uploadRouter.post(
   "/presigned-url",
   presignedUrlRateLimit,
   validateBody(presignRequestSchema),
-  presignedUsageLimit,
   (req, res) => uploadController.getPresignedUrl(req, res)
 );
 
@@ -56,7 +48,6 @@ uploadRouter.post(
 uploadRouter.post(
   "/profile-resume",
   validateBody(uploadResumeSchema),
-  usageLimit("GENERATE_RESUME"),
   (req, res) => uploadController.uploadProfileResume(req, res)
 );
 uploadRouter.delete("/profile-resume", (req, res) => uploadController.deleteProfileResume(req, res));
