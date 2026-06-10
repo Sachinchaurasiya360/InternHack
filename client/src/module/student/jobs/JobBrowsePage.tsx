@@ -458,30 +458,41 @@ export default function JobBrowsePage() {
               listings, updated daily.
             </p>
           </div>
-          <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
-            {typeof internalTotal === "number" && internalTotal > 0 && (
-              <span>
-                internal{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {internalTotal}
+          <div className="flex flex-col items-end gap-3">
+            <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
+              {typeof internalTotal === "number" && internalTotal > 0 && (
+                <span>
+                  internal{" "}
+                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                    {internalTotal}
+                  </span>
                 </span>
-              </span>
-            )}
-            {typeof externalTotal === "number" && (
-              <span>
-                external{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {externalTotal}
+              )}
+              {typeof externalTotal === "number" && (
+                <span>
+                  external{" "}
+                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                    {externalTotal}
+                  </span>
                 </span>
-              </span>
-            )}
-            {typeof scrapedTotal === "number" && (
-              <span>
-                scraped{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {scrapedTotal}
+              )}
+              {typeof scrapedTotal === "number" && (
+                <span>
+                  scraped{" "}
+                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                    {scrapedTotal}
+                  </span>
                 </span>
-              </span>
+              )}
+            </div>
+            {isInsideLayout && (
+              <Link
+                to="/student/jobs/saved"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
+              >
+                <Bookmark className="w-3.5 h-3.5" />
+                saved jobs
+              </Link>
             )}
           </div>
         </motion.div>
