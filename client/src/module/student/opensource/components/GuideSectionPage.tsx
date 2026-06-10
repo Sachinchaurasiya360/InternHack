@@ -50,6 +50,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   });
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [showReasons, setShowReasons] = useState(false);
 
 
   const toggleComplete = useCallback(() => {
@@ -66,10 +67,14 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   useEffect(() => {
     if (!step) return;
 
-    const saved = localStorage.getItem(`guide-feedback-${basePath}-${step.id}`);
-    if (saved) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRating(saved);
+    const savedRaw = localStorage.getItem(`guide-feedback-${basePath}-${step.id}`);
+    if (savedRaw) {
+      try {
+        const saved = JSON.parse(savedRaw);
+        setRating(saved.rating);
+      } catch {
+        setRating(savedRaw);
+      }
       setSubmitted(true);
     }
   }, [step, basePath]);
@@ -85,7 +90,12 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
 
 if (!step) return <Navigate to={basePath} replace />;
 
-  const submitFeedback = async (value: "up" | "down") => {
+  const handleThumbsDown = () => {
+    if (!step || submitted) return;
+    setShowReasons(true);
+  };
+
+  const submitFeedback = async (value: "up" | "down", reason?: string) => {
     if (!step || submitted) return;
 
     try {
@@ -93,16 +103,21 @@ if (!step) return <Navigate to={basePath} replace />;
         guideId: basePath,
         stepId: step.id,
         rating: value,
+        reason,
       });
 
-      localStorage.setItem(`guide-feedback-${basePath}-${step.id}`, value);
+      const entry = JSON.stringify({ rating: value, reason });
+      localStorage.setItem(`guide-feedback-${basePath}-${step.id}`, entry);
       setRating(value);
       setSubmitted(true);
+      setShowReasons(false);
     } catch {
       // Fallback to local only if server fails
-      localStorage.setItem(`guide-feedback-${basePath}-${step.id}`, value);
+      const entry = JSON.stringify({ rating: value, reason });
+      localStorage.setItem(`guide-feedback-${basePath}-${step.id}`, entry);
       setRating(value);
       setSubmitted(true);
+      setShowReasons(false);
     }
   };
 
@@ -287,7 +302,6 @@ if (!step) return <Navigate to={basePath} replace />;
           </motion.div>
         )}
 
-        {/* Feedback Widget */}
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
           <p className="text-sm font-medium mb-3 text-gray-900 dark:text-gray-100">
             Was this step helpful?
@@ -302,7 +316,7 @@ if (!step) return <Navigate to={basePath} replace />;
               👍 Thumbs Up
             </Button>
             <Button
-              onClick={() => submitFeedback("down")}
+              onClick={handleThumbsDown}
               disabled={submitted}
               variant={rating === "down" ? "mono" : "outline"}
               size="sm"
@@ -310,8 +324,39 @@ if (!step) return <Navigate to={basePath} replace />;
               👎 Thumbs Down
             </Button>
           </div>
+
+          {showReasons && !submitted && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800"
+            >
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                How can we improve this step?
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { id: "too_complex", label: "Too complex" },
+                  { id: "missing_info", label: "Missing information" },
+                  { id: "outdated", label: "Outdated or broken" },
+                ].map((r) => (
+                  <Button
+                    key={r.id}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => submitFeedback("down", r.id)}
+                  >
+                    {r.label}
+                  </Button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           {submitted && (
-            <p className="text-green-600 dark:text-green-400 text-sm mt-2">
+            <p className="text-green-600 dark:text-green-400 text-sm mt-3 flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4" />
               Thanks for your feedback!
             </p>
           )}

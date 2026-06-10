@@ -4,7 +4,6 @@ import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
   Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus,
 } from "lucide-react";
-import { Button } from "../../../components/ui/button";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { markLearningPathMilestone } from "./learning-paths.data";
@@ -1020,22 +1019,6 @@ const TIME_ZONE_REGION_HINTS: Record<string, keyof typeof LOCAL_CURRENCY_BY_REGI
   "America/Sao_Paulo": "BR",
 };
 
-const STATUS_STYLE: Record<string, string> = {
-  Annual: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  Ongoing:
-    "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  Batch:
-    "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-};
-
-const ELIGIBILITY_STYLE: Record<string, string> = {
-  Students:
-    "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  "Open to All":
-    "bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
-  "Diversity-focused":
-    "bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
-};
 
 function getCountdown(
   program: Program,
@@ -1161,150 +1144,142 @@ function ProgramCard({ program }: { program: Program }) {
   const [expanded, setExpanded] = useState(false);
   const localStipendEstimate = program.stipendPaid ? getLocalStipendEstimate(program.stipend) : null;
   const urgency = getUrgency(program);
+  const cd = getCountdown(program);
 
   return (
-    <div
-      className={`bg-white dark:bg-gray-900 rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${program.bgColor}`}
-    >
+    <div className="bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors overflow-hidden rounded-md">
+      {/* Closing soon indicator */}
       {urgency?.level === "critical" && (
-        <div className="bg-red-500 text-white text-center text-xs font-bold py-1.5 px-4 animate-pulse">
-          CLOSING SOON
+        <div className="flex items-center gap-2 px-5 py-2 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900">
+          <motion.span
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+            className="h-1.5 w-1.5 bg-lime-400 shrink-0"
+          />
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            closing soon · {urgency.days} days left
+          </span>
         </div>
       )}
-      {/* Header */}
+
       <div className="p-5">
+        {/* Header row */}
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            {urgency?.level === "closed" && (
-              <span className="px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 bg-gray-500 text-white">
-                Closed
-              </span>
-            )}
-            <div
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}
-            >
-              {program.short}
+          <div className="flex items-start gap-3 min-w-0">
+            <div className="inline-flex items-center justify-center h-10 w-10 rounded-md bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 shrink-0 text-xs font-bold">
+              {program.short.slice(0, 4)}
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight">
+              <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 leading-tight">
                 {program.name}
               </h3>
-              <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                <span
-                  className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${STATUS_STYLE[program.status]}`}
-                >
+              <div className="flex items-center gap-3 mt-1">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                   {program.status}
                 </span>
-                <span
-                  className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${ELIGIBILITY_STYLE[program.eligibilityType]}`}
-                >
+                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700 shrink-0" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                   {program.eligibilityType}
                 </span>
+                {urgency?.level === "closed" && (
+                  <>
+                    <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700 shrink-0" />
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">closed</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Stipend */}
           <div className="text-right shrink-0">
             {program.stipendPaid ? (
-              <div className="flex items-center justify-end gap-1 text-emerald-700">
-                <DollarSign className="w-3.5 h-3.5" />
-                <span className="text-sm font-bold">
-                  {program.stipend.split(" ")[0]}
-                </span>
-              </div>
-            ) : (
-              <span className="text-xs text-gray-400 font-medium">
-                No stipend
-              </span>
-            )}
-            {program.stipendPaid && (
               <>
-                <p className="text-xs text-gray-400 mt-0.5">USD {program.stipend}</p>
+                <div className="flex items-center justify-end gap-1">
+                  <DollarSign className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
+                  <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                    {program.stipend.split(" ")[0]}
+                  </span>
+                </div>
+                <p className="text-[10px] font-mono text-stone-500 mt-0.5">{program.stipend}</p>
                 {localStipendEstimate && (
                   <p
-                    className="mt-0.5 max-w-32 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
-                    title="Approximate local value. Amounts may vary based on exchange rates, project difficulty, and location."
+                    className="text-[10px] font-mono text-lime-600 dark:text-lime-400 mt-0.5"
+                    title="Approximate local value based on current exchange rates."
                   >
                     {localStipendEstimate}
                   </p>
                 )}
               </>
+            ) : (
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                no stipend
+              </span>
             )}
           </div>
         </div>
 
-        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mt-3">
+        <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-4">
           {program.description}
         </p>
 
-        {/* Key info row */}
-        <div className="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
-          <span className="flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5 text-gray-400" />
+        {/* Meta row */}
+        <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-4">
+          <span className="flex items-center gap-1.5 text-xs text-stone-500">
+            <Calendar className="w-3.5 h-3.5 text-stone-400" />
             {program.window}
           </span>
-          <span className="flex items-center gap-1">
-            <Globe className="w-3.5 h-3.5 text-gray-400" />
+          <span className="flex items-center gap-1.5 text-xs text-stone-500">
+            <Globe className="w-3.5 h-3.5 text-stone-400" />
             {program.region}
           </span>
-          <span className="flex items-center gap-1">
-            <Users className="w-3.5 h-3.5 text-gray-400" />
-            {program.eligibility.length > 50
-              ? program.eligibility.slice(0, 50) + "…"
-              : program.eligibility}
+          <span className="flex items-center gap-1.5 text-xs text-stone-500">
+            <Users className="w-3.5 h-3.5 text-stone-400" />
+            {program.eligibility.length > 50 ? program.eligibility.slice(0, 50) + "…" : program.eligibility}
           </span>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1 mt-3">
+        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-3">
           {program.tags.slice(0, 4).map((t) => (
-            <span
-              key={t}
-              className="px-2 py-0.5 bg-gray-50 dark:bg-gray-800 text-gray-500 text-[10px] rounded-full border border-gray-100 dark:border-gray-700"
-            >
+            <span key={t} className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
               #{t}
             </span>
           ))}
         </div>
+
         {/* Countdown */}
-        {(() => {
-          const cd = getCountdown(program);
-          return cd ? (
-            <div
-              className={`flex items-center gap-1 mt-2 text-xs ${cd.className}`}
-            >
-              <Calendar className="w-3.5 h-3.5" />
-              {cd.text}
-            </div>
-          ) : null;
-        })()}
-        {/* Expand / CTA row */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
-          <Button
-            variant="ghost"
-            size="sm"
+        {cd && (
+          <div className="flex items-center gap-1.5 mt-3 text-xs font-mono text-stone-500">
+            <span className="h-1.5 w-1.5 bg-lime-400 shrink-0" />
+            {cd.text}
+          </div>
+        )}
+
+        {/* Action row */}
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-stone-100 dark:border-white/5">
+          <button
+            type="button"
             onClick={() => setExpanded(!expanded)}
-            className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
           >
-            {expanded ? (
-              <ChevronUp className="w-3.5 h-3.5" />
-            ) : (
-              <ChevronDown className="w-3.5 h-3.5" />
-            )}
-            {expanded ? "Less details" : "Full details"}
-          </Button>
+            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            {expanded ? "less" : "full details"}
+          </button>
+
           <div className="flex gap-2">
             {program.applicationDeadline ? (
               <a
                 href={getGoogleCalendarUrl(program)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer no-underline"
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-white/5 hover:bg-stone-100 dark:hover:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md transition-colors no-underline"
               >
-                <CalendarPlus className="w-3 h-3" /> Add to Calendar
+                <CalendarPlus className="w-3 h-3" /> Calendar
               </a>
             ) : (
-              <div className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-800">
-                <Calendar className="w-3 h-3" /> Deadline: TBA
+              <div className="inline-flex items-center gap-1 px-3 py-1.5 text-xs text-stone-400 bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md">
+                <Calendar className="w-3 h-3" /> TBA
               </div>
             )}
             <a href={program.website} target="_blank" rel="noopener noreferrer"
@@ -1331,61 +1306,53 @@ function ProgramCard({ program }: { program: Program }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden border-t border-gray-100 dark:border-gray-800"
+            transition={{ duration: 0.22 }}
+            className="overflow-hidden border-t border-stone-100 dark:border-white/5"
           >
-            <div className="p-5 bg-gray-50 dark:bg-gray-950 grid grid-cols-1 md:grid-cols-3 gap-6">              
-              {/* Requirements */}
+            <div className="p-5 bg-stone-50 dark:bg-stone-900/50 grid md:grid-cols-3 gap-6">
               <div>
-                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
-                  Requirements
-                </h4>
-                <ul className="space-y-2">
+                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">
+                  <span className="h-1.5 w-1.5 bg-lime-400" />
+                  requirements
+                </div>
+                <ul className="space-y-2.5">
                   {program.requirements.map((r, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                    <li key={i} className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 dark:text-lime-400 shrink-0 mt-0.5" />
                       {r}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* Timeline */}
               <div>
-                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
-                  Timeline
-                </h4>
-                <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">
+                  <span className="h-1.5 w-1.5 bg-lime-400" />
+                  timeline
+                </div>
+                <div className="space-y-2.5">
                   {program.timeline.map((t, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-1.5 shrink-0" />
+                    <div key={i} className="flex items-start gap-2.5">
+                      <div className="w-1.5 h-1.5 bg-stone-300 dark:bg-stone-600 mt-1.5 shrink-0" />
                       <div>
-                        <p className="text-xs font-medium text-gray-900 dark:text-white">
-                          {t.phase}
-                        </p>
-                        <p className="text-[10px] text-gray-500">{t.dates}</p>
+                        <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">{t.phase}</p>
+                        <p className="text-[10px] font-mono text-stone-500">{t.dates}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* How to Apply */}
               <div>
-                <h4 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
-                  How to Apply
-                </h4>
-                <ol className="space-y-2">
+                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">
+                  <span className="h-1.5 w-1.5 bg-lime-400" />
+                  how to apply
+                </div>
+                <ol className="space-y-2.5">
                   {program.howToApply.map((step, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400"
-                    >
-                      <span className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
-                        {i + 1}
+                    <li key={i} className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400">
+                      <span className="text-[10px] font-bold tabular-nums text-lime-600 dark:text-lime-400 shrink-0 mt-0.5 w-4">
+                        {i + 1}.
                       </span>
                       {step}
                     </li>
@@ -1518,7 +1485,7 @@ export default function ProgramTrackerPage() {
   }));
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="relative pb-12">
       <SEO
         title="Open Source Program Tracker - Deadlines & Stipends"
         description="Track deadlines, eligibility, and stipends for GSoC, LFX, MLH Fellowship, Outreachy, and 20+ other open source programs."
@@ -1527,177 +1494,201 @@ export default function ProgramTrackerPage() {
         ogImage="/og/og-programs.png"
         structuredData={programEventsSchema}
       />
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-100 mb-8 p-8">
-        <div className="absolute top-0 right-0 w-56 h-56 bg-linear-to-bl from-emerald-200/30 to-transparent rounded-bl-full pointer-events-none" />
-        <div className="relative">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg">
-              <GraduationCap className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Open Source Program Tracker
-              </h1>
-              <p className="text-sm text-emerald-700">
-                Track deadlines, stipends, and how to apply for every major
-                program
-              </p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mb-6 leading-relaxed">
-            All major open source programs in one place - with deadlines,
-            stipends, eligibility, and step-by-step application guides. Set
-            reminders and apply before windows close.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { label: "Programs Listed", value: PROGRAMS.length },
-              { label: "Paid Programs", value: totalStipend },
-              { label: "High Stipend ($5k+)", value: highStipend },
-              {
-                label: "Diversity Programs",
-                value: PROGRAMS.filter(
-                  (p) => p.eligibilityType === "Diversity-focused",
-                ).length,
-              },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="bg-white/70 dark:bg-gray-900/70 rounded-xl px-4 py-2 border border-emerald-100 dark:border-emerald-800"
-              >
-                <p className="text-lg font-bold text-gray-900 dark:text-white leading-none">
-                  {s.value}
-                </p>
-                <p className="text-[11px] text-gray-500 mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Next Deadline badge */}
+      {/* ── Hero ──────────────────────────────────────────── */}
+      <div className="relative border-b border-stone-200 dark:border-white/10 pb-10 mb-8 overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none dark:hidden"
+          style={{
+            backgroundImage: "linear-gradient(to right, rgba(23,23,23,0.04) 1px, transparent 1px)",
+            backgroundSize: "140px 100%",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none hidden dark:block"
+          style={{
+            backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
+            backgroundSize: "140px 100%",
+          }}
+        />
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative z-10"
+        >
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
+            <motion.span
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              className="h-1.5 w-1.5 bg-lime-400"
+            />
+            opensource / programs
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-none text-stone-900 dark:text-stone-50 mb-4">
+            Open source{" "}
+            <span className="relative inline-block">
+              <span className="relative z-10">programs.</span>
+              <motion.span
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
+                aria-hidden
+                className="absolute bottom-0 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+              />
+            </span>
+          </h1>
+
+          <p className="text-base text-stone-600 dark:text-stone-400 max-w-xl leading-relaxed">
+            Every major program in one place: deadlines, stipends, eligibility, and step-by-step application guides.
+          </p>
+        </motion.div>
+
+        {/* Stats strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.18 }}
+          className="relative z-10 mt-8 grid grid-cols-2 sm:grid-cols-4 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-xl overflow-hidden"
+        >
+          {[
+            { value: PROGRAMS.length, label: "programs listed" },
+            { value: totalStipend, label: "paid programs" },
+            { value: highStipend, label: "high stipend ($5k+)" },
+            { value: PROGRAMS.filter((p) => p.eligibilityType === "Diversity-focused").length, label: "diversity programs" },
+          ].map((s) => (
+            <div key={s.label} className="bg-stone-50 dark:bg-stone-950 p-4 sm:p-5 flex flex-col items-center">
+              <div className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 tabular-nums">
+                {s.value}
+              </div>
+              <div className="mt-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 leading-snug text-center">
+                {s.label}
+              </div>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* ── Next deadline sticky bar ───────────────────────── */}
       {NEXT_DEADLINE && (
-        <div className="sticky top-0 z-10 mb-5 bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-lg px-4 py-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <p className="text-xs font-medium text-stone-700 dark:text-stone-300">
+        <div className="sticky top-0 z-10 mb-6 bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-4 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <motion.span
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              className="h-1.5 w-1.5 bg-lime-400 shrink-0"
+            />
+            <p className="text-xs font-mono text-stone-600 dark:text-stone-400">
               Next deadline:{" "}
-              <span className="font-bold">{NEXT_DEADLINE.program.name}</span> closes in{" "}
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">{NEXT_DEADLINE.days} days</span>
+              <span className="font-bold text-stone-900 dark:text-stone-50">{NEXT_DEADLINE.program.name}</span>
+              {" "}closes in{" "}
+              <span className="font-bold text-lime-600 dark:text-lime-400">{NEXT_DEADLINE.days} days</span>
             </p>
           </div>
           <a
             href={NEXT_DEADLINE.program.website}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 px-3 py-1.5 rounded-md transition-colors no-underline"
+            className="inline-flex items-center gap-1 text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 px-3 py-1.5 rounded-md transition-colors no-underline"
           >
-            View &rarr;
+            View <ExternalLink className="w-3 h-3" />
           </a>
         </div>
       )}
 
-      {/* Filter bar */}
+      {/* ── Filter bar ────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search programs..."
-            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+            className="w-full pl-9 pr-4 py-2.5 border border-stone-200 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 dark:focus:border-lime-400 bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 transition-colors"
           />
         </div>
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           {[
-            {
-              label: "Status",
-              value: selectedStatus,
-              options: STATUS_OPTIONS,
-              set: setSelectedStatus,
-            },
-            {
-              label: "Eligibility",
-              value: selectedEligibility,
-              options: ELIGIBILITY_OPTIONS,
-              set: setSelectedEligibility,
-            },
-            {
-              label: "Focus",
-              value: activeFocus,
-              options: FOCUS_AREA_OPTIONS,
-              set: setActiveFocus,
-            },
-            {
-              label: "Stipend",
-              value: selectedStipend,
-              options: STIPEND_OPTIONS,
-              set: setSelectedStipend,
-            },
+            { label: "Status", value: selectedStatus, options: STATUS_OPTIONS, set: setSelectedStatus },
+            { label: "Eligibility", value: selectedEligibility, options: ELIGIBILITY_OPTIONS, set: setSelectedEligibility },
+            { label: "Focus", value: activeFocus, options: FOCUS_AREA_OPTIONS, set: setActiveFocus },
+            { label: "Stipend", value: selectedStipend, options: STIPEND_OPTIONS, set: setSelectedStipend },
           ].map(({ label, value, options, set }) => (
             <div key={label} className="relative group">
-              <Button variant="secondary" size="sm">
-                <Filter className="w-3 h-3" />
-                <span className="text-gray-400">{label}:</span>
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {value}
-                </span>
-                <ChevronDown className="w-3 h-3 opacity-50" />
-              </Button>
-              <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[170px] max-h-[200px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:block">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 hover:border-stone-400 dark:hover:border-white/30 transition-colors cursor-pointer"
+              >
+                <Filter className="w-3 h-3 text-stone-400" />
+                <span className="text-stone-400 font-mono">{label}:</span>
+                <span className="font-bold text-stone-900 dark:text-stone-50">{value}</span>
+                <ChevronDown className="w-3 h-3 text-stone-400" />
+              </button>
+              <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[170px] max-h-[200px] overflow-y-auto rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
                 {options.map((opt) => (
-                  <Button
+                  <button
                     key={opt}
-                    variant="ghost"
-                    size="sm"
+                    type="button"
                     onClick={() => set(opt)}
-                    className={`w-full justify-start ${value === opt ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}`}
+                    className={`w-full text-left px-3 py-1.5 text-xs rounded transition-colors cursor-pointer border-0 ${
+                      value === opt
+                        ? "bg-lime-400/15 text-lime-700 dark:text-lime-400 font-bold"
+                        : "text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5"
+                    }`}
                   >
                     {opt}
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
           ))}
           <div className="relative group">
-            <Button variant="secondary" size="sm">
-              <Calendar className="w-3.5 h-3.5" />
-              <span className="text-gray-400">Sort:</span>
-              <span className="font-semibold text-gray-900 dark:text-white">{SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? "Default order"}</span>
-              <ChevronDown className="w-3 h-3 opacity-50" />
-            </Button>
-            <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:block">
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 hover:border-stone-400 dark:hover:border-white/30 transition-colors cursor-pointer"
+            >
+              <Calendar className="w-3 h-3 text-stone-400" />
+              <span className="text-stone-400 font-mono">Sort:</span>
+              <span className="font-bold text-stone-900 dark:text-stone-50">{SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? "Default"}</span>
+              <ChevronDown className="w-3 h-3 text-stone-400" />
+            </button>
+            <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
               {SORT_OPTIONS.map((opt) => (
-                <Button
+                <button
                   key={opt.value}
-                  variant="ghost"
-                  size="sm"
+                  type="button"
                   onClick={() => setSortBy(opt.value)}
-                  className={`w-full justify-start ${sortBy === opt.value ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-gray-600 dark:text-gray-300"}`}
+                  className={`w-full text-left px-3 py-1.5 text-xs rounded transition-colors cursor-pointer border-0 ${
+                    sortBy === opt.value
+                      ? "bg-lime-400/15 text-lime-700 dark:text-lime-400 font-bold"
+                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5"
+                  }`}
                 >
                   {opt.label}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
           {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default") && (
-            <Button
-              variant="secondary"
-              size="sm"
+            <button
+              type="button"
               onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); }}
-              className="text-gray-500"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 hover:border-stone-400 dark:hover:border-white/30 text-stone-500 transition-colors cursor-pointer"
             >
               <X className="w-3.5 h-3.5" /> Clear
-            </Button>
+            </button>
           )}
         </div>
       </div>
 
-      <p className="text-sm text-gray-400 mb-5">
+      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-5">
         Showing{" "}
-        <span className="font-semibold text-gray-900 dark:text-white">
+        <span className="font-bold text-stone-900 dark:text-stone-50">
           {filtered.length}
         </span>{" "}
         of {PROGRAMS.length} programs
@@ -1705,9 +1696,9 @@ export default function ProgramTrackerPage() {
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 bg-gray-50 dark:bg-gray-950 rounded-2xl">
-          <GraduationCap className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-          <p className="text-sm text-gray-500 font-medium">
+        <div className="text-center py-16 border border-stone-200 dark:border-white/10 rounded-md bg-stone-50 dark:bg-stone-950">
+          <GraduationCap className="w-10 h-10 text-stone-200 dark:text-stone-700 mx-auto mb-3" />
+          <p className="text-xs font-mono uppercase tracking-widest text-stone-400">
             No programs match your filters
           </p>
         </div>
@@ -1727,18 +1718,15 @@ export default function ProgramTrackerPage() {
       )}
 
       {/* Tip */}
-      <div className="mt-8 p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800">
+      <div className="mt-8 p-5 border border-stone-200 dark:border-white/10 rounded-md bg-stone-50 dark:bg-stone-900/50">
         <div className="flex items-start gap-3">
-          <GraduationCap className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+          <span className="h-1.5 w-1.5 bg-lime-400 shrink-0 mt-2" />
           <div>
-            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-300">
+            <p className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 mb-1">
               Apply to multiple programs simultaneously
             </p>
-            <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1 leading-relaxed">
-              GSoC and Outreachy application windows often overlap with GSSoC
-              and Hacktoberfest. Diversify your applications - each program has
-              different evaluation criteria and your contributions to one
-              project can strengthen proposals in others.
+            <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+              GSoC and Outreachy application windows often overlap with GSSoC and Hacktoberfest. Diversify your applications: each program has different evaluation criteria and your contributions to one project can strengthen proposals in others.
             </p>
           </div>
         </div>

@@ -26,7 +26,7 @@ export function AiHintPanel({ problemId }: { problemId: number }) {
   const [hints, setHints] = useState<AiHintData[]>([]);
   const [expanded, setExpanded] = useState(false);
   const [cooldown, setCooldown] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   useEffect(() => {
     if (cooldown <= 0) {

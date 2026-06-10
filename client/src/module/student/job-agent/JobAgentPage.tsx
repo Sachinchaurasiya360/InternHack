@@ -299,7 +299,7 @@ export default function JobAgentPage() {
   const inputDisabled = chatMut.isPending || hitFreeLimit;
 
   return (
-    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden overscroll-none bg-stone-50 dark:bg-stone-950">
+    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden bg-stone-50 dark:bg-stone-950">
       <SEO title="InternHack AI" noIndex />
 
       {/* Editorial header */}

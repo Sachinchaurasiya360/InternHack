@@ -498,7 +498,7 @@ export default function RoadmapCanvasPage() {
    const [showEditModal, setShowEditModal] = useState(false);
   const [title, setTitle] = useState("");
   const [shortDescription, setShortDescription] = useState("");
-  const [level, setLevel] = useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED">(
+  const [level, setLevel] = useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS">(
     "BEGINNER",
   );
   // Track previous percentComplete so we only fire the modal on the transition to 100
@@ -632,11 +632,9 @@ export default function RoadmapCanvasPage() {
 
     setShowEditModal(false);
 
-    const detail = await api.get<EnrollmentResponse>(
-      `/roadmaps/me/enrollments/${enrollmentId}`,
-    );
-
-    setData(detail.data);
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId!),
+    });
   } catch {
     toast.error("Failed to update roadmap");
   }
