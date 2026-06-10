@@ -2,12 +2,19 @@ import type { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.utils.js";
 import { prisma } from "../database/db.js";
 
+type TokenVersionLookupResult = {
+  tokenVersion: number;
+} | null;
+
 // ── In-memory tokenVersion cache (5-minute TTL, 10 000-entry size cap) ──
 const TOKEN_VERSION_TTL_MS = 5 * 60 * 1000;
 const VERSION_CACHE_MAX_SIZE = 10_000;
 
 // insertion-ordered Map: oldest entries are at the front (Map preserves insertion order)
 const versionCache = new Map<number, { version: number; expiresAt: number }>();
+
+// Stores in-flight tokenVersion lookups by user ID.
+const pendingVersionLookups = new Map<number, Promise<TokenVersionLookupResult>>();
 
 // Background sweep: evict expired entries every 5 minutes so stale entries from
 // deleted or logged-out users do not accumulate for the process lifetime.
@@ -61,24 +68,56 @@ function extractToken(req: Request): string | null {
   return null;
 }
 
+// Returns user's tokenVersion from cache or a shared in-flight DB query.
+async function getTokenVersion(userId: number): Promise<number | null> {
+
+  let dbVersion = getCachedVersion(userId);
+
+  if (dbVersion !== null) {
+    return dbVersion;
+  }
+
+  const pendingLookup = pendingVersionLookups.get(userId);
+
+  // Reuse an existing in-flight lookup.
+  if (pendingLookup !== undefined) {
+    const user = await pendingLookup;
+    return user ? user.tokenVersion : null;
+  }
+
+  try {
+    const dbQuery: Promise<TokenVersionLookupResult> = prisma.user.findUnique({
+      where: { id: userId },
+      select: { tokenVersion: true },
+    });
+
+    // Register the database query before awaiting it
+    // so that concurrent requests can reuse it.
+    pendingVersionLookups.set(userId, dbQuery);
+
+    const user = await dbQuery;
+
+    if (user) {
+      setCachedVersion(userId, user.tokenVersion);
+      dbVersion = user.tokenVersion;
+    }
+  } 
+  finally {
+    // Remove the in-flight lookup regardless of success or failure.
+    pendingVersionLookups.delete(userId);
+  }
+
+  return dbVersion;
+}
+
 export async function optionalAuthMiddleware(req: Request, _res: Response, next: NextFunction): Promise<void> {
   const token = extractToken(req);
   if (token) {
     try {
       const decoded = verifyToken(token);
 
-      // Verify tokenVersion (cached), silently discard revoked tokens
-      let dbVersion = getCachedVersion(decoded.id);
-      if (dbVersion === null) {
-        const user = await prisma.user.findUnique({
-          where: { id: decoded.id },
-          select: { tokenVersion: true },
-        });
-        if (user) {
-          dbVersion = user.tokenVersion;
-          setCachedVersion(decoded.id, dbVersion);
-        }
-      }
+      // Verify tokenVersion, silently discard revoked tokens
+      const dbVersion = await getTokenVersion(decoded.id);
 
       if (dbVersion !== null && decoded.tokenVersion === dbVersion) {
         req.user = { id: decoded.id, email: decoded.email, role: decoded.role };
@@ -106,22 +145,12 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     return;
   }
 
-  // Single-device enforcement: check tokenVersion (cached, 2-min TTL)
-  let dbVersion = getCachedVersion(decoded.id);
+  // Single-device enforcement: resolve current tokenVersion.
+  const dbVersion = await getTokenVersion(decoded.id);
 
   if (dbVersion === null) {
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: { tokenVersion: true },
-    });
-
-    if (!user) {
-      res.status(401).json({ message: "Session expired. Please log in again." });
-      return;
-    }
-
-    dbVersion = user.tokenVersion;
-    setCachedVersion(decoded.id, dbVersion);
+    res.status(401).json({ message: "Session expired. Please log in again." });
+    return;
   }
 
   if (decoded.tokenVersion !== dbVersion) {
