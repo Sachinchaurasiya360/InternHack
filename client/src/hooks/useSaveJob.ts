@@ -1,50 +1,33 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { QueryKey } from "@tanstack/react-query";
 import api from "../lib/axios";
 import { queryKeys } from "../lib/query-keys";
+import toast from "../components/ui/toast";
 
-/**
- * useSaveJob — eliminates the repeated save/unsave mutation pattern that was
- * duplicated across JobBrowsePage, JobDetailPage, and SavedJobsPage.
- *
- * Usage:
- *   const { save, unsave, toggle } = useSaveJob(jobId);
- *
- *   // Save a job
- *   save.mutate();
- *
- *   // Unsave a job
- *   unsave.mutate();
- *
- *   // Toggle based on current saved state
- *   toggle(isSaved);
- *
- * Both mutations invalidate queryKeys.savedJobs.all on success, keeping
- * the saved-jobs list and per-job check queries in sync automatically.
- */
-export function useSaveJob(jobId: number | string) {
-  const queryClient = useQueryClient();
+interface UseSaveJobOptions {
+  extraInvalidations?: QueryKey[];
+  successToast?: string;
+}
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
+export function useSaveJob(opts?: UseSaveJobOptions) {
+  const qc = useQueryClient();
 
-  const save = useMutation({
-    mutationFn: () => api.post(`/student/jobs/${jobId}/save`),
-    onSuccess: invalidate,
+  const { mutate: toggleSave, isPending } = useMutation({
+    mutationFn: async ({ jobId, isSaved }: { jobId: number; isSaved: boolean }) => {
+      if (isSaved) {
+        await api.delete(`/student/jobs/${jobId}/save`);
+      } else {
+        await api.post(`/student/jobs/${jobId}/save`);
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
+      opts?.extraInvalidations?.forEach((key) => {
+        qc.invalidateQueries({ queryKey: key });
+      });
+      if (opts?.successToast) toast.success(opts.successToast);
+    },
   });
 
-  const unsave = useMutation({
-    mutationFn: () => api.delete(`/student/jobs/${jobId}/save`),
-    onSuccess: invalidate,
-  });
-
-  /** Convenience: toggles based on current saved state. */
-  const toggle = (currentlySaved: boolean) => {
-    if (currentlySaved) {
-      unsave.mutate();
-    } else {
-      save.mutate();
-    }
-  };
-
-  return { save, unsave, toggle };
+  return { toggleSave, isPending };
 }

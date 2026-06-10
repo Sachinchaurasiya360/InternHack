@@ -8,12 +8,12 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { jobPostingSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { useSaveJob } from "../../../hooks/useSaveJob";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { Job } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
-import { useSaveJob } from "../../../hooks/useSaveJob";
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 const stagger = { show: { transition: { staggerChildren: 0.07 } } };
@@ -91,7 +91,9 @@ export default function JobDetailPage() {
     staleTime: 30_000,
   });
 
-  const { toggle: toggleSave } = useSaveJob(id!);
+  const { toggleSave } = useSaveJob({
+    extraInvalidations: [queryKeys.savedJobs.check(id!)],
+  });
 
   const backPath = inStudentLayout ? "/student/jobs" : "/jobs";
   const applyPath = inStudentLayout ? `/student/jobs/${id}/apply` : `/jobs/${Number(id)}/apply`;
@@ -223,7 +225,7 @@ export default function JobDetailPage() {
                     mode="icon"
                     size="lg"
                     aria-label={isSaved ? "Remove from saved" : "Save job"}
-                    onClick={() => toggleSave(!!isSaved)}
+                    onClick={() => toggleSave({ jobId: Number(id), isSaved: isSaved ?? false })}
                   >
                     <Bookmark className={isSaved ? "fill-lime-600 dark:fill-lime-400 text-lime-600 dark:text-lime-400" : ""} />
                   </Button>

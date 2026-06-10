@@ -136,9 +136,10 @@ export class DsaController {
     }
   }
 
-  async getCompanies(_req: Request, res: Response, next: NextFunction) {
+  async getCompanies(req: Request, res: Response, next: NextFunction) {
     try {
-      const companies = await this.dsaService.getCompanies();
+      const userId = req.user?.id;
+      const companies = await this.dsaService.getCompanies(userId);
       res.json(companies);
     } catch (err) {
       next(err);
@@ -152,6 +153,17 @@ export class DsaController {
       const { page, limit } = parsePagination(req, { defaultLimit: 50 });
       const result = await this.dsaService.getCompanyProblems(company, studentId, page, limit);
       res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getCompanyTrackStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const company = req.params.company as string;
+      const userId = req.user?.id;
+      const stats = await this.dsaService.getCompanyTrackStats(company, userId);
+      res.json(stats);
     } catch (err) {
       next(err);
     }
@@ -375,6 +387,21 @@ export class DsaController {
       const hint = await this.dsaService.generateHint(userId, problemId, level);
       res.json(hint);
     } catch (err) {
+      next(err);
+    }
+  }
+
+  async getApproaches(req: Request, res: Response, next: NextFunction) {
+    try {
+      const slug = req.params.slug as string;
+      if (!slug) { res.status(400).json({ message: "Problem slug is required" }); return; }
+      const approaches = await this.dsaService.getApproaches(slug);
+      res.json(approaches);
+    } catch (err) {
+      if (err instanceof Error && err.message.includes("Problem not found")) {
+        res.status(404).json({ message: err.message });
+        return;
+      }
       next(err);
     }
   }

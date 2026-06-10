@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   MapPin,
@@ -19,9 +19,12 @@ import { ResultCount } from "../../../components/ui/ResultCount";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
+import { MetaChip } from "../../../components/ui/MetaChip";
+
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { useSaveJob } from "../../../hooks/useSaveJob";
 import type {
   ExternalJob,
   Job,
@@ -29,7 +32,6 @@ import type {
   ScrapedJob,
 } from "../../../lib/types";
 import JobCard from "./component/jobcard";
-
 
 const FILTER_TAGS = [
   "Frontend",
@@ -56,20 +58,7 @@ function CompanyMark({ label }: { label: string }) {
   );
 }
 
-function MetaChip({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-      <span className="text-stone-400">{icon}</span>
-      {children}
-    </span>
-  );
-}
+
 
 const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: ExternalJob }) {
   const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
@@ -290,9 +279,6 @@ export default function JobBrowsePage() {
     placeholderData: keepPreviousData,
   });
 
-
-  const queryClient = useQueryClient();
-
   const { data: savedIds } = useQuery({
     queryKey: queryKeys.savedJobs.list(),
     queryFn: () => api.get("/student/saved-jobs").then((res) => res.data.jobs as Job[]),
@@ -300,16 +286,8 @@ export default function JobBrowsePage() {
     select: (jobs) => new Set(jobs.map((j) => j.id)),
   });
 
-  /** Toggle save/unsave for a job in the browse grid. */
-  const toggleSave = useCallback(async (jobId: number) => {
-    const isSaved = savedIds?.has(jobId) ?? false;
-    if (isSaved) {
-      await api.delete(`/student/jobs/${jobId}/save`);
-    } else {
-      await api.post(`/student/jobs/${jobId}/save`);
-    }
-    queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
-  }, [savedIds, queryClient]);
+  const { toggleSave } = useSaveJob();
+
   const toggleTag = (tag: string) => {
     const updated = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)
@@ -457,30 +435,41 @@ export default function JobBrowsePage() {
               listings, updated daily.
             </p>
           </div>
-          <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
-            {typeof internalTotal === "number" && internalTotal > 0 && (
-              <span>
-                internal{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {internalTotal}
+          <div className="flex flex-col items-end gap-3">
+            <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
+              {typeof internalTotal === "number" && internalTotal > 0 && (
+                <span>
+                  internal{" "}
+                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                    {internalTotal}
+                  </span>
                 </span>
-              </span>
-            )}
-            {typeof externalTotal === "number" && (
-              <span>
-                external{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {externalTotal}
+              )}
+              {typeof externalTotal === "number" && (
+                <span>
+                  external{" "}
+                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                    {externalTotal}
+                  </span>
                 </span>
-              </span>
-            )}
-            {typeof scrapedTotal === "number" && (
-              <span>
-                scraped{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {scrapedTotal}
+              )}
+              {typeof scrapedTotal === "number" && (
+                <span>
+                  scraped{" "}
+                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                    {scrapedTotal}
+                  </span>
                 </span>
-              </span>
+              )}
+            </div>
+            {isInsideLayout && (
+              <Link
+                to="/student/jobs/saved"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
+              >
+                <Bookmark className="w-3.5 h-3.5" />
+                saved jobs
+              </Link>
             )}
           </div>
         </motion.div>
@@ -845,9 +834,9 @@ export default function JobBrowsePage() {
                                 <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
                                 {job.deadline && (
                                   new Date(job.deadline) < new Date() ? (
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
-                                      <Clock className="w-3 h-3" /> expired
-                                    </span>
+                                    <MetaChip icon={<Clock className="w-3 h-3" />} className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40">
+                                      expired
+                                    </MetaChip>
                                   ) : (
                                     <MetaChip icon={<Clock className="w-3 h-3" />}>
                                       {new Date(job.deadline).toLocaleDateString()}
@@ -859,7 +848,7 @@ export default function JobBrowsePage() {
                           />
                           <button
                             type="button"
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSave(job.id); }}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSave({ jobId: job.id, isSaved: savedIds?.has(job.id) ?? false }); }}
                             className={`absolute top-2 right-2 p-1.5 rounded-md transition-colors border-0 bg-transparent cursor-pointer z-10 ${
                               savedIds?.has(job.id)
                                 ? "text-lime-600 dark:text-lime-400 hover:bg-lime-50 dark:hover:bg-lime-900/20"
