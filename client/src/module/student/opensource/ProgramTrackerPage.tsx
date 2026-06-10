@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
-  Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus,
+  Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus, Heart,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { SEO } from "../../../components/SEO";
@@ -959,6 +959,7 @@ const PROGRAMS: Program[] = [
 ];
 
 const STORAGE_KEY = "program_tracker_filters";
+const INTERESTED_PROGRAMS_KEY = "program_tracker_interested";
 
 const ELIGIBILITY_OPTIONS = ["All", "Students", "Open to All", "Diversity-focused"];
 const STATUS_OPTIONS = ["All", "Annual", "Ongoing", "Batch"];
@@ -1157,7 +1158,7 @@ const getGoogleCalendarUrl = (program: Program) => {
 };
 
 // ─── Program Card ─────────────────────────────────────────────
-function ProgramCard({ program }: { program: Program }) {
+function ProgramCard({ program, isInterested, onToggleInterest }: { program: Program; isInterested: boolean; onToggleInterest: (id: number) => void }) {
   const [expanded, setExpanded] = useState(false);
   const localStipendEstimate = program.stipendPaid ? getLocalStipendEstimate(program.stipend) : null;
   const urgency = getUrgency(program);
@@ -1186,9 +1187,23 @@ function ProgramCard({ program }: { program: Program }) {
               {program.short}
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight">
-                {program.name}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight">
+                  {program.name}
+                </h3>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onToggleInterest(program.id); }}
+                  className={`shrink-0 p-1 rounded-full transition-colors ${
+                    isInterested
+                      ? "text-red-500 hover:text-red-600"
+                      : "text-gray-300 dark:text-gray-600 hover:text-red-400"
+                  }`}
+                  aria-label={isInterested ? "Remove from interested" : "Mark as interested"}
+                >
+                  <Heart className={`w-4 h-4 ${isInterested ? "fill-current" : ""}`} />
+                </button>
+              </div>
               <div className="flex flex-wrap items-center gap-1.5 mt-1">
                 <span
                   className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${STATUS_STYLE[program.status]}`}
@@ -1434,6 +1449,16 @@ export default function ProgramTrackerPage() {
   const [activeFocus, setActiveFocus] = useState<string>("All");
   const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
   const [sortBy, setSortBy] = useState<string>(savedFilters.sortBy);
+  const [interestedProgramIds, setInterestedProgramIds] = useState<number[]>(() => {
+    try {
+      const saved = localStorage.getItem(INTERESTED_PROGRAMS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch { /* ignore */ }
+    return [];
+  });
 
   // Save filters to localStorage whenever they change
   useEffect(() => {
@@ -1451,6 +1476,18 @@ export default function ProgramTrackerPage() {
       // ignore storage errors
     }
   }, [selectedStatus, selectedEligibility, selectedStipend, sortBy]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(INTERESTED_PROGRAMS_KEY, JSON.stringify(interestedProgramIds));
+    } catch { /* ignore storage errors */ }
+  }, [interestedProgramIds]);
+
+  const toggleInterest = useCallback((id: number) => {
+    setInterestedProgramIds((prev) =>
+      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id],
+    );
+  }, []);
 
   const filtered = useMemo(() => {
     let list = [...PROGRAMS];
@@ -1719,7 +1756,7 @@ export default function ProgramTrackerPage() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <ProgramCard program={program} />
+              <ProgramCard program={program} isInterested={interestedProgramIds.includes(program.id)} onToggleInterest={toggleInterest} />
             </motion.div>
           ))}
         </div>

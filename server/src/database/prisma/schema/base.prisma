@@ -515,6 +515,17 @@ model opensourceBookmark {
   @@index([userId])
 }
 
+model programInterest {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  programId Int
+  createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, programId])
+  @@index([userId])
+}
+
 model repoRequest {
   id          Int               @id @default(autoincrement())
   name        String
