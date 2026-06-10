@@ -7,6 +7,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
 import BackToTopButton from "./components/common/BackToTopButton";
 import ScrollToTop from "./components/common/ScrollToTop";
+import InterviewReadinessPage from './module/student/learn/InterviewReadinessPage';
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
 function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
@@ -477,6 +478,8 @@ function App() {
             <Route path="jobs/saved" element={<SavedJobsPage />} />
             <Route path="jobs/:id" element={<JobDetailPage />} />
             <Route path="jobs/:id/apply" element={<ApplyPage />} />
+            {/* Look for your student dashboard routes list and insert this entry */}
+            <Route path="learn/readiness" element={<InterviewReadinessPage />} />
             <Route path="internships" element={<GovInternshipsPage />} />
             <Route path="companies" element={<CompanyListPage />} />
             <Route path="companies/:slug" element={<CompanyDetailPage />} />

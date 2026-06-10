@@ -70,4 +70,28 @@ export class LearnController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+  async getInterviewReadinessReport(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id || "anonymous";
+    const { targetRole, companyTier, availableTime } = req.body;
+
+    const report = await this.learnService.calculateReadinessReport({
+      userId,
+      targetRole,
+      companyTier,
+      availableTime,
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: report,
+    });
+  } catch (error: any) {
+    console.error("Readiness report compilation error:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Internal processing fault encountered during report metrics mapping.",
+    });
+  }
+}
 }
