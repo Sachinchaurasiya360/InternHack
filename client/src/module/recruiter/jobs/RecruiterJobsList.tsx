@@ -20,6 +20,7 @@ import type { Job } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 type StatusFilter = "ALL" | JobStatus;
 
@@ -36,8 +37,13 @@ export default function RecruiterJobsList() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<StatusFilter>("ALL");
   const [search, setSearch] = useState("");
-  const [jobToDelete, setJobToDelete] = useState<Job | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { pendingItem: jobToDelete, confirm: setJobToDelete, execute: handleDelete, cancel: cancelDelete } =
+    useConfirmDelete<Job>(async (job) => {
+      await api.delete(`/jobs/${job.id}`);
+      setJobs((prev) => prev.filter((j) => j.id !== job.id));
+      toast.success("Job deleted");
+    });
 
   useEffect(() => {
     api
@@ -48,21 +54,6 @@ export default function RecruiterJobsList() {
       })
       .catch(() => setLoading(false));
   }, []);
-
-  const handleDelete = async () => {
-    if (!jobToDelete) return;
-    setIsDeleting(true);
-    try {
-      await api.delete(`/jobs/${jobToDelete.id}`);
-      setJobs((prev) => prev.filter((j) => j.id !== jobToDelete.id));
-      toast.success("Job deleted");
-      setJobToDelete(null);
-    } catch {
-      toast.error("Failed to delete job");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const handleStatusChange = async (id: number, status: string) => {
     try {
@@ -117,8 +108,7 @@ export default function RecruiterJobsList() {
         confirmLabel="Delete"
         cancelLabel="Cancel"
         confirmVariant="danger"
-        loading={isDeleting}
-        onCancel={() => setJobToDelete(null)}
+        onCancel={cancelDelete}
         onConfirm={handleDelete}
       >
         {jobToDelete && (

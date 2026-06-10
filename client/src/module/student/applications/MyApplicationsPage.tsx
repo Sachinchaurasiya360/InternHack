@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application, ExternalApplication } from "../../../lib/types";
@@ -254,7 +255,6 @@ export default function MyApplicationsPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
 
   useEffect(() => {
@@ -355,22 +355,18 @@ export default function MyApplicationsPage() {
     },
   });
 
+  const { pendingItem: pendingDelete, confirm: confirmDeleteItem, execute: confirmDelete, cancel: cancelDelete } =
+    useConfirmDelete<PendingDelete>(async (item) => {
+      deleteMutation.mutate(item);
+    });
+
   const handleWithdraw = useCallback((id: number) => {
-    setPendingDelete({ kind: "internal", id });
-  }, []);
+    confirmDeleteItem({ kind: "internal", id });
+  }, [confirmDeleteItem]);
 
   const handleRemoveExternal = useCallback((id: number) => {
-    setPendingDelete({ kind: "external", id });
-  }, []);
-
-  const confirmDelete = useCallback(() => {
-    if (!pendingDelete) return;
-    const item = pendingDelete;
-    setPendingDelete(null);
-    deleteMutation.mutate(item);
-  }, [pendingDelete, deleteMutation]);
-
-  const cancelDelete = useCallback(() => setPendingDelete(null), []);
+    confirmDeleteItem({ kind: "external", id });
+  }, [confirmDeleteItem]);
 
   const isInternalDelete = pendingDelete?.kind === "internal";
   const confirmTitle = isInternalDelete

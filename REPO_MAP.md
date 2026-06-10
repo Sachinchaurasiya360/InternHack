@@ -209,6 +209,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 |---|---|
 | `useFaceDetection.ts` | MediaPipe face detection via webcam; detects no-face / multiple-faces |
 | `useProctoring.ts` | Full proctoring system, tab switches, focus, fullscreen, DevTools, face violations |
+| `useConfirmDelete.ts` | Generic confirm-delete pattern: manages `pendingItem`, `confirm`, `execute`, `cancel` |
 
 ### Components, `src/components/`
 
