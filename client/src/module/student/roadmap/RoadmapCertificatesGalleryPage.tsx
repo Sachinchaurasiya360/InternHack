@@ -21,7 +21,7 @@ const CertificateCard = memo(function CertificateCard({
   certificate: Certificate;
 }) {
   const shareUrl =
-    `${window.location.origin}${certificate.shareUrl}/${certificate.enrollmentId}`;
+    `${window.location.origin}${certificate.shareUrl}`;
 
   const downloadUrl =
     `${window.location.origin}${certificate.certificateUrl}`;
@@ -75,14 +75,13 @@ const CertificateCard = memo(function CertificateCard({
           </button>
 
           <button
-            onClick={() => {
-              navigator.clipboard.writeText(
-                shareUrl,
-              );
-
-              toast.success(
-                "Share link copied to clipboard!",
-              );
+            onClick={async() => {
+              try{
+              await navigator.clipboard.writeText(shareUrl);
+              toast.success("Share link copied to clipboard!");
+              } catch(e){
+              toast.error("Failed to copy share link. Please try copying manually.");
+              }
             }}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all"
           >
