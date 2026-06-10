@@ -164,6 +164,12 @@ export const queryKeys = {
       ["scraped-jobs", "list", params] as const,
     detail: (id: string | number) => ["scraped-jobs", "detail", id] as const,
   },
+  
+  externalJobs: {
+    detail: (slug: string) => ["external-job", slug] as const,
+    similar: (id: string | number) => ["external-job-similar", id] as const,
+    status: (id: string | number) => ["external-job-status", id] as const,
+  },
 
   // Professors
   professors: {
