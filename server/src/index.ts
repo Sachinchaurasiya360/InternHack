@@ -161,7 +161,7 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Vary", "Origin");
   }
-  
+
   // Expose headers to the browser client
   res.setHeader("Access-Control-Expose-Headers", "x-request-id");
 
@@ -447,6 +447,20 @@ const server = app.listen(PORT, async () => {
     name: "Leaderboard Ranks Cron",
     priority: 10,
     fn: () => stopLeaderboardRanksCron(),
+  });
+  shutdownManager.register({
+    name: "Analytics Report Cron",
+    priority: 10,
+    fn: () => stopAnalyticsReportCron(),
+  });
+
+  // Start signals cleanup cron (weekly Sunday at 2 AM)
+  startSignalsCleanupCron();
+
+  shutdownManager.register({
+    name: "Signals Cleanup Cron",
+    priority: 10,
+    fn: () => stopSignalsCleanupCron(),
   });
 
   // Register Redis disconnect
