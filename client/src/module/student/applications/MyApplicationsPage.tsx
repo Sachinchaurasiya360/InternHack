@@ -1,3 +1,4 @@
+import { FilterChip } from "../../../components/ui/FilterChip";
 import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
@@ -267,9 +268,9 @@ export default function MyApplicationsPage() {
   }, [search]);
 
   useEffect(() => {
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  setPage(1);
-}, [debouncedSearch, statusFilter]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -454,20 +455,12 @@ export default function MyApplicationsPage() {
       {/* Status Filter Tabs */}
       <div className="flex flex-wrap gap-2 mb-8">
         {STATUS_TABS.map((tab) => (
-          <button
+          <FilterChip
             key={tab}
-            onClick={() => {
-              setStatusFilter(tab);
-              setPage(1);
-            }}
-            className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-all ${
-              statusFilter === tab
-                ? "bg-lime-400 text-stone-900 border-lime-400"
-                : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 dark:hover:border-white/30"
-            }`}
-          >
-            {tab.replace("_", " ")}
-          </button>
+            label={tab.replace("_", " ")}
+            active={statusFilter === tab}
+            onClick={() => { setStatusFilter(tab); setPage(1); }}
+          />
         ))}
       </div>
 
@@ -489,35 +482,7 @@ export default function MyApplicationsPage() {
         </select>
       </div>
 
-      <div className="mb-5 flex flex-wrap gap-2">
-  {[
-    "ALL",
-    "APPLIED",
-    "IN_PROGRESS",
-    "SHORTLISTED",
-    "HIRED",
-    "REJECTED",
-    "WITHDRAWN",
-  ].map((status) => (
-    <button
-      key={status}
-      onClick={() => {
-        setStatusFilter(status);
-        setPage(1);
-      }}
-      className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
-        statusFilter === status
-          ? "bg-lime-400 text-stone-900 border-lime-400"
-          : "border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
-      }`}
-    >
-      {status.replace("_", " ")}
-    </button>
-  ))}
-</div>
       {/* Search */}
-
-      
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
@@ -583,9 +548,9 @@ export default function MyApplicationsPage() {
             | { kind: "internal"; app: Application }
             | { kind: "external"; app: ExternalApplication }
           > = [
-              ...filtered.map((app) => ({ kind: "internal" as const, app })),
-              ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
-            ];
+            ...filtered.map((app) => ({ kind: "internal" as const, app })),
+            ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
+          ];
           const totalResults = combined.length;
           const totalPages = Math.max(1, Math.ceil(totalResults / PAGE_SIZE));
           const safePage = Math.min(page, totalPages);
