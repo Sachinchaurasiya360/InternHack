@@ -4,6 +4,7 @@ import { Search, Bell, Users, ArrowUpRight } from "lucide-react";
 import { SEO } from "../../../../components/SEO";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import toast from "../../../../components/ui/toast";
+import { Kicker } from "../../../../../components/ui/Kicker";
 
 export default function MentorMatchingPage() {
   const [email, setEmail] = useState("");
@@ -32,10 +33,7 @@ export default function MentorMatchingPage() {
           transition={{ duration: 0.4 }}
           className="text-center"
         >
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-            <span className="h-1.5 w-1.5 bg-lime-400" />
-            learn / mentors
-          </div>
+          <Kicker className="mb-6">learn / mentors</Kicker>
 
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none mb-6">
             Mentor Matching{" "}

@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+import { Kicker } from "../../../../components/ui/Kicker";
   CheckCircle2, XCircle, ChevronLeft, ChevronRight, Building2, Clock,
   Trophy, Send, RotateCcw, ArrowUpRight,
 } from "lucide-react";
@@ -205,10 +206,7 @@ export default function AptitudeTopicPage() {
           className="mt-2 mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-6"
         >
           <div className="min-w-0 flex-1">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              learn / aptitude / {slug}
-            </div>
+            <Kicker>learn / aptitude / {slug}</Kicker>
             <h1 className="mt-3 text-2xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight wrap-break-word">
               {topic.name}
             </h1>

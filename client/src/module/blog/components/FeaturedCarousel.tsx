@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+import { Kicker } from "../../../../components/ui/Kicker";
   ArrowLeft,
   ArrowRight,
   Calendar,
@@ -102,10 +103,7 @@ export default function FeaturedCarousel({
       <div className="flex items-center justify-between mb-5">
         <div>
           {/* Kicker — lime dot + mono uppercase */}
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-3">
-            <span className="h-1.5 w-1.5 bg-lime-400" />
-            featured
-          </div>
+          <Kicker className="mb-3">featured</Kicker>
           <h2 className="text-2xl md:text-3xl font-black text-stone-900 dark:text-stone-50">
             Featured Articles
           </h2>

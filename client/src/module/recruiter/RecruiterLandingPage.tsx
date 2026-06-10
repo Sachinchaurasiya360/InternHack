@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import NumberFlow from "@number-flow/react";
 import {
+import { Kicker } from "../../../components/ui/Kicker";
   ArrowRight,
   Briefcase,
   BarChart3,
@@ -274,10 +275,7 @@ export default function RecruiterLandingPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mb-16"
           >
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              who it is for
-            </div>
+            <Kicker className="mb-6">who it is for</Kicker>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Three hiring shapes,{" "}
               <span className="text-stone-400 dark:text-stone-600">
@@ -336,10 +334,7 @@ export default function RecruiterLandingPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mb-16"
           >
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              the hr stack
-            </div>
+            <Kicker className="mb-6">the hr stack</Kicker>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Eight modules.{" "}
               <span className="text-stone-400 dark:text-stone-600">
@@ -396,10 +391,7 @@ export default function RecruiterLandingPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mb-16"
           >
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              how it works
-            </div>
+            <Kicker className="mb-6">how it works</Kicker>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Four steps.{" "}
               <span className="text-stone-400 dark:text-stone-600">
@@ -447,10 +439,7 @@ export default function RecruiterLandingPage() {
             transition={{ duration: 0.5 }}
             className="text-center max-w-3xl mx-auto mb-14"
           >
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              pricing
-            </div>
+            <Kicker className="mb-6">pricing</Kicker>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Free to start.{" "}
               <span className="text-stone-400 dark:text-stone-600">

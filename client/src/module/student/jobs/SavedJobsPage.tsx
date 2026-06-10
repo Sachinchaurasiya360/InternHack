@@ -6,6 +6,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job } from "../../../lib/types";
 import toast from "../../../components/ui/toast";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const cardBase =
   "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
@@ -38,10 +39,7 @@ export default function SavedJobsPage() {
         className="mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
       >
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-            <span className="h-1.5 w-1.5 bg-lime-400" />
-            saved / jobs
-          </div>
+          <Kicker>saved / jobs</Kicker>
           <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
             Your{" "}
             <span className="relative inline-block">

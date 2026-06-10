@@ -6,6 +6,7 @@ import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { SEO } from "../../components/SEO";
 import { GoogleAuthButton } from "../../components/GoogleAuthButton";
+import { Kicker } from "../../../components/ui/Kicker";
 
 const PASSWORD_CRITERIA = [
   { id: "length",    label: "At least 8 characters",  test: (p: string) => p.length >= 8 },
@@ -351,10 +352,7 @@ export default function RegisterPage() {
           transition={{ duration: 0.4 }}
           className="w-full max-w-md"
         >
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
-            <span className="h-1.5 w-1.5 bg-lime-400" />
-            create account
-          </div>
+          <Kicker className="mb-5">create account</Kicker>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
             Create an account.
           </h1>

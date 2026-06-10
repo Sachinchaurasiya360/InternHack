@@ -10,6 +10,7 @@ import type { CustomFieldDefinition } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 interface RoundInput {
   name: string;
@@ -142,10 +143,7 @@ export default function CreateJobPage() {
             <ArrowLeft className="w-3 h-3" />
             my jobs
           </Link>
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-            <span className="h-1.5 w-1.5 bg-lime-400" />
-            recruiter / new posting
-          </div>
+          <Kicker>recruiter / new posting</Kicker>
           <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
             Post a{" "}
             <span className="relative inline-block">
@@ -227,10 +225,7 @@ export default function CreateJobPage() {
         >
           {/* Section header */}
           <div className="px-6 py-5 border-b border-stone-200 dark:border-white/10">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              step {stepIdx + 1} / {STEPS.length}
-            </div>
+            <Kicker>step {stepIdx + 1} / {STEPS.length}</Kicker>
             <h2 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
               {stepIdx === 0 && "The basics"}
               {stepIdx === 1 && "Custom application fields"}

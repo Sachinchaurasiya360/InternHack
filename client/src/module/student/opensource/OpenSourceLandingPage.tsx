@@ -6,6 +6,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import {
+import { Kicker } from "../../../../components/ui/Kicker";
   ArrowRight,
   CheckCircle,
   GitBranch,
@@ -162,10 +163,7 @@ function StickyProgramsSection() {
         <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
           <div className="max-w-6xl mx-auto w-full px-6 mb-8">
             <div className="mt-6">
-              <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-                <span className="h-1.5 w-1.5 bg-lime-400" />
-                programs
-              </div>
+              <Kicker className="mb-6">programs</Kicker>
               <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
                 Apply to top open-source{" "}
                 <span className="text-stone-400 dark:text-stone-600">programs.</span>
@@ -358,10 +356,7 @@ export default function OpenSourceLandingPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mb-16"
           >
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              what's inside
-            </div>
+            <Kicker className="mb-6">what's inside</Kicker>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Everything you need.{" "}
               <span className="text-stone-400 dark:text-stone-600">
@@ -409,10 +404,7 @@ export default function OpenSourceLandingPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mb-16"
           >
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              hidden gems
-            </div>
+            <Kicker className="mb-6">hidden gems</Kicker>
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Underrated repos{" "}
               <span className="text-stone-400 dark:text-stone-600">worth contributing to.</span>
@@ -478,10 +470,7 @@ export default function OpenSourceLandingPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mb-16"
           >
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              how it works
-            </div>
+            <Kicker className="mb-6">how it works</Kicker>
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Three steps to your{" "}
               <span className="text-stone-400 dark:text-stone-600">first open-source PR.</span>
@@ -528,10 +517,7 @@ export default function OpenSourceLandingPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mb-16"
           >
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              why it matters
-            </div>
+            <Kicker className="mb-6">why it matters</Kicker>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Why you should{" "}
               <span className="text-stone-400 dark:text-stone-600">contribute to open source.</span>

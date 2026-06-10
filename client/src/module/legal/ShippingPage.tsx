@@ -3,6 +3,7 @@ import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
 import { Monitor, Zap, Package, HelpCircle, Mail, Clock } from "lucide-react";
+import { Kicker } from "../../../components/ui/Kicker";
 
 type Section = {
   id: string;
@@ -83,10 +84,7 @@ export default function ShippingPage() {
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="max-w-3xl mx-auto text-center"
             >
-              <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-6">
-                <span className="h-1.5 w-1.5 bg-lime-400" />
-                shipping & delivery
-              </div>
+              <Kicker className="mb-6">shipping & delivery</Kicker>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
                 Shipping & Delivery{" "}
                 <span className="relative inline-block">

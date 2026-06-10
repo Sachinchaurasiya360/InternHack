@@ -20,8 +20,7 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
-
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
 
 export default function DsaTopicDetailPage() {
@@ -44,7 +43,7 @@ export default function DsaTopicDetailPage() {
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
-      params.set("limit", "200"); // covers all current topics; virtualizer handles render performance
+      params.set("limit", "200");
       if (diffParam) params.set("difficulty", diffParam);
       if (searchParam) params.set("search", searchParam);
       return api.get<DsaTopicDetail>(`/dsa/topics/${slug}?${params}`).then((r) => r.data);
@@ -225,16 +224,26 @@ export default function DsaTopicDetailPage() {
               )}
             </div>
             {user && (
-              <div className="mt-4">
-                <ProgressBar
-                  value={topic.totalSolved}
-                  max={topic.totalProblems}
-                  height="thin"
-                  activeColor={pct === 100 ? "bg-lime-400" : "bg-stone-900 dark:bg-stone-50"}
-                />
+              <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap">
+                <span>
+                  <span className="text-stone-900 dark:text-stone-50 tabular-nums">{topic.totalSolved}</span>
+                  <span className="text-stone-400 dark:text-stone-600"> / {topic.totalProblems} solved</span>
+                </span>
+                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                <span className="text-lime-600 dark:text-lime-400 tabular-nums">{pct}% complete</span>
               </div>
             )}
+          </div>
+          {user && (
+            <div className="mt-4">
+              <ProgressBar
+                value={topic.totalSolved}
+                max={topic.totalProblems}
+                height="thin"
+                activeColor={pct === 100 ? "bg-lime-400" : "bg-stone-900 dark:bg-stone-50"}
+              />
             </div>
+          )}
         </motion.div>
 
         {/* Stats strip */}

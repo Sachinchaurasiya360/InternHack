@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import {
+import { Kicker } from "../../../../components/ui/Kicker";
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
@@ -285,12 +286,9 @@ export default function InterviewQuestionPage() {
           className="mt-2 mb-8 border-b border-stone-200 dark:border-white/10 pb-8"
         >
           <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 min-w-0">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              <span className="truncate">
+            <Kicker className="min-w-0"><span className="truncate">
                 interview prep / <Link to={`${basePath}/${sectionSlug}`} className="hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline">{sectionSlug}</Link> / #{String(currentIndex + 1).padStart(2, "0")}
-              </span>
-            </div>
+              </span></Kicker>
             <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => prevQuestion && navigate(`${basePath}/${sectionSlug}/${prevQuestion.id}`)}

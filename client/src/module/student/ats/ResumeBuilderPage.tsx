@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+import { Kicker } from "../../../../components/ui/Kicker";
   Download,
   Plus,
   Trash2,
@@ -713,10 +714,7 @@ export default function ResumeBuilderPage() {
           className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
         >
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              resume / builder
-            </div>
+            <Kicker>resume / builder</Kicker>
             <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Build your resume.
             </h1>

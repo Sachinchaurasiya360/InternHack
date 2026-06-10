@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode, type KeyboardEvent } from "react";
 import { useNavigate, Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+import { Kicker } from "../../../../components/ui/Kicker";
   ArrowRight,
   Check,
   ChevronLeft,
@@ -298,10 +299,7 @@ export default function AiRoadmapWizardPage() {
           transition={{ duration: 0.4 }}
           className="mt-2 mb-6"
         >
-          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-3">
-            <span className="h-1.5 w-1.5 bg-lime-400" />
-            generate with ai
-          </div>
+          <Kicker className="mb-3">generate with ai</Kicker>
           <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 leading-tight">
             Build a roadmap that fits you.
           </h1>

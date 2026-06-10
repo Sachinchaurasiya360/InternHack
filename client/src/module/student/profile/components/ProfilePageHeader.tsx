@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { Save, Loader2 } from "lucide-react";
+import { Kicker } from "../../../../../components/ui/Kicker";
 
 interface ProfilePageHeaderProps {
   profileCompletion: number;
@@ -34,10 +35,7 @@ export function ProfilePageHeader({ profileCompletion, saving, onSave }: Profile
       className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
     >
       <div>
-        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-          <span className="h-1.5 w-1.5 bg-lime-400" />
-          account / profile
-        </div>
+        <Kicker>account / profile</Kicker>
         <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
           My profile.
         </h1>

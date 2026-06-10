@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import type { BlogCategory } from "@/lib/types";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const CATEGORY_LABELS: Record<BlogCategory, string> = {
   CAREER_ADVICE: "Career Advice",
@@ -32,10 +33,7 @@ export default function CategoryPills({
   return (
     <div className="mt-6 mb-8">
       {/* Kicker — lime dot + mono uppercase */}
-      <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-4">
-        <span className="h-1.5 w-1.5 bg-lime-400" />
-        categories
-      </div>
+      <Kicker className="mb-4">categories</Kicker>
 
       <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
         {categories.map((category) => {

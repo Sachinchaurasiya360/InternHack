@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+import { Kicker } from "../../../../components/ui/Kicker";
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
@@ -878,10 +879,7 @@ export default function DsaProblemDetailPage() {
           >
             <div className="max-w-5xl mx-auto px-4 py-4 pb-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-                  <span className="h-1.5 w-1.5 bg-lime-400 rounded-full animate-pulse" />
-                  try next
-                </div>
+                <Kicker>try next</Kicker>
                 <button
                   onClick={() => setShowNextPanel(false)}
                   className="w-7 h-7 inline-flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors"

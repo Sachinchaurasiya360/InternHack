@@ -12,6 +12,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import type { Roadmap, RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 function Chrome({ children, isStudent, sidebarWidth, collapsed, sidebar }: {
   children: ReactNode;
@@ -191,10 +192,7 @@ export default function RoadmapDetailPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              roadmap · {roadmap.level.replace("_", " ").toLowerCase()}
-            </div>
+            <Kicker className="mb-5">roadmap · {roadmap.level.replace("_", " ").toLowerCase()}</Kicker>
             <h1 className="font-display text-4xl sm:text-6xl font-bold tracking-tight text-stone-950 dark:text-stone-50 mb-5 leading-[1.05]">
               {roadmap.title}
             </h1>

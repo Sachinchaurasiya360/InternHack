@@ -1,9 +1,11 @@
+import { FilterChip } from "../../../components/ui/FilterChip";
 import React, { useState, useEffect, useRef } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
+import { Kicker } from "../../../../components/ui/Kicker";
   Search,
   MapPin,
   IndianRupee,
@@ -436,10 +438,7 @@ export default function JobBrowsePage() {
           className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
         >
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              browse / jobs
-            </div>
+            <Kicker>browse / jobs</Kicker>
             <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Find your next{" "}
               <span className="relative inline-block">
@@ -637,24 +636,20 @@ export default function JobBrowsePage() {
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
               filter /
             </span>
-            {FILTER_TAGS.map((tag, i) => {
-              const active = selectedTags.includes(tag);
-              return (
-                <motion.button
-                  key={tag}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.02, duration: 0.2 }}
+            {FILTER_TAGS.map((tag, i) => (
+              <motion.div
+                key={tag}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.02, duration: 0.2 }}
+              >
+                <FilterChip
+                  label={tag}
+                  active={selectedTags.includes(tag)}
                   onClick={() => toggleTag(tag)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${active
-                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                    }`}
-                >
-                  {tag}
-                </motion.button>
-              );
-            })}
+                />
+              </motion.div>
+            ))}
 
             <label
               className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors cursor-pointer select-none ${hideExpired

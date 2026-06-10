@@ -11,6 +11,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
 import api from "../../../lib/axios"
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const STORAGE_KEY = "interview-progress";
 
@@ -174,10 +175,7 @@ export default function InterviewLessonsPage() {
           className="mt-2 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8"
         >
           <div className="min-w-0">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              learn / interview prep
-            </div>
+            <Kicker>learn / interview prep</Kicker>
             <h1 className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Walk in{" "}
               <span className="relative inline-block">

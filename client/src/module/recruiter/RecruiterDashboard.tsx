@@ -23,6 +23,7 @@ import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { SEO } from "../../components/SEO";
 import { Button } from "../../components/ui/button";
 import { useAuthStore } from "../../lib/auth.store";
+import { Kicker } from "../../components/ui/Kicker";
 
 interface DashboardData {
   totalJobs: number;
@@ -111,10 +112,7 @@ function RecruiterDashboardInner() {
           className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-6 border-b border-stone-200 dark:border-white/10 pb-8"
         >
           <div className="min-w-0">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              recruiter / dashboard
-            </div>
+            <Kicker>recruiter / dashboard</Kicker>
             <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
               Hiring{" "}
               <span className="relative inline-block">
@@ -273,10 +271,7 @@ function RecruiterDashboardInner() {
         >
           <div className="flex items-end justify-between border-b border-stone-200 dark:border-white/10 pb-4 mb-0">
             <div>
-              <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-                <span className="h-1.5 w-1.5 bg-lime-400" />
-                recent applications
-              </div>
+              <Kicker>recent applications</Kicker>
               <h2 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
                 Who just applied
               </h2>
