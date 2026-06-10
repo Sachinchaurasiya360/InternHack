@@ -81,7 +81,7 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bo
                 </div>
               </div>
             </div>
-            
+
             {/* Restored Bookmark Button */}
             <div className="flex items-center gap-2 shrink-0 relative z-10">
               <button
@@ -147,55 +147,37 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bo
               {repo.healthScore !== undefined && (
                 <div className="flex items-center gap-1.5 ml-1">
                   <div
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      repo.healthScore >= 75
+                    className={`h-1.5 w-1.5 rounded-full ${repo.healthScore >= 75
                         ? "bg-emerald-500 border border-emerald-400/30"
                         : repo.healthScore >= 50
-                        ? "bg-amber-500 border border-amber-400/30"
-                        : "bg-rose-500 border border-rose-400/30"
-                    }`}
+                          ? "bg-amber-500 border border-amber-400/30"
+                          : "bg-rose-500 border border-rose-400/30"
+                      }`}
                   />
                   <span
-                    className={`text-[9px] font-bold uppercase tracking-tight ${
-                      repo.healthScore >= 75
+                    className={`text-[9px] font-bold uppercase tracking-tight ${repo.healthScore >= 75
                         ? "text-emerald-600 dark:text-emerald-400"
                         : repo.healthScore >= 50
-                        ? "text-amber-600 dark:text-amber-400"
-                        : "text-rose-600 dark:text-rose-400"
-                    }`}
+                          ? "text-amber-600 dark:text-amber-400"
+                          : "text-rose-600 dark:text-rose-400"
+                      }`}
                   >
                     {repo.healthScore >= 75
                       ? "Healthy"
                       : repo.healthScore >= 50
-                      ? "Active"
-                      : "Quiet"}
+                        ? "Active"
+                        : "Quiet"}
                   </span>
                 </div>
               )}
             </div>
+
             <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors">
               details
               <ArrowRight
                 className="w-3 h-3 group-hover:translate-x-0.5 transition-transform"
                 aria-hidden
               />
-            <div className="flex items-center gap-3 text-[11px] font-mono text-stone-500 dark:text-stone-400">
-              <span className="flex items-center gap-1">
-                <Star size={12} className="text-lime-600 dark:text-lime-400" />
-                {formatCount(repo.stars)}
-              </span>
-              <span className="flex items-center gap-1">
-                <GitFork size={12} />
-                {formatCount(repo.forks)}
-              </span>
-              <span className="flex items-center gap-1">
-                <CircleDot size={12} />
-                {formatCount(repo.openIssues)}
-              </span>
-            </div>
-            <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors">
-              details
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
             </span>
           </div>
         </div>
