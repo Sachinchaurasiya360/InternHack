@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import {
   Trophy,
   Download,
@@ -15,12 +15,91 @@ interface Certificate {
   shareUrl: string;
 }
 
-export default function RoadmapCertificatesGalleryPage() {
-  const [certificates, setCertificates] = useState<
-    Certificate[]
-  >([]);
+const CertificateCard = memo(function CertificateCard({
+  certificate,
+}: {
+  certificate: Certificate;
+}) {
+  const shareUrl =
+    `${window.location.origin}${certificate.shareUrl}/${certificate.enrollmentId}`;
 
+  const downloadUrl =
+    `${window.location.origin}${certificate.certificateUrl}`;
+
+  return (
+    <div className="group w-full max-w-sm rounded-3xl border border-white/10 bg-stone-900/80 overflow-hidden hover:border-lime-400/30 transition-all duration-300">
+
+      {/* Accent */}
+      <div className="h-2 bg-linear-to-r from-lime-400 via-emerald-400 to-sky-400" />
+
+      <div className="p-6">
+
+        {/* Icon */}
+        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-lime-400 text-stone-950 shadow-lg shadow-lime-500/20 mb-5">
+          <Trophy className="w-7 h-7" />
+        </div>
+
+        {/* Title */}
+        <h2 className="text-xl font-bold leading-tight">
+          {certificate.roadmapTitle}
+        </h2>
+
+        <p className="text-stone-500 text-sm mt-2">
+          Completed on{" "}
+          {new Date(
+            certificate.completedAt,
+          ).toLocaleDateString()}
+        </p>
+
+        {/* Buttons */}
+        <div className="mt-6 space-y-3">
+
+          <button
+            onClick={() =>
+              window.open(downloadUrl, "_blank")
+            }
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-stone-950 font-semibold transition-all"
+          >
+            <Download className="w-4 h-4" />
+            Download Certificate
+          </button>
+
+          <button
+            onClick={() =>
+              window.open(shareUrl, "_blank")
+            }
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Open Public Page
+          </button>
+
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(
+                shareUrl,
+              );
+
+              toast.success(
+                "Share link copied to clipboard!",
+              );
+            }}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all"
+          >
+            <Share2 className="w-4 h-4" />
+            Copy Share Link
+          </button>
+
+        </div>
+      </div>
+    </div>
+  );
+});
+
+export default function RoadmapCertificatesGalleryPage() {
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     async function fetchCertificates() {
@@ -32,7 +111,10 @@ export default function RoadmapCertificatesGalleryPage() {
           },
         );
 
-        if (!res.ok) return;
+        if (!res.ok) {
+          setError(true);
+          return;
+        }
 
         const data = await res.json();
 
@@ -52,6 +134,18 @@ export default function RoadmapCertificatesGalleryPage() {
       </div>
     );
   }
+
+  if (error) {
+  return (
+    <div className="min-h-screen bg-stone-950 flex items-center justify-center px-4">
+      <div className="text-center">
+        <p className="text-stone-400 mb-4">Failed to load certificate</p>
+        <button onClick={() => window.location.reload()} className="text-lime-400 hover:underline">
+          Retry
+        </button>
+      </div>
+    </div>
+  );}
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 px-6 py-12 flex justify-center">
@@ -94,82 +188,9 @@ export default function RoadmapCertificatesGalleryPage() {
         {certificates.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 place-items-center">
 
-            {certificates.map((certificate) => {
-              const shareUrl =
-                `${window.location.origin}${certificate.shareUrl}/${certificate.enrollmentId}`;
-
-              const downloadUrl =
-                `${window.location.origin}${certificate.certificateUrl}`;
-
-              return (
-                <div
-                  key={certificate.enrollmentId}
-                  className="group w-full max-w-sm rounded-3xl border border-white/10 bg-stone-900/80 overflow-hidden hover:border-lime-400/30 transition-all duration-300"
-                >
-
-                  {/* Accent */}
-                  <div className="h-2 bg-gradient-to-r from-lime-400 via-emerald-400 to-sky-400" />
-
-                  <div className="p-6">
-
-                    {/* Icon */}
-                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-lime-400 text-stone-950 shadow-lg shadow-lime-500/20 mb-5">
-                      <Trophy className="w-7 h-7" />
-                    </div>
-
-                    {/* Title */}
-                    <h2 className="text-xl font-bold leading-tight">
-                      {certificate.roadmapTitle}
-                    </h2>
-
-                    <p className="text-stone-500 text-sm mt-2">
-                      Completed on{" "}
-                      {new Date(
-                        certificate.completedAt,
-                      ).toLocaleDateString()}
-                    </p>
-
-                    {/* Buttons */}
-                    <div className="mt-6 space-y-3">
-
-                      <button
-                        onClick={() =>
-                          window.open(downloadUrl, "_blank")
-                        }
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-stone-950 font-semibold transition-all"
-                      >
-                        <Download className="w-4 h-4" />
-                        Download Certificate
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          window.open(shareUrl, "_blank")
-                        }
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        Open Public Page
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(
-                            shareUrl,
-                          );
-                          toast.success("Share link copied to clipboard!");
-                        }}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all"
-                      >
-                        <Share2 className="w-4 h-4" />
-                        Copy Share Link
-                      </button>
-
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {certificates.map((certificate) => (
+            <CertificateCard key={certificate.enrollmentId} certificate={certificate}/>
+            ))}
 
           </div>
         )}

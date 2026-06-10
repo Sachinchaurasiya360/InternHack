@@ -16,6 +16,7 @@ export default function RoadmapCertificatePage() {
 
   const [data, setData] = useState<CertificateMeta | null>(null);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     async function fetchCertificate() {
@@ -23,7 +24,10 @@ export default function RoadmapCertificatePage() {
         `/api/roadmaps/certificates/${slug}/${enrolledId}/meta`,
       );
 
-      if (!res.ok) return;
+      if (!res.ok) {
+        setError(true);
+        return;
+      }
 
       const json = await res.json();
       setData(json);
@@ -31,7 +35,17 @@ export default function RoadmapCertificatePage() {
 
     fetchCertificate();
   }, [slug, enrolledId]);
-
+  if (error) {
+  return (
+    <div className="min-h-screen bg-stone-950 flex items-center justify-center px-4">
+      <div className="text-center">
+        <p className="text-stone-400 mb-4">Failed to load certificate</p>
+        <button onClick={() => window.location.reload()} className="text-lime-400 hover:underline">
+          Retry
+        </button>
+      </div>
+    </div>
+  );}
   if (!data) {
     return (
       <div className="min-h-screen bg-stone-950 flex items-center justify-center text-stone-400">
@@ -67,7 +81,7 @@ export default function RoadmapCertificatePage() {
     <div className="min-h-screen bg-stone-950 text-stone-100 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-2xl rounded-3xl border border-white/10 bg-stone-900/90 overflow-hidden shadow-2xl">
 
-        <div className="h-2 bg-gradient-to-r from-lime-400 via-emerald-400 to-sky-400" />
+        <div className="h-2 bg-linear-to-r from-lime-400 via-emerald-400 to-sky-400" />
 
         <div className="p-10 text-center">
 
