@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate,Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
@@ -254,12 +254,19 @@ export default function PublicProfilePage() {
               <div className="flex flex-wrap gap-1.5">
                 {profile.skills.map((skill) => {
                   const v = verifiedMap.get(skill.toLowerCase());
-                  return (
-                    <span key={skill} className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"}`}>
+                  const badge = (
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"}`}>
                       {v && <ShieldCheck className="w-3 h-3" />}
                       {skill}
                       {v && <span className="text-[10px] opacity-70">{v.score}%</span>}
                     </span>
+                  );
+                  return v?.token ? (
+                    <Link key={skill} to={`/verify/${v.token}`} className="no-underline" title="View verified skill details">
+                      {badge}
+                    </Link>
+                  ) : (
+                    <span key={skill}>{badge}</span>
                   );
                 })}
               </div>
