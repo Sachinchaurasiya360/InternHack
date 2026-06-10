@@ -234,7 +234,7 @@ export class LeaderboardService {
       prisma.studentBadge.count({
         where: {
           studentId: userId,
-          awardedAt: { gte: oneMonthAgo },
+          earnedAt: { gte: oneMonthAgo },
         },
       }),
     ]);

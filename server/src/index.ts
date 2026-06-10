@@ -76,6 +76,7 @@ import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/sche
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
+import { startLeaderboardRanksCron, stopLeaderboardRanksCron } from "./cron/leaderboard-ranks.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
@@ -438,6 +439,14 @@ const server = app.listen(PORT, async () => {
     name: "Deadline Alert Cron",
     priority: 10,
     fn: () => stopDeadlineAlertCron(),
+  });
+
+  // Start leaderboard ranks update cron (daily at 2 AM)
+  startLeaderboardRanksCron();
+  shutdownManager.register({
+    name: "Leaderboard Ranks Cron",
+    priority: 10,
+    fn: () => stopLeaderboardRanksCron(),
   });
 
   // Register Redis disconnect

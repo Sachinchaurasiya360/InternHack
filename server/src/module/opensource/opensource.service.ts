@@ -7,6 +7,7 @@ import {
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
 import { UserService } from "../user/user.service.js";
+import { triggerLeaderboardUpdate } from "./leaderboard.utils.js";
 
 interface ListReposQuery {
   page: number;
@@ -363,6 +364,9 @@ export class OpensourceService {
       include: { user: { select: { name: true, email: true } } },
     });
 
+    // Trigger leaderboard score update for pending repo suggestion
+    triggerLeaderboardUpdate(userId);
+
     try {
       await sendEmail({
         to: request.user.email,
@@ -443,6 +447,9 @@ export class OpensourceService {
       where: { id },
       data: { status: "APPROVED", adminNote: overrides.adminNote ?? null },
     });
+
+    // Trigger leaderboard score update for the user
+    triggerLeaderboardUpdate(request.userId);
 
     try {
       await sendEmail({
