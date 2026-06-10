@@ -8,6 +8,7 @@ import {
   isEmailableStatus,
 } from "../../utils/email-templates.js";
 import { createLogger } from "../../utils/logger.js";
+import { cacheGet, cacheSet } from "../../utils/cache.js";
 
 const S3_BUCKET = process.env["AWS_S3_BUCKET"] || "";
 // validating the URL
@@ -581,15 +582,32 @@ export class RecruiterService {
     }
 
     // Top verified skills among applicants
-    const topVerifiedSkills = await prisma.verifiedSkill.groupBy({
-      by: ["skillName"],
-      where: {
-        student: { applications: { some: { job: { recruiterId } } } },
-      },
-      _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
-      take: 5,
-    });
+    let topVerifiedSkills: { skillName: string; _count: { id: number } }[] | null = null;
+    const CACHE_KEY = `dashboard:topVerifiedSkills:${recruiterId}`;
+
+    try {
+      topVerifiedSkills = await cacheGet<{ skillName: string; _count: { id: number } }[]>(CACHE_KEY);
+    } catch (error) {
+      logger.error(`Cache read failed for key ${CACHE_KEY}`, error);
+    }
+
+    if (!topVerifiedSkills) {
+      topVerifiedSkills = await prisma.verifiedSkill.groupBy({
+        by: ["skillName"],
+        where: {
+          student: { applications: { some: { job: { recruiterId } } } },
+        },
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+        take: 5,
+      });
+
+      try {
+        await cacheSet(CACHE_KEY, topVerifiedSkills, 300);
+      } catch (error) {
+        logger.error(`Cache write failed for key ${CACHE_KEY}`, error);
+      }
+    }
 
     return {
       totalJobs,
