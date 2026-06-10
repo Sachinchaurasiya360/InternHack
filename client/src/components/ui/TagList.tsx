@@ -10,7 +10,7 @@ export function TagList({ tags, max = 3, tagClassName }: TagListProps) {
 
   const visible = tags.slice(0, max);
   const overflow = tags.length - max;
-  const defaultTagClass = "px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider";
+  const defaultTagClass = "px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-xs font-mono uppercase tracking-wider";
   const finalTagClass = tagClassName || defaultTagClass;
 
   return (
