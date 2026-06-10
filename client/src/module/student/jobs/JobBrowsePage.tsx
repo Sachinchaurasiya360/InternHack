@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   MapPin,
@@ -29,6 +29,7 @@ import type {
   ScrapedJob,
 } from "../../../lib/types";
 import JobCard from "./component/jobcard";
+
 
 const FILTER_TAGS = [
   "Frontend",
@@ -289,6 +290,7 @@ export default function JobBrowsePage() {
     placeholderData: keepPreviousData,
   });
 
+
   const queryClient = useQueryClient();
 
   const { data: savedIds } = useQuery({
@@ -298,19 +300,16 @@ export default function JobBrowsePage() {
     select: (jobs) => new Set(jobs.map((j) => j.id)),
   });
 
-  const { mutate: toggleSave } = useMutation({
-    mutationFn: async (jobId: number) => {
-      if (savedIds?.has(jobId)) {
-        await api.delete(`/student/jobs/${jobId}/save`);
-      } else {
-        await api.post(`/student/jobs/${jobId}/save`);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
-    },
-  });
-
+  /** Toggle save/unsave for a job in the browse grid. */
+  const toggleSave = useCallback(async (jobId: number) => {
+    const isSaved = savedIds?.has(jobId) ?? false;
+    if (isSaved) {
+      await api.delete(`/student/jobs/${jobId}/save`);
+    } else {
+      await api.post(`/student/jobs/${jobId}/save`);
+    }
+    queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
+  }, [savedIds, queryClient]);
   const toggleTag = (tag: string) => {
     const updated = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)

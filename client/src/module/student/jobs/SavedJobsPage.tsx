@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Bookmark, MapPin, IndianRupee, Clock, Trash2, ArrowUpRight, Briefcase } from "lucide-react";
 import { Link } from "react-router";
@@ -6,25 +6,36 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job } from "../../../lib/types";
 import toast from "../../../components/ui/toast";
+import { useSaveJob } from "../../../hooks/useSaveJob";
 
 const cardBase =
   "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
 
-export default function SavedJobsPage() {
-  const queryClient = useQueryClient();
+/** Small button component so each card gets its own useSaveJob instance. */
+function UnsaveButton({ jobId }: { jobId: number }) {
+  const { unsave } = useSaveJob(jobId);
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        unsave.mutate(undefined, {
+          onSuccess: () => toast.success("Job removed from saved"),
+        });
+      }}
+      className="absolute top-3 right-3 p-1.5 rounded-md text-stone-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-0 bg-transparent cursor-pointer z-10"
+      title="Remove from saved"
+    >
+      <Trash2 className="w-4 h-4" />
+    </button>
+  );
+}
 
+export default function SavedJobsPage() {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.savedJobs.list(),
     queryFn: () => api.get("/student/saved-jobs").then((res) => res.data.jobs as Job[]),
     staleTime: 30_000,
-  });
-
-  const { mutate: unsave } = useMutation({
-    mutationFn: (jobId: number) => api.delete(`/student/jobs/${jobId}/save`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
-      toast.success("Job removed from saved");
-    },
   });
 
   const savedJobs = data ?? [];
@@ -163,14 +174,7 @@ export default function SavedJobsPage() {
                   <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
                 </div>
               </Link>
-              <button
-                type="button"
-                onClick={(e) => { e.preventDefault(); unsave(job.id); }}
-                className="absolute top-3 right-3 p-1.5 rounded-md text-stone-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-0 bg-transparent cursor-pointer z-10"
-                title="Remove from saved"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+              <UnsaveButton jobId={job.id} />
             </motion.div>
           ))}
         </div>

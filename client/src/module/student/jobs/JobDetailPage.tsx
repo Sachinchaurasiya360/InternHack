@@ -1,7 +1,7 @@
 import { useParams, Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, IndianRupee, Users, Send, Check, Building2, Clock, ArrowUpRight, Share2, Bookmark } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -13,6 +13,7 @@ import type { Job } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
+import { useSaveJob } from "../../../hooks/useSaveJob";
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 const stagger = { show: { transition: { staggerChildren: 0.07 } } };
@@ -83,8 +84,6 @@ export default function JobDetailPage() {
     staleTime: 30 * 60 * 1000,
   });
 
-  const queryClient = useQueryClient();
-
   const { data: isSaved } = useQuery({
     queryKey: queryKeys.savedJobs.check(id!),
     queryFn: () => api.get(`/student/jobs/${id}/save`).then((res) => res.data.saved as boolean),
@@ -92,19 +91,7 @@ export default function JobDetailPage() {
     staleTime: 30_000,
   });
 
-  const { mutate: toggleSave } = useMutation({
-    mutationFn: async () => {
-      if (isSaved) {
-        await api.delete(`/student/jobs/${id}/save`);
-      } else {
-        await api.post(`/student/jobs/${id}/save`);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.check(id!) });
-    },
-  });
+  const { toggle: toggleSave } = useSaveJob(id!);
 
   const backPath = inStudentLayout ? "/student/jobs" : "/jobs";
   const applyPath = inStudentLayout ? `/student/jobs/${id}/apply` : `/jobs/${Number(id)}/apply`;
@@ -236,7 +223,7 @@ export default function JobDetailPage() {
                     mode="icon"
                     size="lg"
                     aria-label={isSaved ? "Remove from saved" : "Save job"}
-                    onClick={() => toggleSave()}
+                    onClick={() => toggleSave(!!isSaved)}
                   >
                     <Bookmark className={isSaved ? "fill-lime-600 dark:fill-lime-400 text-lime-600 dark:text-lime-400" : ""} />
                   </Button>
