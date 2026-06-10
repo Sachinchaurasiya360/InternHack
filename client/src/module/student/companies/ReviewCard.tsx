@@ -67,4 +67,4 @@ export default function ReviewCard({ review }: { review: CompanyReview }) {
       )}
     </div>
   );
-}d
+}
