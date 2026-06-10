@@ -3,7 +3,6 @@ import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   ShieldCheck,
   Clock,
   HelpCircle,
@@ -45,6 +44,7 @@ import { Button } from "../../../components/ui/button";
 import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { SkillTest, SkillTestAttempt, VerifiedSkill, TestDifficulty } from "../../../lib/types";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 /* ------------------------------------------------------------------ */
 /*  Skill icon + color mapping                                         */

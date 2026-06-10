@@ -3,7 +3,6 @@ import { useParams, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
@@ -27,6 +26,7 @@ import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
 import { Button } from "@/components/ui/button";
 import { DsaApproachesPanel } from "./components/DsaApproachesPanel";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const DIFF_STYLE: Record<string, string> = {
   Easy: "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",

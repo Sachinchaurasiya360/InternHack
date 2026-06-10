@@ -3,7 +3,6 @@ import { Link, useSearchParams, useNavigate, useLocation } from "react-router";
 import toast from "@/components/ui/toast";
 import { motion } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   Download,
   AlertCircle,
   FileCode2,
@@ -32,6 +31,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { useLatexAutoSave } from "./useLatexAutoSave";
 import { CopyButton } from "../../../components/ui/CopyButton";
 import { getLatexTemplate } from "./latex-templates.data";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const DEFAULT_TEMPLATE = `\\documentclass[11pt,a4paper]{article}
 \\usepackage[margin=0.75in]{geometry}

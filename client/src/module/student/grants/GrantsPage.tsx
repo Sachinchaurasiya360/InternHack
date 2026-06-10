@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   Search,
   ExternalLink,
   X,
@@ -25,6 +24,7 @@ import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./gran
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Link } from "react-router";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 function resolveGrantLogo(logo: string, website: string): string {
   if (logo && !logo.includes("placehold.co")) return logo;

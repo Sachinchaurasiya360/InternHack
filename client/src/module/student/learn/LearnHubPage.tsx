@@ -7,7 +7,6 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { itemListSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   TRACKS,
   CATEGORY_LABEL,
   CATEGORY_ORDER,
@@ -21,6 +20,7 @@ import {
 import api from "../../../lib/axios";
 import { Button } from "../../../components/ui/button";
 import { useTrackProgress } from "./useTrackProgress";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const CATEGORY_DESCRIPTION: Record<TrackCategory, string> = {
   practice: "Curated questions, animated lessons, and roadmaps to ace placements.",

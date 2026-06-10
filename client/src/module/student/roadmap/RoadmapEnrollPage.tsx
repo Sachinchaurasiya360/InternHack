@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   Check,
   Clock,
   Loader2,
@@ -26,6 +25,7 @@ import type {
 } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const DAYS: DayOfWeek[] = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 const DAY_LABEL: Record<DayOfWeek, string> = {

@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   AlertCircle,
   Filter,
   X,
@@ -49,6 +48,7 @@ import type {
 } from "../../../lib/types";
 import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
 import { HacktoberfestTracker } from "./HacktoberfestTracker";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 // ─── Theme ──────────────────────────────────────────────────────
 const CHART_COLORS = [

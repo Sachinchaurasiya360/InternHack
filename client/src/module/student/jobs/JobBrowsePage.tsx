@@ -5,7 +5,6 @@ import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   Search,
   MapPin,
   IndianRupee,
@@ -31,6 +30,7 @@ import type {
   ScrapedJob,
 } from "../../../lib/types";
 import JobCard from "./component/jobcard";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const FILTER_TAGS = [
   "Frontend",

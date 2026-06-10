@@ -4,7 +4,6 @@ import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   Wand2,
   FileText,
   Search,
@@ -40,6 +39,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { queryKeys } from "../../../lib/query-keys";
 import type { UsageStats } from "../../../lib/types";
 import AtsToolsNav from "./AtsToolsNav";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const GENERATION_STEPS = [
   { icon: FileText, label: "Reading your profile" },

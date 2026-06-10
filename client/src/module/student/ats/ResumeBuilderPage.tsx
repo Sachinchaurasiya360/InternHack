@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   Download,
   Plus,
   Trash2,
@@ -47,6 +46,7 @@ import { defaultResumeData } from "./resume-builder/types";
 import { TEMPLATES, getTemplate } from "./resume-builder/templates";
 import AtsToolsNav from "./AtsToolsNav";
 import { useDebounce } from "../../../hooks/useDebounce";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const STORAGE_KEY = "internhack-resume-data";
 const TEMPLATE_KEY = "internhack-resume-template";

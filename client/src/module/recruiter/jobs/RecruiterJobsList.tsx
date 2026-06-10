@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   PlusCircle,
   Users,
   BarChart3,
@@ -21,6 +20,7 @@ import type { Job } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 type StatusFilter = "ALL" | JobStatus;
 

@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   ArrowLeft,
   ArrowRight,
   Calendar,
@@ -11,6 +10,7 @@ import { Kicker } from "../../../../components/ui/Kicker";
 } from "lucide-react";
 
 import type { BlogPost, BlogCategory } from "@/lib/types";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const CATEGORY_LABELS: Record<BlogCategory, string> = {
   CAREER_ADVICE: "Career Advice",

@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { uploadDirectToS3 } from "../../../utils/upload";
 import { CopyButton } from "../../../components/ui/CopyButton";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   Upload,
   FileText,
   CheckCircle,
@@ -49,6 +48,7 @@ import { ScoreBreakdownPanel } from "./components/ScoreBreakdownPanel";
 import { KeywordAnalysisPanel } from "./components/KeywordAnalysisPanel";
 import { SuggestionsPanel } from "./components/SuggestionsPanel";
 import { cardCls, sectionKickerCls, sectionTitleCls, inputCls } from "./components/ats-ui";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 const CATEGORY_LABELS: Record<string, string> = {
   formatting: "Formatting",

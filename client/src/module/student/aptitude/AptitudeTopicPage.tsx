@@ -3,7 +3,6 @@ import { useParams, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   CheckCircle2, XCircle, ChevronLeft, ChevronRight, Building2, Clock,
   Trophy, Send, RotateCcw, ArrowUpRight,
 } from "lucide-react";
@@ -17,6 +16,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import { sanitizeHtml } from "../../../lib/sanitize";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 type QuestionResult = AptitudeAnswerResult;
 

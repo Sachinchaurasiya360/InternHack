@@ -2,7 +2,6 @@ import { useEffect, useState, type ReactNode, type KeyboardEvent } from "react";
 import { useNavigate, Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   ArrowRight,
   Check,
   ChevronLeft,
@@ -22,6 +21,7 @@ import toast from "../../../components/ui/toast";
 import type { DayOfWeek, RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 type Background = "CS_STUDENT" | "SELF_TAUGHT" | "CAREER_SWITCHER" | "HOBBYIST" | "WORKING_PRO";
 type Experience = "NEW" | "SOME" | "EXPERIENCED";

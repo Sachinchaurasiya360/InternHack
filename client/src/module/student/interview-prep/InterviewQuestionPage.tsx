@@ -2,7 +2,6 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import {
-import { Kicker } from "../../../../components/ui/Kicker";
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
@@ -19,6 +18,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 import api from "../../../lib/axios";
+import { Kicker } from "../../../../components/ui/Kicker";
 
 async function getServerProgress() {
   const { data } = await api.get("/interview-progress");
