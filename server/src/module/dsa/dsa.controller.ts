@@ -390,4 +390,19 @@ export class DsaController {
       next(err);
     }
   }
+
+  async getApproaches(req: Request, res: Response, next: NextFunction) {
+    try {
+      const slug = req.params.slug as string;
+      if (!slug) { res.status(400).json({ message: "Problem slug is required" }); return; }
+      const approaches = await this.dsaService.getApproaches(slug);
+      res.json(approaches);
+    } catch (err) {
+      if (err instanceof Error && err.message.includes("Problem not found")) {
+        res.status(404).json({ message: err.message });
+        return;
+      }
+      next(err);
+    }
+  }
 }
