@@ -7,6 +7,7 @@ import {
   codeReviewResponseSchema,
   type CodeReviewResponse,
 } from "./dsa.validation.js";
+import { getApproaches } from "./dsa-approaches.data.js";
 
 interface TestCaseResult {
   input: string;
