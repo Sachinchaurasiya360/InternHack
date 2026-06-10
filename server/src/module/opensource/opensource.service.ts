@@ -645,8 +645,6 @@ where["OR"] = [
     });
   }
 
-  }
-
   // ─── Bookmarks ────────────────────────────────────────────────
 
   async getBookmarkedRepoIds(userId: number): Promise<number[]> {
