@@ -587,6 +587,29 @@ where["OR"] = [
     return repos;
   }
 
+  async submitGuideFeedback(userId: number, data: { guideId: string; stepId: string; rating: string; reason?: string }) {
+    return prisma.guideFeedback.upsert({
+      where: {
+        userId_guideId_stepId: {
+          userId,
+          guideId: data.guideId,
+          stepId: data.stepId,
+        },
+      },
+      update: {
+        rating: data.rating,
+        reason: data.reason,
+      } as any,
+      create: {
+        userId,
+        guideId: data.guideId,
+        stepId: data.stepId,
+        rating: data.rating,
+        reason: data.reason,
+      } as any,
+    });
+  }
+
   // ─── Bookmarks ────────────────────────────────────────────────
 
   async getBookmarkedRepoIds(userId: number): Promise<number[]> {

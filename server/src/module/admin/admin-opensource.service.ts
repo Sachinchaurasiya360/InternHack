@@ -174,4 +174,72 @@ export class AdminOpensourceService {
     if (!repo) throw new Error("Repository not found");
     return prisma.opensourceRepo.delete({ where: { id: repoId } });
   }
+
+  async getGuideFeedbackAnalytics() {
+    // 1. Satisfaction Rate
+    const totalFeedback = await prisma.guideFeedback.count();
+    const thumbsUp = await prisma.guideFeedback.count({ where: { rating: "up" } });
+    const globalSatisfactionRate = totalFeedback > 0 ? (thumbsUp / totalFeedback) * 100 : 0;
+
+    // 2. Aggregate by guide and step using raw feed
+    const feedback = await prisma.guideFeedback.findMany();
+
+    const statsMap = new Map<string, { total: number; up: number; reasons: Record<string, number> }>();
+
+    feedback.forEach((f) => {
+      const key = `${f.guideId}:${f.stepId}`;
+      if (!statsMap.has(key)) {
+        statsMap.set(key, { total: 0, up: 0, reasons: {} });
+      }
+      const s = statsMap.get(key)!;
+      s.total++;
+      if (f.rating === "up") s.up++;
+      if ((f as any).reason) {
+        s.reasons[(f as any).reason] = (s.reasons[(f as any).reason] || 0) + 1;
+      }
+    });
+
+    const stepStats = Array.from(statsMap.entries()).map(([key, s]) => {
+      const [guideId, stepId] = key.split(":");
+      return {
+        guideId,
+        stepId,
+        total: s.total,
+        up: s.up,
+        satisfactionRate: (s.up / s.total) * 100,
+        reasons: s.reasons,
+      };
+    });
+
+    // 3. Bottom 5 Steps (where total responses > 5)
+    const bottom5Steps = stepStats
+      .filter((s) => s.total > 5)
+      .sort((a, b) => a.satisfactionRate - b.satisfactionRate)
+      .slice(0, 5);
+
+    // 4. Feedback Density (Heatmap data)
+    const densityMap: Record<string, number> = {};
+    feedback.forEach((f) => {
+      const key = `${f.guideId}:${f.stepId}`;
+      densityMap[key] = (densityMap[key] || 0) + 1;
+    });
+
+    // 5. Preset Drop-off Reasons Global Summary
+    const reasonSummary: Record<string, number> = {};
+    feedback.forEach((f) => {
+      if ((f as any).reason) {
+        reasonSummary[(f as any).reason] = (reasonSummary[(f as any).reason] || 0) + 1;
+      }
+    });
+
+    return {
+      global: {
+        totalFeedback,
+        satisfactionRate: globalSatisfactionRate,
+      },
+      bottom5Steps,
+      feedbackDensity: densityMap,
+      reasonSummary,
+    };
+  }
 }
