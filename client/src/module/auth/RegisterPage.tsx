@@ -6,7 +6,7 @@ import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { SEO } from "../../components/SEO";
 import { GoogleAuthButton } from "../../components/GoogleAuthButton";
-import { Kicker } from "../../../components/ui/Kicker";
+import { Kicker } from "../../components/ui/Kicker";
 
 const PASSWORD_CRITERIA = [
   { id: "length",    label: "At least 8 characters",  test: (p: string) => p.length >= 8 },

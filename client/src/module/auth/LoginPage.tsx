@@ -6,7 +6,7 @@ import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { SEO } from "../../components/SEO";
 import { GoogleAuthButton } from "../../components/GoogleAuthButton";
-import { Kicker } from "../../../components/ui/Kicker";
+import { Kicker } from "../../components/ui/Kicker";
 
 export default function LoginPage() {
   const navigate = useNavigate();
