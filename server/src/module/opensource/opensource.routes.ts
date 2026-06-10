@@ -3,6 +3,7 @@ import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";
 import { OpensourceStreakController } from "./opensource-streak.controller.js";
 import { OpensourceProgramController } from "./opensource-program.controller.js";
+import { LeaderboardController } from "./leaderboard.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
@@ -11,6 +12,7 @@ export const opensourceRouter = Router();
 const controller = new OpensourceController();
 const streakController = new OpensourceStreakController();
 const programController = new OpensourceProgramController();
+const leaderboardController = new LeaderboardController();
 
 // ─── Public Routes ─────────────────────────────────────────────
 
@@ -26,9 +28,39 @@ opensourceRouter.get("/languages", (req, res, next) => controller.getLanguages(r
 // Get GSoC organizations
 opensourceRouter.get("/gsoc/orgs", (req, res, next) => controller.getGsocOrgs(req, res, next));
 
+// ─── Leaderboard Routes ────────────────────────────────────────
+
+// Public: Get leaderboard entries with filters
+opensourceRouter.get("/leaderboard", authMiddleware, (req, res, next) =>
+  leaderboardController.getLeaderboard(req, res, next),
+);
+
+// Public: Get global leaderboard stats
+opensourceRouter.get("/leaderboard/stats", (req, res, next) =>
+  leaderboardController.getStats(req, res, next),
+);
+
+// Student: Get my rank across all views
+opensourceRouter.get("/leaderboard/my-rank", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  leaderboardController.getMyRank(req, res, next),
+);
+
+// Student: Update privacy settings
+opensourceRouter.patch("/leaderboard/privacy", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  leaderboardController.updatePrivacy(req, res, next),
+);
+
+// Student: Manually refresh my score
+opensourceRouter.post("/leaderboard/refresh", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  leaderboardController.refreshMyScore(req, res, next),
+);
+
+// ─── Student Routes ────────────────────────────────────────────
+
 // Get recommended repos for student based on skills
 opensourceRouter.get("/recommended", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.getRecommendedRepos(req, res, next),
+  
 );
 // NOTE: these must be registered BEFORE /:id to avoid route conflicts
 
