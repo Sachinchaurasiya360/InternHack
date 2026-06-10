@@ -15,7 +15,7 @@ export function MetaChip({ children, icon, className = "" }: MetaChipProps) {
 
   return (
     <span className={finalClass}>
-      {icon && <span className="text-stone-400 shrink-0">{icon}</span>}
+      {icon && <span className="shrink-0">{icon}</span>}
       {children}
     </span>
   );
