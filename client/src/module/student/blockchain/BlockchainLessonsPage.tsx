@@ -1,12 +1,23 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star, Lock } from "lucide-react";
+import {
+  CheckCircle2,
+  ArrowRight,
+  BookOpen,
+  TrendingUp,
+  Star,
+  Lock,
+} from "lucide-react";
 import { sections, lessons } from "./data";
 import type { BlockchainProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
-import { courseSchema, breadcrumbSchema } from "../../../lib/structured-data";
+import {
+  courseSchema,
+  breadcrumbSchema,
+  faqSchema,
+} from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -34,9 +45,18 @@ function CircularProgress({ progress }: { progress: number }) {
   return (
     <div className="relative w-14 h-14 shrink-0">
       <svg className="w-14 h-14 -rotate-90" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r={r} fill="none" className="stroke-stone-200 dark:stroke-white/10" strokeWidth="4" />
         <circle
-          cx="32" cy="32" r={r}
+          cx="32"
+          cy="32"
+          r={r}
+          fill="none"
+          className="stroke-stone-200 dark:stroke-white/10"
+          strokeWidth="4"
+        />
+        <circle
+          cx="32"
+          cy="32"
+          r={r}
           fill="none"
           className="stroke-lime-400"
           strokeWidth="4"
@@ -62,16 +82,21 @@ export default function BlockchainLessonsPage() {
   const sectionStats = useMemo(() => {
     return sections.map((section) => {
       const sectionLessons = lessons.filter((l) => l.sectionId === section.id);
-      const completed = sectionLessons.filter((l) => progress[l.id]?.completed).length;
+      const completed = sectionLessons.filter(
+        (l) => progress[l.id]?.completed,
+      ).length;
       const total = sectionLessons.length;
       const hasInterview = sectionLessons.some((l) => l.isInterviewQuestion);
       return { ...section, completed, total, hasInterview };
     });
   }, [progress]);
 
-  const totalCompleted = Object.values(progress).filter((p) => p.completed).length;
+  const totalCompleted = Object.values(progress).filter(
+    (p) => p.completed,
+  ).length;
   const totalLessons = lessons.length;
-  const overallPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+  const overallPct =
+    totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
 
   return (
     <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
@@ -91,6 +116,23 @@ export default function BlockchainLessonsPage() {
             { name: "Home", url: SITE_URL },
             { name: "Learn", url: `${SITE_URL}/learn` },
             { name: "Blockchain", url: `${SITE_URL}/learn/blockchain` },
+          ]),
+          faqSchema([
+            {
+              question: "Is this Blockchain course free?",
+              answer:
+                "Yes, the Blockchain course on InternHack is completely free with no sign-up required.",
+            },
+            {
+              question: "What will I learn in this Blockchain course?",
+              answer:
+                "You will learn blockchain fundamentals, smart contracts, decentralized applications, and Web3 development concepts.",
+            },
+            {
+              question: "Do I need programming knowledge for Blockchain?",
+              answer:
+                "Basic programming knowledge is helpful, though the course starts from blockchain fundamentals.",
+            },
           ]),
         ]}
       />
@@ -115,16 +157,24 @@ export default function BlockchainLessonsPage() {
                 Ship on-chain.
               </h1>
               <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl">
-                Interactive blockchain lessons, curated for interviews. Smart contracts, Solidity, DApps, and DeFi.
+                Interactive blockchain lessons, curated for interviews. Smart
+                contracts, Solidity, DApps, and DeFi.
               </p>
             </div>
             <div className="flex items-center gap-3 flex-wrap text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
               <span>
-                <span className="text-stone-900 dark:text-stone-50">{totalCompleted}</span>
-                <span className="text-stone-400 dark:text-stone-600"> / {totalLessons} done</span>
+                <span className="text-stone-900 dark:text-stone-50">
+                  {totalCompleted}
+                </span>
+                <span className="text-stone-400 dark:text-stone-600">
+                  {" "}
+                  / {totalLessons} done
+                </span>
               </span>
               <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-              <span className="text-lime-600 dark:text-lime-400">{overallPct}% complete</span>
+              <span className="text-lime-600 dark:text-lime-400">
+                {overallPct}% complete
+              </span>
             </div>
           </div>
         </motion.div>
@@ -170,7 +220,10 @@ export default function BlockchainLessonsPage() {
 
         <div className="space-y-2">
           {sectionStats.map((section, idx) => {
-            const pct = section.total > 0 ? Math.round((section.completed / section.total) * 100) : 0;
+            const pct =
+              section.total > 0
+                ? Math.round((section.completed / section.total) * 100)
+                : 0;
             const basePath = "/learn/blockchain";
             const isComplete = pct === 100 && section.total > 0;
             const isLocked = idx >= FREE_LIMIT && !isAuthenticated;
@@ -203,7 +256,10 @@ export default function BlockchainLessonsPage() {
                       </span>
                     )}
                     {section.hasInterview && (
-                      <Star className="w-3.5 h-3.5 text-lime-500 fill-lime-400 shrink-0" aria-label="Interview question" />
+                      <Star
+                        className="w-3.5 h-3.5 text-lime-500 fill-lime-400 shrink-0"
+                        aria-label="Interview question"
+                      />
                     )}
                   </div>
                   <p className="text-sm text-stone-600 dark:text-stone-400 mb-2.5 truncate">
@@ -225,13 +281,20 @@ export default function BlockchainLessonsPage() {
                         `${section.total} lessons`
                       ) : (
                         <>
-                          <span className="text-stone-900 dark:text-stone-50">{section.completed}</span>
-                          <span className="text-stone-400 dark:text-stone-600"> / {section.total} lessons</span>
+                          <span className="text-stone-900 dark:text-stone-50">
+                            {section.completed}
+                          </span>
+                          <span className="text-stone-400 dark:text-stone-600">
+                            {" "}
+                            / {section.total} lessons
+                          </span>
                         </>
                       )}
                     </span>
                     <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                    <span className={LEVEL_COLOR[section.level]}>{section.level.toLowerCase()}</span>
+                    <span className={LEVEL_COLOR[section.level]}>
+                      {section.level.toLowerCase()}
+                    </span>
                   </div>
                 </div>
 
