@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -27,26 +27,16 @@ export default function LeaderboardSettingsPage() {
   const updatePrivacy = useUpdateLeaderboardPrivacy();
   const refreshScore = useRefreshMyScore();
 
-  const [isPublic, setIsPublic] = useState(true);
-  const [showRealName, setShowRealName] = useState(true);
-  const [hasChanges, setHasChanges] = useState(false);
+  const [isPublic, setIsPublic] = useState(myRank?.privacy?.isPublic ?? true);
+  const [showRealName, setShowRealName] = useState(myRank?.privacy?.showRealName ?? true);
 
-  // Initialize state from data
-  useEffect(() => {
-    if (myRank?.privacy) {
-      setIsPublic(myRank.privacy.isPublic);
-      setShowRealName(myRank.privacy.showRealName);
-    }
-  }, [myRank]);
-
-  // Track changes
-  useEffect(() => {
-    if (myRank?.privacy) {
-      const changed =
-        isPublic !== myRank.privacy.isPublic ||
-        showRealName !== myRank.privacy.showRealName;
-      setHasChanges(changed);
-    }
+  // Calculate if there are changes using useMemo
+  const hasChanges = useMemo(() => {
+    if (!myRank?.privacy) return false;
+    return (
+      isPublic !== myRank.privacy.isPublic ||
+      showRealName !== myRank.privacy.showRealName
+    );
   }, [isPublic, showRealName, myRank]);
 
   const handleSave = async () => {
