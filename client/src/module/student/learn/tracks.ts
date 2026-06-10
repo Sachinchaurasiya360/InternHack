@@ -37,6 +37,12 @@ export interface Track {
   lessonCountKey?: string;
   /** Absolute path override. When present, the card links here instead of `/learn/${path}`. */
   to?: string;
+  tags?: string[];
+  difficulty?: "Beginner" | "Intermediate" | "Advanced";
+  createdAt?: string;
+  enrolledStudents?: number;
+  /** Average salary range for this skill in India (e.g. "Avg ₹14 LPA"). Source: Glassdoor, AmbitionBox. */
+  salary?: string;
 }
 
 export const TRACKS: Track[] = [
@@ -97,6 +103,7 @@ export const TRACKS: Track[] = [
     kind: "lesson",
     category: "practice",
     stat: "Animated lessons",
+    salary: "Avg ₹35 LPA",
   },
   {
     id: "aptitude",
@@ -128,6 +135,7 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "html",
+    salary: "Avg ₹8 LPA",
   },
   {
     id: "css",
@@ -143,6 +151,7 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "css",
+    salary: "Avg ₹8 LPA",
   },
   {
     id: "javascript",
@@ -158,6 +167,7 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "javascript",
+    salary: "Avg ₹10 LPA",
   },
   {
     id: "typescript",
@@ -173,6 +183,7 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "typescript",
+    salary: "Avg ₹13 LPA",
   },
   {
     id: "react",
@@ -188,6 +199,7 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "react",
+    salary: "Avg ₹14 LPA",
   },
 
   // ── Backend ──
@@ -205,6 +217,7 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "nodejs",
+    salary: "Avg ₹12 LPA",
   },
   {
     id: "python",
@@ -220,6 +233,7 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "python",
+    salary: "Avg ₹13 LPA",
   },
   {
     id: "fastapi",
@@ -235,6 +249,7 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "fastapi",
+    salary: "Avg ₹11 LPA",
   },
   {
     id: "flask",
@@ -250,6 +265,7 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "flask",
+    salary: "Avg ₹10 LPA",
   },
   {
     id: "django",
@@ -265,6 +281,7 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "django",
+    salary: "Avg ₹12 LPA",
   },
 
   // ── Data ──
@@ -281,6 +298,7 @@ export const TRACKS: Track[] = [
     kind: "lesson",
     category: "data",
     stat: "188 Exercises",
+    salary: "Avg ₹8 LPA",
   },
   {
     id: "data-analytics",
@@ -295,6 +313,7 @@ export const TRACKS: Track[] = [
     category: "data",
     stat: "Lessons",
     lessonCountKey: "data-analytics",
+    salary: "Avg ₹15 LPA",
   },
 
   // ── Web3 ──
@@ -311,6 +330,8 @@ export const TRACKS: Track[] = [
     kind: "lesson",
     category: "web3",
     stat: "35 Projects",
+    difficulty: "Beginner", //mock testing
+    salary: "Avg ₹16 LPA",
   },
 ];
 

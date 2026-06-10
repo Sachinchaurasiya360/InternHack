@@ -29,6 +29,19 @@ export function difficultyBadge(d: OpenSourceRepo["difficulty"]) {
 export function parseGithubRepoUrl(raw: string): { owner: string; name: string } | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;
+
+  // Support SSH format: git@github.com:owner/repo.git
+  const sshMatch = trimmed.match(/^git@github\.com:(.+)$/);
+  if (sshMatch) {
+    const segments = sshMatch[1].split("/").filter(Boolean);
+    if (segments.length < 2) return null;
+    const [owner, rawName] = segments;
+    const name = rawName.replace(/\.git$/i, "");
+    const nameRe = /^[A-Za-z0-9._-]+$/;
+    if (!nameRe.test(owner) || !nameRe.test(name)) return null;
+    return { owner, name };
+  }
+
   let url: URL;
   try {
     url = new URL(trimmed);

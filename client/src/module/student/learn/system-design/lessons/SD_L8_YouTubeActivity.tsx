@@ -144,14 +144,17 @@ function ABRPlayer() {
     if (!ideal) return;
     if (ideal.i !== currentTier) {
       const up = ideal.i > currentTier;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEvents((es) => [...es, {
         t,
         quality: ideal.tier.name,
         reason: up ? `bandwidth ${bandwidth.toFixed(1)} Mbps — upshifting` : `bandwidth ${bandwidth.toFixed(1)} Mbps — downshifting`,
         color: up ? SD : WARN,
       }].slice(-5));
+       
       setCurrentTier(ideal.i);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bandwidth, t]);
 
   const reset = () => { setEvents([]); setCurrentTier(2); setT(0); setPlaying(false); };

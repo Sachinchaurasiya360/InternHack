@@ -122,7 +122,7 @@ export default function VerifyEmailPage() {
       <SEO
         title="Verify Email"
         description="Verify your email address to activate your InternHack account."
-        keywords="verify email, OTP, InternHack, email verification"
+        noIndex
       />
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4 pt-24 pb-12">

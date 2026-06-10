@@ -46,8 +46,9 @@ export class AttendanceController {
       const employeeId = Number(req.query["employeeId"]);
       if (isNaN(employeeId)) return res.status(400).json({ message: "employeeId required" });
 
-      const query = attendanceQuerySchema.parse(req.query);
-      const data = await this.attendanceService.getMyAttendance(employeeId, query);
+      const parsed = attendanceQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const data = await this.attendanceService.getMyAttendance(employeeId, parsed.data);
       return res.json(data);
     } catch (error) {
       console.error(error);
@@ -90,6 +91,15 @@ export class AttendanceController {
       const record = await this.attendanceService.regularize(result.data);
       return res.json({ message: "Attendance regularized", record });
     } catch (error) {
+      if (error instanceof Error) {
+        const msg = error.message;
+        if (
+          msg === "Cannot regularize attendance for future dates" ||
+          msg === "Check-in time cannot be in the future" ||
+          msg === "Check-out time cannot be in the future" ||
+          msg === "Check-out time must be after check-in time"
+        ) return res.status(400).json({ message: msg });
+      }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
@@ -97,8 +107,9 @@ export class AttendanceController {
 
   async getReport(req: Request, res: Response) {
     try {
-      const query = attendanceQuerySchema.parse(req.query);
-      const data = await this.attendanceService.getReport(query);
+      const parsed = attendanceQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const data = await this.attendanceService.getReport(parsed.data);
       return res.json(data);
     } catch (error) {
       console.error(error);

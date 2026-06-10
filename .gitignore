@@ -1,0 +1,9 @@
+.env
+server/.env
+client/.env
+node_modules/
+
+# Claude Code
+CLAUDE.md
+agents.md
+REPO_MAP.md

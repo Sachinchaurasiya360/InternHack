@@ -18,6 +18,7 @@ export class InterviewController {
       if (error instanceof Error) {
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "One or more interviewers are already scheduled during this time.") return res.status(409).json({ message: error.message });
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -27,8 +28,9 @@ export class InterviewController {
   async getAll(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
-      const query = interviewQuerySchema.parse(req.query);
-      const data = await this.interviewService.getAll(req.user.id, query);
+      const parsed = interviewQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const data = await this.interviewService.getAll(req.user.id, parsed.data);
       return res.json(data);
     } catch (error) {
       console.error(error);
@@ -69,6 +71,7 @@ export class InterviewController {
       if (error instanceof Error) {
         if (error.message === "Interview not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
+        if (error.message === "One or more interviewers are already scheduled during this time.") return res.status(409).json({ message: error.message });
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });

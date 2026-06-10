@@ -219,7 +219,22 @@ export class SitemapService {
       }
     }
 
-    // ── 8. Aptitude topics ───────────────────────────────────────
+    // ── 8. Open-source repo catalog pages ────────────────────────
+    const ossRepos = await prisma.opensourceRepo.findMany({
+      select: { owner: true, name: true, updatedAt: true },
+      orderBy: { stars: "desc" },
+      take: 5000,
+    });
+    for (const repo of ossRepos) {
+      urls.push({
+        loc: `${SITE_URL}/opensource/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}`,
+        lastmod: toIsoDate(repo.updatedAt),
+        changefreq: "weekly",
+        priority: 0.6,
+      });
+    }
+
+    // ── 9. Aptitude topics ───────────────────────────────────────
     const aptTopics = await prisma.aptitudeTopic.findMany({
       select: { slug: true },
     });

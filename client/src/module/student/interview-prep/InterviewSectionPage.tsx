@@ -1,28 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowUpRight } from "lucide-react";
 import { sections, questions } from "./data";
-import type { InterviewProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
-
-function getLocalProgress(): InterviewProgress {
-  try {
-    const raw = JSON.parse(localStorage.getItem("interview-progress") || "{}");
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-    const out: InterviewProgress = {};
-    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-      if (v && typeof v === "object" && typeof (v as { completed?: unknown }).completed === "boolean") {
-        out[k] = { completed: (v as { completed: boolean }).completed };
-      }
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
+import { Button } from "../../../components/ui/button";
+import api from "../../../lib/axios";
+import { useQuery } from "@tanstack/react-query";
 
 const DIFF_STYLE: Record<string, string> = {
   Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
@@ -50,18 +36,65 @@ export default function InterviewSectionPage() {
   const { sectionSlug } = useParams();
   const basePath = "/learn/interview";
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const [activeDifficulty, setActiveDifficulty] = useState("All");
+  const [selectedCompany, setSelectedCompany] = useState("All");
+  const [sortBy, setSortBy] = useState("frequency");
 
-  const progress: InterviewProgress = getLocalProgress();
+  const { data: progressData, isLoading } = useQuery({
+    queryKey: ["interview-progress"],
+    queryFn: () => api.get("/interview-progress").then((r) => r.data),
+    enabled: !!isAuthenticated,
+    staleTime: 5 * 60 * 1000,
+  });
+  const completedIds: string[] = progressData?.completedIds ?? [];
+
   const section = sections.find((s) => s.id === sectionSlug);
-
-  if (section && !section.freeTier && !isAuthenticated) {
-    return <Navigate to={basePath} replace />;
-  }
 
   const sectionQuestions = useMemo(
     () => questions.filter((q) => q.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
     [sectionSlug],
   );
+
+  const availableCompanies = useMemo(() => {
+    const companies = new Set<string>();
+    sectionQuestions.forEach((q) => {
+      if (q.companies) {
+        q.companies.forEach((c) => companies.add(c));
+      }
+    });
+    return Array.from(companies).sort();
+  }, [sectionQuestions]);
+
+  // Filter and sort the questions
+  const filteredAndSortedQuestions = useMemo(() => {
+    let result = [...sectionQuestions];
+
+    // 1. Difficulty Filter
+    if (activeDifficulty !== "All") {
+      result = result.filter((q) => q.difficulty === activeDifficulty);
+    }
+
+    // 2. Company Filter
+    if (selectedCompany !== "All") {
+      result = result.filter((q) => q.companies?.includes(selectedCompany));
+    }
+
+    // 3. Sorting
+    result.sort((a, b) => {
+      if (sortBy === "frequency") {
+        return (b.frequency || 0) - (a.frequency || 0); // Highest first
+      } else if (sortBy === "order") {
+        return a.orderIndex - b.orderIndex; // Original order
+      }
+      return 0;
+    });
+
+    return result;
+  }, [sectionQuestions, activeDifficulty, selectedCompany, sortBy]);
+
+  if (section && !section.freeTier && !isAuthenticated) {
+    return <Navigate to={basePath} replace />;
+  }
 
   if (!section) {
     return (
@@ -77,7 +110,7 @@ export default function InterviewSectionPage() {
     );
   }
 
-  const completedCount = sectionQuestions.filter((q) => progress[q.id]?.completed).length;
+  const completedCount = sectionQuestions.filter((q) => completedIds.includes(q.id)).length;
   const pct = sectionQuestions.length > 0 ? Math.round((completedCount / sectionQuestions.length) * 100) : 0;
 
   return (
@@ -147,7 +180,7 @@ export default function InterviewSectionPage() {
         >
           <div className="flex items-center justify-between gap-4 mb-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              section progress
+              {isLoading ? "syncing progress" : "section progress"}
             </span>
             <span className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 tabular-nums">
               {completedCount} / {sectionQuestions.length}
@@ -179,15 +212,87 @@ export default function InterviewSectionPage() {
           </span>
         </div>
 
+        {/* Controls Panel */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 bg-stone-50 dark:bg-stone-900/50 p-4 rounded-md border border-stone-200 dark:border-white/10">
+          
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Difficulty Chips */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Difficulty</span>
+              <div className="flex gap-1 bg-white dark:bg-stone-950 p-1 rounded-md border border-stone-200 dark:border-white/10">
+                {["All", "Beginner", "Intermediate", "Advanced"].map((level) => (
+                  <Button
+                    key={level}
+                    variant="ghost" 
+                    onClick={() => setActiveDifficulty(level)}
+                    className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md transition-all cursor-pointer ${
+                      activeDifficulty === level
+                        ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm"
+                        : "bg-transparent border-transparent shadow-none text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800"
+                    }`}
+                  >
+                    {level}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="w-px h-6 bg-stone-300 dark:bg-stone-700 hidden sm:block" />
+
+            {/* Company Dropdown */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Company</span>
+              <select
+                value={selectedCompany}
+                onChange={(e) => setSelectedCompany(e.target.value)}
+                className="text-sm bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-lime-400 cursor-pointer"
+              >
+                <option value="All">All Companies</option>
+                {availableCompanies.map((company) => (
+                  <option key={company} value={company}>
+                    {company}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Sort</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="text-sm bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-lime-400 cursor-pointer"
+            >
+              <option value="frequency">Most Frequent</option>
+              <option value="order">Curated Order</option>
+            </select>
+          </div>
+        </div>
+
         {/* Question list */}
-        {sectionQuestions.length === 0 ? (
+        {filteredAndSortedQuestions.length === 0 ? (
           <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-            <p className="text-sm text-stone-600 dark:text-stone-400">No questions in this section yet.</p>
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+              No questions match your filters.
+            </p>
+            {(activeDifficulty !== "All" || selectedCompany !== "All") && (
+              <button 
+                onClick={() => {
+                  setActiveDifficulty("All");
+                  setSelectedCompany("All");
+                }}
+                className="mt-2 text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline cursor-pointer"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            {sectionQuestions.map((question, i) => {
-              const isCompleted = progress[question.id]?.completed;
+            {filteredAndSortedQuestions.map((question, i) => {
+              const isCompleted = completedIds.includes(question.id);
               return (
                 <motion.div
                   key={question.id}

@@ -41,6 +41,30 @@ function formatBytes(b: number): string {
 /*  TAB 1 - Interactive calculator                                      */
 /* ================================================================== */
 
+function SliderControl({
+  label, value, onChange, min, max, step, format, unit,
+}: {
+  label: string; value: number; onChange: (n: number) => void;
+  min: number; max: number; step: number;
+  format?: (n: number) => string; unit?: string;
+}) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+        <span style={{ fontSize: "0.82rem", color: "var(--eng-text)", fontWeight: 600 }}>{label}</span>
+        <span style={{ fontFamily: MONO, fontSize: "0.88rem", color: SD, fontWeight: 700 }}>
+          {format ? format(value) : value}{unit ? ` ${unit}` : ""}
+        </span>
+      </div>
+      <input
+        type="range" min={min} max={max} step={step} value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        style={{ width: "100%", accentColor: SD }}
+      />
+    </div>
+  );
+}
+
 function Calculator1() {
   const [dau, setDau] = useState(200_000_000);
   const [perUser, setPerUser] = useState(2);
@@ -57,28 +81,6 @@ function Calculator1() {
     const storageYr = storageDay * 365;
     return { writesDay, writesSec, readsSec, peakReadsSec, storageDay, storageYr };
   }, [dau, perUser, readMult, bytesPerItem, peakMult]);
-
-  const Slider = ({
-    label, value, onChange, min, max, step, format, unit,
-  }: {
-    label: string; value: number; onChange: (n: number) => void;
-    min: number; max: number; step: number;
-    format?: (n: number) => string; unit?: string;
-  }) => (
-    <div style={{ marginBottom: 14 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
-        <span style={{ fontSize: "0.82rem", color: "var(--eng-text)", fontWeight: 600 }}>{label}</span>
-        <span style={{ fontFamily: MONO, fontSize: "0.88rem", color: SD, fontWeight: 700 }}>
-          {format ? format(value) : value}{unit ? ` ${unit}` : ""}
-        </span>
-      </div>
-      <input
-        type="range" min={min} max={max} step={step} value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        style={{ width: "100%", accentColor: SD }}
-      />
-    </div>
-  );
 
   return (
     <div>
@@ -100,29 +102,29 @@ function Calculator1() {
           <div style={{ fontFamily: MONO, fontSize: "0.7rem", fontWeight: 800, color: SD, letterSpacing: "0.08em", marginBottom: 14 }}>
             INPUTS · THINGS YOU CLARIFY WITH THE PM
           </div>
-          <Slider
+          <SliderControl
             label="Daily Active Users"
             value={dau} onChange={setDau}
             min={10000} max={1_000_000_000} step={10000}
             format={formatNum} unit="DAU"
           />
-          <Slider
+          <SliderControl
             label="Writes per user per day"
             value={perUser} onChange={setPerUser}
             min={1} max={50} step={1} unit="× / day"
           />
-          <Slider
+          <SliderControl
             label="Read / Write ratio"
             value={readMult} onChange={setReadMult}
             min={1} max={500} step={1} unit="× reads per write"
           />
-          <Slider
+          <SliderControl
             label="Bytes per item (tweet, post, event)"
             value={bytesPerItem} onChange={setBytesPerItem}
             min={100} max={10000} step={50}
             format={formatBytes}
           />
-          <Slider
+          <SliderControl
             label="Peak / Average multiplier"
             value={peakMult} onChange={setPeakMult}
             min={1} max={10} step={0.5} unit="×"
