@@ -418,7 +418,11 @@ function DashboardSkeleton() {
   );
 }
 
-function getInitials(name: string) {
+function getInitials(name?: string): string {
+  if (!name?.trim()) {
+    return '?';
+  }
+
   return name
     .split(" ")
     .map((n) => n[0])
