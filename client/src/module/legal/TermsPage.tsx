@@ -1,9 +1,10 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
 import { motion, type Variants } from "framer-motion";
-import {`n  ShieldCheck,
+import {
+  ShieldCheck,
   UserCheck,
   Lock,
   BadgeCheck,
