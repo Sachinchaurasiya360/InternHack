@@ -15,7 +15,7 @@ export class LeaveController {
 
       const result = createLeaveRequestSchema.safeParse(req.body);
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
       const employeeId = Number(req.user.id);
       const request = await this.leaveService.createRequest(employeeId, result.data);
       return res.status(201).json({ message: "Leave request submitted", request });
