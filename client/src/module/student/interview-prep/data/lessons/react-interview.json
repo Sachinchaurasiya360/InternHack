@@ -5,6 +5,8 @@
     "orderIndex": 0,
     "title": "Virtual DOM & Reconciliation",
     "difficulty": "Intermediate",
+    "companies": ["Adobe", "Meta"],
+    "frequency": 3,
     "type": "Concept",
     "concepts": [
       "Virtual DOM",
@@ -55,6 +57,8 @@
     "orderIndex": 1,
     "title": "Hooks Deep Dive",
     "difficulty": "Intermediate",
+    "companies": ["Amazon", "Google", "Meta"],
+    "frequency": 4,
     "type": "Coding",
     "concepts": [
       "useState",
@@ -107,6 +111,8 @@
     "orderIndex": 2,
     "title": "State Management Patterns",
     "difficulty": "Advanced",
+    "companies": ["Adobe", "Meta", "Amazon", "Google"],
+    "frequency": 5,
     "type": "Experience",
     "concepts": [
       "Context API",
@@ -158,6 +164,8 @@
     "orderIndex": 3,
     "title": "JSX & Rendering",
     "difficulty": "Beginner",
+    "companies": ["Meta"],
+    "frequency": 3,
     "type": "Concept",
     "concepts": [
       "JSX",
@@ -208,6 +216,8 @@
     "orderIndex": 4,
     "title": "Props & PropTypes",
     "difficulty": "Beginner",
+    "companies": ["Infosys", "Meta", "Amazon"],
+    "frequency": 4,
     "type": "Concept",
     "concepts": [
       "Props",
