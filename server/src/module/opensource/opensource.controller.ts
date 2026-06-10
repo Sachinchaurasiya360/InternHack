@@ -366,6 +366,20 @@ export class OpensourceController {
     }
   }
 
+  async issueCertificate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { guideName } = req.body;
+      if (!guideName) {
+        res.status(400).json({ message: "guideName is required" });
+        return;
+      }
+      const certificate = await service.issueCertificate(req.user!.id, guideName);
+      res.status(201).json({ certificate });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   // ─── Bookmarks ─────────────────────────────────────────────────
 
   async getBookmarks(req: Request, res: Response, next: NextFunction) {
@@ -394,6 +408,20 @@ export class OpensourceController {
         res.status(404).json({ message: err.message });
         return;
       }
+      next(err);
+    }
+  }
+
+  async getCertificate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.params.token as string;
+      const certificate = await service.getCertificate(token);
+      if (!certificate) {
+        res.status(404).json({ message: "Certificate not found" });
+        return;
+      }
+      res.json({ certificate });
+    } catch (err) {
       next(err);
     }
   }
@@ -493,38 +521,31 @@ export class OpensourceController {
         year: "numeric",
       });
 
-      // SVG Template for the certificate
       const svg = `
-        <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
-            </linearGradient>
-          </defs>
-          <rect width="1200" height="630" fill="#0f172a" />
-          <rect x="20" y="20" width="1160" height="590" rx="20" fill="none" stroke="url(#grad)" stroke-width="4" />
-          
-          <text x="600" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#94a3b8" text-anchor="middle" letter-spacing="4">CERTIFICATE OF COMPLETION</text>
-          
-          <text x="600" y="250" font-family="Arial, sans-serif" font-size="32" fill="#e2e8f0" text-anchor="middle">This is to certify that</text>
-          
-          <text x="600" y="340" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">${certificate.studentName}</text>
-          
-          <text x="600" y="420" font-family="Arial, sans-serif" font-size="32" fill="#e2e8f0" text-anchor="middle">has successfully completed the</text>
-          
-          <text x="600" y="500" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#4f46e5" text-anchor="middle">${certificate.guideName}</text>
-          
-          <text x="600" y="570" font-family="Arial, sans-serif" font-size="20" fill="#94a3b8" text-anchor="middle">Issued on ${date} • Verify at internhack.xyz/certificate/${token}</text>
-        </svg>
-      `;
+      <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="630" fill="#0f172a" />
+        <rect x="20" y="20" width="1160" height="590" rx="20" fill="none" stroke="url(#grad)" stroke-width="4" />
+        
+        <text x="600" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#94a3b8" text-anchor="middle" letter-spacing="4">CERTIFICATE OF COMPLETION</text>
+        
+        <text x="600" y="250" font-family="Arial, sans-serif" font-size="32" fill="#e2e8f0" text-anchor="middle">This is to certify that</text>
+        
+        <text x="600" y="340" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">${certificate.studentName}</text>
+        
+        <text x="600" y="420" font-family="Arial, sans-serif" font-size="32" fill="#e2e8f0" text-anchor="middle">has successfully completed the</text>
+        
+        <text x="600" y="500" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#4f46e5" text-anchor="middle">${certificate.guideName}</text>
+        
+        <text x="600" y="570" font-family="Arial, sans-serif" font-size="20" fill="#94a3b8" text-anchor="middle">Issued on ${date} • Verify at internhack.xyz/certificate/${token}</text>
+      </svg>
+    `;
 
-      // Since we don't have an image library, we can serve SVG with the correct content type.
-      // But the user asked for PNG. Most social platforms (Twitter, LinkedIn) support high-quality SVG as og:image, 
-      // but if PNG is strictly required, we'd need sharp.
-      // I'll serve SVG but set Content-Type to image/svg+xml. 
-      // If the user insists on PNG, they might need to install 'sharp'.
-      
       res.setHeader("Content-Type", "image/svg+xml");
       res.setHeader("Cache-Control", "public, max-age=604800, immutable");
       res.send(svg);
@@ -532,4 +553,25 @@ export class OpensourceController {
       next(err);
     }
   }
+
+  async bulkMigrateBookmarks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = bulkMigrateBookmarksSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+      const repoIds = await service.bulkMigrateBookmarks(
+        req.user!.id,
+        parsed.data.repoIds,
+      );
+      res.json({ message: "Bookmarks migrated", repoIds });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
+
