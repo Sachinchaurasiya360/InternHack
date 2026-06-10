@@ -3,7 +3,6 @@ import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
 import {
-import { Kicker } from "../../../components/ui/Kicker";
   CreditCard,
   XCircle,
   CheckCircle,
@@ -12,6 +11,7 @@ import { Kicker } from "../../../components/ui/Kicker";
   Clock,
   MessageCircle,
 } from "lucide-react";
+import { Kicker } from "../../../components/ui/Kicker";
 
 type Section = {
   id: string;

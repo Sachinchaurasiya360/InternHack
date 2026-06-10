@@ -4,7 +4,6 @@ import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
 import { motion, type Variants } from "framer-motion";
 import {
-import { Kicker } from "../../../components/ui/Kicker";
   ShieldCheck,
   UserCheck,
   Lock,
@@ -16,6 +15,7 @@ import { Kicker } from "../../../components/ui/Kicker";
   RefreshCcw,
   Mail,
 } from "lucide-react";
+import { Kicker } from "../../../components/ui/Kicker";
 
 type Section = {
   id: string;
