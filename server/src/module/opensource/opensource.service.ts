@@ -5,6 +5,9 @@ import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
+import { UserService } from "../user/user.service.js";
+
+const userService = new UserService();
 
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 let statsCache: {
@@ -384,6 +387,8 @@ where["OR"] = [
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
+    // Re-sync stored ossTier for the contributor (fire-and-forget)
+    userService.calculateOssTier(request.userId).catch(() => {});
     return repo;
   }
 
@@ -551,6 +556,8 @@ where["OR"] = [
       },
       select: { completedStepIds: true },
     });
+    // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
+    userService.calculateOssTier(userId).catch(() => {});
     return progress.completedStepIds;
   }
 
@@ -585,6 +592,29 @@ where["OR"] = [
     });
 
     return repos;
+  }
+
+  async submitGuideFeedback(userId: number, data: { guideId: string; stepId: string; rating: string; reason?: string }) {
+    return prisma.guideFeedback.upsert({
+      where: {
+        userId_guideId_stepId: {
+          userId,
+          guideId: data.guideId,
+          stepId: data.stepId,
+        },
+      },
+      update: {
+        rating: data.rating,
+        reason: data.reason,
+      },
+      create: {
+        userId,
+        guideId: data.guideId,
+        stepId: data.stepId,
+        rating: data.rating,
+        reason: data.reason,
+      },
+    });
   }
 
   // ─── Bookmarks ────────────────────────────────────────────────

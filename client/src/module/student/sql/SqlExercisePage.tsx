@@ -46,7 +46,7 @@ function getLocalProgress(): SqlProgress {
 function saveLocalProgress(id: string, solved: boolean, code: string) {
   const progress = getLocalProgress();
   progress[id] = { solved, code };
-  localStorage.setItem("sql-progress", JSON.stringify(progress));
+  try { localStorage.setItem("sql-progress", JSON.stringify(progress)); } catch { console.warn("Failed to persist to localStorage: sql-progress"); }
 }
 
 function useSqlProgress() {
