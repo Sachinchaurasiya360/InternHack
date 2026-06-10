@@ -210,6 +210,7 @@ export default function ApplicationsList() {
                             <option value="SHORTLISTED">Shortlisted</option>
                             <option value="REJECTED">Rejected</option>
                             <option value="HIRED">Hired</option>
+                            <option value="WITHDRAWN">Withdrawn</option>
                           </select>
                           {updatingId === app.id && (
                             <svg className="animate-spin ml-1.5 h-3 w-3 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
