@@ -1,12 +1,12 @@
-import { ProgressBar } from "../../../components/ui/ProgressBar";
-import React, { useState, useCallback, useRef, useLayoutEffect } from "react";
+﻿import { ProgressBar } from "../../../components/ui/ProgressBar";
+import React, { useState, useCallback, useRef } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useParams, Link, Navigate } from "react-router";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Circle, ExternalLink,
-  Bookmark, BookmarkCheck, StickyNote, ChevronDown,
+  Bookmark, BookmarkCheck, StickyNote,
   Lightbulb, BookOpen, TrendingUp, Search,
 } from "lucide-react";
 import toast from "@/components/ui/toast";
@@ -20,7 +20,8 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
-import { DIFF_COLOR } from "../../../lib/difficulty-styles";
+import { DIFF_COLOR } from "../../../lib/Difficulty-styles";
+
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
 
 export default function DsaTopicDetailPage() {
@@ -29,625 +30,500 @@ export default function DsaTopicDetailPage() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<DiffFilter>("All");
   const [search, setSearch] = useState("");
-  const page = 1; // virtual scroll replaces server-side pagination
-  const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
-  const [noteValues, setNoteValues] = useState<Record<number, string>>({});
-  const [savingNotes, setSavingNotes] = useState<Set<number>>(new Set());
+  const [noteOpen, setNoteOpen] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState("");
+  const parentRef = useRef<HTMLDivElement>(null);
 
-  const diffParam = filter === "All" ? undefined : filter;
-  const searchParam = search.trim() || undefined;
-
-  const { data: topic, isLoading } = useQuery({
-    queryKey: queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam }),
-    queryFn: () => {
-      const params = new URLSearchParams();
-      params.set("page", String(page));
-      params.set("limit", "200");
-      if (diffParam) params.set("difficulty", diffParam);
-      if (searchParam) params.set("search", searchParam);
-      return api.get<DsaTopicDetail>(`/dsa/topics/${slug}?${params}`).then((r) => r.data);
-    },
+  const { data: topic, isLoading } = useQuery<DsaTopicDetail>({
+    queryKey: queryKeys.dsa.topicDetail(slug!),
+    queryFn: () => api.get(`/dsa/topics/${slug}`).then((r) => r.data),
     enabled: !!slug,
-    placeholderData: keepPreviousData,
-    staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 
-  const toggleMutation = useMutation({
-    mutationFn: (problemId: number) =>
-      api.post<{ problemId: number; solved: boolean }>(`/dsa/problems/${problemId}/toggle`).then((r) => r.data),
+  const toggleMutation: UseMutationResult<void, Error, string> = useMutation({
+    mutationFn: (problemId: string) =>
+      api.post(`/dsa/problems/${problemId}/toggle`).then((r) => r.data),
     onMutate: async (problemId) => {
-      const key = queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam });
-      await queryClient.cancelQueries({ queryKey: key });
-      const prev = queryClient.getQueryData<DsaTopicDetail>(key);
-      if (prev) {
-        const updated = {
-          ...prev,
-          problems: prev.problems.map((p) =>
-            p.id === problemId ? { ...p, solved: !p.solved } : p,
+      await queryClient.cancelQueries({ queryKey: queryKeys.dsa.topicDetail(slug!) });
+      const prev = queryClient.getQueryData<DsaTopicDetail>(queryKeys.dsa.topicDetail(slug!));
+      queryClient.setQueryData<DsaTopicDetail>(queryKeys.dsa.topicDetail(slug!), (old) => {
+        if (!old) return old;
+        const wasSolved = old.problems.find((p) => p._id === problemId)?.solved ?? false;
+        return {
+          ...old,
+          totalSolved: wasSolved ? old.totalSolved - 1 : old.totalSolved + 1,
+          problems: old.problems.map((p) =>
+            p._id === problemId ? { ...p, solved: !p.solved } : p
           ),
         };
-        const delta = updated.problems.find((p) => p.id === problemId)!.solved ? 1 : -1;
-        updated.totalSolved = prev.totalSolved + delta;
-        queryClient.setQueryData(key, updated);
-      }
+      });
       return { prev };
     },
-    onError: (_err, _problemId, context) => {
-      if (context?.prev) queryClient.setQueryData(queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam }), context.prev);
-      toast.error("Failed to update progress");
+    onError: (_err, _id, context: { prev?: DsaTopicDetail } | undefined) => {
+      if (context?.prev) {
+        queryClient.setQueryData(queryKeys.dsa.topicDetail(slug!), context.prev);
+      }
+      toast.error("Failed to update. Please try again.");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.dsa.topics() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.dsa.progress() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dsa.topicDetail(slug!) });
     },
   });
 
   const bookmarkMutation = useMutation({
-    mutationFn: (problemId: number) =>
-      api.post<{ problemId: number; bookmarked: boolean }>(`/dsa/problems/${problemId}/bookmark`).then((r) => r.data),
+    mutationFn: (problemId: string) =>
+      api.post(`/dsa/problems/${problemId}/bookmark`).then((r) => r.data),
     onMutate: async (problemId) => {
-      const key = queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam });
-      await queryClient.cancelQueries({ queryKey: key });
-      const prev = queryClient.getQueryData<DsaTopicDetail>(key);
-      if (prev) {
-        queryClient.setQueryData(key, {
-          ...prev,
-          problems: prev.problems.map((p) =>
-            p.id === problemId ? { ...p, bookmarked: !p.bookmarked } : p,
+      await queryClient.cancelQueries({ queryKey: queryKeys.dsa.topicDetail(slug!) });
+      const prev = queryClient.getQueryData<DsaTopicDetail>(queryKeys.dsa.topicDetail(slug!));
+      queryClient.setQueryData<DsaTopicDetail>(queryKeys.dsa.topicDetail(slug!), (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          problems: old.problems.map((p) =>
+            p._id === problemId ? { ...p, bookmarked: !p.bookmarked } : p
           ),
-        });
-      }
+        };
+      });
       return { prev };
     },
-    onError: (_err, _problemId, context) => {
-      if (context?.prev) queryClient.setQueryData(queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam }), context.prev);
-      toast.error("Failed to update bookmark");
+    onError: (_err, _id, context: { prev?: DsaTopicDetail } | undefined) => {
+      if (context?.prev) {
+        queryClient.setQueryData(queryKeys.dsa.topicDetail(slug!), context.prev);
+      }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.dsa.bookmarks() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dsa.topicDetail(slug!) });
     },
   });
 
-  const saveNotes = useCallback(async (problemId: number, notes: string) => {
-    setSavingNotes((prev) => new Set(prev).add(problemId));
-    try {
-      await api.put(`/dsa/problems/${problemId}/notes`, { notes });
-      const key = queryKeys.dsa.topic(slug!, page, { difficulty: diffParam, search: searchParam });
-      const prev = queryClient.getQueryData<DsaTopicDetail>(key);
-      if (prev) {
-        queryClient.setQueryData(key, {
-          ...prev,
-          problems: prev.problems.map((p) =>
-            p.id === problemId ? { ...p, notes: notes.trim() || null } : p,
-          ),
-        });
-      }
-    } catch {
-      toast.error("Failed to save notes");
-    } finally {
-      setSavingNotes((prev) => {
-        const next = new Set(prev);
-        next.delete(problemId);
-        return next;
-      });
-    }
-  }, [queryClient, slug, page, diffParam, searchParam]);
-
-  const toggleNotes = (problemId: number, currentNotes: string | null | undefined) => {
-    setExpandedNotes((prev) => {
-      const next = new Set(prev);
-      if (next.has(problemId)) {
-        next.delete(problemId);
-        const val = noteValues[problemId];
-        if (val !== undefined && val !== (currentNotes ?? "")) saveNotes(problemId, val);
-      } else {
-        next.add(problemId);
-        setNoteValues((prev) => ({ ...prev, [problemId]: currentNotes ?? "" }));
-      }
-      return next;
-    });
-  };
-
-  const listRef = useRef<HTMLDivElement>(null);
-  const [scrollMargin, setScrollMargin] = useState(0);
-  useLayoutEffect(() => {
-    setScrollMargin(listRef.current?.offsetTop ?? 0);
-  }, []);
-
-  const virtualizer = useWindowVirtualizer({
-    count: topic?.problems.length ?? 0,
-    estimateSize: () => 76,
-    overscan: 8,
-    scrollMargin,
+  const noteMutation = useMutation({
+    mutationFn: ({ problemId, note }: { problemId: string; note: string }) =>
+      api.post(`/dsa/problems/${problemId}/note`, { note }).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.dsa.topicDetail(slug!) });
+      setNoteOpen(null);
+      setNoteText("");
+    },
   });
 
-  if (!user && topic && topic.orderIndex >= 5) {
-    return <Navigate to="/learn/dsa" replace />;
-  }
+  const filtered = React.useMemo(() => {
+    if (!topic) return [];
+    return topic.problems.filter((p) => {
+      const matchesDiff = filter === "All" || p.difficulty === filter;
+      const matchesSearch =
+        !search || p.title.toLowerCase().includes(search.toLowerCase());
+      return matchesDiff && matchesSearch;
+    });
+  }, [topic, filter, search]);
+
+  const virtualizer = useWindowVirtualizer({
+    count: filtered.length,
+    estimateSize: () => 56,
+    overscan: 10,
+    scrollMargin: parentRef.current?.offsetTop ?? 0,
+  });
+
+  const handleToggle = useCallback(
+    (problemId: string) => {
+      if (!user) return;
+      toggleMutation.mutate(problemId);
+    },
+    [user, toggleMutation]
+  );
+
+  const handleBookmark = useCallback(
+    (problemId: string) => {
+      if (!user) return;
+      bookmarkMutation.mutate(problemId);
+    },
+    [user, bookmarkMutation]
+  );
 
   if (isLoading) return <LoadingScreen />;
+  if (!topic) return <Navigate to="/dsa" replace />;
 
-  if (!topic) {
-    return (
-      <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-16 text-center">
-          <p className="text-sm text-stone-500 dark:text-stone-400">Topic not found.</p>
-        </div>
-      </div>
-    );
-  }
+  const pct = topic.totalProblems > 0
+    ? Math.round((topic.totalSolved / topic.totalProblems) * 100)
+    : 0;
 
-  const pct = topic.totalProblems > 0 ? Math.round((topic.totalSolved / topic.totalProblems) * 100) : 0;
-  const topicNum = topic.orderIndex >= 0 ? String(topic.orderIndex + 1).padStart(2, "0") : "00";
-
-  const diffTabs: DiffFilter[] = ["All", "Easy", "Medium", "Hard"];
+  const jsonLd = breadcrumbSchema([
+    { name: "Home", url: SITE_URL },
+    { name: "DSA", url: `${SITE_URL}/dsa` },
+    { name: topic.title, url: canonicalUrl(`/dsa/${slug}`) },
+  ]);
 
   return (
-    <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
+    <>
       <SEO
-        title={`${topic.name}, DSA Practice`}
-        description={`Practice ${topic.name} problems with difficulty tracking, bookmarks, and notes.`}
-        keywords={`${topic.name}, DSA, data structures, algorithms, practice problems`}
-        canonicalUrl={canonicalUrl(`/learn/dsa/${slug}`)}
-        structuredData={[
-          breadcrumbSchema([
-            { name: "Home", url: SITE_URL },
-            { name: "Learn", url: `${SITE_URL}/learn` },
-            { name: "DSA", url: `${SITE_URL}/learn/dsa` },
-            { name: topic.name, url: `${SITE_URL}/learn/dsa/${slug}` },
-          ]),
-        ]}
+        title={`${topic.title} â€“ DSA Practice | InternHack`}
+        description={`Practice ${topic.totalProblems} ${topic.title} problems. Track your progress, bookmark questions, and add notes.`}
+        canonical={canonicalUrl(`/dsa/${slug}`)}
+        jsonLd={jsonLd}
       />
 
-      <div className="max-w-6xl mx-auto px-3 sm:px-8 py-8">
-        {/* Editorial header */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-8"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-1 w-1 bg-lime-400"></div>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-              dsa / topic {topicNum}
-            </span>
-          </div>
-          <div className="flex items-end justify-between gap-4 flex-wrap">
-            <div className="min-w-0 flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5 wrap-break-word">
-                {topic.name}
-              </h1>
-              {topic.description && (
-                <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl">{topic.description}</p>
-              )}
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+
+          {/* Back link */}
+          <Link
+            to="/dsa"
+            className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors mb-8"
+          >
+            â† all topics
+          </Link>
+
+          {/* Hero */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-10"
+          >
+            <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-50 mb-1">
+                  {topic.title}
+                </h1>
+                {topic.description && (
+                  <p className="text-sm text-stone-500 dark:text-stone-400 max-w-xl">
+                    {topic.description}
+                  </p>
+                )}
+              </div>
+
+              {/* Stats badges */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {(["Easy", "Medium", "Hard"] as const).map((d) => {
+                  const count = topic.problems.filter((p) => p.difficulty === d).length;
+                  if (!count) return null;
+                  return (
+                    <span
+                      key={d}
+                      className={`text-[10px] font-mono uppercase tracking-widest ${DIFF_COLOR[d]}`}
+                    >
+                      {count} {d}
+                    </span>
+                  );
+                })}
+              </div>
             </div>
+
+            {/* Progress â€” restored: solved count + percentage + thin bar */}
             {user && (
-              <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap">
-                <span>
-                  <span className="text-stone-900 dark:text-stone-50 tabular-nums">{topic.totalSolved}</span>
-                  <span className="text-stone-400 dark:text-stone-600"> / {topic.totalProblems} solved</span>
-                </span>
-                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                <span className="text-lime-600 dark:text-lime-400 tabular-nums">{pct}% complete</span>
+              <div>
+                <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap mb-2">
+                  <span>
+                    <span className="text-stone-900 dark:text-stone-50 tabular-nums">{topic.totalSolved}</span>
+                    <span className="text-stone-400 dark:text-stone-600"> / {topic.totalProblems} solved</span>
+                  </span>
+                  <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                  <span className="text-lime-600 dark:text-lime-400 tabular-nums">{pct}% complete</span>
+                </div>
+                <ProgressBar
+                  value={topic.totalSolved}
+                  max={topic.totalProblems}
+                  height="thin"
+                  activeColor={pct === 100 ? "bg-lime-400" : "bg-stone-900 dark:bg-stone-50"}
+                />
+              </div>
+            )}
+          </motion.div>
+
+          {/* Stats strip */}
+          <div className="grid grid-cols-3 gap-3 mb-8">
+            {[
+              { icon: TrendingUp, label: "Total", value: topic.totalProblems },
+              { icon: CheckCircle2, label: "Solved", value: topic.totalSolved },
+              { icon: Bookmark, label: "Bookmarked", value: topic.problems.filter((p) => p.bookmarked).length },
+            ].map(({ icon: Icon, label, value }) => (
+              <div
+                key={label}
+                className="px-4 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-center"
+              >
+                <Icon className="w-3.5 h-3.5 text-stone-400 mx-auto mb-1" />
+                <div className="text-base font-semibold text-stone-900 dark:text-stone-50 tabular-nums">
+                  {value}
+                </div>
+                <div className="text-[9px] font-mono uppercase tracking-widest text-stone-400">
+                  {label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Controls */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-stone-50 dark:bg-stone-900/50 p-4 rounded-md border border-stone-200 dark:border-white/10">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5">
+                {(["All", "Easy", "Medium", "Hard"] as const).map((d) => (
+                  <Button
+                    key={d}
+                    variant="ghost"
+                    onClick={() => setFilter(d)}
+                    className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md transition-all cursor-pointer ${
+                      filter === d
+                        ? "bg-stone-900 text-stone-50 dark:bg-stone-50 dark:text-stone-900"
+                        : d === "All"
+                        ? "text-stone-500 hover:text-stone-900 dark:hover:text-stone-50"
+                        : `${DIFF_COLOR[d]} opacity-70 hover:opacity-100`
+                    }`}
+                  >
+                    {d}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-400" />
+              <input
+                type="text"
+                placeholder="Search problemsâ€¦"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-7 pr-3 py-1.5 text-xs font-mono bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md text-stone-900 dark:text-stone-50 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400 w-48"
+              />
+            </div>
+          </div>
+
+          {/* Problem list */}
+          <div ref={parentRef}>
+            {filtered.length === 0 ? (
+              <div className="py-16 text-center text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                No problems match your filters
+              </div>
+            ) : (
+              <div
+                style={{
+                  height: `${virtualizer.getTotalSize()}px`,
+                  position: "relative",
+                }}
+              >
+                {virtualizer.getVirtualItems().map((item) => {
+                  const problem = filtered[item.index];
+                  return (
+                    <div
+                      key={problem._id}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        transform: `translateY(${item.start - virtualizer.options.scrollMargin}px)`,
+                      }}
+                    >
+                      <ProblemRow
+                        problem={problem}
+                        user={user}
+                        onToggle={handleToggle}
+                        onBookmark={handleBookmark}
+                        noteOpen={noteOpen}
+                        noteText={noteText}
+                        setNoteOpen={setNoteOpen}
+                        setNoteText={setNoteText}
+                        onSaveNote={(id) =>
+                          noteMutation.mutate({ problemId: id, note: noteText })
+                        }
+                      />
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
-          {user && (
-            <div className="mt-4">
-              <ProgressBar
-                value={topic.totalSolved}
-                max={topic.totalProblems}
-                height="thin"
-                activeColor={pct === 100 ? "bg-lime-400" : "bg-stone-900 dark:bg-stone-50"}
-              />
-            </div>
-          )}
-        </motion.div>
 
-        {/* Stats strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.05 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-t border-l border-stone-200 dark:border-white/10 mb-8"
-        >
-          {[
-            { icon: BookOpen, value: topic.totalProblems, label: "problems" },
-            { icon: TrendingUp, value: topic.totalSolved, label: "solved" },
-            { icon: CheckCircle2, value: `${pct}%`, label: "overall" },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="flex items-start gap-3 p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10"
-            >
-              <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center shrink-0">
-                <stat.icon className="w-4 h-4 text-lime-600 dark:text-lime-400" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50 tabular-nums">
-                  {stat.value}
-                </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
-                  / {stat.label}
-                </span>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Filters + search */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-6 space-y-3"
-        >
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-            <input
-              type="text"
-              placeholder="Search problems..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); }}
-              className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
-            />
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
-              difficulty /
-            </span>
-            {diffTabs.map((d) => {
-              const active = filter === d;
-              return (
-                <button
-                  key={d}
-                  onClick={() => { setFilter(d); }}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
-                    active
-                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
-                >
-                  {d}
-                </button>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Section header */}
-        <div className="flex items-center gap-2 mb-3">
-          <div className="h-1 w-1 bg-lime-400"></div>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-            problems / {topic.problems.length}
-          </span>
         </div>
-
-        {/* Problem list — virtualized for performance with dynamic height measurement */}
-        {topic.problems.length === 0 ? (
-          <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
-            <Search className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-            <p className="text-sm text-stone-600 dark:text-stone-400">No problems found.</p>
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-2">
-              try a different filter
-            </p>
-          </div>
-        ) : (
-          <div ref={listRef}>
-            <div
-              style={{
-                height: `${virtualizer.getTotalSize()}px`,
-                width: "100%",
-                position: "relative",
-              }}
-            >
-              {virtualizer.getVirtualItems().map((virtualItem) => {
-                const problem = topic.problems[virtualItem.index];
-                return (
-                  <div
-                    key={problem.id}
-                    data-index={virtualItem.index}
-                    ref={virtualizer.measureElement}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      transform: `translateY(${
-                        virtualItem.start - virtualizer.options.scrollMargin
-                      }px)`,
-                    }}
-                  >
-                    <div className="pb-2">
-                      <DsaProblemCard
-                        problem={problem}
-                        pIdx={virtualItem.index}
-                        user={user}
-                        isExpanded={expandedId === problem.id}
-                        toggleMutation={toggleMutation}
-                        bookmarkMutation={bookmarkMutation}
-                        expandedNotes={expandedNotes}
-                        savingNotes={savingNotes}
-                        noteValues={noteValues}
-                        setNoteValues={setNoteValues}
-                        saveNotes={saveNotes}
-                        toggleNotes={toggleNotes}
-                        setExpandedId={setExpandedId}
-                        cleanHint={cleanHint}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+    </>
   );
 }
 
-export const DsaProblemCard = React.memo(function DsaProblemCard({
-  problem,
-  pIdx,
-  user,
-  isExpanded,
-  toggleMutation,
-  bookmarkMutation,
-  expandedNotes,
-  savingNotes,
-  noteValues,
-  setNoteValues,
-  saveNotes,
-  toggleNotes,
-  setExpandedId,
-  cleanHint,
-}: {
-  problem: DsaProblem;
-  pIdx: number;
-  user: User | null;
-  isExpanded: boolean;
-  toggleMutation: UseMutationResult<unknown, Error, number>;
-  bookmarkMutation: UseMutationResult<unknown, Error, number>;
-  expandedNotes: Set<number>;
-  savingNotes: Set<number>;
-  noteValues: Record<number, string>;
-  setNoteValues: React.Dispatch<React.SetStateAction<Record<number, string>>>;
-  saveNotes: (problemId: number, val: string) => void;
-  toggleNotes: (problemId: number, notes: string | null | undefined) => void;
-  setExpandedId: (val: number | null) => void;
-  cleanHint: (hint: string) => string;
-}) {
-  const links: { href: string; label: string }[] = [];
-  if (problem.leetcodeUrl) links.push({ href: problem.leetcodeUrl, label: "LeetCode" });
-  if (problem.gfgUrl) links.push({ href: problem.gfgUrl, label: "GFG" });
-  if (problem.hackerrankUrl) links.push({ href: problem.hackerrankUrl, label: "HackerRank" });
-  if (problem.codechefUrl) links.push({ href: problem.codechefUrl, label: "CodeChef" });
-  if (problem.articleUrl) links.push({ href: problem.articleUrl, label: "Article" });
-  if (problem.videoUrl) links.push({ href: problem.videoUrl, label: "Video" });
+// â”€â”€â”€ ProblemRow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+interface ProblemRowProps {
+  problem: DsaProblem;
+  user: User | null;
+  onToggle: (id: string) => void;
+  onBookmark: (id: string) => void;
+  noteOpen: string | null;
+  noteText: string;
+  setNoteOpen: (id: string | null) => void;
+  setNoteText: (text: string) => void;
+  onSaveNote: (id: string) => void;
+}
+
+function ProblemRow({
+  problem,
+  user,
+  onToggle,
+  onBookmark,
+  noteOpen,
+  noteText,
+  setNoteOpen,
+  setNoteText,
+  onSaveNote,
+}: ProblemRowProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(pIdx, 10) * 0.02 }}
-      className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden hover:border-stone-400 dark:hover:border-white/25 transition-colors"
-    >
+    <div className="mb-1.5">
       <div
-        className="flex items-center gap-2 sm:gap-3 px-3 py-3 sm:px-5 sm:py-4 cursor-pointer"
-        onClick={() => setExpandedId(isExpanded ? null : problem.id)}
+        className={`flex items-center gap-3 px-4 py-3 rounded-md border transition-colors ${
+          problem.solved
+            ? "bg-lime-50 dark:bg-lime-950/20 border-lime-200 dark:border-lime-800/40"
+            : "bg-white dark:bg-stone-900 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/20"
+        }`}
       >
+        {/* Solved toggle */}
         {user && (
-          <Button
-            variant="ghost"
-            mode="icon"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleMutation.mutate(problem.id);
-            }}
-            className="shrink-0"
+          <button
+            onClick={() => onToggle(problem._id)}
+            className="shrink-0 text-stone-300 dark:text-stone-600 hover:text-lime-500 dark:hover:text-lime-400 transition-colors"
           >
             {problem.solved ? (
-              <CheckCircle2 className="w-5 h-5 text-lime-500" />
+              <CheckCircle2 className="w-4 h-4 text-lime-500 dark:text-lime-400" />
             ) : (
-              <Circle className="w-5 h-5 text-stone-300 dark:text-stone-600 hover:text-stone-400 dark:hover:text-stone-500 transition-colors" />
+              <Circle className="w-4 h-4" />
             )}
-          </Button>
+          </button>
         )}
 
-        <div className="flex-1 min-w-0">
-          <Link
-            to={`/learn/dsa/problem/${problem.slug}`}
-            onClick={(e) => e.stopPropagation()}
-            className={`text-sm font-bold tracking-tight no-underline hover:underline wrap-break-word ${
-              problem.solved
-                ? "text-stone-400 dark:text-stone-500 line-through"
-                : "text-stone-900 dark:text-stone-50"
+        {/* Title + difficulty */}
+        <div className="flex-1 min-w-0 flex items-center gap-3">
+          <span
+            className={`text-sm text-stone-900 dark:text-stone-50 truncate ${
+              problem.solved ? "line-through text-stone-400 dark:text-stone-600" : ""
             }`}
           >
             {problem.title}
-          </Link>
-          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-            <span
-              className={`text-[10px] font-mono uppercase tracking-widest ${
-                DIFF_COLOR[problem.difficulty] || "text-stone-500"
-              }`}
-            >
-              / {problem.difficulty.toLowerCase()}
-            </span>
-            {problem.acceptanceRate && (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 tabular-nums">
-                {problem.acceptanceRate}
-              </span>
-            )}
-            {problem.companies?.slice(0, 2).map((c) => (
-              <span
-                key={c}
-                className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 capitalize"
-              >
-                {c}
-              </span>
-            ))}
-          </div>
+          </span>
+          <span className={`text-[9px] font-mono uppercase tracking-widest shrink-0 ${DIFF_COLOR[problem.difficulty]}`}>
+            {problem.difficulty}
+          </span>
         </div>
 
-        {problem.leetcodeUrl && (
-          <a
-            href={problem.leetcodeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="w-7 h-7 rounded-md bg-stone-100 dark:bg-white/5 hidden sm:flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-200 dark:hover:bg-white/10 transition-colors shrink-0 no-underline"
-            title="LeetCode"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-        )}
+        {/* Action icons */}
+        <div className="flex items-center gap-1 shrink-0">
+          {user && (
+            <>
+              <button
+                onClick={() => {
+                  if (noteOpen === problem._id) {
+                    setNoteOpen(null);
+                  } else {
+                    setNoteOpen(problem._id);
+                    setNoteText(problem.note ?? "");
+                  }
+                }}
+                className={`p-1.5 rounded transition-colors ${
+                  problem.note
+                    ? "text-amber-500 dark:text-amber-400"
+                    : "text-stone-300 dark:text-stone-600 hover:text-stone-500"
+                }`}
+              >
+                <StickyNote className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => onBookmark(problem._id)}
+                className={`p-1.5 rounded transition-colors ${
+                  problem.bookmarked
+                    ? "text-stone-900 dark:text-stone-50"
+                    : "text-stone-300 dark:text-stone-600 hover:text-stone-500"
+                }`}
+              >
+                {problem.bookmarked ? (
+                  <BookmarkCheck className="w-3.5 h-3.5" />
+                ) : (
+                  <Bookmark className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </>
+          )}
 
-        {user && (
-          <Button
-            variant="ghost"
-            mode="icon"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              bookmarkMutation.mutate(problem.id);
-            }}
-            className="shrink-0"
-          >
-            {problem.bookmarked ? (
-              <BookmarkCheck className="w-4 h-4 text-lime-500" />
-            ) : (
-              <Bookmark className="w-4 h-4 text-stone-300 dark:text-stone-600 hover:text-stone-400 dark:hover:text-stone-500 transition-colors" />
-            )}
-          </Button>
-        )}
+          {problem.leetcodeUrl && (
+            <a
+              href={problem.leetcodeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 text-stone-300 dark:text-stone-600 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
 
-        <ChevronDown
-          className={`w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0 transition-transform duration-200 ${
-            isExpanded ? "rotate-180" : ""
-          }`}
-        />
+          {problem.hint && (
+            <details className="relative">
+              <summary className="p-1.5 text-stone-300 dark:text-stone-600 hover:text-amber-500 transition-colors cursor-pointer list-none">
+                <Lightbulb className="w-3.5 h-3.5" />
+              </summary>
+              <div className="absolute right-0 top-7 z-10 w-64 p-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md shadow-lg text-xs text-stone-600 dark:text-stone-400">
+                {problem.hint}
+              </div>
+            </details>
+          )}
+
+          {problem.resources && problem.resources.length > 0 && (
+            <details className="relative">
+              <summary className="p-1.5 text-stone-300 dark:text-stone-600 hover:text-blue-500 transition-colors cursor-pointer list-none">
+                <BookOpen className="w-3.5 h-3.5" />
+              </summary>
+              <div className="absolute right-0 top-7 z-10 w-52 p-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md shadow-lg">
+                {problem.resources.map((r, i) => (
+                  <a
+                    key={i}
+                    href={r.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-800 rounded transition-colors"
+                  >
+                    <ExternalLink className="w-3 h-3 shrink-0" />
+                    <span className="truncate">{r.label}</span>
+                  </a>
+                ))}
+              </div>
+            </details>
+          )}
+        </div>
       </div>
 
+      {/* Note editor */}
       <AnimatePresence>
-        {isExpanded && (
+        {noteOpen === problem._id && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="px-3 sm:px-5 pb-4 space-y-3 border-t border-stone-200 dark:border-white/10 pt-4">
-              {problem.hints.length > 0 && (
-                <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Lightbulb className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                      / {problem.hints.length === 1 ? "hint" : `hints (${problem.hints.length})`}
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {problem.hints.map((hint, i) => (
-                      <div
-                        key={i}
-                        className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex gap-1"
-                      >
-                        {problem.hints.length > 1 && (
-                          <span className="font-mono font-medium text-stone-500 dark:text-stone-400 shrink-0">
-                            {i + 1}.
-                          </span>
-                        )}
-                        <span dangerouslySetInnerHTML={{ __html: cleanHint(hint) }} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {links.length > 0 && (
-                <div className="flex items-center gap-2 flex-wrap">
-                  {links.map((link) => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 rounded-md text-[10px] font-mono uppercase tracking-widest hover:bg-stone-200 dark:hover:bg-white/10 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      {link.label}
-                    </a>
-                  ))}
-                  <Link
-                    to={`/learn/dsa/problem/${problem.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-900 dark:bg-stone-50 text-lime-400 rounded-md text-[10px] font-mono uppercase tracking-widest hover:opacity-90 transition-opacity no-underline"
-                  >
-                    view details
-                  </Link>
-                </div>
-              )}
-
-              {user && (
-                <div>
-                  {expandedNotes.has(problem.id) ? (
-                    <div>
-                      <textarea
-                        value={noteValues[problem.id] ?? ""}
-                        onChange={(e) =>
-                          setNoteValues((prev) => ({ ...prev, [problem.id]: e.target.value }))
-                        }
-                        onBlur={() => {
-                          const val = noteValues[problem.id];
-                          if (val !== undefined && val !== (problem.notes ?? "")) {
-                            saveNotes(problem.id, val);
-                          }
-                        }}
-                        placeholder="Add your notes here..."
-                        rows={3}
-                        className="w-full px-4 py-3 text-sm border border-stone-300 dark:border-white/10 rounded-md bg-stone-50 dark:bg-white/5 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 focus:outline-none focus:border-lime-400 transition-colors resize-none"
-                      />
-                      <div className="flex items-center justify-between mt-1.5">
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                          {savingNotes.has(problem.id) ? "saving..." : "auto-saves on close"}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          mode="link"
-                          onClick={() => toggleNotes(problem.id, problem.notes)}
-                          className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300"
-                        >
-                          close notes
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => toggleNotes(problem.id, problem.notes)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 rounded-md text-[10px] font-mono uppercase tracking-widest hover:bg-stone-200 dark:hover:bg-white/10 hover:text-stone-900 dark:hover:text-stone-50 transition-colors cursor-pointer"
-                    >
-                      <StickyNote className="w-3 h-3" />
-                      {problem.notes ? "view notes" : "add notes"}
-                    </button>
-                  )}
-                </div>
-              )}
+            <div className="mt-1 px-4 py-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-md">
+              <div className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-2">
+                <StickyNote className="w-3 h-3" />
+                Note
+              </div>
+              <textarea
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                placeholder="Add a noteâ€¦"
+                rows={3}
+                className="w-full text-xs bg-transparent text-stone-900 dark:text-stone-50 placeholder:text-stone-400 focus:outline-none resize-none"
+              />
+              <div className="flex items-center justify-end gap-2 mt-2">
+                <button
+                  onClick={() => setNoteOpen(null)}
+                  className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-stone-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => onSaveNote(problem._id)}
+                  className="text-[10px] font-mono uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors"
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
-});
-
-function cleanHint(html: string): string {
-  return html
-    .replace(/<div[^>]*>/gi, "")
-    .replace(/<\/div>/gi, "")
-    .replace(/<code>/gi, "<code class='px-1.5 py-0.5 bg-stone-200 dark:bg-white/10 rounded-md text-sm font-mono'>");
 }
