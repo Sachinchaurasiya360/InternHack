@@ -110,6 +110,11 @@ export const queryKeys = {
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
     bookmarks: () => ["opensource", "bookmarks"] as const,
+    // Leaderboard
+    leaderboard: (params?: Record<string, string | number>) =>
+      ["opensource", "leaderboard", params] as const,
+    leaderboardStats: () => ["opensource", "leaderboard", "stats"] as const,
+    myRank: () => ["opensource", "leaderboard", "my-rank"] as const,
   },
 
   // Blog

@@ -137,3 +137,116 @@ export interface GSoCStats {
   technologies: { name: string; count: number }[];
   topics: { name: string; count: number }[];
 }
+
+// ─── Leaderboard Types ─────────────────────────────────────────
+
+export type LeaderboardView = "global" | "weekly" | "monthly" | "university" | "domain";
+
+export interface LeaderboardMetrics {
+  guidesCompleted: number;
+  reposSuggestedApproved: number;
+  githubPRsMerged: number;
+  currentStreak: number;
+  certificatesEarned: number;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId: number;
+  name: string;
+  profilePic?: string;
+  profileSlug?: string;
+  college?: string;
+  score: number;
+  metrics: LeaderboardMetrics;
+  isCurrentUser: boolean;
+}
+
+export interface LeaderboardResponse {
+  success: boolean;
+  entries: LeaderboardEntry[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  view: LeaderboardView;
+  domain?: string | null;
+}
+
+export interface LeaderboardStats {
+  totalParticipants: number;
+  topScore: number;
+  averageScore: number;
+  activeThisWeek: number;
+}
+
+export interface LeaderboardStatsResponse {
+  success: boolean;
+  stats: LeaderboardStats;
+}
+
+export interface MyRankMetrics extends LeaderboardMetrics {
+  reposSuggestedPending: number;
+  longestStreak: number;
+  lastActivityDate?: string;
+}
+
+export interface MyRankResponse {
+  success: boolean;
+  rank: {
+    global?: number;
+    weekly?: number;
+    monthly?: number;
+    university?: number;
+    domain: Record<string, number>; // e.g., { "WEB": 5, "AI": 12 }
+  };
+  scores: {
+    total: number;
+    weekly: number;
+    monthly: number;
+  };
+  metrics: MyRankMetrics;
+  privacy: {
+    isPublic: boolean;
+    showRealName: boolean;
+  };
+  user: {
+    name: string;
+    profilePic?: string;
+    college?: string;
+    profileSlug?: string;
+  };
+}
+
+export interface LeaderboardPrivacyUpdate {
+  isPublic?: boolean;
+  showRealName?: boolean;
+}
+
+export interface LeaderboardPrivacyResponse {
+  success: boolean;
+  message: string;
+  privacy: {
+    isPublic: boolean;
+    showRealName: boolean;
+  };
+}
+
+export interface LeaderboardRefreshResponse {
+  success: boolean;
+  message: string;
+  scores: {
+    total: number;
+    weekly: number;
+    monthly: number;
+  };
+}
+
+export interface LeaderboardQueryParams {
+  view?: LeaderboardView;
+  domain?: string;
+  limit?: number;
+  page?: number;
+}
