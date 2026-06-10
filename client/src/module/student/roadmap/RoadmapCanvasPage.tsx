@@ -43,7 +43,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
-import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
+import  RoadmapCompletionModal from "./RoadmapCompletionModal";
 import { Button } from "../../../components/ui/button";
 import { Navbar } from "../../../components/Navbar";
 import { useStudentSidebar } from "../../../components/StudentSidebar";
