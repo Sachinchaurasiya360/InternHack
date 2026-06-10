@@ -79,7 +79,7 @@ const CertificateCard = memo(function CertificateCard({
               try{
               await navigator.clipboard.writeText(shareUrl);
               toast.success("Share link copied to clipboard!");
-              } catch(e){
+              } catch {
               toast.error("Failed to copy share link. Please try copying manually.");
               }
             }}
@@ -138,7 +138,7 @@ export default function RoadmapCertificatesGalleryPage() {
   return (
     <div className="min-h-screen bg-stone-950 flex items-center justify-center px-4">
       <div className="text-center">
-        <p className="text-stone-400 mb-4">Failed to load certificate</p>
+        <p className="text-stone-400 mb-4">Failed to load certificates</p>
         <button onClick={() => window.location.reload()} className="text-lime-400 hover:underline">
           Retry
         </button>
