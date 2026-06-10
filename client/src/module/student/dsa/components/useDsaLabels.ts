@@ -55,6 +55,30 @@ export function useDsaLabels(enabled = true) {
     [queryClient, key],
   );
 
+  // Snapshot the labels cache, then optimistically apply a transform to a single
+  // problem's label set derived from the live snapshot (not stale render state).
+  // The returned context lets onError roll back to the snapshot.
+  const optimisticPatch = useCallback(
+    async (
+      problemId: number,
+      transform: (current: string[]) => string[],
+    ) => {
+      await queryClient.cancelQueries({ queryKey: key });
+      const prev = queryClient.getQueryData<DsaMyLabelsResponse>(key);
+      const current = prev?.byProblem?.[problemId] ?? [];
+      patchCache(problemId, transform(current));
+      return { prev };
+    },
+    [queryClient, key, patchCache],
+  );
+
+  const rollback = useCallback(
+    (context: { prev: DsaMyLabelsResponse | undefined } | undefined) => {
+      if (context?.prev) queryClient.setQueryData(key, context.prev);
+    },
+    [queryClient, key],
+  );
+
   const addMutation = useMutation({
     mutationFn: ({ problemId, label }: { problemId: number; label: string }) =>
       api
@@ -62,8 +86,15 @@ export function useDsaLabels(enabled = true) {
           label,
         })
         .then((r) => r.data),
+    // Instant UI: append the label to the cache before the request resolves.
+    onMutate: ({ problemId, label }) =>
+      optimisticPatch(problemId, (current) =>
+        current.includes(label) ? current : [...current, label],
+      ),
+    // Reconcile with the server's authoritative label set (handles normalization).
     onSuccess: (res) => patchCache(res.problemId, res.labels),
-    onError: (err: unknown) => {
+    onError: (err: unknown, _vars, context) => {
+      rollback(context);
       const msg =
         err instanceof AxiosError
           ? (err.response?.data as { message?: string } | undefined)?.message
@@ -79,8 +110,16 @@ export function useDsaLabels(enabled = true) {
           data: { label },
         })
         .then((r) => r.data),
+    // Instant UI: drop the label from the cache before the request resolves.
+    onMutate: ({ problemId, label }) =>
+      optimisticPatch(problemId, (current) =>
+        current.filter((l) => l !== label),
+      ),
     onSuccess: (res) => patchCache(res.problemId, res.labels),
-    onError: () => toast.error("Failed to remove label"),
+    onError: (_err, _vars, context) => {
+      rollback(context);
+      toast.error("Failed to remove label");
+    },
   });
 
   const getLabels = useCallback(

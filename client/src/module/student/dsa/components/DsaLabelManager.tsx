@@ -5,6 +5,7 @@ import {
   DSA_SYSTEM_LABELS,
   DSA_MAX_LABELS_PER_PROBLEM,
 } from "../../../../lib/types";
+import { ConfirmDialog } from "../../../../components/ui/ConfirmDialog";
 
 interface DsaLabelManagerProps {
   problemId: number;
@@ -17,7 +18,7 @@ interface DsaLabelManagerProps {
  * Per-problem label control: renders the current labels as removable chips and
  * a "+" button that opens a dropdown of system-suggested labels plus a free-text
  * input for creating custom labels. Enforces the per-problem cap in the UI to
- * match the server constraint.
+ * match the server constraint. Removals are guarded by a confirmation dialog.
  */
 export const DsaLabelManager = React.memo(function DsaLabelManager({
   problemId,
@@ -27,6 +28,8 @@ export const DsaLabelManager = React.memo(function DsaLabelManager({
 }: DsaLabelManagerProps) {
   const [open, setOpen] = useState(false);
   const [custom, setCustom] = useState("");
+  // Label awaiting delete confirmation (null = no pending deletion).
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const atLimit = labels.length >= DSA_MAX_LABELS_PER_PROBLEM;
@@ -48,8 +51,16 @@ export const DsaLabelManager = React.memo(function DsaLabelManager({
 
   const has = (label: string) => labels.includes(label);
 
+  // All removals funnel through the confirmation dialog.
+  const requestRemove = (label: string) => setPendingDelete(label);
+
+  const confirmRemove = () => {
+    if (pendingDelete !== null) onRemove(problemId, pendingDelete);
+    setPendingDelete(null);
+  };
+
   const handleToggle = (label: string) => {
-    if (has(label)) onRemove(problemId, label);
+    if (has(label)) requestRemove(label);
     else if (!atLimit) onAdd(problemId, label);
   };
 
@@ -78,7 +89,7 @@ export const DsaLabelManager = React.memo(function DsaLabelManager({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onRemove(problemId, label);
+              requestRemove(label);
             }}
             className="opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
             title={`Remove "${label}"`}
@@ -109,42 +120,47 @@ export const DsaLabelManager = React.memo(function DsaLabelManager({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.12 }}
-            className="absolute top-full left-0 mt-1.5 z-20 w-60 p-2 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 shadow-lg"
+            className="absolute top-full left-0 mt-1.5 z-20 w-72 p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="px-1 pb-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
+            <p className="px-0.5 pb-2 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
               {atLimit
                 ? `max ${DSA_MAX_LABELS_PER_PROBLEM} labels reached`
-                : "system labels"}
+                : "suggested labels"}
             </p>
 
-            <div className="space-y-0.5">
+            <div className="grid grid-cols-2 gap-1.5">
               {DSA_SYSTEM_LABELS.map(({ emoji, label }) => {
                 const active = has(label);
                 const disabled = !active && atLimit;
                 return (
-                  <button
+                  <motion.button
                     key={label}
                     type="button"
                     disabled={disabled}
                     onClick={() => handleToggle(label)}
-                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs text-left transition-colors ${
+                    whileHover={disabled ? undefined : { scale: 1.04 }}
+                    whileTap={disabled ? undefined : { scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 420, damping: 26 }}
+                    className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg border text-[11px] font-medium text-left transition-colors ${
                       active
-                        ? "bg-lime-100 dark:bg-lime-950/30 text-lime-800 dark:text-lime-300"
+                        ? "bg-lime-100 dark:bg-lime-950/40 text-lime-800 dark:text-lime-300 border-lime-300 dark:border-lime-800/60"
                         : disabled
-                          ? "text-stone-300 dark:text-stone-600 cursor-not-allowed"
-                          : "text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5 cursor-pointer"
+                          ? "text-stone-300 dark:text-stone-600 border-stone-200 dark:border-white/10 cursor-not-allowed"
+                          : "text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-lime-400 dark:hover:border-lime-500/50 hover:bg-stone-50 dark:hover:bg-white/5 cursor-pointer"
                     }`}
                   >
-                    <span aria-hidden>{emoji}</span>
+                    <span aria-hidden className="text-sm leading-none">
+                      {emoji}
+                    </span>
                     <span className="flex-1 truncate">{label}</span>
-                    {active && <Check className="w-3.5 h-3.5 shrink-0" />}
-                  </button>
+                    {active && <Check className="w-3 h-3 shrink-0" />}
+                  </motion.button>
                 );
               })}
             </div>
 
-            <div className="mt-2 pt-2 border-t border-stone-200 dark:border-white/10">
+            <div className="mt-3 pt-3 border-t border-stone-200 dark:border-white/10">
               <div className="flex items-center gap-1.5">
                 <input
                   type="text"
@@ -176,6 +192,21 @@ export const DsaLabelManager = React.memo(function DsaLabelManager({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Remove label?"
+        description={
+          pendingDelete
+            ? `Remove the "${pendingDelete}" label from this problem? You can add it again later.`
+            : ""
+        }
+        confirmLabel="Remove"
+        cancelLabel="Keep"
+        confirmVariant="danger"
+        onConfirm={confirmRemove}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 });
