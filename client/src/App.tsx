@@ -466,7 +466,6 @@ function App() {
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
             </Route>
-            </Route>
 
             {/* Legacy redirects */}
             <Route path="/dsa/*" element={<Navigate to="/learn/dsa" replace />} />
@@ -626,8 +625,8 @@ function App() {
               <Route path="profile/:identifier" element={<PublicProfilePage />} />
             </Route>
 
-            {/* 404 catch-all */}
-            <Route path="*" element={<NotFoundPage />} />
+          {/* 404 catch-all */}
+          <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </ErrorBoundary>
