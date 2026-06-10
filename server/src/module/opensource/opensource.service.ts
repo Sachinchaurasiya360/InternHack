@@ -5,6 +5,9 @@ import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
+import { UserService } from "../user/user.service.js";
+
+const userService = new UserService();
 
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 let statsCache: {
@@ -384,6 +387,8 @@ where["OR"] = [
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
+    // Re-sync stored ossTier for the contributor (fire-and-forget)
+    userService.calculateOssTier(request.userId).catch(() => {});
     return repo;
   }
 
@@ -551,6 +556,8 @@ where["OR"] = [
       },
       select: { completedStepIds: true },
     });
+    // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
+    userService.calculateOssTier(userId).catch(() => {});
     return progress.completedStepIds;
   }
 
@@ -585,5 +592,59 @@ where["OR"] = [
     });
 
     return repos;
+  }
+
+  // ─── Bookmarks ────────────────────────────────────────────────
+
+  async getBookmarkedRepoIds(userId: number): Promise<number[]> {
+    const bookmarks = await prisma.opensourceBookmark.findMany({
+      where: { userId },
+      select: { repoId: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return bookmarks.map((b) => b.repoId);
+  }
+
+  async addBookmark(userId: number, repoId: number): Promise<{ repoId: number }> {
+    const repo = await prisma.opensourceRepo.findUnique({
+      where: { id: repoId },
+      select: { id: true },
+    });
+    if (!repo) throw new Error("Repository not found");
+
+    await prisma.opensourceBookmark.upsert({
+      where: { userId_repoId: { userId, repoId } },
+      create: { userId, repoId },
+      update: {}, // no-op if already bookmarked
+    });
+    return { repoId };
+  }
+
+  async removeBookmark(userId: number, repoId: number): Promise<void> {
+    await prisma.opensourceBookmark.deleteMany({
+      where: { userId, repoId },
+    });
+  }
+
+  async bulkMigrateBookmarks(userId: number, repoIds: number[]): Promise<number[]> {
+    // Resolve only IDs that actually exist in the DB
+    const validRepos = await prisma.opensourceRepo.findMany({
+      where: { id: { in: repoIds } },
+      select: { id: true },
+    });
+    const validIds = validRepos.map((r) => r.id);
+    if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
+
+    await prisma.$transaction(
+      validIds.map((repoId) =>
+        prisma.opensourceBookmark.upsert({
+          where: { userId_repoId: { userId, repoId } },
+          create: { userId, repoId },
+          update: {},
+        }),
+      ),
+    );
+
+    return this.getBookmarkedRepoIds(userId);
   }
 }

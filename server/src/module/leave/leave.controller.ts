@@ -16,7 +16,7 @@ export class LeaveController {
       const result = createLeaveRequestSchema.safeParse(req.body);
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
 
-      const employeeId = Number(req.query["employeeId"] ?? req.user.id);
+      const employeeId = req.user.id;
       const request = await this.leaveService.createRequest(employeeId, result.data);
       return res.status(201).json({ message: "Leave request submitted", request });
     } catch (error) {
@@ -31,10 +31,10 @@ export class LeaveController {
 
   async getMyRequests(req: Request, res: Response) {
     try {
-      const employeeId = Number(req.query["employeeId"]);
-      if (isNaN(employeeId)) return res.status(400).json({ message: "employeeId query param required" });
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const query = leaveQuerySchema.parse(req.query);
+      const employeeId = req.user.id;
+      const { employeeId: _ignoredEmployeeId, ...query } = leaveQuerySchema.parse(req.query);
       const data = await this.leaveService.getMyRequests(employeeId, query);
       return res.json(data);
     } catch (error) {
@@ -112,9 +112,9 @@ export class LeaveController {
 
   async getBalance(req: Request, res: Response) {
     try {
-      const employeeId = Number(req.query["employeeId"]);
-      if (isNaN(employeeId)) return res.status(400).json({ message: "employeeId required" });
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
+      const employeeId = req.user.id;
       const year = req.query["year"] ? Number(req.query["year"]) : undefined;
       const balances = await this.leaveService.getBalance(employeeId, year);
       return res.json({ balances });

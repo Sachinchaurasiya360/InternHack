@@ -31,7 +31,7 @@ function toggleProgress(lessonId: string): boolean {
   const progress = getLocalProgress();
   const current = progress[lessonId]?.completed ?? false;
   progress[lessonId] = { ...progress[lessonId], completed: !current };
-  localStorage.setItem("html-progress", JSON.stringify(progress));
+  try { localStorage.setItem("html-progress", JSON.stringify(progress)); } catch { console.warn("Failed to persist to localStorage: html-progress"); }
   return !current;
 }
 

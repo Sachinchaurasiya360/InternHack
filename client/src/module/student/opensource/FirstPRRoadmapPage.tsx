@@ -170,6 +170,21 @@ export default function FirstPRRoadmapPage() {
     );
   }
 
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "First Pull Request Guide - Open Source for Beginners",
+    "description": "Step-by-step roadmap to making your first pull request on GitHub. Learn git workflow, finding issues, and contributing to open source projects.",
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+    "totalTime": `PT${STEPS.reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0)}M`,
+    "step": STEPS.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.title,
+      "text": s.description || "Follow the visual walkthrough steps."
+    }))
+  };
+
   return (
     <div className="relative pb-12">
       <SEO
@@ -178,6 +193,7 @@ export default function FirstPRRoadmapPage() {
         keywords="first pull request, open source contribution, GitHub beginner, git workflow, contribute to open source"
         canonicalUrl={canonicalUrl("/student/opensource/first-pr")}
         ogImage="/og/og-first-pr.png"
+        structuredData={howToSchema}
       />
 
       {/* Atmospheric background */}
