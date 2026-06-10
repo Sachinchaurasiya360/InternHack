@@ -5,7 +5,7 @@ import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 export default function RecruiterLoginPage() {
   const navigate = useNavigate();

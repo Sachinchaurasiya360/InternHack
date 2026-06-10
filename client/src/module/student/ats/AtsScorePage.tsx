@@ -48,7 +48,7 @@ import { ScoreBreakdownPanel } from "./components/ScoreBreakdownPanel";
 import { KeywordAnalysisPanel } from "./components/KeywordAnalysisPanel";
 import { SuggestionsPanel } from "./components/SuggestionsPanel";
 import { cardCls, sectionKickerCls, sectionTitleCls, inputCls } from "./components/ats-ui";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 const CATEGORY_LABELS: Record<string, string> = {
   formatting: "Formatting",

@@ -1,11 +1,9 @@
-﻿import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
-import {
-import { Kicker } from "../../../../components/ui/Kicker";
-  Target,
+import {`n  Target,
   Search,
   BarChart2,
   Lightbulb,
@@ -220,9 +218,9 @@ export default function AtsLandingPage() {
         ogType="website"
       />
 
-      {/* ── Hero ── */}
+      {/* -- Hero -- */}
       <section className="relative w-full overflow-hidden bg-stone-50 dark:bg-stone-950 border-b border-stone-200 dark:border-white/10">
-        {/* Vertical grid lines — light */}
+        {/* Vertical grid lines � light */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none dark:hidden"
@@ -231,7 +229,7 @@ export default function AtsLandingPage() {
             backgroundSize: "140px 100%",
           }}
         />
-        {/* Vertical grid lines — dark */}
+        {/* Vertical grid lines � dark */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none hidden dark:block"
@@ -300,7 +298,7 @@ export default function AtsLandingPage() {
               onClick={handleTryNow}
               className="group inline-flex items-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0"
             >
-              {isAuthenticated ? "Analyze My Resume" : "Try free — no signup"}
+              {isAuthenticated ? "Analyze My Resume" : "Try free � no signup"}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
             <Link to="/register" className="no-underline">
@@ -333,7 +331,7 @@ export default function AtsLandingPage() {
         </div>
       </section>
 
-      {/* ── Features ── */}
+      {/* -- Features -- */}
       <section className="py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -349,7 +347,7 @@ export default function AtsLandingPage() {
               <span className="text-stone-400 dark:text-stone-600">to ace the ATS.</span>
             </h2>
             <p className="mt-6 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-xl leading-relaxed">
-              Comprehensive AI-powered resume analysis tools — all in one place, completely free.
+              Comprehensive AI-powered resume analysis tools � all in one place, completely free.
             </p>
           </motion.div>
 
@@ -375,7 +373,7 @@ export default function AtsLandingPage() {
         </div>
       </section>
 
-      {/* ── More Career Tools ── */}
+      {/* -- More Career Tools -- */}
       <section className="py-24 md:py-32 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -469,7 +467,7 @@ export default function AtsLandingPage() {
         </div>
       </section>
 
-      {/* ── How It Works ── */}
+      {/* -- How It Works -- */}
       <section className="py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -511,7 +509,7 @@ export default function AtsLandingPage() {
         </div>
       </section>
 
-      {/* ── What We Analyze ── */}
+      {/* -- What We Analyze -- */}
       <section className="py-24 md:py-32 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -560,7 +558,7 @@ export default function AtsLandingPage() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
+      {/* -- CTA -- */}
       <section className="py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -600,7 +598,7 @@ export default function AtsLandingPage() {
                     onClick={handleTryNow}
                     className="group inline-flex items-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0"
                   >
-                    {isAuthenticated ? "Get My ATS Score" : "Get started — it's free"}
+                    {isAuthenticated ? "Get My ATS Score" : "Get started � it's free"}
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </button>
                   <Link to="/register" className="no-underline">

@@ -48,7 +48,7 @@ import type {
 } from "../../../lib/types";
 import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
 import { HacktoberfestTracker } from "./HacktoberfestTracker";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 // ─── Theme ──────────────────────────────────────────────────────
 const CHART_COLORS = [

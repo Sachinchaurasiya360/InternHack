@@ -26,7 +26,7 @@ import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
 import { Button } from "@/components/ui/button";
 import { DsaApproachesPanel } from "./components/DsaApproachesPanel";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 const DIFF_STYLE: Record<string, string> = {
   Easy: "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",

@@ -9,7 +9,7 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { courseSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 const FREE_LIMIT = 5;
 

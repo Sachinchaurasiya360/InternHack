@@ -3,7 +3,7 @@ import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
 import { Monitor, Zap, Package, HelpCircle, Mail, Clock } from "lucide-react";
-import { Kicker } from "../../../components/ui/Kicker";
+import { Kicker } from "../../components/ui/Kicker";
 
 type Section = {
   id: string;

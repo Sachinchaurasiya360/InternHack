@@ -20,7 +20,7 @@ import {
 import api from "../../../lib/axios";
 import { Button } from "../../../components/ui/button";
 import { useTrackProgress } from "./useTrackProgress";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 const CATEGORY_DESCRIPTION: Record<TrackCategory, string> = {
   practice: "Curated questions, animated lessons, and roadmaps to ace placements.",

@@ -3,8 +3,7 @@ import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
 import { motion, type Variants } from "framer-motion";
-import {
-  ShieldCheck,
+import {`n  ShieldCheck,
   UserCheck,
   Lock,
   BadgeCheck,
@@ -15,7 +14,6 @@ import {
   RefreshCcw,
   Mail,
 } from "lucide-react";
-import { Kicker } from "../../../components/ui/Kicker";
 
 type Section = {
   id: string;

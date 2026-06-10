@@ -12,7 +12,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Button } from "../../../components/ui/button";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 // — Streak Banner ———————————————————————————————————————————
 type StreakBannerProps = { streak: number };

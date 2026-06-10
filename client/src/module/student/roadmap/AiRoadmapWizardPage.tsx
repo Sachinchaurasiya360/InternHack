@@ -21,7 +21,7 @@ import toast from "../../../components/ui/toast";
 import type { DayOfWeek, RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 type Background = "CS_STUDENT" | "SELF_TAUGHT" | "CAREER_SWITCHER" | "HOBBYIST" | "WORKING_PRO";
 type Experience = "NEW" | "SOME" | "EXPERIENCED";

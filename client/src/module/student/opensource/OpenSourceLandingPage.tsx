@@ -5,9 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
-import {
-import { Kicker } from "../../../../components/ui/Kicker";
-  ArrowRight,
+import {`n  ArrowRight,
   CheckCircle,
   GitBranch,
   BookOpen,

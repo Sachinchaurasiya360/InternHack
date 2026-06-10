@@ -22,7 +22,7 @@ import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
 import { canonicalUrl } from "../../lib/seo.utils";
-import { Kicker } from "../../../components/ui/Kicker";
+import { Kicker } from "../../components/ui/Kicker";
 
 const ROTATING_WORDS = ["hire.", "onboard.", "pay.", "review.", "retain."];
 

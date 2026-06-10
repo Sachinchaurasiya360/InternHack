@@ -16,7 +16,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import { sanitizeHtml } from "../../../lib/sanitize";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 type QuestionResult = AptitudeAnswerResult;
 

@@ -2,8 +2,7 @@ import { motion, type Variants } from "framer-motion";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
-import {
-  CreditCard,
+import {`n  CreditCard,
   XCircle,
   CheckCircle,
   Ban,
@@ -11,7 +10,6 @@ import {
   Clock,
   MessageCircle,
 } from "lucide-react";
-import { Kicker } from "../../../components/ui/Kicker";
 
 type Section = {
   id: string;

@@ -1,6 +1,5 @@
 import CoverLetterHistoryPanel from "./CoverLetterHistoryPanel";
 import { CopyButton } from "../../../components/ui/CopyButton";
-import { Kicker } from "../../../../components/ui/Kicker";
 
 import { useState, useRef, useMemo, useEffect } from "react";
 import { Link } from "react-router";
@@ -37,6 +36,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { CoverLetterTone, UsageStats } from "../../../lib/types";
+import { Kicker } from "../../../components/ui/Kicker";
 
 
 const TONES: { id: CoverLetterTone; label: string; description: string }[] = [

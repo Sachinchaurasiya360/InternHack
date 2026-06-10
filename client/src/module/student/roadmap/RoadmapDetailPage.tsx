@@ -12,7 +12,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import type { Roadmap, RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 function Chrome({ children, isStudent, sidebarWidth, collapsed, sidebar }: {
   children: ReactNode;

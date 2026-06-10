@@ -20,7 +20,7 @@ import type { Job } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
-import { Kicker } from "../../../../components/ui/Kicker";
+import { Kicker } from "../../../components/ui/Kicker";
 
 type StatusFilter = "ALL" | JobStatus;
 
