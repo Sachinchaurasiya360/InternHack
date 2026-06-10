@@ -66,6 +66,7 @@ export class PayrollController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       const employeeId = Number(req.user.id);
 
+      const employeeId = req.user.id;
       const payslips = await this.payrollService.getMyPayslips(employeeId);
       return res.json({ payslips });
     } catch (error) {

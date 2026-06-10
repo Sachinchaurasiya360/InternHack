@@ -71,7 +71,12 @@ export class BadgeController {
 
   async listAllBadges(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = badgeQuerySchema.parse(req.query);
+      const queryResult = badgeQuerySchema.safeParse(req.query);
+      if (!queryResult.success) {
+        res.status(400).json({ message: "Invalid query parameters", errors: queryResult.error.flatten() });
+        return;
+      }
+      const query = queryResult.data;
       const data = await this.badgeService.listAllBadges(query.page, query.limit);
       res.json(data);
     } catch (err) {
