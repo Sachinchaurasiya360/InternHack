@@ -48,9 +48,10 @@ function setCachedVersion(userId: number, version: number): void {
   versionCache.set(userId, { version, expiresAt: Date.now() + TOKEN_VERSION_TTL_MS });
 }
 
-/** Invalidate cache for a user (call on login to force immediate propagation) */
+/** Invalidate cache for a user (call on login to force immediate propagation) and pending in-flight lookup. */
 export function invalidateVersionCache(userId: number): void {
   versionCache.delete(userId);
+  pendingVersionLookups.delete(userId);
 }
 
 /** Extract token from httpOnly cookie first, then Authorization header as fallback */
@@ -85,27 +86,31 @@ async function getTokenVersion(userId: number): Promise<number | null> {
     return user ? user.tokenVersion : null;
   }
 
-  try {
-    const dbQuery: Promise<TokenVersionLookupResult> = prisma.user.findUnique({
-      where: { id: userId },
-      select: { tokenVersion: true },
-    });
+  const dbQuery: Promise<TokenVersionLookupResult> = prisma.user.findUnique({
+    where: { id: userId },
+    select: { tokenVersion: true },
+  });
 
+  try {
     // Register the database query before awaiting it
     // so that concurrent requests can reuse it.
     pendingVersionLookups.set(userId, dbQuery);
 
     const user = await dbQuery;
 
-    if (user) {
+    //Only cache if the query is still active for this user.
+    if (user && pendingVersionLookups.get(userId) === dbQuery) {
       setCachedVersion(userId, user.tokenVersion);
       dbVersion = user.tokenVersion;
     }
   } 
   finally {
     // Remove the in-flight lookup regardless of success or failure.
-    pendingVersionLookups.delete(userId);
-  }
+    // Only remove the query if it is still active for this user.
+    if (pendingVersionLookups.get(userId) === dbQuery) {
+      pendingVersionLookups.delete(userId);
+    }
+  } 
 
   return dbVersion;
 }
