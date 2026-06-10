@@ -24,7 +24,7 @@ export const useAuthStore = create<AuthState>((set) => {
     isAuthenticated: !!storedUser && (() => { try { return !!JSON.parse(storedUser); } catch { return false; } })(),
 
     login: (user) => {
-      localStorage.setItem("user", JSON.stringify(user));
+      try { localStorage.setItem("user", JSON.stringify(user)); } catch { console.warn("Failed to persist to localStorage: user"); }
       set({ user, isAuthenticated: true });
       _queryClient?.clear();
     },
@@ -44,7 +44,7 @@ export const useAuthStore = create<AuthState>((set) => {
     },
 
     setUser: (user) => {
-      localStorage.setItem("user", JSON.stringify(user));
+      try { localStorage.setItem("user", JSON.stringify(user)); } catch { console.warn("Failed to persist to localStorage: user"); }
       set({ user });
     },
   };
