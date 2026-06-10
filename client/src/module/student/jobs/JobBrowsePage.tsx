@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   MapPin,
@@ -24,6 +24,7 @@ import { MetaChip } from "../../../components/ui/MetaChip";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { useSaveJob } from "../../../hooks/useSaveJob";
 import type {
   ExternalJob,
   Job,
@@ -278,8 +279,6 @@ export default function JobBrowsePage() {
     placeholderData: keepPreviousData,
   });
 
-  const queryClient = useQueryClient();
-
   const { data: savedIds } = useQuery({
     queryKey: queryKeys.savedJobs.list(),
     queryFn: () => api.get("/student/saved-jobs").then((res) => res.data.jobs as Job[]),
@@ -287,18 +286,7 @@ export default function JobBrowsePage() {
     select: (jobs) => new Set(jobs.map((j) => j.id)),
   });
 
-  const { mutate: toggleSave } = useMutation({
-    mutationFn: async (jobId: number) => {
-      if (savedIds?.has(jobId)) {
-        await api.delete(`/student/jobs/${jobId}/save`);
-      } else {
-        await api.post(`/student/jobs/${jobId}/save`);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.savedJobs.all });
-    },
-  });
+  const { toggleSave } = useSaveJob();
 
   const toggleTag = (tag: string) => {
     const updated = selectedTags.includes(tag)
@@ -849,7 +837,7 @@ export default function JobBrowsePage() {
                           />
                           <button
                             type="button"
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSave(job.id); }}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSave({ jobId: job.id, isSaved: savedIds?.has(job.id) ?? false }); }}
                             className={`absolute top-2 right-2 p-1.5 rounded-md transition-colors border-0 bg-transparent cursor-pointer z-10 ${
                               savedIds?.has(job.id)
                                 ? "text-lime-600 dark:text-lime-400 hover:bg-lime-50 dark:hover:bg-lime-900/20"
