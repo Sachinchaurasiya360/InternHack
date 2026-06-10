@@ -24,13 +24,7 @@ function Kicker({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CompanyMark({ label }: { label: string }) {
-  return (
-    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
 function statusClass(status: string) {
   switch (status) {
@@ -64,7 +58,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
   return (
     <div className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
       <div className="flex items-start gap-4">
-        <CompanyMark label={app.job?.company || "?"} />
+        <CompanyMark name={app.job?.company || "?"} />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -160,7 +154,7 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
         external
       </span>
       <div className="flex items-start gap-4 pr-16">
-        <CompanyMark label={app.adminJob.company || "?"} />
+        <CompanyMark name={app.adminJob.company || "?"} />
         <div className="flex-1 min-w-0">
           <Link
             to={app.adminJob.slug ? `/jobs/ext/${app.adminJob.slug}` : "#"}

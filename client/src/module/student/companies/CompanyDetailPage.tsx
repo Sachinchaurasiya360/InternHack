@@ -88,30 +88,7 @@ function Kicker({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CompanyLogo({ src, label }: { src?: string | null; label: string }) {
-  if (src) {
-    return (
-      <img
-        src={src.startsWith("http") ? src : `${SERVER_URL}${src}`}
-        alt={label}
-        className="w-16 h-16 sm:w-20 sm:h-20 rounded-md object-cover border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 shrink-0"
-      />
-    );
-  }
-  return (
-    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-2xl sm:text-3xl font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
-
-function ContactMark({ label }: { label: string }) {
-  return (
-    <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
 export default function CompanyDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -255,7 +232,7 @@ export default function CompanyDetailPage() {
           <motion.div variants={fadeUp}>
             <Kicker>company / profile</Kicker>
             <div className="mt-4 flex flex-col sm:flex-row sm:items-start gap-5">
-              <CompanyLogo src={company.logo} label={company.name} />
+              <CompanyMark name={company.name} logo={company.logo} size="xl" />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
                   <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
@@ -584,7 +561,7 @@ export default function CompanyDetailPage() {
                         className="pb-4 border-b border-stone-100 dark:border-white/5 last:pb-0 last:border-b-0"
                       >
                         <div className="flex items-start gap-3">
-                          <ContactMark label={contact.name} />
+                          <CompanyMark name={contact.name} size="sm" />
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">
                               {contact.name}

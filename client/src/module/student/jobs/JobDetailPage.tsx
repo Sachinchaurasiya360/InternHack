@@ -27,14 +27,7 @@ function Kicker({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CompanyMark({ label, size = "md" }: { label: string; size?: "md" | "lg" }) {
-  const dims = size === "lg" ? "w-14 h-14 text-xl" : "w-10 h-10 text-sm";
-  return (
-    <div className={`${dims} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 font-bold`}>
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
 function getDeadlineInfo(deadline: string) {
   const diff = Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
@@ -210,7 +203,7 @@ export default function JobDetailPage() {
           <motion.div variants={fadeUp}>
             <Kicker>internal / posting</Kicker>
             <div className="mt-4 flex flex-col sm:flex-row sm:items-start gap-5">
-              <CompanyMark label={job.company || "?"} size="lg" />
+              <CompanyMark name={job.company || "?"} size="lg" />
               <div className="flex-1 min-w-0">
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
                   {job.title}
@@ -367,7 +360,7 @@ export default function JobDetailPage() {
                 <motion.div variants={fadeUp} className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-6">
                   <Kicker>posted / by</Kicker>
                   <div className="mt-4 flex items-center gap-3">
-                    <CompanyMark label={job.recruiter.name || "?"} />
+                    <CompanyMark name={job.recruiter.name || "?"} />
                     <div className="min-w-0">
                       <p className="font-bold text-sm text-stone-900 dark:text-stone-50 truncate">
                         {job.recruiter.name}
@@ -419,7 +412,7 @@ export default function JobDetailPage() {
                   >
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex items-start gap-3 min-w-0">
-                        <CompanyMark label={rj.company || "?"} />
+                        <CompanyMark name={rj.company || "?"} />
                         <div className="flex-1 min-w-0">
                           <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate leading-tight">
                             {rj.title}
