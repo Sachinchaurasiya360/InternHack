@@ -55,4 +55,4 @@ export async function issueCertificate(guideName: string): Promise<Certificate> 
 export async function fetchCertificate(token: string): Promise<Certificate> {
   const { data } = await api.get<{ certificate: Certificate }>(`/opensource/certificate/${token}`);
   return data.certificate;
-}
+}

@@ -100,7 +100,7 @@ export default function GuideListPage({
     if (!cert) return;
     const url = `${window.location.origin}/certificate/${cert.token}`;
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-    window.open(linkedInUrl, "_blank", "width=600,height=600");
+    window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
   };
 
   // Split title around accent word

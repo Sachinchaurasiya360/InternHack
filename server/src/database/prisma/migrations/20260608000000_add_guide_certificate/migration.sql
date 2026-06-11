@@ -13,5 +13,5 @@ CREATE TABLE "guideCertificate" (
 -- CreateIndex
 CREATE UNIQUE INDEX "guideCertificate_token_key" ON "guideCertificate"("token");
 
--- AddForeignKey
-ALTER TABLE "guideCertificate" ADD CONSTRAINT "guideCertificate_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "guideCertificate" ADD CONSTRAINT "guideCertificate_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

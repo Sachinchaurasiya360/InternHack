@@ -5,6 +5,7 @@ import { Trophy, Copy, Download, Check, Linkedin, ArrowLeft, ExternalLink } from
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
+import { fetchCertificate } from "./api/opensource.api";
 
 
 interface Certificate {
@@ -22,13 +23,10 @@ export default function CertificateViewPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/opensource/certificate/${token}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Not found");
-        return res.json();
-      })
-      .then((data) => {
-        setCert(data.certificate);
+    if (!token) return;
+    fetchCertificate(token)
+      .then((certificate) => {
+        setCert(certificate);
         setLoading(false);
       })
       .catch((err) => {
@@ -49,7 +47,7 @@ export default function CertificateViewPage() {
   const shareLinkedIn = () => {
     const url = window.location.href;
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-    window.open(linkedInUrl, "_blank", "width=600,height=600");
+    window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
   };
 
   if (loading) {
@@ -233,7 +231,7 @@ export default function CertificateViewPage() {
               onClick={() => window.open(`${import.meta.env.VITE_API_URL}/api/opensource/certificate/${token}/og`, "_blank")}
             >
               <Download className="w-4 h-4 mr-2" />
-              Download PNG
+              Download SVG
             </Button>
           </motion.div>
         </div>
