@@ -53,7 +53,7 @@ export function VideoEmbed({ url, title }: Props) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-medium text-stone-600 dark:text-stone-400 hover:underline"
       >
         <Video className="w-4 h-4" />
         {title ?? "Watch video"}
@@ -69,8 +69,8 @@ export function VideoEmbed({ url, title }: Props) {
         className="flex items-center justify-between w-full px-5 py-3.5 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
-            <Video className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+          <div className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center shrink-0">
+            <Video className="w-4 h-4 text-stone-600 dark:text-stone-400" />
           </div>
           <div>
             <span className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -81,7 +81,7 @@ export function VideoEmbed({ url, title }: Props) {
             </span>
           </div>
         </div>
-        <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400 shrink-0">
+        <span className="text-xs font-medium text-stone-600 dark:text-stone-400 shrink-0">
           {expanded ? "Collapse" : "Play"}
         </span>
       </button>
