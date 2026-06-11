@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Lightbulb, Code2 } from "lucide-react";
+import { ChevronDown, Code2 } from "lucide-react";
 import api from "../../../../lib/axios";
 import { queryKeys } from "../../../../lib/query-keys";
 import type { DsaApproachEntry } from "../../../../lib/types";

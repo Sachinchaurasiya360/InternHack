@@ -113,7 +113,7 @@ export default function CandidateImportPage() {
         if (err) {
           errors.push(`Row ${idx + 2}: ${err}`);
         } else {
-          validRows.push(row as CsvRow);
+          validRows.push(row as unknown as CsvRow);
         }
       });
 
