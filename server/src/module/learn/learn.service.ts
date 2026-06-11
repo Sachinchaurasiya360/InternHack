@@ -57,60 +57,52 @@ async function runRepeatableRead<T>(operation: (tx: Prisma.TransactionClient) =>
 }
 
 export class LearnService {
-  async calculateReadinessReport(data: {
-    userId: string;
-    targetRole: string;
-    companyTier: string;
-    availableTime: string;
-  }): Promise<any> {
-    const { targetRole, companyTier, availableTime } = data;
-    
-    // Uses the official configuration method from the package you installed
-    const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-    const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
+  async calculateReadinessReport(userId: string, body: { targetRole: string; companyTier: string; availableTime: string }) {
+    const { targetRole, companyTier, availableTime } = body;
 
-    const systemPrompt = `
-      You are an expert tech recruiter assessing student readiness indicators.
-      Target Role: ${targetRole}
-      Hiring Company Tier: ${companyTier}
-      Prep Time: ${availableTime}
+    // 1. Fetch real student data from the database
+    const userProgress = await this.prisma.interviewProgress.findMany({
+      where: { userId },
+      include: { question: true }
+    });
 
-      Respond strictly with a single JSON object. Do not include markdown ticks:
+    const completedLessons = await this.prisma.userLesson.findMany({
+      where: { userId, completed: true }
+    });
+
+    // 2. Format a comprehensive prompt summary context for Gemini
+    const systemContextPrompt = `
+      You are an elite technical interviewer evaluating an InternHack student.
+      
+      Student Target Parameters:
+      - Role: ${targetRole}
+      - Target Tier: ${companyTier}
+      - Preparation Window: ${availableTime}
+      
+      Actual Platform Analytics Data:
+      - Total Interview Questions Solved: ${userProgress.length}
+      - Completed Lessons Count: ${completedLessons.length}
+      
+      Analyze their progress objectively. Return a raw JSON payload containing:
       {
-        "overallReadiness": 65,
-        "estimatedTimeToReady": "3 weeks",
-        "todaysPriority": "Solve 2 more Binary Tree problems + complete Node.js authentication lesson",
-        "strongAreas": [
-          { "topic": "HTML/CSS", "score": 90 },
-          { "topic": "React Hooks", "score": 80 }
-        ],
-        "gapAreas": [
-          { "topic": "System Design", "score": 20 },
-          { "topic": "TypeScript", "score": 45 }
-        ],
-        "mockInterviewQuestion": {
-          "title": "Implement a Custom useFetch Hook",
-          "description": "Create a hook handling network execution state loops cleanly."
-        }
+        "overallReadiness": number (0-100),
+        "estimatedTimeToReady": "string",
+        "todaysPriority": "string",
+        "strongAreas": [{"topic": "string", "score": number}],
+        "gapAreas": [{"topic": "string", "score": number}],
+        "mockInterviewQuestion": {"title": "string", "description": "string"}
       }
     `;
 
     try {
-      const result = await model.generateContent(systemPrompt);
-      const text = result.response.text();
-      const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
-      return JSON.parse(cleanJson);
+      // Execute the official SDK call using your system configuration elements
+      const response = await this.geminiProvider.generateJSON(systemContextPrompt);
+      return JSON.parse(response);
     } catch (error) {
-      console.error("Gemini fallback exception trigger:", error);
-      // Clean safety fallback so the server never crashes even if API keys are missing locally
-      return {
-        overallReadiness: 65,
-        estimatedTimeToReady: "3 weeks",
-        todaysPriority: "Solve 2 more Binary Tree problems",
-        strongAreas: [{ topic: "React Hooks", score: 80 }],
-        gapAreas: [{ topic: "TypeScript", score: 45 }],
-        mockInterviewQuestion: { title: "Custom Hook", description: "Build state management wrappers." }
-      };
+      console.error("Gemini API execution failure:", error);
+      
+      // Throw a standard error matching InternHack's architecture instead of a custom class
+      throw new Error("Failed to generate AI evaluation metrics. Please try again.");
     }
   }
   async getInterviewProgress(userId: number): Promise<InterviewProgressDto> {

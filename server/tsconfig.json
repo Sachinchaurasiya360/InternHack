@@ -42,5 +42,5 @@
     "skipLibCheck": true,
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "vitest.config.ts","../../client/**/*"]
+  "exclude": ["node_modules", "dist", "vitest.config.ts"]
 }

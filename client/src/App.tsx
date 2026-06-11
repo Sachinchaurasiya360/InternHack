@@ -7,7 +7,6 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
 import BackToTopButton from "./components/common/BackToTopButton";
 import ScrollToTop from "./components/common/ScrollToTop";
-import InterviewReadinessPage from './module/student/learn/InterviewReadinessPage';
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
 function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
@@ -220,6 +219,7 @@ const SignalDetailPage = lazyWithRetry(() => import("./module/student/signals/Si
 const InterviewsDirectoryPage = lazyWithRetry(() => import("./module/student/interviews/InterviewsDirectoryPage"));
 const InterviewExperienceDetailPage = lazyWithRetry(() => import("./module/student/interviews/InterviewExperienceDetailPage"));
 const ShareInterviewPage = lazyWithRetry(() => import("./module/student/interviews/ShareInterviewPage"));
+const InterviewReadinessPage = lazyWithRetry(() => import("./module/student/learn/InterviewReadinessPage"));
 
 // Admin pages
 const AdminLoginPage = lazyWithRetry(() => import("./module/admin/AdminLoginPage"));
@@ -478,8 +478,9 @@ function App() {
             <Route path="jobs/saved" element={<SavedJobsPage />} />
             <Route path="jobs/:id" element={<JobDetailPage />} />
             <Route path="jobs/:id/apply" element={<ApplyPage />} />
-            {/* Look for your student dashboard routes list and insert this entry */}
-            <Route path="learn/readiness" element={<InterviewReadinessPage />} />
+            <Route element={<ProtectedRoute role="STUDENT" />}>
+              <Route path="learn/readiness" element={<InterviewReadinessPage />} />
+            </Route>
             <Route path="internships" element={<GovInternshipsPage />} />
             <Route path="companies" element={<CompanyListPage />} />
             <Route path="companies/:slug" element={<CompanyDetailPage />} />
