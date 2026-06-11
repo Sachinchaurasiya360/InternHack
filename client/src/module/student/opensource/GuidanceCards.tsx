@@ -55,14 +55,14 @@ export const GuidanceCards = React.memo(function GuidanceCards() {
             <Link
               to={card.to}
               aria-label={`Open guide: ${card.title}`}
-              className="group relative flex flex-col gap-3 p-4 h-full bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-50 transition-colors"
+              className="group relative flex flex-col gap-3 p-4 h-full bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
             >
               <div className="flex items-center justify-between" aria-hidden="true">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-500">
                   / {String(i + 1).padStart(2, "0")}
                 </span>
-                <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 flex items-center justify-center transition-colors">
-                  <card.icon className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-500" />
+                <div className="w-8 h-8 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-lime-400/10 flex items-center justify-center transition-colors">
+                  <card.icon className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-600 dark:group-hover:text-lime-400" />
                 </div>
               </div>
               {/* Hide the visual text from screen readers so they only hear the cleaner aria-label on the Link */}
