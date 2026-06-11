@@ -232,7 +232,7 @@ export default function RepoDiscoveryPage() {
     queryKey: ["repo-deep-link", initialRepoId],
     queryFn: () => api.get(`/opensource/${initialRepoId}`).then((res) => res.data.repo),
     enabled: !!initialRepoId && !selectedRepo,
-    staleTime: 10 * 60 * 1000,
+    staleTime: 0,
     retry: false,
   });
 
