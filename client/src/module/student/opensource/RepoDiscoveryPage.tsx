@@ -1,7 +1,8 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
+
 import {
   Search,
   Star,
@@ -26,6 +27,7 @@ import {
   Bookmark,
   GitPullRequest,
 } from "lucide-react";
+
 import api from "../../../lib/axios";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 import { queryKeys } from "../../../lib/query-keys";
@@ -41,11 +43,9 @@ import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
 import { SuggestRepoModal } from "./SuggestRepoModal";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
-import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
 import { useCoachStore } from "./stores/coach.store";
 import { markLearningPathMilestone } from "./learning-paths.data";
-import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
 
 const BOOKMARK_KEY = "oss_bookmarks";
 
@@ -118,7 +118,8 @@ export default function RepoDiscoveryPage() {
   const page = Number(searchParams.get("page")) || 1;
   const trendingOnly = searchParams.get("trending") === "true";
   const hacktoberfestOnly = searchParams.get("hacktoberfest") === "true";
-  const showHacktoberfestFilter = isHacktoberfestMode();
+  const highlyActiveOnly = searchParams.get("highlyActive") === "true";
+  const showHacktoberfestFilter = true;
 
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
@@ -203,13 +204,7 @@ export default function RepoDiscoveryPage() {
     return Array.from(langs);
   }, [user]);
 
-  const handleRecentlyViewedOverflow = useCallback(() => {
-    toast.success("Oldest repo removed from recently viewed");
-  }, []);
-
-  const { recentlyViewed, addRepo, clearHistory } = useRecentlyViewedRepos({
-    onRepoRemoved: handleRecentlyViewedOverflow,
-  });
+  const { addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     addRepo(repo);
@@ -305,23 +300,24 @@ export default function RepoDiscoveryPage() {
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
-    
+
     if (languageMode === "auto") {
       if (inferredLanguages.length > 0) {
-        params.language = inferredLanguages[0]; 
+        params.language = inferredLanguages[0];
       }
     } else if (selectedLanguage.length > 0) {
       params.language = selectedLanguage[0];
     }
-    
+
     if (trendingOnly) params.trending = "true";
     if (hacktoberfestOnly) params.hacktoberfest = "true";
+    if (highlyActiveOnly) params.highlyActive = "true";
 
     const sortOpt = SORT_OPTIONS.find((s) => s.key === sortKey);
     if (sortOpt) params.sortOrder = sortOpt.order;
 
     return params;
-  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, hacktoberfestOnly, page]);
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, languageMode, inferredLanguages, sortKey, trendingOnly, hacktoberfestOnly, highlyActiveOnly, page]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.opensource.list(queryParams),
@@ -389,11 +385,11 @@ export default function RepoDiscoveryPage() {
 
   const stats = globalStats
     ? {
-        totalRepos: globalStats.totalRepos,
-        totalStars: formatCount(globalStats.totalStars),
-        trendingCount: globalStats.trendingCount,
-        languages: globalStats.languageCount,
-      }
+      totalRepos: globalStats.totalRepos,
+      totalStars: formatCount(globalStats.totalStars),
+      trendingCount: globalStats.trendingCount,
+      languages: globalStats.languageCount,
+    }
     : null;
 
   const updateFilter = (key: string, value: string | number) => {
@@ -557,14 +553,11 @@ export default function RepoDiscoveryPage() {
         {/* My Submissions */}
         {!!user && (
           <div className="mb-8">
-              <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 <div className="h-1 w-1 bg-lime-400" />
                 my submissions
               </div>
-              <Link to="/student/opensource/my-submissions" className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors no-underline">
-                View all &rarr;
-              </Link>
             </div>
 
             {isMyRequestsLoading && (
@@ -618,9 +611,8 @@ export default function RepoDiscoveryPage() {
                         </span>
                       </div>
                       <span
-                        className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-md border shrink-0 ml-3 ${
-                          STATUS_STYLE[req.status] ?? STATUS_STYLE.PENDING
-                        }`}
+                        className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-md border shrink-0 ml-3 ${STATUS_STYLE[req.status] ?? STATUS_STYLE.PENDING
+                          }`}
                       >
                         {req.status}
                       </span>
@@ -647,11 +639,14 @@ export default function RepoDiscoveryPage() {
         {/* Guidance Cards */}
         <GuidanceCards />
 
-        {/* Recently viewed & recommended */}
-        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} onClear={clearHistory} />
 
         {user?.role === "STUDENT" && (
-          <RecommendedSection onSelect={handleOpenRepo} />
+          <RecommendedSection
+            onSelect={handleOpenRepo}
+            bookmarks={bookmarks}
+            onToggleBookmark={toggleBookmark}
+
+          />
         )}
 
         {/* Filter bar */}
@@ -664,11 +659,10 @@ export default function RepoDiscoveryPage() {
                 key={d.key}
                 type="button"
                 onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
-                className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
-                  active
-                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                    : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-                }`}
+                className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${active
+                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                  : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+                  }`}
               >
                 {d.label}
               </button>
@@ -679,11 +673,10 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => setShowSaved((v) => !v)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
-              showSaved
-                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
-            }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${showSaved
+              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
+              }`}
           >
             <Bookmark className="w-3 h-3" />
             Saved {bookmarks.length > 0 && `(${bookmarks.length})`}
@@ -693,11 +686,10 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => updateFilter("trending", trendingOnly ? "" : "true")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
-              trendingOnly
-                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-            }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${trendingOnly
+              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              }`}
           >
             <Flame className="w-3 h-3" />
             Trending
@@ -707,16 +699,31 @@ export default function RepoDiscoveryPage() {
             <button
               type="button"
               onClick={() => updateFilter("hacktoberfest", hacktoberfestOnly ? "" : "true")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
-                hacktoberfestOnly
-                  ? "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30"
-                  : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-              }`}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${hacktoberfestOnly
+                ? "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+                }`}
             >
               <GitPullRequest className="w-3 h-3" />
-              Hacktoberfest repos only
+              Hacktoberfest
             </button>
           )}
+
+          {/* Highly Active toggle */}
+          <button
+            type="button"
+            onClick={() => updateFilter("highlyActive", highlyActiveOnly ? "" : "true")}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${highlyActiveOnly
+              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              }`}
+          >
+            <div
+              className={`h-1.5 w-1.5 rounded-full ${highlyActiveOnly ? "bg-lime-500" : "bg-stone-400"
+                }`}
+            />
+            Highly Active
+          </button>
 
           {inferredLanguages.length > 0 && (
             <button
@@ -741,11 +748,10 @@ export default function RepoDiscoveryPage() {
                   return params;
                 }, { replace: true });
               }}
-              className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
-                languageMode === "auto"
-                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                  : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-              }`}
+              className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${languageMode === "auto"
+                ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+                }`}
             >
               My Languages
             </button>
@@ -755,11 +761,10 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => setShowFilters(!showFilters)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
-              activeFilters > 0
-                ? "bg-lime-400 text-stone-950 border-lime-400 hover:bg-lime-300"
-                : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-            }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${activeFilters > 0
+              ? "bg-lime-400 text-stone-950 border-lime-400 hover:bg-lime-300"
+              : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+              }`}
           >
             <Filter className="w-3 h-3" />
             Filters
@@ -773,8 +778,8 @@ export default function RepoDiscoveryPage() {
 
           {/* Sort dropdown */}
           <div className="relative" ref={sortDropdownRef}>
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               variant="ghost"
               size="sm"
               onClick={() => setSortOpen(!sortOpen)}
@@ -807,11 +812,10 @@ export default function RepoDiscoveryPage() {
                         updateFilter("sort", opt.key);
                         setSortOpen(false);
                       }}
-                      className={`w-full justify-start text-left px-2.5 py-1.5 rounded-md text-xs font-normal transition-colors cursor-pointer ${
-                        sortKey === opt.key
-                          ? "bg-stone-900 dark:bg-stone-50 text-lime-400 hover:bg-stone-900 dark:hover:bg-stone-50 hover:text-lime-400"
-                          : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
-                      }`}
+                      className={`w-full justify-start text-left px-2.5 py-1.5 rounded-md text-xs font-normal transition-colors cursor-pointer ${sortKey === opt.key
+                        ? "bg-stone-900 dark:bg-stone-50 text-lime-400 hover:bg-stone-900 dark:hover:bg-stone-50 hover:text-lime-400"
+                        : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
+                        }`}
                     >
                       {opt.label}
                     </Button>
@@ -1019,11 +1023,10 @@ export default function RepoDiscoveryPage() {
                   <button
                     type="button"
                     onClick={handleShare}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border ${
-                      copiedShareUrl
-                        ? "bg-lime-400 text-stone-950 border-lime-400"
-                        : "bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5"
-                    }`}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border ${copiedShareUrl
+                      ? "bg-lime-400 text-stone-950 border-lime-400"
+                      : "bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:bg-stone-50 dark:hover:bg-white/5"
+                      }`}
                   >
                     {copiedShareUrl ? (
                       <>
@@ -1193,11 +1196,10 @@ export default function RepoDiscoveryPage() {
                   <button
                     type="button"
                     onClick={() => copyCloneUrl(`${selectedRepo.url}.git`)}
-                    className={`flex items-center justify-center gap-2 py-3 rounded-md text-sm font-bold transition-colors cursor-pointer ${
-                      copiedCloneUrl
-                        ? "bg-green-500 text-white"
-                        : "bg-stone-100 dark:bg-white/10 hover:bg-stone-200 dark:hover:bg-white/20 text-stone-700 dark:text-stone-300"
-                    }`}
+                    className={`flex items-center justify-center gap-2 py-3 rounded-md text-sm font-bold transition-colors cursor-pointer ${copiedCloneUrl
+                      ? "bg-green-500 text-white"
+                      : "bg-stone-100 dark:bg-white/10 hover:bg-stone-200 dark:hover:bg-white/20 text-stone-700 dark:text-stone-300"
+                      }`}
                   >
                     {copiedCloneUrl ? (
                       <>
@@ -1221,7 +1223,15 @@ export default function RepoDiscoveryPage() {
   );
 }
 
-function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => void }) {
+function RecommendedSection({
+  onSelect,
+  bookmarks,
+  onToggleBookmark
+}: {
+  onSelect: (repo: OpenSourceRepo) => void;
+  bookmarks: number[];
+  onToggleBookmark: (id: number) => void;
+}) {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.opensource.list({ recommended: "true" }),
     queryFn: async () => {
@@ -1270,7 +1280,13 @@ function RecommendedSection({ onSelect }: { onSelect: (repo: OpenSourceRepo) => 
         <div className="flex gap-4 min-w-full">
           {repos.map((repo, i) => (
             <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
-              <RepoCard repo={repo} index={i} onSelect={onSelect} />
+              <RepoCard
+                repo={repo}
+                index={i}
+                onSelect={onSelect}
+                bookmarked={bookmarks.includes(repo.id)}
+                onToggleBookmark={() => onToggleBookmark(repo.id)}
+              />
             </div>
           ))}
         </div>

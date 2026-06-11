@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Copy, Check } from "lucide-react";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
+
 import markup from "react-syntax-highlighter/dist/esm/languages/prism/markup";
 import css from "react-syntax-highlighter/dist/esm/languages/prism/css";
 import javascript from "react-syntax-highlighter/dist/esm/languages/prism/javascript";
@@ -13,6 +14,7 @@ import solidity from "react-syntax-highlighter/dist/esm/languages/prism/solidity
 import json from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import sql from "react-syntax-highlighter/dist/esm/languages/prism/sql";
 import { vscDarkPlus, prism } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 import { useThemeStore } from "../../lib/theme.store";
 import { Button } from "./button";
 import toast from "./toast";
@@ -86,7 +88,6 @@ export function CodeBlock({ code, label, example, language = "javascript" }: Cod
 
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {
         e.preventDefault();
-
         await handleCopy();
       }
     },
@@ -114,7 +115,7 @@ export function CodeBlock({ code, label, example, language = "javascript" }: Cod
           aria-label={copied ? "Code copied" : "Copy code to clipboard"}
           className="font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 shrink-0 min-h-[36px] px-2"
         >
-          {copied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
+          {copied ? <Check aria-hidden="true" className="w-3 h-3 text-lime-500" /> : <Copy aria-hidden="true" className="w-3 h-3" />}
           {copied ? "Copied" : "Copy"}
         </Button>
       </div>

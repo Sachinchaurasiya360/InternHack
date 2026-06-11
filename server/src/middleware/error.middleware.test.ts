@@ -235,5 +235,42 @@ describe("errorMiddleware", () => {
         name: "Test User",
       });
     });
+
+    it("should redact deeply nested sensitive fields in request body before logging", async () => {
+      const { prisma } = await import("../database/db.js");
+      const err = new Error("User not found");
+      const req = mockReq({
+        body: {
+          email: "user@test.com",
+          data: {
+            profile: {
+              password: "secret123",
+              cvv: "123",
+            }
+          },
+          items: [{ token: "jwt-token" }],
+        },
+      });
+      const res = mockRes();
+
+      errorMiddleware(err, req, res, noop);
+
+      // Give the async create a tick to resolve
+      await new Promise((r) => setTimeout(r, 10));
+
+      expect(prisma.errorLog.create).toHaveBeenCalled();
+      const callArg = (prisma.errorLog.create as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+      const body = callArg?.data?.requestBody;
+      expect(body).toEqual({
+        email: "user@test.com",
+        data: {
+          profile: {
+            password: "[REDACTED]",
+            cvv: "[REDACTED]",
+          }
+        },
+        items: [{ token: "[REDACTED]" }],
+      });
+    });
   });
 });
