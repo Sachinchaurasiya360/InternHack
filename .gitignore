@@ -3,6 +3,9 @@ server/.env
 client/.env
 node_modules/
 
+# Backup files
+*.bak
+
 # Claude Code
 CLAUDE.md
 agents.md
