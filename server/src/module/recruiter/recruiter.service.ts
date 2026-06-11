@@ -210,13 +210,16 @@ export class RecruiterService {
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
 
     await prisma.$transaction(async (tx) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const txRound = tx.round as any;
+
       // Archive the round and then re-index the remaining active rounds atomically.
-      await anyRound.update({
+      await txRound.update({
         where: { id: roundId },
         data: { isArchived: true },
       });
 
-      const remainingRounds = await (anyRound.findMany({
+      const remainingRounds = await (txRound.findMany({
         where: { jobId, isArchived: false },
         orderBy: { orderIndex: "asc" },
         select: { id: true, orderIndex: true },
@@ -449,7 +452,9 @@ export class RecruiterService {
         );
       }
 
-      const rounds = (await anyRound.findMany({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const txRound = tx.round as any;
+      const rounds = (await txRound.findMany({
           where: { jobId: application.jobId, isArchived: false },
         orderBy: { orderIndex: "asc" },
       })) as Awaited<ReturnType<typeof prisma.round.findMany>>;

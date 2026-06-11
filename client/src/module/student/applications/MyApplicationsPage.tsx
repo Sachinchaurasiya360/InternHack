@@ -302,10 +302,10 @@ export default function MyApplicationsPage() {
           a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
 
-    if (statusFilter !== "ALL") {
-      if (statusFilter !== "APPLIED") {
-        base = [];
-      }
+    // External apps have no explicit status field — they are always implicitly APPLIED.
+    // Show them only when the filter is ALL or APPLIED; hide for any other status.
+    if (statusFilter !== "ALL" && statusFilter !== "APPLIED") {
+      base = [];
     }
 
     return [...base].sort((a, b) => {
