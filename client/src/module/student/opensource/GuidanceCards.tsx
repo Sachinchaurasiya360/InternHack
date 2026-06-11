@@ -89,13 +89,13 @@ export const GuidanceCards = React.memo(function GuidanceCards() {
                 </div>
               </div>
               <div className="flex flex-col gap-1">
-                <p className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                <p className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-50 group-hover:text-stone-950 dark:group-hover:text-white transition-colors">
                   {card.title}
                 </p>
-                <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-stone-600 dark:text-stone-400 group-hover:text-stone-700 dark:group-hover:text-stone-200 line-clamp-2 leading-relaxed transition-colors">
                   {card.desc}
                 </p>
-                <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 mt-1">
+                <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 group-hover:text-stone-600 dark:group-hover:text-stone-300 mt-1 transition-colors">
                   ~{card.minutes} min &middot; {card.steps} steps
                 </span>
               </div>
