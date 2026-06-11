@@ -11,6 +11,7 @@ import type { Application, ExternalApplication } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { EmptyState } from "../../../components/ui/EmptyState";
 import { ApplicationNotes } from "./ApplicationNotes";
 import toast from "@/components/ui/toast";
 
@@ -540,19 +541,24 @@ export default function MyApplicationsPage() {
           </Link>
         </div>
       ) : filtered.length === 0 && filteredExternal.length === 0 ? (
-        <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-          <Search className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-          <p className="text-sm text-stone-500">No applications match your current filters.</p>
-          <button
-            onClick={() => {
-              setSearch("");
-              setStatusFilter("ALL");
-            }}
-            className="mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 bg-transparent border-0 cursor-pointer"
-          >
-            Clear all filters
-          </button>
-        </div>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <EmptyState
+            icon={<Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+            title="No applications match your current filters"
+            action={
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setStatusFilter("ALL");
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer mt-2"
+              >
+                Clear all filters
+              </button>
+            }
+          />
+        </motion.div>
       ) : (
         (() => {
           const combined: Array<
