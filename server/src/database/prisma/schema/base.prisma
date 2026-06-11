@@ -1560,6 +1560,7 @@ model guideCertificate {
   studentName String
   user        user     @relation("UserCertificates", fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, guideName])
   @@index([userId])
   @@index([token])
 }

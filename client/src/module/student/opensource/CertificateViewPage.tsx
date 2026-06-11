@@ -53,7 +53,7 @@ export default function CertificateViewPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950">
-        <div className="h-12 w-12 rounded-md border-4 border-purple-500 border-t-transparent animate-spin" />
+        <div className="h-12 w-12 rounded-md border-4 border-lime-500 border-t-transparent animate-spin" />
       </div>
 
     );
@@ -102,7 +102,7 @@ export default function CertificateViewPage() {
         <div className="flex items-center justify-between mb-8">
           <Link
             to="/"
-            className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to InternHack
@@ -134,7 +134,7 @@ export default function CertificateViewPage() {
             </div>
 
             <div className="absolute top-8 right-8 w-24 h-24 sm:w-32 sm:h-32 opacity-10">
-              <Trophy className="w-full h-full text-indigo-500" />
+              <Trophy className="w-full h-full text-lime-500" />
             </div>
 
             <div className="space-y-6 sm:space-y-10 relative z-10 w-full">
@@ -173,7 +173,7 @@ export default function CertificateViewPage() {
 
                   <span>ID: {token}</span>
                   <span>•</span>
-                  <Link to="/" className="hover:text-indigo-500 transition-colors flex items-center gap-1">
+                  <Link to="/" className="hover:text-lime-500 transition-colors flex items-center gap-1">
                     internhack.xyz <ExternalLink className="w-2.5 h-2.5" />
                   </Link>
                 </div>

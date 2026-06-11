@@ -635,18 +635,10 @@ export class OpensourceService {
     });
     if (!user) throw new Error("User not found");
 
-    // Check if exactly this guide certificate already exists for this user
-    const existing = await prisma.guideCertificate.findFirst({
-      where: { userId, guideName },
-    });
-    if (existing) return existing;
-
-    return prisma.guideCertificate.create({
-      data: {
-        userId,
-        guideName,
-        studentName: user.name,
-      },
+    return prisma.guideCertificate.upsert({
+      where: { userId_guideName: { userId, guideName } },
+      update: {},
+      create: { userId, guideName, studentName: user.name },
     });
   }
 
