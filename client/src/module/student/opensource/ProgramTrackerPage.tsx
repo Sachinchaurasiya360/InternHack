@@ -1494,17 +1494,13 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
                 <p className="text-xs text-stone-400 mt-0.5">USD {program.stipend}</p>
                 {localStipendEstimate && (
                   <p
-                    className="text-[10px] font-mono text-lime-600 dark:text-lime-400 mt-0.5"
+                    className="text-xs font-mono text-lime-600 dark:text-lime-400 mt-0.5"
                     title="Approximate local value based on current exchange rates."
                   >
                     {localStipendEstimate}
                   </p>
                 )}
               </>
-            ) : (
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">
-                no stipend
-              </span>
             )}
           </div>
         </div>
@@ -1565,7 +1561,7 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
           >
             {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             {expanded ? "less" : "full details"}
-          </button>
+          </Button>
 
           <div className="flex gap-2">
             {program.applicationDeadline ? (
@@ -1915,7 +1911,7 @@ export default function ProgramTrackerPage() {
                 <p className="text-lg font-bold text-stone-900 dark:text-white leading-none">
                   {s.value}
                 </p>
-                <p className="text-[11px] text-stone-500 mt-0.5">{s.label}</p>
+                <p className="text-xs text-stone-500 mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
@@ -2032,7 +2028,7 @@ export default function ProgramTrackerPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search programs..."
-            className="w-full pl-9 pr-4 py-2.5 border border-stone-200 dark:border-stone-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 bg-white dark:bg-stone-800 dark:text-white dark:placeholder-gray-500"
+            className="w-full pl-9 pr-4 py-2.5 border border-stone-200 dark:border-stone-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 bg-white dark:bg-stone-800 dark:text-white dark:placeholder-stone-500"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -2093,7 +2089,7 @@ export default function ProgramTrackerPage() {
               className="text-stone-500"
             >
               <X className="w-3.5 h-3.5" /> Clear
-            </button>
+            </Button>
           )}
         </div>
       </div>
