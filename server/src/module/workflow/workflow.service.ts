@@ -16,6 +16,18 @@ interface StepHistoryEntry {
   performedAt: string;
 }
 
+function readJsonArray(value: Prisma.JsonValue, fieldName: string): unknown[] {
+  const parsed = typeof value === "string" ? JSON.parse(value) : value;
+  if (!Array.isArray(parsed)) {
+    throw new Error(`Invalid workflow data: ${fieldName} must be an array`);
+  }
+  return parsed;
+}
+
+function toInputJson(value: unknown): Prisma.InputJsonValue {
+  return value as Prisma.InputJsonValue;
+}
+
 export class WorkflowService {
   // ── Definitions ──
 
@@ -25,7 +37,7 @@ export class WorkflowService {
         name: data.name,
         description: data.description ?? null,
         triggerEvent: data.triggerEvent,
-        steps: JSON.stringify(data.steps),
+        steps: toInputJson(data.steps),
         isActive: data.isActive,
       },
     });
@@ -46,7 +58,7 @@ export class WorkflowService {
     if (!definition) throw new Error("Workflow definition not found");
 
     const updateData: Record<string, unknown> = { ...data };
-    if (data.steps) updateData.steps = JSON.stringify(data.steps);
+    if (data.steps !== undefined) updateData.steps = toInputJson(data.steps);
 
     return prisma.workflowDefinition.update({ where: { id }, data: updateData });
   }
@@ -75,7 +87,7 @@ export class WorkflowService {
         entityId,
         currentStep: 0,
         status: "ACTIVE",
-        stepHistory: JSON.stringify([]),
+        stepHistory: [],
       },
       include: { definition: { select: { name: true, steps: true } } },
     });
@@ -132,8 +144,8 @@ export class WorkflowService {
     let steps: unknown[];
     let history: StepHistoryEntry[];
     try {
-      steps = JSON.parse(instance.definition.steps as string) as unknown[];
-      history = JSON.parse(instance.stepHistory as string) as StepHistoryEntry[];
+      steps = readJsonArray(instance.definition.steps, "definition steps");
+      history = readJsonArray(instance.stepHistory, "step history") as StepHistoryEntry[];
     } catch {
       throw new Error("Invalid workflow data: failed to parse definition steps or history");
     }
@@ -154,7 +166,7 @@ export class WorkflowService {
       data: {
         currentStep: isComplete ? instance.currentStep : nextStep,
         status: action === "REJECT" ? "CANCELLED" : isComplete ? "COMPLETED" : "ACTIVE",
-        stepHistory: JSON.stringify(history),
+        stepHistory: toInputJson(history),
       },
     });
   }
