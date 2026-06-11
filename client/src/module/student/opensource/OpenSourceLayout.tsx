@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import ContributionCoachPanel from "./ContributionCoachPanel";
 import CoachFloatingButton from "./CoachFloatingButton";
 import { LearningPathProvider } from "./learning-paths.context";
+import StreakFlame from "./StreakFlame";
 
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
@@ -46,7 +47,7 @@ function OpenSourceBreadcrumb() {
   }));
 
   return (
-    <nav className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest mb-6 flex-wrap px-4 sm:px-8 pt-6">
+    <nav className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest mb-6 flex-wrap px-4 sm:px-8 pt-6">
       <div className="h-1 w-1 bg-lime-400"></div>
       {items.map((item, i) => (
         <Fragment key={item.path}>
@@ -77,6 +78,9 @@ export default function OpenSourceLayout() {
         </main>
         <ContributionCoachPanel />
         <CoachFloatingButton />
+        <div className="fixed bottom-4 right-4 z-40">
+          <StreakFlame />
+        </div>
       </div>
     </LearningPathProvider>
   );
