@@ -13,6 +13,7 @@ import { SEO } from "../../../components/SEO";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { ApplicationNotes } from "./ApplicationNotes";
 import toast from "@/components/ui/toast";
+import type { PendingDelete } from "@/lib/types/actions.types";
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -249,16 +250,13 @@ function sortApplications(
   });
 }
 
-type PendingDelete =
-  | { kind: "internal"; id: number }
-  | { kind: "external"; id: number };
 
 export default function MyApplicationsPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
@@ -319,7 +317,7 @@ export default function MyApplicationsPage() {
   const totalFiltered = filtered.length + filteredExternal.length;
 
   const deleteMutation = useMutation({
-    mutationFn: async (item: PendingDelete) => {
+    mutationFn: async (item: NonNullable<PendingDelete>) => {
       if (item.kind === "internal") {
         await api.delete(`/student/applications/${item.id}`);
       } else {
