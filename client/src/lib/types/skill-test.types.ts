@@ -53,6 +53,7 @@ export interface VerifiedSkill {
   skillName: string;
   score: number;
   verifiedAt: string;
+  token?: string;
 }
 
 export interface SkillTestWithQuestions extends SkillTest {
@@ -108,6 +109,7 @@ export interface SkillTestSubmitResult {
   correctCount: number;
   totalQuestions: number;
   gradedAnswers: GradedAnswer[];
+  token?: string;
 }
 
 // Badges

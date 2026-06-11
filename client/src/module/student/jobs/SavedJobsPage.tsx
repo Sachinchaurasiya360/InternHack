@@ -9,9 +9,8 @@ import { MetaChip } from "../../../components/ui/MetaChip";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job } from "../../../lib/types";
 import { useSaveJob } from "../../../hooks/useSaveJob";
+import { CARD_BASE } from "../../../lib/card-styles";
 
-const cardBase =
-  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
 
 export default function SavedJobsPage() {
   const { data, isLoading } = useQuery({
@@ -105,7 +104,7 @@ export default function SavedJobsPage() {
               transition={{ delay: i * 0.03 }}
               className="relative"
             >
-              <Link to={`/student/jobs/${job.id}`} className={cardBase}>
+              <Link to={`/student/jobs/${job.id}`} className={CARD_BASE}>
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
                     {job.company?.charAt(0)?.toUpperCase() || "?"}
