@@ -450,7 +450,7 @@ export default function RepoDiscoveryPage() {
           </div>
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5 leading-tight">
+              <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
                 Find a repo, ship your{" "}
                 <span className="relative inline-block">
                   <span className="relative z-10">first PR.</span>
