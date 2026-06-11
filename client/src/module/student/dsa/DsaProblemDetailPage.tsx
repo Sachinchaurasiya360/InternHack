@@ -25,6 +25,7 @@ import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
 import { Button } from "@/components/ui/button";
+import { DsaApproachesPanel } from "./components/DsaApproachesPanel";
 
 const DIFF_STYLE: Record<string, string> = {
   Easy: "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
@@ -539,6 +540,9 @@ export default function DsaProblemDetailPage() {
                   </div>
                 </div>
               )}
+
+              {/* Approaches */}
+              <DsaApproachesPanel slug={problem.slug} />
 
               {/* AI Hints */}
               {user && (

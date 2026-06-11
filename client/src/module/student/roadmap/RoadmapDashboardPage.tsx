@@ -7,7 +7,7 @@ import {
   Clock,
   BookOpen,
   Download,
-  Map,
+  Map as MapIcon,
   Loader2,
   X,
   Zap,
@@ -231,7 +231,7 @@ export default function RoadmapDashboardPage() {
         </div>
       ) : enrollments.length === 0 ? (
         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-10 text-center">
-          <Map
+          <MapIcon
             className="w-10 h-10 text-gray-300 mx-auto mb-3"
             aria-hidden="true"
           />

@@ -1,0 +1,276 @@
+{
+  "hackathonGuide": [
+    {
+      "step": 1,
+      "id": "winning-first-hackathon",
+      "title": "How to Win Your First Hackathon",
+      "description": "Winning a hackathon isn't about building the most complex project. It's about execution, presentation, and knowing what judges actually look for.",
+      "estimatedMinutes": 10,
+      "mentor_guidance": "I've judged over a dozen hackathons and mentored 20+ first-time winners. Here's the secret that nobody tells beginners: judges don't have time to deeply evaluate your code. At most, they spend 3-5 minutes per project. In those minutes, they're looking for three things: a real problem, a working prototype, and a clear demo.\n\nMost teams fail because they spend 80% of their time building and 20% preparing their pitch. You should do the reverse. A polished 3-minute demo of a simple project will beat a half-finished complex project every single time.\n\nThe winning formula is: pick a narrow, real problem → build the absolute minimum that demonstrates it → practice your demo until it's smooth → show the problem first, then your solution.\n\nDon't try to impress with technical complexity. Judges care about: does this solve a real problem? Does it work? Can I understand what it does in 30 seconds?",
+      "details": [
+        "Most hackathon projects fail because the scope is too large. A team that tries to build a full marketplace in 24 hours will end up with a login page, half a database, and nothing that demoes. A team that builds 'a tool that scans your grocery receipt and tells you which items were overpriced' can finish, demo, and win. Narrow scope is your superpower.",
+        "The problem statement matters more than the solution. Spend your first 2-3 hours finding a specific, relatable problem. The best problems are: something you or your team experienced personally (authenticity shows), a problem for a specific group (busy parents, students, small business owners), or a campus/community issue that needs solving. Avoid 'world hunger' problems - they're too big for a weekend.",
+        "Use a tech stack you already know. A hackathon is not the time to learn Rust. If you know React + Express + MongoDB, build with that. The 20% time savings from using a familiar stack translates directly into demo quality. You can always learn new tech after the event.",
+        "Your demo is the single most important factor in judging. A good demo: starts with the problem (30 seconds), shows the working solution (2 minutes), demonstrates real data (not lorem ipsum), handles at least one edge case gracefully, and ends with future vision (30 seconds). Smile, speak clearly, and don't apologize for what you didn't build.",
+        "Judges look for: does it solve a real problem? (relevance), does it actually work? (execution), can I understand it quickly? (clarity), is there a market? (viability), and did the team learn something? (growth). Every single one of these is about communication, not code quality.",
+        "Submit early, submit often. Many hackathons have rolling submission deadlines, and submitting early gives you buffer time if something breaks last minute. Your final submission can always be updated, but a late submission can't be accepted at all."
+      ],
+      "commands": [],
+      "resources": [
+        { "title": "MLH - Major League Hacking", "url": "https://mlh.io", "type": "tool" },
+        { "title": "Devpost - Hackathon Platform", "url": "https://devpost.com", "type": "tool" },
+        { "title": "Hackathon Judging Criteria Guide", "url": "https://hackathon-guide.devpost.com/judging", "type": "article" }
+      ],
+      "tips": [
+        "The first hour is the most important. Use it to define your problem and agree on scope as a team. If you start coding in the first 30 minutes without a clear plan, you're building the wrong thing.",
+        "Don't optimize for 'technical impressiveness.' A CRUD app that solves a real problem and has a polished demo will beat a half-finished blockchain AI microservice every time.",
+        "Sleep. Seriously. A tired team makes bad decisions, writes buggy code, and delivers a terrible demo. Take at least 4-5 hours to sleep - you'll be more productive after rest."
+      ]
+    },
+    {
+      "step": 2,
+      "id": "picking-the-right-project",
+      "title": "Picking the Right Project Idea",
+      "description": "The best hackathon projects start with a problem, not a technology. Here's a framework for finding and validating ideas quickly.",
+      "estimatedMinutes": 15,
+      "mentor_guidance": "The biggest mistake I see at hackathons is teams deciding to 'build something with AI' or 'build something with blockchain' and then working backwards to find a problem. This is backwards. Start with a problem that you or someone you know actually has, then pick the simplest technology that solves it.\n\nHere's my framework for rapid idea validation: think about a frustrating experience you had in the last week - something that took too long, was confusing, or just didn't work well. That frustration is your product idea. Every successful startup started with someone saying 'there has to be a better way to do this.'\n\nWrite down 10 problems in 30 minutes. Don't judge them, don't filter, just list. Then pick the 3 most annoying ones. For each, ask: can I build a simple version of this in 24 hours? Does at least one other person have this problem? Can I demo it without needing users or data? Pick the one with the strongest 'yes' answers.",
+      "details": [
+        "Problem-first approach: Write down 10 frustrations you've had in the past week. Examples: 'My laundry room is always full and I waste 15 minutes walking there,' 'I forget to take my medications,' 'I can never find my parking spot in a large lot.' Each of these is a potential hackathon project. The more specific, the better.",
+        "Validate your problem in 10 minutes: Ask 3 people around you if they've experienced this problem. If they say yes and can describe it in detail, you have a real problem. If they say 'interesting but not really,' move on. Real problems get enthusiastic nods.",
+        "Scope estimation: For a 24-hour hackathon, your project should have: 1 main feature (fully working), 2-3 secondary features (basic implementation), a clear user flow from start to finish (even if simple), and a visually clean UI (use a component library). If your project has more than 5 distinct features, cut scope.",
+        "The single-user MVP: The best hackathon projects work without requiring real user data. Build something that works with dummy data or a single user account. If your project needs 100 users to demo, it's too complex for a weekend.",
+        "Check existing solutions quickly: A 2-minute Google search for your idea will tell you if 5 polished startups already exist. If they do, that's actually a good sign - it means the problem is real. Your job is to find a specific angle or user group they're not serving well.",
+        "Your idea should tell a story. 'A platform for college students to find leftover food from campus events before it gets thrown away' is a compelling story. 'An AI-powered dashboard for waste management analytics' is not. Judges remember stories, not features."
+      ],
+      "commands": [],
+      "resources": [
+        { "title": "Y Combinator's Startup Ideas Guide", "url": "https://www.ycombinator.com/library/4Q-how-to-get-startup-ideas", "type": "article" },
+        { "title": "Problem Validation Template", "url": "https://leanstack.com/lean-canvas", "type": "tool" }
+      ],
+      "tips": [
+        "If you're stuck for ideas, look at the hackathon's sponsor challenges. These often have bonus prizes and give you a built-in problem statement. They also reduce the risk of building something nobody cares about.",
+        "The best hackathon ideas sound simple when described. 'It's like Tinder for roommates' or 'Uber for campus laundry.' If you can't explain your idea in one sentence, it's too complicated.",
+        "Your idea doesn't need to be original. Building a better version of an existing tool, focused on a specific audience, is a proven winning strategy."
+      ]
+    },
+    {
+      "step": 3,
+      "id": "rapid-prototyping-stacks",
+      "title": "Rapid Prototyping Tech Stacks",
+      "description": "You don't have time to learn new tools during a hackathon. Use these battle-tested stacks for fast, working prototypes in 24-48 hours.",
+      "estimatedMinutes": 15,
+      "mentor_guidance": "In a hackathon, speed is everything. The best tech stack is the one you already know. But if you're flexible, here are stacks optimized for rapid prototyping that let you go from idea to working demo in hours.\n\nFor web apps: Next.js + Tailwind CSS + Prisma + SQLite. Next.js gives you routing, API routes, and server-side rendering out of the box. Tailwind lets you build beautiful UIs without writing custom CSS. Prisma with SQLite means zero database setup - it just works. Deploy on Vercel with one click.\n\nFor AI/ML: Python + FastAPI + Streamlit. Streamlit lets you build a data app UI in pure Python. FastAPI gives you a backend if you need one. Deploy on Hugging Face Spaces or Render.\n\nFor mobile: React Native Expo. Expo handles all the native build tooling so you can focus on code. Use Expo Go to preview on your phone instantly.\n\nThe golden rule: pick one stack and commit to it. Time spent debating tech choices in the first hour is time you'll regret in hour 20.",
+      "details": [
+        "Next.js + Tailwind starter: Clone a template like create-next-app with Tailwind, deploy to Vercel for free with automatic HTTPS and custom domains. Use Prisma + SQLite for the database (zero config), NextAuth for authentication (Google/GitHub OAuth in 15 minutes), and deploy with 'vercel --prod'. Your project is live and shareable in under 30 minutes.",
+        "Python + Streamlit starter: pip install streamlit, write your entire UI in Python, use st.dataframe for data display, st.plotly_chart for visualizations, and st.button/st.text_input for interactivity. Deploy to Streamlit Community Cloud or Hugging Face Spaces for free. Best for data science, ML demos, and analytics dashboards.",
+        "React Native Expo starter: npx create-expo-app, use Expo Router for navigation, deploy preview with 'npx expo publish'. Works on both iOS and Android from a single codebase. Expo's SDK includes camera, location, file system, and push notifications - all available as plug-and-play modules.",
+        "Firebase for backendless apps: If you don't need a custom backend, Firebase gives you authentication, Firestore database, file storage, and hosting. Use it with any frontend (React, Vue, vanilla JS). Firebase's free tier handles most hackathon projects easily. The Firestore real-time sync means your app updates instantly across all clients.",
+        "Docker is rarely worth it in a 24-hour hackathon. The time spent writing Dockerfiles and docker-compose config is better spent on your demo. Skip containers and use platform-specific deployment (Vercel, Netlify, Render, Hugging Face) that handles environment setup automatically.",
+        "API-first tools that speed up development: Clerk or NextAuth for authentication, Stripe test mode for payments (you can fake the UI in 30 minutes), Resend or SendGrid for emails, UploadThing for file uploads, and Mapbox or Leaflet for maps. Each of these has generous free tiers and can be integrated in under an hour."
+      ],
+      "commands": [
+        { "label": "Create a Next.js + Tailwind project", "code": "npx create-next-app@latest my-hackathon-app --typescript --tailwind\ncd my-hackathon-app\nnpm run dev" },
+        { "label": "Create a Streamlit app", "code": "pip install streamlit\nstreamlit run app.py" },
+        { "label": "Create a React Native Expo app", "code": "npx create-expo-app my-hackathon-app\ncd my-hackathon-app\nnpx expo start" }
+      ],
+      "resources": [
+        { "title": "Next.js + Tailwind Starter Template", "url": "https://vercel.com/templates/next.js/nextjs-tailwind-starter", "type": "tool" },
+        { "title": "Streamlit Documentation", "url": "https://docs.streamlit.io", "type": "docs" },
+        { "title": "Expo Documentation", "url": "https://docs.expo.dev", "type": "docs" },
+        { "title": "Firebase Free Tier Limits", "url": "https://firebase.google.com/pricing", "type": "docs" }
+      ],
+      "tips": [
+        "Use a starter template, not a fresh setup. Every minute of configuration is a minute you're not building features. Most frameworks have official 'hackathon starter' repos - use them.",
+        "Don't set up a custom domain. Vercel/Netlify subdomains are fine for judging. Setting up DNS is not a good use of your limited time.",
+        "If your project needs a database, use SQLite (with Prisma) or Firebase Firestore. These need zero configuration and work immediately. Avoid PostgreSQL or MySQL - they require server setup and environment variables."
+      ]
+    },
+    {
+      "step": 4,
+      "id": "building-a-compelling-demo",
+      "title": "Building a Compelling Demo in Under 5 Minutes",
+      "description": "Your demo is worth more than your code. A 3-minute polished demo of a simple app beats a 10-minute rambling demo of a complex one every time.",
+      "estimatedMinutes": 15,
+      "mentor_guidance": "I've seen teams build incredible technical projects and lose because their demo was disorganized. And I've seen teams build something simple and win because their demo was tight, clear, and memorable.\n\nThe anatomy of a winning demo is: 30 seconds for the problem (make the audience feel the pain), 2 minutes for the solution (show it working with real scenarios), 30 seconds for the tech stack (brief, don't dive deep), 30 seconds for future vision (what would you build next), and 30 seconds Q&A buffer.\n\nPractice your demo at least 5 times before presenting. Time yourself. Cut anything that doesn't directly demonstrate value. If you can't show it working in 30 seconds, it's not a core feature - cut it from the demo.\n\nMost importantly: show the problem first before showing your solution. If you start by saying 'we built a platform that connects students with campus food vendors,' the judge has no context. Start with 'every day, 30% of campus cafeteria food gets thrown away while students are hungry.' Now they care.",
+      "details": [
+        "Demo script structure: Hook (a relatable problem statement) → The 'Before' (how people solve this now, and why it's painful) → Your Solution (show the product, walk through a user flow) → Key Differentiator (one thing that makes your approach unique) → Live Demo (click through the real app, handle any errors gracefully) → Future Vision (what would you add with more time). Total: 3-4 minutes.",
+        "Prepare your demo environment: close all unrelated tabs and apps, set your browser to the exact page the demo starts on, have your terminal and dev server already running, turn off notifications, set your demo data to realistic content (not 'test' or 'asdf'), and have a backup plan (screenshots or a video recording) in case the internet fails. The Boy Scout rule: leave a working state you can demo from at all times.",
+        "What to avoid in demos: don't show code (judges don't have time to read it), don't explain architecture (keep it high-level), don't apologize for what's missing (focus on what works), don't fumble with the UI (practice the exact clicks), don't go over time (most hackathons enforce a strict limit), and don't read from slides (talk naturally).",
+        "Demo data matters enormously. Use real-looking names, realistic photos (try thispersondoesnotexist.com), plausible data points, and complete sentences. A demo showing 'User: test123, Data: lorem ipsum, Status: pending' feels fake. A demo showing 'User: Priya Sharma, Recent Purchase: MacBook Pro $2,499, Status: Shipped' feels real. The difference takes 5 minutes to prepare but dramatically impacts judge perception.",
+        "If something breaks during demo: don't panic, don't freeze, don't apologize excessively. Say 'this feature isn't cooperating right now, but the core flow works,' and skip to the next part. Judges understand that demos break - how you handle it matters more than the break itself. Have screenshots or a Loom video as a fallback.",
+        "The closing statement matters as much as the opening. End with a clear call to action: 'We want to launch this on campus next semester,' or 'We're looking for a developer to join our team.' Leave the judges with a clear picture of what comes next. A strong finish makes your project memorable during judging deliberation."
+      ],
+      "commands": [],
+      "resources": [
+        { "title": "How to Pitch Your Hackathon Project (Y Combinator)", "url": "https://www.ycombinator.com/library/4t-how-to-pitch-your-startup", "type": "article" },
+        { "title": "Demo Day Tips from TechCrunch", "url": "https://techcrunch.com/2023/03/15/how-to-give-a-great-tech-demo/", "type": "article" }
+      ],
+      "tips": [
+        "Record yourself practicing the demo and watch it back. You'll catch filler words ('um', 'like', 'basically'), awkward transitions, and parts that need more explanation. Do this at least twice.",
+        "Time your demo with a visible clock. Know exactly how long each section takes. If you're over 4 minutes, cut ruthlessly. A tight 3-minute demo is better than a scattered 5-minute one.",
+        "Assign one person to present and one person to handle technical setup (clicking, scrolling, typing). A single presenter keeps the narrative focused. Split-screen with a tech operator feels professional."
+      ]
+    },
+    {
+      "step": 5,
+      "id": "pitching-to-judges",
+      "title": "Pitching to Judges",
+      "description": "The pitch is where everything comes together. Here's the structure, delivery tips, and how to handle Q&A with confidence.",
+      "estimatedMinutes": 12,
+      "mentor_guidance": "Your pitch to judges is a performance. It's not about being the best public speaker - it's about being clear, confident, and authentic. The best pitches I've seen at hackathons come from teams who clearly care about their problem and have practiced enough to talk about it naturally.\n\nThe structure is simple: Problem → Solution → Demo → Impact → Team. Each section has a specific job. Problem makes the judge care. Solution makes them understand. Demo makes them believe. Impact makes them remember. Team makes them trust.\n\nWhen judges ask questions, they're not trying to catch you. They're trying to understand. A question like 'how is this different from X?' is an invitation to explain your unique value, not a challenge. 'Who is your target user?' is a chance to show you've thought about the market. Treat every question as an opportunity to reinforce your narrative.",
+      "details": [
+        "The Problem section (30 seconds): Describe a specific, relatable pain point. Use concrete numbers when possible: '85% of students report missing at least one meal per week because campus dining options are unclear.' Frame it emotionally: 'We've all stood in front of a vending machine at 2 AM, hungry and disappointed.' Make the judge nod in recognition.",
+        "The Solution section (30 seconds): Introduce your project in one clear sentence. 'We built CampusEats - it shows real-time food availability at every campus dining location.' Don't explain architecture or tech stack here. Focus on what it does, not how it works. Show a screenshot or the live app.",
+        "The Demo section (2 minutes): Walk through one complete user journey. Start from the beginning (opening the app) and end with the value delivered (finding food, saving money, etc.). Use realistic data. Speak at a natural pace - don't rush. Pause at key moments to let features sink in. This is your most important section.",
+        "The Impact section (30 seconds): Explain why this matters beyond the hackathon. How many people would use this? What problem does it permanently solve? 'We surveyed 100 students and 94 said they'd use this daily. Campus dining services have expressed interest in piloting it.' Impact can be real data, survey results, or even just a well-reasoned estimate.",
+        "The Team section (15 seconds): Briefly introduce who you are and why you're the right team to build this. 'I'm Priya, a CS senior who's been hungry on campus for 3 years. Sarah is a designer who previously redesigned our university's course catalog site.' Connect your backgrounds to the problem. This shows passion and authenticity.",
+        "Handling Q&A: Listen to the full question before starting your answer. Repeat the question back if you need clarification. Answer honestly - if you don't know, say 'that's something we'd need to explore further.' Bridge back to your narrative: 'That's a great point - and it relates to why we chose to focus on X first.' Always end answers by connecting back to your core value proposition.",
+        "Common judge questions and how to prepare: 'What's your business model?' (even for non-commercial projects, have a sustainability answer), 'How is this different from X?' (know your competitors and your 1-2 unique advantages), 'What was the hardest technical challenge?' (have a specific story ready), 'Who would pay for this?' (know your target user and willingness to pay), 'What would you do with more time?' (have a prioritized roadmap of 2-3 features)."
+      ],
+      "commands": [],
+      "resources": [
+        { "title": "Pitch Deck Structure Guide", "url": "https://pitchdeckhunt.com/pitch-deck-structure", "type": "article" },
+        { "title": "How to Answer Tough Q&A Questions", "url": "https://www.forbes.com/sites/forbesbusinessdevelopmentcouncil/2023/02/15/how-to-handle-tough-questions-during-a-presentation/", "type": "article" }
+      ],
+      "tips": [
+        "Prepare answers to the 5 most likely questions BEFORE the presentation. Write them down, practice them, and have them ready. The confidence from preparation shows.",
+        "Don't memorize your pitch word-for-word. Memorize the structure and transitions. Natural, conversational delivery with well-rehearsed key points is more engaging than a scripted monologue.",
+        "Eye contact matters. Look at each judge for 3-5 seconds before moving to the next. Don't stare at your slides, your demo screen, or the floor. You're talking to humans, not presenting to a machine."
+      ]
+    },
+    {
+      "step": 6,
+      "id": "finding-teammates",
+      "title": "Finding Teammates Before and During the Hackathon",
+      "description": "Your team makes or breaks your hackathon experience. Here's how to find, vet, and work effectively with teammates.",
+      "estimatedMinutes": 10,
+      "mentor_guidance": "A great team with an average idea will outperform a struggling team with a great idea every single time. Team dynamics matter more than technical skill.\n\nThe ideal hackathon team has 3-4 people with complementary skills: one strong frontend person, one backend person, one designer/presenter, and optionally someone with domain knowledge. The most important quality in a teammate is reliability - someone who shows up, communicates, and delivers what they promise.\n\nFinding teammates starts before the event. Join the hackathon's Discord or Slack server, introduce yourself with your skills and interests, and look for people posting similar things. At the event, attend the team formation session if there is one, and talk to at least 5 people before committing. Ask about their availability, experience level, and what they want to build.",
+      "details": [
+        "Before the hackathon: Join the official communication channels (Discord, Slack, Telegram) at least a week before the event. Post a brief introduction: 'Hi! I'm Priya, a full-stack developer (React/Node). Looking for a team working on education or sustainability projects. I have experience with Next.js and Firebase.' Browse the #team-formation channel and message people whose interests align with yours.",
+        "At the event: Attend the opening ceremony and any team formation activities. Walk around and talk to people. Ask: 'What kind of project are you looking to build?' and 'What skills do you bring to a team?' Look for people who have a clear idea of what they want to build and how they can contribute. Avoid teams where nobody has a clear role or plan.",
+        "Ideal team composition for a 24-hour hackathon: 1 frontend specialist (React/Next.js/Flutter), 1 backend specialist (Node/Python/Firebase), 1 designer (Figma, CSS, UI/UX), and optionally 1 domain expert or project manager. Everyone should be able and willing to present the project - the presenter role can rotate.",
+        "Red flags in potential teammates: no clear availability (they're here but also have other commitments), overpromising skills (claiming expertise in 6 different technologies), negative attitude about the event or other teams, unwilling to commit to a project idea, or they want to build something unrealistic in 24 hours.",
+        "Working as a team: Use a shared GitHub repository with branch protection. Communicate via Discord/Slack in a team channel. Have a quick standup every 4-6 hours to check progress and blockers. Use a shared task board (GitHub Projects, Trello, or even a shared doc). Most importantly: one person handles all presentation duties, but everyone should be familiar enough with the project to answer questions.",
+        "If a teammate becomes unresponsive: After 2 hours of no contact, redistribute their tasks. Don't spend time chasing them. The project must ship regardless. After the hackathon, you can choose not to include unresponsive teammates in future events."
+      ],
+      "commands": [],
+      "resources": [
+        { "title": "MLH Team Formation Guide", "url": "https://mlh.io/team-formation", "type": "article" },
+        { "title": "Hackathon Team Roles Template", "url": "https://hackathon.guide/team-roles", "type": "article" }
+      ],
+      "tips": [
+        "Ideal team size is 3-4 people. Solo projects are impressive but exhausting. Teams of 5+ struggle with coordination and often have members who contribute very little.",
+        "If you can't find a team before the event, don't worry. Most hackathons have a team formation session at the start. Show up early, be friendly, and be open to different project ideas.",
+        "Diversity in your team (skills, background, perspective) produces better projects. A team of 4 backend developers will build something technically impressive but probably ugly and hard to use. Get at least one person who cares about design and user experience."
+      ]
+    },
+    {
+      "step": 7,
+      "id": "overnight-survival",
+      "title": "Overnight Survival Guide",
+      "description": "How to pace yourself, what to pack, and how to stay productive and healthy during a 24-48 hour hackathon.",
+      "estimatedMinutes": 8,
+      "mentor_guidance": "I've done 30+ hackathons, and the single biggest difference between teams that finish and teams that burn out is pacing. A hackathon is a marathon, not a sprint. The teams that win are the ones who are still functional and friendly at hour 20.\n\nHere's my proven schedule for a 24-hour hackathon: Hour 0-1: Ideation and team formation. Hour 1-3: Planning, wireframing, stack decisions. Hour 3-12: BUILD (first sprint). Hour 12-14: Break, eat, nap. Hour 14-20: BUILD (second sprint with whatever scope remains). Hour 20-22: Polish UI, prepare demo. Hour 22-24: Rehearse demo, submit, rest before presenting.\n\nThe overnight hours (midnight to 6 AM) are when most teams make their worst decisions. Your cognitive function at 3 AM is equivalent to being legally drunk. Complex debugging at 4 AM is almost always counterproductive. Sleep for 4-5 hours, set an alarm, and come back fresh.",
+      "details": [
+        "What to pack: laptop and charger (most important - label your charger!), phone charger, portable battery pack, noise-canceling headphones or earplugs (essential for sleeping in noisy environments), a hoodie or jacket (venues are often cold), toiletries (toothbrush, toothpaste, deodorant, face wipes), a reusable water bottle, snacks (protein bars, nuts, dried fruit - avoid sugary snacks that cause energy crashes), and a small pillow or travel neck pillow if you plan to sleep.",
+        "Food strategy: Eat a real meal at regular intervals, not just vending machine snacks. Protein and complex carbs (sandwiches, rice bowls, pasta) provide sustained energy. Sugar gives you a 30-minute burst followed by a crash. Caffeine is fine but stop by 6 PM if you want to sleep. Drink water constantly - dehydration causes brain fog and fatigue. Most hackathons provide meals - take advantage of them.",
+        "Sleep strategy: Take a 4-5 hour sleep block, not multiple short naps. Sleep somewhere quiet and dark (use eye mask and earplugs). Set an alarm and stick to it. The hour after waking is your most productive - use it for your hardest task. If you absolutely can't sleep (some people can't in noisy environments), at least close your eyes and rest for 30 minutes every 4 hours. Sleep debt is real and accumulates.",
+        "Code hygiene during all-nighters: Commit and push every 60-90 minutes regardless of whether code is working. Use descriptive commit messages (not 'wip' or 'asdf'). Keep a written checklist of what you need to do next (when you're sleep-deprived, your memory is unreliable). Test your demo flow before you go to sleep - fixing things when tired creates more bugs.",
+        "Mental health: Take a 5-minute walk outside every 4-6 hours. Fresh air and movement reset your focus. Talk to other teams - hackathons are social events, not solitary coding marathons. If you're stuck on a bug for more than 30 minutes, ask for help. The person next to you has probably seen the same issue before. Remember: it's supposed to be fun. If you're miserable, you're doing it wrong.",
+        "When to stop: At hour 22, stop adding features and start polishing. Your project will never be 'finished' in the traditional sense, and that's ok. The goal is a working demo that tells a compelling story. Every minute spent on a new feature at hour 22 is a minute stolen from your demo preparation, which is a terrible trade."
+      ],
+      "commands": [],
+      "resources": [
+        { "title": "Hacker Packing List", "url": "https://hackpack.app", "type": "tool" },
+        { "title": "Coping with Sleep Deprivation (CDC)", "url": "https://www.cdc.gov/niosh/emres/longhourstraining/rest.html", "type": "article" }
+      ],
+      "tips": [
+        "Set a hard cutoff for coding at least 2 hours before submission. Use the remaining time to: polish your demo flow, prepare your pitch, record a backup video of your demo, and write your Devpost submission. A broken demo during judging is worse than a missing feature.",
+        "Don't sacrifice sleep for code. A well-rested team with a simpler project delivers a better presentation than an exhausted team with a complex one. Judges can tell when you haven't slept.",
+        "Make friends, not just projects. The connections you make at hackathons are often more valuable than the prizes. Exchange contacts, follow each other on LinkedIn, and stay in touch. Many hackathon teams become startup co-founders."
+      ]
+    },
+    {
+      "step": 8,
+      "id": "portfolio-value",
+      "title": "Portfolio Value of Hackathon Projects",
+      "description": "Hackathon projects are more than just weekend experiments. Here's how to present them effectively on your resume, LinkedIn, and portfolio.",
+      "estimatedMinutes": 10,
+      "mentor_guidance": "Every hackathon project you complete is a portfolio piece that demonstrates real engineering skills. But most people present them badly - they just list the project name and a link. Here's how to make your hackathon projects work for you.\n\nOn your resume, a hackathon project should look like a work experience entry. List the technologies used, describe your specific contribution, and include measurable outcomes. 'Built a React Native app that connects 50+ campus volunteers with local food banks, handling 200+ meal deliveries during the pilot weekend.' Numbers make the difference.\n\nOn GitHub, every hackathon project should have: a polished README with screenshots and a demo link, clear setup instructions (so others can run it), a description of what was built and why, and a note about what you'd improve. A well-documented hackathon project shows professionalism and follow-through.",
+      "details": [
+        "Resume entry format for hackathon projects: Project Name | Technologies used. Example: 'CampusEats - React Native, Firebase, Google Maps API.' Bullet points should describe: what problem you solved, your specific role and contribution, measurable outcomes or impact, and technical challenges overcome. Keep it to 2-3 bullet points, concise and impactful.",
+        "GitHub README requirements: Project name and one-line description, problem statement (2-3 sentences explaining the 'why'), screenshots or GIFs of the working app (visual proof is critical), tech stack list with brief explanations of key choices, setup instructions (clone, install, run - make it work!), what we learned section (demonstrates growth), and future improvements (shows you think beyond the weekend).",
+        "LinkedIn project section: Add the hackathon project under 'Projects' with a brief description, mention the hackathon name and dates, tag any team members, include a link to the GitHub repo and any live demo, and ask your teammates for recommendations highlighting your contribution. A well-documented hackathon project with team endorsements is powerful social proof.",
+        "Demo video for portfolio: Record a 2-3 minute Loom or YouTube video walking through the project. Show the problem, the solution, the working demo, and key technical decisions. A demo video is worth 1000 words on a portfolio. It shows communication skills, technical understanding, and the ability to present - all qualities employers value.",
+        "Using hackathon projects in interviews: When asked about a project, tell the story: why you chose that problem, how you approached the build, a specific technical challenge you overcame, and what you learned. The STAR method (Situation, Task, Action, Result) works well for hackathon stories. Practice explaining your project in 2 minutes and in 30 seconds.",
+        "Follow-up after the hackathon: Spend 2-3 hours after the event polishing your project. Fix the bugs you noted during judging, improve the README, add a license, and deploy it somewhere permanent (not just the hackathon's submission platform). A post-hackathon polish session turns a weekend project into a lasting portfolio piece."
+      ],
+      "commands": [
+        { "label": "Quick README template for hackathon projects", "code": "# Project Name\n\n> One-line description of what you built and why\n\n## Problem\nBriefly describe the problem this project solves.\n\n## Demo\n![Screenshot](link-to-screenshot)\n\n## Tech Stack\n- Frontend: React Native\n- Backend: Firebase\n- APIs: Google Maps, Twilio\n\n## Setup\n```bash\ngit clone <repo>\ncd project\nnpm install\nnpm run dev\n```\n\n## What I Learned\n- Working with real-time data synchronization\n- Designing for mobile-first UX\n\n## Future Improvements\n- Add push notifications\n- Support multiple languages" }
+      ],
+      "resources": [
+        { "title": "How to Showcase Hackathon Projects on Your Resume", "url": "https://www.freecodecamp.org/news/how-to-showcase-hackathon-projects-on-your-resume/", "type": "article" },
+        { "title": "Building a Developer Portfolio", "url": "https://www.freecodecamp.org/news/how-to-build-a-developer-portfolio/", "type": "article" }
+      ],
+      "tips": [
+        "Keep a 'brag doc' of every hackathon you participate in: what you built, your role, technologies used, prizes won, and lessons learned. When it's time to update your resume or prep for interviews, this document is gold.",
+        "Not all hackathon projects need to be winners to be portfolio-worthy. Even projects that didn't place demonstrate: you can ship under pressure, you work well in teams, and you're passionate enough to spend weekends building.",
+        "The worst thing you can do with a hackathon project is leave it on a forgotten GitHub repo with no README and no demo. Spend 2-3 hours after the event packaging it properly. It's the highest-ROI time you'll spend on career development."
+      ]
+    },
+    {
+      "step": 9,
+      "id": "hackathon-calendar",
+      "title": "Hackathon Calendar & Finding Events",
+      "description": "Where to find beginner-friendly hackathons, how to choose the right one, and how to prepare before the event starts.",
+      "estimatedMinutes": 8,
+      "mentor_guidance": "There's a hackathon happening somewhere in the world almost every weekend. The challenge isn't finding one - it's finding the RIGHT one for your skill level and goals.\n\nFor your first hackathon, look for: a local or university-run event (lower pressure, more mentoring, more beginner-friendly), a theme you're interested in (education, climate, health - passion makes the weekend easier), and preferably in-person (the energy and networking are unmatched).\n\nMajor platforms: MLH (Major League Hacking) runs the largest network of official hackathons across North America and internationally. Devpost lists thousands of hackathons globally, both online and in-person. Devfolio is popular for Indian hackathons. Follow these platforms and turn on notifications.\n\nAlso check our Program Tracker - it lists open source programs like GSoC, LFX, and Outreachy that run on similar timelines to hackathons and can be great complementary experiences.",
+      "details": [
+        "Major League Hacking (MLH): The largest hackathon organization, running 200+ events annually across North America, Europe, and Asia-Pacific. MLH hackathons are high-quality with standardized judging, mentorship, and prize distribution. MLH also runs the MLH Fellowship (a 12-week remote internship alternative). Apply early - popular MLH events fill up fast.",
+        "Devpost: The largest hackathon listing platform with 5000+ events. Filter by 'in-person' vs 'online,' 'beginner-friendly,' 'cash prizes,' and 'theme.' Devpost hosts both independent hackathons and company-sponsored events with substantial prizes. The platform handles project submissions and judging for most online hackathons.",
+        "Devfolio: India's largest hackathon community platform. Lists 100+ Indian hackathons including major events like HackIndia, DevJam, and university-specific hackathons. Many Devfolio hackathons are beginner-friendly with travel reimbursements and good prize pools.",
+        "How to choose your first hackathon: Pick one that explicitly says 'beginner-friendly' or 'first-timer friendly.' Check if they have mentorship programs or workshops during the event. Look at past winning projects to understand the quality bar. Read attendee reviews if available. Prefer longer events (36-48 hours) for your first time - 24 hours can feel rushed.",
+        "Before the event: Set up your development environment (install IDE, Git, Node.js/Python, etc.), familiarize yourself with the hackathon platform (Devpost, MLH dashboard), prepare 2-3 project ideas (so you're not scrambling), charge all your devices, pack your bag (see the survival guide step), and join the event's communication channels early to network.",
+        "During the event: Attend workshops and tech talks (they often count toward prize eligibility), participate in sponsor challenges (extra prizes and often easier than main competition), network with mentors and judges (they're there to help), and document your build process (screenshots for your portfolio)."
+      ],
+      "commands": [],
+      "resources": [
+        { "title": "MLH - Find a Hackathon", "url": "https://mlh.io/events", "type": "tool" },
+        { "title": "Devpost - Hackathon Listings", "url": "https://devpost.com/hackathons", "type": "tool" },
+        { "title": "Devfolio - Indian Hackathons", "url": "https://devfolio.co", "type": "tool" },
+        { "title": "Open Source Program Tracker", "url": "/student/opensource/programs", "type": "tool" }
+      ],
+      "tips": [
+        "Your first hackathon doesn't need to be a famous 48-hour event at a major university. Local college hackathons, company-hosted 24-hour events, and even online weekend hackathons are great starting points. The experience is what matters.",
+        "Many hackathons offer travel reimbursement for participants, especially if you're from an underrepresented group in tech. Check the event page for travel grant information and apply early - these funds are limited.",
+        "If you can't attend in person, online hackathons are just as valuable for learning. They're often more beginner-friendly (you can Google freely, use your own setup) and have more flexible schedules."
+      ]
+    },
+    {
+      "step": 10,
+      "id": "post-hackathon",
+      "title": "Post-Hackathon: Turning Your Project Into a Portfolio Piece",
+      "description": "The hackathon is over. Now what? Here's how to continue your project, present it professionally, and use it to advance your career.",
+      "estimatedMinutes": 10,
+      "mentor_guidance": "Most hackathon projects die the moment the event ends. The code sits in a forgotten GitHub repo, the domain expires, and the lessons fade. But the teams that treat the hackathon as Day 1 of their project, not Day 0, get disproportionately more value from the experience.\n\nHere's what I recommend: take 2-3 hours within a week of the hackathon to polish your project. Fix the bugs you identified, write the README, deploy it properly, and record a demo video. This small investment turns a weekend project into a career asset that keeps paying dividends.\n\nThen decide: is this a one-weekend project, or is there something worth continuing? Some of the most successful startups started as hackathon projects - GroupMe, Carousell, Zenefits, and many more. Even if you don't start a company, continuing a hackathon project on your own shows initiative, passion, and follow-through - qualities every employer wants.",
+      "details": [
+        "Immediate post-hackathon actions (within 24 hours): Submit your project to the hackathon platform (if you haven't already). Send thank-you messages to mentors who helped you. Connect with your teammates on LinkedIn and GitHub. Record a quick demo video while everything is fresh. Take screenshots of your working app for your portfolio. Write a brief retrospective: what went well, what didn't, what you'd do differently.",
+        "The polish week (within 7 days): Fix the 3 most important bugs you identified during judging. Write or improve your README with screenshots and setup instructions. Add a license file (MIT is standard for hackathon projects). Deploy the project somewhere permanent (Vercel, Netlify, GitHub Pages). Clean up your commit history (squash the 'wip' commits). Add a demo link to your project's README and social profiles.",
+        "Decide on continuation: Ask yourself 3 questions: Do I genuinely care about this problem? Is there evidence people would use this? Can I commit 2-4 hours per week to it? If all 3 are yes, consider continuing. If not, that's completely fine - not every project needs to become a startup. The skills and experience from the weekend are valuable regardless.",
+        "Document your learning: Write a blog post or LinkedIn article about your hackathon experience. Include: the problem you solved, your approach, a technical challenge you overcame, what you learned, and advice for first-time hackers. Blog posts about hackathon experiences perform very well on LinkedIn and establish you as someone who builds things.",
+        "Update your portfolio and resume: Add the project to your GitHub pinned repositories, add a 'Hackathons' section to your resume (if you have 2+), add the project to your portfolio website, update your LinkedIn 'Projects' section, and include it in job application portfolios. A hackathon project demonstrates practical skills that employers value more than coursework.",
+        "Prepare for the next one: You now know exactly what to expect. Apply your learnings: scope better, start the demo earlier, bring better snacks. Each hackathon makes you faster, better, and more confident. The most impressive developers I know have 10+ hackathons under their belts."
+      ],
+      "commands": [],
+      "resources": [
+        { "title": "Turning Hackathon Projects Into Startups (Y Combinator)", "url": "https://www.ycombinator.com/library/8q-from-side-project-to-startup", "type": "article" },
+        { "title": "How to Write a Devpost Submission That Wins", "url": "https://help.devpost.com/hc/en-us/articles/360057233792-How-to-create-a-standout-project-submission", "type": "article" }
+      ],
+      "tips": [
+        "The best time to network is immediately after the hackathon ends. Everyone is energized and proud of what they built. Connect on LinkedIn within 24 hours while the shared experience is fresh. Include a personal message referencing something specific from your interaction.",
+        "Don't be discouraged if you didn't win. Most winning projects are built by teams who have done 5+ hackathons. Your first few are for learning. The skills, connections, and portfolio pieces matter more than prizes.",
+        "Keep a folder of every hackathon project, badge, photo, and certificate. Years later, you'll be glad you have this archive. It's a tangible record of your growth as a developer."
+      ]
+    }
+  ]
+}

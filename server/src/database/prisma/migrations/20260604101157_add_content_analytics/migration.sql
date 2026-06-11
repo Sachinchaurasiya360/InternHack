@@ -4,9 +4,6 @@
 -- CreateEnum
 CREATE TYPE "ContentType" AS ENUM ('LESSON', 'DSA', 'INTERVIEW_QUESTION');
 
--- AlterTable
-ALTER TABLE "roadmapSection" ADD COLUMN     "aiRegeneratedAt" TIMESTAMP(3);
-
 -- AlterTable (Safe changes only)
 -- userInterviewProgress changes handled in separate migration or safe add if missing
 -- (Assuming user wants to keep analytics changes only here)
