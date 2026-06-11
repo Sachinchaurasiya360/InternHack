@@ -713,7 +713,7 @@ export default function RepoDiscoveryPage() {
             <button
               type="button"
               onClick={() => updateFilter("hacktoberfest", hacktoberfestOnly ? "" : "true")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${hacktoberfestOnly
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${hacktoberfestOnly
                 ? "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/30"
                 : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
                 }`}
@@ -727,7 +727,7 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => updateFilter("highlyActive", highlyActiveOnly ? "" : "true")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${highlyActiveOnly
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${highlyActiveOnly
               ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
               : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
               }`}
@@ -1248,7 +1248,7 @@ function GoodFirstIssuesSection({ repoId }: { repoId: number }) {
     staleTime: 5 * 60 * 1000,
   });
 
-  const now = useMemo(() => Date.now(), []);
+  const [now] = useState(() => Date.now());
 
   return (
     <div>

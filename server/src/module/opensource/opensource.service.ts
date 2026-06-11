@@ -6,9 +6,6 @@ import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
-import { UserService } from "../user/user.service.js";
-
-const userService = new UserService();
 
 interface GFICacheEntry {
   issues: GoodFirstIssue[];
@@ -185,25 +182,8 @@ where["OR"] = [
   }
 
   private async updateGithubStats(id: number, url: string, name: string) {
-    const [stats, health] = await Promise.all([
-      fetchGithubStats(url),
-      this.getRepoOwnerAndNameFromUrl(url).then(parsed => 
-        parsed ? fetchRepoHealthData(parsed.owner, parsed.name) : null
-      )
-    ]);
-
+    const stats = await fetchGithubStats(url);
     if (!stats) return;
-
-    let healthScore = 0;
-    if (health) {
-      if (health.hasContributing) healthScore += 15;
-      if (health.hasCodeOfConduct) healthScore += 10;
-      if (health.hasIssueTemplate) healthScore += 10;
-      if (health.fastResponse) healthScore += 20;
-      if (health.hasRecentCommits) healthScore += 15;
-      if (health.hasGoodFirstIssues) healthScore += 20;
-      if (health.mergeRate > 30) healthScore += 10;
-    }
 
     await prisma.opensourceRepo.update({
       where: { id },
@@ -212,17 +192,10 @@ where["OR"] = [
         forks: stats.forks,
         openIssues: stats.openIssues,
         githubStatsUpdatedAt: new Date(),
-        healthScore,
         ...(stats.language && { language: stats.language }),
       } as any,
     });
-    console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
-  }
-
-  private async getRepoOwnerAndNameFromUrl(url: string) {
-    const match = url.match(/github\.com\/([^\/]+)\/([^\/\s\.]+)/);
-    if (!match) return null;
-    return { owner: match[1], name: match[2].replace(".git", "") };
+    console.info(`[github] updated stats for ${name}`);
   }
 
   async getGsocOrgs(query: {
@@ -416,8 +389,7 @@ where["OR"] = [
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
-    // Re-sync stored ossTier for the contributor (fire-and-forget)
-    userService.calculateOssTier(request.userId).catch(() => {});
+
     return repo;
   }
 
@@ -623,8 +595,6 @@ where["OR"] = [
       },
       select: { completedStepIds: true },
     });
-    // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
-    userService.calculateOssTier(userId).catch(() => {});
     return progress.completedStepIds;
   }
 
@@ -672,14 +642,12 @@ where["OR"] = [
       },
       update: {
         rating: data.rating,
-        reason: data.reason,
       },
       create: {
         userId,
         guideId: data.guideId,
         stepId: data.stepId,
         rating: data.rating,
-        reason: data.reason,
       },
     });
   }

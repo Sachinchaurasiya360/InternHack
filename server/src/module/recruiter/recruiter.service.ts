@@ -731,7 +731,7 @@ export class RecruiterService {
       where.jobStatus = filter.jobStatus;
     }
     if (filter.ossTier) {
-      where.ossTier = { equals: filter.ossTier, mode: "insensitive" };
+      // ossTier was removed from the schema
     }
 
     const skip = (filter.page - 1) * filter.limit;

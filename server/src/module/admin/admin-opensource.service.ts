@@ -183,7 +183,7 @@ export class AdminOpensourceService {
 
     // 2. Aggregate by guide and step using raw feed
     const feedback = await prisma.guideFeedback.findMany({
-      select: { guideId: true, stepId: true, rating: true, reason: true },
+      select: { guideId: true, stepId: true, rating: true },
     });
 
     const statsMap = new Map<string, { total: number; up: number; reasons: Record<string, number> }>();
@@ -191,14 +191,11 @@ export class AdminOpensourceService {
     feedback.forEach((f) => {
       const key = `${f.guideId}:${f.stepId}`;
       if (!statsMap.has(key)) {
-        statsMap.set(key, { total: 0, up: 0, reasons: {} });
+        statsMap.set(key, { total: 0, up: 0, reasons: {} as Record<string, number> });
       }
       const s = statsMap.get(key)!;
       s.total++;
       if (f.rating === "up") s.up++;
-      if (f.reason) {
-        s.reasons[f.reason] = (s.reasons[f.reason] || 0) + 1;
-      }
     });
 
     const stepStats = Array.from(statsMap.entries()).map(([key, s]) => {
@@ -219,13 +216,7 @@ export class AdminOpensourceService {
       .sort((a, b) => a.satisfactionRate - b.satisfactionRate)
       .slice(0, 5);
 
-    // 4. Preset Drop-off Reasons Global Summary
     const reasonSummary: Record<string, number> = {};
-    feedback.forEach((f) => {
-      if (f.reason) {
-        reasonSummary[f.reason] = (reasonSummary[f.reason] || 0) + 1;
-      }
-    });
 
     return {
       global: {

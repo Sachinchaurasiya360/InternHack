@@ -160,7 +160,6 @@ export class AuthService {
         subscriptionPlan: true,
         subscriptionStatus: true,
         subscriptionEndDate: true,
-        ossTier: true,
       },
     });
 
@@ -303,7 +302,6 @@ export class AuthService {
     invalidateVersionCache(user.id);
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
-    const ossTier = user.ossTier;
 
     return {
       user: {
@@ -320,7 +318,6 @@ export class AuthService {
         subscriptionPlan: user.subscriptionPlan,
         subscriptionStatus: user.subscriptionStatus,
         subscriptionEndDate: user.subscriptionEndDate,
-        ossTier,
       },
       token,
       isNewUser: !user.createdAt || (Date.now() - user.createdAt.getTime()) < 5000,
@@ -371,7 +368,6 @@ export class AuthService {
     invalidateVersionCache(user.id);
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
-    const ossTier = user.ossTier;
 
     return {
       user: {
@@ -388,7 +384,6 @@ export class AuthService {
         subscriptionPlan: user.subscriptionPlan,
         subscriptionStatus: user.subscriptionStatus,
         subscriptionEndDate: user.subscriptionEndDate,
-        ossTier,
       },
       token,
     };
@@ -424,7 +419,6 @@ export class AuthService {
     subscriptionPlan: true,
     subscriptionStatus: true,
     subscriptionEndDate: true,
-    ossTier: true,
   } as const;
 
   async getProfile(userId: number) {
@@ -667,7 +661,6 @@ export class AuthService {
         subscriptionPlan: true,
         subscriptionStatus: true,
         subscriptionEndDate: true,
-        ossTier: true,
       },
     });
 
@@ -687,9 +680,8 @@ export class AuthService {
     invalidateVersionCache(updated.id);
 
 	    const token = generateToken({ id: updated.id, email: updated.email, role: updated.role, tokenVersion: versionUpdate.tokenVersion });
-    const ossTier = updated.ossTier;
 
-    return { user: { ...updated, ossTier }, token };
+    return { user: { ...updated }, token };
   }
 
   async resendOtp(email: string) {

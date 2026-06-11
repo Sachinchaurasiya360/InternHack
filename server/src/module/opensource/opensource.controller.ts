@@ -104,7 +104,12 @@ export class OpensourceController {
         return;
       }
       const { owner, name } = parsed.data;
-      const result = await service.getGoodFirstIssues(owner, name);
+      const repo = await service.getRepoByOwnerAndName(owner, name);
+      if (!repo) {
+        res.status(404).json({ message: "Repository not found" });
+        return;
+      }
+      const result = await service.getGoodFirstIssues(repo.id);
       if (!result) {
         res.status(404).json({ message: "Repository not found" });
         return;
