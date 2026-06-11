@@ -43,8 +43,8 @@ export class OpensourceService {
       totalRepos,
       totalStars: starsAgg._sum.stars ?? 0,
       trendingCount,
-      languageCount: languageGroups.filter((g) => g.language && g.language.trim() !== "").length,
-      domainBreakdown: domainGroups.map((g) => ({
+      languageCount: languageGroups.filter((g: any) => g.language && g.language.trim() !== "").length,
+      domainBreakdown: domainGroups.map((g: any) => ({
         domain: g.domain || "Other",
         count: g._count._all,
       })),
@@ -60,9 +60,9 @@ export class OpensourceService {
       distinct: ["language"],
     });
     return rows
-      .map((r) => r.language)
-      .filter((l): l is string => Boolean(l && l.trim() !== ""))
-      .sort((a, b) => a.localeCompare(b));
+      .map((r: any) => r.language)
+      .filter((l: string | null): l is string => Boolean(l && l.trim() !== ""))
+      .sort((a: string, b: string) => a.localeCompare(b));
   }
 
   async listRepos(query: any) {
@@ -109,7 +109,7 @@ export class OpensourceService {
         )
       `;
 
-      const tagMatchIds = tagMatches.map((r) => r.id);
+      const tagMatchIds = tagMatches.map((r: any) => r.id);
       where["OR"] = [
         { name: { contains: trimmedSearch, mode: "insensitive" } },
         { owner: { contains: trimmedSearch, mode: "insensitive" } },
@@ -688,7 +688,7 @@ export class OpensourceService {
       select: { repoId: true },
       orderBy: { createdAt: "desc" },
     });
-    return bookmarks.map((b) => b.repoId);
+    return bookmarks.map((b: any) => b.repoId);
   }
 
   async addBookmark(
@@ -724,11 +724,11 @@ export class OpensourceService {
       where: { id: { in: repoIds } },
       select: { id: true },
     });
-    const validIds = validRepos.map((r) => r.id);
+    const validIds = validRepos.map((r: any) => r.id);
     if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
 
     await prisma.$transaction(
-      validIds.map((repoId) =>
+      validIds.map((repoId: number) =>
         prisma.opensourceBookmark.upsert({
           where: { userId_repoId: { userId, repoId } },
           create: { userId, repoId },

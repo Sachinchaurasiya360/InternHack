@@ -428,7 +428,7 @@ export class OpensourceController {
 
   async getCertificate(req: Request, res: Response, next: NextFunction) {
     try {
-      const token = req.params.token;
+      const token = req.params.token as string;
       const certificate = await service.getCertificate(token);
       if (!certificate) {
         res.status(404).json({ message: "Certificate not found" });
@@ -494,7 +494,7 @@ export class OpensourceController {
 
   async getCertificateOgImage(req: Request, res: Response, next: NextFunction) {
     try {
-      const token = req.params.token;
+      const token = req.params.token as string;
       const certificate = await service.getCertificate(token);
       if (!certificate) {
         res.status(404).json({ message: "Certificate not found" });

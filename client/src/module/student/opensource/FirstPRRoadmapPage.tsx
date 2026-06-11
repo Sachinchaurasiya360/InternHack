@@ -44,7 +44,7 @@ export default function FirstPRRoadmapPage() {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuthStore();
-  const triggerCoach = useCoachStore((s) => s.triggerCoach);
+  const triggerCoach = useCoachStore((s: any) => s.triggerCoach);
   const [cert, setCert] = useState<Certificate | null>(null);
   const [copying, setCopying] = useState(false);
 
@@ -86,7 +86,7 @@ export default function FirstPRRoadmapPage() {
       const nextCompleted = !isCurrentlyCompleted;
       const isCompletingLastStep = nextCompleted && completed.size === STEPS.length - 1;
 
-      setCompleted((prev) => {
+      setCompleted((prev: Set<string>) => {
         const next = new Set(prev);
         if (nextCompleted) next.add(id);
         else next.delete(id);
@@ -103,7 +103,7 @@ export default function FirstPRRoadmapPage() {
       void patchFirstPRProgress(id, nextCompleted)
         .then(() => notifyLearningPathProgressChanged())
         .catch(() => {
-          setCompleted((prev) => {
+          setCompleted((prev: Set<string>) => {
             const rolledBack = new Set(prev);
             if (isCurrentlyCompleted) rolledBack.add(id);
             else rolledBack.delete(id);

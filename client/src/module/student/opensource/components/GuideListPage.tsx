@@ -46,7 +46,7 @@ export default function GuideListPage({
   const { user } = useAuthStore();
 
   const toggle = useCallback((id: string) => {
-    setCompleted((prev) => {
+    setCompleted((prev: Set<string>) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
@@ -227,7 +227,7 @@ export default function GuideListPage({
                   variant="ghost"
                   mode="icon"
                   size="sm"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
+                  onClick={(e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
                   className="shrink-0"
                 >
                   {done ? (

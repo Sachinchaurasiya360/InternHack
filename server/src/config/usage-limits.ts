@@ -1,4 +1,15 @@
-import type { UsageAction } from "@prisma/client";
+// Mirror of the UsageAction Prisma enum — keeps this config file free of
+// a generated-client import while staying in sync with base.prisma.
+export type UsageAction =
+  | "ATS_SCORE"
+  | "COVER_LETTER"
+  | "GENERATE_RESUME"
+  | "JOB_APPLICATION"
+  | "MOCK_INTERVIEW"
+  | "AI_JOB_CHAT"
+  | "CODE_RUN"
+  | "GITHUB_STATS"
+  | "ROADMAP_GENERATION";
 
 export type PlanTier = "FREE" | "PREMIUM";
 
