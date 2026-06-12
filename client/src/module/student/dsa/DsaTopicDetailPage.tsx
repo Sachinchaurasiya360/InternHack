@@ -21,6 +21,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import { sanitizeHtml } from "../../../lib/sanitize";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { cleanHint } from "../../../lib/sanitize";
 
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
 
@@ -378,7 +379,6 @@ export default function DsaTopicDetailPage() {
                         saveNotes={saveNotes}
                         toggleNotes={toggleNotes}
                         setExpandedId={setExpandedId}
-                        cleanHint={cleanHint}
                       />
                     </div>
                   </div>
@@ -406,7 +406,6 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   saveNotes,
   toggleNotes,
   setExpandedId,
-  cleanHint,
 }: {
   problem: DsaProblem;
   pIdx: number;
@@ -421,7 +420,6 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   saveNotes: (problemId: number, val: string) => void;
   toggleNotes: (problemId: number, notes: string | null | undefined) => void;
   setExpandedId: (val: number | null) => void;
-  cleanHint: (hint: string) => string;
 }) {
   const links: { href: string; label: string }[] = [];
   if (problem.leetcodeUrl) links.push({ href: problem.leetcodeUrl, label: "LeetCode" });
@@ -647,9 +645,4 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   );
 });
 
-function cleanHint(html: string): string {
-  return html
-    .replace(/<div[^>]*>/gi, "")
-    .replace(/<\/div>/gi, "")
-    .replace(/<code>/gi, "<code class='px-1.5 py-0.5 bg-stone-200 dark:bg-white/10 rounded-md text-sm font-mono'>");
-}
+
