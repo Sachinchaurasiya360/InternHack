@@ -14,7 +14,6 @@ import { markLearningPathMilestone } from "./learning-paths.data";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import toast from "../../../components/ui/toast";
-import { queryKeys } from "../../../lib/query-keys";
 
 function nextDate(month: number, day: number, hour = 23, minute = 59): string {
   const now = new Date();
@@ -1240,7 +1239,6 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
   const [downloading, setDownloading] = useState(false);
   const localStipendEstimate = program.stipendPaid ? getLocalStipendEstimate(program.stipend) : null;
   const urgency = getUrgency(program);
-  const cd = getCountdown(program);
 
   const handleDownloadIcs = async () => {
     setDownloading(true);

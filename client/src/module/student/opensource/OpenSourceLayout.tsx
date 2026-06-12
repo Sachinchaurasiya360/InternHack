@@ -5,6 +5,7 @@ import ContributionCoachPanel from "./ContributionCoachPanel";
 import CoachFloatingButton from "./CoachFloatingButton";
 import { LearningPathProvider } from "./learning-paths.context";
 import StreakFlame from "./StreakFlame";
+import { LearningPathSidebar } from "./components/LearningPathSidebar";
 
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
