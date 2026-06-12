@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {CheckCircle2, ArrowRight, Trophy,} from "lucide-react";
+import {CheckCircle2, ArrowRight, Trophy, Copy, Linkedin, Check} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
@@ -8,6 +8,10 @@ import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
 import { NextInPathCard } from "./NextInPathCard";
+import { issueCertificate, type Certificate } from "../api/opensource.api";
+import toast from "../../../../components/ui/toast";
+import { useAuthStore } from "../../../../lib/auth.store";
+import { useEffect } from "react";
 
 interface Step { step: number; id: string; title: string; description: string ; estimatedMinutes?: number; }
 
@@ -37,9 +41,12 @@ export default function GuideListPage({
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  const [cert, setCert] = useState<Certificate | null>(null);
+  const [copying, setCopying] = useState(false);
+  const { user } = useAuthStore();
 
   const toggle = useCallback((id: string) => {
-    setCompleted((prev) => {
+    setCompleted((prev: Set<string>) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
@@ -70,6 +77,30 @@ export default function GuideListPage({
       "name": s.title,
       "text": s.description || "Follow the visual walkthrough steps."
     }))
+  };
+
+  useEffect(() => {
+    if (allDone && !cert && user) {
+      issueCertificate(title)
+        .then(setCert)
+        .catch(console.error);
+    }
+  }, [allDone, cert, title, user]);
+
+  const copyCertLink = () => {
+    if (!cert) return;
+    const url = `${window.location.origin}/certificate/${cert.token}`;
+    navigator.clipboard.writeText(url);
+    setCopying(true);
+    toast.success("Certificate link copied!");
+    setTimeout(() => setCopying(false), 2000);
+  };
+
+  const shareLinkedIn = () => {
+    if (!cert) return;
+    const url = `${window.location.origin}/certificate/${cert.token}`;
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
   };
 
   // Split title around accent word
@@ -155,6 +186,19 @@ export default function GuideListPage({
             <div>
               <p className="text-base font-bold text-green-900 dark:text-green-300">All sections completed!</p>
               <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">You've completed all {totalSteps} sections. Apply this knowledge to your next contribution!</p>
+              
+              {cert && (
+                <div className="flex gap-3 mt-4 flex-wrap">
+                  <Button variant="secondary" size="sm" onClick={copyCertLink} className="bg-white dark:bg-green-900/40">
+                    {copying ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                    {copying ? "Copied" : "Copy Certificate"}
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={shareLinkedIn} className="bg-white dark:bg-green-900/40">
+                    <Linkedin className="w-4 h-4 mr-2 fill-current" />
+                    Share on LinkedIn
+                  </Button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -183,7 +227,7 @@ export default function GuideListPage({
                   variant="ghost"
                   mode="icon"
                   size="sm"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
+                  onClick={(e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
                   className="shrink-0"
                 >
                   {done ? (
