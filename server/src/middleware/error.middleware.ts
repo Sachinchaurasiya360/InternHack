@@ -66,8 +66,6 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
   });
 
   if (statusCode >= 500) {
-
-  if (statusCode >= 500) {
     const rawDetails = rawErr ? formatRawError(rawErr) : "No stack trace";
     sendEmail({
       to: ADMIN_ALERT_EMAIL,
