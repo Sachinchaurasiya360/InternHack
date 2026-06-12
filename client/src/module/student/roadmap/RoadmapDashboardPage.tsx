@@ -188,7 +188,7 @@ export default function RoadmapDashboardPage() {
         >
           <Link
             to="/learn/roadmaps/certificates"
-            className="group flex items-center justify-between gap-4 rounded-2xl border border-lime-400/30 bg-lime-400/10 hover:bg-lime-400/15 px-5 py-4 no-underline transition-colors"
+            className="group flex items-center justify-between gap-4 rounded-md border border-lime-400/30 bg-lime-400/10 hover:bg-lime-400/15 px-5 py-4 no-underline transition-colors"
           >
             <div>
               <p className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 mb-1">
