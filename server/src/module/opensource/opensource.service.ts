@@ -20,6 +20,9 @@ let statsCache: {
 } = { data: null, expiresAt: 0 };
 
 export class OpensourceService {
+  private recommendationCache = new Map<number, { timestamp: number; data: any[] }>();
+  private CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
   async getGlobalStats() {
     if (statsCache.data && Date.now() < statsCache.expiresAt) {
       return statsCache.data;
@@ -556,8 +559,11 @@ where["OR"] = [
   }
 
   async getRecommendedRepos(userId: number) {
-    // Phase 1: Enhanced Data Collection
-    
+    const cached = this.recommendationCache.get(userId);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return cached.data;
+    }
+
     // 1. Get student profile with skills, recent applications, and job preferences
     const student = await prisma.user.findUnique({
       where: { id: userId },
@@ -669,15 +675,16 @@ where["OR"] = [
       new Map(repos.map((repo) => [repo.id, repo])).values()
     );
 
-    // Phase 2 & 3: AI-Powered Ranking with Match Reasons
     // Use Gemini to rank repos and generate match reasons
     const rankedReposWithReasons = await this.rankReposWithAIAndReasons(student, uniqueRepos, allKeywords);
 
-    return rankedReposWithReasons.slice(0, 8);
+    const result = rankedReposWithReasons.slice(0, 8);
+    this.recommendationCache.set(userId, { timestamp: Date.now(), data: result });
+    return result;
   }
 
   /**
-   * Phase 2 & 3: Use Gemini AI to rank repositories and generate match reasons
+   * Use Gemini AI to rank repositories and generate match reasons
    */
   private async rankReposWithAIAndReasons(
     student: {
@@ -687,7 +694,7 @@ where["OR"] = [
       projects: any;
       achievements: any;
     },
-    repos: any[],
+    repos: Awaited<ReturnType<typeof prisma.opensourceRepo.findMany>>[number][],
     userKeywords: string[]
   ): Promise<any[]> {
     const apiKey = process.env["GEMINI_API_KEY"];
@@ -729,7 +736,7 @@ where["OR"] = [
   /**
    * Add basic match reasons without AI (fallback)
    */
-  private addBasicMatchReasons(repos: any[], userKeywords: string[]): any[] {
+  private addBasicMatchReasons(repos: Awaited<ReturnType<typeof prisma.opensourceRepo.findMany>>[number][], userKeywords: string[]): any[] {
     return repos.map(repo => {
       const matchedSkills = this.findMatchedSkills(repo, userKeywords);
       const reason = this.generateBasicMatchReason(repo, matchedSkills);
@@ -746,14 +753,14 @@ where["OR"] = [
   /**
    * Find which user skills match the repo
    */
-  private findMatchedSkills(repo: any, userKeywords: string[]): string[] {
+  private findMatchedSkills(repo: Awaited<ReturnType<typeof prisma.opensourceRepo.findMany>>[number], userKeywords: string[]): string[] {
     const matched = new Set<string>();
     
     userKeywords.forEach(keyword => {
       const keywordLower = keyword.toLowerCase();
       
       // Check language
-      if (repo.language.toLowerCase() === keywordLower) {
+      if (repo.language?.toLowerCase() === keywordLower) {
         matched.add(repo.language);
       }
       
@@ -778,7 +785,7 @@ where["OR"] = [
   /**
    * Generate a basic match reason without AI
    */
-  private generateBasicMatchReason(repo: any, matchedSkills: string[]): string {
+  private generateBasicMatchReason(repo: Awaited<ReturnType<typeof prisma.opensourceRepo.findMany>>[number], matchedSkills: string[]): string {
     if (matchedSkills.length > 0) {
       const skillsText = matchedSkills.slice(0, 2).join(", ");
       return `Matches your skills in ${skillsText}${matchedSkills.length > 2 ? " and more" : ""}`;
@@ -810,7 +817,7 @@ where["OR"] = [
       projects: any;
       achievements: any;
     },
-    repos: any[]
+    repos: Awaited<ReturnType<typeof prisma.opensourceRepo.findMany>>[number][]
   ): string {
     const userProfile = `
 User Profile:
@@ -897,7 +904,7 @@ Rules:
    * Apply AI rankings with reasons to repository list
    */
   private applyRankingsWithReasons(
-    repos: any[],
+    repos: Awaited<ReturnType<typeof prisma.opensourceRepo.findMany>>[number][],
     rankingsWithReasons: Array<{ index: number; reason: string }>,
     userKeywords: string[]
   ): any[] {
