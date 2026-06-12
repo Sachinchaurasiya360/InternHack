@@ -16,7 +16,7 @@ import {
   RefreshCw,
   FileText,
   AlertTriangle,
-  Shuffle
+  Shuffle,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
