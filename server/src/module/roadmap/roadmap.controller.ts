@@ -976,7 +976,7 @@ export async function getPublicCertificateMeta(
     }
 
     const completedTopics = enrollment.topicProgress.filter(
-      (p) => p.status === "COMPLETED",
+      (p) => p.status === "COMPLETED" && p.completedAt,
     );
 
     const percentComplete =
@@ -1130,7 +1130,7 @@ export async function getMyCertificates(
     const certificates = enrollments
       .map((enrollment) => {
         const completedTopics = enrollment.topicProgress.filter(
-          (p) => p.status === "COMPLETED",
+          (p) => p.status === "COMPLETED" && p.completedAt
         );
 
         const percentComplete =

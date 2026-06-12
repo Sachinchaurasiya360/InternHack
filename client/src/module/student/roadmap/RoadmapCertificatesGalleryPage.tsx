@@ -174,7 +174,7 @@ export default function RoadmapCertificatesGalleryPage() {
   useEffect(() => {
     async function fetchCertificates() {
       try {
-        const res = await api.get("/api/roadmaps/me/certificates");
+        const res = await api.get("/roadmaps/me/certificates");
 
         setCertificates(res.data.certificates || []);
       } catch {

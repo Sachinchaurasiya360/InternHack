@@ -24,7 +24,7 @@ export default function RoadmapCertificatePage() {
     async function fetchCertificate() {
       try {
         const res = await api.get(
-          `/api/roadmaps/certificates/${slug}/${enrollmentId}/meta`
+          `/roadmaps/certificates/${slug}/${enrollmentId}/meta`
         );
         setData(res.data);
       } catch {
@@ -121,7 +121,7 @@ export default function RoadmapCertificatePage() {
           <div className="mt-10 grid gap-3">
 
             <button
-              onClick={() => window.open(fullCertificateUrl, "_blank")}
+              onClick={() => window.open(fullCertificateUrl, "_blank", "noopener,noreferrer")}
               className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-lime-400 text-stone-950 font-bold hover:bg-lime-300 transition-all"
             >
               <Download className="w-4 h-4" />
@@ -129,7 +129,7 @@ export default function RoadmapCertificatePage() {
             </button>
 
             <button
-              onClick={() => window.open(linkedInUrl, "_blank")}
+              onClick={() => window.open(linkedInUrl, "_blank", "noopener,noreferrer")}
               className="w-full flex items-center justify-center gap-2 px-5 py-2 text-sm rounded-xl bg-[#0A66C2]/20 border border-[#0A66C2]/30 text-[#70B5F9]"
             >
               <Share2 className="w-4 h-4" />
@@ -137,7 +137,7 @@ export default function RoadmapCertificatePage() {
             </button>
 
             <button
-              onClick={() => window.open(twitterUrl, "_blank")}
+              onClick={() => window.open(twitterUrl, "_blank", "noopener,noreferrer")}
               className="w-full flex items-center justify-center gap-2 px-5 py-2 text-sm rounded-xl bg-stone-800 border border-stone-200 dark:border-white/10"
             >
               <Share2 className="w-4 h-4" />
