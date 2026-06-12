@@ -8,6 +8,7 @@ import {
   isEmailableStatus,
 } from "../../utils/email-templates.js";
 import { createLogger } from "../../utils/logger.js";
+import { cacheGet, cacheSet } from "../../utils/cache.js";
 
 const S3_BUCKET = process.env["AWS_S3_BUCKET"] || "";
 // validating the URL
@@ -51,6 +52,7 @@ interface TalentSearchFilter {
   location?: string;
   search?: string;
   jobStatus?: string;
+  ossTier?: string;
 }
 
 interface CreateRoundData {
@@ -154,7 +156,7 @@ export class RecruiterService {
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
     return prisma.round.findMany({
-      where: { jobId },
+      where: { jobId, isArchived: false },
       orderBy: { orderIndex: "asc" },
       include: {
         _count: { select: { roundSubmissions: true } },
@@ -203,23 +205,29 @@ export class RecruiterService {
     const round = await prisma.round.findUnique({ where: { id: roundId } });
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
 
-    await prisma.round.delete({ where: { id: roundId } });
+    await prisma.$transaction(async (tx) => {
+      // Archive the round and then re-index the remaining active rounds atomically.
+      await tx.round.update({
+        where: { id: roundId },
+        data: { isArchived: true },
+      });
 
-    // Re-index remaining rounds
-    const remainingRounds = await prisma.round.findMany({
-      where: { jobId },
-      orderBy: { orderIndex: "asc" },
-    });
+      const remainingRounds = await tx.round.findMany({
+        where: { jobId, isArchived: false },
+        orderBy: { orderIndex: "asc" },
+        select: { id: true, orderIndex: true },
+      });
 
-    for (let i = 0; i < remainingRounds.length; i++) {
-      const r = remainingRounds[i]!;
-      if (r.orderIndex !== i) {
-        await prisma.round.update({
-          where: { id: r.id },
-          data: { orderIndex: i },
-        });
+      for (let i = 0; i < remainingRounds.length; i++) {
+        const r = remainingRounds[i]!;
+        if (r.orderIndex !== i) {
+          await tx.round.update({
+            where: { id: r.id },
+            data: { orderIndex: i },
+          });
+        }
       }
-    }
+    });
   }
 
   async reorderRounds(jobId: number, recruiterId: number, rounds: { roundId: number; orderIndex: number }[]) {
@@ -231,6 +239,7 @@ export class RecruiterService {
       where: {
         id: { in: rounds.map((r) => r.roundId) },
         jobId,
+        isArchived: false,
       },
       select: { id: true },
     });
@@ -241,7 +250,7 @@ export class RecruiterService {
 
     // Use a transaction with temporary high indices to avoid unique constraint conflicts
     await prisma.$transaction(async (tx) => {
-      // First, set all to temporary high values
+      // First, set all to temporary high values (unique(jobId, orderIndex) safe)
       for (const r of rounds) {
         await tx.round.update({
           where: { id: r.roundId },
@@ -258,7 +267,7 @@ export class RecruiterService {
     });
 
     return prisma.round.findMany({
-      where: { jobId },
+      where: { jobId, isArchived: false },
       orderBy: { orderIndex: "asc" },
     });
   }
@@ -437,7 +446,7 @@ export class RecruiterService {
       }
 
       const rounds = await tx.round.findMany({
-        where: { jobId: application.jobId },
+          where: { jobId: application.jobId, isArchived: false },
         orderBy: { orderIndex: "asc" },
       });
 
@@ -573,15 +582,32 @@ export class RecruiterService {
     }
 
     // Top verified skills among applicants
-    const topVerifiedSkills = await prisma.verifiedSkill.groupBy({
-      by: ["skillName"],
-      where: {
-        student: { applications: { some: { job: { recruiterId } } } },
-      },
-      _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
-      take: 5,
-    });
+    let topVerifiedSkills: { skillName: string; _count: { id: number } }[] | null = null;
+    const CACHE_KEY = `dashboard:topVerifiedSkills:${recruiterId}`;
+
+    try {
+      topVerifiedSkills = await cacheGet<{ skillName: string; _count: { id: number } }[]>(CACHE_KEY);
+    } catch (error) {
+      logger.error(`Cache read failed for key ${CACHE_KEY}`, error);
+    }
+
+    if (!topVerifiedSkills) {
+      topVerifiedSkills = await prisma.verifiedSkill.groupBy({
+        by: ["skillName"],
+        where: {
+          student: { applications: { some: { job: { recruiterId } } } },
+        },
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+        take: 5,
+      });
+
+      try {
+        await cacheSet(CACHE_KEY, topVerifiedSkills, 300);
+      } catch (error) {
+        logger.error(`Cache write failed for key ${CACHE_KEY}`, error);
+      }
+    }
 
     return {
       totalJobs,
@@ -611,7 +637,7 @@ export class RecruiterService {
           _count: { id: true },
         }),
         prisma.round.findMany({
-          where: { jobId },
+          where: { jobId, isArchived: false },
           orderBy: { orderIndex: "asc" },
           include: {
             _count: { select: { roundSubmissions: true } },
@@ -619,7 +645,7 @@ export class RecruiterService {
         }),
         prisma.roundSubmission.groupBy({
           by: ["roundId", "status"],
-          where: { round: { jobId } },
+          where: { round: { jobId, isArchived: false } },
           _count: { id: true },
         }),
       ]);
@@ -703,6 +729,9 @@ export class RecruiterService {
     }
     if (filter.jobStatus) {
       where.jobStatus = filter.jobStatus;
+    }
+    if (filter.ossTier) {
+      where.ossTier = { equals: filter.ossTier, mode: "insensitive" };
     }
 
     const skip = (filter.page - 1) * filter.limit;

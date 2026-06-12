@@ -2,8 +2,10 @@ import type { Request, Response, NextFunction } from "express";
 import { DsaService } from "./dsa.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 import { syncLeetCodeSolvedProblems } from "./leetcode.service.js";
+import { syncLeetCodeSchema } from "./dsa.validation.js";
 import { prisma } from "../../database/db.js";
 import { isPremiumUser } from "../../utils/premium.utils.js";
+import { executeCodeSchema } from "./dsa.validation.js";
 
 export class DsaController {
   constructor(private dsaService: DsaService) {}
@@ -134,9 +136,10 @@ export class DsaController {
     }
   }
 
-  async getCompanies(_req: Request, res: Response, next: NextFunction) {
+  async getCompanies(req: Request, res: Response, next: NextFunction) {
     try {
-      const companies = await this.dsaService.getCompanies();
+      const userId = req.user?.id;
+      const companies = await this.dsaService.getCompanies(userId);
       res.json(companies);
     } catch (err) {
       next(err);
@@ -150,6 +153,17 @@ export class DsaController {
       const { page, limit } = parsePagination(req, { defaultLimit: 50 });
       const result = await this.dsaService.getCompanyProblems(company, studentId, page, limit);
       res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getCompanyTrackStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const company = req.params.company as string;
+      const userId = req.user?.id;
+      const stats = await this.dsaService.getCompanyTrackStats(company, userId);
+      res.json(stats);
     } catch (err) {
       next(err);
     }
@@ -186,6 +200,28 @@ export class DsaController {
     }
   }
 
+  async getLists(req: Request, res: Response, next: NextFunction) {
+    try {
+      const studentId = req.user?.id;
+      const lists = await this.dsaService.getLists(studentId);
+      res.json(lists);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getListProblems(req: Request, res: Response, next: NextFunction) {
+    try {
+      const list = req.params.name as string;
+      const studentId = req.user?.id;
+      const { page, limit } = parsePagination(req, { defaultLimit: 50 });
+      const result = await this.dsaService.getListProblems(list, studentId, page, limit);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getMyProgress(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
@@ -203,7 +239,9 @@ export class DsaController {
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
       const problemId = parseInt(req.params.problemId as string);
       if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
-      const { language, code } = req.body;
+      const body = executeCodeSchema.safeParse(req.body);
+      if (!body.success) return res.status(400).json({ message: "Validation failed", errors: body.error.flatten() });
+      const { language, code } = body.data;
       const result = await this.dsaService.executeCodeAgainstTestCases(userId, problemId, language, code);
       res.json(result);
     } catch (err) {
@@ -228,9 +266,9 @@ export class DsaController {
     try {
       const userId = req.user?.id;
       if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
-      const { leetcodeUsername } = req.body;
-      if (!leetcodeUsername) { res.status(400).json({ message: "LeetCode username is required" }); return; }
-      const result = await syncLeetCodeSolvedProblems(userId, leetcodeUsername);
+      const parsed = syncLeetCodeSchema.safeParse(req.body);
+      if (!parsed.success) { res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() }); return; }
+      const result = await syncLeetCodeSolvedProblems(userId, parsed.data.leetcodeUsername);
       res.json({
         success: true,
         message: `Successfully synced ${result.syncedCount} problems from LeetCode.`,
@@ -330,6 +368,39 @@ export class DsaController {
           res.status(403).json({ message: err.message });
           return;
         }
+      }
+      next(err);
+    }
+  }
+
+  async generateHint(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) { res.status(401).json({ message: "Authentication required" }); return; }
+      const problemId = parseInt(req.params.problemId as string);
+      if (isNaN(problemId)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      const { level } = req.body;
+      if (!["conceptual", "algorithmic", "code"].includes(level)) {
+        res.status(400).json({ message: "Invalid hint level. Must be: conceptual, algorithmic, or code" });
+        return;
+      }
+      const hint = await this.dsaService.generateHint(userId, problemId, level);
+      res.json(hint);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getApproaches(req: Request, res: Response, next: NextFunction) {
+    try {
+      const slug = req.params.slug as string;
+      if (!slug) { res.status(400).json({ message: "Problem slug is required" }); return; }
+      const approaches = await this.dsaService.getApproaches(slug);
+      res.json(approaches);
+    } catch (err) {
+      if (err instanceof Error && err.message.includes("Problem not found")) {
+        res.status(404).json({ message: err.message });
+        return;
       }
       next(err);
     }

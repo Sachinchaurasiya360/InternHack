@@ -1,10 +1,13 @@
 import { prisma } from "../../database/db.js";
-import { fetchGithubGoodFirstIssues, fetchGithubStats } from "../../lib/github.js";
+import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
+import { UserService } from "../user/user.service.js";
+
+const userService = new UserService();
 
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 let statsCache: {
@@ -72,12 +75,27 @@ export class OpensourceService {
       domain,
       sortBy,
       sortOrder,
+      trending,
+      hacktoberfest,
+      ids,
     } = query;
     const skip = (page - 1) * limit;
     const where: Record<string, any> = {};
     if (language) where["language"] = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
+    if (trending === "true") where["trending"] = true;
+    if (hacktoberfest === "true") where["hacktoberfest"] = true;
+    if (query.highlyActive === "true") {
+      where["healthScore"] = { gte: 75 };
+    }
+    if (ids) {
+      const idList = ids
+        .split(",")
+        .map((id: string) => Number(id))
+        .filter((id: number) => !Number.isNaN(id));
+      if (idList.length > 0) where["id"] = { in: idList };
+    }
 const trimmedSearch = search?.trim();
 
 if (trimmedSearch) {
@@ -124,11 +142,20 @@ where["OR"] = [
     if (!repo) return null;
 
     const SIX_HOURS = 6 * 60 * 60 * 1000;
+    const neverFetched = !repo.githubStatsUpdatedAt;
     const isStale =
-      !repo.githubStatsUpdatedAt ||
+      neverFetched ||
       Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
 
     if (isStale && repo.url?.includes("github.com")) {
+      if (neverFetched) {
+        // First-ever fetch: await so the caller gets live stats, not 0s
+        await this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
+          console.error(`[github] initial stats fetch failed for ${id}:`, err),
+        );
+        return (await prisma.opensourceRepo.findUnique({ where: { id } })) as any;
+      }
+      // Stale but previously fetched: update in background, return cached
       this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
         console.error(`[github] background update failed for ${id}:`, err),
       );
@@ -166,8 +193,26 @@ where["OR"] = [
   }
 
   private async updateGithubStats(id: number, url: string, name: string) {
-    const stats = await fetchGithubStats(url);
+    const [stats, health] = await Promise.all([
+      fetchGithubStats(url),
+      this.getRepoOwnerAndNameFromUrl(url).then(parsed => 
+        parsed ? fetchRepoHealthData(parsed.owner, parsed.name) : null
+      )
+    ]);
+
     if (!stats) return;
+
+    let healthScore = 0;
+    if (health) {
+      if (health.hasContributing) healthScore += 15;
+      if (health.hasCodeOfConduct) healthScore += 10;
+      if (health.hasIssueTemplate) healthScore += 10;
+      if (health.fastResponse) healthScore += 20;
+      if (health.hasRecentCommits) healthScore += 15;
+      if (health.hasGoodFirstIssues) healthScore += 20;
+      if (health.mergeRate > 30) healthScore += 10;
+    }
+
     await prisma.opensourceRepo.update({
       where: { id },
       data: {
@@ -175,10 +220,17 @@ where["OR"] = [
         forks: stats.forks,
         openIssues: stats.openIssues,
         githubStatsUpdatedAt: new Date(),
+        healthScore,
         ...(stats.language && { language: stats.language }),
       } as any,
     });
-    console.info(`[github] updated stats for ${name}`);
+    console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
+  }
+
+  private async getRepoOwnerAndNameFromUrl(url: string) {
+    const match = url.match(/github\.com\/([^\/]+)\/([^\/\s\.]+)/);
+    if (!match) return null;
+    return { owner: match[1], name: match[2].replace(".git", "") };
   }
 
   async getGsocOrgs(query: {
@@ -229,12 +281,45 @@ where["OR"] = [
     };
   }
 
+  private FREE_MONTHLY_REPO_SUGGESTIONS = 3;
+
   async submitRepoRequest(userId: number, data: any) {
     const existing = await prisma.repoRequest.findFirst({
       where: { url: data.url, status: { in: ["PENDING", "APPROVED"] } },
     });
     if (existing) {
       throw new Error("This repository has already been submitted");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
+    });
+
+    if (user) {
+      const isPremium =
+        (user.subscriptionPlan === "MONTHLY" || user.subscriptionPlan === "YEARLY") &&
+        user.subscriptionStatus === "ACTIVE" &&
+        (!user.subscriptionEndDate || user.subscriptionEndDate > new Date());
+
+      if (!isPremium) {
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        const monthlyCount = await prisma.repoRequest.count({
+          where: {
+            userId,
+            createdAt: { gte: startOfMonth },
+          },
+        });
+
+        if (monthlyCount >= this.FREE_MONTHLY_REPO_SUGGESTIONS) {
+          throw new Error(
+            "You've used all your free repo suggestions this month. Upgrade to Pro for unlimited suggestions.",
+          );
+        }
+      }
     }
     const request = await prisma.repoRequest.create({
       data: { ...data, userId },
@@ -339,6 +424,8 @@ where["OR"] = [
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
+    // Re-sync stored ossTier for the contributor (fire-and-forget)
+    userService.calculateOssTier(request.userId).catch(() => {});
     return repo;
   }
 
@@ -352,13 +439,76 @@ where["OR"] = [
     });
   }
 
-  async getStudentContributionTrend(userId: number) {
+  private static readonly HACKTOBERFEST_GOAL = 4;
+  private static readonly FIRST_PR_TOTAL_STEPS = 7;
+
+  async getHacktoberfestProgress(userId: number) {
+    const octStart = new Date(Date.UTC(2026, 9, 1));
+    const novStart = new Date(Date.UTC(2026, 10, 1));
+
+    const [approvedInOctober, repoSuggestionsInOctober, firstPrProgress] =
+      await Promise.all([
+        prisma.repoRequest.count({
+          where: {
+            userId,
+            status: "APPROVED",
+            createdAt: { gte: octStart, lt: novStart },
+          },
+        }),
+        prisma.repoRequest.count({
+          where: {
+            userId,
+            createdAt: { gte: octStart, lt: novStart },
+          },
+        }),
+        prisma.studentFirstPrProgress.findUnique({
+          where: { userId },
+          select: { completedStepIds: true },
+        }),
+      ]);
+
+    const completedSteps = firstPrProgress?.completedStepIds.length ?? 0;
+    const completed = Math.min(
+      OpensourceService.HACKTOBERFEST_GOAL,
+      approvedInOctober,
+    );
+    const goal = OpensourceService.HACKTOBERFEST_GOAL;
+
+    const nodeDefs = [
+      { id: 1, label: "1st PR", description: "First approved contribution" },
+      { id: 2, label: "2nd PR", description: "Second approved contribution" },
+      { id: 3, label: "3rd PR", description: "Third approved contribution" },
+      {
+        id: 4,
+        label: "Complete",
+        description: "Hacktoberfest goal reached",
+      },
+    ];
+
+    return {
+      completed,
+      goal,
+      percent: Math.round((completed / goal) * 100),
+      nodes: nodeDefs.map((node) => ({
+        ...node,
+        completed: approvedInOctober >= node.id,
+      })),
+      stats: {
+        approvedContributions: approvedInOctober,
+        repoSuggestions: repoSuggestionsInOctober,
+        firstPrStepsCompleted: completedSteps,
+        firstPrTotalSteps: OpensourceService.FIRST_PR_TOTAL_STEPS,
+      },
+    };
+  }
+
+  async getStudentContributionTrend(userId: number, startDate?: string, endDate?: string) {
     const now = new Date();
     const currentMonthStart = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
     );
-    const startMonth = this.addMonthsUTC(currentMonthStart, -5);
-    const endMonth = this.addMonthsUTC(currentMonthStart, 1);
+    const startMonth = startDate ? new Date(startDate) : this.addMonthsUTC(currentMonthStart, -5);
+    const endMonth = endDate ? new Date(endDate) : this.addMonthsUTC(currentMonthStart, 1);
     const approvedRequests = await prisma.repoRequest.findMany({
       where: {
         userId,
@@ -374,7 +524,10 @@ where["OR"] = [
       countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
     }
 
-    const trend = Array.from({ length: 6 }, (_, index) => {
+    const monthDiff = (endMonth.getUTCFullYear() - startMonth.getUTCFullYear()) * 12
+      + (endMonth.getUTCMonth() - startMonth.getUTCMonth());
+    const numMonths = Math.max(monthDiff, 1);
+    const trend = Array.from({ length: numMonths }, (_, index) => {
       const monthStart = this.addMonthsUTC(startMonth, index);
       const monthKey = this.getMonthKeyUTC(monthStart);
       return {
@@ -440,6 +593,8 @@ where["OR"] = [
       },
       select: { completedStepIds: true },
     });
+    // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
+    userService.calculateOssTier(userId).catch(() => {});
     return progress.completedStepIds;
   }
 
@@ -474,5 +629,82 @@ where["OR"] = [
     });
 
     return repos;
+  }
+
+  async submitGuideFeedback(userId: number, data: { guideId: string; stepId: string; rating: string; reason?: string }) {
+    return prisma.guideFeedback.upsert({
+      where: {
+        userId_guideId_stepId: {
+          userId,
+          guideId: data.guideId,
+          stepId: data.stepId,
+        },
+      },
+      update: {
+        rating: data.rating,
+        reason: data.reason,
+      },
+      create: {
+        userId,
+        guideId: data.guideId,
+        stepId: data.stepId,
+        rating: data.rating,
+        reason: data.reason,
+      },
+    });
+  }
+
+  // ─── Bookmarks ────────────────────────────────────────────────
+
+  async getBookmarkedRepoIds(userId: number): Promise<number[]> {
+    const bookmarks = await prisma.opensourceBookmark.findMany({
+      where: { userId },
+      select: { repoId: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return bookmarks.map((b) => b.repoId);
+  }
+
+  async addBookmark(userId: number, repoId: number): Promise<{ repoId: number }> {
+    const repo = await prisma.opensourceRepo.findUnique({
+      where: { id: repoId },
+      select: { id: true },
+    });
+    if (!repo) throw new Error("Repository not found");
+
+    await prisma.opensourceBookmark.upsert({
+      where: { userId_repoId: { userId, repoId } },
+      create: { userId, repoId },
+      update: {}, // no-op if already bookmarked
+    });
+    return { repoId };
+  }
+
+  async removeBookmark(userId: number, repoId: number): Promise<void> {
+    await prisma.opensourceBookmark.deleteMany({
+      where: { userId, repoId },
+    });
+  }
+
+  async bulkMigrateBookmarks(userId: number, repoIds: number[]): Promise<number[]> {
+    // Resolve only IDs that actually exist in the DB
+    const validRepos = await prisma.opensourceRepo.findMany({
+      where: { id: { in: repoIds } },
+      select: { id: true },
+    });
+    const validIds = validRepos.map((r) => r.id);
+    if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
+
+    await prisma.$transaction(
+      validIds.map((repoId) =>
+        prisma.opensourceBookmark.upsert({
+          where: { userId_repoId: { userId, repoId } },
+          create: { userId, repoId },
+          update: {},
+        }),
+      ),
+    );
+
+    return this.getBookmarkedRepoIds(userId);
   }
 }

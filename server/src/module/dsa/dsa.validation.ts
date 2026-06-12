@@ -5,6 +5,10 @@ export const executeCodeSchema = z.object({
   code: z.string().min(1, "Code is required").max(50000, "Code too long"),
 });
 
+export const syncLeetCodeSchema = z.object({
+  leetcodeUsername: z.string().min(1, "LeetCode username is required").max(100),
+});
+
 export const codeReviewResponseSchema = z.object({
   timeComplexity: z.string(),
   spaceComplexity: z.string(),

@@ -18,6 +18,7 @@ import {
   Shield,
   FileText,
   Trophy,
+  Copy,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
@@ -83,7 +84,7 @@ export default function SkillTestPage() {
   const [started, setStarted] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [retryAfter, setRetryAfter] = useState<Date | null>(null); 
+  const [retryAfter, setRetryAfter] = useState<Date | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const submittingRef = useRef(false);
@@ -225,75 +226,75 @@ export default function SkillTestPage() {
      Keyboard shortcuts for test navigation and answer selection.
      Active only during an ongoing test 
    */
- useEffect(() => {
-  if (!started || result) return;
+  useEffect(() => {
+    if (!started || result) return;
 
- const handleKeyDown = (event: KeyboardEvent) => {
-  const target = event.target as HTMLElement | null;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
 
-  const isEditable =
-    !!target &&
-    (target.tagName === "INPUT" ||
-      target.tagName === "TEXTAREA" ||
-      target.isContentEditable);
+      const isEditable =
+        !!target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable);
 
-  if (
-    isEditable ||
-    event.ctrlKey ||
-    event.metaKey ||
-    event.altKey
-  ) {
-    return;
-  }
-
-  const key = event.key.toLowerCase();
-    const questions = questionsRef.current;
-    const qIndex = currentQRef.current;
-    const current = questions[qIndex];
-    if (!current) return;
-    if (
-      key === "arrowleft" ||
-      key === "arrowright" ||
-      key === "enter" ||
-      ["a", "d", "1", "2", "3", "4"].includes(key)
-    ) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    // LEFT
-    if (key === "arrowleft" || key === "a") {
-      setCurrentQ((p) => Math.max(0, p - 1));
-      return;
-    }
-
-    // RIGHT
-    if (key === "arrowright" || key === "d") {
-      setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
-      return;
-    }
-
-    // OPTIONS
-    if (key === "1") selectAnswer(current.id, 0);
-    if (key === "2") selectAnswer(current.id, 1);
-    if (key === "3") selectAnswer(current.id, 2);
-    if (key === "4") selectAnswer(current.id, 3);
-
-    // ENTER → only move if answer exists
-    if (key === "enter") {
-      const hasAnswered = answers[current.id] !== undefined;
-      if (hasAnswered) {
-        setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
+      if (
+        isEditable ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey
+      ) {
+        return;
       }
-    }
-  };
 
-  window.addEventListener("keydown", handleKeyDown, true);
+      const key = event.key.toLowerCase();
+      const questions = questionsRef.current;
+      const qIndex = currentQRef.current;
+      const current = questions[qIndex];
+      if (!current) return;
+      if (
+        key === "arrowleft" ||
+        key === "arrowright" ||
+        key === "enter" ||
+        ["a", "d", "1", "2", "3", "4"].includes(key)
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
 
-  return () => {
-    window.removeEventListener("keydown", handleKeyDown, true);
-  };
-}, [started, result, answers, selectAnswer]);
+      // LEFT
+      if (key === "arrowleft" || key === "a") {
+        setCurrentQ((p) => Math.max(0, p - 1));
+        return;
+      }
+
+      // RIGHT
+      if (key === "arrowright" || key === "d") {
+        setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
+        return;
+      }
+
+      // OPTIONS
+      if (key === "1") selectAnswer(current.id, 0);
+      if (key === "2") selectAnswer(current.id, 1);
+      if (key === "3") selectAnswer(current.id, 2);
+      if (key === "4") selectAnswer(current.id, 3);
+
+      // ENTER → only move if answer exists
+      if (key === "enter") {
+        const hasAnswered = answers[current.id] !== undefined;
+        if (hasAnswered) {
+          setCurrentQ((p) => Math.min(questions.length - 1, p + 1));
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, true);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [started, result, answers, selectAnswer]);
 
   /* Timer ----------------------------------------------------------- */
 
@@ -313,10 +314,10 @@ export default function SkillTestPage() {
   /* Loading --------------------------------------------------------- */
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
         <div className="max-w-4xl w-full px-6 animate-pulse space-y-4">
-          <div className="h-8 bg-gray-100 dark:bg-gray-800 rounded-xl w-1/3" />
-          <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+          <div className="h-8 bg-stone-200 dark:bg-stone-800 rounded-md w-1/3" />
+          <div className="h-48 bg-stone-200 dark:bg-stone-800 rounded-md" />
         </div>
       </div>
     );
@@ -326,22 +327,22 @@ export default function SkillTestPage() {
 
   if (error || !test) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950 p-6">
         <div className="max-w-3xl mx-auto">
           <Button
             variant="ghost"
             size="sm"
             onClick={closeTab}
-            className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white mb-5"
+            className="text-stone-500 dark:text-stone-400 hover:text-black dark:hover:text-white mb-5"
           >
             <ArrowLeft className="w-4 h-4" /> Close
           </Button>
-          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-10 text-center space-y-3">
+          <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-md shadow-sm p-10 text-center space-y-3">
             <AlertTriangle className="w-10 h-10 text-amber-400 mx-auto" />
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100">
               Test Not Available
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
+            <p className="text-sm text-stone-500 dark:text-stone-400">{error}</p>
           </div>
         </div>
       </div>
@@ -386,25 +387,25 @@ export default function SkillTestPage() {
     };
 
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center p-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-8 space-y-6"
+          className="max-w-md w-full bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-md shadow-sm p-8 space-y-6"
         >
           <div className="text-center space-y-2">
-            <div className="w-14 h-14 bg-amber-100 dark:bg-amber-900/30 rounded-2xl flex items-center justify-center mx-auto">
+            <div className="w-14 h-14 bg-amber-100 dark:bg-amber-900/30 rounded-md flex items-center justify-center mx-auto">
               <Camera className="w-7 h-7 text-amber-600 dark:text-amber-400" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100">
               Camera Required
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-stone-500 dark:text-stone-400">
               This is a proctored test. Please enable your camera to continue.
             </p>
           </div>
 
-          <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden flex items-center justify-center">
+          <div className="aspect-video bg-stone-100 dark:bg-stone-800 rounded-md overflow-hidden flex items-center justify-center">
             <video
               ref={videoRef}
               autoPlay
@@ -412,11 +413,11 @@ export default function SkillTestPage() {
               playsInline
               className="w-full h-full object-cover hidden"
             />
-            <Camera className="w-10 h-10 text-gray-300 dark:text-gray-600" />
+            <Camera className="w-10 h-10 text-stone-300 dark:text-stone-600" />
           </div>
 
           {cameraError && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3 text-center">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3 text-center">
               <p className="text-sm text-red-600 dark:text-red-400">
                 {cameraError}
               </p>
@@ -426,7 +427,7 @@ export default function SkillTestPage() {
           <Button
             size="lg"
             onClick={requestCamera}
-            className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
+            className="w-full bg-lime-600 hover:bg-lime-700 text-white rounded-md"
           >
             <Camera className="w-4 h-4" />
             Enable Camera & Continue
@@ -439,77 +440,77 @@ export default function SkillTestPage() {
   /* Pre-start screen ------------------------------------------------ */
   if (!started) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center p-6">
         <div className="max-w-3xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-8 space-y-6"
+            className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-md shadow-sm p-8 space-y-6"
           >
             <div className="text-center space-y-2">
-              <div className="w-14 h-14 bg-violet-100 dark:bg-violet-900/30 rounded-2xl flex items-center justify-center mx-auto">
-                <ShieldCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" />
+              <div className="w-14 h-14 bg-lime-100 dark:bg-lime-900/30 rounded-md flex items-center justify-center mx-auto">
+                <ShieldCheck className="w-7 h-7 text-lime-600 dark:text-lime-400" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+              <h1 className="text-xl font-bold text-stone-900 dark:text-stone-100">
                 {test.title}
               </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+              <p className="text-sm text-stone-500 dark:text-stone-400 capitalize">
                 {test.skillName.replace(/-/g, " ")}
               </p>
             </div>
-                    
+
             {test.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+              <p className="text-sm text-stone-600 dark:text-stone-400 text-center">
                 {test.description}
               </p>
             )}
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-  {[
-    {
-      label: "Time Limit",
-      value: `${Math.ceil(test.timeLimitSecs / 60)} min`,
-      icon: Clock,
-    },
-    {
-      label: "Pass Score",
-      value: `${test.passThreshold}%`,
-      icon: CheckCircle2,
-    },
-    {
-      label: "Questions",
-      value: test.questionsPerSession ?? "—",
-      icon: FileText,
-    },
-    {
-      label: "Best Attempt",
-      value:
-  test.bestAttempt?.score !== undefined
-    ? `${test.bestAttempt.score}%`
-    : "—",
-      icon: Trophy,
-    },
-  ].map((item) => (
-    <div
-      key={item.label}
-      className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-center"
-    >
-      <item.icon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                {
+                  label: "Time Limit",
+                  value: `${Math.ceil(test.timeLimitSecs / 60)} min`,
+                  icon: Clock,
+                },
+                {
+                  label: "Pass Score",
+                  value: `${test.passThreshold}%`,
+                  icon: CheckCircle2,
+                },
+                {
+                  label: "Questions",
+                  value: test.questionsPerSession ?? "—",
+                  icon: FileText,
+                },
+                {
+                  label: "Best Attempt",
+                  value:
+                    test.bestAttempt?.score !== undefined
+                      ? `${test.bestAttempt.score}%`
+                      : "—",
+                  icon: Trophy,
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="bg-stone-100 dark:bg-stone-800 rounded-md p-3 text-center"
+                >
+                  <item.icon className="w-4 h-4 text-stone-400 mx-auto mb-1" />
 
-      <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-        {item.value}
-      </p>
+                  <p className="text-sm font-bold text-stone-900 dark:text-stone-100">
+                    {item.value}
+                  </p>
 
-      <p className="text-[11px] text-gray-500 dark:text-gray-400">
-        {item.label}
-      </p>
-    </div>
-  ))}
-</div>  
-             
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                    {item.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+
 
             {test.existingVerification && (
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-3 text-center">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md p-3 text-center">
                 <p className="text-sm text-green-700 dark:text-green-400 font-medium">
                   Already verified with {test.existingVerification.score}%
                   score. You can retake to improve.
@@ -517,12 +518,12 @@ export default function SkillTestPage() {
               </div>
             )}
 
-            <div className="bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl p-4 space-y-2">
-              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
-                <Shield className="w-4 h-4 text-gray-500 dark:text-gray-400" />{" "}
+            <div className="bg-stone-100 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 rounded-md p-4 space-y-2">
+              <h3 className="text-sm font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
+                <Shield className="w-4 h-4 text-stone-500 dark:text-stone-400" />{" "}
                 Proctored Test Rules
               </h3>
-              <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1.5 list-disc list-inside">
+              <ul className="text-xs text-stone-600 dark:text-stone-400 space-y-1.5 list-disc list-inside">
                 <li>The test will enter fullscreen mode</li>
                 <li>Your camera will be active for face detection</li>
                 <li>
@@ -540,19 +541,19 @@ export default function SkillTestPage() {
             </div>
 
             {retryAfter && new Date() < retryAfter ? (
-  <div className="w-full text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
-    ⏳ Cooldown active! Retry available at {retryAfter.toLocaleTimeString()}
-  </div>
-) : (
-  <Button
-    size="lg"
-    onClick={handleStart}
-    className="w-full bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
-  >
-    <Maximize className="w-4 h-4" />
-    Start Proctored Test
-  </Button>
-)}
+              <div className="w-full text-center p-4 bg-stone-100 dark:bg-stone-800 rounded-md text-sm text-stone-600 dark:text-stone-400">
+                ⏳ Cooldown active! Retry available at {retryAfter.toLocaleTimeString()}
+              </div>
+            ) : (
+              <Button
+                size="lg"
+                onClick={handleStart}
+                className="w-full bg-lime-600 hover:bg-lime-700 text-white rounded-md"
+              >
+                <Maximize className="w-4 h-4" />
+                Start Proctored Test
+              </Button>
+            )}
           </motion.div>
         </div>
       </div>
@@ -562,20 +563,31 @@ export default function SkillTestPage() {
   /* Result screen --------------------------------------------------- */
   if (result) {
     const log = proctor.getProctorLog();
+    const shareUrl = result.token ? `${window.location.origin}/verify/${result.token}` : null;
+    const handleCopyShareLink = async () => {
+      if (!shareUrl) return;
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Verification link copied to clipboard.");
+      } catch {
+        toast.error("Unable to copy the verification link.");
+      }
+    };
+
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950 p-6">
         <div className="max-w-3xl mx-auto space-y-5">
           {/* Score card */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`rounded-2xl p-8 text-center border ${result.passed
+            className={`rounded-md p-8 text-center border ${result.passed
               ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
               : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
               }`}
           >
             <div
-              className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold ${result.passed
+              className={`w-20 h-20 rounded-md flex items-center justify-center mx-auto mb-4 text-2xl font-bold ${result.passed
                 ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400"
                 : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400"
                 }`}
@@ -587,17 +599,17 @@ export default function SkillTestPage() {
             >
               {result.passed ? "Skill Verified!" : "Not Passed"}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-stone-600 dark:text-stone-400 mt-1">
               {result.correctCount}/{result.totalQuestions} correct
               {!result.passed && ` - Need ${test.passThreshold}% to pass`}
             </p>
 
             {/* Proctor summary */}
-            <div className="flex flex-wrap justify-center gap-3 mt-4 text-xs text-gray-500 dark:text-gray-400">
-              <span className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+            <div className="flex flex-wrap justify-center gap-3 mt-4 text-xs text-stone-500 dark:text-stone-400">
+              <span className="flex items-center gap-1 px-2 py-1 bg-stone-100 dark:bg-stone-800 rounded-md">
                 <EyeOff className="w-3 h-3" /> Tab: {log.tabSwitches}
               </span>
-              <span className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+              <span className="flex items-center gap-1 px-2 py-1 bg-stone-100 dark:bg-stone-800 rounded-md">
                 <Eye className="w-3 h-3" /> Focus: {log.focusLosses}
               </span>
               {log.devtoolsAttempts > 0 && (
@@ -611,7 +623,7 @@ export default function SkillTestPage() {
                   {log.faceViolations.length}
                 </span>
               )}
-              <span className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+              <span className="flex items-center gap-1 px-2 py-1 bg-stone-100 dark:bg-stone-800 rounded-md">
                 <Camera className="w-3 h-3" /> Cam:{" "}
                 {log.cameraEnabled ? "On" : "Off"}
               </span>
@@ -623,9 +635,30 @@ export default function SkillTestPage() {
             </div>
           </motion.div>
 
+          {result.passed && shareUrl ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-md p-5 text-sm text-stone-700 dark:text-stone-300"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-stone-900 dark:text-stone-100">Shareable verification link</p>
+                  <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">Anyone can verify your skill using this public URL.</p>
+                </div>
+                <Button variant="secondary" size="sm" onClick={handleCopyShareLink} className="rounded-md">
+                  <Copy className="w-4 h-4 mr-2" /> Copy Link
+                </Button>
+              </div>
+              <div className="mt-3 rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950 px-3 py-2 break-all text-xs text-stone-800 dark:text-stone-200">
+                {shareUrl}
+              </div>
+            </motion.div>
+          ) : null}
+
           {/* Question review */}
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">
+            <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
               Question Review
             </h3>
             {questions.map((q, qIdx) => {
@@ -635,10 +668,10 @@ export default function SkillTestPage() {
               return (
                 <div
                   key={q.id}
-                  className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-4 space-y-2"
+                  className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-md p-4 space-y-2"
                 >
-                  <p className="text-sm text-gray-900 dark:text-gray-100">
-                    <span className="text-gray-400 mr-1">{qIdx + 1}.</span>
+                  <p className="text-sm text-stone-900 dark:text-stone-100">
+                    <span className="text-stone-400 mr-1">{qIdx + 1}.</span>
                     {q.question}
                   </p>
                   <div className="space-y-1.5">
@@ -649,11 +682,11 @@ export default function SkillTestPage() {
                       return (
                         <div
                           key={optIdx}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs border ${isCorrect
+                          className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs border ${isCorrect
                             ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300"
                             : isWrong
                               ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300"
-                              : "border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-400"
+                              : "border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400"
                             }`}
                         >
                           <span className="font-bold w-5">
@@ -665,7 +698,7 @@ export default function SkillTestPage() {
                     })}
                   </div>
                   {graded?.explanation && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 mt-1">
+                    <p className="text-xs text-stone-500 dark:text-stone-400 bg-stone-50 dark:bg-stone-800 rounded-md p-2 mt-1">
                       {graded.explanation}
                     </p>
                   )}
@@ -674,40 +707,40 @@ export default function SkillTestPage() {
             })}
           </div>
 
-        {/* Actions */}
-        {/* Actions */}
-        <div className="flex gap-3 pt-2 pb-8">
-          <Button
-            size="lg"
-            variant="secondary"
-            onClick={closeTab}
-            className="flex-1 rounded-xl"
-          >
-            Close Tab
-          </Button>
+          {/* Actions */}
+          {/* Actions */}
+          <div className="flex gap-3 pt-2 pb-8">
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={closeTab}
+              className="flex-1 rounded-md"
+            >
+              Close Tab
+            </Button>
 
-          {!result.passed && (
-            retryAfter && new Date() < retryAfter ? (
-              <div className="flex-1 text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-600 dark:text-gray-400">
-                ⏳ Retry available at {retryAfter.toLocaleTimeString()}
-              </div>
-            ) : (
-              <Button
-                size="lg"
-                onClick={() => {
-                  setResult(null);
-                  setAnswers({});
-                  setCurrentQ(0);
-                  setStarted(false);
-                  setRetryAfter(null);
-                }}
-                className="flex-1 bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
-              >
-                Try Again
-              </Button>
-            )
-          )}
-        </div>
+            {!result.passed && (
+              retryAfter && new Date() < retryAfter ? (
+                <div className="flex-1 text-center p-3 bg-stone-100 dark:bg-stone-800 rounded-md text-sm text-stone-600 dark:text-stone-400">
+                  ⏳ Retry available at {retryAfter.toLocaleTimeString()}
+                </div>
+              ) : (
+                <Button
+                  size="lg"
+                  onClick={() => {
+                    setResult(null);
+                    setAnswers({});
+                    setCurrentQ(0);
+                    setStarted(false);
+                    setRetryAfter(null);
+                  }}
+                  className="flex-1 bg-lime-600 hover:bg-lime-700 text-white rounded-md"
+                >
+                  Try Again
+                </Button>
+              )
+            )}
+          </div>
         </div>
       </div>
     );
@@ -715,7 +748,7 @@ export default function SkillTestPage() {
 
   /* Test in progress ------------------------------------------------ */
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 pt-8">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 p-4 pt-8">
       <div className="max-w-4xl mx-auto">
         {/* Fullscreen warning overlay */}
         {proctor.state.showFullscreenWarning && (
@@ -737,11 +770,11 @@ export default function SkillTestPage() {
         />
 
         {/* Sticky header */}
-        <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 -mx-4 px-4 py-3 mb-5">
+        <div className="sticky top-0 z-10 bg-white/80 dark:bg-stone-950/80 backdrop-blur-md border-b border-stone-100 dark:border-stone-800 -mx-4 px-4 py-3 mb-5">
           <div className="flex items-center justify-between gap-4 max-w-4xl mx-auto">
             <div className="flex items-center gap-3 min-w-0">
-              <ShieldCheck className="w-5 h-5 text-violet-500 shrink-0" />
-              <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
+              <ShieldCheck className="w-5 h-5 text-lime-500 shrink-0" />
+              <h1 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate">
                 {test.title}
               </h1>
             </div>
@@ -770,15 +803,15 @@ export default function SkillTestPage() {
               )}
 
               {/* Progress */}
-              <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-[10px] font-semibold rounded-md tabular-nums">
+              <span className="px-2 py-1 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-[10px] font-semibold rounded-md tabular-nums">
                 {answeredCount}/{totalQuestions}
               </span>
 
               {/* Timer */}
               <div
-                className={`px-3 py-1.5 rounded-lg text-sm font-mono font-bold tabular-nums ${isUrgent
+                className={`px-3 py-1.5 rounded-md text-sm font-mono font-bold tabular-nums ${isUrgent
                   ? "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 animate-pulse"
-                  : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  : "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300"
                   }`}
               >
                 {timerDisplay}
@@ -788,7 +821,7 @@ export default function SkillTestPage() {
         </div>
 
         {/* Horizontal question navigator - at top */}
-        <div className="flex flex-wrap gap-1.5 mb-5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-3">
+        <div className="flex flex-wrap gap-1.5 mb-5 bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-md p-3">
           {questions.map((q, i) => (
             <Button
               key={q.id}
@@ -796,10 +829,10 @@ export default function SkillTestPage() {
               variant="ghost"
               onClick={() => setCurrentQ(i)}
               className={`w-9 h-9 ${i === currentQ
-                ? "bg-violet-600 text-white shadow-sm hover:bg-violet-700"
+                ? "bg-lime-600 text-white shadow-sm hover:bg-lime-700"
                 : answers[q.id] !== undefined
                   ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  : "bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700"
                 }`}
             >
               {i + 1}
@@ -815,10 +848,10 @@ export default function SkillTestPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2 }}
-              className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-6"
+              className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-md shadow-sm p-6"
             >
-              <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-4">
-                <span className="text-gray-400 dark:text-gray-500 mr-1.5">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-100 mb-4">
+                <span className="text-stone-400 dark:text-stone-500 mr-1.5">
                   {currentQ + 1}.
                 </span>
                 {currentQuestion.question}
@@ -833,15 +866,15 @@ export default function SkillTestPage() {
                       variant="outline"
                       onClick={() => selectAnswer(currentQuestion.id, optIdx)}
                       autoHeight
-                      className={`w-full justify-start gap-3 py-3.5 rounded-xl text-left ${isSelected
-                        ? "border-violet-400 dark:border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-900 dark:text-violet-200 ring-1 ring-violet-200 dark:ring-violet-700"
+                      className={`w-full justify-start gap-3 py-3.5 rounded-md text-left ${isSelected
+                        ? "border-lime-400 dark:border-lime-500 bg-lime-50 dark:bg-lime-900/20 text-lime-900 dark:text-lime-200 ring-1 ring-lime-200 dark:ring-lime-700"
                         : ""
                         }`}
                     >
                       <span
-                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border ${isSelected
-                          ? "border-violet-400 dark:border-violet-500 bg-violet-500 text-white"
-                          : "border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400"
+                        className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold shrink-0 border ${isSelected
+                          ? "border-lime-400 dark:border-lime-500 bg-lime-500 text-white"
+                          : "border-stone-300 dark:border-stone-600 text-stone-500 dark:text-stone-400"
                           }`}
                       >
                         {OPTION_LABELS[optIdx]}
@@ -860,7 +893,7 @@ export default function SkillTestPage() {
               variant="secondary"
               onClick={() => setCurrentQ((p) => Math.max(0, p - 1))}
               disabled={currentQ === 0}
-              className="rounded-xl"
+              className="rounded-md"
             >
               <ChevronLeft className="w-4 h-4" /> Previous
             </Button>
@@ -869,7 +902,7 @@ export default function SkillTestPage() {
               <Button
                 onClick={() => handleSubmit()}
                 disabled={!allAnswered || submitting}
-                className="bg-green-600 hover:bg-green-700 text-white rounded-xl"
+                className="bg-green-600 hover:bg-green-700 text-white rounded-md"
               >
                 {submitting ? (
                   <>
@@ -888,7 +921,7 @@ export default function SkillTestPage() {
                 onClick={() =>
                   setCurrentQ((p) => Math.min(totalQuestions - 1, p + 1))
                 }
-                className="bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
+                className="bg-lime-600 hover:bg-lime-700 text-white rounded-md"
               >
                 Next <ChevronRight className="w-4 h-4" />
               </Button>

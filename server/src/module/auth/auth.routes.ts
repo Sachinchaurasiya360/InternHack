@@ -39,6 +39,16 @@ const resendOtpRateLimit = createOtpRateLimit(3, "Too many resend attempts, plea
 const forgotPasswordRateLimit = createOtpRateLimit(3, "Too many password reset requests, please try again after 15 minutes", "forgot-password");
 const resetPasswordRateLimit = createOtpRateLimit(5, "Too many password reset attempts, please try again after 15 minutes", "reset-password");
 
+// Profile enumeration protection: 10 requests per minute per IP
+const publicProfileRateLimit = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: { message: "Too many requests, please slow down" },
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRateLimitStore("public-profile"),
+});
+
 // ---------------------------------------------------------------------------
 // Routes
 // ---------------------------------------------------------------------------
@@ -60,4 +70,4 @@ authRouter.get("/me", authMiddleware, (req, res) => authController.getProfile(re
 authRouter.put("/me", authMiddleware, validateBody(updateProfileSchema), (req, res) => authController.updateProfile(req, res));
 authRouter.post("/import-github", authMiddleware, validateBody(importGitHubSchema), (req, res) => authController.importGitHub(req, res));
 authRouter.get("/github-stats", authMiddleware, usageLimit("GITHUB_STATS"), (req, res) => authController.getGitHubStats(req, res));
-authRouter.get("/profile/:identifier", authMiddleware, (req, res) => authController.getPublicProfile(req, res));
+authRouter.get("/profile/:identifier", authMiddleware, publicProfileRateLimit, (req, res) => authController.getPublicProfile(req, res));

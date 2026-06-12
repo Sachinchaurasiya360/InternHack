@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import ContributionCoachPanel from "./ContributionCoachPanel";
 import CoachFloatingButton from "./CoachFloatingButton";
 import { LearningPathProvider } from "./learning-paths.context";
-import { LearningPathSidebar } from "./components/LearningPathSidebar";
+import StreakFlame from "./StreakFlame";
 
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
@@ -15,6 +15,7 @@ const SEGMENT_NAMES: Record<string, string> = {
   "git-guide": "Git Guide",
   communication: "Communication",
   cicd: "CI/CD",
+  "hackathon-prep": "Hackathon Prep",
   programs: "Programs",
   analytics: "Analytics",
 };
@@ -46,7 +47,7 @@ function OpenSourceBreadcrumb() {
   }));
 
   return (
-    <nav className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest mb-6 flex-wrap px-4 sm:px-8 pt-6">
+    <nav className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest mb-6 flex-wrap px-4 sm:px-8 pt-6">
       <div className="h-1 w-1 bg-lime-400"></div>
       {items.map((item, i) => (
         <Fragment key={item.path}>
@@ -71,17 +72,15 @@ export default function OpenSourceLayout() {
   return (
     <LearningPathProvider>
       <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
-        <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 pb-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:px-8">
-          <main className="min-w-0">
-            <OpenSourceBreadcrumb />
-            <Outlet />
-          </main>
-          <div className="pt-6 lg:sticky lg:top-20 lg:h-fit">
-            <LearningPathSidebar />
-          </div>
-        </div>
+        <main>
+          <OpenSourceBreadcrumb />
+          <Outlet />
+        </main>
         <ContributionCoachPanel />
         <CoachFloatingButton />
+        <div className="fixed bottom-4 right-4 z-40">
+          <StreakFlame />
+        </div>
       </div>
     </LearningPathProvider>
   );

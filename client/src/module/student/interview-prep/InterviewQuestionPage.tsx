@@ -79,13 +79,9 @@ export default function InterviewQuestionPage() {
 
   const [completed, setCompleted] = useState(false);
 
-  const section = sections.find((s) => s.id === sectionSlug);
-  const sectionQuestions = useMemo(
-    () => questions.filter((q) => q.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
-    [sectionSlug],
-  );
-
-  const question = sectionQuestions.find((q) => q.id === questionId);
+  const section = useMemo( () => sections.find((s) => s.id === sectionSlug) || null, [sectionSlug]);
+  const sectionQuestions = useMemo(() => { return questions.filter((q) => q.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex);}, [sectionSlug]);
+  const question = useMemo(() => { return sectionQuestions.find((q) => q.id === questionId) || null;}, [sectionQuestions, questionId]);
 
   const currentIndex = question
     ? sectionQuestions.findIndex((q) => q.id === question.id)
@@ -215,20 +211,52 @@ export default function InterviewQuestionPage() {
   }
 
   if (!question || !section) {
-    return (
-      <div className="relative max-w-6xl mx-auto py-20 text-center">
-        <p className="text-sm text-stone-600 dark:text-stone-400">Question not found.</p>
+  return (
+    <div className="relative max-w-3xl mx-auto py-24 px-6 text-center">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-xl p-8">
+        <h2 className="text-2xl font-bold text-stone-900 dark:text-stone-50 mb-3">
+          Question not found
+        </h2>
+
+        <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+          This interview question may have been moved, deleted,
+          or the URL might be incorrect.
+        </p>
+
         <Link
           to={basePath}
-          className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline"
+          className="mt-6 inline-flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline"
         >
-          back to interview prep <ArrowUpRight className="w-3 h-3" />
+          Browse all questions
+          <ArrowUpRight className="w-3 h-3" />
         </Link>
+      </div>
+    </div>
+  );
+  }
+
+  const content = question.content;
+  const hasValidContent = content && typeof content.question === "string" && typeof content.answer === "string";
+  
+  if (!hasValidContent) {
+    console.error("Malformed interview question payload", {
+      sectionSlug,
+      questionId,
+    });
+
+  return (
+      <div className="relative max-w-3xl mx-auto py-24 px-6 text-center">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-xl p-8">
+          <h2 className="text-2xl font-bold">Question not found</h2>
+          <p className="text-sm text-stone-600 dark:text-stone-400">
+            Invalid or corrupted question data.
+          </p>
+          <Link to={basePath}>Go back</Link>
+        </div>
       </div>
     );
   }
-
-  const { content } = question;
+  
   const codeExamples = content.codeExamples ?? [];
 
   return (

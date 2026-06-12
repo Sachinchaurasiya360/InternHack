@@ -12,8 +12,11 @@ import {
   ChevronDown,
   ArrowLeft,
   BarChart3,
+  Flame,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
+import { useAuthStore } from "../../../lib/auth.store";
 import {
   PieChart,
   Pie,
@@ -44,6 +47,10 @@ import type {
   GSoCStats,
   OpenSourceContributionTrendResponse,
 } from "../../../lib/types";
+import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
+import { HacktoberfestTracker } from "./HacktoberfestTracker";
+import type { OpenSourceStreak } from "../../../lib/types";
+import { STREAK_RESET_HOURS, STREAK_RISK_HOURS } from "./streakConstants";
 
 // ─── Theme ──────────────────────────────────────────────────────
 const CHART_COLORS = [
@@ -117,7 +124,7 @@ function ChartModal({ open, onClose, title, subtitle, children }: { open: boolea
               <div>
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <div className="h-1 w-1 bg-lime-400" />
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400">{subtitle}</p>
+                  <p className="text-xs font-mono uppercase tracking-widest text-stone-400">{subtitle}</p>
                 </div>
                 <h3 className="text-base font-bold text-stone-50">{title}</h3>
               </div>
@@ -136,6 +143,27 @@ function ChartModal({ open, onClose, title, subtitle, children }: { open: boolea
         </>
       )}
     </AnimatePresence>
+  );
+}
+
+// ─── Accessible Chart ─────────────────────────────────────────────────
+function AccessibleChart({
+  label,
+  caption,
+  children,
+}: {
+  label: string;
+  caption: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <figure role="img" aria-label={label} tabIndex={0}>
+      {children}
+
+      <figcaption className="sr-only">
+        {caption}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -161,7 +189,7 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
           <div>
             <div className="flex items-center gap-1.5 mb-0.5">
               <div className="h-1 w-1 bg-lime-400" />
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{subtitle}</p>
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{subtitle}</p>
             </div>
             <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50">{title}</h3>
           </div>
@@ -235,11 +263,28 @@ export default function OpenSourceAnalyticsPage() {
     markLearningPathMilestone("leaderboard");
   }, []);
 
+  const { user } = useAuthStore();
+  const isPremium =
+    user?.subscriptionStatus === "ACTIVE" &&
+    user?.subscriptionPlan !== "FREE" &&
+    user?.subscriptionEndDate &&
+    new Date(user.subscriptionEndDate) > new Date();
+  const showHacktoberfestTracker = isHacktoberfestMode();
+
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [filterYear, setFilterYear] = useState<string>("ALL");
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
   const [filterTech, setFilterTech] = useState<string>("ALL");
   const [showFilters, setShowFilters] = useState(false);
+
+  const now = Date.now(); // eslint-disable-line react-hooks/purity
+
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  const defaultStart = sixMonthsAgo.toISOString().slice(0, 7);
+  const today = new Date().toISOString().slice(0, 7);
+  const [startMonth, setStartMonth] = useState(defaultStart);
+  const [endMonth, setEndMonth] = useState(today);
 
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
@@ -267,9 +312,15 @@ export default function OpenSourceAnalyticsPage() {
   });
 
   const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
-    queryKey: queryKeys.opensource.trend(),
-    queryFn: () => api.get("/opensource/analytics/trend").then((r) => r.data),
+    queryKey: queryKeys.opensource.trend(startMonth, endMonth),
+    queryFn: () => api.get("/opensource/analytics/trend", { params: { startDate: startMonth, endDate: endMonth } }).then((r) => r.data),
     staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: streakData } = useQuery({
+    queryKey: queryKeys.opensource.streak(),
+    queryFn: () => api.get("/opensource/streak").then((r) => r.data.streak as OpenSourceStreak),
+    staleTime: 60000,
   });
 
   const allOrgs = useMemo(() => orgsData ?? [], [orgsData]);
@@ -281,22 +332,29 @@ export default function OpenSourceAnalyticsPage() {
   contributionTrend.length > 0 &&
   contributionTrend.every((entry) => entry.count === 0);
 
-  const handleExportCSV = () => {
-    if (!contributionTrend || contributionTrend.length === 0) return;
-
-    const header = "Month,Label,Contributions";
-    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
-    const csv = [header, ...rows].join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const downloadBlob = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "my-oss-contributions.csv";
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportCSV = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+    const header = "Month,Label,Contributions";
+    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
+    downloadBlob([header, ...rows].join("\n"), `oss-contributions-${startMonth}-${endMonth}.csv`, "text/csv;charset=utf-8;");
+  };
+
+  const handleExportJSON = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+    const json = JSON.stringify({ range: { start: startMonth, end: endMonth }, contributions: contributionTrend }, null, 2);
+    downloadBlob(json, `oss-contributions-${startMonth}-${endMonth}.json`, "application/json");
   };
 
   const years = useMemo(() => {
@@ -414,12 +472,20 @@ export default function OpenSourceAnalyticsPage() {
     );
   };
 
+  if (!isPremium) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16">
+        <PremiumUpgradeCTA feature="Open Source Analytics" />
+      </div>
+    );
+  }
+
   if (isLoading) {
     return <LoadingScreen />;
   }
 
-  // Empty state: student has zero contributions
-  if (!trendIsLoading && !trendIsError && contributionTotal === 0) {
+  // Empty state: student has zero contributions (skip during Hacktoberfest mode so tracker is visible)
+  if (!showHacktoberfestTracker && !trendIsLoading && !trendIsError && contributionTotal === 0) {
     return (
       <div className="pb-16">
         <SEO title="Open Source Analytics" noIndex />
@@ -465,33 +531,120 @@ export default function OpenSourceAnalyticsPage() {
           </div>
           <Link
             to="/student/opensource"
-            className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline shrink-0"
+            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline shrink-0"
           >
             <ArrowLeft className="w-3 h-3" />
             back to repos
           </Link>
         </div>
 
+        {showHacktoberfestTracker && <HacktoberfestTracker />}
+
         {/* ── Contribution Heatmap ─────────────────────────────── */}
         <div className="mb-8">
           <div className="flex items-center gap-1.5 mb-3">
             <div className="h-1 w-1 bg-lime-400" />
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
               your contributions
             </p>
           </div>
           <OssContributionHeatmap />
 
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
+              From
+              <input
+                type="month"
+                value={startMonth}
+                onChange={(e) => setStartMonth(e.target.value)}
+                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
+              />
+            </label>
+            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
+              To
+              <input
+                type="month"
+                value={endMonth}
+                onChange={(e) => setEndMonth(e.target.value)}
+                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
+              />
+            </label>
             <button
               onClick={handleExportCSV}
               disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
               className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
-              Export CSV
+              CSV
+            </button>
+            <button
+              onClick={handleExportJSON}
+              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
+              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              JSON
             </button>
           </div>
+        </div>
+
+        {/* ── Streak ──────────────────────────────────────────── */}
+        <div className="mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.03, duration: 0.4 }}
+            className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5"
+          >
+            <div className="flex items-center gap-1.5 mb-4">
+              <div className="h-1 w-1 bg-lime-400" />
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                streak
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-8">
+              <div className="flex items-center gap-3">
+                <Flame className={`w-8 h-8 ${streakData && streakData.currentStreak > 0 ? "text-lime-500" : "text-stone-400"}`} />
+                <div>
+                  <p className="text-2xl font-bold text-stone-900 dark:text-stone-50">
+                    {streakData?.currentStreak ?? 0}
+                  </p>
+                  <p className="text-xs text-stone-500">day streak</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-6 text-sm">
+                <div>
+                  <p className="font-bold text-stone-900 dark:text-stone-50">{streakData?.longestStreak ?? 0}</p>
+                  <p className="text-xs text-stone-500">longest</p>
+                </div>
+                <div>
+                  <p className="font-bold text-stone-900 dark:text-stone-50">{streakData?.totalDays ?? 0}</p>
+                  <p className="text-xs text-stone-500">total days</p>
+                </div>
+                {streakData?.lastActivityAt && (
+                  <div>
+                    <p className="font-bold text-stone-900 dark:text-stone-50">
+                      {Math.floor((now - new Date(streakData.lastActivityAt).getTime()) / 3600000)}h
+                    </p>
+                    <p className="text-xs text-stone-500">since last activity</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            {streakData && streakData.currentStreak > 0 && streakData.lastActivityAt && (() => {
+              const hoursSince = (now - new Date(streakData.lastActivityAt).getTime()) / 3600000;
+              const hoursRemaining = Math.max(0, STREAK_RESET_HOURS - hoursSince);
+              if (hoursSince >= STREAK_RISK_HOURS) {
+                return (
+                  <div className="mt-4 flex items-center gap-2 text-xs text-orange-500 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/30 rounded-md px-3 py-2">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>Your streak is at risk. Contribute within the next {Math.ceil(hoursRemaining)} hours to keep it alive.</span>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+          </motion.div>
         </div>
 
         {/* ── Monthly Contribution Activity ────────────────── */}
@@ -501,7 +654,7 @@ export default function OpenSourceAnalyticsPage() {
             subtitle={
               trendIsLoading
                 ? "loading your approved open source contribution history"
-                : `approved repo requests in the last 6 months${contributionTotal ? ` · ${contributionTotal} total` : ""}`
+                : `approved repo requests ${startMonth}–${endMonth}${contributionTotal ? ` · ${contributionTotal} total` : ""}`
             }
             index={0}
             expandedChildren={
@@ -515,6 +668,7 @@ export default function OpenSourceAnalyticsPage() {
                   showButton
                 />
               ) : hasContributionActivity ? (
+                <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -524,6 +678,7 @@ export default function OpenSourceAnalyticsPage() {
                     <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
                   </BarChart>
                 </ResponsiveContainer>
+                </AccessibleChart>
               ) : (
                 <TrendEmptyState
                   message="Submit a repo suggestion and get it approved to start tracking your open source journey."
@@ -535,6 +690,7 @@ export default function OpenSourceAnalyticsPage() {
             {trendIsLoading ? (
               <TrendSkeleton />
             ) : hasContributionActivity ? (
+              <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -544,6 +700,7 @@ export default function OpenSourceAnalyticsPage() {
                   <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
                 </BarChart>
               </ResponsiveContainer>
+              </AccessibleChart>
             ) : trendIsError ? (
               <TrendEmptyState
                 message="We could not load your contribution trend right now. Try again in a moment."
@@ -567,7 +724,7 @@ export default function OpenSourceAnalyticsPage() {
             >
               <div className="flex items-center gap-1.5 mb-4">
                 <div className="h-1 w-1 bg-lime-400" />
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                   contributions / by domain
                 </span>
               </div>
@@ -639,7 +796,7 @@ export default function OpenSourceAnalyticsPage() {
                   <Filter className="w-3 h-3" />
                   Filters
                   {activeFilterCount > 0 && (
-                    <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-md bg-stone-950 text-lime-400 text-[10px] font-mono">
+                    <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-md bg-stone-950 text-lime-400 text-xs font-mono">
                       {activeFilterCount}
                     </span>
                   )}
@@ -650,7 +807,7 @@ export default function OpenSourceAnalyticsPage() {
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
+                    className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
                   >
                     / clear all
                   </button>
@@ -667,7 +824,7 @@ export default function OpenSourceAnalyticsPage() {
                   >
                     <div className="flex flex-wrap gap-4 mt-3 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
                       <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Year</label>
+                        <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Year</label>
                         <select
                           value={filterYear}
                           onChange={(e) => setFilterYear(e.target.value)}
@@ -678,7 +835,7 @@ export default function OpenSourceAnalyticsPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Category</label>
+                        <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Category</label>
                         <select
                           value={filterCategory}
                           onChange={(e) => setFilterCategory(e.target.value)}
@@ -689,7 +846,7 @@ export default function OpenSourceAnalyticsPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Technology</label>
+                        <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Technology</label>
                         <select
                           value={filterTech}
                           onChange={(e) => setFilterTech(e.target.value)}
@@ -707,7 +864,7 @@ export default function OpenSourceAnalyticsPage() {
 
             {/* ── Results label ───────────────────────────────── */}
             <div className="mb-4">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                 <span className="text-stone-900 dark:text-stone-50">{orgs.length}</span>
                 {" "}organization{orgs.length !== 1 ? "s" : ""}
                 {hasActiveFilter && " (filtered)"}
@@ -725,7 +882,7 @@ export default function OpenSourceAnalyticsPage() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="mt-3 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline cursor-pointer bg-transparent border-0"
+                  className="mt-3 text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline cursor-pointer bg-transparent border-0"
                 >
                   / clear filters
                 </button>
@@ -737,7 +894,7 @@ export default function OpenSourceAnalyticsPage() {
               <>
                 <div className="flex items-center gap-1.5 mb-4">
                   <div className="h-1 w-1 bg-lime-400" />
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                     gsoc organization charts
                   </p>
                 </div>
@@ -747,6 +904,7 @@ export default function OpenSourceAnalyticsPage() {
                   {/* 1 - Category Distribution (Pie) */}
                   <ChartCard title="Category Distribution" subtitle="organizations by category" index={0}
                     expandedChildren={
+                      <AccessibleChart label="Pie chart showing distribution of GSoC organizations by category" caption="Pie chart representing the number of GSoC organizations across different categories such as web, security, development tools, and programming languages.">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie data={categoryData} cx="50%" cy="50%" innerRadius="25%" outerRadius="45%" dataKey="value" paddingAngle={2} stroke="none">
@@ -756,8 +914,10 @@ export default function OpenSourceAnalyticsPage() {
                           <Legend formatter={(v) => <span className="text-sm text-stone-400">{v}</span>} />
                         </PieChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Pie chart showing distribution of GSoC organizations by category" caption="Pie chart representing the number of GSoC organizations across different categories such as web, security, development tools, and programming languages.">
                     <ResponsiveContainer width="100%" height={260}>
                       <PieChart>
                         <Pie data={categoryData} cx="50%" cy="50%" innerRadius={55} outerRadius={95} dataKey="value" paddingAngle={2} stroke="none">
@@ -767,11 +927,13 @@ export default function OpenSourceAnalyticsPage() {
                         <Legend formatter={(v) => <span className="text-xs text-stone-500 dark:text-stone-400">{v}</span>} wrapperStyle={{ fontSize: 10 }} />
                       </PieChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 2 - Year Trend (Line) */}
                   <ChartCard title="Year-wise Participation" subtitle="organizations per year" index={1}
                     expandedChildren={
+                      <AccessibleChart label="Line chart showing GSoC organization participation by year" caption="Line chart displaying the number of organizations participating in Google Summer of Code each year.">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={yearTrendData}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -781,8 +943,10 @@ export default function OpenSourceAnalyticsPage() {
                           <Line type="monotone" dataKey="count" stroke="#a3e635" strokeWidth={2.5} dot={{ r: 4, fill: "#a3e635" }} activeDot={{ r: 6 }} name="Organizations" />
                         </LineChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Line chart showing GSoC organization participation by year" caption="Line chart displaying the number of organizations participating in Google Summer of Code each year.">
                     <ResponsiveContainer width="100%" height={260}>
                       <LineChart data={yearTrendData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -792,11 +956,13 @@ export default function OpenSourceAnalyticsPage() {
                         <Line type="monotone" dataKey="count" stroke="#a3e635" strokeWidth={2} dot={{ r: 3, fill: "#a3e635" }} activeDot={{ r: 5 }} name="Organizations" />
                       </LineChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 3 - Top Technologies */}
                   <ChartCard title="Top Technologies" subtitle="most common across orgs" index={2}
                     expandedChildren={
+                      <AccessibleChart label="Horizontal bar chart showing the most commonly used technologies across GSoC organizations" caption="Horizontal bar chart displaying the technologies most frequently used by GSoC organizations, ranked by organization count.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -808,8 +974,10 @@ export default function OpenSourceAnalyticsPage() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Horizontal bar chart showing the most commonly used technologies across GSoC organizations" caption="Horizontal bar chart displaying the technologies most frequently used by GSoC organizations, ranked by organization count.">
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -821,11 +989,13 @@ export default function OpenSourceAnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 4 - Top Topics */}
                   <ChartCard title="Top Topics" subtitle="most common topics" index={3}
                     expandedChildren={
+                      <AccessibleChart label="Horizontal bar chart showing the most common topics across GSoC organizations" caption="Horizontal bar chart displaying the most common project topics and focus areas among GSoC organizations.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -837,8 +1007,10 @@ export default function OpenSourceAnalyticsPage() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Horizontal bar chart showing the most common topics across GSoC organizations" caption="Horizontal bar chart displaying the most common project topics and focus areas among GSoC organizations.">
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -850,11 +1022,13 @@ export default function OpenSourceAnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 5 - Top Orgs by Projects */}
                   <ChartCard title="Top Organizations by Projects" subtitle="most gsoc projects" index={4}
                     expandedChildren={
+                      <AccessibleChart label="Bar chart showing GSoC organizations with the highest number of projects" caption="Bar chart displaying the top GSoC organizations ranked by total number of Google Summer of Code projects.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={topProjectsData} margin={{ left: 10 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -866,8 +1040,10 @@ export default function OpenSourceAnalyticsPage() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Bar chart showing GSoC organizations with the highest number of projects" caption="Bar chart displaying the top GSoC organizations ranked by total number of Google Summer of Code projects.">
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={topProjectsData} margin={{ left: 10 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -879,11 +1055,13 @@ export default function OpenSourceAnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 6 - Longevity Distribution */}
                   <ChartCard title="Longevity Distribution" subtitle="years active in gsoc" index={5}
                     expandedChildren={
+                      <AccessibleChart label="Bar chart showing how long organizations have participated in GSoC" caption="Bar chart displaying the number of organizations grouped by years of participation in Google Summer of Code.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={yearCountData}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -893,8 +1071,10 @@ export default function OpenSourceAnalyticsPage() {
                           <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Organizations" />
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Bar chart showing how long organizations have participated in GSoC" caption="Bar chart displaying the number of organizations grouped by years of participation in Google Summer of Code.">
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={yearCountData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -904,6 +1084,7 @@ export default function OpenSourceAnalyticsPage() {
                         <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Organizations" />
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
                 </div>
 
@@ -911,7 +1092,7 @@ export default function OpenSourceAnalyticsPage() {
                 <div className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <div className="h-1 w-1 bg-lime-400" />
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">comparison</p>
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">comparison</p>
                   </div>
                   <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50 mb-4">Organization Comparison</h3>
                   <div className="flex flex-wrap gap-1.5 mb-5 max-h-24 overflow-y-auto">
@@ -934,6 +1115,7 @@ export default function OpenSourceAnalyticsPage() {
 
                   {selectedOrgs.length >= 2 ? (
                     <div className="max-w-xl mx-auto">
+                      <AccessibleChart label="Radar chart comparing selected GSoC organizations" caption="Radar chart comparing selected organizations based on projects, years active, technologies, and topics.">
                       <ResponsiveContainer width="100%" height={300}>
                         <RadarChart data={radarData}>
                           <PolarGrid stroke="rgba(120,113,108,0.2)" />
@@ -946,6 +1128,7 @@ export default function OpenSourceAnalyticsPage() {
                           <Tooltip {...tooltipStyle} />
                         </RadarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center h-32 text-stone-400 dark:text-stone-500 text-sm">

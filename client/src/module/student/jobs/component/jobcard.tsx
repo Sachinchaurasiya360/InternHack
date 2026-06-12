@@ -1,9 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
-
-const cardBase =
-  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
+import { CARD_BASE } from "../../../../lib/card-styles";
 
 function CompanyMark({ label }: { label: string }) {
   return (
@@ -107,14 +105,14 @@ const JobCard = React.memo(function JobCard({
 
   if (href) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={cardBase}>
+      <a href={href} target="_blank" rel="noopener noreferrer" className={CARD_BASE}>
         {inner}
       </a>
     );
   }
 
   return (
-    <Link to={to ?? "#"} className={cardBase}>
+    <Link to={to ?? "#"} className={CARD_BASE}>
       {inner}
     </Link>
   );

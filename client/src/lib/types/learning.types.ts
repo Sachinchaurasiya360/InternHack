@@ -88,6 +88,12 @@ export interface DsaProgress {
   };
 }
 
+export interface DsaApproachEntry {
+  title: string;
+  complexity: string;
+  content: string;
+}
+
 export interface DsaSimilarProblem {
   id: number;
   title: string;
@@ -99,6 +105,7 @@ export interface DsaSimilarProblem {
 export interface DsaCompany {
   name: string;
   count: number;
+  solved: number;
 }
 
 export interface DsaPattern {
@@ -106,10 +113,26 @@ export interface DsaPattern {
   count: number;
 }
 
+export interface DsaCompanyTrackStats {
+  company: string;
+  total: number;
+  solved: number;
+  difficultyBreakdown: Record<string, { total: number; solved: number }>;
+}
+
 export interface DsaSheetStats {
   name: string;
   total: number;
   solved: number;
+}
+
+export interface DsaList {
+  slug: string;
+  title: string;
+  description: string;
+  total: number;
+  solved: number;
+  estimatedHours: number;
 }
 
 export interface DsaBookmarkItem {
@@ -190,6 +213,14 @@ export interface DsaCodeReview {
   };
   edgeCases: string[];
   suggestions: string[];
+}
+
+export interface DsaStreak {
+  currentStreak: number;
+  longestStreak: number;
+  solvedToday: boolean;
+  lastSolvedDate: string | null;
+  activeDays: string[];
 }
 
 export interface DsaSubmissionSummary {
@@ -279,6 +310,8 @@ export interface AptitudeQuestion {
   topicSlug?: string;
 }
 
+export type AptitudeDifficultyLevel = "EASY" | "MEDIUM" | "HARD";
+
 export interface AptitudeTopicDetail {
   id: number;
   name: string;
@@ -287,9 +320,19 @@ export interface AptitudeTopicDetail {
   categoryName: string;
   categorySlug: string;
   totalQuestions: number;
+  currentDifficulty?: AptitudeDifficultyLevel;
   page: number;
   totalPages: number;
   questions: AptitudeQuestion[];
+}
+
+export interface AptitudeAnswerResult {
+  correct: boolean;
+  correctAnswer: string;
+  explanation?: string;
+  currentDifficulty: AptitudeDifficultyLevel;
+  previousDifficulty: AptitudeDifficultyLevel;
+  difficultyChange: "increased" | "decreased" | null;
 }
 
 export interface AptitudeCompany {
