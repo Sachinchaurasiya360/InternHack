@@ -24,6 +24,7 @@ export interface OpenSourceRepo {
   lastUpdated: string;
   createdAt: string;
   updatedAt: string;
+  healthScore: number;
   matchedSkills?: string[];
 }
 
@@ -113,6 +114,17 @@ export interface GSoCOrganization {
   mailingList?: string;
   ideasUrl?: string;
   guideUrl?: string;
+}
+
+export interface OpenSourceStreak {
+  id: number;
+  userId: number;
+  currentStreak: number;
+  longestStreak: number;
+  lastActivityAt: string | null;
+  totalDays: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GSoCStats {

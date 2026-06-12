@@ -44,7 +44,7 @@ export default function ExternalJobDetailPage() {
   const [applied, setApplied] = useState(false);
 
   const { data: job, isLoading, error } = useQuery({
-    queryKey: ["external-job", slug],
+    queryKey: queryKeys.externalJobs.detail(slug!),
     queryFn: async () => {
       const res = await api.get(`/external-jobs/${slug}`);
       return res.data.job as ExternalJob;
@@ -55,7 +55,7 @@ export default function ExternalJobDetailPage() {
   });
 
   const { data: similarJobs = [] } = useQuery({
-    queryKey: ["external-job-similar", job?.id],
+    queryKey: queryKeys.externalJobs.similar(job?.id as number),
     queryFn: async () => {
       const res = await api.get(`/external-jobs`, { params: { limit: 20 } });
       const all = (res.data.jobs || []) as ExternalJob[];
@@ -76,7 +76,7 @@ export default function ExternalJobDetailPage() {
   });
 
   useQuery({
-    queryKey: ["external-job-status", job?.id],
+    queryKey: queryKeys.externalJobs.status(job?.id as number),
     queryFn: async () => {
       const res = await api.get(`/student/external-jobs/${job!.id}/status`);
       if (res.data.applied) setApplied(true);

@@ -54,7 +54,6 @@ import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
 import { contactRouter } from "./module/contact/contact.routes.js";
-// import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
@@ -76,6 +75,7 @@ import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
+import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
@@ -296,7 +296,6 @@ app.use("/api/coach", coachRouter);
 
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
-// app.use("/api/hackathons", hackathonRouter);
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
 // Public ingest endpoint, external websites POST jobs here with API key
@@ -431,6 +430,14 @@ const server = app.listen(PORT, async () => {
     name: "Analytics Report Cron",
     priority: 10,
     fn: () => stopAnalyticsReportCron(),
+  });
+
+  // Start signals cleanup cron (weekly Sunday at 2 AM)
+  startSignalsCleanupCron();
+  shutdownManager.register({
+    name: "Signals Cleanup Cron",
+    priority: 10,
+    fn: () => stopSignalsCleanupCron(),
   });
 
   // Register Redis disconnect

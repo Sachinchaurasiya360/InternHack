@@ -27,6 +27,30 @@
         "Always clone YOUR fork, not the original. A quick check: the URL should have YOUR username, not the project owner's username.",
         "Set up upstream immediately after cloning - don't wait until you need it. It takes 10 seconds and prevents headaches later.",
         "Use SSH URLs instead of HTTPS to avoid entering your password on every push. If you see 'Permission denied (publickey)', your SSH keys aren't set up correctly."
+      ],
+      "quiz": [
+        {
+          "question": "Which remote should 'origin' point to after cloning?",
+          "options": [
+            "The original project repository",
+            "Your forked copy of the repository",
+            "Both the original and your fork",
+            "The upstream branch"
+          ],
+          "correctIndex": 1,
+          "explanation": "When you clone your fork, Git automatically sets 'origin' to point to your fork on GitHub. The original repo should be added as 'upstream' so you can sync changes from it."
+        },
+        {
+          "question": "What command adds the original repository as a remote named 'upstream'?",
+          "options": [
+            "git remote add origin git@github.com:ORIGINAL-OWNER/project.git",
+            "git remote set-url upstream git@github.com:ORIGINAL-OWNER/project.git",
+            "git remote add upstream git@github.com:ORIGINAL-OWNER/project.git",
+            "git clone --upstream git@github.com:ORIGINAL-OWNER/project.git"
+          ],
+          "correctIndex": 2,
+          "explanation": "The command 'git remote add upstream <url>' adds a new remote named 'upstream' pointing to the original repository. You verify this with 'git remote -v'."
+        }
       ]
     },
     {
@@ -58,6 +82,30 @@
         "One branch = one feature/fix = one PR. Never mix multiple unrelated changes in one branch. This makes reviews easier and lets maintainers merge each change independently.",
         "If you realize you're on the wrong branch, don't panic. `git stash` your changes, switch to the correct branch, and `git stash pop` to apply them there.",
         "Use `git branch -a` to see all branches including remote ones. This helps you check if someone else is already working on a similar feature."
+      ],
+      "quiz": [
+        {
+          "question": "Why should you never work directly on the main branch of your fork?",
+          "options": [
+            "The main branch is protected and you cannot push to it",
+            "You can only open one PR at a time from main",
+            "Your changes would be visible to everyone immediately",
+            "The main branch doesn't sync with upstream"
+          ],
+          "correctIndex": 1,
+          "explanation": "If you work on main and open a PR, every new commit pushed to main goes into the same PR. You can't work on anything else until that PR is merged. Feature branches let you work on multiple changes in parallel."
+        },
+        {
+          "question": "Which branch name follows the recommended naming convention?",
+          "options": [
+            "my-changes",
+            "fix/login-form-validation",
+            "login-form-validation-fix-bug",
+            "patch-1"
+          ],
+          "correctIndex": 1,
+          "explanation": "Branch names should use a prefix (fix/, feature/, docs/, etc.) followed by a descriptive name. 'fix/login-form-validation' clearly indicates it's a bug fix related to login form validation."
+        }
       ]
     },
     {
