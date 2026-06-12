@@ -9,14 +9,51 @@ const interviewController = new InterviewController(interviewService);
 
 export const interviewRouter = Router();
 
-// Interview module extends the recruiter module, requires RECRUITER role
+/* ======================================================
+   STUDENT ROUTES
+====================================================== */
+
+interviewRouter.get(
+  "/student/my-interviews",
+  authMiddleware,
+  requireRole("STUDENT"),
+  (req, res) => interviewController.getStudentInterviews(req, res)
+);
+
+/* ======================================================
+   RECRUITER ROUTES
+====================================================== */
+
 interviewRouter.use(authMiddleware, requireRole("RECRUITER"));
 
-interviewRouter.post("/", (req, res) => interviewController.create(req, res));
-interviewRouter.get("/", (req, res) => interviewController.getAll(req, res));
-interviewRouter.get("/calendar", (req, res) => interviewController.getCalendar(req, res));
-interviewRouter.get("/:id", (req, res) => interviewController.getById(req, res));
-interviewRouter.patch("/:id", (req, res) => interviewController.update(req, res));
-interviewRouter.delete("/:id", (req, res) => interviewController.delete(req, res));
-interviewRouter.post("/:id/feedback", (req, res) => interviewController.addFeedback(req, res));
-interviewRouter.get("/applications/:applicationId", (req, res) => interviewController.getForApplication(req, res));
+interviewRouter.post("/", (req, res) =>
+  interviewController.create(req, res)
+);
+
+interviewRouter.get("/", (req, res) =>
+  interviewController.getAll(req, res)
+);
+
+interviewRouter.get("/calendar", (req, res) =>
+  interviewController.getCalendar(req, res)
+);
+
+interviewRouter.get("/:id", (req, res) =>
+  interviewController.getById(req, res)
+);
+
+interviewRouter.patch("/:id", (req, res) =>
+  interviewController.update(req, res)
+);
+
+interviewRouter.delete("/:id", (req, res) =>
+  interviewController.delete(req, res)
+);
+
+interviewRouter.post("/:id/feedback", (req, res) =>
+  interviewController.addFeedback(req, res)
+);
+
+interviewRouter.get("/applications/:applicationId", (req, res) =>
+  interviewController.getForApplication(req, res)
+);

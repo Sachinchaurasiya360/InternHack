@@ -1,6 +1,29 @@
 import { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Lock, BrainCircuit, Radar, Bookmark } from "lucide-react";
+import {
+  Briefcase,
+  FileText,
+  LogOut,
+  ScanSearch,
+  Building2,
+  ChevronsLeft,
+  ChevronsRight,
+  UserCircle,
+  Award,
+  Globe,
+  Crown,
+  ShieldCheck,
+  Video,
+  GraduationCap,
+  User,
+  Menu,
+  X,
+  Lock,
+  BrainCircuit,
+  Radar,
+  Bookmark,
+  Calendar,
+} from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 
 type NavItem = {
@@ -17,15 +40,22 @@ type NavGroup = {
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    label: "work",
-    items: [
-      { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
-      { to: "/student/jobs/saved", icon: Bookmark, label: "Saved Jobs" },
-      { to: "/student/signals", icon: Radar, label: "Funding Signals" },
-      { to: "/student/applications", icon: FileText, label: "My Applications" },
-      { to: "/student/companies", icon: Building2, label: "Explore Companies" },
-    ],
-  },
+  label: "work",
+  items: [
+    { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
+    { to: "/student/jobs/saved", icon: Bookmark, label: "Saved Jobs" },
+    { to: "/student/signals", icon: Radar, label: "Funding Signals" },
+    { to: "/student/applications", icon: FileText, label: "My Applications" },
+
+    {
+      to: "/student/interviews/dashboard",
+      icon: Calendar,
+      label: "Interview Dashboard",
+    },
+
+    { to: "/student/companies", icon: Building2, label: "Explore Companies" },
+  ],
+},
   {
     label: "prep",
     items: [
@@ -43,6 +73,11 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/student/opensource", icon: Globe, label: "Open Source" },
     ],
   },
+  {
+  label: "Interview Dashboard",
+  to: "/student/interview-dashboard",
+  icon: Calendar,
+},
   {
     label: "account",
     items: [

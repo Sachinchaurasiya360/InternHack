@@ -239,7 +239,9 @@ export const queryKeys = {
     activity: (year: number) => ["dsa", "activity", year] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
   },
-
+  interviewDashboard: {
+  mine: () => ["interview-dashboard", "mine"] as const,
+},
   // Roadmaps
   roadmaps: {
     all: ["roadmaps"] as const,
