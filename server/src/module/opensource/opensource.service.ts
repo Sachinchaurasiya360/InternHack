@@ -43,8 +43,8 @@ export class OpensourceService {
       totalRepos,
       totalStars: starsAgg._sum.stars ?? 0,
       trendingCount,
-      languageCount: languageGroups.filter((g) => g.language && g.language.trim() !== "").length,
-      domainBreakdown: domainGroups.map((g) => ({
+      languageCount: languageGroups.filter((g: any) => g.language && g.language.trim() !== "").length,
+      domainBreakdown: domainGroups.map((g: any) => ({
         domain: g.domain || "Other",
         count: g._count._all,
       })),
@@ -60,9 +60,9 @@ export class OpensourceService {
       distinct: ["language"],
     });
     return rows
-      .map((r) => r.language)
-      .filter((l): l is string => Boolean(l && l.trim() !== ""))
-      .sort((a, b) => a.localeCompare(b));
+      .map((r: any) => r.language)
+      .filter((l: string | null): l is string => Boolean(l && l.trim() !== ""))
+      .sort((a: string, b: string) => a.localeCompare(b));
   }
 
   async listRepos(query: any) {
@@ -96,25 +96,25 @@ export class OpensourceService {
         .filter((id: number) => !Number.isNaN(id));
       if (idList.length > 0) where["id"] = { in: idList };
     }
-const trimmedSearch = search?.trim();
+    const trimmedSearch = search?.trim();
 
-if (trimmedSearch) {
-  // Prisma's scalar-list filters can't do case-insensitive substring match
-  // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-  // subquery and merge the matching ids into the OR clause.
+    if (trimmedSearch) {
+      // Prisma's scalar-list filters can't do case-insensitive substring match
+      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+      // subquery and merge the matching ids into the OR clause.
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
           SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${trimmedSearch}%`}
         )
       `;
-    
-      const tagMatchIds = tagMatches.map((r) => r.id);
-where["OR"] = [
-  { name: { contains: trimmedSearch, mode: "insensitive" } },
-  { owner: { contains: trimmedSearch, mode: "insensitive" } },
-  { description: { contains: trimmedSearch, mode: "insensitive" } },
-  { language: { contains: trimmedSearch, mode: "insensitive" } },
+
+      const tagMatchIds = tagMatches.map((r: any) => r.id);
+      where["OR"] = [
+        { name: { contains: trimmedSearch, mode: "insensitive" } },
+        { owner: { contains: trimmedSearch, mode: "insensitive" } },
+        { description: { contains: trimmedSearch, mode: "insensitive" } },
+        { language: { contains: trimmedSearch, mode: "insensitive" } },
         ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
       ];
     }
@@ -195,7 +195,7 @@ where["OR"] = [
   private async updateGithubStats(id: number, url: string, name: string) {
     const [stats, health] = await Promise.all([
       fetchGithubStats(url),
-      this.getRepoOwnerAndNameFromUrl(url).then(parsed => 
+      this.getRepoOwnerAndNameFromUrl(url).then(parsed =>
         parsed ? fetchRepoHealthData(parsed.owner, parsed.name) : null
       )
     ]);
@@ -247,7 +247,7 @@ where["OR"] = [
 
     const trimmedSearch = search?.trim();
 
-      if (trimmedSearch) {
+    if (trimmedSearch) {
       where.OR = [
         { name: { contains: trimmedSearch, mode: "insensitive" } },
         { description: { contains: trimmedSearch, mode: "insensitive" } },
@@ -425,7 +425,7 @@ where["OR"] = [
       console.error("[github] approval stats fetch failed:", err),
     );
     // Re-sync stored ossTier for the contributor (fire-and-forget)
-    userService.calculateOssTier(request.userId).catch(() => {});
+    userService.calculateOssTier(request.userId).catch(() => { });
     return repo;
   }
 
@@ -594,7 +594,7 @@ where["OR"] = [
       select: { completedStepIds: true },
     });
     // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
-    userService.calculateOssTier(userId).catch(() => {});
+    userService.calculateOssTier(userId).catch(() => { });
     return progress.completedStepIds;
   }
 
@@ -631,7 +631,35 @@ where["OR"] = [
     return repos;
   }
 
-  async submitGuideFeedback(userId: number, data: { guideId: string; stepId: string; rating: string; reason?: string }) {
+  async getCertificate(token: string) {
+    return prisma.guideCertificate.findUnique({
+      where: { token },
+    });
+  }
+
+  async issueCertificate(userId: number, guideName: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true },
+    });
+    if (!user) throw new Error("User not found");
+
+    return prisma.guideCertificate.upsert({
+      where: { userId_guideName: { userId, guideName } },
+      update: {},
+      create: { userId, guideName, studentName: user.name },
+    });
+  }
+
+  async submitGuideFeedback(
+    userId: number,
+    data: {
+      guideId: string;
+      stepId: string;
+      rating: string;
+      reason?: string;
+    },
+  ) {
     return prisma.guideFeedback.upsert({
       where: {
         userId_guideId_stepId: {
@@ -653,7 +681,6 @@ where["OR"] = [
       },
     });
   }
-
   // ─── Bookmarks ────────────────────────────────────────────────
 
   async getBookmarkedRepoIds(userId: number): Promise<number[]> {
@@ -662,10 +689,13 @@ where["OR"] = [
       select: { repoId: true },
       orderBy: { createdAt: "desc" },
     });
-    return bookmarks.map((b) => b.repoId);
+    return bookmarks.map((b: any) => b.repoId);
   }
 
-  async addBookmark(userId: number, repoId: number): Promise<{ repoId: number }> {
+  async addBookmark(
+    userId: number,
+    repoId: number,
+  ): Promise<{ repoId: number }> {
     const repo = await prisma.opensourceRepo.findUnique({
       where: { id: repoId },
       select: { id: true },
@@ -686,17 +716,20 @@ where["OR"] = [
     });
   }
 
-  async bulkMigrateBookmarks(userId: number, repoIds: number[]): Promise<number[]> {
+  async bulkMigrateBookmarks(
+    userId: number,
+    repoIds: number[],
+  ): Promise<number[]> {
     // Resolve only IDs that actually exist in the DB
     const validRepos = await prisma.opensourceRepo.findMany({
       where: { id: { in: repoIds } },
       select: { id: true },
     });
-    const validIds = validRepos.map((r) => r.id);
+    const validIds = validRepos.map((r: any) => r.id);
     if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
 
     await prisma.$transaction(
-      validIds.map((repoId) =>
+      validIds.map((repoId: number) =>
         prisma.opensourceBookmark.upsert({
           where: { userId_repoId: { userId, repoId } },
           create: { userId, repoId },
@@ -707,4 +740,7 @@ where["OR"] = [
 
     return this.getBookmarkedRepoIds(userId);
   }
+
 }
+
+

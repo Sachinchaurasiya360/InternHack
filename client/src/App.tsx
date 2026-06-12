@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect, type ComponentType } from "react";
+import { lazy, Suspense, useEffect, type ComponentType, type LazyExoticComponent } from "react";
 import { Navigate, Route, Routes, useParams, useNavigate } from "react-router";
 import { useAuthStore } from "./lib/auth.store";
+import type { ProgramType } from "./module/student/opensource/OrgBrowserPage";
 import toast, { Toaster } from "./components/ui/toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -10,19 +11,20 @@ import ScrollProgressBar from "./components/common/ScrollProgressBar";
 import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
-function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
-  return lazy(() =>
-    factory().catch((err: unknown) => {
-      const key = "chunk_reload";
-      if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, "1");
-        window.location.reload();
-        return new Promise(() => { }); // never resolves, page is reloading
-      }
-      sessionStorage.removeItem(key);
-      throw err;
-    }),
-  );
+function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>): LazyExoticComponent<T> {
+  return lazy(
+    () =>
+      factory().catch((err: unknown) => {
+        const key = "chunk_reload";
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem("1", "1");
+          window.location.reload();
+          return new Promise<never>(() => { }); // never resolves, page is reloading
+        }
+        sessionStorage.removeItem(key);
+        throw err;
+      }) as Promise<{ default: T }>,
+  ) as LazyExoticComponent<T>;
 }
 
 // Public pages
@@ -66,6 +68,7 @@ const YCCompanyDetailPage = lazyWithRetry(() => import("./module/student/compani
 const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/GovInternshipsPage"));
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
+const CertificateViewPage = lazyWithRetry(() => import("./module/student/opensource/CertificateViewPage"));
 
 // Legal pages
 const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
@@ -91,8 +94,15 @@ const AddCompanyPage = lazyWithRetry(() => import("./module/student/companies/Ad
 const StudentProfilePage = lazyWithRetry(() => import("./module/student/profile/StudentProfilePage"));
 const PublicProfilePage = lazyWithRetry(() => import("./module/student/profile/PublicProfilePage"));
 const RepoDiscoveryPage = lazyWithRetry(() => import("./module/student/opensource/RepoDiscoveryPage"));
+const OpenSourceDashboardPage = lazyWithRetry(() => import("./module/student/opensource/OpenSourceDashboardPage"));
 const GSoCReposPage = lazyWithRetry(() => import("./module/student/opensource/GSoCReposPage"));
 const ProgramTrackerPage = lazyWithRetry(() => import("./module/student/opensource/ProgramTrackerPage"));
+const OrgBrowserPage = lazy(
+  () =>
+    import("./module/student/opensource/OrgBrowserPage") as Promise<{
+      default: ComponentType<{ programType: ProgramType }>;
+    }>,
+) as LazyExoticComponent<ComponentType<{ programType: ProgramType }>>;
 const FirstPRRoadmapPage = lazyWithRetry(() => import("./module/student/opensource/FirstPRRoadmapPage"));
 const FirstPRSectionPage = lazyWithRetry(() => import("./module/student/opensource/FirstPRSectionPage"));
 const GSoCProposalPage = lazyWithRetry(() => import("./module/student/opensource/GSoCProposalPage"));
@@ -349,6 +359,7 @@ function App() {
             <Route path="/companies" element={<CompanyListOrRedirect />} />
             <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
             <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
+            <Route path="/certificate/:token" element={<CertificateViewPage />} />
 
 
             <Route path="/ats-score" element={<PublicAtsPage />} />
@@ -508,9 +519,14 @@ function App() {
               <Route path="grants" element={<GrantsPage />} />
               <Route path="grants/tracker" element={<GrantTrackerPage />} />
               <Route path="opensource" element={<OpenSourceLayout />}>
-                <Route index element={<RepoDiscoveryPage />} />
+                <Route index element={<OpenSourceDashboardPage />} />
+                <Route path="discover" element={<RepoDiscoveryPage />} />
                 <Route path="gsoc" element={<GSoCReposPage />} />
                 <Route path="programs" element={<ProgramTrackerPage />} />
+                <Route path="outreachy-orgs" element={<OrgBrowserPage key="OUTREACHY" programType="OUTREACHY" />} />
+                <Route path="lfx-projects" element={<OrgBrowserPage key="LFX" programType="LFX" />} />
+                <Route path="season-of-docs" element={<OrgBrowserPage key="SEASON_OF_DOCS" programType="SEASON_OF_DOCS" />} />
+                <Route path="mlh" element={<OrgBrowserPage key="MLH" programType="MLH" />} />
                 <Route path="first-pr" element={<FirstPRRoadmapPage />} />
                 <Route path="first-pr/:sectionSlug" element={<FirstPRSectionPage />} />
                 <Route path="gsoc-proposal" element={<GSoCProposalPage />} />
@@ -577,33 +593,33 @@ function App() {
             {/* Admin login (public) */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
 
-          {/* Admin protected routes */}
-          <Route path="/admin" element={<ProtectedRoute role="ADMIN" redirectTo="/admin/login"><AdminLayout /></ProtectedRoute>}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<UsersListPage />} />
-            <Route path="users/:id" element={<UserDetailPage />} />
-            <Route path="jobs" element={<AdminJobsListPage />} />
-            <Route path="errors" element={<ErrorLogsPage />} />
-            <Route path="companies" element={<AdminCompaniesPage />} />
-            <Route path="reviews" element={<AdminReviewsPage />} />
-            <Route path="contributions" element={<AdminContributionsPage />} />
-            <Route path="subscribers" element={<AdminSubscribersPage />} />
-            <Route path="dsa" element={<AdminDsaPage />} />
-            <Route path="aptitude" element={<AdminAptitudePage />} />
-            <Route path="skill-tests" element={<AdminSkillTestsPage />} />
-            <Route path="badges" element={<AdminBadgesPage />} />
-            <Route path="ai-providers" element={<AdminAIProvidersPage />} />
-            <Route path="external-jobs" element={<AdminExternalJobsPage />} />
-            <Route path="repo-requests" element={<AdminRepoRequestsPage />} />
-            <Route path="interview-experiences" element={<AdminInterviewsPage />} />
-            <Route path="signals" element={<AdminSignalsPage />} />
-            <Route path="broadcast-email" element={<AdminBroadcastEmailPage />} />
-            <Route path="blog" element={<AdminBlogPage />} />
-            <Route path="blog/editor" element={<AdminBlogEditor />} />
-            <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
-            <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
-            <Route path="profile/:identifier" element={<PublicProfilePage />} />
-          </Route>
+            {/* Admin protected routes */}
+            <Route path="/admin" element={<ProtectedRoute role="ADMIN" redirectTo="/admin/login"><AdminLayout /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<UsersListPage />} />
+              <Route path="users/:id" element={<UserDetailPage />} />
+              <Route path="jobs" element={<AdminJobsListPage />} />
+              <Route path="errors" element={<ErrorLogsPage />} />
+              <Route path="companies" element={<AdminCompaniesPage />} />
+              <Route path="reviews" element={<AdminReviewsPage />} />
+              <Route path="contributions" element={<AdminContributionsPage />} />
+              <Route path="subscribers" element={<AdminSubscribersPage />} />
+              <Route path="dsa" element={<AdminDsaPage />} />
+              <Route path="aptitude" element={<AdminAptitudePage />} />
+              <Route path="skill-tests" element={<AdminSkillTestsPage />} />
+              <Route path="badges" element={<AdminBadgesPage />} />
+              <Route path="ai-providers" element={<AdminAIProvidersPage />} />
+              <Route path="external-jobs" element={<AdminExternalJobsPage />} />
+              <Route path="repo-requests" element={<AdminRepoRequestsPage />} />
+              <Route path="interview-experiences" element={<AdminInterviewsPage />} />
+              <Route path="signals" element={<AdminSignalsPage />} />
+              <Route path="broadcast-email" element={<AdminBroadcastEmailPage />} />
+              <Route path="blog" element={<AdminBlogPage />} />
+              <Route path="blog/editor" element={<AdminBlogEditor />} />
+              <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
+              <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
+              <Route path="profile/:identifier" element={<PublicProfilePage />} />
+            </Route>
 
             {/* 404 catch-all */}
             <Route path="*" element={<NotFoundPage />} />
