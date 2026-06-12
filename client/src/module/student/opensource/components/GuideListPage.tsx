@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {CheckCircle2, ArrowRight, Trophy, Copy, Linkedin, Check} from "lucide-react";
+import {CheckCircle2, ArrowRight, Trophy} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
@@ -10,7 +10,6 @@ import GuideCompletionSection from "./GuideCompletionSection";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
 import { NextInPathCard } from "./NextInPathCard";
 import { issueCertificate, type Certificate } from "../api/opensource.api";
-import toast from "../../../../components/ui/toast";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { useEffect } from "react";
 
@@ -45,7 +44,6 @@ export default function GuideListPage({
     } catch { return new Set(); }
   });
   const [cert, setCert] = useState<Certificate | null>(null);
-  const [copying, setCopying] = useState(false);
   const { user } = useAuthStore();
 
   const toggle = useCallback((id: string) => {
@@ -89,22 +87,6 @@ export default function GuideListPage({
         .catch(console.error);
     }
   }, [allDone, cert, title, user]);
-
-  const copyCertLink = () => {
-    if (!cert) return;
-    const url = `${window.location.origin}/certificate/${cert.token}`;
-    navigator.clipboard.writeText(url);
-    setCopying(true);
-    toast.success("Certificate link copied!");
-    setTimeout(() => setCopying(false), 2000);
-  };
-
-  const shareLinkedIn = () => {
-    if (!cert) return;
-    const url = `${window.location.origin}/certificate/${cert.token}`;
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-    window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
-  };
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, GitPullRequest, ArrowRight, Trophy, Clock, Copy, Linkedin, Check } from "lucide-react";
+import { CheckCircle2, GitPullRequest, ArrowRight, Trophy, Clock } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -47,7 +47,6 @@ export default function FirstPRRoadmapPage() {
   const { user } = useAuthStore();
   const triggerCoach = useCoachStore((s: any) => s.triggerCoach);
   const [cert, setCert] = useState<Certificate | null>(null);
-  const [copying, setCopying] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -64,22 +63,6 @@ export default function FirstPRRoadmapPage() {
     return () => { isMounted = false; };
   }, []);
 
-
-  const copyCertLink = () => {
-    if (!cert) return;
-    const url = `${window.location.origin}/certificate/${cert.token}`;
-    navigator.clipboard.writeText(url);
-    setCopying(true);
-    toast.success("Certificate link copied!");
-    setTimeout(() => setCopying(false), 2000);
-  };
-
-  const shareLinkedIn = () => {
-    if (!cert) return;
-    const url = `${window.location.origin}/certificate/${cert.token}`;
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-    window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
-  };
 
   const toggle = useCallback(
     (id: string) => {
