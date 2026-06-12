@@ -198,8 +198,10 @@ export class PaymentService {
 
       // Link subscription ID and mark payment SUCCESS first, then activate the user.
       // Order matters: payment record must be linked before any code looks it up by subscription_id.
+      // Match on dodoSubscriptionId: null so this works whether payment.succeeded already
+      // flipped the status to SUCCESS or the record is still PENDING.
       await tx.payment.updateMany({
-        where: { userId, status: "PENDING" },
+        where: { userId, dodoSubscriptionId: null },
         data: { dodoSubscriptionId: sub.subscription_id, status: "SUCCESS" },
       });
 

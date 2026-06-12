@@ -6,6 +6,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
 import BackToTopButton from "./components/common/BackToTopButton";
+import ScrollProgressBar from "./components/common/ScrollProgressBar";
 import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
@@ -16,7 +17,7 @@ function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> 
       if (!sessionStorage.getItem(key)) {
         sessionStorage.setItem(key, "1");
         window.location.reload();
-        return new Promise(() => {}); // never resolves, page is reloading
+        return new Promise(() => { }); // never resolves, page is reloading
       }
       sessionStorage.removeItem(key);
       throw err;
@@ -105,12 +106,15 @@ const CommTemplatesPage = lazyWithRetry(() => import("./module/student/opensourc
 const CommTemplatesSectionPage = lazyWithRetry(() => import("./module/student/opensource/CommTemplatesSectionPage"));
 const CICDGuidePage = lazyWithRetry(() => import("./module/student/opensource/CICDGuidePage"));
 const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/CICDGuideSectionPage"));
+const HackathonGuidePage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuidePage"));
+const HackathonGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
 const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
 const SkillVerificationPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillVerificationPage"));
+const SkillVerificationBadgePage = lazyWithRetry(() => import("./module/student/skill-verification/SkillVerificationBadgePage"));
 const SkillTestPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillTestPage"));
 const SqlExercisePage = lazyWithRetry(() => import("./module/student/sql/SqlExercisePage"));
 const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPlaygroundPage"));
@@ -244,6 +248,7 @@ const AdminRepoRequestsPage = lazyWithRetry(() => import("./module/admin/repo-re
 const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broadcast/AdminBroadcastEmailPage"));
 const AdminSignalsPage = lazyWithRetry(() => import("./module/admin/signals/AdminSignalsPage"));
 const AdminInterviewsPage = lazyWithRetry(() => import("./module/admin/interviews/AdminInterviewsPage"));
+const GuideFeedbackDashboard = lazyWithRetry(() => import("./module/admin/GuideFeedbackDashboard"));
 
 function JobBrowseOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -317,251 +322,256 @@ function AuthExpiredRedirect() {
 function App() {
   return (
     <>
+      <ScrollProgressBar />
       <ScrollToTop />
       <AuthExpiredRedirect />
       <Toaster />
       <ErrorBoundary>
-      <BackToTopButton />
-      <Suspense fallback={<LoadingScreen />}>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/verify-email" element={<VerifyEmailPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/jobs" element={<JobBrowseOrRedirect />} />
-          <Route path="/jobs/t/:slug" element={<JobLandingPage />} />
-          <Route path="/jobs/:id" element={<JobDetailOrRedirect />} />
-          <Route path="/jobs/ext/:slug" element={<ExternalJobDetailPage />} />
-          <Route path="/internships" element={<GovInternshipsPage />} />
-          <Route path="/external-jobs" element={<ScrapedJobsPage />} />
-          <Route path="/external-jobs/:id" element={<ScrapedJobDetailPage />} />
-          <Route path="/companies" element={<CompanyListOrRedirect />} />
-          <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
-          <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
+        <BackToTopButton />
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/verify/:token" element={<SkillVerificationBadgePage />} />
+            <Route path="/jobs" element={<JobBrowseOrRedirect />} />
+            <Route path="/jobs/t/:slug" element={<JobLandingPage />} />
+            <Route path="/jobs/:id" element={<JobDetailOrRedirect />} />
+            <Route path="/jobs/ext/:slug" element={<ExternalJobDetailPage />} />
+            <Route path="/internships" element={<GovInternshipsPage />} />
+            <Route path="/external-jobs" element={<ScrapedJobsPage />} />
+            <Route path="/external-jobs/:id" element={<ScrapedJobDetailPage />} />
+            <Route path="/companies" element={<CompanyListOrRedirect />} />
+            <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
+            <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
 
 
- <Route path="/ats-score" element={<PublicAtsPage />} />
-<Route path="/grants" element={<GrantsPage />} />
+            <Route path="/ats-score" element={<PublicAtsPage />} />
+            <Route path="/grants" element={<GrantsPage />} />
 
 
-          <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
-          <Route path="/recruiter/login" element={<Navigate to="/login?role=RECRUITER" replace />} />
-          <Route path="/recruiter/register" element={<Navigate to="/register?role=RECRUITER" replace />} />
-          <Route path="/opensource" element={<PublicOpenSourcePage />} />
-          <Route path="/opensource/:owner/:name" element={<RepoPublicPage />} />
-          {/* Roadmaps (public + auth) */}
-          <Route path="/roadmaps" element={<RoadmapsLandingPage />} />
-          <Route path="/roadmaps/:slug" element={<RoadmapDetailPage />} />
-          <Route path="/roadmaps/:slug/topics/:topicSlug" element={<RoadmapTopicPage />} />
-          <Route path="/roadmaps/generate" element={<ProtectedRoute role="STUDENT"><AiRoadmapWizardPage /></ProtectedRoute>} />
-          <Route path="/roadmaps/:slug/enroll" element={<ProtectedRoute role="STUDENT"><RoadmapEnrollPage /></ProtectedRoute>} />
-          <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
-          <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
-          <Route path="/blog" element={<BlogListPage />} />
-          <Route path="/contributors" element={<ContributorsPage />} />
-          <Route path="/blog/:slug" element={<BlogPostPage />} />
-          {/* Legal Pages */}
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/shipping" element={<ShippingPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/refund" element={<RefundPage />} />
-          {/* Learning Hub - all learning content under /learn */}
-          <Route path="/learn" element={<LearnLayout />}>
-            <Route index element={<LearnHubPage />} />
-            <Route path="challenges" element={<BuildChallengesPage />} />
-            <Route path="mentors" element={<MentorMatchingPage />} />
-            <Route path="javascript" element={<JsLessonsPage />} />
-            <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
-            <Route path="javascript/:sectionSlug/:lessonId" element={<JsLessonDetailPage />} />
-            <Route path="html" element={<HtmlLessonsPage />} />
-            <Route path="html/:sectionSlug" element={<HtmlSectionPage />} />
-            <Route path="html/:sectionSlug/:lessonId" element={<HtmlLessonDetailPage />} />
-            <Route path="css" element={<CssLessonsPage />} />
-            <Route path="css/:sectionSlug" element={<CssSectionPage />} />
-            <Route path="css/:sectionSlug/:lessonId" element={<CssLessonDetailPage />} />
-            <Route path="typescript" element={<TsLessonsPage />} />
-            <Route path="typescript/:sectionSlug" element={<TsSectionPage />} />
-            <Route path="typescript/:sectionSlug/:lessonId" element={<TsLessonDetailPage />} />
-            <Route path="react" element={<ReactLessonsPage />} />
-            <Route path="react/:sectionSlug" element={<ReactSectionPage />} />
-            <Route path="react/:sectionSlug/:lessonId" element={<ReactLessonDetailPage />} />
-            <Route path="fastapi" element={<FastApiLessonsPage />} />
-            <Route path="fastapi/:sectionSlug" element={<FastApiSectionPage />} />
-            <Route path="fastapi/:sectionSlug/:lessonId" element={<FastApiLessonDetailPage />} />
-            <Route path="flask" element={<FlaskLessonsPage />} />
-            <Route path="flask/:sectionSlug" element={<FlaskSectionPage />} />
-            <Route path="flask/:sectionSlug/:lessonId" element={<FlaskLessonDetailPage />} />
-            <Route path="django" element={<DjangoLessonsPage />} />
-            <Route path="django/:sectionSlug" element={<DjangoSectionPage />} />
-            <Route path="django/:sectionSlug/:lessonId" element={<DjangoLessonDetailPage />} />
-            <Route path="nodejs" element={<NodeLessonsPage />} />
-            <Route path="nodejs/:sectionSlug" element={<NodeSectionPage />} />
-            <Route path="nodejs/:sectionSlug/:lessonId" element={<NodeLessonDetailPage />} />
-            <Route path="python" element={<PythonLessonsPage />} />
-            <Route path="python/:sectionSlug" element={<PythonSectionPage />} />
-            <Route path="python/:sectionSlug/:lessonId" element={<PythonLessonDetailPage />} />
-            <Route path="sql" element={<SqlPracticePage />} />
-            <Route path="sql/playground" element={<SqlPlaygroundPage />} />
-            <Route path="sql/:sectionSlug" element={<SqlExercisePage />} />
-            <Route path="sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
-            <Route path="dsa" element={<DsaTopicsPage />} />
-            <Route path="dsa/companies" element={<DsaCompaniesPage />} />
-            <Route path="dsa/patterns" element={<DsaPatternsPage />} />
-            <Route path="dsa/lists" element={<DsaListsPage />} />
-            <Route path="dsa/bookmarks" element={<ProtectedRoute role="STUDENT"><DsaBookmarksPage /></ProtectedRoute>} />
-            <Route path="dsa/problem" element={<Navigate to="/learn/dsa" replace />} />
-            <Route path="dsa/problem/:slug" element={<DsaProblemDetailPage />} />
-            <Route path="dsa/companies/:company" element={<DsaCompaniesPage />} />
-            <Route path="dsa/:slug" element={<DsaTopicDetailPage />} />
-            <Route path="dsa-foundations" element={<DsaFoundationsHubPage />} />
-            <Route path="dsa-foundations/:levelId" element={<DsaFoundationsLevelPage />} />
-            <Route path="dsa-foundations/:levelId/:lessonSlug" element={<DsaFoundationsLessonPage />} />
-            <Route path="system-design" element={<SystemDesignHubPage />} />
-            <Route path="system-design/:levelId" element={<SystemDesignLevelPage />} />
-            <Route path="system-design/:levelId/:lessonSlug" element={<SystemDesignLessonPage />} />
-            <Route path="aptitude" element={<AptitudeCategoriesPage />} />
-            <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
-            <Route path="aptitude/:slug" element={<AptitudeTheoryPage />} />
-            <Route path="aptitude/:slug/practice" element={<AptitudeTopicPage />} />
-            <Route path="blockchain" element={<BlockchainLessonsPage />} />
-            <Route path="blockchain/:sectionSlug" element={<BlockchainSectionPage />} />
-            <Route path="blockchain/:sectionSlug/:lessonId" element={<BlockchainLessonDetailPage />} />
-            <Route path="data-analytics" element={<DataAnalyticsLessonsPage />} />
-            <Route path="data-analytics/:sectionSlug" element={<DataAnalyticsSectionPage />} />
-            <Route path="data-analytics/:sectionSlug/:lessonId" element={<DataAnalyticsLessonDetailPage />} />
-            <Route path="exam-prep" element={<ExamPrepHubPage />} />
-            <Route path="exam-prep/:examId" element={<ExamDetailPage />} />
-            <Route path="exam-prep/:examId/mock" element={<ExamMockPage />} />
-            <Route path="exam-prep/:examId/section/:sectionId" element={<ExamSectionPage />} />
-            <Route path="interview" element={<InterviewLessonsPage />} />
-            <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
-            <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
-          </Route>
-
-          {/* Legacy redirects */}
-          <Route path="/dsa/*" element={<Navigate to="/learn/dsa" replace />} />
-          <Route path="/sql/*" element={<Navigate to="/learn/sql" replace />} />
-          <Route path="/javascript/*" element={<Navigate to="/learn/javascript" replace />} />
-          <Route path="/aptitude/*" element={<Navigate to="/learn/aptitude" replace />} />
-          <Route path="/student/learn" element={<Navigate to="/learn" replace />} />
-          <Route path="/student/javascript/*" element={<Navigate to="/learn/javascript" replace />} />
-          <Route path="/html/*" element={<Navigate to="/learn/html" replace />} />
-          <Route path="/css/*" element={<Navigate to="/learn/css" replace />} />
-          <Route path="/student/html/*" element={<Navigate to="/learn/html" replace />} />
-          <Route path="/student/css/*" element={<Navigate to="/learn/css" replace />} />
-          <Route path="/typescript/*" element={<Navigate to="/learn/typescript" replace />} />
-          <Route path="/student/typescript/*" element={<Navigate to="/learn/typescript" replace />} />
-          <Route path="/react/*" element={<Navigate to="/learn/react" replace />} />
-          <Route path="/student/react/*" element={<Navigate to="/learn/react" replace />} />
-          <Route path="/student/sql/*" element={<Navigate to="/learn/sql" replace />} />
-          <Route path="/student/dsa/*" element={<Navigate to="/learn/dsa" replace />} />
-          <Route path="/student/aptitude/*" element={<Navigate to="/learn/aptitude" replace />} />
-          <Route path="/fastapi/*" element={<Navigate to="/learn/fastapi" replace />} />
-          <Route path="/flask/*" element={<Navigate to="/learn/flask" replace />} />
-          <Route path="/django/*" element={<Navigate to="/learn/django" replace />} />
-          <Route path="/python/*" element={<Navigate to="/learn/python" replace />} />
-          <Route path="/student/python/*" element={<Navigate to="/learn/python" replace />} />
-
-          {/* Standalone proctored test - no layout chrome */}
-          <Route path="/test/:testId" element={<ProtectedRoute role="STUDENT"><SkillTestPage /></ProtectedRoute>} />
-
-          {/* Student protected routes */}
-          <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyRedirect /></ProtectedRoute>} />
-          <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
-            <Route index element={<Navigate to="applications" replace />} />
-            <Route path="jobs" element={<JobBrowsePage />} />
-            <Route path="jobs/saved" element={<SavedJobsPage />} />
-            <Route path="jobs/:id" element={<JobDetailPage />} />
-            <Route path="jobs/:id/apply" element={<ApplyPage />} />
-            <Route path="internships" element={<GovInternshipsPage />} />
-            <Route path="companies" element={<CompanyListPage />} />
-            <Route path="companies/:slug" element={<CompanyDetailPage />} />
-            <Route path="yc/:slug" element={<YCCompanyDetailPage />} />
-            <Route path="applications" element={<MyApplicationsPage />} />
-            <Route path="applications/:applicationId" element={<ApplicationProgressPage />} />
-            <Route path="ats" element={<AtsLandingPage />} />
-            <Route path="ats/score" element={<AtsScorePage />} />
-            <Route path="ats/resume-generator" element={<ResumeGeneratorPage />} />
-            <Route path="ats/templates" element={<ResumeBuilderPage />} />
-            <Route path="ats/cover-letter" element={<CoverLetterPage />} />
-            <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
-            <Route path="ats/latex-templates" element={<LatexTemplatesGallery />} />
-            <Route path="skill-verification" element={<SkillVerificationPage />} />
-            <Route path="mock-interview" element={<MockInterviewPage />} />
-            <Route path="companies/add" element={<AddCompanyPage />} />
-            <Route path="grants" element={<GrantsPage />} />
-            <Route path="grants/tracker" element={<GrantTrackerPage />} />
-            <Route path="opensource" element={<OpenSourceLayout />}>
-              <Route index element={<RepoDiscoveryPage />} />
-              <Route path="gsoc" element={<GSoCReposPage />} />
-              <Route path="programs" element={<ProgramTrackerPage />} />
-              <Route path="first-pr" element={<FirstPRRoadmapPage />} />
-              <Route path="first-pr/:sectionSlug" element={<FirstPRSectionPage />} />
-              <Route path="gsoc-proposal" element={<GSoCProposalPage />} />
-              <Route path="gsoc-proposal/:sectionSlug" element={<GSoCProposalStepPage />} />
-              <Route path="analytics" element={<OpenSourceAnalyticsPage />} />
-              <Route path="read-codebase" element={<ReadCodebasePage />} />
-              <Route path="read-codebase/:sectionSlug" element={<ReadCodebaseSectionPage />} />
-              <Route path="git-guide" element={<GitCheatsheetPage />} />
-              <Route path="git-guide/:sectionSlug" element={<GitCheatsheetSectionPage />} />
-              <Route path="communication" element={<CommTemplatesPage />} />
-              <Route path="communication/:sectionSlug" element={<CommTemplatesSectionPage />} />
-              <Route path="cicd" element={<CICDGuidePage />} />
-              <Route path="cicd/:sectionSlug" element={<CICDGuideSectionPage />} />
-              <Route path="my-submissions" element={<MySubmissionsPage />} />
+            <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
+            <Route path="/recruiter/login" element={<Navigate to="/login?role=RECRUITER" replace />} />
+            <Route path="/recruiter/register" element={<Navigate to="/register?role=RECRUITER" replace />} />
+            <Route path="/opensource" element={<PublicOpenSourcePage />} />
+            <Route path="/opensource/:owner/:name" element={<RepoPublicPage />} />
+            {/* Roadmaps (public + auth) */}
+            <Route path="/roadmaps" element={<RoadmapsLandingPage />} />
+            <Route path="/roadmaps/:slug" element={<RoadmapDetailPage />} />
+            <Route path="/roadmaps/:slug/topics/:topicSlug" element={<RoadmapTopicPage />} />
+            <Route path="/roadmaps/generate" element={<ProtectedRoute role="STUDENT"><AiRoadmapWizardPage /></ProtectedRoute>} />
+            <Route path="/roadmaps/:slug/enroll" element={<ProtectedRoute role="STUDENT"><RoadmapEnrollPage /></ProtectedRoute>} />
+            <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
+            <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
+            <Route path="/blog" element={<BlogListPage />} />
+            <Route path="/contributors" element={<ContributorsPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
+            {/* Legal Pages */}
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/shipping" element={<ShippingPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/refund" element={<RefundPage />} />
+            {/* Learning Hub - all learning content under /learn */}
+            <Route path="/learn" element={<LearnLayout />}>
+              <Route index element={<LearnHubPage />} />
+              <Route path="challenges" element={<BuildChallengesPage />} />
+              <Route path="mentors" element={<MentorMatchingPage />} />
+              <Route path="skill-tests" element={<ProtectedRoute role="STUDENT"><SkillVerificationPage /></ProtectedRoute>} />
+              <Route path="javascript" element={<JsLessonsPage />} />
+              <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
+              <Route path="javascript/:sectionSlug/:lessonId" element={<JsLessonDetailPage />} />
+              <Route path="html" element={<HtmlLessonsPage />} />
+              <Route path="html/:sectionSlug" element={<HtmlSectionPage />} />
+              <Route path="html/:sectionSlug/:lessonId" element={<HtmlLessonDetailPage />} />
+              <Route path="css" element={<CssLessonsPage />} />
+              <Route path="css/:sectionSlug" element={<CssSectionPage />} />
+              <Route path="css/:sectionSlug/:lessonId" element={<CssLessonDetailPage />} />
+              <Route path="typescript" element={<TsLessonsPage />} />
+              <Route path="typescript/:sectionSlug" element={<TsSectionPage />} />
+              <Route path="typescript/:sectionSlug/:lessonId" element={<TsLessonDetailPage />} />
+              <Route path="react" element={<ReactLessonsPage />} />
+              <Route path="react/:sectionSlug" element={<ReactSectionPage />} />
+              <Route path="react/:sectionSlug/:lessonId" element={<ReactLessonDetailPage />} />
+              <Route path="fastapi" element={<FastApiLessonsPage />} />
+              <Route path="fastapi/:sectionSlug" element={<FastApiSectionPage />} />
+              <Route path="fastapi/:sectionSlug/:lessonId" element={<FastApiLessonDetailPage />} />
+              <Route path="flask" element={<FlaskLessonsPage />} />
+              <Route path="flask/:sectionSlug" element={<FlaskSectionPage />} />
+              <Route path="flask/:sectionSlug/:lessonId" element={<FlaskLessonDetailPage />} />
+              <Route path="django" element={<DjangoLessonsPage />} />
+              <Route path="django/:sectionSlug" element={<DjangoSectionPage />} />
+              <Route path="django/:sectionSlug/:lessonId" element={<DjangoLessonDetailPage />} />
+              <Route path="nodejs" element={<NodeLessonsPage />} />
+              <Route path="nodejs/:sectionSlug" element={<NodeSectionPage />} />
+              <Route path="nodejs/:sectionSlug/:lessonId" element={<NodeLessonDetailPage />} />
+              <Route path="python" element={<PythonLessonsPage />} />
+              <Route path="python/:sectionSlug" element={<PythonSectionPage />} />
+              <Route path="python/:sectionSlug/:lessonId" element={<PythonLessonDetailPage />} />
+              <Route path="sql" element={<SqlPracticePage />} />
+              <Route path="sql/playground" element={<SqlPlaygroundPage />} />
+              <Route path="sql/:sectionSlug" element={<SqlExercisePage />} />
+              <Route path="sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
+              <Route path="dsa" element={<DsaTopicsPage />} />
+              <Route path="dsa/companies" element={<DsaCompaniesPage />} />
+              <Route path="dsa/patterns" element={<DsaPatternsPage />} />
+              <Route path="dsa/lists" element={<DsaListsPage />} />
+              <Route path="dsa/bookmarks" element={<ProtectedRoute role="STUDENT"><DsaBookmarksPage /></ProtectedRoute>} />
+              <Route path="dsa/problem" element={<Navigate to="/learn/dsa" replace />} />
+              <Route path="dsa/problem/:slug" element={<DsaProblemDetailPage />} />
+              <Route path="dsa/companies/:company" element={<DsaCompaniesPage />} />
+              <Route path="dsa/:slug" element={<DsaTopicDetailPage />} />
+              <Route path="dsa-foundations" element={<DsaFoundationsHubPage />} />
+              <Route path="dsa-foundations/:levelId" element={<DsaFoundationsLevelPage />} />
+              <Route path="dsa-foundations/:levelId/:lessonSlug" element={<DsaFoundationsLessonPage />} />
+              <Route path="system-design" element={<SystemDesignHubPage />} />
+              <Route path="system-design/:levelId" element={<SystemDesignLevelPage />} />
+              <Route path="system-design/:levelId/:lessonSlug" element={<SystemDesignLessonPage />} />
+              <Route path="aptitude" element={<AptitudeCategoriesPage />} />
+              <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
+              <Route path="aptitude/:slug" element={<AptitudeTheoryPage />} />
+              <Route path="aptitude/:slug/practice" element={<AptitudeTopicPage />} />
+              <Route path="blockchain" element={<BlockchainLessonsPage />} />
+              <Route path="blockchain/:sectionSlug" element={<BlockchainSectionPage />} />
+              <Route path="blockchain/:sectionSlug/:lessonId" element={<BlockchainLessonDetailPage />} />
+              <Route path="data-analytics" element={<DataAnalyticsLessonsPage />} />
+              <Route path="data-analytics/:sectionSlug" element={<DataAnalyticsSectionPage />} />
+              <Route path="data-analytics/:sectionSlug/:lessonId" element={<DataAnalyticsLessonDetailPage />} />
+              <Route path="exam-prep" element={<ExamPrepHubPage />} />
+              <Route path="exam-prep/:examId" element={<ExamDetailPage />} />
+              <Route path="exam-prep/:examId/mock" element={<ExamMockPage />} />
+              <Route path="exam-prep/:examId/section/:sectionId" element={<ExamSectionPage />} />
+              <Route path="interview" element={<InterviewLessonsPage />} />
+              <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
+              <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
             </Route>
-            <Route path="ai-agent" element={<JobAgentPage />} />
-            <Route path="signals" element={<SignalsPage />} />
-            <Route path="signals/:id" element={<SignalDetailPage />} />
-            <Route path="interviews" element={<InterviewsDirectoryPage />} />
-            <Route path="interviews/share" element={<ShareInterviewPage />} />
-            <Route path="interviews/:id" element={<InterviewExperienceDetailPage />} />
-            <Route path="checkout" element={<CheckoutPage />} />
-            <Route path="profile" element={<StudentProfilePage />} />
-            <Route path="roadmaps" element={<RoadmapDashboardPage />} />
-          </Route>
 
-          {/* Recruiter protected routes */}
-          <Route path="/recruiters" element={<ProtectedRoute role="RECRUITER"><RecruiterLayout /></ProtectedRoute>}>
-            <Route index element={<RecruiterDashboard />} />
-            <Route path="jobs" element={<RecruiterJobsList />} />
-            <Route path="jobs/create" element={<CreateJobPage />} />
-            <Route path="jobs/:id/edit" element={<EditJobPage />} />
-            <Route path="jobs/:id/applications" element={<ApplicationsList />} />
-            <Route path="jobs/:id/import-candidates" element={<CandidateImportPage />} />
-            <Route path="jobs/:id/analytics" element={<JobAnalyticsPage />} />
-            <Route path="applications/:applicationId" element={<ApplicationDetail />} />
-            <Route path="talent-search" element={<TalentSearchPage />} />
-            <Route path="saved" element={<SavedCandidatesPage />} />
-            <Route path="profile" element={<RecruiterProfilePage />} />
-            <Route path="profile/:identifier" element={<PublicProfilePage />} />
-            {/* HR Management */}
-            <Route path="hr" element={<HRDashboardPage />} />
-            <Route path="hr/employees" element={<EmployeesPage />} />
-            <Route path="hr/employees/:id" element={<EmployeeDetailPage />} />
-            <Route path="hr/departments" element={<DepartmentsPage />} />
-            <Route path="hr/leave" element={<LeavePage />} />
-            <Route path="hr/attendance" element={<AttendancePage />} />
-            <Route path="hr/interviews" element={<HRInterviewsPage />} />
-            <Route path="hr/tasks" element={<TasksPage />} />
-            <Route path="hr/performance" element={<PerformancePage />} />
-            <Route path="hr/payroll" element={<PayrollPage />} />
-            <Route path="hr/reimbursements" element={<ReimbursementsPage />} />
-            <Route path="hr/onboarding" element={<OnboardingPage />} />
-            <Route path="hr/compliance" element={<CompliancePage />} />
-            <Route path="hr/workflows" element={<WorkflowsPage />} />
-            <Route path="hr/roles" element={<RolesPage />} />
-          </Route>
+            {/* Legacy redirects */}
+            <Route path="/dsa/*" element={<Navigate to="/learn/dsa" replace />} />
+            <Route path="/sql/*" element={<Navigate to="/learn/sql" replace />} />
+            <Route path="/javascript/*" element={<Navigate to="/learn/javascript" replace />} />
+            <Route path="/aptitude/*" element={<Navigate to="/learn/aptitude" replace />} />
+            <Route path="/student/learn" element={<Navigate to="/learn" replace />} />
+            <Route path="/student/javascript/*" element={<Navigate to="/learn/javascript" replace />} />
+            <Route path="/html/*" element={<Navigate to="/learn/html" replace />} />
+            <Route path="/css/*" element={<Navigate to="/learn/css" replace />} />
+            <Route path="/student/html/*" element={<Navigate to="/learn/html" replace />} />
+            <Route path="/student/css/*" element={<Navigate to="/learn/css" replace />} />
+            <Route path="/typescript/*" element={<Navigate to="/learn/typescript" replace />} />
+            <Route path="/student/typescript/*" element={<Navigate to="/learn/typescript" replace />} />
+            <Route path="/react/*" element={<Navigate to="/learn/react" replace />} />
+            <Route path="/student/react/*" element={<Navigate to="/learn/react" replace />} />
+            <Route path="/student/sql/*" element={<Navigate to="/learn/sql" replace />} />
+            <Route path="/student/dsa/*" element={<Navigate to="/learn/dsa" replace />} />
+            <Route path="/student/aptitude/*" element={<Navigate to="/learn/aptitude" replace />} />
+            <Route path="/fastapi/*" element={<Navigate to="/learn/fastapi" replace />} />
+            <Route path="/flask/*" element={<Navigate to="/learn/flask" replace />} />
+            <Route path="/django/*" element={<Navigate to="/learn/django" replace />} />
+            <Route path="/python/*" element={<Navigate to="/learn/python" replace />} />
+            <Route path="/student/python/*" element={<Navigate to="/learn/python" replace />} />
 
-          {/* Profile view redirect → recruiter layout */}
-          <Route path="/profile/:id" element={<ProtectedRoute><ProfileRedirect /></ProtectedRoute>} />
+            {/* Standalone proctored test - no layout chrome */}
+            <Route path="/test/:testId" element={<ProtectedRoute role="STUDENT"><SkillTestPage /></ProtectedRoute>} />
 
-          {/* Admin login (public) */}
-          <Route path="/admin/login" element={<AdminLoginPage />} />
+            {/* Student protected routes */}
+            <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyRedirect /></ProtectedRoute>} />
+            <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
+              <Route index element={<Navigate to="applications" replace />} />
+              <Route path="jobs" element={<JobBrowsePage />} />
+              <Route path="jobs/saved" element={<SavedJobsPage />} />
+              <Route path="jobs/:id" element={<JobDetailPage />} />
+              <Route path="jobs/:id/apply" element={<ApplyPage />} />
+              <Route path="internships" element={<GovInternshipsPage />} />
+              <Route path="companies" element={<CompanyListPage />} />
+              <Route path="companies/:slug" element={<CompanyDetailPage />} />
+              <Route path="yc/:slug" element={<YCCompanyDetailPage />} />
+              <Route path="applications" element={<MyApplicationsPage />} />
+              <Route path="applications/:applicationId" element={<ApplicationProgressPage />} />
+              <Route path="ats" element={<AtsLandingPage />} />
+              <Route path="ats/score" element={<AtsScorePage />} />
+              <Route path="ats/resume-generator" element={<ResumeGeneratorPage />} />
+              <Route path="ats/templates" element={<ResumeBuilderPage />} />
+              <Route path="ats/cover-letter" element={<CoverLetterPage />} />
+              <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
+              <Route path="ats/latex-templates" element={<LatexTemplatesGallery />} />
+              <Route path="skill-verification" element={<SkillVerificationPage />} />
+              <Route path="mock-interview" element={<MockInterviewPage />} />
+              <Route path="companies/add" element={<AddCompanyPage />} />
+              <Route path="grants" element={<GrantsPage />} />
+              <Route path="grants/tracker" element={<GrantTrackerPage />} />
+              <Route path="opensource" element={<OpenSourceLayout />}>
+                <Route index element={<RepoDiscoveryPage />} />
+                <Route path="gsoc" element={<GSoCReposPage />} />
+                <Route path="programs" element={<ProgramTrackerPage />} />
+                <Route path="first-pr" element={<FirstPRRoadmapPage />} />
+                <Route path="first-pr/:sectionSlug" element={<FirstPRSectionPage />} />
+                <Route path="gsoc-proposal" element={<GSoCProposalPage />} />
+                <Route path="gsoc-proposal/:sectionSlug" element={<GSoCProposalStepPage />} />
+                <Route path="analytics" element={<OpenSourceAnalyticsPage />} />
+                <Route path="read-codebase" element={<ReadCodebasePage />} />
+                <Route path="read-codebase/:sectionSlug" element={<ReadCodebaseSectionPage />} />
+                <Route path="git-guide" element={<GitCheatsheetPage />} />
+                <Route path="git-guide/:sectionSlug" element={<GitCheatsheetSectionPage />} />
+                <Route path="communication" element={<CommTemplatesPage />} />
+                <Route path="communication/:sectionSlug" element={<CommTemplatesSectionPage />} />
+                <Route path="cicd" element={<CICDGuidePage />} />
+                <Route path="cicd/:sectionSlug" element={<CICDGuideSectionPage />} />
+                <Route path="hackathon-prep" element={<HackathonGuidePage />} />
+                <Route path="hackathon-prep/:sectionSlug" element={<HackathonGuideSectionPage />} />
+                <Route path="my-submissions" element={<MySubmissionsPage />} />
+              </Route>
+              <Route path="ai-agent" element={<JobAgentPage />} />
+              <Route path="signals" element={<SignalsPage />} />
+              <Route path="signals/:id" element={<SignalDetailPage />} />
+              <Route path="interviews" element={<InterviewsDirectoryPage />} />
+              <Route path="interviews/share" element={<ShareInterviewPage />} />
+              <Route path="interviews/:id" element={<InterviewExperienceDetailPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+              <Route path="profile" element={<StudentProfilePage />} />
+              <Route path="roadmaps" element={<RoadmapDashboardPage />} />
+            </Route>
+
+            {/* Recruiter protected routes */}
+            <Route path="/recruiters" element={<ProtectedRoute role="RECRUITER"><RecruiterLayout /></ProtectedRoute>}>
+              <Route index element={<RecruiterDashboard />} />
+              <Route path="jobs" element={<RecruiterJobsList />} />
+              <Route path="jobs/create" element={<CreateJobPage />} />
+              <Route path="jobs/:id/edit" element={<EditJobPage />} />
+              <Route path="jobs/:id/applications" element={<ApplicationsList />} />
+              <Route path="jobs/:id/import-candidates" element={<CandidateImportPage />} />
+              <Route path="jobs/:id/analytics" element={<JobAnalyticsPage />} />
+              <Route path="applications/:applicationId" element={<ApplicationDetail />} />
+              <Route path="talent-search" element={<TalentSearchPage />} />
+              <Route path="saved" element={<SavedCandidatesPage />} />
+              <Route path="profile" element={<RecruiterProfilePage />} />
+              <Route path="profile/:identifier" element={<PublicProfilePage />} />
+              {/* HR Management */}
+              <Route path="hr" element={<HRDashboardPage />} />
+              <Route path="hr/employees" element={<EmployeesPage />} />
+              <Route path="hr/employees/:id" element={<EmployeeDetailPage />} />
+              <Route path="hr/departments" element={<DepartmentsPage />} />
+              <Route path="hr/leave" element={<LeavePage />} />
+              <Route path="hr/attendance" element={<AttendancePage />} />
+              <Route path="hr/interviews" element={<HRInterviewsPage />} />
+              <Route path="hr/tasks" element={<TasksPage />} />
+              <Route path="hr/performance" element={<PerformancePage />} />
+              <Route path="hr/payroll" element={<PayrollPage />} />
+              <Route path="hr/reimbursements" element={<ReimbursementsPage />} />
+              <Route path="hr/onboarding" element={<OnboardingPage />} />
+              <Route path="hr/compliance" element={<CompliancePage />} />
+              <Route path="hr/workflows" element={<WorkflowsPage />} />
+              <Route path="hr/roles" element={<RolesPage />} />
+            </Route>
+
+            {/* Profile view redirect → recruiter layout */}
+            <Route path="/profile/:id" element={<ProtectedRoute><ProfileRedirect /></ProtectedRoute>} />
+
+            {/* Admin login (public) */}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
 
           {/* Admin protected routes */}
           <Route path="/admin" element={<ProtectedRoute role="ADMIN" redirectTo="/admin/login"><AdminLayout /></ProtectedRoute>}>
@@ -587,13 +597,14 @@ function App() {
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
+            <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
             <Route path="profile/:identifier" element={<PublicProfilePage />} />
           </Route>
 
-          {/* 404 catch-all */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Suspense>
+            {/* 404 catch-all */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
       </ErrorBoundary>
     </>
   );

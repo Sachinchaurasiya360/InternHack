@@ -1,12 +1,23 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star, Lock } from "lucide-react";
+import {
+  CheckCircle2,
+  ArrowRight,
+  BookOpen,
+  TrendingUp,
+  Star,
+  Lock,
+} from "lucide-react";
 import { sections, lessons } from "./data";
 import type { DataAnalyticsProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
-import { courseSchema, breadcrumbSchema } from "../../../lib/structured-data";
+import {
+  courseSchema,
+  breadcrumbSchema,
+  faqSchema,
+} from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 import { pythonEngine } from "../python/lib/python-engine";
@@ -35,9 +46,18 @@ function CircularProgress({ progress }: { progress: number }) {
   return (
     <div className="relative w-14 h-14 shrink-0">
       <svg className="w-14 h-14 -rotate-90" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r={r} fill="none" className="stroke-stone-200 dark:stroke-white/10" strokeWidth="4" />
         <circle
-          cx="32" cy="32" r={r}
+          cx="32"
+          cy="32"
+          r={r}
+          fill="none"
+          className="stroke-stone-200 dark:stroke-white/10"
+          strokeWidth="4"
+        />
+        <circle
+          cx="32"
+          cy="32"
+          r={r}
           fill="none"
           className="stroke-lime-400"
           strokeWidth="4"
@@ -67,16 +87,21 @@ export default function DataAnalyticsLessonsPage() {
   const sectionStats = useMemo(() => {
     return sections.map((section) => {
       const sectionLessons = lessons.filter((l) => l.sectionId === section.id);
-      const completed = sectionLessons.filter((l) => progress[l.id]?.completed).length;
+      const completed = sectionLessons.filter(
+        (l) => progress[l.id]?.completed,
+      ).length;
       const total = sectionLessons.length;
       const hasInterview = sectionLessons.some((l) => l.isInterviewQuestion);
       return { ...section, completed, total, hasInterview };
     });
   }, [progress]);
 
-  const totalCompleted = Object.values(progress).filter((p) => p.completed).length;
+  const totalCompleted = Object.values(progress).filter(
+    (p) => p.completed,
+  ).length;
   const totalLessons = lessons.length;
-  const overallPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+  const overallPct =
+    totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
 
   return (
     <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
@@ -96,6 +121,23 @@ export default function DataAnalyticsLessonsPage() {
             { name: "Home", url: SITE_URL },
             { name: "Learn", url: `${SITE_URL}/learn` },
             { name: "Data Analytics", url: `${SITE_URL}/learn/data-analytics` },
+          ]),
+          faqSchema([
+            {
+              question: "Is this Data Analytics course free?",
+              answer:
+                "Yes, the Data Analytics course on InternHack is completely free with no sign-up required.",
+            },
+            {
+              question: "What will I learn in this Data Analytics course?",
+              answer:
+                "You will learn data cleaning, exploratory data analysis, visualization, statistics, and working with tools like Pandas and Matplotlib.",
+            },
+            {
+              question: "Do I need math for Data Analytics?",
+              answer:
+                "Basic math and statistics knowledge is helpful, but the course explains all necessary concepts from the ground up.",
+            },
           ]),
         ]}
       />
@@ -120,16 +162,24 @@ export default function DataAnalyticsLessonsPage() {
                 Analyze data with Python.
               </h1>
               <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl">
-                Interactive lessons on NumPy, Pandas, statistics, visualization, EDA, SQL, and ML basics.
+                Interactive lessons on NumPy, Pandas, statistics, visualization,
+                EDA, SQL, and ML basics.
               </p>
             </div>
             <div className="flex items-center gap-3 flex-wrap text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
               <span>
-                <span className="text-stone-900 dark:text-stone-50">{totalCompleted}</span>
-                <span className="text-stone-400 dark:text-stone-600"> / {totalLessons} done</span>
+                <span className="text-stone-900 dark:text-stone-50">
+                  {totalCompleted}
+                </span>
+                <span className="text-stone-400 dark:text-stone-600">
+                  {" "}
+                  / {totalLessons} done
+                </span>
               </span>
               <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-              <span className="text-lime-600 dark:text-lime-400">{overallPct}% complete</span>
+              <span className="text-lime-600 dark:text-lime-400">
+                {overallPct}% complete
+              </span>
             </div>
           </div>
         </motion.div>
@@ -175,7 +225,10 @@ export default function DataAnalyticsLessonsPage() {
 
         <div className="space-y-2">
           {sectionStats.map((section, idx) => {
-            const pct = section.total > 0 ? Math.round((section.completed / section.total) * 100) : 0;
+            const pct =
+              section.total > 0
+                ? Math.round((section.completed / section.total) * 100)
+                : 0;
             const basePath = "/learn/data-analytics";
             const isComplete = pct === 100 && section.total > 0;
             const isLocked = idx >= FREE_LIMIT && !isAuthenticated;
@@ -208,7 +261,10 @@ export default function DataAnalyticsLessonsPage() {
                       </span>
                     )}
                     {section.hasInterview && (
-                      <Star className="w-3.5 h-3.5 text-lime-500 fill-lime-400 shrink-0" aria-label="Interview question" />
+                      <Star
+                        className="w-3.5 h-3.5 text-lime-500 fill-lime-400 shrink-0"
+                        aria-label="Interview question"
+                      />
                     )}
                   </div>
                   <p className="text-sm text-stone-600 dark:text-stone-400 mb-2.5 truncate">
@@ -230,13 +286,20 @@ export default function DataAnalyticsLessonsPage() {
                         `${section.total} lessons`
                       ) : (
                         <>
-                          <span className="text-stone-900 dark:text-stone-50">{section.completed}</span>
-                          <span className="text-stone-400 dark:text-stone-600"> / {section.total} lessons</span>
+                          <span className="text-stone-900 dark:text-stone-50">
+                            {section.completed}
+                          </span>
+                          <span className="text-stone-400 dark:text-stone-600">
+                            {" "}
+                            / {section.total} lessons
+                          </span>
                         </>
                       )}
                     </span>
                     <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                    <span className={LEVEL_COLOR[section.level]}>{section.level.toLowerCase()}</span>
+                    <span className={LEVEL_COLOR[section.level]}>
+                      {section.level.toLowerCase()}
+                    </span>
                   </div>
                 </div>
 

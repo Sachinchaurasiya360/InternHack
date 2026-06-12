@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate,Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
@@ -41,7 +41,17 @@ interface PublicProfile {
   bestAtsScore: number | null;
   verifiedSkills: VerifiedSkill[];
   createdAt: string;
+  ossTier?: string;
 }
+
+// ─── TIER COLORS ────────────────────────────────────────────────
+const OSS_TIER_COLORS: Record<string, string> = {
+  "First Steps": "bg-stone-50 text-stone-600 border-stone-200",
+  "Contributor": "bg-stone-100 text-stone-700 border-stone-300",
+  "Active Contributor": "bg-stone-200 text-stone-800 border-stone-400",
+  "OSS Leader": "bg-stone-300 text-stone-900 border-stone-500",
+  "Ambassador": "bg-lime-400 text-stone-900 border-lime-500",
+};
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -106,12 +116,12 @@ export default function PublicProfilePage() {
   return (
     <div className="relative pb-12 max-w-5xl mx-auto">
       <SEO
-  title={`${profile.name} — InternHack Profile`}
-  description={`${profile.name}'s skills: ${profile.skills.slice(0, 5).join(", ")}${profile.skills.length > 5 ? " and more" : ""}. ${profile.bio ? profile.bio.slice(0, 100) : "View their projects, achievements, and verified skills on InternHack."}`}
-  ogImage={profile.profilePic || undefined}
-  ogType="profile"
-  canonicalUrl={`https://internhack.xyz/student/profile/${profile.id}`}
-/>
+        title={`${profile.name} — InternHack Profile`}
+        description={`${profile.name}'s skills: ${profile.skills.slice(0, 5).join(", ")}${profile.skills.length > 5 ? " and more" : ""}. ${profile.bio ? profile.bio.slice(0, 100) : "View their projects, achievements, and verified skills on InternHack."}`}
+        ogImage={profile.profilePic || undefined}
+        ogType="profile"
+        canonicalUrl={`https://internhack.xyz/student/profile/${profile.id}`}
+      />
 
       {/* Back button */}
       <motion.button
@@ -152,6 +162,12 @@ export default function PublicProfilePage() {
                 <h1 className="text-xl font-bold text-gray-950 dark:text-white">{profile.name}</h1>
                 {jobStatusInfo && (
                   <span className={`text-xs font-medium px-2.5 py-0.5 rounded-lg ${jobStatusInfo.cls}`}>{jobStatusInfo.label}</span>
+                )}
+                {profile.ossTier && (
+                  <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border ${OSS_TIER_COLORS[profile.ossTier] || OSS_TIER_COLORS["First Steps"]}`}>
+                    <Trophy className="w-3 h-3" />
+                    {profile.ossTier}
+                  </span>
                 )}
               </div>
               {(profile.designation || profile.company) && (
@@ -238,12 +254,19 @@ export default function PublicProfilePage() {
               <div className="flex flex-wrap gap-1.5">
                 {profile.skills.map((skill) => {
                   const v = verifiedMap.get(skill.toLowerCase());
-                  return (
-                    <span key={skill} className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"}`}>
+                  const badge = (
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"}`}>
                       {v && <ShieldCheck className="w-3 h-3" />}
                       {skill}
                       {v && <span className="text-[10px] opacity-70">{v.score}%</span>}
                     </span>
+                  );
+                  return v?.token ? (
+                    <Link key={skill} to={`/verify/${v.token}`} className="no-underline" title="View verified skill details">
+                      {badge}
+                    </Link>
+                  ) : (
+                    <span key={skill}>{badge}</span>
                   );
                 })}
               </div>
