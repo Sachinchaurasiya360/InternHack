@@ -24,6 +24,8 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 interface ListResponse {
   roadmaps: RoadmapListItem[];
@@ -221,14 +223,7 @@ export default function RoadmapsLandingPage() {
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pb-16">
         {/* Vertical column gridlines, same atmosphere as the Learn hub */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-          style={{
-            backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-            backgroundSize: "120px 100%",
-          }}
-        />
+        <GridBackground />
 
         <div className="relative">
           {/* Editorial header */}
