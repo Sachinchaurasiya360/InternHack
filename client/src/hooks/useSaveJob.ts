@@ -27,6 +27,9 @@ export function useSaveJob(opts?: UseSaveJobOptions) {
       });
       if (opts?.successToast) toast.success(opts.successToast);
     },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to save job");
+    },
   });
 
   return { toggleSave, isPending };
