@@ -358,4 +358,13 @@ export class AdminPlatformService {
       },
     };
   }
+
+  async getSidebarStats() {
+    const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const [pendingContributions, recentErrors] = await Promise.all([
+      prisma.companyContribution.count({ where: { status: "PENDING" } }),
+      prisma.errorLog.count({ where: { statusCode: { gte: 500 }, createdAt: { gte: since24h } } }),
+    ]);
+    return { pendingContributions, recentErrors };
+  }
 }

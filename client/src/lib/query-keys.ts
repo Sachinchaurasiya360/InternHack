@@ -105,6 +105,7 @@ export const queryKeys = {
     myRequests: () => ["opensource", "my-requests"] as const,
     trend: (startDate?: string, endDate?: string) => ["opensource", "trend", startDate, endDate] as const,
     hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
+    streak: () => ["opensource", "streak"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
@@ -163,6 +164,12 @@ export const queryKeys = {
     list: (params?: Record<string, string | number | undefined>) =>
       ["scraped-jobs", "list", params] as const,
     detail: (id: string | number) => ["scraped-jobs", "detail", id] as const,
+  },
+  
+  externalJobs: {
+    detail: (slug: string) => ["external-job", slug] as const,
+    similar: (id: string | number) => ["external-job-similar", id] as const,
+    status: (id: string | number) => ["external-job-status", id] as const,
   },
 
   // Professors
@@ -228,6 +235,7 @@ export const queryKeys = {
     bookmarks: () => ["dsa", "bookmarks"] as const,
     companies: () => ["dsa", "companies"] as const,
     company: (name: string, page?: number) => ["dsa", "company", name, page] as const,
+    companyTrackStats: (name: string) => ["dsa", "company", name, "track-stats"] as const,
     patterns: () => ["dsa", "patterns"] as const,
     pattern: (name: string, page?: number) => ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
@@ -238,6 +246,7 @@ export const queryKeys = {
     streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
+    approaches: (slug: string) => ["dsa", "approaches", slug] as const,
   },
   interviewDashboard: {
   mine: () => ["interview-dashboard", "mine"] as const,
