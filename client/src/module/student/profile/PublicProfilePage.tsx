@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, MapPin, GraduationCap, Linkedin, Github, Globe,
   ExternalLink, FileText, ShieldCheck, Trophy, FolderGit2, Briefcase, Calendar,
-  Phone, Mail, Clock, User,
+  Phone, Mail, Clock, User, Lock
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { LoadingScreen } from "../../../components/LoadingScreen";
@@ -100,12 +100,33 @@ export default function PublicProfilePage() {
   });
 
   if (isLoading) return <LoadingScreen />;
+  
+  if (error) {
+    const status = (error as any)?.response?.status;
+    if (status === 403) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+          <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-md p-8 max-w-md w-full shadow-sm space-y-6">
+            <Lock className="w-12 h-12 text-stone-400 mx-auto" />
+            <div>
+              <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mb-2">This profile is private.</h2>
+              <p className="text-stone-500 dark:text-stone-400">The owner has chosen not to share their profile publicly.</p>
+            </div>
+            <Link to="/" className="inline-block bg-lime-500 hover:bg-lime-600 text-stone-900 font-semibold px-6 py-2.5 rounded-md transition-colors">
+              Return Home
+            </Link>
+          </div>
+        </div>
+      );
+    }
+  }
+
   if (error || !profile) {
     return (
-      <div className="text-center py-20">
-        <h2 className="text-xl font-bold text-gray-950 dark:text-white mb-2">Profile not found</h2>
-        <p className="text-gray-500 mb-4">This student profile doesn't exist or you don't have permission to view it.</p>
-        <Button variant="primary" mode="link" onClick={() => navigate(-1)} className="text-indigo-600 dark:text-indigo-400 hover:underline">Go back</Button>
+      <div className="text-center py-20 space-y-6 p-6">
+        <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-2">Profile not found</h2>
+        <p className="text-stone-500 mb-4">This student profile doesn't exist.</p>
+        <Button variant="primary" mode="link" onClick={() => navigate(-1)} className="text-lime-600 dark:text-lime-500 hover:underline">Go back</Button>
       </div>
     );
   }
