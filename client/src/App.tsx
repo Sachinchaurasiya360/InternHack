@@ -92,6 +92,7 @@ const AddCompanyPage = lazyWithRetry(() => import("./module/student/companies/Ad
 const StudentProfilePage = lazyWithRetry(() => import("./module/student/profile/StudentProfilePage"));
 const PublicProfilePage = lazyWithRetry(() => import("./module/student/profile/PublicProfilePage"));
 const RepoDiscoveryPage = lazyWithRetry(() => import("./module/student/opensource/RepoDiscoveryPage"));
+const OpenSourceDashboardPage = lazyWithRetry(() => import("./module/student/opensource/OpenSourceDashboardPage"));
 const GSoCReposPage = lazyWithRetry(() => import("./module/student/opensource/GSoCReposPage"));
 const ProgramTrackerPage = lazyWithRetry(() => import("./module/student/opensource/ProgramTrackerPage"));
 const FirstPRRoadmapPage = lazyWithRetry(() => import("./module/student/opensource/FirstPRRoadmapPage"));
@@ -510,7 +511,8 @@ function App() {
               <Route path="grants" element={<GrantsPage />} />
               <Route path="grants/tracker" element={<GrantTrackerPage />} />
               <Route path="opensource" element={<OpenSourceLayout />}>
-                <Route index element={<RepoDiscoveryPage />} />
+                <Route index element={<OpenSourceDashboardPage />} />
+                <Route path="discover" element={<RepoDiscoveryPage />} />
                 <Route path="gsoc" element={<GSoCReposPage />} />
                 <Route path="programs" element={<ProgramTrackerPage />} />
                 <Route path="first-pr" element={<FirstPRRoadmapPage />} />

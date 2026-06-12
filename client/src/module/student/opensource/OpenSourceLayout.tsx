@@ -8,6 +8,7 @@ import StreakFlame from "./StreakFlame";
 
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
+  discover: "Discover Repos",
   "first-pr": "First PR",
   "gsoc-proposal": "GSoC Proposal",
   gsoc: "GSoC Repos",
