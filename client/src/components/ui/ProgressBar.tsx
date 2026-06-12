@@ -41,7 +41,7 @@ export function ProgressBar({
     <div className="px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md">
       <div className="flex items-center justify-between gap-4 mb-2">
         {label && (
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
             {label}
           </span>
         )}
