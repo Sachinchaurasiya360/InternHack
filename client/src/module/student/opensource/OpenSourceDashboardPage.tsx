@@ -83,13 +83,21 @@ export const ActiveIssueRow = React.memo(function ActiveIssueRow({
   onComplete: (id: number) => void;
   onAbandon: (id: number) => void;
 }) {
-  const timeAgo = (dateStr: string) => {
-    const elapsed = Date.now() - new Date(dateStr).getTime();
-    const hrs = Math.floor(elapsed / 3600000);
-    if (hrs < 24) return hrs <= 0 ? "Just now" : `${hrs}h ago`;
-    const days = Math.floor(hrs / 24);
-    return `${days}d ago`;
-  };
+  const [timeAgoStr, setTimeAgoStr] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const elapsed = Date.now() - new Date(issue.claimedAt).getTime();
+      const hrs = Math.floor(elapsed / 3600000);
+      if (hrs < 24) {
+        setTimeAgoStr(hrs <= 0 ? "Just now" : `${hrs}h ago`);
+      } else {
+        const days = Math.floor(hrs / 24);
+        setTimeAgoStr(`${days}d ago`);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [issue.claimedAt]);
 
   return (
     <div className="p-4 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900/40 hover:border-stone-300 dark:hover:border-white/15 transition-all">
@@ -108,7 +116,7 @@ export const ActiveIssueRow = React.memo(function ActiveIssueRow({
           </h4>
           <span className="inline-flex items-center gap-1 mt-2 text-[10px] text-stone-400 font-mono">
             <Clock className="w-3 h-3 text-stone-400" />
-            Claimed {timeAgo(issue.claimedAt)}
+            Claimed {timeAgoStr || "Recently"}
           </span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -390,8 +398,8 @@ export default function OpenSourceDashboardPage() {
   ];
 
   // Deadlines dates
-  const gsocDeadline = Date.now() + 15 * 86400 * 1000 + 4 * 3600 * 1000;
-  const lfxDeadline = Date.now() + 32 * 86400 * 1000 + 12 * 3600 * 1000;
+  const [gsocDeadline] = useState(() => Date.now() + 15 * 86400 * 1000 + 4 * 3600 * 1000);
+  const [lfxDeadline] = useState(() => Date.now() + 32 * 86400 * 1000 + 12 * 3600 * 1000);
 
   return (
     <div className="pb-16 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 transition-colors">

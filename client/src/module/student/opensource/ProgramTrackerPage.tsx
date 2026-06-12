@@ -1469,7 +1469,7 @@ export default function ProgramTrackerPage() {
       list.sort((a, b) => a.name.localeCompare(b.name));
     }
     return list;
-  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy]);
+  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy, activeFocus]);
 
   const totalStipend = PROGRAMS.filter((p) => p.stipendPaid).length;
   const highStipend = PROGRAMS.filter((p) => p.stipendRange === "High").length;
