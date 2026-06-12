@@ -13,6 +13,7 @@ import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
+import GuideCompletionSection from "./components/GuideCompletionSection";
 import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 import { NextInPathCard } from "./components/NextInPathCard";
 import { issueCertificate, type Certificate } from "./api/opensource.api";
@@ -193,31 +194,12 @@ export default function GSoCProposalPage() {
       {/* Completion banner */}
       <AnimatePresence>
         {allDone && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 flex items-center gap-4"
-          >
-            <Trophy className="w-8 h-8 text-green-500 shrink-0" />
-            <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">You've completed the guide!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline.</p>
-
-              {cert && (
-                <div className="flex gap-3 mt-4 flex-wrap">
-                  <Button variant="secondary" size="sm" onClick={copyCertLink} className="bg-white dark:bg-green-900/40">
-                    {copying ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
-                    {copying ? "Copied" : "Copy Certificate"}
-                  </Button>
-                  <Button variant="secondary" size="sm" onClick={shareLinkedIn} className="bg-white dark:bg-green-900/40">
-                    <Linkedin className="w-4 h-4 mr-2 fill-current" />
-                    Share on LinkedIn
-                  </Button>
-                </div>
-              )}
-            </div>
-          </motion.div>
+          <GuideCompletionSection
+            headline="You've completed the guide!"
+            subtitle="Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline."
+            certificateGuideName="GSoC Proposal Guide"
+            accentWord="guide"
+          />
         )}
       </AnimatePresence>
 
