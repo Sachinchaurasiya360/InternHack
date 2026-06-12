@@ -20,10 +20,12 @@ import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
 import { MetaChip } from "../../../components/ui/MetaChip";
+import { EmptyState } from "../../../components/ui/EmptyState";
 
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { CARD_BASE } from "../../../lib/card-styles";
 import { useSaveJob } from "../../../hooks/useSaveJob";
 import type {
   ExternalJob,
@@ -48,9 +50,6 @@ const FILTER_TAGS = [
 
 const SALARY_HAS_CURRENCY = /[₹$€£¥]|\b(USD|EUR|GBP|INR|JPY|CAD|AUD)\b/i;
 
-const cardBase =
-  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
-
 function CompanyMark({ label }: { label: string }) {
   return (
     <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
@@ -65,7 +64,7 @@ const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: Exte
   const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
-    <Link to={job.slug ? `/jobs/ext/${job.slug}` : "#"} className={cardBase}>
+    <Link to={job.slug ? `/jobs/ext/${job.slug}` : "#"} className={CARD_BASE}>
       <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
         <span className="h-1 w-1 bg-lime-400" />
         external
@@ -111,7 +110,7 @@ const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: Scrape
   const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
-    <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer" className={cardBase}>
+    <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer" className={CARD_BASE}>
       <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
         <span className="h-1 w-1 bg-lime-400" />
         {job.source}
@@ -758,22 +757,22 @@ export default function JobBrowsePage() {
             </div>
           </div>
         ) : (data?.jobs ?? []).length === 0 ? (
-          <motion.div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4">
-            <div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">No jobs match your filters</p>
-              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
-                try adjusting your search or filters
-              </p>
-            </div>
-            {hasFilters && (
-              <button
-                type="button"
-                onClick={clearAll}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" /> Clear filters
-              </button>
-            )}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <EmptyState
+              title="No jobs match your filters"
+              description="try adjusting your search or filters"
+              action={
+                hasFilters ? (
+                  <button
+                    type="button"
+                    onClick={clearAll}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" /> Clear filters
+                  </button>
+                ) : undefined
+              }
+            />
           </motion.div>
         ) : (
           <>

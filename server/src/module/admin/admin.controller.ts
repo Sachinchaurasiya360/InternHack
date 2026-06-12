@@ -236,6 +236,16 @@ export class AdminController {
     }
   }
 
+  async getSidebarStats(req: Request, res: Response) {
+    try {
+      const data = await this.adminService.getSidebarStats();
+      return res.status(200).json(data);
+    } catch (error) {
+      logger.error("Failed to get sidebar stats", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   // ==================== COMPANY DASHBOARD (existing) ====================
 
   async getDashboard(req: Request, res: Response, next: NextFunction) {

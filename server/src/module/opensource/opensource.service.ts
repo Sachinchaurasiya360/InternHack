@@ -1,5 +1,5 @@
 import { prisma } from "../../database/db.js";
-import { fetchGithubGoodFirstIssues, fetchGithubStats } from "../../lib/github.js";
+import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
   repoRequestSubmittedHtml,
@@ -86,6 +86,9 @@ export class OpensourceService {
     if (domain) where["domain"] = domain;
     if (trending === "true") where["trending"] = true;
     if (hacktoberfest === "true") where["hacktoberfest"] = true;
+    if (query.highlyActive === "true") {
+      where["healthScore"] = { gte: 75 };
+    }
     if (ids) {
       const idList = ids
         .split(",")
@@ -139,11 +142,20 @@ where["OR"] = [
     if (!repo) return null;
 
     const SIX_HOURS = 6 * 60 * 60 * 1000;
+    const neverFetched = !repo.githubStatsUpdatedAt;
     const isStale =
-      !repo.githubStatsUpdatedAt ||
+      neverFetched ||
       Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
 
     if (isStale && repo.url?.includes("github.com")) {
+      if (neverFetched) {
+        // First-ever fetch: await so the caller gets live stats, not 0s
+        await this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
+          console.error(`[github] initial stats fetch failed for ${id}:`, err),
+        );
+        return (await prisma.opensourceRepo.findUnique({ where: { id } })) as any;
+      }
+      // Stale but previously fetched: update in background, return cached
       this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
         console.error(`[github] background update failed for ${id}:`, err),
       );
@@ -181,8 +193,26 @@ where["OR"] = [
   }
 
   private async updateGithubStats(id: number, url: string, name: string) {
-    const stats = await fetchGithubStats(url);
+    const [stats, health] = await Promise.all([
+      fetchGithubStats(url),
+      this.getRepoOwnerAndNameFromUrl(url).then(parsed => 
+        parsed ? fetchRepoHealthData(parsed.owner, parsed.name) : null
+      )
+    ]);
+
     if (!stats) return;
+
+    let healthScore = 0;
+    if (health) {
+      if (health.hasContributing) healthScore += 15;
+      if (health.hasCodeOfConduct) healthScore += 10;
+      if (health.hasIssueTemplate) healthScore += 10;
+      if (health.fastResponse) healthScore += 20;
+      if (health.hasRecentCommits) healthScore += 15;
+      if (health.hasGoodFirstIssues) healthScore += 20;
+      if (health.mergeRate > 30) healthScore += 10;
+    }
+
     await prisma.opensourceRepo.update({
       where: { id },
       data: {
@@ -190,10 +220,17 @@ where["OR"] = [
         forks: stats.forks,
         openIssues: stats.openIssues,
         githubStatsUpdatedAt: new Date(),
+        healthScore,
         ...(stats.language && { language: stats.language }),
       } as any,
     });
-    console.info(`[github] updated stats for ${name}`);
+    console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
+  }
+
+  private async getRepoOwnerAndNameFromUrl(url: string) {
+    const match = url.match(/github\.com\/([^\/]+)\/([^\/\s\.]+)/);
+    if (!match) return null;
+    return { owner: match[1], name: match[2].replace(".git", "") };
   }
 
   async getGsocOrgs(query: {

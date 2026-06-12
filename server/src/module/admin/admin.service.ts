@@ -50,6 +50,9 @@ export class AdminService {
   getErrorLogs(...args: Parameters<AdminPlatformService["getErrorLogs"]>) {
     return this.platformSvc.getErrorLogs(...args);
   }
+  getSidebarStats() {
+    return this.platformSvc.getSidebarStats();
+  }
 
   // ── Company ───────────────────────────────────────────────────────────
   getDashboardStats(...args: Parameters<AdminCompanyService["getDashboardStats"]>) {
