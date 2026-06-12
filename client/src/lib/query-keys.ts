@@ -105,6 +105,7 @@ export const queryKeys = {
     myRequests: () => ["opensource", "my-requests"] as const,
     trend: (startDate?: string, endDate?: string) => ["opensource", "trend", startDate, endDate] as const,
     hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
+    streak: () => ["opensource", "streak"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
@@ -163,6 +164,12 @@ export const queryKeys = {
     list: (params?: Record<string, string | number | undefined>) =>
       ["scraped-jobs", "list", params] as const,
     detail: (id: string | number) => ["scraped-jobs", "detail", id] as const,
+  },
+  
+  externalJobs: {
+    detail: (slug: string) => ["external-job", slug] as const,
+    similar: (id: string | number) => ["external-job-similar", id] as const,
+    status: (id: string | number) => ["external-job-status", id] as const,
   },
 
   // Professors

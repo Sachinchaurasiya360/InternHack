@@ -1,14 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, AlertTriangle, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Award, Cpu, ExternalLink, Menu, X, Radar, MessageCircle } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, AlertTriangle, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Award, Cpu, ExternalLink, Menu, X, Radar, MessageCircle, TrendingUp } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 import { SEO } from "../../components/SEO";
+import api from "../../lib/axios";
+
+function NavBadge({ count }: { count: number }) {
+  if (count === 0) return null;
+  return (
+    <span className="ml-auto bg-red-500 text-white text-xs font-semibold rounded px-1.5 py-0.5 leading-none">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
 
 export default function AdminLayout() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarStats, setSidebarStats] = useState({ pendingContributions: 0, recentErrors: 0 });
+
+  useEffect(() => {
+    const load = () => {
+      api.get<{ pendingContributions: number; recentErrors: number }>("/admin/sidebar-stats")
+        .then((r) => setSidebarStats(r.data))
+        .catch(() => {});
+    };
+    load();
+    const interval = setInterval(load, 60_000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -54,6 +76,7 @@ export default function AdminLayout() {
         <NavLink to="/admin/errors" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <AlertTriangle className="w-4 h-4" />
           Error Logs
+          <NavBadge count={sidebarStats.recentErrors} />
         </NavLink>
         <NavLink to="/admin/companies" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <Building2 className="w-4 h-4" />
@@ -66,6 +89,7 @@ export default function AdminLayout() {
         <NavLink to="/admin/contributions" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <GitPullRequest className="w-4 h-4" />
           Contributions
+          <NavBadge count={sidebarStats.pendingContributions} />
         </NavLink>
         <NavLink to="/admin/subscribers" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <Mail className="w-4 h-4" />
@@ -114,6 +138,10 @@ export default function AdminLayout() {
         <NavLink to="/admin/blog" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <BookOpen className="w-4 h-4" />
           Blog
+        </NavLink>
+        <NavLink to="/admin/guide-feedback" className={linkClass} onClick={() => setSidebarOpen(false)}>
+          <TrendingUp className="w-4 h-4" />
+          Guide Analytics
         </NavLink>
       </nav>
 

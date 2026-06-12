@@ -39,6 +39,10 @@ skillTestRouter.get(
   (req, res, next) => controller.listTests(req, res, next)
 );
 skillTestRouter.get(
+  "/verify/:token",
+  (req, res, next) => controller.verifyBadge(req, res, next)
+);
+skillTestRouter.get(
   "/:id",
   authMiddleware,
   requireRole("STUDENT"),

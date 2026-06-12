@@ -1,10 +1,14 @@
 ﻿import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
+import {
+  generateVerifiedSkillToken,
+  verifyVerifiedSkillToken,
+} from "../../utils/jwt.utils.js";
 import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from "../../utils/cache.js";
 
 const TESTS_LIST_TTL = 600;    // 10 min â€” shared across all students
-const VERIFIED_TTL  = 3600;   // 1 hour â€” verified skills rarely change
-const ATTEMPTS_TTL  = 300;    // 5 min  â€” attempts change after each test
+const VERIFIED_TTL = 3600;   // 1 hour â€” verified skills rarely change
+const ATTEMPTS_TTL = 300;    // 5 min  â€” attempts change after each test
 
 const verifiedKey = (id: number) => `skill:verified:${id}`;
 const attemptsKey = (id: number) => `skill:attempts:${id}`;
@@ -90,20 +94,21 @@ export class SkillTestService {
 
     if (!test || !test.isActive) throw new Error("Test not found");
 
-    //  Cooldown check - 12 hours between retakes
+    // Failed attempts must wait 7 days before retaking
     const lastAttempt = await prisma.skillTestAttempt.findFirst({
-      where: { testId, studentId ,completedAt: { not: null }},
+      where: { testId, studentId, completedAt: { not: null } },
       orderBy: { completedAt: "desc" },
     });
 
-    if (lastAttempt?.completedAt) {
-      const hoursSince = (Date.now() - lastAttempt.completedAt.getTime()) / (1000 * 60 * 60);
-      if (hoursSince < 12) {
-        const retryAfter = new Date(lastAttempt.completedAt.getTime() + 12 * 60 * 60 * 1000);
-        throw Object.assign(new Error("Cooldown active. Please wait before retaking."), {
-          status: 429,
-          retryAfter,
-        });
+    if (lastAttempt && !lastAttempt.passed && lastAttempt.completedAt) {
+      const retryAfter = new Date(
+        lastAttempt.completedAt.getTime() + 7 * 24 * 60 * 60 * 1000,
+      );
+      if (new Date() < retryAfter) {
+        throw Object.assign(
+          new Error("Retake locked. Please try again later."),
+          { status: 429, retryAfter },
+        );
       }
     }
 
@@ -269,9 +274,9 @@ export class SkillTestService {
     });
 
     const score =
-    totalQuestions > 0
-      ? Math.round((correctCount / totalQuestions) * 100)
-      : 0;
+      totalQuestions > 0
+        ? Math.round((correctCount / totalQuestions) * 100)
+        : 0;
 
     // Calculate proctoring integrity score
     const proctoringScore = this.calculateProctoringScore(proctorLog);
@@ -294,9 +299,9 @@ export class SkillTestService {
       },
     });
 
-    // If passed, upsert verifiedSkill
+    let verificationToken: string | null = null;
     if (passed) {
-      await prisma.verifiedSkill.upsert({
+      const verified = await prisma.verifiedSkill.upsert({
         where: {
           studentId_skillName: {
             studentId,
@@ -316,6 +321,11 @@ export class SkillTestService {
           verifiedAt: new Date(),
         },
       });
+      verificationToken = generateVerifiedSkillToken({
+        vid: verified.id,
+        studentId,
+        skillName: verified.skillName,
+      });
     }
 
     // Bust per-user caches â€” attempts always change, verified changes on pass
@@ -331,6 +341,7 @@ export class SkillTestService {
       correctCount,
       totalQuestions,
       gradedAnswers,
+      token: verificationToken,
     };
   }
 
@@ -357,8 +368,16 @@ export class SkillTestService {
       where: { studentId },
       orderBy: { verifiedAt: "desc" },
     });
-    await cacheSet(verifiedKey(studentId), result, VERIFIED_TTL);
-    return result;
+    const mapped = result.map((item) => ({
+      ...item,
+      token: generateVerifiedSkillToken({
+        vid: item.id,
+        studentId: item.studentId,
+        skillName: item.skillName,
+      }),
+    }));
+    await cacheSet(verifiedKey(studentId), mapped, VERIFIED_TTL);
+    return mapped;
   }
 
   async getStudentVerified(studentId: number) {
@@ -369,8 +388,53 @@ export class SkillTestService {
       where: { studentId },
       orderBy: { verifiedAt: "desc" },
     });
-    await cacheSet(verifiedKey(studentId), result, VERIFIED_TTL);
-    return result;
+    const mapped = result.map((item) => ({
+      ...item,
+      token: generateVerifiedSkillToken({
+        vid: item.id,
+        studentId: item.studentId,
+        skillName: item.skillName,
+      }),
+    }));
+    await cacheSet(verifiedKey(studentId), mapped, VERIFIED_TTL);
+    return mapped;
+  }
+
+  async verifyBadgeToken(token: string) {
+    let payload;
+    try {
+      payload = verifyVerifiedSkillToken(token);
+    } catch {
+      throw new Error("INVALID_VERIFICATION_TOKEN");
+    }
+
+    const verified = await prisma.verifiedSkill.findUnique({
+      where: { id: payload.vid },
+      include: {
+        student: { select: { id: true, name: true, profileSlug: true } },
+      },
+    });
+
+    if (
+      !verified ||
+      verified.studentId !== payload.studentId ||
+      verified.skillName !== payload.skillName
+    ) {
+      throw new Error("INVALID_VERIFICATION_TOKEN");
+    }
+
+    return {
+      student: {
+        id: verified.student.id,
+        name: verified.student.name,
+        profileSlug: verified.student.profileSlug,
+      },
+      skillName: verified.skillName,
+      score: verified.score,
+      verifiedAt: verified.verifiedAt,
+      token,
+      publicUrl: `/verify/${token}`,
+    };
   }
 
   async createTest(
