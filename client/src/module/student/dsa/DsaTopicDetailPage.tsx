@@ -20,6 +20,7 @@ import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { sanitizeHtml } from "../../../lib/sanitize";
 
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
 
@@ -564,7 +565,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                             {i + 1}.
                           </span>
                         )}
-                        <span dangerouslySetInnerHTML={{ __html: cleanHint(hint) }} />
+                        <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanHint(hint)) }} />
                       </div>
                     ))}
                   </div>
