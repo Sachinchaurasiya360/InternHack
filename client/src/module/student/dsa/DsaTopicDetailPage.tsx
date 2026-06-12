@@ -19,6 +19,7 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
+import { sanitizeHtml } from "../../../lib/sanitize";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
@@ -564,7 +565,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                             {i + 1}.
                           </span>
                         )}
-                        <span dangerouslySetInnerHTML={{ __html: cleanHint(hint) }} />
+                        <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanHint(hint)) }} />
                       </div>
                     ))}
                   </div>
