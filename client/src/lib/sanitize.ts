@@ -1,3 +1,5 @@
+const CODE_CLASS = "px-1.5 py-0.5 bg-stone-200 dark:bg-white/10 rounded-md text-sm font-mono";
+
 export function sanitizeHtml(html: string): string {
   return html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
@@ -17,4 +19,11 @@ export function sanitizeHtml(html: string): string {
     .replace(/<(div|span|p|font)\s*>\s*<\/\1>/gi, "")
     .replace(/<\/?font[^>]*>/gi, "")
     .replace(/<img\b[^>]*\/?>/gi, "");
+}
+
+export function cleanHint(html: string): string {
+  return html
+    .replace(/<div[^>]*>/gi, "")
+    .replace(/<\/div>/gi, "")
+    .replace(/<code>/gi, `<code class='${CODE_CLASS}'>`);
 }
