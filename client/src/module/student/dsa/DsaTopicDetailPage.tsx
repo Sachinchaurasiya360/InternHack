@@ -34,6 +34,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import { sanitizeHtml } from "../../../lib/sanitize";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { cleanHint } from "../../../lib/sanitize";
 import { useDsaLabels } from "./components/useDsaLabels";
 import { DsaLabelManager } from "./components/DsaLabelManager";
 import { DsaLabelFilter } from "./components/DsaLabelFilter";
@@ -496,7 +497,6 @@ export default function DsaTopicDetailPage() {
                         saveNotes={saveNotes}
                         toggleNotes={toggleNotes}
                         setExpandedId={setExpandedId}
-                        cleanHint={cleanHint}
                         labels={
                           getLabels(problem.id).length
                             ? getLabels(problem.id)
@@ -531,7 +531,6 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   saveNotes,
   toggleNotes,
   setExpandedId,
-  cleanHint,
   labels,
   onAddLabel,
   onRemoveLabel,
@@ -549,7 +548,6 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   saveNotes: (problemId: number, val: string) => void;
   toggleNotes: (problemId: number, notes: string | null | undefined) => void;
   setExpandedId: (val: number | null) => void;
-  cleanHint: (hint: string) => string;
   labels: string[];
   onAddLabel: (problemId: number, label: string) => void;
   onRemoveLabel: (problemId: number, label: string) => void;
@@ -807,12 +805,3 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   );
 });
 
-function cleanHint(html: string): string {
-  return html
-    .replace(/<div[^>]*>/gi, "")
-    .replace(/<\/div>/gi, "")
-    .replace(
-      /<code>/gi,
-      "<code class='px-1.5 py-0.5 bg-stone-200 dark:bg-white/10 rounded-md text-sm font-mono'>",
-    );
-}

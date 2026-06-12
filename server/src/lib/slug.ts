@@ -24,7 +24,7 @@ export async function createUniqueProfileSlug(
       data: { profileSlug: base },
     });
     return base;
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
       const fallback = `${base}-${id}`;
       await prisma.user.update({

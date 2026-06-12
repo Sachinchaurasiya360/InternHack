@@ -16,7 +16,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import { sanitizeHtml } from "../../../lib/sanitize";
+import { sanitizeHtml, cleanHint } from "../../../lib/sanitize";
 import { Button } from "../../../components/ui/button";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
 
@@ -198,13 +198,6 @@ function externalLinks(p: DsaCompanyProblem) {
   if (p.articleUrl) links.push({ href: p.articleUrl, label: "Article" });
   if (p.videoUrl) links.push({ href: p.videoUrl, label: "Video" });
   return links;
-}
-
-function cleanHint(html: string): string {
-  return html
-    .replace(/<div[^>]*>/gi, "")
-    .replace(/<\/div>/gi, "")
-    .replace(/<code>/gi, "<code class='px-1.5 py-0.5 bg-stone-200 dark:bg-white/10 rounded-md text-sm font-mono'>");
 }
 
 export default function DsaCompaniesPage() {

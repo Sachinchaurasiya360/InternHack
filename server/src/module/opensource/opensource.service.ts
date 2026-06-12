@@ -7,6 +7,49 @@ import {
 } from "../../utils/email-templates.js";
 import { UserService } from "../user/user.service.js";
 
+interface ListReposQuery {
+  page: number;
+  limit: number;
+  search?: string;
+  language?: string;
+  difficulty?: string;
+  domain?: string;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
+  trending?: string;
+  hacktoberfest?: string;
+  highlyActive?: string;
+  ids?: string;
+}
+interface SubmitRepoRequestData {
+  name: string;
+  owner: string;
+  description: string;
+  language: string;
+  url: string;
+  domain: string;
+  difficulty: string;
+  techStack: string[];
+  tags: string[];
+  reason: string;
+}
+interface ApproveOverrideData {
+  adminNote?: string;
+  name?: string;
+  description?: string;
+  domain?: string;
+  difficulty?: string;
+  tags?: string[];
+}
+interface GsocOrgsQuery {
+  page: number;
+  limit: number;
+  search?: string;
+  category?: string;
+  technology?: string;
+  year?: number;
+}
+
 const userService = new UserService();
 
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -43,8 +86,8 @@ export class OpensourceService {
       totalRepos,
       totalStars: starsAgg._sum.stars ?? 0,
       trendingCount,
-      languageCount: languageGroups.filter((g: any) => g.language && g.language.trim() !== "").length,
-      domainBreakdown: domainGroups.map((g: any) => ({
+      languageCount: languageGroups.filter((g) => g.language && g.language.trim() !== "").length,
+      domainBreakdown: domainGroups.map((g) => ({
         domain: g.domain || "Other",
         count: g._count._all,
       })),
@@ -60,12 +103,12 @@ export class OpensourceService {
       distinct: ["language"],
     });
     return rows
-      .map((r: any) => r.language)
+      .map((r) => r.language)
       .filter((l: string | null): l is string => Boolean(l && l.trim() !== ""))
       .sort((a: string, b: string) => a.localeCompare(b));
   }
 
-  async listRepos(query: any) {
+  async listRepos(query: ListReposQuery) {
     const {
       page,
       limit,
@@ -80,8 +123,8 @@ export class OpensourceService {
       ids,
     } = query;
     const skip = (page - 1) * limit;
-    const where: Record<string, any> = {};
-    if (language) where["language"] = { equals: language, mode: "insensitive" };
+    const where: Record<string, unknown> = {};
+    if (language) where.language = { equals: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
     if (trending === "true") where["trending"] = true;
@@ -109,7 +152,7 @@ export class OpensourceService {
         )
       `;
 
-      const tagMatchIds = tagMatches.map((r: any) => r.id);
+      const tagMatchIds = tagMatches.map((r) => r.id);
       where["OR"] = [
         { name: { contains: trimmedSearch, mode: "insensitive" } },
         { owner: { contains: trimmedSearch, mode: "insensitive" } },
@@ -136,9 +179,9 @@ export class OpensourceService {
   }
 
   async getRepoById(id: number) {
-    const repo = (await prisma.opensourceRepo.findUnique({
+    const repo = await prisma.opensourceRepo.findUnique({
       where: { id },
-    })) as any;
+    });
     if (!repo) return null;
 
     const SIX_HOURS = 6 * 60 * 60 * 1000;
@@ -153,7 +196,7 @@ export class OpensourceService {
         await this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
           console.error(`[github] initial stats fetch failed for ${id}:`, err),
         );
-        return (await prisma.opensourceRepo.findUnique({ where: { id } })) as any;
+        return await prisma.opensourceRepo.findUnique({ where: { id } });
       }
       // Stale but previously fetched: update in background, return cached
       this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
@@ -164,12 +207,12 @@ export class OpensourceService {
   }
 
   async getRepoByOwnerAndName(owner: string, name: string) {
-    const repo = (await prisma.opensourceRepo.findFirst({
+    const repo = await prisma.opensourceRepo.findFirst({
       where: {
         owner: { equals: owner, mode: "insensitive" },
         name: { equals: name, mode: "insensitive" },
       },
-    })) as any;
+    });
     if (!repo) return null;
 
     const SIX_HOURS = 6 * 60 * 60 * 1000;
@@ -222,7 +265,7 @@ export class OpensourceService {
         githubStatsUpdatedAt: new Date(),
         healthScore,
         ...(stats.language && { language: stats.language }),
-      } as any,
+      },
     });
     console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
   }
@@ -233,17 +276,10 @@ export class OpensourceService {
     return { owner: match[1], name: match[2].replace(".git", "") };
   }
 
-  async getGsocOrgs(query: {
-    page: number;
-    limit: number;
-    search?: string;
-    category?: string;
-    tech?: string;
-    year?: number;
-  }) {
+  async getGsocOrgs(query: GsocOrgsQuery & { tech?: string }) {
     const { page, limit, search, category, tech, year } = query;
     const skip = (page - 1) * limit;
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     const trimmedSearch = search?.trim();
 
@@ -283,7 +319,7 @@ export class OpensourceService {
 
   private FREE_MONTHLY_REPO_SUGGESTIONS = 3;
 
-  async submitRepoRequest(userId: number, data: any) {
+  async submitRepoRequest(userId: number, data: SubmitRepoRequestData) {
     const existing = await prisma.repoRequest.findFirst({
       where: { url: data.url, status: { in: ["PENDING", "APPROVED"] } },
     });
@@ -356,7 +392,7 @@ export class OpensourceService {
     skip: number;
   }) {
     const { status, page, limit, skip } = query;
-    const where: Record<string, any> = {};
+    const where: Record<string, unknown> = {};
     if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
       where.status = status;
     }
@@ -380,7 +416,7 @@ export class OpensourceService {
     };
   }
 
-  async approveRepoRequest(id: number, overrides: any) {
+  async approveRepoRequest(id: number, overrides: ApproveOverrideData) {
     const request = await prisma.repoRequest.findUnique({
       where: { id },
       include: { user: { select: { name: true, email: true } } },
@@ -689,7 +725,7 @@ export class OpensourceService {
       select: { repoId: true },
       orderBy: { createdAt: "desc" },
     });
-    return bookmarks.map((b: any) => b.repoId);
+    return bookmarks.map((b) => b.repoId);
   }
 
   async addBookmark(
@@ -725,7 +761,7 @@ export class OpensourceService {
       where: { id: { in: repoIds } },
       select: { id: true },
     });
-    const validIds = validRepos.map((r: any) => r.id);
+    const validIds = validRepos.map((r) => r.id);
     if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
 
     await prisma.$transaction(

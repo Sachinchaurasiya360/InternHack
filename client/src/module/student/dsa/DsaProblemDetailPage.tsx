@@ -19,7 +19,7 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { AiHintPanel } from "./components/AiHintPanel";
-import { sanitizeHtml } from "../../../lib/sanitize";
+import { sanitizeHtml, cleanHint } from "../../../lib/sanitize";
 import { DsaCodeEditor } from "./components/DsaCodeEditor";
 import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
@@ -946,13 +946,6 @@ function ExtLink({ href, label }: { href: string; label: string }) {
       <ExternalLink className="w-3 h-3" /> {label}
     </a>
   );
-}
-
-function cleanHint(html: string): string {
-  return html
-    .replace(/<div[^>]*>/gi, "")
-    .replace(/<\/div>/gi, "")
-    .replace(/<code>/gi, "<code class='px-1.5 py-0.5 bg-stone-100 dark:bg-stone-800 rounded-sm text-sm font-mono'>");
 }
 
 function formatDescription(md: string): string {
