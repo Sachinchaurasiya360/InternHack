@@ -9,7 +9,8 @@ export type UsageAction =
   | "AI_JOB_CHAT"
   | "CODE_RUN"
   | "GITHUB_STATS"
-  | "ROADMAP_GENERATION";
+  | "ROADMAP_GENERATION"
+  | "STREAK_TICK";
 
 export type PlanTier = "FREE" | "PREMIUM";
 
