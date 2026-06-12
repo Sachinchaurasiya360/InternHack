@@ -7,7 +7,6 @@ import {
   Loader2,
   MapPin,
   Plus,
-  Users,
   X,
 } from "lucide-react";
 import toast from "@/components/ui/toast";

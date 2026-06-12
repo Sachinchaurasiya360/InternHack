@@ -118,7 +118,6 @@ export function run(code: string): RunResult {
   console.info = (...args) => logs.push(args.map(String).join(" "));
 
   try {
-    // eslint-disable-next-line no-new-func
     new Function(code)();
     console.log = originalLog;
     console.error = originalError;
