@@ -22,6 +22,93 @@ model user {
   resetOtpExpiresAt        DateTime?
   passwordResetAttempts    Int                            @default(0)
   passwordResetLockedUntil DateTime?
+<<<<<<< HEAD
+  verificationAttempts  Int                         @default(0)
+  verificationLockedUntil DateTime?
+  contactNo             String?
+  profilePic            String?
+  coverImage            String?
+  resumes               String[]                    @default([])
+  company               String?
+  designation           String?
+  createdAt             DateTime                    @default(now())
+  updatedAt             DateTime                    @updatedAt
+  subscriptionPlan      SubscriptionPlan            @default(FREE)
+  subscriptionStatus    SubscriptionStatus          @default(EXPIRED)
+  subscriptionStartDate DateTime?
+  subscriptionEndDate   DateTime?
+  bio                   String?
+  college               String?
+  graduationYear        Int?
+  skills                String[]                    @default([])
+  linkedinUrl           String?
+  githubUrl             String?
+  portfolioUrl          String?
+  location              String?
+  jobStatus             String?
+  projects              Json                        @default("[]")
+  achievements          Json                        @default("[]")
+  leetcodeUrl           String?
+  unsubscribeDigest     Boolean                     @default(false)
+  trackedPrograms       String[]                    @default([])
+  tokenVersion          Int                         @default(0)
+  ossTier               String?
+  adminProfile          adminProfile?               @relation("AdminProfile")
+  applications          application[]               @relation("StudentApplications")
+  atsScores             atsScore[]                  @relation("StudentAtsScores")
+  blogPosts             blogPost[]                  @relation("BlogAuthor")
+  createdCompanies      company[]                   @relation("UserCreatedCompanies")
+  addedContacts         companyContact[]            @relation("UserAddedContacts")
+  reviewedContributions companyContribution[]       @relation("AdminReviewedContributions")
+  contributions         companyContribution[]       @relation("UserContributions")
+  companyReviews        companyReview[]             @relation("UserReviews")
+  dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
+  dsaProblemLabels      dsaProblemLabel[]           @relation("StudentDsaProblemLabels")
+  dsaProblemReports     dsaProblemReport[]
+  emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
+  employeeProfile       employee?                   @relation("EmployeeUser")
+  postedJobs            job[]                       @relation("RecruiterJobs")
+  payments              payment[]                   @relation("UserPayments")
+  createdSkillTests     skillTest[]                 @relation("SkillTestCreator")
+  skillTestAttempts     skillTestAttempt[]          @relation("StudentSkillTestAttempts")
+  aptitudeProgress      studentAptitudeProgress[]   @relation("StudentAptitudeProgress")
+  aptitudeTopicProgress studentAptitudeTopicProgress[] @relation("StudentAptitudeTopicProgress")
+  studentBadges         studentBadge[]              @relation("StudentBadges")
+  dsaProgress           studentDsaProgress[]        @relation("StudentDsaProgress")
+  dsaSubmissions        dsaSubmission[]             @relation("StudentDsaSubmissions")
+  sqlProgress           studentSqlProgress[]        @relation("StudentSqlProgress")
+  savedCandidates       savedCandidate[]            @relation("RecruiterSavedCandidates")
+  savedByRecruiters     savedCandidate[]            @relation("StudentSavedByRecruiters")
+  usageLogs             usageLog[]                  @relation("UserUsageLogs")
+  customRoles           userCustomRole[]            @relation("UserCustomRoles")
+  verifiedSkills        verifiedSkill[]             @relation("StudentVerifiedSkills")
+  jobPreference         userJobPreference?          @relation("UserJobPreferences")
+  jobMatches            jobMatch[]                  @relation("UserJobMatches")
+  agentConversations    jobAgentConversation[]      @relation("UserAgentConversations")
+  jobAgentEmailLogs     jobAgentEmailLog[]          @relation("UserJobAgentEmailLogs")
+  milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
+  externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
+  opensourceStreak      opensourceStreak?
+  repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  guideFeedbacks        guideFeedback[]
+  interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
+  firstPrProgress       studentFirstPrProgress[]    @relation("StudentFirstPrProgress")
+  interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
+  interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
+  roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
+  scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
+  privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
+  generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
+  leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
+  generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
+  recommendation            userRecommendation?          @relation("UserRecommendation")
+  hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
+  contentViews              contentView[]                @relation("UserContentViews")
+  statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
+  coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
+  ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
+  guideCertificates         guideCertificate[]           @relation("UserCertificates")
+=======
   verificationAttempts     Int                            @default(0)
   verificationLockedUntil  DateTime?
   contactNo                String?
@@ -50,7 +137,6 @@ model user {
   leetcodeUrl              String?
   unsubscribeDigest        Boolean                        @default(false)
   tokenVersion             Int                            @default(0)
-  ossTier                  String?
   adminProfile             adminProfile?                  @relation("AdminProfile")
   applications             application[]                  @relation("StudentApplications")
   atsScores                atsScore[]                     @relation("StudentAtsScores")
@@ -85,7 +171,6 @@ model user {
   jobAgentEmailLogs        jobAgentEmailLog[]             @relation("UserJobAgentEmailLogs")
   milestoneEmails          milestoneEmail[]               @relation("StudentMilestoneEmails")
   externalApplications     externalJobApplication[]       @relation("StudentExternalApplications")
-  opensourceStreak         opensourceStreak?
   repoRequests             repoRequest[]                  @relation("UserRepoRequests")
   ossLeaderboard           opensourceLeaderboard?         @relation("UserOssLeaderboard")
   guideFeedbacks           guideFeedback[]
@@ -104,96 +189,8 @@ model user {
   contentViews             contentView[]                  @relation("UserContentViews")
   statusHistory            applicationStatusHistory[]     @relation("ChangerStatusHistory")
   coachAdvice              coachAdvice[]                  @relation("UserCoachAdvice")
-  ossBookmarks             opensourceBookmark[]           @relation("UserOssBookmarks")
-  guideCertificates        guideCertificate[]             @relation("UserCertificates")
-  verificationAttempts     Int                            @default(0)
-  verificationLockedUntil  DateTime?
-  contactNo                String?
-  profilePic               String?
-  coverImage               String?
-  resumes                  String[]                       @default([])
-  company                  String?
-  designation              String?
-  createdAt                DateTime                       @default(now())
-  updatedAt                DateTime                       @updatedAt
-  subscriptionPlan         SubscriptionPlan               @default(FREE)
-  subscriptionStatus       SubscriptionStatus             @default(EXPIRED)
-  subscriptionStartDate    DateTime?
-  subscriptionEndDate      DateTime?
-  bio                      String?
-  college                  String?
-  graduationYear           Int?
-  skills                   String[]                       @default([])
-  linkedinUrl              String?
-  githubUrl                String?
-  portfolioUrl             String?
-  location                 String?
-  jobStatus                String?
-  projects                 Json                           @default("[]")
-  achievements             Json                           @default("[]")
-  leetcodeUrl              String?
-  unsubscribeDigest        Boolean                        @default(false)
-  trackedPrograms          String[]                       @default([])
-  tokenVersion             Int                            @default(0)
-  ossTier                  String?
-  adminProfile             adminProfile?                  @relation("AdminProfile")
-  applications             application[]                  @relation("StudentApplications")
-  atsScores                atsScore[]                     @relation("StudentAtsScores")
-  blogPosts                blogPost[]                     @relation("BlogAuthor")
-  createdCompanies         company[]                      @relation("UserCreatedCompanies")
-  addedContacts            companyContact[]               @relation("UserAddedContacts")
-  reviewedContributions    companyContribution[]          @relation("AdminReviewedContributions")
-  contributions            companyContribution[]          @relation("UserContributions")
-  companyReviews           companyReview[]                @relation("UserReviews")
-  dsaBookmarks             dsaBookmark[]                  @relation("StudentDsaBookmarks")
-  dsaProblemLabels         dsaProblemLabel[]              @relation("StudentDsaProblemLabels")
-  dsaProblemReports        dsaProblemReport[]
-  emailCampaigns           emailCampaign[]                @relation("UserEmailCampaigns")
-  employeeProfile          employee?                      @relation("EmployeeUser")
-  postedJobs               job[]                          @relation("RecruiterJobs")
-  payments                 payment[]                      @relation("UserPayments")
-  createdSkillTests        skillTest[]                    @relation("SkillTestCreator")
-  skillTestAttempts        skillTestAttempt[]             @relation("StudentSkillTestAttempts")
-  aptitudeProgress         studentAptitudeProgress[]      @relation("StudentAptitudeProgress")
-  aptitudeTopicProgress    studentAptitudeTopicProgress[] @relation("StudentAptitudeTopicProgress")
-  studentBadges            studentBadge[]                 @relation("StudentBadges")
-  dsaProgress              studentDsaProgress[]           @relation("StudentDsaProgress")
-  dsaSubmissions           dsaSubmission[]                @relation("StudentDsaSubmissions")
-  sqlProgress              studentSqlProgress[]           @relation("StudentSqlProgress")
-  savedCandidates          savedCandidate[]               @relation("RecruiterSavedCandidates")
-  savedByRecruiters        savedCandidate[]               @relation("StudentSavedByRecruiters")
-  usageLogs                usageLog[]                     @relation("UserUsageLogs")
-  customRoles              userCustomRole[]               @relation("UserCustomRoles")
-  verifiedSkills           verifiedSkill[]                @relation("StudentVerifiedSkills")
-  jobPreference            userJobPreference?             @relation("UserJobPreferences")
-  jobMatches               jobMatch[]                     @relation("UserJobMatches")
-  agentConversations       jobAgentConversation[]         @relation("UserAgentConversations")
-  jobAgentEmailLogs        jobAgentEmailLog[]             @relation("UserJobAgentEmailLogs")
-  milestoneEmails          milestoneEmail[]               @relation("StudentMilestoneEmails")
-  externalApplications     externalJobApplication[]       @relation("StudentExternalApplications")
-  opensourceStreak         opensourceStreak?
-  opensourceStreak         opensourceStreak?
-  repoRequests             repoRequest[]                  @relation("UserRepoRequests")
-  ossLeaderboard           opensourceLeaderboard?         @relation("UserOssLeaderboard")
-  guideFeedbacks           guideFeedback[]
-  interviewProgress        userInterviewProgress[]        @relation("StudentInterviewProgress")
-  firstPrProgress          studentFirstPrProgress[]       @relation("StudentFirstPrProgress")
-  interviewExperiences     interviewExperience[]          @relation("UserInterviewExperiences")
-  interviewUpvotes         interviewExperienceUpvote[]    @relation("UserInterviewUpvotes")
-  roadmapEnrollments       roadmapEnrollment[]            @relation("UserRoadmapEnrollments")
-  scheduledEmails          scheduledEmail[]               @relation("UserScheduledEmails")
-  privateRoadmaps          roadmap[]                      @relation("UserPrivateRoadmaps")
-  generatedResumes         generatedResume[]              @relation("UserGeneratedResumes")
-  leetcodeImports          leetcodeImportLog[]            @relation("UserLeetcodeImports")
-  generatedCoverLetters    generatedCoverLetter[]         @relation("StudentCoverLetters")
-  recommendation           userRecommendation?            @relation("UserRecommendation")
-  hackathonParticipations  hackathonParticipation[]       @relation("UserHackathonParticipations")
-  contentViews             contentView[]                  @relation("UserContentViews")
-  statusHistory            applicationStatusHistory[]     @relation("ChangerStatusHistory")
-  coachAdvice              coachAdvice[]                  @relation("UserCoachAdvice")
-  ossBookmarks             opensourceBookmark[]           @relation("UserOssBookmarks")
-  guideCertificates        guideCertificate[]             @relation("UserCertificates")
 
+>>>>>>> 8851bf0c (style: reformat prisma schema files with consistent indentation)
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -567,30 +564,35 @@ model payment {
 }
 
 model opensourceRepo {
-  id                   Int                  @id @default(autoincrement())
-  name                 String
-  owner                String
-  description          String
-  language             String
-  techStack            String[]             @default([])
-  difficulty           RepoDifficulty       @default(BEGINNER)
-  domain               RepoDomain           @default(WEB)
-  issueTypes           String[]             @default([])
-  stars                Int                  @default(0)
-  forks                Int                  @default(0)
-  openIssues           Int                  @default(0)
-  url                  String
-  logo                 String?
-  tags                 String[]             @default([])
-  highlights           String[]             @default([])
-  trending             Boolean              @default(false)
-  hacktoberfest        Boolean              @default(false)
-  lastUpdated          DateTime             @default(now())
-  createdAt            DateTime             @default(now())
-  updatedAt            DateTime             @updatedAt
+  id            Int            @id @default(autoincrement())
+  name          String
+  owner         String
+  description   String
+  language      String
+  techStack     String[]       @default([])
+  difficulty    RepoDifficulty @default(BEGINNER)
+  domain        RepoDomain     @default(WEB)
+  issueTypes    String[]       @default([])
+  stars         Int            @default(0)
+  forks         Int            @default(0)
+  openIssues    Int            @default(0)
+  url           String
+  logo          String?
+  tags          String[]       @default([])
+  highlights    String[]       @default([])
+  trending      Boolean        @default(false)
+  hacktoberfest Boolean        @default(false)
+  lastUpdated   DateTime       @default(now())
+<<<<<<< HEAD
   githubStatsUpdatedAt DateTime?
-  healthScore          Int                  @default(0)
-  bookmarks            opensourceBookmark[]
+  healthScore          Int            @default(0)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  bookmarks   opensourceBookmark[]
+=======
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+>>>>>>> 8851bf0c (style: reformat prisma schema files with consistent indentation)
 
   @@index([domain])
   @@index([difficulty])
@@ -598,12 +600,12 @@ model opensourceRepo {
 }
 
 model opensourceBookmark {
-  id        Int            @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   userId    Int
   repoId    Int
-  createdAt DateTime       @default(now())
-  user      user           @relation("UserOssBookmarks", fields: [userId], references: [id], onDelete: Cascade)
-  repo      opensourceRepo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  createdAt DateTime        @default(now())
+  user      user            @relation("UserOssBookmarks", fields: [userId], references: [id], onDelete: Cascade)
+  repo      opensourceRepo  @relation(fields: [repoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, repoId])
   @@index([userId])
@@ -1690,14 +1692,14 @@ model contentView {
 }
 
 model opensourceStreak {
-  id             Int       @id @default(autoincrement())
-  userId         Int       @unique
-  currentStreak  Int       @default(0)
-  longestStreak  Int       @default(0)
-  lastActivityAt DateTime?
-  totalDays      Int       @default(0)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id              Int       @id @default(autoincrement())
+  userId          Int       @unique
+  currentStreak   Int       @default(0)
+  longestStreak   Int       @default(0)
+  lastActivityAt  DateTime?
+  totalDays       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   user user @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -1749,19 +1751,7 @@ model coachAdvice {
   @@index([userId])
   @@index([createdAt])
 }
-
-model opensourceStreak {
-  id             Int       @id @default(autoincrement())
-  userId         Int       @unique
-  currentStreak  Int       @default(0)
-  longestStreak  Int       @default(0)
-  lastActivityAt DateTime?
-  totalDays      Int       @default(0)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+<<<<<<< HEAD
 
 model guideCertificate {
   id          Int      @id @default(autoincrement())
@@ -1776,3 +1766,6 @@ model guideCertificate {
   @@index([userId])
   @@index([token])
 }
+
+=======
+>>>>>>> 8851bf0c (style: reformat prisma schema files with consistent indentation)
