@@ -1,4 +1,13 @@
-import { Sparkles, Clock, HardDrive, Eye, AlertTriangle, Lightbulb, RefreshCw, Loader2 } from "lucide-react";
+import {
+  Sparkles,
+  Clock,
+  HardDrive,
+  Eye,
+  AlertTriangle,
+  Lightbulb,
+  RefreshCw,
+  Loader2,
+} from "lucide-react";
 import type { DsaCodeReview } from "../../../../lib/types";
 import { Button } from "../../../../components/ui/button";
 
@@ -31,7 +40,13 @@ function scoreLabel(score: number): string {
   return "Excellent";
 }
 
-export function DsaAiReviewPanel({ review, isLoading, error, onRequestReview, hasSubmission }: Props) {
+export function DsaAiReviewPanel({
+  review,
+  isLoading,
+  error,
+  onRequestReview,
+  hasSubmission,
+}: Props) {
   if (isLoading) {
     return (
       <div className="p-6 flex flex-col items-center justify-center gap-3 text-stone-400">
@@ -43,12 +58,16 @@ export function DsaAiReviewPanel({ review, isLoading, error, onRequestReview, ha
   }
 
   if (error) {
-    const errMsg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
-      ?? (error instanceof Error ? error.message : "Something went wrong");
+    const errMsg =
+      (error as { response?: { data?: { message?: string } } })?.response?.data
+        ?.message ??
+      (error instanceof Error ? error.message : "Something went wrong");
     return (
       <div className="p-6 flex flex-col items-center justify-center gap-3">
         <AlertTriangle className="w-6 h-6 text-red-500" />
-        <p className="text-sm text-red-600 dark:text-red-400 font-medium">{errMsg}</p>
+        <p className="text-sm text-red-600 dark:text-red-400 font-medium">
+          {errMsg}
+        </p>
         <Button variant="secondary" size="sm" onClick={onRequestReview}>
           <RefreshCw className="w-3 h-3 mr-1.5" /> Retry
         </Button>
@@ -69,8 +88,7 @@ export function DsaAiReviewPanel({ review, isLoading, error, onRequestReview, ha
           <p className="text-xs text-stone-500 dark:text-stone-400 max-w-[240px] leading-relaxed">
             {hasSubmission
               ? "Get AI feedback on your solution — complexity, readability, edge cases, and suggestions."
-              : "Run your code first, then request an AI review of your submission."
-            }
+              : "Run your code first, then request an AI review of your submission."}
           </p>
         </div>
         <Button
@@ -92,7 +110,9 @@ export function DsaAiReviewPanel({ review, isLoading, error, onRequestReview, ha
         <div className="border border-stone-200 dark:border-white/10 rounded-lg p-3 bg-white dark:bg-stone-950">
           <div className="flex items-center gap-1.5 mb-1.5">
             <Clock className="w-3 h-3 text-stone-500" />
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">time</span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              time
+            </span>
           </div>
           <p className="text-sm font-semibold text-stone-900 dark:text-stone-50 leading-snug">
             {review.timeComplexity}
@@ -101,7 +121,9 @@ export function DsaAiReviewPanel({ review, isLoading, error, onRequestReview, ha
         <div className="border border-stone-200 dark:border-white/10 rounded-lg p-3 bg-white dark:bg-stone-950">
           <div className="flex items-center gap-1.5 mb-1.5">
             <HardDrive className="w-3 h-3 text-stone-500" />
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">space</span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              space
+            </span>
           </div>
           <p className="text-sm font-semibold text-stone-900 dark:text-stone-50 leading-snug">
             {review.spaceComplexity}
@@ -114,13 +136,19 @@ export function DsaAiReviewPanel({ review, isLoading, error, onRequestReview, ha
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5">
             <Eye className="w-3 h-3 text-stone-500" />
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">readability</span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              readability
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className={`text-sm font-bold tabular-nums ${scoreColor(review.readability.score)}`}>
+            <span
+              className={`text-sm font-bold tabular-nums ${scoreColor(review.readability.score)}`}
+            >
               {review.readability.score}/10
             </span>
-            <span className={`text-[10px] font-mono uppercase tracking-wider ${scoreColor(review.readability.score)}`}>
+            <span
+              className={`text-[10px] font-mono uppercase tracking-wider ${scoreColor(review.readability.score)}`}
+            >
               {scoreLabel(review.readability.score)}
             </span>
           </div>
@@ -150,7 +178,10 @@ export function DsaAiReviewPanel({ review, isLoading, error, onRequestReview, ha
           </div>
           <ul className="divide-y divide-stone-100 dark:divide-white/5">
             {review.edgeCases.map((ec, i) => (
-              <li key={i} className="px-3 py-2.5 text-xs text-stone-700 dark:text-stone-300 leading-relaxed flex gap-2">
+              <li
+                key={i}
+                className="px-3 py-2.5 text-xs text-stone-700 dark:text-stone-300 leading-relaxed flex gap-2"
+              >
                 <span className="text-[10px] font-mono font-bold tabular-nums text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">
                   {String(i + 1).padStart(2, "0")}
                 </span>
@@ -174,7 +205,10 @@ export function DsaAiReviewPanel({ review, isLoading, error, onRequestReview, ha
           </div>
           <ul className="divide-y divide-stone-100 dark:divide-white/5">
             {review.suggestions.map((s, i) => (
-              <li key={i} className="px-3 py-2.5 text-xs text-stone-700 dark:text-stone-300 leading-relaxed flex gap-2">
+              <li
+                key={i}
+                className="px-3 py-2.5 text-xs text-stone-700 dark:text-stone-300 leading-relaxed flex gap-2"
+              >
                 <span className="text-[10px] font-mono font-bold tabular-nums text-lime-600 dark:text-lime-400 shrink-0 mt-0.5">
                   {String(i + 1).padStart(2, "0")}
                 </span>

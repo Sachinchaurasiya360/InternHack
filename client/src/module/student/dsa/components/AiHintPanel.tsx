@@ -42,12 +42,16 @@ export function AiHintPanel({ problemId }: { problemId: number }) {
         return prev - 1;
       });
     }, 1000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [cooldown]);
 
   const hintMutation = useMutation({
     mutationFn: (level: HintLevel) =>
-      api.post<AiHintData>(`/dsa/problems/${problemId}/hints`, { level }).then((r) => r.data),
+      api
+        .post<AiHintData>(`/dsa/problems/${problemId}/hints`, { level })
+        .then((r) => r.data),
     onSuccess: (data) => {
       setHints((prev) => [...prev, data]);
       setCooldown(COOLDOWN_SECONDS);
@@ -75,7 +79,7 @@ export function AiHintPanel({ problemId }: { problemId: number }) {
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-stone-50 dark:hover:bg-stone-800/40 transition-colors border-0 bg-transparent cursor-pointer"
       >
-          <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
+        <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
           <Sparkles className="w-3 h-3 text-amber-500" />
           AI hints
           {hints.length > 0 && (
@@ -98,7 +102,8 @@ export function AiHintPanel({ problemId }: { problemId: number }) {
             <div className="px-4 pb-4 space-y-3">
               {hints.length === 0 && (
                 <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
-                  Get progressive hints for this problem — conceptual, algorithmic, then code-level.
+                  Get progressive hints for this problem — conceptual,
+                  algorithmic, then code-level.
                 </p>
               )}
 

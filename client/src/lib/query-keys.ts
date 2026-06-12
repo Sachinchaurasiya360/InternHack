@@ -36,9 +36,9 @@ export const queryKeys = {
     history: () => ["ats", "history"] as const,
   },
   coverLetter: {
-  history: ()           => ["cover-letter", "history"] as const,
-  detail:  (id: number) => ["cover-letter", "detail", id] as const,
-},
+    history: () => ["cover-letter", "history"] as const,
+    detail: (id: number) => ["cover-letter", "detail", id] as const,
+  },
 
   // Companies
   companies: {
@@ -47,8 +47,7 @@ export const queryKeys = {
       ["companies", "list", params] as const,
     cities: () => ["companies", "cities"] as const,
     detail: (id: string | number) => ["companies", "detail", id] as const,
-    reviews: (id: string | number) =>
-      ["companies", "reviews", id] as const,
+    reviews: (id: string | number) => ["companies", "reviews", id] as const,
   },
 
   // Admin
@@ -103,7 +102,8 @@ export const queryKeys = {
       ["opensource", "list", params] as const,
     detail: (id: number) => ["opensource", "detail", id] as const,
     myRequests: () => ["opensource", "my-requests"] as const,
-    trend: (startDate?: string, endDate?: string) => ["opensource", "trend", startDate, endDate] as const,
+    trend: (startDate?: string, endDate?: string) =>
+      ["opensource", "trend", startDate, endDate] as const,
     hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
     streak: () => ["opensource", "streak"] as const,
     allRequests: (params?: Record<string, string | number>) =>
@@ -184,7 +184,8 @@ export const queryKeys = {
     all: () => ["badges", "all"] as const,
     my: () => ["badges", "my"] as const,
     student: (id: number) => ["badges", "student", id] as const,
-    admin: (params?: Record<string, string | number>) => ["badges", "admin", params] as const,
+    admin: (params?: Record<string, string | number>) =>
+      ["badges", "admin", params] as const,
   },
 
   // Saved Candidates
@@ -212,8 +213,10 @@ export const queryKeys = {
     detail: (id: number) => ["interviews", "detail", id] as const,
     companies: (params?: Record<string, string | number>) =>
       ["interviews", "companies", params] as const,
-    companySummary: (slug: string) => ["interviews", "company-summary", slug] as const,
-    topQuestions: (slug: string) => ["interviews", "top-questions", slug] as const,
+    companySummary: (slug: string) =>
+      ["interviews", "company-summary", slug] as const,
+    topQuestions: (slug: string) =>
+      ["interviews", "top-questions", slug] as const,
   },
 
   // Funding Signals
@@ -229,19 +232,28 @@ export const queryKeys = {
   // DSA Practice
   dsa: {
     topics: (filter?: string) => ["dsa", "topics", filter] as const,
-    topic: (slug: string, page?: number, filters?: Record<string, string | undefined>) => ["dsa", "topic", slug, page, filters] as const,
+    topic: (
+      slug: string,
+      page?: number,
+      filters?: Record<string, string | undefined>,
+    ) => ["dsa", "topic", slug, page, filters] as const,
     problem: (slug: string) => ["dsa", "problem", slug] as const,
     progress: () => ["dsa", "progress"] as const,
     bookmarks: () => ["dsa", "bookmarks"] as const,
+    labels: () => ["dsa", "labels"] as const,
     companies: () => ["dsa", "companies"] as const,
-    company: (name: string, page?: number) => ["dsa", "company", name, page] as const,
-    companyTrackStats: (name: string) => ["dsa", "company", name, "track-stats"] as const,
+    company: (name: string, page?: number) =>
+      ["dsa", "company", name, page] as const,
+    companyTrackStats: (name: string) =>
+      ["dsa", "company", name, "track-stats"] as const,
     patterns: () => ["dsa", "patterns"] as const,
-    pattern: (name: string, page?: number) => ["dsa", "pattern", name, page] as const,
+    pattern: (name: string, page?: number) =>
+      ["dsa", "pattern", name, page] as const,
     sheets: () => ["dsa", "sheets"] as const,
     lists: () => ["dsa", "lists"] as const,
     list: (name: string, page?: number) => ["dsa", "list", name, page] as const,
-    submissions: (problemId: number) => ["dsa", "submissions", problemId] as const,
+    submissions: (problemId: number) =>
+      ["dsa", "submissions", problemId] as const,
     importStatus: () => ["dsa", "import-status"] as const,
     streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
@@ -256,9 +268,12 @@ export const queryKeys = {
       ["roadmaps", "list", params] as const,
     detail: (slug: string) => ["roadmaps", "detail", slug] as const,
     enrollments: () => ["roadmaps", "enrollments"] as const,
-    enrollmentDetail: (id: number) => ["roadmaps", "enrollment-detail", id] as const,
-    enrollmentAnalytics: (id: number) => ["roadmaps", "enrollment-analytics", id] as const,
-    topic: (slug: string, topicSlug: string) => ["roadmaps", "topic", slug, topicSlug] as const,
+    enrollmentDetail: (id: number) =>
+      ["roadmaps", "enrollment-detail", id] as const,
+    enrollmentAnalytics: (id: number) =>
+      ["roadmaps", "enrollment-analytics", id] as const,
+    topic: (slug: string, topicSlug: string) =>
+      ["roadmaps", "topic", slug, topicSlug] as const,
     community: () => ["roadmaps", "community"] as const,
   },
 };
