@@ -66,6 +66,7 @@ const YCCompanyDetailPage = lazyWithRetry(() => import("./module/student/compani
 const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/GovInternshipsPage"));
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
+const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage"));
 
 // Legal pages
 const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
@@ -434,6 +435,7 @@ function App() {
               <Route path="system-design/:levelId/:lessonSlug" element={<SystemDesignLessonPage />} />
               <Route path="aptitude" element={<AptitudeCategoriesPage />} />
               <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
+              <Route path="aptitude/verbal-ability" element={<VerbalAbilityPage />} />
               <Route path="aptitude/:slug" element={<AptitudeTheoryPage />} />
               <Route path="aptitude/:slug/practice" element={<AptitudeTopicPage />} />
               <Route path="blockchain" element={<BlockchainLessonsPage />} />
