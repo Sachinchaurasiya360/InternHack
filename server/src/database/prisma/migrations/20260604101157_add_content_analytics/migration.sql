@@ -11,18 +11,6 @@ CREATE TYPE "ContentType" AS ENUM ('LESSON', 'DSA', 'INTERVIEW_QUESTION');
 -- Migration safe block - removed drops of production tables
 
 -- CreateTable
-CREATE TABLE "dsaProblemReport" (
-    "id" SERIAL NOT NULL,
-    "reason" TEXT NOT NULL,
-    "message" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "userId" INTEGER NOT NULL,
-    "problemId" INTEGER NOT NULL,
-
-    CONSTRAINT "dsaProblemReport_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "contentView" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER,
@@ -43,12 +31,6 @@ CREATE INDEX "contentView_userId_idx" ON "contentView"("userId");
 
 -- CreateIndex
 CREATE INDEX "contentView_createdAt_idx" ON "contentView"("createdAt");
-
--- AddForeignKey
-ALTER TABLE "dsaProblemReport" ADD CONSTRAINT "dsaProblemReport_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "dsaProblemReport" ADD CONSTRAINT "dsaProblemReport_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "dsaProblem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "contentView" ADD CONSTRAINT "contentView_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
