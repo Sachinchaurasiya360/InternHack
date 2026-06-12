@@ -27,6 +27,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { CARD_BASE } from "../../../lib/card-styles";
 import { useSaveJob } from "../../../hooks/useSaveJob";
+import { useClearFilters } from "../../../hooks/useClearFilters";
 import type {
   ExternalJob,
   Job,
@@ -301,19 +302,18 @@ export default function JobBrowsePage() {
     setScrPage(1);
   };
 
-  const clearAll = () => {
-    setSearch("");
-    setLocationFilter("");
-    setDebouncedSearch("");
-    setDebouncedLocation("");
-    setSelectedTags([]);
-    setSalaryMin("");
-    setSalaryMax("");
-    setSearchParams({});
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
-  };
+  const clearAll = useClearFilters([
+    () => setSearch(""),
+    () => setLocationFilter(""),
+    () => setDebouncedSearch(""),
+    () => setDebouncedLocation(""),
+    () => setSelectedTags([]),
+    () => setSalaryMin(""),
+    () => setSalaryMax(""),
+    () => setPage(1),
+    () => setExtPage(1),
+    () => setScrPage(1),
+  ]);
 
   const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
   const selectSuggestion = (location: string) => {

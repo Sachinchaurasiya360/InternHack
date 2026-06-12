@@ -1,6 +1,7 @@
 import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
 import { BadgeProgressWidget } from "../opensource/components/BadgeProgressWidget";
 import { Link } from "react-router";
+import { useClearFilters } from "../../../hooks/useClearFilters";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -263,6 +264,12 @@ export default function MyApplicationsPage() {
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
+  const clearFilters = useClearFilters([
+    () => setSearch(""),
+    () => setStatusFilter("ALL"),
+    () => setPage(1),
+  ]);
+
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 200);
     return () => clearTimeout(t);
@@ -300,7 +307,7 @@ export default function MyApplicationsPage() {
   }, [applications, debouncedSearch, sortOption, statusFilter]);
 
   const filteredExternal = useMemo(() => {
-    let base = !debouncedSearch.trim()
+    const base = !debouncedSearch.trim()
       ? externalApplications
       : externalApplications.filter(
         (a) =>
@@ -314,7 +321,7 @@ export default function MyApplicationsPage() {
       if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
       return 0;
     });
-  }, [externalApplications, debouncedSearch, sortOption, statusFilter]);
+  }, [externalApplications, debouncedSearch, sortOption]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;
@@ -510,10 +517,7 @@ export default function MyApplicationsPage() {
       {isFiltered && (
         <div className="mb-6">
           <button
-            onClick={() => {
-              setSearch("");
-              setStatusFilter("ALL");
-            }}
+            onClick={clearFilters}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
           >
             <X className="w-3 h-3" /> clear all filters
@@ -548,10 +552,7 @@ export default function MyApplicationsPage() {
             action={
               <button
                 type="button"
-                onClick={() => {
-                  setSearch("");
-                  setStatusFilter("ALL");
-                }}
+                onClick={clearFilters}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer mt-2"
               >
                 Clear all filters
