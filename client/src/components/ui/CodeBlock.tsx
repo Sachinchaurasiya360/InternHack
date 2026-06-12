@@ -50,9 +50,16 @@ interface CodeBlockProps {
   label?: string;
   example?: CodeExample;
   language?: string;
+  onTryIt?: (code: string) => void;
 }
 
-export function CodeBlock({ code, label, example, language = "javascript" }: CodeBlockProps) {
+export function CodeBlock({
+  code,
+  label,
+  example,
+  language = "javascript",
+  onTryIt,
+}: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const theme = useThemeStore((s) => s.theme);
 
@@ -107,6 +114,31 @@ export function CodeBlock({ code, label, example, language = "javascript" }: Cod
             {activeTitle}
           </span>
         </div>
+        <div className="flex items-center gap-2">
+  {onTryIt && (
+    <Button
+      type="button"
+      variant="ghost"
+      size="sm"
+      onClick={() => onTryIt(activeCode)}
+      className="font-mono uppercase tracking-widest text-lime-600 hover:text-lime-500"
+    >
+      Try it →
+    </Button>
+  )}
+
+  <Button
+    type="button"
+    variant="ghost"
+    size="sm"
+    onClick={handleCopy}
+    aria-label={copied ? "Code copied" : "Copy code to clipboard"}
+    className="font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 shrink-0 min-h-9 px-2"
+  >
+    {copied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
+    {copied ? "Copied" : "Copy"}
+  </Button>
+</div>
         <Button
           type="button"
           variant="ghost"
