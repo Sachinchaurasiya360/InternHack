@@ -12,6 +12,8 @@ export const DAILY_LIMITS: Record<UsageAction, Record<PlanTier, number>> = {
   CODE_RUN:        { FREE: 0,  PREMIUM: 50 },
   GITHUB_STATS:    { FREE: 20, PREMIUM: 999999 },
   ROADMAP_GENERATION: { FREE: 1, PREMIUM: 20 },
+  ROADMAP_GENERATION: { FREE: 0, PREMIUM: 0 }, // placeholder — actual limits in MONTHLY_LIMITS
+  STREAK_TICK: { FREE: 1, PREMIUM: 1 },
 };
 
 export function getPlanTier(
@@ -28,3 +30,8 @@ export function getPlanTier(
   }
   return "FREE";
 }
+
+export const MONTHLY_LIMITS: Partial<Record<UsageAction, Record<PlanTier, number>>> = {
+  ATS_SCORE: { FREE: 3, PREMIUM: 20 },
+  ROADMAP_GENERATION: { FREE: 5, PREMIUM: 50 },
+};

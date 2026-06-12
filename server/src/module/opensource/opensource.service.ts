@@ -1,11 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
-import { fetchGithubGoodFirstIssues, fetchGithubStats } from "../../lib/github.js";
+import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
+import { UserService } from "../user/user.service.js";
+
+const userService = new UserService();
 
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 let statsCache: {
@@ -87,6 +90,9 @@ export class OpensourceService {
     if (domain) where["domain"] = domain;
     if (trending === "true") where["trending"] = true;
     if (hacktoberfest === "true") where["hacktoberfest"] = true;
+    if (query.highlyActive === "true") {
+      where["healthScore"] = { gte: 75 };
+    }
     if (ids) {
       const idList = ids
         .split(",")
@@ -140,11 +146,20 @@ where["OR"] = [
     if (!repo) return null;
 
     const SIX_HOURS = 6 * 60 * 60 * 1000;
+    const neverFetched = !repo.githubStatsUpdatedAt;
     const isStale =
-      !repo.githubStatsUpdatedAt ||
+      neverFetched ||
       Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
 
     if (isStale && repo.url?.includes("github.com")) {
+      if (neverFetched) {
+        // First-ever fetch: await so the caller gets live stats, not 0s
+        await this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
+          console.error(`[github] initial stats fetch failed for ${id}:`, err),
+        );
+        return (await prisma.opensourceRepo.findUnique({ where: { id } })) as any;
+      }
+      // Stale but previously fetched: update in background, return cached
       this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
         console.error(`[github] background update failed for ${id}:`, err),
       );
@@ -182,8 +197,26 @@ where["OR"] = [
   }
 
   private async updateGithubStats(id: number, url: string, name: string) {
-    const stats = await fetchGithubStats(url);
+    const [stats, health] = await Promise.all([
+      fetchGithubStats(url),
+      this.getRepoOwnerAndNameFromUrl(url).then(parsed => 
+        parsed ? fetchRepoHealthData(parsed.owner, parsed.name) : null
+      )
+    ]);
+
     if (!stats) return;
+
+    let healthScore = 0;
+    if (health) {
+      if (health.hasContributing) healthScore += 15;
+      if (health.hasCodeOfConduct) healthScore += 10;
+      if (health.hasIssueTemplate) healthScore += 10;
+      if (health.fastResponse) healthScore += 20;
+      if (health.hasRecentCommits) healthScore += 15;
+      if (health.hasGoodFirstIssues) healthScore += 20;
+      if (health.mergeRate > 30) healthScore += 10;
+    }
+
     await prisma.opensourceRepo.update({
       where: { id },
       data: {
@@ -191,10 +224,17 @@ where["OR"] = [
         forks: stats.forks,
         openIssues: stats.openIssues,
         githubStatsUpdatedAt: new Date(),
+        healthScore,
         ...(stats.language && { language: stats.language }),
       } as any,
     });
-    console.info(`[github] updated stats for ${name}`);
+    console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
+  }
+
+  private async getRepoOwnerAndNameFromUrl(url: string) {
+    const match = url.match(/github\.com\/([^\/]+)\/([^\/\s\.]+)/);
+    if (!match) return null;
+    return { owner: match[1], name: match[2].replace(".git", "") };
   }
 
   async getGsocOrgs(query: {
@@ -388,6 +428,8 @@ where["OR"] = [
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
+    // Re-sync stored ossTier for the contributor (fire-and-forget)
+    userService.calculateOssTier(request.userId).catch(() => {});
     return repo;
   }
 
@@ -555,6 +597,8 @@ where["OR"] = [
       },
       select: { completedStepIds: true },
     });
+    // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
+    userService.calculateOssTier(userId).catch(() => {});
     return progress.completedStepIds;
   }
 
@@ -944,5 +988,82 @@ Rules:
     }
 
     return rankedRepos;
+  }
+
+  async submitGuideFeedback(userId: number, data: { guideId: string; stepId: string; rating: string; reason?: string }) {
+    return prisma.guideFeedback.upsert({
+      where: {
+        userId_guideId_stepId: {
+          userId,
+          guideId: data.guideId,
+          stepId: data.stepId,
+        },
+      },
+      update: {
+        rating: data.rating,
+        reason: data.reason,
+      },
+      create: {
+        userId,
+        guideId: data.guideId,
+        stepId: data.stepId,
+        rating: data.rating,
+        reason: data.reason,
+      },
+    });
+  }
+
+  // ─── Bookmarks ────────────────────────────────────────────────
+
+  async getBookmarkedRepoIds(userId: number): Promise<number[]> {
+    const bookmarks = await prisma.opensourceBookmark.findMany({
+      where: { userId },
+      select: { repoId: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return bookmarks.map((b) => b.repoId);
+  }
+
+  async addBookmark(userId: number, repoId: number): Promise<{ repoId: number }> {
+    const repo = await prisma.opensourceRepo.findUnique({
+      where: { id: repoId },
+      select: { id: true },
+    });
+    if (!repo) throw new Error("Repository not found");
+
+    await prisma.opensourceBookmark.upsert({
+      where: { userId_repoId: { userId, repoId } },
+      create: { userId, repoId },
+      update: {}, // no-op if already bookmarked
+    });
+    return { repoId };
+  }
+
+  async removeBookmark(userId: number, repoId: number): Promise<void> {
+    await prisma.opensourceBookmark.deleteMany({
+      where: { userId, repoId },
+    });
+  }
+
+  async bulkMigrateBookmarks(userId: number, repoIds: number[]): Promise<number[]> {
+    // Resolve only IDs that actually exist in the DB
+    const validRepos = await prisma.opensourceRepo.findMany({
+      where: { id: { in: repoIds } },
+      select: { id: true },
+    });
+    const validIds = validRepos.map((r) => r.id);
+    if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
+
+    await prisma.$transaction(
+      validIds.map((repoId) =>
+        prisma.opensourceBookmark.upsert({
+          where: { userId_repoId: { userId, repoId } },
+          create: { userId, repoId },
+          update: {},
+        }),
+      ),
+    );
+
+    return this.getBookmarkedRepoIds(userId);
   }
 }
