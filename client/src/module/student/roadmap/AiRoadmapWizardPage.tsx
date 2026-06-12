@@ -401,7 +401,7 @@ const res = await api.post<{
       } else {
         const msg = axiosErr.response?.data?.message ?? "Could not generate roadmap. Please try again.";
         toast.error(msg);
-      } main
+      }
       setSubmitting(false);
     }
   };
@@ -471,7 +471,7 @@ const res = await api.post<{
             <div className="flex items-center gap-3 flex-wrap">
               <button
                 onClick={() => setPreview(null)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 border border-stone-300 dark:border-stone-700 rounded-xl text-sm font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:border-stone-500 dark:hover:border-stone-500 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 border border-stone-300 dark:border-stone-700 rounded-xl text-sm font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" /> Adjust
               </button>
@@ -548,7 +548,7 @@ const res = await api.post<{
       <div className="relative max-w-3xl mx-auto px-6 pb-16">
         {/* Decorative gradient */}
         <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-200 h-150 bg-linear-to-br from-lime-100 via-transparent to-stone-100 dark:from-lime-900/20 dark:via-transparent dark:to-stone-900/30 rounded-full blur-3xl opacity-60" />
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-200 h-150 bg-gradient-to-br from-lime-100 via-transparent to-stone-100 dark:from-lime-900/20 dark:via-transparent dark:to-stone-950/50 rounded-full blur-3xl" />
         </div>
 
         {/* Generation counter */}
@@ -659,7 +659,7 @@ const res = await api.post<{
           >
             <Link
               to="/student/roadmaps"
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-lime-400 dark:hover:border-lime-600 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-50 transition-colors no-underline"
+              className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-lime-400 dark:hover:border-lime-600 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 transition-colors"
             >
               <MapIcon className="w-3.5 h-3.5 text-lime-500" />
               {enrollments.length} active
@@ -988,7 +988,7 @@ const res = await api.post<{
           </motion.div>
         </AnimatePresence>
 
-<div className="flex flex-col gap-4 mt-8">
+        <div className="flex flex-col gap-4 mt-8">
           {step === STEPS.length - 1 && similarEnrollment && !dismissedWarning && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -1043,33 +1043,12 @@ const res = await api.post<{
             )}
           </div>
         </div>
-          )}
-
-          <div className="flex items-center justify-between">
-            <Button variant="ghost" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
-              <ChevronLeft className="w-4 h-4" />
-              Back
-            </Button>
-            {step < STEPS.length - 1 ? (
-              <Button variant="mono" onClick={() => setStep((s) => s + 1)} disabled={!canProceed}>
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button variant="mono" onClick={() => submit(false)} disabled={!canProceed}>
-                <Wand2 className="w-4 h-4" />
-                Generate my roadmap
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
-        </div>
       </div>
     </Chrome>
   );
 }
 
-// ── Subcomponents ─────────────────────────────────────────────────────────
+// ── Subcomponents ────────────────────────────────────────────────────────────
 function Pickable({
   active,
   onClick,
@@ -1183,7 +1162,7 @@ function ChipsField({
           type="button"
           onClick={add}
           disabled={!input.trim()}
-          className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-lime-400 dark:hover:bg-lime-400 hover:text-stone-950 disabled:opacity-50 disabled:hover:bg-stone-100 dark:disabled:hover:bg-stone-800 cursor-pointer transition-colors border-0 text-stone-500 dark:text-stone-400"
+          className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-lime-400 dark:hover:bg-lime-400 hover:text-stone-950 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus className="w-3.5 h-3.5" />
         </button>
