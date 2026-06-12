@@ -10,16 +10,9 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { useQuery } from "@tanstack/react-query";
-
-const DIFF_STYLE: Record<string, string> = {
-  Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
-  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
-  Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
-};
-
+import { DIFFICULTY_STYLE as DIFF_STYLE } from "../../../lib/difficulty-styles";
 const TYPE_STYLE: Record<string, string> = {
   Theory:      "text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-900/60",
-  Coding:      "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
   Situational: "text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-900/60",
   Concept:     "text-cyan-700 dark:text-cyan-400 border-cyan-300 dark:border-cyan-900/60",
   Experience:  "text-rose-700 dark:text-rose-400 border-rose-300 dark:border-rose-900/60",
