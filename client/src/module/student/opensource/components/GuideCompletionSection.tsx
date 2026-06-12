@@ -79,7 +79,7 @@ export default function GuideCompletionSection({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="relative mb-10 overflow-hidden rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950"
+      className="relative mb-10 overflow-hidden rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950"
     >
       {/* Vertical grid lines */}
       <div
@@ -142,7 +142,7 @@ export default function GuideCompletionSection({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.28 }}
-          className="mb-8"
+          className="mb-8 rounded-md"
         >
           <GuideCertificateCard
             studentName={user?.name ?? "Student"}
@@ -161,7 +161,7 @@ export default function GuideCompletionSection({
             type="button"
             onClick={handleDownload}
             disabled={downloading}
-            className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <Download className="w-4 h-4" />
             {downloading ? "Generating…" : "Download Certificate"}

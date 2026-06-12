@@ -10,8 +10,8 @@ export default function GuideCertificateCard({
   completionDate,
 }: Props) {
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white text-stone-900 rounded-xl border-2 border-stone-900 p-1.5 shadow-lg">
-      <div className="relative rounded-lg border border-lime-400 px-8 py-10 sm:px-12 sm:py-12 text-center">
+    <div className="w-full max-w-2xl mx-auto bg-white text-stone-900 rounded-md border-2 border-stone-900 p-1.5 shadow-lg">
+      <div className="relative rounded-md border border-lime-400 px-8 py-10 sm:px-12 sm:py-12 text-center">
         {/* Corner accents */}
         <span
           aria-hidden
@@ -43,7 +43,7 @@ export default function GuideCertificateCard({
           <img
             src="/logo.png"
             alt="InternHack"
-            className="w-10 h-10 rounded-lg object-contain"
+            className="w-10 h-10 rounded-md object-contain"
           />
           <span className="text-xl font-bold tracking-tight text-stone-900">
             InternHack
