@@ -394,6 +394,20 @@ export class AuthService {
     };
   }
 
+  async deleteAccount(userId: number, password: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { password: true },
+    });
+    if (!user) throw new Error("User not found");
+
+    const isValid = await comparePassword(password, user.password);
+    if (!isValid) throw new Error("Incorrect password");
+
+    await prisma.user.delete({ where: { id: userId } });
+    invalidateVersionCache(userId);
+  }
+
   private readonly profileSelect = {
     id: true,
     name: true,
