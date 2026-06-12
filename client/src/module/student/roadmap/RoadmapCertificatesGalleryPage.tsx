@@ -32,15 +32,15 @@ const CertificateCard = memo(function CertificateCard({
     `${window.location.origin}${certificate.certificateUrl}`;
 
   return (
-    <div className="group w-full max-w-sm rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 overflow-hidden hover:border-lime-400/30 transition-all duration-300">
+    <div className="group w-full max-w-sm rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 overflow-hidden hover:border-lime-400/30 transition-all duration-300">
 
       {/* Accent */}
-      <div className="h-1 bg-linear-to-r from-lime-400/80 via-emerald-400/70 to-sky-400/70" />
+      <div className="h-1 bg-linear-to-r from-lime-400/80 via-lime-300 to-sky-400/70" />
 
       <div className="p-6">
 
         {/* Icon */}
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-lime-400 text-stone-950 shadow-lg shadow-lime-500/20 mb-5">
+        <div className="inline-flex h-16 w-16 items-center justify-center rounded-md bg-lime-400 text-stone-950 shadow-lg shadow-lime-500/20 mb-5">
           <Trophy className="w-7 h-7" />
         </div>
 
@@ -63,7 +63,7 @@ const CertificateCard = memo(function CertificateCard({
             onClick={() =>
               window.open(downloadUrl, "_blank")
             }
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-stone-950 font-semibold transition-all"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 font-semibold transition-all"
           >
             <Download className="w-4 h-4" />
             Download Certificate
@@ -73,7 +73,7 @@ const CertificateCard = memo(function CertificateCard({
             onClick={() =>
               window.open(shareUrl, "_blank")
             }
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-stone-200 dark:border-white/10 hover:bg-stone-100 dark:hover:bg-white/5 transition-all text-sm text-stone-700 dark:text-stone-300"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-stone-200 dark:border-white/10 hover:bg-stone-100 dark:hover:bg-white/5 transition-all text-sm text-stone-700 dark:text-stone-300"
           >
             <ExternalLink className="w-4 h-4" />
             Open Public Page
@@ -88,7 +88,7 @@ const CertificateCard = memo(function CertificateCard({
               toast.error("Failed to copy share link. Please try copying manually.");
               }
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-stone-200 dark:border-white/10 hover:bg-stone-100 dark:hover:bg-white/5 transition-all text-sm text-stone-700 dark:text-stone-300"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-stone-200 dark:border-white/10 hover:bg-stone-100 dark:hover:bg-white/5 transition-all text-sm text-stone-700 dark:text-stone-300"
           >
             <Share2 className="w-4 h-4" />
             Copy Share Link
@@ -211,8 +211,8 @@ export default function RoadmapCertificatesGalleryPage() {
 
         {/* Empty state */}
         {certificates.length === 0 && (
-          <div className="rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900/60 p-16 text-center">
-            <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-stone-800 mb-6">
+          <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900/60 p-16 text-center">
+            <div className="inline-flex h-20 w-20 items-center justify-center rounded-md bg-stone-800 mb-6">
               <Trophy className="w-8 h-8 text-stone-500" />
             </div>
 

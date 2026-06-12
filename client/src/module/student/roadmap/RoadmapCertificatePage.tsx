@@ -84,13 +84,13 @@ export default function RoadmapCertificatePage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-2xl rounded-2xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900/90 overflow-hidden shadow-2xl">
+      <div className="w-full max-w-2xl rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900/90 overflow-hidden shadow-2xl">
 
-        <div className="h-2 bg-linear-to-r from-lime-400 via-emerald-400 to-sky-400" />
+        <div className="h-2 bg-linear-to-r from-lime-400 via-lime-300 to-sky-400" />
 
         <div className="p-10 text-center">
 
-          <div className="inline-flex h-24 w-24 items-center justify-center rounded-2xl bg-lime-400 text-stone-950 shadow-lg shadow-lime-500/30 mb-6">
+          <div className="inline-flex h-24 w-24 items-center justify-center rounded-md bg-lime-400 text-stone-950 shadow-lg shadow-lime-500/30 mb-6">
             <Trophy className="w-10 h-10" />
           </div>
 
@@ -122,7 +122,7 @@ export default function RoadmapCertificatePage() {
 
             <button
               onClick={() => window.open(fullCertificateUrl, "_blank", "noopener,noreferrer")}
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-lime-400 text-stone-950 font-bold hover:bg-lime-300 transition-all"
+              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-lime-400 text-stone-950 font-bold hover:bg-lime-300 transition-all"
             >
               <Download className="w-4 h-4" />
               Download Certificate
@@ -130,7 +130,7 @@ export default function RoadmapCertificatePage() {
 
             <button
               onClick={() => window.open(linkedInUrl, "_blank", "noopener,noreferrer")}
-              className="w-full flex items-center justify-center gap-2 px-5 py-2 text-sm rounded-xl bg-[#0A66C2]/20 border border-[#0A66C2]/30 text-[#70B5F9]"
+              className="w-full flex items-center justify-center gap-2 px-5 py-2 text-sm rounded-md bg-[#0A66C2]/20 border border-[#0A66C2]/30 text-[#70B5F9]"
             >
               <Share2 className="w-4 h-4" />
               Share on LinkedIn
@@ -138,7 +138,7 @@ export default function RoadmapCertificatePage() {
 
             <button
               onClick={() => window.open(twitterUrl, "_blank", "noopener,noreferrer")}
-              className="w-full flex items-center justify-center gap-2 px-5 py-2 text-sm rounded-xl bg-stone-800 border border-stone-200 dark:border-white/10"
+              className="w-full flex items-center justify-center gap-2 px-5 py-2 text-sm rounded-md bg-stone-800 border border-stone-200 dark:border-white/10"
             >
               <Share2 className="w-4 h-4" />
               Share on X (Twitter)
@@ -146,7 +146,7 @@ export default function RoadmapCertificatePage() {
 
             <button
               onClick={handleCopy}
-              className="w-full flex items-center justify-center gap-2 px-5 py-2 text-sm rounded-xl border border-stone-200 dark:border-white/10 hover:bg-white/5 transition-all"
+              className="w-full flex items-center justify-center gap-2 px-5 py-2 text-sm rounded-md border border-stone-200 dark:border-white/10 hover:bg-white/5 transition-all"
             >
               {copied ? (
                 <Check className="w-4 h-4 text-lime-400" />

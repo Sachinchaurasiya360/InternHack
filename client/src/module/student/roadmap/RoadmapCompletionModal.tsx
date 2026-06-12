@@ -181,7 +181,7 @@ export default function RoadmapCompletionModal({
         transition={{ type: "spring", damping: 24, stiffness: 300 }}
         className="fixed inset-0 z-[70] flex items-center justify-center px-4 pointer-events-none overflow-y-auto py-6"
       >
-        <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto pointer-events-auto bg-white dark:bg-stone-900/95 border border-stone-200 dark:border-white/10 rounded-2xl shadow-2xl shadow-lime-500/10 overflow-hidden">
+        <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto pointer-events-auto bg-white dark:bg-stone-900/95 border border-stone-200 dark:border-white/10 rounded-md shadow-2xl shadow-lime-500/10 overflow-hidden">
 
           {/* Confetti burst */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -220,7 +220,7 @@ export default function RoadmapCompletionModal({
               className="relative inline-flex items-center justify-center mb-5"
             >
               <div className="absolute inset-0 rounded-full bg-lime-400/20 blur-xl scale-150" />
-              <div className="relative h-20 w-20 rounded-2xl bg-lime-400 flex items-center justify-center shadow-lg shadow-lime-500/40">
+              <div className="relative h-20 w-20 rounded-md bg-lime-400 flex items-center justify-center shadow-lg shadow-lime-500/40">
                 <Trophy className="w-9 h-9 text-stone-950" strokeWidth={2.5} />
               </div>
               {/* Sparkles */}
@@ -278,7 +278,7 @@ export default function RoadmapCompletionModal({
                 id="download-certificate-btn"
                 type="button"
                 onClick={() => window.open(certificateUrl, "_blank")}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-stone-950 font-bold text-sm transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 font-bold text-sm transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               >
                 <Trophy className="w-4 h-4 shrink-0" aria-hidden="true" />
                 <span>Download Certificate</span>
@@ -289,7 +289,7 @@ export default function RoadmapCompletionModal({
                 id="linkedin-add-profile-btn"
                 type="button"
                 onClick={() => openShare(linkedInAddToProfileUrl)}
-                className="w-full flex items-center justify-center gap-3 px-4 py-2 text-sm rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 font-semibold transition-all duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+                className="w-full flex items-center justify-center gap-3 px-4 py-2 text-sm rounded-md bg-[#0A66C2]/20 hover:bg-[#0A66C2]/35 border border-[#0A66C2]/30 hover:border-[#0A66C2]/60 text-[#70B5F9] font-semibold transition-all duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               >
                 <LinkedInIcon className="w-4 h-4 shrink-0" aria-hidden="true" />
                 <span>Add Certificate to LinkedIn</span>
@@ -300,7 +300,7 @@ export default function RoadmapCompletionModal({
                 id="share-twitter-btn"
                 type="button"
                 onClick={() => openShare(twitterShareUrl)}
-                className="w-full flex items-center justify-center gap-3 px-4 py-2 text-sm rounded-xl bg-stone-800 hover:bg-stone-700 border border-white/8 hover:border-white/15 text-stone-900 dark:text-stone-50 font-semibold transition-all duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+                className="w-full flex items-center justify-center gap-3 px-4 py-2 text-sm rounded-md bg-stone-800 hover:bg-stone-700 border border-white/8 hover:border-white/15 text-stone-900 dark:text-stone-50 font-semibold transition-all duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               >
                 <XIcon className="w-4 h-4 text-stone-300 group-hover:text-stone-900 dark:text-stone-50 transition-colors shrink-0" aria-hidden="true" />
                 <span>Share on X (Twitter)</span>
@@ -311,7 +311,7 @@ export default function RoadmapCompletionModal({
                 id="share-linkedin-btn"
                 type="button"
                 onClick={() => openShare(linkedInShareUrl)}
-                className="w-full flex items-center justify-center gap-3 px-4 py-2 text-sm rounded-xl bg-[#0A66C2]/20 hover:bg-[#0A66C2]/35 border border-[#0A66C2]/30 hover:border-[#0A66C2]/60 text-[#70B5F9] font-semibold transition-all duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+                className="w-full flex items-center justify-center gap-3 px-4 py-2 text-sm rounded-md bg-[#0A66C2]/20 hover:bg-[#0A66C2]/35 border border-[#0A66C2]/30 hover:border-[#0A66C2]/60 text-[#70B5F9] font-semibold transition-all duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               >
                 <LinkedInIcon className="w-4 h-4 shrink-0" aria-hidden="true" />
                 <span>Share on LinkedIn</span>
@@ -323,7 +323,7 @@ export default function RoadmapCompletionModal({
                   id="share-native-btn"
                   type="button"
                   onClick={handleNativeShare}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm rounded-xl bg-transparent hover:bg-white/5 border border-white/8 hover:border-white/15 text-stone-400 hover:text-stone-300 font-medium transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm rounded-md bg-transparent hover:bg-white/5 border border-white/8 hover:border-white/15 text-stone-400 hover:text-stone-300 font-medium transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
                 >
                   <Share2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                   <span>More options</span>
