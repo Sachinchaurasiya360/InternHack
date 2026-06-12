@@ -213,6 +213,8 @@ const RoadmapsLandingPage = lazyWithRetry(() => import("./module/student/roadmap
 const RoadmapDetailPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapDetailPage"));
 const RoadmapEnrollPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapEnrollPage"));
 const RoadmapCanvasPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapCanvasPage"));
+const RoadmapCertificatePage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapCertificatePage"));
+const RoadmapCertificatesGalleryPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapCertificatesGalleryPage"));
 const RoadmapTopicPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapTopicPage"));
 const RoadmapDashboardPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapDashboardPage"));
 const AiRoadmapWizardPage = lazyWithRetry(() => import("./module/student/roadmap/AiRoadmapWizardPage"));
@@ -365,6 +367,8 @@ function App() {
             <Route path="/roadmaps/generate" element={<ProtectedRoute role="STUDENT"><AiRoadmapWizardPage /></ProtectedRoute>} />
             <Route path="/roadmaps/:slug/enroll" element={<ProtectedRoute role="STUDENT"><RoadmapEnrollPage /></ProtectedRoute>} />
             <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
+            <Route path="/learn/roadmaps/certificates/:slug/:enrollmentId" element={<RoadmapCertificatePage />}/>
+            <Route path="/learn/roadmaps/certificates" element={<ProtectedRoute role="STUDENT"><RoadmapCertificatesGalleryPage /></ProtectedRoute>}/>
             <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
             <Route path="/blog" element={<BlogListPage />} />
             <Route path="/contributors" element={<ContributorsPage />} />
