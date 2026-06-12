@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Search,
   MapPin,
@@ -180,7 +180,7 @@ export default function ScrapedJobsPage() {
       const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
     retry: 1,
   });
 

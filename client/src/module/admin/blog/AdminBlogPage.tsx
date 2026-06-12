@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import {
   FileText,
@@ -58,7 +58,7 @@ export default function AdminBlogPage() {
       const res = await api.get("/blog/admin/posts", { params });
       return res.data;
     },
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const posts = data?.posts ?? [];

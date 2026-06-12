@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Search,
   MapPin,
@@ -224,7 +224,7 @@ export default function JobBrowsePage() {
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
     staleTime: 60_000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const { data: extData } = useQuery({
@@ -252,7 +252,7 @@ export default function JobBrowsePage() {
       };
     },
     staleTime: 60_000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const { data: scrData } = useQuery({
@@ -275,7 +275,7 @@ export default function JobBrowsePage() {
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
     staleTime: 60_000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const { data: savedIds } = useQuery({
