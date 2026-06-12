@@ -7,33 +7,29 @@ let cronJob: cron.ScheduledTask | null = null;
 const leaderboardService = new LeaderboardService();
 
 /**
- * Update global, weekly, and monthly ranks for all leaderboard entries
+ * Update global, weekly, and monthly ranks for all leaderboard entries.
+ *
+ * Each ranking dimension is computed with a single
+ * `UPDATE … SET rank = ROW_NUMBER() OVER (ORDER BY …)` query so the total
+ * number of statements stays constant regardless of user count.
  */
 async function updateLeaderboardRanks(): Promise<void> {
   console.log("[Leaderboard] Starting rank update...");
   const start = Date.now();
 
   try {
-    // Update all scores first
+    // Update all scores first (serialized, batched)
     const updatedCount = await leaderboardService.updateAllActiveUsers();
     console.log(`[Leaderboard] Updated scores for ${updatedCount} users`);
 
-    // Calculate global ranks (sorted by totalScore DESC)
+    // Each rank pass is a single SQL statement ── no N+1 queries
     await updateGlobalRanks();
-
-    // Calculate weekly ranks (sorted by weeklyScore DESC)
     await updateWeeklyRanks();
-
-    // Calculate monthly ranks (sorted by monthlyScore DESC)
     await updateMonthlyRanks();
-
-    // Calculate university ranks (grouped by college, sorted by totalScore DESC)
     await updateUniversityRanks();
-
-    // Calculate domain ranks (grouped by domain, sorted by totalScore DESC)
     await updateDomainRanks();
 
-    // Update lastRankUpdate timestamp
+    // Update lastRankUpdate timestamp (already a single updateMany)
     await prisma.opensourceLeaderboard.updateMany({
       data: { lastRankUpdate: new Date() },
     });
@@ -47,113 +43,82 @@ async function updateLeaderboardRanks(): Promise<void> {
 }
 
 /**
- * Update global ranks (position 1, 2, 3, ...) based on totalScore DESC
+ * Global ranks — single UPDATE with ROW_NUMBER() ordered by totalScore DESC
  */
 async function updateGlobalRanks(): Promise<void> {
-  const entries = await prisma.opensourceLeaderboard.findMany({
-    orderBy: { totalScore: "desc" },
-    select: { id: true },
-  });
-
-  const updates = entries.map((entry, index) =>
-    prisma.opensourceLeaderboard.update({
-      where: { id: entry.id },
-      data: { globalRank: index + 1 },
-    }),
-  );
-
-  await Promise.all(updates);
-  console.log(`[Leaderboard] Updated ${entries.length} global ranks`);
+  const affected = await prisma.$executeRawUnsafe(`
+    UPDATE "opensourceLeaderboard" AS lb
+    SET "globalRank" = sub.rn
+    FROM (
+      SELECT id, ROW_NUMBER() OVER (ORDER BY "totalScore" DESC, id ASC) AS rn
+      FROM "opensourceLeaderboard"
+    ) AS sub
+    WHERE lb.id = sub.id
+  `);
+  console.log(`[Leaderboard] Updated ${affected} global ranks`);
 }
 
 /**
- * Update weekly ranks based on weeklyScore DESC
+ * Weekly ranks — single UPDATE with ROW_NUMBER() ordered by weeklyScore DESC
  */
 async function updateWeeklyRanks(): Promise<void> {
-  const entries = await prisma.opensourceLeaderboard.findMany({
-    orderBy: { weeklyScore: "desc" },
-    select: { id: true },
-  });
-
-  const updates = entries.map((entry, index) =>
-    prisma.opensourceLeaderboard.update({
-      where: { id: entry.id },
-      data: { weeklyRank: index + 1 },
-    }),
-  );
-
-  await Promise.all(updates);
-  console.log(`[Leaderboard] Updated ${entries.length} weekly ranks`);
+  const affected = await prisma.$executeRawUnsafe(`
+    UPDATE "opensourceLeaderboard" AS lb
+    SET "weeklyRank" = sub.rn
+    FROM (
+      SELECT id, ROW_NUMBER() OVER (ORDER BY "weeklyScore" DESC, id ASC) AS rn
+      FROM "opensourceLeaderboard"
+    ) AS sub
+    WHERE lb.id = sub.id
+  `);
+  console.log(`[Leaderboard] Updated ${affected} weekly ranks`);
 }
 
 /**
- * Update monthly ranks based on monthlyScore DESC
+ * Monthly ranks — single UPDATE with ROW_NUMBER() ordered by monthlyScore DESC
  */
 async function updateMonthlyRanks(): Promise<void> {
-  const entries = await prisma.opensourceLeaderboard.findMany({
-    orderBy: { monthlyScore: "desc" },
-    select: { id: true },
-  });
-
-  const updates = entries.map((entry, index) =>
-    prisma.opensourceLeaderboard.update({
-      where: { id: entry.id },
-      data: { monthlyRank: index + 1 },
-    }),
-  );
-
-  await Promise.all(updates);
-  console.log(`[Leaderboard] Updated ${entries.length} monthly ranks`);
+  const affected = await prisma.$executeRawUnsafe(`
+    UPDATE "opensourceLeaderboard" AS lb
+    SET "monthlyRank" = sub.rn
+    FROM (
+      SELECT id, ROW_NUMBER() OVER (ORDER BY "monthlyScore" DESC, id ASC) AS rn
+      FROM "opensourceLeaderboard"
+    ) AS sub
+    WHERE lb.id = sub.id
+  `);
+  console.log(`[Leaderboard] Updated ${affected} monthly ranks`);
 }
 
 /**
- * Update university ranks (per-college leaderboard)
- * Each user gets their rank within their university
+ * University ranks — single UPDATE with ROW_NUMBER() partitioned by college
  */
 async function updateUniversityRanks(): Promise<void> {
-  // Get all leaderboard entries with user college info
-  const entries = await prisma.opensourceLeaderboard.findMany({
-    include: {
-      user: {
-        select: { id: true, college: true },
-      },
-    },
-    orderBy: { totalScore: "desc" },
-  });
-
-  // Group by college
-  const byCollege = new Map<string, Array<{ id: number; userId: number }>>();
-  for (const entry of entries) {
-    const college = entry.user.college || "Unknown";
-    if (!byCollege.has(college)) {
-      byCollege.set(college, []);
-    }
-    byCollege.get(college)!.push({ id: entry.id, userId: entry.user.id });
-  }
-
-  // Calculate ranks per college
-  const updates: Promise<any>[] = [];
-  for (const [college, users] of byCollege) {
-    for (let i = 0; i < users.length; i++) {
-      updates.push(
-        prisma.opensourceLeaderboard.update({
-          where: { id: users[i].id },
-          data: { universityRank: i + 1 },
-        }),
-      );
-    }
-  }
-
-  await Promise.all(updates);
-  console.log(`[Leaderboard] Updated university ranks for ${byCollege.size} colleges`);
+  const affected = await prisma.$executeRawUnsafe(`
+    UPDATE "opensourceLeaderboard" AS lb
+    SET "universityRank" = sub.rn
+    FROM (
+      SELECT ol.id,
+             ROW_NUMBER() OVER (
+               PARTITION BY COALESCE(u.college, 'Unknown')
+               ORDER BY ol."totalScore" DESC, ol.id ASC
+             ) AS rn
+      FROM "opensourceLeaderboard" ol
+      JOIN "user" u ON u.id = ol."userId"
+    ) AS sub
+    WHERE lb.id = sub.id
+  `);
+  console.log(`[Leaderboard] Updated ${affected} university ranks`);
 }
 
 /**
- * Update domain ranks (per-domain leaderboard based on repo contributions)
- * Stores as JSON: { "WEB": 5, "AI": 12, "MOBILE": 3 }
+ * Domain ranks — kept in JS because domain data is derived from repoRequest
+ * rows, not from the leaderboard table itself. However, we batch the writes
+ * inside a single Prisma transaction with chunks of 10 to stay within the
+ * connection pool budget.
  */
 async function updateDomainRanks(): Promise<void> {
-  // Get all leaderboard entries with repo request data
+  // Fetch all leaderboard entries with repo request domain data
   const entries = await prisma.opensourceLeaderboard.findMany({
     include: {
       user: {
@@ -173,8 +138,7 @@ async function updateDomainRanks(): Promise<void> {
   const byDomain = new Map<string, Array<{ id: number; totalScore: number }>>();
 
   for (const entry of entries) {
-    // Get unique domains this user has contributed to
-    const userDomains = new Set(entry.user.repoRequests.map((r) => r.domain));
+    const userDomains = new Set(entry.user.repoRequests.map((r: { domain: string }) => r.domain));
 
     for (const domain of userDomains) {
       if (!byDomain.has(domain)) {
@@ -188,7 +152,6 @@ async function updateDomainRanks(): Promise<void> {
   const domainRanksByUser = new Map<number, Record<string, number>>();
 
   for (const [domain, users] of byDomain) {
-    // Sort by total score DESC
     users.sort((a, b) => b.totalScore - a.totalScore);
 
     for (let i = 0; i < users.length; i++) {
@@ -200,15 +163,22 @@ async function updateDomainRanks(): Promise<void> {
     }
   }
 
-  // Update all entries with their domain ranks
-  const updates = Array.from(domainRanksByUser.entries()).map(([id, ranks]) =>
-    prisma.opensourceLeaderboard.update({
-      where: { id },
-      data: { domainRank: ranks },
-    }),
-  );
+  // Batch updates inside a transaction, chunked to limit concurrency
+  const allUpdates = Array.from(domainRanksByUser.entries());
+  const CHUNK_SIZE = 10;
 
-  await Promise.all(updates);
+  for (let i = 0; i < allUpdates.length; i += CHUNK_SIZE) {
+    const chunk = allUpdates.slice(i, i + CHUNK_SIZE);
+    await prisma.$transaction(
+      chunk.map(([id, ranks]) =>
+        prisma.opensourceLeaderboard.update({
+          where: { id },
+          data: { domainRank: ranks },
+        }),
+      ),
+    );
+  }
+
   console.log(`[Leaderboard] Updated domain ranks for ${byDomain.size} domains`);
 }
 

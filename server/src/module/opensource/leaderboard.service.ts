@@ -334,11 +334,13 @@ export class LeaderboardService {
   }
 
   /**
-   * Bulk update scores for multiple users (used by scheduled jobs)
+   * Bulk update scores for multiple users (used by scheduled jobs).
+   * Runs sequentially to stay within the DB connection pool budget.
    */
   async bulkUpdateScores(userIds: number[]): Promise<void> {
-    const updates = userIds.map((userId) => this.updateUserScore(userId));
-    await Promise.all(updates);
+    for (const userId of userIds) {
+      await this.updateUserScore(userId);
+    }
   }
 
   /**
