@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import { Prisma, type UsageAction } from "@prisma/client";
 import { prisma } from "../database/db.js";
-import { DAILY_LIMITS, getPlanTier } from "../config/usage-limits.js";
+import { DAILY_LIMITS, getPlanTier, MONTHLY_LIMITS } from "../config/usage-limits.js";
 
-export function usageLimit(action: UsageAction) {
+export function usageLimit(action: UsageAction, window: "daily" | "monthly" = "daily") {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (!req.user) {
       res.status(401).json({ message: "Authentication required" });
@@ -11,13 +11,18 @@ export function usageLimit(action: UsageAction) {
     }
 
     const userId = req.user.id;
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const startOfWindow = new Date();
+    if (window === "monthly") {
+      startOfWindow.setUTCDate(1);
+      startOfWindow.setUTCHours(0, 0, 0, 0);
+    } else {
+      startOfWindow.setUTCHours(0, 0, 0, 0);
+    }
 
     try {
       // Serializable transaction prevents TOCTOU race: concurrent requests that
       // race through the count→insert path will cause one to get a P2034
-      // serialization failure rather than both slipping past the daily cap.
+      // serialization failure rather than both slipping past the usage cap.
       type TxResult =
         | { ok: true; used: number; limit: number; tier: string }
         | { ok: false; reason: "user_missing" | "limit_reached"; used: number; limit: number; tier: string };
@@ -30,14 +35,17 @@ export function usageLimit(action: UsageAction) {
               select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
             }),
             tx.usageLog.count({
-              where: { userId, action, createdAt: { gte: startOfDay } },
+              where: { userId, action, createdAt: { gte: startOfWindow } },
             }),
           ]);
 
           if (!user) return { ok: false, reason: "user_missing", used: 0, limit: 0, tier: "FREE" } as const;
 
           const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
-          const limit = DAILY_LIMITS[action][tier];
+          const limits = window === "monthly"
+            ? (MONTHLY_LIMITS[action] ?? DAILY_LIMITS[action])
+            : DAILY_LIMITS[action];
+          const limit = limits[tier];
 
           if (used >= limit) return { ok: false, reason: "limit_reached", used, limit, tier } as const;
 
@@ -52,10 +60,12 @@ export function usageLimit(action: UsageAction) {
           res.status(401).json({ message: "User not found" });
           return;
         }
+        const windowLabel = window === "monthly" ? "Monthly" : "Daily";
+        const resetLabel = window === "monthly" ? "next month" : "tomorrow";
         res.status(429).json({
           message: result.tier === "FREE"
-            ? "Daily limit reached. Upgrade to Premium for higher limits."
-            : "Daily limit reached. Try again tomorrow.",
+            ? `${windowLabel} limit reached. Upgrade to Premium for higher limits.`
+            : `${windowLabel} limit reached. Try again ${resetLabel}.`,
           usage: { used: result.used, limit: result.limit, action, tier: result.tier },
         });
         return;

@@ -1,6 +1,7 @@
 import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
 import type { UserRole, JobStatus } from "@prisma/client";
+import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 
 export class AdminPlatformService {
   async getPlatformDashboard() {
@@ -234,6 +235,7 @@ export class AdminPlatformService {
     }
 
     await prisma.user.delete({ where: { id: userId } });
+    invalidateVersionCache(userId);
   }
 
   async getAdminJobs(query: {
@@ -357,5 +359,14 @@ export class AdminPlatformService {
         totalPages: Math.ceil(total / query.limit),
       },
     };
+  }
+
+  async getSidebarStats() {
+    const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const [pendingContributions, recentErrors] = await Promise.all([
+      prisma.companyContribution.count({ where: { status: "PENDING" } }),
+      prisma.errorLog.count({ where: { statusCode: { gte: 500 }, createdAt: { gte: since24h } } }),
+    ]);
+    return { pendingContributions, recentErrors };
   }
 }

@@ -13,7 +13,6 @@ import {
 import type { z } from "zod";
 import { AuthService } from "./auth.service.js";
 import { setTokenCookie, clearTokenCookie } from "../../utils/cookie.utils.js";
-
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -28,7 +27,7 @@ export class AuthController {
       return res.status(201).json({ message: "Registration successful. Please verify your email to continue.", user: data.user });
     } catch (error) {
       if (error instanceof Error && error.message === "Email already registered") {
-        return res.status(409).json({ message: error.message });
+        return res.status(201).json({ message: "Registration successful. Please verify your email to continue." });
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -259,6 +258,23 @@ export class AuthController {
         ? 429
         : 400;
       return res.status(statusCode).json({ message: errorMessage });
+    }
+  }
+
+  async deleteAccount(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const { password } = req.body as { password: string };
+      await this.authService.deleteAccount(req.user.id, password);
+      clearTokenCookie(res);
+      return res.status(200).json({ message: "Account deleted successfully" });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Incorrect password") {
+        return res.status(401).json({ message: error.message });
+      }
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
     }
   }
 }

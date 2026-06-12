@@ -1,4 +1,5 @@
 import { useGoogleLogin } from "@react-oauth/google";
+import { Button } from "./ui/button";
 
 type Props = {
   label: string;
@@ -15,15 +16,17 @@ export function GoogleAuthButton({ label, onAccessToken, onError, disabled }: Pr
   });
 
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
+      size="lg"
       onClick={() => login()}
       disabled={disabled}
-      className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 border border-stone-300 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 rounded-md text-sm font-bold hover:border-stone-400 dark:hover:border-white/20 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      className="w-full font-bold"
     >
       <GoogleIcon className="h-4 w-4" />
       {label}
-    </button>
+    </Button>
   );
 }
 

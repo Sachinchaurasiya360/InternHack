@@ -33,6 +33,7 @@ export interface DsaProblem {
   solved: boolean;
   notes?: string | null;
   bookmarked?: boolean;
+  labels?: string[];
 }
 
 export interface DsaTopicDetail {
@@ -70,7 +71,12 @@ export interface DsaProblemDetail {
   acceptanceRate?: string;
   totalAccepted?: number;
   totalSubmissions?: number;
-  similarQuestions?: { title: string; slug: string; difficulty: string; url: string }[];
+  similarQuestions?: {
+    title: string;
+    slug: string;
+    difficulty: string;
+    url: string;
+  }[];
   category?: string;
   isPremium: boolean;
   solved: boolean;
@@ -88,6 +94,12 @@ export interface DsaProgress {
   };
 }
 
+export interface DsaApproachEntry {
+  title: string;
+  complexity: string;
+  content: string;
+}
+
 export interface DsaSimilarProblem {
   id: number;
   title: string;
@@ -99,6 +111,7 @@ export interface DsaSimilarProblem {
 export interface DsaCompany {
   name: string;
   count: number;
+  solved: number;
 }
 
 export interface DsaPattern {
@@ -106,10 +119,26 @@ export interface DsaPattern {
   count: number;
 }
 
+export interface DsaCompanyTrackStats {
+  company: string;
+  total: number;
+  solved: number;
+  difficultyBreakdown: Record<string, { total: number; solved: number }>;
+}
+
 export interface DsaSheetStats {
   name: string;
   total: number;
   solved: number;
+}
+
+export interface DsaList {
+  slug: string;
+  title: string;
+  description: string;
+  total: number;
+  solved: number;
+  estimatedHours: number;
 }
 
 export interface DsaBookmarkItem {
@@ -125,8 +154,42 @@ export interface DsaBookmarkItem {
   sheets: string[];
   acceptanceRate?: string;
   solved: boolean;
+  labels?: string[];
   createdAt: string;
 }
+
+// ── DSA custom problem labels (tagging) ──
+
+export interface DsaMyLabelsResponse {
+  /** Map of problemId → labels the student attached to that problem. */
+  byProblem: Record<number, string[]>;
+  /** Distinct, sorted list of every custom label the student has created. */
+  allLabels: string[];
+}
+
+export interface DsaLabelMutationResponse {
+  problemId: number;
+  label: string;
+  /** The problem's full label set after the mutation. */
+  labels: string[];
+}
+
+export interface DsaSystemLabel {
+  label: string;
+  emoji: string;
+}
+
+/** System-suggested labels surfaced in the label dropdown. */
+export const DSA_SYSTEM_LABELS: DsaSystemLabel[] = [
+  { emoji: "⭐", label: "Important" },
+  { emoji: "🔄", label: "Need Revisit" },
+  { emoji: "💼", label: "Was Asked in Interview" },
+  { emoji: "🏆", label: "Contest Problem" },
+  { emoji: "✅", label: "Company-specific" },
+];
+
+/** Maximum labels a student may attach to one problem (mirrors the server cap). */
+export const DSA_MAX_LABELS_PER_PROBLEM = 5;
 
 export interface DsaCompanyProblem {
   id: number;
@@ -192,6 +255,14 @@ export interface DsaCodeReview {
   suggestions: string[];
 }
 
+export interface DsaStreak {
+  currentStreak: number;
+  longestStreak: number;
+  solvedToday: boolean;
+  lastSolvedDate: string | null;
+  activeDays: string[];
+}
+
 export interface DsaSubmissionSummary {
   id: number;
   language: DsaLanguage;
@@ -220,7 +291,11 @@ export interface LeetcodeImportPreview {
   newSolves: number;
   token: string;
   preview: LeetcodeImportPreviewItem[];
-  lastImport?: { importedAt: string; username: string | null; source: string } | null;
+  lastImport?: {
+    importedAt: string;
+    username: string | null;
+    source: string;
+  } | null;
 }
 
 export interface LeetcodeImportResult {

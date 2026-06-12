@@ -1,11 +1,16 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";
+import { OpensourceStreakController } from "./opensource-streak.controller.js";
+import { OpensourceProgramController } from "./opensource-program.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
+import { usageLimit } from "../../middleware/usage-limit.middleware.js";
 
 export const opensourceRouter = Router();
 const controller = new OpensourceController();
+const streakController = new OpensourceStreakController();
+const programController = new OpensourceProgramController();
 
 // ─── Public Routes ─────────────────────────────────────────────
 
@@ -71,7 +76,6 @@ opensourceRouter.get("/analytics/hacktoberfest", authMiddleware, requireRole("ST
   controller.getHacktoberfestProgress(req, res, next),
 );
 
-// Get open source activity
 opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
   try {
     const queryStudentId = req.query.studentId as string | undefined;
@@ -125,12 +129,109 @@ opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
   }
 });
 
+opensourceRouter.get("/premium/status", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
+    });
+    const isPremium =
+      user !== null &&
+      (user.subscriptionPlan === "MONTHLY" || user.subscriptionPlan === "YEARLY") &&
+      user.subscriptionStatus === "ACTIVE" &&
+      (!user.subscriptionEndDate || user.subscriptionEndDate > new Date());
+    res.json({ isPremium });
+  } catch (err) {
+    next(err);
+  }
+});
+
 opensourceRouter.get("/first-pr/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.getFirstPrProgress(req, res, next),
 );
 
 opensourceRouter.patch("/first-pr/progress", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.patchFirstPrProgress(req, res, next),
+);
+
+// ─── Certificate Routes ─────────────────────────────────────────
+opensourceRouter.post("/certificate/issue", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.issueCertificate(req, res, next),
+);
+opensourceRouter.get("/certificate/:token/og", (req, res, next) =>
+  controller.getCertificateOgImage(req, res, next),
+);
+opensourceRouter.get("/certificate/:token", (req, res, next) =>
+  controller.getCertificate(req, res, next),
+);
+
+opensourceRouter.post("/guide-feedback", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.submitGuideFeedback(req, res, next),
+);
+
+// ─── Student: Bookmarks ─────────────────────────────────────────
+
+opensourceRouter.get("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.getBookmarks(req, res, next),
+);
+
+opensourceRouter.post("/bookmarks", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.addBookmark(req, res, next),
+);
+
+// POST /bookmarks/migrate — bulk-import localStorage bookmarks to the server
+opensourceRouter.post("/bookmarks/migrate", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.bulkMigrateBookmarks(req, res, next),
+);
+
+opensourceRouter.delete("/bookmarks/:repoId", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.removeBookmark(req, res, next),
+);
+
+// ─── Streak ─────────────────────────────────────────────────────
+opensourceRouter.get("/streak", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  streakController.getStreak(req, res, next),
+);
+
+opensourceRouter.post("/streak/tick", authMiddleware, requireRole("STUDENT"), usageLimit("STREAK_TICK"),
+  (req, res, next) => streakController.tickStreak(req, res, next),
+);
+
+// ─── Programs ────────────────────────────────────────────────────
+
+// Public program listing (no auth required)
+opensourceRouter.get("/programs", (req, res, next) =>
+  programController.listPrograms(req, res, next),
+);
+
+opensourceRouter.get("/programs/:slug", (req, res, next) =>
+  programController.getProgram(req, res, next),
+);
+
+opensourceRouter.get("/programs/:slug/ics", (req, res, next) =>
+  programController.downloadIcs(req, res, next),
+);
+
+// Student program tracking
+opensourceRouter.post("/programs/track", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  programController.toggleProgram(req, res, next),
+);
+
+opensourceRouter.get("/programs/tracked/mine", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  programController.getTrackedPrograms(req, res, next),
+);
+
+// Admin program management
+opensourceRouter.post("/programs/manage", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
+  programController.createProgram(req, res, next),
+);
+
+opensourceRouter.put("/programs/manage/:id", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
+  programController.updateProgram(req, res, next),
+);
+
+opensourceRouter.delete("/programs/manage/:id", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
+  programController.deleteProgram(req, res, next),
 );
 
 // ─── Admin: Manage Repo Requests ─────────────────────────────────

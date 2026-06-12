@@ -38,16 +38,18 @@ interface MockInterviewFeedbackResult {
 
 export class StudentService {
   async applyToJob(jobId: number, studentId: number, data: ApplyData) {
-    const job = await prisma.job.findUnique({
-      where: { id: jobId },
-      include: { rounds: { orderBy: { orderIndex: "asc" }, take: 1 } },
+    const firstRound = await prisma.$transaction(async (tx) => {
+      const job = await tx.job.findUnique({
+        where: { id: jobId },
+        include: { rounds: { orderBy: { orderIndex: "asc" }, take: 1 } },
+      });
+
+      if (!job) throw new Error("Job not found");
+      if (job.status !== "PUBLISHED") throw new Error("Job is not accepting applications");
+      if (job.deadline && new Date(job.deadline) < new Date()) throw new Error("Application deadline has passed");
+
+      return job.rounds[0];
     });
-
-    if (!job) throw new Error("Job not found");
-    if (job.status !== "PUBLISHED") throw new Error("Job is not accepting applications");
-    if (job.deadline && new Date(job.deadline) < new Date()) throw new Error("Application deadline has passed");
-
-    const firstRound = job.rounds[0];
 
     try {
       const application = await prisma.application.create({

@@ -17,6 +17,7 @@ export default function GitCheatsheetPage() {
       ogImage="/og/og-git-guide.png"
       icon={GitBranch}
       iconColor="text-orange-500"
+      certificateGuideName="Git Cheatsheet"
     />
   );
 }

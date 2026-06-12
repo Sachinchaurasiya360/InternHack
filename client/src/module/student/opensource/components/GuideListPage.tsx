@@ -1,13 +1,17 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {CheckCircle2, ArrowRight, Trophy,} from "lucide-react";
+import {CheckCircle2, ArrowRight, Trophy} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
+import GuideCompletionSection from "./GuideCompletionSection";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
 import { NextInPathCard } from "./NextInPathCard";
+import { issueCertificate, type Certificate } from "../api/opensource.api";
+import { useAuthStore } from "../../../../lib/auth.store";
+import { useEffect } from "react";
 
 interface Step { step: number; id: string; title: string; description: string ; estimatedMinutes?: number; }
 
@@ -24,11 +28,13 @@ interface Props {
   ogImage?: string;
   icon: LucideIcon;
   iconColor: string;         // e.g. "text-emerald-500"
+  certificateGuideName?: string;
 }
 
 export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
+  certificateGuideName,
   ogImage,
 }: Props) {
   const [completed, setCompleted] = useState<Set<string>>(() => {
@@ -37,9 +43,11 @@ export default function GuideListPage({
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  const [cert, setCert] = useState<Certificate | null>(null);
+  const { user } = useAuthStore();
 
   const toggle = useCallback((id: string) => {
-    setCompleted((prev) => {
+    setCompleted((prev: Set<string>) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
@@ -57,6 +65,29 @@ export default function GuideListPage({
     .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
   const remainingMinutes = totalEstimatedTime - completedMinutes;
 
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": seoTitle,
+    "description": seoDescription,
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+    "totalTime": `PT${totalEstimatedTime}M`,
+    "step": steps.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.title,
+      "text": s.description || "Follow the visual walkthrough steps."
+    }))
+  };
+
+  useEffect(() => {
+    if (allDone && !cert && user) {
+      issueCertificate(title)
+        .then(setCert)
+        .catch(console.error);
+    }
+  }, [allDone, cert, title, user]);
+
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
   const currentSlug = basePath.split("/").pop() as "git-guide" | "communication" | "read-codebase" | "cicd";
@@ -69,6 +100,7 @@ export default function GuideListPage({
         keywords={seoKeywords}
         canonicalUrl={canonicalUrl(basePath)}
         ogImage={ogImage}
+        structuredData={howToSchema}
       />
 
       {/* Atmospheric background */}
@@ -128,17 +160,25 @@ export default function GuideListPage({
 
       {/* Completion banner */}
       <AnimatePresence>
-        {allDone && (
+        {allDone && certificateGuideName && (
+          <GuideCompletionSection
+            headline="All sections completed!"
+            subtitle={`You've completed all ${totalSteps} sections. Apply this knowledge to your next contribution!`}
+            certificateGuideName={certificateGuideName}
+            accentWord="completed"
+          />
+        )}
+        {allDone && !certificateGuideName && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 flex items-center gap-4"
+            className="mb-8 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900 p-5 flex items-center gap-4"
           >
-            <Trophy className="w-8 h-8 text-green-500 shrink-0" />
+            <Trophy className="w-8 h-8 text-lime-500 shrink-0" />
             <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">All sections completed!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">You've completed all {totalSteps} sections. Apply this knowledge to your next contribution!</p>
+              <p className="text-base font-bold text-stone-900 dark:text-stone-50">All sections completed!</p>
+              <p className="text-sm text-stone-600 dark:text-stone-400 mt-0.5">You've completed all {totalSteps} sections. Apply this knowledge to your next contribution!</p>
             </div>
           </motion.div>
         )}
@@ -167,7 +207,7 @@ export default function GuideListPage({
                   variant="ghost"
                   mode="icon"
                   size="sm"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
+                  onClick={(e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
                   className="shrink-0"
                 >
                   {done ? (

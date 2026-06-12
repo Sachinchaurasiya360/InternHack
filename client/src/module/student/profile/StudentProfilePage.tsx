@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 import { Save, Loader2, Github } from "lucide-react";
 import { ProfilePageHeader } from "./components/ProfilePageHeader";
 import type { VerifiedSkill, ProjectItem, AchievementItem } from "../../../lib/types";
@@ -10,6 +11,7 @@ import { uploadDirectToS3 } from "../../../utils/upload";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
 import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 import GitHubImportModal from "./GitHubImportModal";
@@ -126,6 +128,7 @@ export default function StudentProfilePage() {
   const collegeDropdownRef = useRef<HTMLDivElement>(null);
   const skillInputRef = useRef<HTMLInputElement>(null);
   const skillDropdownRef = useRef<HTMLDivElement>(null);
+  const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
 
   const filteredSkillSuggestions = skillInput.trim().length > 0
     ? VERIFIABLE_SKILLS.filter((s) => {
@@ -157,6 +160,7 @@ export default function StudentProfilePage() {
   const { data: jobPrefsData } = useQuery({
     queryKey: queryKeys.jobFeed.preferences(),
     queryFn: () => api.get("/job-feed/preferences").then((r) => r.data),
+    enabled: isPremium,
     staleTime: 30 * 60 * 1000,
   });
 
@@ -458,7 +462,6 @@ export default function StudentProfilePage() {
   };
 
   const displayDate = memberSince || user?.createdAt;
-  const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
 
   const profileCompletion = (() => {
     const fields = [form.name, form.bio, form.contactNo, form.location, form.college, form.company, form.linkedinUrl, form.githubUrl];
@@ -611,7 +614,7 @@ export default function StudentProfilePage() {
               open={openSections.jobPrefs}
               onToggle={() => toggleSection("jobPrefs")}
             />
-            {openSections.jobPrefs && (
+            {openSections.jobPrefs && isPremium && (
               <JobPreferencesSection
                 jobPrefRoles={jobPrefRoles}
                 jobPrefSkills={jobPrefSkills}
@@ -630,6 +633,16 @@ export default function StudentProfilePage() {
                 onDomainsChange={setJobPrefDomains}
                 onSavingChange={setSavingJobPrefs}
               />
+            )}
+            {openSections.jobPrefs && !isPremium && (
+              <div className="px-5 py-5 space-y-3">
+                <p className="text-sm text-stone-600 dark:text-stone-400">
+                  Job matching preferences are available with Premium.
+                </p>
+                <Button asChild variant="primary" size="sm">
+                  <Link to="/student/checkout">Upgrade</Link>
+                </Button>
+              </div>
             )}
           </motion.div>
 

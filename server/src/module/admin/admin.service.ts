@@ -50,6 +50,9 @@ export class AdminService {
   getErrorLogs(...args: Parameters<AdminPlatformService["getErrorLogs"]>) {
     return this.platformSvc.getErrorLogs(...args);
   }
+  getSidebarStats() {
+    return this.platformSvc.getSidebarStats();
+  }
 
   // ── Company ───────────────────────────────────────────────────────────
   getDashboardStats(...args: Parameters<AdminCompanyService["getDashboardStats"]>) {
@@ -107,6 +110,9 @@ export class AdminService {
   }
   deleteRepo(...args: Parameters<AdminOpensourceService["deleteRepo"]>) {
     return this.opensourceSvc.deleteRepo(...args);
+  }
+  getGuideFeedbackAnalytics() {
+    return this.opensourceSvc.getGuideFeedbackAnalytics();
   }
 
   // ── Learning (DSA + Aptitude + Skill Tests) ───────────────────────────

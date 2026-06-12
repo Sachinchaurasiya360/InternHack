@@ -113,14 +113,16 @@ function mergeProgress(
 
 function writeStoredProgress(progress: InterviewServerProgress, userId?: number) {
   if (userId) {
-    localStorage.setItem(progressCacheKey(userId), JSON.stringify(progress));
+    try { localStorage.setItem(progressCacheKey(userId), JSON.stringify(progress)); } catch { console.warn("Failed to persist to localStorage:", progressCacheKey(userId)); }
     return;
   }
 
-  localStorage.setItem(LEGACY_PROGRESS_KEY, JSON.stringify(toProgressMap(progress)));
-  localStorage.setItem(LEGACY_COMPLETED_KEY, JSON.stringify(progress.completedIds));
-  localStorage.setItem(LEGACY_BOOKMARKS_KEY, JSON.stringify(progress.bookmarkedIds));
-  if (progress.lastVisitedId) localStorage.setItem(LEGACY_LAST_VISITED_KEY, progress.lastVisitedId);
+  try { localStorage.setItem(LEGACY_PROGRESS_KEY, JSON.stringify(toProgressMap(progress))); } catch { console.warn("Failed to persist to localStorage:", LEGACY_PROGRESS_KEY); }
+  try { localStorage.setItem(LEGACY_COMPLETED_KEY, JSON.stringify(progress.completedIds)); } catch { console.warn("Failed to persist to localStorage:", LEGACY_COMPLETED_KEY); }
+  try { localStorage.setItem(LEGACY_BOOKMARKS_KEY, JSON.stringify(progress.bookmarkedIds)); } catch { console.warn("Failed to persist to localStorage:", LEGACY_BOOKMARKS_KEY); }
+  if (progress.lastVisitedId) {
+    try { localStorage.setItem(LEGACY_LAST_VISITED_KEY, progress.lastVisitedId); } catch { console.warn("Failed to persist to localStorage:", LEGACY_LAST_VISITED_KEY); }
+  }
 }
 
 async function fetchServerProgress() {

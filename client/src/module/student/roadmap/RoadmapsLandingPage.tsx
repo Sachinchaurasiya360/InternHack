@@ -8,6 +8,7 @@ import {
   Clock,
   Map as MapIcon,
   Search,
+  Sparkles,
   Users,
   Wand2,
 } from "lucide-react";
@@ -98,6 +99,15 @@ export default function RoadmapsLandingPage() {
     if (enrollmentsError) return []; // Fallback to empty but we'll show error below
     return enrollmentsData?.enrollments || [];
   }, [enrollmentsData, enrollmentsError]);
+  const completedEnrollments = useMemo(
+    () =>
+      enrollments.filter((e) =>
+        e.topicProgress.length > 0 &&
+        e.topicProgress.every((p) => p.status === "COMPLETED")
+      ),
+    [enrollments]
+  );
+  const completedCount = completedEnrollments.length;
   const loading = roadmapsLoading;
   const error = (roadmapsError || (isStudent && enrollmentsError)) ? "Could not load roadmaps. Please try again." : null;
 
@@ -136,7 +146,13 @@ export default function RoadmapsLandingPage() {
 
   // Secondary client-side filtering for ultra-smooth UX while API loads
   const filtered = useMemo(() => {
-    let result = roadmaps;
+    let result = roadmaps.filter((r) => {
+      const enrollment = enrollments.find((e) => e.roadmap.slug === r.slug);
+      if (!enrollment) return true;
+      const isCompleted = enrollment.topicProgress.length > 0 && enrollment.topicProgress.every((p) => p.status === "COMPLETED");
+      return !isCompleted;
+    });
+
     const needle = debouncedSearch.trim().toLowerCase();
     
     if (needle) {
@@ -153,15 +169,18 @@ export default function RoadmapsLandingPage() {
     }
     
     if (tag) {
-      result = result.filter(r => r.tags.includes(tag));
+      result = result.filter(r =>
+        r.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
+      );
     }
-
     if (category) {
-      result = result.filter(r => r.tags.includes(category));
+      result = result.filter(r =>
+        r.tags.map(t => t.toLowerCase()).includes(category.toLowerCase())
+      );
     }
     
     return result;
-  }, [roadmaps, debouncedSearch, level, tag, category]);
+  }, [roadmaps, enrollments, debouncedSearch, level, tag, category]);
 
   // "In progress" is built directly from enrollments so AI-generated roadmaps
   // (isPublished: false) are included even though they're absent from the
@@ -169,6 +188,8 @@ export default function RoadmapsLandingPage() {
   const inProgressEnrollments = useMemo(() => {
     const needle = debouncedSearch.trim().toLowerCase();
     return enrollments.filter((e) => {
+      const isCompleted = e.topicProgress.length > 0 && e.topicProgress.every((p) => p.status === "COMPLETED");
+      if (isCompleted) return false;
       const r = e.roadmap;
       if (needle) {
         const matchesText =
@@ -178,8 +199,8 @@ export default function RoadmapsLandingPage() {
         if (!matchesText) return false;
       }
       if (level && level !== "ALL_LEVELS" && r.level && r.level !== level) return false;
-      if (tag && !(r.tags ?? []).includes(tag)) return false;
-      if (category && !(r.tags ?? []).includes(category)) return false;
+      if (tag && !(r.tags ?? []).map(t => t.toLowerCase()).includes(tag.toLowerCase())) return false;
+      if (category && !(r.tags ?? []).map(t => t.toLowerCase()).includes(category.toLowerCase())) return false;
       return true;
     });
   }, [enrollments, debouncedSearch, level, tag, category]);
@@ -264,12 +285,20 @@ export default function RoadmapsLandingPage() {
                 </span>
               </span>
               {isStudent && (
+                <>
                 <span>
                   enrolled
                   <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-2">
                     {enrollments.length}
                   </span>
                 </span>
+                <span>
+                  completed
+                  <span className="text-lime-600 dark:text-lime-500 text-sm font-bold tabular-nums ml-2">
+                    {completedCount}
+                  </span>
+                </span>
+                </>
               )}
               <span>
                 free
@@ -277,6 +306,42 @@ export default function RoadmapsLandingPage() {
               </span>
             </div>
           </motion.div>
+
+          {/* Certificates CTA */}
+          {isStudent && completedCount > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-6"
+            >
+              <Link
+                to="/learn/roadmaps/certificates"
+                className="group relative block overflow-hidden bg-lime-400 text-stone-950 rounded-md p-5 sm:p-6 no-underline border border-lime-500 hover:bg-lime-300 transition-colors"
+              >
+                <div className="relative flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] mb-1">
+                      certificates
+                    </p>
+
+                    <p className="text-lg font-bold leading-tight">
+                      View all certificates
+                    </p>
+
+                    <p className="text-sm mt-1 opacity-80">
+                      Browse and share your completed roadmap certificates.
+                    </p>
+                  </div>
+
+                  <ArrowUpRight
+                    className="w-5 h-5 shrink-0 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
+                    aria-hidden="true"
+                  />
+                </div>
+              </Link>
+            </motion.div>
+          )}
 
           {/* AI generate CTA */}
           <motion.div

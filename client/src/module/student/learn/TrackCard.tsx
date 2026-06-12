@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, IndianRupee } from "lucide-react";
 import type { Track } from "./tracks";
 import { getLessonCount } from "./lesson-counts";
 import type { TrackProgress } from "./useTrackProgress";
@@ -52,6 +52,12 @@ export const TrackCard = React.memo(function TrackCard({ track, index, progress 
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
               {statLabel}
             </span>
+            {track.salary && (
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-lime-700 dark:text-lime-400 mt-1 bg-lime-50 dark:bg-lime-900/30 px-1.5 py-0.5 rounded-sm">
+                <IndianRupee className="w-3 h-3" />
+                {track.salary}
+              </span>
+            )}
           </div>
         </div>
 

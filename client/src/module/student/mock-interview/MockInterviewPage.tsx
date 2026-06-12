@@ -19,6 +19,7 @@ import {
   ArrowRight,
   Zap,
   CheckCircle,
+  Server,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
@@ -56,7 +57,7 @@ const OPTIONS = [
 ];
 
 type AiStage = "setup" | "interview" | "generating" | "results";
-type MockTopicId = "frontend" | "backend" | "dsa" | "behavioral";
+type MockTopicId = "frontend" | "backend" | "dsa" | "behavioral" | "system-design";
 
 interface MockTopic {
   id: MockTopicId;
@@ -117,6 +118,19 @@ const MOCK_TOPICS: MockTopic[] = [
       "How do you handle feedback when someone challenges your approach?",
       "Tell me about a conflict on a team and how you resolved it.",
       "What are you actively improving about your work style right now?",
+    ],
+  },
+  {
+    id: "system-design",
+    title: "System Design",
+    description: "Architecture, scaling, databases, trade-offs, and distributed systems.",
+    icon: Server,
+    questions: [
+      "Design a URL shortening service like TinyURL. Walk through your data model, API, and scaling strategy.",
+      "How would you design a real-time chat system like WhatsApp? Discuss message delivery guarantees and storage.",
+      "Design a news feed system like Twitter. How do you handle the celebrity fan-out problem?",
+      "Walk through the design of a distributed rate limiter. What algorithms and data stores would you use?",
+      "How would you design a video streaming platform like YouTube? Cover the upload pipeline and playback.",
     ],
   },
 ];

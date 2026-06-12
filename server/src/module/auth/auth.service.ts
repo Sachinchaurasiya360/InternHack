@@ -5,7 +5,10 @@ import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
+import { UserService } from "../user/user.service.js";
 import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+
+const userService = new UserService();
 
 // TTL shorter than S3 presigned URL expiry (S3 default â‰¥15 min)
 const PROFILE_TTL = 300;
@@ -157,6 +160,7 @@ export class AuthService {
         subscriptionPlan: true,
         subscriptionStatus: true,
         subscriptionEndDate: true,
+        ossTier: true,
       },
     });
 
@@ -299,6 +303,7 @@ export class AuthService {
     invalidateVersionCache(user.id);
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
+    const ossTier = user.ossTier;
 
     return {
       user: {
@@ -315,6 +320,7 @@ export class AuthService {
         subscriptionPlan: user.subscriptionPlan,
         subscriptionStatus: user.subscriptionStatus,
         subscriptionEndDate: user.subscriptionEndDate,
+        ossTier,
       },
       token,
       isNewUser: !user.createdAt || (Date.now() - user.createdAt.getTime()) < 5000,
@@ -365,6 +371,7 @@ export class AuthService {
     invalidateVersionCache(user.id);
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
+    const ossTier = user.ossTier;
 
     return {
       user: {
@@ -381,9 +388,24 @@ export class AuthService {
         subscriptionPlan: user.subscriptionPlan,
         subscriptionStatus: user.subscriptionStatus,
         subscriptionEndDate: user.subscriptionEndDate,
+        ossTier,
       },
       token,
     };
+  }
+
+  async deleteAccount(userId: number, password: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { password: true },
+    });
+    if (!user) throw new Error("User not found");
+
+    const isValid = await comparePassword(password, user.password);
+    if (!isValid) throw new Error("Incorrect password");
+
+    await prisma.user.delete({ where: { id: userId } });
+    invalidateVersionCache(userId);
   }
 
   private readonly profileSelect = {
@@ -416,6 +438,7 @@ export class AuthService {
     subscriptionPlan: true,
     subscriptionStatus: true,
     subscriptionEndDate: true,
+    ossTier: true,
   } as const;
 
   async getProfile(userId: number) {
@@ -442,6 +465,7 @@ export class AuthService {
       (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
     }
 
+
     await cacheSet(cacheKey, user, PROFILE_TTL);
     return user;
   }
@@ -457,7 +481,7 @@ export class AuthService {
       updateData.graduationYear = data.graduationYear ? Number(data.graduationYear) : null;
     }
     if ("skills" in data) {
-      updateData.skills = Array.isArray(data.skills) ? data.skills : [];
+      updateData.skills = Array.isArray(data.skills) ? data.skills.map((s) => s.trim().toLowerCase()) : [];
     }
     if ("jobStatus" in data) {
       updateData.jobStatus = data.jobStatus || null;
@@ -524,6 +548,7 @@ export class AuthService {
       await cacheDel(`profile:public:${user.profileSlug}`);
     }
 
+
     return user;
   }
 
@@ -571,6 +596,7 @@ export class AuthService {
     if (rest.coverImage) {
       (rest as Record<string, unknown>).coverImage = await signUrl(rest.coverImage);
     }
+
     const result = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
@@ -655,6 +681,7 @@ export class AuthService {
         subscriptionPlan: true,
         subscriptionStatus: true,
         subscriptionEndDate: true,
+        ossTier: true,
       },
     });
 
@@ -673,9 +700,10 @@ export class AuthService {
     });
     invalidateVersionCache(updated.id);
 
-    const token = generateToken({ id: updated.id, email: updated.email, role: updated.role, tokenVersion: versionUpdate.tokenVersion });
+	    const token = generateToken({ id: updated.id, email: updated.email, role: updated.role, tokenVersion: versionUpdate.tokenVersion });
+    const ossTier = updated.ossTier;
 
-    return { user: updated, token };
+    return { user: { ...updated, ossTier }, token };
   }
 
   async resendOtp(email: string) {
