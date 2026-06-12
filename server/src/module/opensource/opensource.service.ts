@@ -190,7 +190,7 @@ export class OpensourceService {
     const neverFetched = !repo.githubStatsUpdatedAt;
     const isStale =
       neverFetched ||
-      Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
+      Date.now() - new Date(repo.githubStatsUpdatedAt!).getTime() > SIX_HOURS;
 
     if (isStale && repo.url?.includes("github.com")) {
       if (neverFetched) {
@@ -360,9 +360,14 @@ export class OpensourceService {
       }
     }
     const request = await prisma.repoRequest.create({
-      data: { ...data, userId },
+      data: { 
+        ...data, 
+        userId,
+        domain: data.domain as any,
+        difficulty: data.difficulty as any
+      },
       include: { user: { select: { name: true, email: true } } },
-    });
+    }) as any;
 
     // Trigger leaderboard score update for pending repo suggestion
     triggerLeaderboardUpdate(userId);
@@ -436,8 +441,8 @@ export class OpensourceService {
         description: overrides.description ?? request.description,
         language: request.language,
         url: request.url,
-        domain: overrides.domain ?? request.domain,
-        difficulty: overrides.difficulty ?? request.difficulty,
+        domain: (overrides.domain ?? request.domain) as any,
+        difficulty: (overrides.difficulty ?? request.difficulty) as any,
         techStack: request.techStack,
         tags: overrides.tags ?? request.tags,
       },

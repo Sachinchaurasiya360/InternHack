@@ -77,6 +77,7 @@ import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cro
 import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { startLeaderboardRanksCron, stopLeaderboardRanksCron } from "./cron/leaderboard-ranks.js";
+import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
