@@ -1,3 +1,4 @@
+import { formatDate } from "../../../lib/date-utils";
 import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
 import { BadgeProgressWidget } from "../opensource/components/BadgeProgressWidget";
 import { Link } from "react-router";
@@ -98,11 +99,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
           <span className="flex items-center gap-1.5">
             <Clock className="w-3 h-3" />
             Applied{" "}
-            {new Date(app.createdAt).toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })}
+            {formatDate(app.createdAt)}
           </span>
           {totalRounds > 0 && (
             <span className="flex items-center gap-1.5">
@@ -189,11 +186,7 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
         <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
           <Clock className="w-3 h-3" />
           Applied{" "}
-          {new Date(app.createdAt).toLocaleDateString("en-IN", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
+          {formatDate(app.createdAt)}
         </span>
         <div className="flex items-center gap-2">
           <button
