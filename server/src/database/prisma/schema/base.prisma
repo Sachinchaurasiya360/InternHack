@@ -88,6 +88,7 @@ model user {
   milestoneEmails          milestoneEmail[]               @relation("StudentMilestoneEmails")
   externalApplications     externalJobApplication[]       @relation("StudentExternalApplications")
   opensourceStreak         opensourceStreak?
+  opensourceStreak         opensourceStreak?
   repoRequests             repoRequest[]                  @relation("UserRepoRequests")
   ossLeaderboard           opensourceLeaderboard?         @relation("UserOssLeaderboard")
   guideFeedbacks           guideFeedback[]
@@ -108,6 +109,7 @@ model user {
   coachAdvice              coachAdvice[]                  @relation("UserCoachAdvice")
   ossBookmarks             opensourceBookmark[]           @relation("UserOssBookmarks")
   guideCertificates        guideCertificate[]             @relation("UserCertificates")
+
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -481,30 +483,30 @@ model payment {
 }
 
 model opensourceRepo {
-  id            Int            @id @default(autoincrement())
-  name          String
-  owner         String
-  description   String
-  language      String
-  techStack     String[]       @default([])
-  difficulty    RepoDifficulty @default(BEGINNER)
-  domain        RepoDomain     @default(WEB)
-  issueTypes    String[]       @default([])
-  stars         Int            @default(0)
-  forks         Int            @default(0)
-  openIssues    Int            @default(0)
-  url           String
-  logo          String?
-  tags          String[]       @default([])
-  highlights    String[]       @default([])
-  trending      Boolean        @default(false)
-  hacktoberfest Boolean        @default(false)
-  lastUpdated   DateTime       @default(now())
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                   Int                  @id @default(autoincrement())
+  name                 String
+  owner                String
+  description          String
+  language             String
+  techStack            String[]             @default([])
+  difficulty           RepoDifficulty       @default(BEGINNER)
+  domain               RepoDomain           @default(WEB)
+  issueTypes           String[]             @default([])
+  stars                Int                  @default(0)
+  forks                Int                  @default(0)
+  openIssues           Int                  @default(0)
+  url                  String
+  logo                 String?
+  tags                 String[]             @default([])
+  highlights           String[]             @default([])
+  trending             Boolean              @default(false)
+  hacktoberfest        Boolean              @default(false)
+  lastUpdated          DateTime             @default(now())
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
   githubStatsUpdatedAt DateTime?
-  healthScore          Int            @default(0)
-  bookmarks   opensourceBookmark[]
+  healthScore          Int                  @default(0)
+  bookmarks            opensourceBookmark[]
 
   @@index([domain])
   @@index([difficulty])
@@ -512,12 +514,12 @@ model opensourceRepo {
 }
 
 model opensourceBookmark {
-  id        Int             @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   userId    Int
   repoId    Int
-  createdAt DateTime        @default(now())
-  user      user            @relation("UserOssBookmarks", fields: [userId], references: [id], onDelete: Cascade)
-  repo      opensourceRepo  @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+  user      user           @relation("UserOssBookmarks", fields: [userId], references: [id], onDelete: Cascade)
+  repo      opensourceRepo @relation(fields: [repoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, repoId])
   @@index([userId])
@@ -1604,14 +1606,14 @@ model contentView {
 }
 
 model opensourceStreak {
-  id              Int       @id @default(autoincrement())
-  userId          Int       @unique
-  currentStreak   Int       @default(0)
-  longestStreak   Int       @default(0)
-  lastActivityAt  DateTime?
-  totalDays       Int       @default(0)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id             Int       @id @default(autoincrement())
+  userId         Int       @unique
+  currentStreak  Int       @default(0)
+  longestStreak  Int       @default(0)
+  lastActivityAt DateTime?
+  totalDays      Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   user user @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

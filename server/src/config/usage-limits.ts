@@ -23,8 +23,8 @@ export const DAILY_LIMITS: Record<UsageAction, Record<PlanTier, number>> = {
   AI_JOB_CHAT:     { FREE: 2,  PREMIUM: 50 },
   CODE_RUN:        { FREE: 0,  PREMIUM: 50 },
   GITHUB_STATS:    { FREE: 20, PREMIUM: 999999 },
-  ROADMAP_GENERATION: { FREE: 0, PREMIUM: 0 }, // placeholder — actual limits in MONTHLY_LIMITS
-  STREAK_TICK: { FREE: 1, PREMIUM: 1 },
+  ROADMAP_GENERATION: { FREE: 1, PREMIUM: 20 },
+  STREAK_TICK:     { FREE: 999999, PREMIUM: 999999 },
 };
 
 export function getPlanTier(
