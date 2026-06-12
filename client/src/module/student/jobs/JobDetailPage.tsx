@@ -14,9 +14,8 @@ import type { Job } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
+import { fadeUp, stagger } from "@/lib/motion-variants"; 
 
-const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
-const stagger = { show: { transition: { staggerChildren: 0.07 } } };
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
