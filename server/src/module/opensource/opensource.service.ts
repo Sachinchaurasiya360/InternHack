@@ -461,7 +461,7 @@ export class OpensourceService {
       console.error("[github] approval stats fetch failed:", err),
     );
     // Re-sync stored ossTier for the contributor (fire-and-forget)
-    userService.calculateOssTier(request.userId).catch(() => { });
+    userService.calculateOssTier(request.userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return repo;
   }
 
@@ -630,7 +630,7 @@ export class OpensourceService {
       select: { completedStepIds: true },
     });
     // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
-    userService.calculateOssTier(userId).catch(() => { });
+    userService.calculateOssTier(userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return progress.completedStepIds;
   }
 

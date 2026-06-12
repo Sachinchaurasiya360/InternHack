@@ -61,9 +61,11 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
       userAgent: req.headers["user-agent"] || null,
       requestBody: sanitizeBody(req.body) ?? Prisma.DbNull,
     },
-  }).catch((dbErr) => {
+    }).catch((dbErr) => {
     console.error("[ErrorLog] Failed to write:", dbErr);
   });
+
+  if (statusCode >= 500) {
 
   if (statusCode >= 500) {
     const rawDetails = rawErr ? formatRawError(rawErr) : "No stack trace";
@@ -82,7 +84,7 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
         <pre style="margin-top:16px;padding:12px;background:#1f2937;color:#f9fafb;border-radius:6px;overflow:auto;font-size:12px">${rawDetails}</pre>
       `,
       text: `Server Error ${statusCode}\n${req.method} ${path}\n${message}\n\n${rawDetails}`,
-    }).catch(() => {});
+    }).catch((e) => console.error("[ErrorLog] Admin alert email failed:", e));
   }
 }
 

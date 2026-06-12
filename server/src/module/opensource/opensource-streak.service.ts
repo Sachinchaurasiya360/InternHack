@@ -69,7 +69,7 @@ export class OpensourceStreakService {
     if (!todayLastActivity) {
       badgeService.checkAndAwardBadges(userId, "oss_streak", {
         streak: newCurrentStreak,
-      }).catch(() => {});
+      }).catch((err) => console.error("Badge check failed (oss_streak):", err));
     }
 
     return updated;

@@ -44,7 +44,7 @@ export async function validateOrReject(
 ): Promise<void> {
   const { valid } = await validateFileContent(filePath, allowedMimes);
   if (!valid) {
-    await unlink(filePath).catch(() => {});
+    await unlink(filePath).catch((err) => console.error("Failed to clean up invalid file:", err));
     throw new Error(friendlyError);
   }
 }

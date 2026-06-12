@@ -529,7 +529,7 @@ export class AuthService {
     });
 
     // Check profile_complete badge (fire-and-forget)
-    badgeService.checkAndAwardBadges(userId, "profile_complete").catch(() => {});
+    badgeService.checkAndAwardBadges(userId, "profile_complete").catch((err) => console.error("Badge check failed (profile_complete):", err));
 
     if (user.resumes.length > 0) {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
