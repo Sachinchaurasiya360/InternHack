@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
@@ -1139,6 +1140,17 @@ const getGoogleCalendarUrl = (program: Program) => {
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${startDate}/${endDate}&details=${details}`;
 };
 
+const BROWSER_ROUTES: Record<string, string> = {
+  "Outreachy": "/student/opensource/outreachy-orgs",
+  "LFX Mentorship": "/student/opensource/lfx-projects",
+  "Season of Docs": "/student/opensource/season-of-docs",
+  "MLH Fellowship": "/student/opensource/mlh",
+};
+
+const getProgramBrowserRoute = (program: Program) => {
+  return BROWSER_ROUTES[program.name];
+};
+
 // ─── Program Card ─────────────────────────────────────────────
 function ProgramCard({ program }: { program: Program }) {
   const [expanded, setExpanded] = useState(false);
@@ -1298,6 +1310,14 @@ function ProgramCard({ program }: { program: Program }) {
             >
               Apply <ExternalLink className="w-3 h-3 opacity-70" />
             </a>
+            {getProgramBrowserRoute(program) ? (
+              <Link
+                to={getProgramBrowserRoute(program)!}
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-stone-700 bg-stone-50 hover:bg-stone-100 dark:bg-white/5 dark:hover:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md no-underline transition-colors"
+              >
+                Browse Organizations
+              </Link>
+            ) : null}
           </div>
         </div>
       </div>

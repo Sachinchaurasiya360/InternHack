@@ -18,6 +18,10 @@ const SEGMENT_NAMES: Record<string, string> = {
   cicd: "CI/CD",
   "hackathon-prep": "Hackathon Prep",
   programs: "Programs",
+  "outreachy-orgs": "Outreachy Organizations",
+  "lfx-projects": "LFX Projects",
+  mlh: "MLH Fellowship",
+  "season-of-docs": "Season of Docs",
   analytics: "Analytics",
 };
 
@@ -39,7 +43,7 @@ function OpenSourceBreadcrumb() {
   if (osIdx < 0) return null;
 
   const relevantSegments = segments.slice(osIdx);
-  if (relevantSegments.length <= 1) return null;
+  if (relevantSegments.length <= 2) return null;
 
   const items = relevantSegments.map((seg, i) => ({
     path: "/" + segments.slice(0, osIdx + i + 1).join("/"),
