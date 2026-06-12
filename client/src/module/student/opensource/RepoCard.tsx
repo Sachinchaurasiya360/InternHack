@@ -15,12 +15,13 @@ interface RepoCardProps {
 
 const MAX_STAGGER_INDEX = 8;
 
-export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bookmarked, onToggleBookmark }: RepoCardProps) {
+export const RepoCard = React.memo(React.forwardRef<HTMLDivElement, RepoCardProps>(function RepoCard({ repo, index, onSelect, bookmarked, onToggleBookmark }, ref) {
   const badge = difficultyBadge(repo.difficulty);
   const delay = Math.min(index, MAX_STAGGER_INDEX) * 0.04;
 
   return (
     <motion.div
+      ref={ref}
       role="listitem"
       layout
       initial={{ opacity: 0, y: 20 }}
@@ -184,7 +185,7 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bo
       </button>
     </motion.div>
   );
-});
+}));
 
 export const RepoCardSkeleton = React.memo(function RepoCardSkeleton() {
   return (

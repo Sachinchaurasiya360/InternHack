@@ -20,6 +20,7 @@ import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
 import { MetaChip } from "../../../components/ui/MetaChip";
+import { EmptyState } from "../../../components/ui/EmptyState";
 
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
@@ -423,22 +424,22 @@ function CompanyMark({ label }: { label: string }) {
             </div>
           </div>
         ) : (data?.jobs ?? []).length === 0 ? (
-          <motion.div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4">
-            <div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">No jobs match your filters</p>
-              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
-                try adjusting your search or filters
-              </p>
-            </div>
-            {hasFilters && (
-              <button
-                type="button"
-                onClick={clearAll}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" /> Clear filters
-              </button>
-            )}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <EmptyState
+              title="No jobs match your filters"
+              description="try adjusting your search or filters"
+              action={
+                hasFilters ? (
+                  <button
+                    type="button"
+                    onClick={clearAll}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" /> Clear filters
+                  </button>
+                ) : undefined
+              }
+            />
           </motion.div>
         ) : (
           <>

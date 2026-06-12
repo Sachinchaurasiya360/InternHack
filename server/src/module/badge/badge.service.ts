@@ -198,6 +198,7 @@ export class BadgeService {
       total?: number;
       shareCount?: number;
       solved?: number;
+      streak?: number;
       profileUser?: {
         name: string | null;
         bio: string | null;
@@ -247,6 +248,9 @@ export class BadgeService {
           },
         });
         break;
+      case "oss_streak":
+        ctx.streak = (context?.streak as number) ?? 0;
+        break;
     }
 
     // 5. Evaluate each badge using pre-fetched data — zero additional DB queries
@@ -287,6 +291,12 @@ export class BadgeService {
               !!u.profilePic &&
               !!u.contactNo;
           }
+          break;
+        }
+        case "oss_streak": {
+          const s = ctx.streak ?? 0;
+          const required = (params["count"] as number) || 1;
+          earned = s >= required;
           break;
         }
       }

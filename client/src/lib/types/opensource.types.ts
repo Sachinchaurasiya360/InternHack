@@ -116,6 +116,17 @@ export interface GSoCOrganization {
   guideUrl?: string;
 }
 
+export interface OpenSourceStreak {
+  id: number;
+  userId: number;
+  currentStreak: number;
+  longestStreak: number;
+  lastActivityAt: string | null;
+  totalDays: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface GSoCStats {
   total: number;
   categories: { name: string; count: number }[];

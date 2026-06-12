@@ -142,11 +142,20 @@ where["OR"] = [
     if (!repo) return null;
 
     const SIX_HOURS = 6 * 60 * 60 * 1000;
+    const neverFetched = !repo.githubStatsUpdatedAt;
     const isStale =
-      !repo.githubStatsUpdatedAt ||
+      neverFetched ||
       Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
 
     if (isStale && repo.url?.includes("github.com")) {
+      if (neverFetched) {
+        // First-ever fetch: await so the caller gets live stats, not 0s
+        await this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
+          console.error(`[github] initial stats fetch failed for ${id}:`, err),
+        );
+        return (await prisma.opensourceRepo.findUnique({ where: { id } })) as any;
+      }
+      // Stale but previously fetched: update in background, return cached
       this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
         console.error(`[github] background update failed for ${id}:`, err),
       );

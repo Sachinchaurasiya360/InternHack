@@ -85,6 +85,7 @@ model user {
   jobAgentEmailLogs     jobAgentEmailLog[]          @relation("UserJobAgentEmailLogs")
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
+  opensourceStreak      opensourceStreak?
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
   guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
@@ -1357,6 +1358,7 @@ enum UsageAction {
   CODE_RUN
   GITHUB_STATS
   ROADMAP_GENERATION
+  STREAK_TICK
 }
 
 enum EmailCampaignStatus {
@@ -1535,6 +1537,20 @@ model contentView {
   @@index([contentType, contentId])
   @@index([userId])
   @@index([createdAt])
+}
+
+model opensourceStreak {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @unique
+  currentStreak   Int       @default(0)
+  longestStreak   Int       @default(0)
+  lastActivityAt  DateTime?
+  totalDays       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
 }
 
 model coachAdvice {
