@@ -5,8 +5,6 @@ import {
   CheckCircle2,
   XCircle,
   ChevronLeft,
-  ChevronRight,
-  Building2,
   RotateCcw,
   Send,
   BookOpen,
@@ -18,8 +16,7 @@ import {
   RefreshCw,
   FileText,
   AlertTriangle,
-  Shuffle,
-  GraduationCap
+  Shuffle
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";

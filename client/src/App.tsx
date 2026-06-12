@@ -436,6 +436,19 @@ function App() {
               <Route path="aptitude" element={<AptitudeCategoriesPage />} />
               <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
               <Route path="aptitude/verbal-ability" element={<VerbalAbilityPage />} />
+              
+              {/* Legacy Verbal Route Redirects to Unified Dashboard */}
+              <Route path="aptitude/synonyms" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/synonyms/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/reading-comprehension" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/reading-comprehension/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/sentence-correction" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/sentence-correction/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/para-jumbles" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/para-jumbles/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/error-spotting" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/error-spotting/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+
               <Route path="aptitude/:slug" element={<AptitudeTheoryPage />} />
               <Route path="aptitude/:slug/practice" element={<AptitudeTopicPage />} />
               <Route path="blockchain" element={<BlockchainLessonsPage />} />
