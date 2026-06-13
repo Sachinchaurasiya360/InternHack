@@ -1,3 +1,4 @@
+import { fadeUp, stagger } from "@/lib/motion-variants";
 import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
@@ -42,8 +43,6 @@ const SIZE_LABELS: Record<string, string> = {
   ENTERPRISE: "Enterprise (1000+)",
 };
 
-const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
-const stagger = { show: { transition: { staggerChildren: 0.07 } } };
 
 
 
