@@ -197,7 +197,7 @@ export default function RoadmapCompletionModal({
           </div>
 
           {/* Top gradient accent */}
-          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-lime-400/60 to-transparent" />
+          <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-lime-400/60 to-transparent" />
 
           {/* Close button */}
           <button
@@ -259,7 +259,7 @@ export default function RoadmapCompletionModal({
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 0.4, duration: 0.5 }}
-              className="my-6 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"
+              className="my-6 h-px bg-linear-to-r from-transparent via-white/10 to-transparent"
             />
 
             {/* Share buttons */}
