@@ -67,6 +67,7 @@ interface Program {
   applicationDeadline?: string;
   difficulty?: ProgramDifficulty;
   focusArea?: FocusArea;
+  active?: boolean;
 }
 
 const PROGRAMS: Program[] = [
@@ -1371,6 +1372,20 @@ function getUrgency(
   return { level: "none", days };
 }
 
+function isPastProgram(program: Program): boolean {
+  if (program.active === false) return true;
+  const now = Date.now();
+  if (program.deadline) {
+    const deadlineTime = new Date(program.deadline + "T23:59:59").getTime();
+    if (deadlineTime < now) return true;
+  }
+  if (program.applicationDeadline) {
+    const appDeadlineTime = new Date(program.applicationDeadline).getTime();
+    if (appDeadlineTime < now) return true;
+  }
+  return false;
+}
+
 const getBrowserCurrencyConfig = (): LocalCurrencyConfig | null => {
   if (typeof Intl === "undefined") return null;
 
@@ -1648,11 +1663,10 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
             <button
               type="button"
               onClick={() => program.slug && onToggleTrack(program.slug, !tracked)}
-              className={`flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold rounded-md border transition-colors cursor-pointer ${
-                tracked
-                  ? "text-lime-700 dark:text-lime-400 bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800/30"
-                  : "text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700"
-              }`}
+              className={`flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold rounded-md border transition-colors cursor-pointer ${tracked
+                ? "text-lime-700 dark:text-lime-400 bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800/30"
+                : "text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700"
+                }`}
               title={tracked ? "Stop tracking" : "Track this program"}
             >
               <Bookmark className={`w-3 h-3 ${tracked ? "fill-current" : ""}`} />
@@ -1785,12 +1799,21 @@ export default function ProgramTrackerPage() {
 
   const savedFilters = getSavedFilters();
 
+  const [search, setSearch] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
+  const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
+  const [activeFocus, setActiveFocus] = useState<string>("All");
+  const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
+  const [sortBy, setSortBy] = useState<string>(savedFilters.sortBy);
+  const [showTrackedOnly, setShowTrackedOnly] = useState(false);
+  const [showPastPrograms, setShowPastPrograms] = useState(false);
+
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
   const { data: serverPrograms } = useQuery({
-    queryKey: ["opensource-programs"],
-    queryFn: () => api.get("/opensource/programs").then((r) => r.data.programs),
+    queryKey: ["opensource-programs", showPastPrograms],
+    queryFn: () => api.get(`/opensource/programs?all=${showPastPrograms}`).then((r) => r.data.programs),
     staleTime: 600000,
   });
 
@@ -1816,14 +1839,6 @@ export default function ProgramTrackerPage() {
     if (!trackedData) return new Set<string>();
     return new Set(trackedData.map((p: any) => p.slug));
   }, [trackedData]);
-
-  const [search, setSearch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
-  const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
-  const [activeFocus, setActiveFocus] = useState<string>("All");
-  const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
-  const [sortBy, setSortBy] = useState<string>(savedFilters.sortBy);
-  const [showTrackedOnly, setShowTrackedOnly] = useState(false);
 
   // Save filters to localStorage whenever they change
   useEffect(() => {
@@ -1864,6 +1879,9 @@ export default function ProgramTrackerPage() {
     let list = [...programsSource];
     if (showTrackedOnly) {
       list = list.filter((p) => trackedSlugs.has(p.slug));
+    }
+    if (!showPastPrograms) {
+      list = list.filter((p) => !isPastProgram(p));
     }
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -1909,7 +1927,7 @@ export default function ProgramTrackerPage() {
       list.sort((a, b) => a.name.localeCompare(b.name));
     }
     return list;
-  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy, activeFocus, showTrackedOnly, programsSource, trackedSlugs]);
+  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy, activeFocus, showTrackedOnly, showPastPrograms, programsSource, trackedSlugs]);
 
   const totalStipend = programsSource.filter((p: Program) => p.stipendPaid).length;
   const highStipend = programsSource.filter((p: Program) => p.stipendRange === "High").length;
@@ -2087,15 +2105,15 @@ export default function ProgramTrackerPage() {
       )}
 
       {/* ── Filter bar ────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-5">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+      <div className="flex flex-wrap items-center gap-3 mb-6 w-full">
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search programs..."
-            className="w-full pl-9 pr-4 py-2.5 border border-stone-200 dark:border-stone-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 bg-white dark:bg-stone-800 dark:text-white dark:placeholder-stone-500"
+            className="w-full pl-10 pr-4 py-2 border border-stone-200 dark:border-stone-700 rounded-md text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-stone-800 dark:text-white dark:placeholder-stone-500"
           />
         </div>
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
@@ -2148,11 +2166,20 @@ export default function ProgramTrackerPage() {
             <Calendar className="w-3.5 h-3.5 mr-1.5" />
             Sort by deadline
           </Button>
-          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default" || showTrackedOnly) && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowPastPrograms((prev) => !prev)}
+            className={showPastPrograms ? "bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800 text-lime-700 dark:text-lime-400 font-medium" : "text-stone-600 dark:text-stone-300"}
+          >
+            <Calendar className={`w-3.5 h-3.5 mr-1.5 ${showPastPrograms ? "fill-current" : ""}`} />
+            Include past programs
+          </Button>
+          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default" || showTrackedOnly || showPastPrograms) && (
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); setShowTrackedOnly(false); }}
+              onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); setShowTrackedOnly(false); setShowPastPrograms(false); }}
               className="text-stone-500"
             >
               <X className="w-3.5 h-3.5" /> Clear
