@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import type { RepoDomain, RepoDifficulty } from "@prisma/client";
 import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import {
@@ -188,7 +189,7 @@ export class OpensourceService {
     const neverFetched = !repo.githubStatsUpdatedAt;
     const isStale =
       neverFetched ||
-      Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
+      Date.now() - new Date(repo.githubStatsUpdatedAt!).getTime() > SIX_HOURS;
 
     if (isStale && repo.url?.includes("github.com")) {
       if (neverFetched) {
@@ -358,7 +359,12 @@ export class OpensourceService {
       }
     }
     const request = await prisma.repoRequest.create({
-      data: { ...data, userId },
+      data: {
+        ...data,
+        userId,
+        domain: data.domain as RepoDomain,
+        difficulty: data.difficulty as RepoDifficulty,
+      },
       include: { user: { select: { name: true, email: true } } },
     });
 
@@ -431,8 +437,8 @@ export class OpensourceService {
         description: overrides.description ?? request.description,
         language: request.language,
         url: request.url,
-        domain: overrides.domain ?? request.domain,
-        difficulty: overrides.difficulty ?? request.difficulty,
+        domain: (overrides.domain ?? request.domain) as RepoDomain,
+        difficulty: (overrides.difficulty ?? request.difficulty) as RepoDifficulty,
         techStack: request.techStack,
         tags: overrides.tags ?? request.tags,
       },
@@ -461,7 +467,7 @@ export class OpensourceService {
       console.error("[github] approval stats fetch failed:", err),
     );
     // Re-sync stored ossTier for the contributor (fire-and-forget)
-    userService.calculateOssTier(request.userId).catch(() => { });
+    userService.calculateOssTier(request.userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return repo;
   }
 
@@ -630,7 +636,7 @@ export class OpensourceService {
       select: { completedStepIds: true },
     });
     // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
-    userService.calculateOssTier(userId).catch(() => { });
+    userService.calculateOssTier(userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return progress.completedStepIds;
   }
 

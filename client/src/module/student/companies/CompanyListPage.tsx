@@ -42,6 +42,8 @@ import type {
   InterviewCompanyListResponse,
 } from "../../../lib/types";
 import { listInterviewCompanies } from "../interviews/interviews-api";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 const SIZE_LABELS: Record<string, string> = {
   STARTUP: "Startup",
@@ -722,16 +724,9 @@ export default function CompanyListPage() {
 
       {!isInsideLayout && <Navbar />}
 
-      {/* Grid line background */}
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+
+      <GridBackground />
+
 
       <div className="relative max-w-6xl mx-auto px-6 pt-8 pb-20">
         {/* Editorial header */}

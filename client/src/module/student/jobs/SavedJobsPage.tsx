@@ -1,3 +1,4 @@
+import { formatDate } from "../../../lib/date-utils";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Bookmark, MapPin, IndianRupee, Clock, Trash2, ArrowUpRight, Briefcase } from "lucide-react";
@@ -5,13 +6,10 @@ import { Link } from "react-router";
 import api from "../../../lib/axios";
 import { MetaChip } from "../../../components/ui/MetaChip";
 import { EmptyState } from "../../../components/ui/EmptyState";
-
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job } from "../../../lib/types";
 import { useSaveJob } from "../../../hooks/useSaveJob";
 import { CARD_BASE } from "../../../lib/card-styles";
-
-
 export default function SavedJobsPage() {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.savedJobs.list(),
@@ -127,7 +125,7 @@ export default function SavedJobsPage() {
                       </MetaChip>
                     ) : (
                       <MetaChip icon={<Clock className="w-3 h-3 text-stone-400" />}>
-                        {new Date(job.deadline).toLocaleDateString()}
+                        {formatDate(job.deadline)}
                       </MetaChip>
                     )
                   )}

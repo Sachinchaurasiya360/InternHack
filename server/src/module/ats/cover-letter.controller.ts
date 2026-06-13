@@ -68,7 +68,7 @@ export class CoverLetterController {
         keySkills:      result.data.keySkills,
         length:         result.data.length,
         targetWords:    result.data.targetWords ?? 300,
-      }).catch(() => {});
+      }).catch((err) => console.error("Failed to log cover letter usage:", err));
 
       const usage = req.usageInfo
         ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit }

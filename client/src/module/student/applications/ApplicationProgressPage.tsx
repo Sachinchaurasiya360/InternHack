@@ -1,3 +1,4 @@
+import { formatDate } from "../../../lib/date-utils";
 import { useState, useRef } from "react";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate, Link } from "react-router";
@@ -86,7 +87,7 @@ export default function ApplicationProgressPage() {
           {application.job?.deadline && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500 flex items-center gap-1">
-                <Clock className="w-4 h-4" /> Deadline: {new Date(application.job.deadline).toLocaleDateString()}
+                <Clock className="w-4 h-4" /> Deadline: {formatDate(application.job.deadline)}
               </span>
               <Button
                 variant="outline"

@@ -2,17 +2,30 @@ import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  X, Upload, User, ArrowRight, CheckCircle2, AlertCircle,
-  Loader2, FileText, RefreshCw, Download,
+  X,
+  Upload,
+  User,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  FileText,
+  RefreshCw,
+  Download,
 } from "lucide-react";
 import api from "../../../../lib/axios";
 import { queryKeys } from "../../../../lib/query-keys";
-import type { LeetcodeImportPreview, LeetcodeImportResult, LeetcodeImportPreviewItem } from "../../../../lib/types";
+import type {
+  LeetcodeImportPreview,
+  LeetcodeImportResult,
+  LeetcodeImportPreviewItem,
+} from "../../../../lib/types";
 import { Button } from "../../../../components/ui/button";
 import { DIFF_COLOR } from "../../../../lib/difficulty-colors";
 
 // Feature flag — mirrors server env
-const IMPORT_ENABLED = import.meta.env["VITE_LEETCODE_IMPORT_ENABLED"] !== "false";
+const IMPORT_ENABLED =
+  import.meta.env["VITE_LEETCODE_IMPORT_ENABLED"] !== "false";
 
 type Method = "username" | "csv";
 type Step = "input" | "loading" | "preview" | "success" | "error";
@@ -56,16 +69,23 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
     try {
       let data: LeetcodeImportPreview;
       if (method === "username") {
-        const res = await api.post<LeetcodeImportPreview>("/dsa/import/leetcode", { username: username.trim() });
+        const res = await api.post<LeetcodeImportPreview>(
+          "/dsa/import/leetcode",
+          { username: username.trim() },
+        );
         data = res.data;
       } else {
-        const res = await api.post<LeetcodeImportPreview>("/dsa/import/csv", { csvContent: csvText });
+        const res = await api.post<LeetcodeImportPreview>("/dsa/import/csv", {
+          csvContent: csvText,
+        });
         data = res.data;
       }
       setPreview(data);
       setStep("preview");
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Something went wrong. Please try again.";
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? "Something went wrong. Please try again.";
       setErrorMsg(msg);
       setStep("error");
     }
@@ -75,7 +95,9 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
     if (!preview) return;
     setStep("loading");
     try {
-      const res = await api.post<LeetcodeImportResult>("/dsa/import/confirm", { token: preview.token });
+      const res = await api.post<LeetcodeImportResult>("/dsa/import/confirm", {
+        token: preview.token,
+      });
       setResult(res.data);
       setStep("success");
       // Invalidate progress & topics so the heatmap / counters refresh
@@ -85,7 +107,9 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
         qc.invalidateQueries({ queryKey: ["dsa", "topics"] }),
       ]);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Import failed. Please try again.";
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? "Import failed. Please try again.";
       setErrorMsg(msg);
       setStep("error");
     }
@@ -116,11 +140,12 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
 
     setCsvFileName(file.name);
     const reader = new FileReader();
-    reader.onload = (ev) => setCsvText(ev.target?.result as string ?? "");
+    reader.onload = (ev) => setCsvText((ev.target?.result as string) ?? "");
     reader.readAsText(file);
   }
 
-  const canPreview = method === "username" ? username.trim().length > 0 : csvText.length > 0;
+  const canPreview =
+    method === "username" ? username.trim().length > 0 : csvText.length > 0;
 
   if (!IMPORT_ENABLED) return null;
 
@@ -169,7 +194,6 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
 
             {/* Body */}
             <div className="px-6 py-5 space-y-5">
-
               {/* ── INPUT STEP ── */}
               {(step === "input" || step === "error") && (
                 <>
@@ -180,14 +204,21 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                         key={m}
                         variant={method === m ? "mono" : "outline"}
                         size="md"
-                        onClick={() => { setMethod(m); setErrorMsg(""); }}
+                        onClick={() => {
+                          setMethod(m);
+                          setErrorMsg("");
+                        }}
                         className={`flex items-center justify-center gap-2 py-2.5 rounded-md text-xs font-medium border transition-all cursor-pointer ${
                           method === m
                             ? "bg-stone-900 dark:bg-stone-50 text-white dark:text-stone-900 border-stone-900 dark:border-stone-50"
                             : "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 bg-transparent"
                         }`}
                       >
-                        {m === "username" ? <User className="w-3.5 h-3.5" /> : <FileText className="w-3.5 h-3.5" />}
+                        {m === "username" ? (
+                          <User className="w-3.5 h-3.5" />
+                        ) : (
+                          <FileText className="w-3.5 h-3.5" />
+                        )}
                         {m === "username" ? "LeetCode Username" : "CSV Upload"}
                       </Button>
                     ))}
@@ -204,12 +235,17 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                         type="text"
                         placeholder="e.g. neal_wu"
                         value={username}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-                        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && canPreview && handlePreview()}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setUsername(e.target.value)
+                        }
+                        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                          e.key === "Enter" && canPreview && handlePreview()
+                        }
                         className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-white/10 rounded-md text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 focus:outline-none focus:border-lime-400 transition-colors"
                       />
                       <p className="mt-2 text-[10px] text-stone-500 dark:text-stone-400">
-                        Only public profiles. We import up to 100 recent accepted submissions.
+                        Only public profiles. We import up to 100 recent
+                        accepted submissions.
                       </p>
                     </div>
                   )}
@@ -228,13 +264,27 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                       >
                         <Upload className="w-6 h-6 text-stone-400" />
                         <span className="text-xs text-stone-600 dark:text-stone-400">
-                          {csvFileName ? csvFileName : "Click to choose a CSV file"}
+                          {csvFileName
+                            ? csvFileName
+                            : "Click to choose a CSV file"}
                         </span>
                       </Button>
-                      <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden" onChange={handleFileChange} />
+                      <input
+                        ref={fileRef}
+                        type="file"
+                        accept=".csv,text/csv"
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
                       <p className="mt-2 text-[10px] text-stone-500 dark:text-stone-400">
-                        CSV must have a <code className="font-mono">Slug</code> or <code className="font-mono">Title</code> column.{" "}
-                        <a href="https://github.com/arunbhardwaj/leetcode-solutions-exporter" target="_blank" rel="noopener noreferrer" className="text-lime-600 dark:text-lime-400 hover:underline inline-flex items-center gap-1">
+                        CSV must have a <code className="font-mono">Slug</code>{" "}
+                        or <code className="font-mono">Title</code> column.{" "}
+                        <a
+                          href="https://github.com/arunbhardwaj/leetcode-solutions-exporter"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-lime-600 dark:text-lime-400 hover:underline inline-flex items-center gap-1"
+                        >
                           How to export <Download className="w-3 h-3" />
                         </a>
                       </p>
@@ -245,7 +295,9 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                   {step === "error" && errorMsg && (
                     <div className="flex items-start gap-3 p-3 rounded-md bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800">
                       <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-                      <p className="text-xs text-rose-700 dark:text-rose-300">{errorMsg}</p>
+                      <p className="text-xs text-rose-700 dark:text-rose-300">
+                        {errorMsg}
+                      </p>
                     </div>
                   )}
 
@@ -269,10 +321,14 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                   <Loader2 className="w-8 h-8 text-lime-500 animate-spin" />
                   <div className="text-center">
                     <p className="text-sm font-medium text-stone-900 dark:text-stone-50">
-                      {preview ? "Importing your solves…" : "Fetching your LeetCode profile…"}
+                      {preview
+                        ? "Importing your solves…"
+                        : "Fetching your LeetCode profile…"}
                     </p>
                     <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1">
-                      {preview ? "Writing to your tracker." : "This can take 5–15 seconds."}
+                      {preview
+                        ? "Writing to your tracker."
+                        : "This can take 5–15 seconds."}
                     </p>
                   </div>
                 </div>
@@ -284,13 +340,34 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                   {/* Stats grid */}
                   <div className="grid grid-cols-3 gap-0 border-t border-l border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                     {[
-                      { label: "matched", value: preview.matched, color: "text-stone-900 dark:text-stone-50" },
-                      { label: "new solves", value: preview.newSolves, color: "text-lime-600 dark:text-lime-400" },
-                      { label: "unmatched", value: preview.unmatched, color: "text-stone-500 dark:text-stone-400" },
+                      {
+                        label: "matched",
+                        value: preview.matched,
+                        color: "text-stone-900 dark:text-stone-50",
+                      },
+                      {
+                        label: "new solves",
+                        value: preview.newSolves,
+                        color: "text-lime-600 dark:text-lime-400",
+                      },
+                      {
+                        label: "unmatched",
+                        value: preview.unmatched,
+                        color: "text-stone-500 dark:text-stone-400",
+                      },
                     ].map((s) => (
-                      <div key={s.label} className="flex flex-col gap-0.5 p-3 bg-white dark:bg-stone-800/60 border-r border-b border-stone-200 dark:border-white/10">
-                        <span className={`text-xl font-bold tabular-nums ${s.color}`}>{s.value}</span>
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">/ {s.label}</span>
+                      <div
+                        key={s.label}
+                        className="flex flex-col gap-0.5 p-3 bg-white dark:bg-stone-800/60 border-r border-b border-stone-200 dark:border-white/10"
+                      >
+                        <span
+                          className={`text-xl font-bold tabular-nums ${s.color}`}
+                        >
+                          {s.value}
+                        </span>
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                          / {s.label}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -298,7 +375,9 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                   {preview.newSolves === 0 ? (
                     <div className="flex items-center gap-2 p-3 rounded-md bg-stone-100 dark:bg-white/5 border border-stone-200 dark:border-white/10">
                       <CheckCircle2 className="w-4 h-4 text-lime-500 shrink-0" />
-                      <p className="text-xs text-stone-700 dark:text-stone-300">All your solves are already in your tracker.</p>
+                      <p className="text-xs text-stone-700 dark:text-stone-300">
+                        All your solves are already in your tracker.
+                      </p>
                     </div>
                   ) : (
                     <>
@@ -308,30 +387,46 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                           / preview ({preview.preview.length} shown)
                         </p>
                         <div className="max-h-44 overflow-y-auto space-y-1 pr-1">
-                          {preview.preview.map((item: LeetcodeImportPreviewItem) => (
-                            <div key={item.problemId} className="flex items-center gap-3 py-1.5 px-2 rounded-md bg-stone-50 dark:bg-stone-800/50">
-                              <span className={`text-[10px] font-mono shrink-0 ${DIFF_COLOR[item.difficulty] ?? "text-stone-400"}`}>
-                                {item.difficulty[0]}
-                              </span>
-                              <span className="text-xs text-stone-700 dark:text-stone-300 truncate flex-1">{item.title}</span>
-                              {item.solvedAt && (
-                                <span className="text-[10px] font-mono text-stone-400 shrink-0">
-                                  {new Date(item.solvedAt).toLocaleDateString()}
+                          {preview.preview.map(
+                            (item: LeetcodeImportPreviewItem) => (
+                              <div
+                                key={item.problemId}
+                                className="flex items-center gap-3 py-1.5 px-2 rounded-md bg-stone-50 dark:bg-stone-800/50"
+                              >
+                                <span
+                                  className={`text-[10px] font-mono shrink-0 ${DIFF_COLOR[item.difficulty] ?? "text-stone-400"}`}
+                                >
+                                  {item.difficulty[0]}
                                 </span>
-                              )}
-                            </div>
-                          ))}
+                                <span className="text-xs text-stone-700 dark:text-stone-300 truncate flex-1">
+                                  {item.title}
+                                </span>
+                                {item.solvedAt && (
+                                  <span className="text-[10px] font-mono text-stone-400 shrink-0">
+                                    {new Date(
+                                      item.solvedAt,
+                                    ).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </div>
+                            ),
+                          )}
                         </div>
                         {preview.newSolves > 50 && (
                           <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-1.5">
-                            + {preview.newSolves - 50} more problems will be imported
+                            + {preview.newSolves - 50} more problems will be
+                            imported
                           </p>
                         )}
                       </div>
 
                       {preview.unmatched > 0 && (
                         <p className="text-[10px] text-stone-500 dark:text-stone-400">
-                          <span className="text-stone-700 dark:text-stone-300">{preview.unmatched} problems</span> couldn't be matched to our catalog. They'll be skipped silently — we're expanding coverage.
+                          <span className="text-stone-700 dark:text-stone-300">
+                            {preview.unmatched} problems
+                          </span>{" "}
+                          couldn't be matched to our catalog. They'll be skipped
+                          silently — we're expanding coverage.
                         </p>
                       )}
 
@@ -357,7 +452,11 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                   )}
 
                   {preview.newSolves === 0 && (
-                    <Button variant="outline" onClick={handleClose} className="w-full py-2.5 rounded-md text-sm font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-stone-400 transition-colors cursor-pointer">
+                    <Button
+                      variant="outline"
+                      onClick={handleClose}
+                      className="w-full py-2.5 rounded-md text-sm font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-stone-400 transition-colors cursor-pointer"
+                    >
                       Done
                     </Button>
                   )}
@@ -375,14 +474,17 @@ export function LeetcodeImportModal({ open, onClose }: Props) {
                       {result.imported} problems imported
                     </p>
                     <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                      {result.skipped > 0 && `${result.skipped} already in your tracker. `}
+                      {result.skipped > 0 &&
+                        `${result.skipped} already in your tracker. `}
                       Your heatmap and stats are now updated.
                     </p>
                   </div>
                   <div className="flex gap-3 w-full">
                     <Button
                       variant="outline"
-                      onClick={() => { reset(); }}
+                      onClick={() => {
+                        reset();
+                      }}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-md text-xs font-medium border border-stone-200 dark:border-white/10 text-stone-600 dark:text-stone-400 hover:border-stone-400 transition-colors cursor-pointer"
                     >
                       <RefreshCw className="w-3.5 h-3.5" /> Re-import

@@ -10,3 +10,6 @@ node_modules/
 CLAUDE.md
 agents.md
 REPO_MAP.md
+
+# Windows reserved filenames
+nul

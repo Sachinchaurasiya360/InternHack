@@ -235,7 +235,9 @@ const SignalDetailPage = lazyWithRetry(() => import("./module/student/signals/Si
 const InterviewsDirectoryPage = lazyWithRetry(() => import("./module/student/interviews/InterviewsDirectoryPage"));
 const InterviewExperienceDetailPage = lazyWithRetry(() => import("./module/student/interviews/InterviewExperienceDetailPage"));
 const ShareInterviewPage = lazyWithRetry(() => import("./module/student/interviews/ShareInterviewPage"));
-
+const InterviewDashboardPage = lazyWithRetry(
+  () => import("./module/student/interviews/InterviewDashboardPage")
+);
 // Admin pages
 const AdminLoginPage = lazyWithRetry(() => import("./module/admin/AdminLoginPage"));
 const AdminLayout = lazyWithRetry(() => import("./module/admin/AdminLayout"));
@@ -548,6 +550,7 @@ function App() {
               <Route path="signals" element={<SignalsPage />} />
               <Route path="signals/:id" element={<SignalDetailPage />} />
               <Route path="interviews" element={<InterviewsDirectoryPage />} />
+              <Route path="interviews/dashboard" element={<InterviewDashboardPage />} />
               <Route path="interviews/share" element={<ShareInterviewPage />} />
               <Route path="interviews/:id" element={<InterviewExperienceDetailPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
