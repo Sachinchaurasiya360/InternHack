@@ -106,6 +106,7 @@ model user {
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
   ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
+  programInterests          programInterest[]
   guideCertificates         guideCertificate[]           @relation("UserCertificates")
   @@index([role])
   @@index([role, isActive])
@@ -519,6 +520,17 @@ model opensourceBookmark {
   repo      opensourceRepo  @relation(fields: [repoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, repoId])
+  @@index([userId])
+}
+
+model programInterest {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  programId Int
+  createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, programId])
   @@index([userId])
 }
 
