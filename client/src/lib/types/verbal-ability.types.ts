@@ -17,7 +17,7 @@ export interface VerbalQuestion {
 }
 
 export interface ReadingComprehensionPassage {
-  id: number;
+  id: number; 
   title: string;
   paragraphs: string[]; // multi-paragraph blocks
   questions: VerbalQuestion[];
@@ -41,3 +41,4 @@ export interface SubtopicInfo {
   companies: string[];
   completionPercentage: number;
 }
+

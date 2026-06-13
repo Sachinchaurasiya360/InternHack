@@ -70,7 +70,7 @@ const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/Gov
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
 const CertificateViewPage = lazyWithRetry(() => import("./module/student/opensource/CertificateViewPage"));
-const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage"));
+const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage")); 
 
 // Legal pages
 const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));

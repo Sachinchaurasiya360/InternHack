@@ -16,7 +16,7 @@ import {
   RefreshCw,
   FileText,
   AlertTriangle,
-  Shuffle
+  Shuffle,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -175,7 +175,7 @@ export default function VerbalAbilityPage() {
                     <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50">
                       {subtopic.name}
                     </h3>
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-400">
                       focus subtopic
                     </p>
                   </div>
@@ -187,17 +187,17 @@ export default function VerbalAbilityPage() {
 
                 {/* Company badges with rounded-md and specific colors */}
                 <div className="flex flex-wrap gap-1">
-                  <span className="text-[9px] font-mono uppercase text-stone-400 self-center mr-1">Tested in:</span>
+                  <span className="text-xs font-mono uppercase text-stone-400 self-center mr-1">Tested in:</span>
                   {subtopic.companies.slice(0, 3).map((comp) => (
                     <span
                       key={comp}
-                      className="text-[10px] font-mono font-medium px-2 py-0.5 bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300 rounded-md border border-stone-200 dark:border-stone-700"
+                      className="text-xs font-mono font-medium px-2 py-0.5 bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300 rounded-md border border-stone-200 dark:border-stone-700"
                     >
                       {comp}
                     </span>
                   ))}
                   {subtopic.companies.length > 3 && (
-                    <span className="text-[10px] font-mono text-stone-400 self-center">
+                    <span className="text-xs font-mono text-stone-400 self-center">
                       +{subtopic.companies.length - 3}
                     </span>
                   )}
@@ -339,7 +339,7 @@ export default function VerbalAbilityPage() {
             {activeSubtopic ? (
               <button
                 onClick={() => setActiveSubtopic(null)}
-                className="group inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer"
+                className="group inline-flex items-center gap-2 text-xs text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
                 Back to Dashboard
@@ -347,7 +347,7 @@ export default function VerbalAbilityPage() {
             ) : (
               <Link
                 to="/learn/aptitude"
-                className="group inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors"
+                className="group inline-flex items-center gap-2 text-xs text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors"
               >
                 <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
                 Back to Aptitude
@@ -367,7 +367,7 @@ export default function VerbalAbilityPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-6 text-[11px] font-mono uppercase tracking-widest text-stone-500">
+          <div className="flex items-center gap-6 text-xs font-mono uppercase tracking-widest text-stone-500">
             <div>
               Total focus topics
               <span className="text-stone-900 dark:text-stone-100 text-sm font-bold ml-2">
@@ -428,9 +428,9 @@ export default function VerbalAbilityPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono text-stone-400 uppercase">Tested in:</span>
+                  <span className="text-xs font-mono text-stone-400 uppercase">Tested in:</span>
                   {activePassage.companies.map(c => (
-                    <span key={c} className="text-[10px] font-mono bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300 px-2 py-0.5 rounded-md border border-stone-200 dark:border-stone-700">
+                    <span key={c} className="text-xs font-mono bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300 px-2 py-0.5 rounded-md border border-stone-200 dark:border-stone-700">
                       {c}
                     </span>
                   ))}
@@ -477,7 +477,7 @@ export default function VerbalAbilityPage() {
                       
                       <button
                         onClick={handleResetRc}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-white/15 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-white/15 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
                         Retry
@@ -619,7 +619,7 @@ export default function VerbalAbilityPage() {
 
                   <button
                     onClick={handleResetNonRc}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-white/15 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-white/15 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     Retry
@@ -659,11 +659,11 @@ export default function VerbalAbilityPage() {
                             
                             <div className="flex items-center gap-1.5">
                               {q.companies.map(c => (
-                                <span key={c} className="text-[9px] font-mono px-1.5 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-500">
+                                <span key={c} className="text-xs font-mono px-1.5 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-500">
                                   {c}
                                 </span>
                               ))}
-                              <span className="text-[10px] font-mono text-lime-600 dark:text-lime-400 border border-lime-300 dark:border-lime-900/40 bg-lime-50/20 px-1.5 py-0.5 rounded-md">
+                              <span className="text-xs font-mono text-lime-600 dark:text-lime-400 border border-lime-300 dark:border-lime-900/40 bg-lime-50/20 px-1.5 py-0.5 rounded-md">
                                 {q.difficulty}
                               </span>
                             </div>
@@ -691,7 +691,7 @@ export default function VerbalAbilityPage() {
                               return (
                                 <label
                                   key={optIdx}
-                                  className={`flex items-center gap-3 p-3 rounded-md border text-xs transition-all duration-155 ${
+                                  className={`flex items-center gap-3 p-3 rounded-md border text-xs transition-all duration-150 ${
                                     hasSubmitted ? "cursor-default" : "cursor-pointer"
                                   } ${optionStyle}`}
                                 >
