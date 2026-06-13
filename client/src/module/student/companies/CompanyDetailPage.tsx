@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
 import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
@@ -144,7 +144,7 @@ export default function CompanyDetailPage() {
     queryKey: [...queryKeys.companies.reviews(slug!), sortBy],
     queryFn: () => api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data),
     enabled: !!slug,
-    placeholderData: (prev) => prev,
+    placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
   });
 

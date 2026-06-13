@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -37,7 +37,7 @@ export default function DsaListsPage() {
     queryKey: queryKeys.dsa.list(selectedList!, page),
     queryFn: () => api.get<DsaPaginatedProblems>(`/dsa/lists/${selectedList}?page=${page}&limit=50`).then((r) => r.data),
     enabled: !!selectedList,
-    placeholderData: (prev) => prev,
+    placeholderData: keepPreviousData,
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 
