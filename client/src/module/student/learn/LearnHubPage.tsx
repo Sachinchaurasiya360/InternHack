@@ -48,7 +48,6 @@ function getCompletedTrackIds(): string[] {
 
 export default function LearnHubPage() {
   const [search, setSearch] = useState("");
-  const completedTrackIds = useMemo(() => getCompletedTrackIds(), []);
   const [activeCategory, setActiveCategory] = useState<TrackCategory | "All">("All");
   const [activeDifficulty, setActiveDifficulty] = useState("All");
   const [sortBy, setSortBy] = useState("popular");

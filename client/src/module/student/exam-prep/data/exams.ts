@@ -126,8 +126,6 @@ export const EXAMS: Exam[] = [
       { id: "automata", name: "Automata Coding", durationMin: 30, topicTags: ["algorithms"] },
     ],
   },
-];
-
   {
     id: "hcl",
     company: "HCL",

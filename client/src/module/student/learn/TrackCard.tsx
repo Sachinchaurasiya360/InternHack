@@ -22,8 +22,8 @@ export const TrackCard = React.memo(function TrackCard({
   track,
   index,
   completedTrackIds = [],
+  progress,
 }: TrackCardProps) {
-export const TrackCard = React.memo(function TrackCard({ track, index, progress }: TrackCardProps) {
   const delay = BASE_DELAY + Math.min(index, MAX_STAGGER_INDEX) * STAGGER_STEP;
   const liveCount = getLessonCount(track.lessonCountKey);
   const statLabel = liveCount != null ? `${liveCount} lessons` : track.stat;

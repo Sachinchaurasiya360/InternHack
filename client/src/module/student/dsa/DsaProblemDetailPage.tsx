@@ -6,8 +6,7 @@ import {
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
   Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
-  History, Terminal, Lock, Crown, Code2, ChevronLeft, ChevronRight, Play,
-  History, Terminal, Lock, Crown, Flag, X, Sparkles,
+  History, Terminal, Lock, Crown, ChevronLeft, ChevronRight, Play, Flag, X, Sparkles,
 } from "lucide-react";
 import type { SolutionStep } from "../../../lib/types";
 import toast from "@/components/ui/toast";

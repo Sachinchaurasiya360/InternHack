@@ -49,6 +49,14 @@ export interface DsaTopicDetail {
   problems: DsaProblem[];
 }
 
+export interface SolutionStep {
+  stepNumber: number;
+  description: string;
+  variables: Record<string, string>;
+  highlightLine?: number;
+  isKeyStep?: boolean;
+}
+
 export interface DsaProblemDetail {
   id: number;
   title: string;
@@ -82,6 +90,8 @@ export interface DsaProblemDetail {
   solved: boolean;
   bookmarked: boolean;
   notes?: string | null;
+  solutionSteps?: SolutionStep[] | null;
+  solutionCode?: string | null;
 }
 
 export interface DsaProgress {

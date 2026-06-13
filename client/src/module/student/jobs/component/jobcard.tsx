@@ -2,8 +2,6 @@ import React from "react";
 import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { TagList } from "../../../../components/ui/TagList";
-const cardBase =
-  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
 import { CARD_BASE } from "../../../../lib/card-styles";
 
 import { CompanyMark } from "../../../../components/ui/CompanyMark";
