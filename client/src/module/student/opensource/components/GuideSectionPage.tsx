@@ -5,6 +5,7 @@ import {
   ArrowRight, ChevronLeft, ChevronRight,
   CheckCircle2, ExternalLink, Lightbulb, Info,
 } from "lucide-react";
+import { VideoEmbed } from "../../../../components/ui/VideoEmbed";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { CodeBlock } from "../../../../components/ui/CodeBlock";
@@ -28,6 +29,7 @@ interface Step {
   resources: Resource[];
   tips: string[];
   quiz?: QuizQuestion[];
+  videoUrl?: string;
 }
 
 interface Props {
@@ -210,6 +212,16 @@ if (!step) return <Navigate to={basePath} replace />;
             <div className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
               {step.mentor_guidance}
             </div>
+          </motion.div>
+        )}
+
+        {step.videoUrl && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.12 }}
+          >
+            <VideoEmbed url={step.videoUrl} title={`Watch: ${step.title}`} />
           </motion.div>
         )}
 
