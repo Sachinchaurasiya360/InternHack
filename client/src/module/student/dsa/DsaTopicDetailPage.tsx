@@ -552,7 +552,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                             {i + 1}.
                           </span>
                         )}
-                        <span dangerouslySetInnerHTML={{ __html: cleanHint(hint) }} />
+                        <span ref={(el) => { if (el) el.textContent = cleanHint(hint); }} />
                       </div>
                     ))}
                   </div>
@@ -635,8 +635,5 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
 });
 
 function cleanHint(html: string): string {
-  return html
-    .replace(/<div[^>]*>/gi, "")
-    .replace(/<\/div>/gi, "")
-    .replace(/<code>/gi, "<code class='px-1.5 py-0.5 bg-stone-200 dark:bg-white/10 rounded-md text-sm font-mono'>");
+  return html.replace(/<[^>]*>/g, "");
 }
