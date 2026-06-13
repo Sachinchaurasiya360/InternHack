@@ -87,6 +87,7 @@ export const RepoCard = React.memo(React.forwardRef<HTMLDivElement, RepoCardProp
             <div className="flex items-center gap-2 shrink-0 relative z-10">
               <button
                 type="button"
+                aria-label={bookmarked ? `Remove bookmark for ${repo.name}` : `Bookmark ${repo.name}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();

@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { Prisma } from "@prisma/client";
 import type { UserRole, JobStatus } from "@prisma/client";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
@@ -234,6 +235,9 @@ export class AdminPlatformService {
         throw new Error("Cannot delete the last SUPER_ADMIN");
     }
 
+    // Invalidate all active sessions before deleting the user
+    await prisma.user.update({ where: { id: userId }, data: { tokenVersion: { increment: 1 } } });
+    invalidateVersionCache(userId);
     await prisma.user.delete({ where: { id: userId } });
     invalidateVersionCache(userId);
   }
