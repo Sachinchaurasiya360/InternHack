@@ -1,5 +1,4 @@
 import { formatDate } from "../../../lib/date-utils";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Bookmark, MapPin, IndianRupee, Clock, Trash2, ArrowUpRight, Briefcase } from "lucide-react";
@@ -125,12 +124,8 @@ export default function SavedJobsPage() {
                         expired
                       </MetaChip>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-                        <Clock className="w-3 h-3 text-stone-400" />
-                        {formatDate(job.deadline)}
-                      </span>
                       <MetaChip icon={<Clock className="w-3 h-3 text-stone-400" />}>
-                        {new Date(job.deadline).toLocaleDateString()}
+                        {formatDate(job.deadline)}
                       </MetaChip>
                     )
                   )}
