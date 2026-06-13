@@ -110,6 +110,7 @@ export const queryKeys = {
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
     bookmarks: () => ["opensource", "bookmarks"] as const,
+    githubStatus: () => ["opensource", "github-status"] as const,
   },
 
   // Blog

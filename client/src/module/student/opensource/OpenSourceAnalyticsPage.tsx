@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
-import { Link } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { Link, useSearchParams } from "react-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
 import {
@@ -14,6 +14,15 @@ import {
   ChevronDown,
   ArrowLeft,
   BarChart3,
+  Github,
+  RefreshCw,
+  Unlink,
+  ExternalLink,
+  GitMerge,
+  GitBranch,
+  Code2,
+  CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
@@ -47,6 +56,7 @@ import type {
   GSoCOrganization,
   GSoCStats,
   OpenSourceContributionTrendResponse,
+  GitHubConnectionStatus,
 } from "../../../lib/types";
 import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
 import { HacktoberfestTracker } from "./HacktoberfestTracker";
@@ -258,13 +268,264 @@ function TrendEmptyState({
   );
 }
 
+// ─── Real Contributions Panel ───────────────────────────────────
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  color = "text-lime-400",
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: number | string;
+  color?: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      className="bg-stone-800/60 border border-white/10 rounded-md p-4 flex flex-col gap-2"
+    >
+      <div className={`w-8 h-8 rounded-md bg-stone-700/60 flex items-center justify-center ${color}`}>
+        <Icon className="w-4 h-4" />
+      </div>
+      <p className="text-2xl font-bold text-stone-50">{typeof value === "number" ? value.toLocaleString() : value}</p>
+      <p className="text-xs font-mono uppercase tracking-widest text-stone-500">{label}</p>
+    </motion.div>
+  );
+}
+
+function GithubStatusSkeleton() {
+  return (
+    <div className="animate-pulse space-y-6">
+      <div className="h-6 w-48 rounded bg-stone-800" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-stone-800 rounded-md p-4 h-24" />
+        ))}
+      </div>
+      <div className="flex gap-3">
+        <div className="h-9 w-28 rounded-md bg-stone-800" />
+        <div className="h-9 w-28 rounded-md bg-stone-800" />
+      </div>
+    </div>
+  );
+}
+
+function RealContributionsPanel() {
+  const queryClient = useQueryClient();
+
+  const { data: status, isLoading } = useQuery<GitHubConnectionStatus>({
+    queryKey: queryKeys.opensource.githubStatus(),
+    queryFn: () => api.get("/opensource/github/status").then((r) => r.data),
+    staleTime: 30_000,
+    retry: 1,
+  });
+
+  const syncMutation = useMutation({
+    mutationFn: () => api.post("/opensource/github/sync"),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubStatus() }),
+  });
+
+  const disconnectMutation = useMutation({
+    mutationFn: () => api.post("/opensource/github/disconnect"),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubStatus() }),
+  });
+
+  const handleConnect = useCallback(async () => {
+    const res = await api.get<{ url: string }>("/opensource/github/url");
+    window.location.href = res.data.url;
+  }, []);
+
+  if (isLoading) return <GithubStatusSkeleton />;
+
+  // ── Disconnected state ──────────────────────────────────────────
+  if (!status?.isConnected) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-stone-900 border border-white/10 rounded-md p-8 flex flex-col items-center text-center gap-5"
+      >
+        <div className="w-14 h-14 rounded-md bg-stone-800 border border-white/10 flex items-center justify-center">
+          <Github className="w-7 h-7 text-stone-400" />
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-stone-50 mb-1">Connect your GitHub account</h3>
+          <p className="text-sm text-stone-400 max-w-sm">
+            Link GitHub to automatically track your merged pull requests and
+            repositories you've contributed to.
+          </p>
+        </div>
+        <ul className="text-left text-xs text-stone-500 space-y-1.5 w-full max-w-xs">
+          <li className="flex items-center gap-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 shrink-0" />
+            Only requests <code className="text-stone-400">read:user</code> and{" "}
+            <code className="text-stone-400">public_repo</code> scopes
+          </li>
+          <li className="flex items-center gap-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 shrink-0" />
+            Access token encrypted at rest with AES-256-GCM
+          </li>
+          <li className="flex items-center gap-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 shrink-0" />
+            Stats refresh automatically every 24 hours
+          </li>
+        </ul>
+        <Button
+          variant="primary"
+          onClick={handleConnect}
+          id="github-connect-btn"
+        >
+          <Github className="w-4 h-4 mr-2" />
+          Connect GitHub
+        </Button>
+      </motion.div>
+    );
+  }
+
+  // ── Connected state ─────────────────────────────────────────────
+  const lastSync = status.lastSyncAt
+    ? new Date(status.lastSyncAt).toLocaleString()
+    : "Never";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
+      {/* Header row */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-md bg-stone-800 border border-white/10 flex items-center justify-center">
+            <Github className="w-5 h-5 text-lime-400" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-stone-50">
+              @{status.githubUsername}
+            </p>
+            <p className="text-xs text-stone-500">GitHub · connected</p>
+          </div>
+          <a
+            href={`https://github.com/${status.githubUsername}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-stone-500 hover:text-lime-400 transition-colors"
+            title="View GitHub profile"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => syncMutation.mutate()}
+            disabled={syncMutation.isPending}
+            id="github-sync-btn"
+          >
+            <RefreshCw
+              className={`w-3.5 h-3.5 mr-1.5 ${
+                syncMutation.isPending ? "animate-spin" : ""
+              }`}
+            />
+            {syncMutation.isPending ? "Syncing…" : "Sync Now"}
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => disconnectMutation.mutate()}
+            disabled={disconnectMutation.isPending}
+            id="github-disconnect-btn"
+          >
+            <Unlink className="w-3.5 h-3.5 mr-1.5" />
+            Disconnect
+          </Button>
+        </div>
+      </div>
+
+      {/* Sync error banner */}
+      {syncMutation.isError && (
+        <div className="flex items-center gap-2 text-xs text-red-400 bg-red-900/20 border border-red-800/30 rounded-md px-3 py-2">
+          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+          <span>Sync failed: {(syncMutation.error as Error).message}</span>
+        </div>
+      )}
+
+      {syncMutation.isSuccess && (
+        <div className="flex items-center gap-2 text-xs text-lime-400 bg-lime-900/20 border border-lime-800/30 rounded-md px-3 py-2">
+          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+          <span>Contributions synced successfully.</span>
+        </div>
+      )}
+
+      {/* Stats grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <StatCard
+          icon={GitMerge}
+          label="merged pull requests"
+          value={status.prsMerged ?? 0}
+          color="text-lime-400"
+        />
+        <StatCard
+          icon={GitBranch}
+          label="repos contributed to"
+          value={status.reposContributed ?? 0}
+          color="text-violet-400"
+        />
+        <StatCard
+          icon={Code2}
+          label="public repositories"
+          value={status.publicRepos ?? 0}
+          color="text-sky-400"
+        />
+      </div>
+
+      {/* Last synced */}
+      <p className="text-xs text-stone-600 font-mono">
+        Last synced: {lastSync}
+      </p>
+    </motion.div>
+  );
+}
+
 // ─── Page ───────────────────────────────────────────────────────
 
 
 export default function OpenSourceAnalyticsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   useEffect(() => {
     markLearningPathMilestone("leaderboard");
   }, []);
+
+  // Read OAuth redirect result from query string and clear it immediately
+  const syncResult = searchParams.get("sync") as "success" | "error" | null;
+  const syncMessage = searchParams.get("message") ?? undefined;
+
+  const [activeTab, setActiveTab] = useState<"platform" | "github">(
+    syncResult ? "github" : "platform"
+  );
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!syncResult) return;
+    // Invalidate github status after OAuth redirect
+    queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubStatus() });
+    // Remove sync params from the URL without pushing a new history entry
+    const next = new URLSearchParams(searchParams);
+    next.delete("sync");
+    next.delete("message");
+    setSearchParams(next, { replace: true });
+  }, [syncResult, queryClient, searchParams, setSearchParams]);
 
   const { user } = useAuthStore();
   const isPremium =
@@ -272,6 +533,7 @@ export default function OpenSourceAnalyticsPage() {
     user?.subscriptionPlan !== "FREE" &&
     user?.subscriptionEndDate &&
     new Date(user.subscriptionEndDate) > new Date();
+    
   const showHacktoberfestTracker = isHacktoberfestMode();
 
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
@@ -510,7 +772,8 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
   }
 
   // Empty state: student has zero contributions (skip during Hacktoberfest mode so tracker is visible)
-  if (!showHacktoberfestTracker && !trendIsLoading && !trendIsError && contributionTotal === 0) {
+  // Also skip when the user is on the GitHub tab — they need to reach the connect UI regardless.
+  if (!showHacktoberfestTracker && !trendIsLoading && !trendIsError && contributionTotal === 0 && activeTab === "platform") {
     return (
       <div className="pb-16">
         <SEO title="Open Source Analytics" noIndex />
@@ -562,6 +825,63 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
             back to repos
           </Link>
         </div>
+
+        {/* ── Tab switcher ─────────────────────────────────── */}
+        <div className="mb-8">
+          <div className="flex items-center gap-1 border-b border-stone-200 dark:border-white/10">
+            {([
+              { key: "platform", label: "Platform Activity" },
+              { key: "github",   label: "Real Contributions" },
+            ] as const).map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                id={`oss-tab-${tab.key}`}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-4 py-2.5 text-xs font-mono uppercase tracking-widest border-b-2 -mb-px transition-colors cursor-pointer ${
+                  activeTab === tab.key
+                    ? "border-lime-400 text-stone-900 dark:text-stone-50"
+                    : "border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* OAuth redirect banner */}
+          {syncResult === "success" && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-3 flex items-center gap-2 text-xs text-lime-400 bg-lime-900/20 border border-lime-800/30 rounded-md px-3 py-2"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+              GitHub connected successfully! Your contributions are being synced.
+            </motion.div>
+          )}
+          {syncResult === "error" && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-3 flex items-center gap-2 text-xs text-red-400 bg-red-900/20 border border-red-800/30 rounded-md px-3 py-2"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              {syncMessage ?? "Failed to connect GitHub. Please try again."}
+            </motion.div>
+          )}
+        </div>
+
+        {/* ── GitHub tab content ───────────────────────────────── */}
+        {activeTab === "github" && (
+          <div className="mb-8">
+            <RealContributionsPanel />
+          </div>
+        )}
+
+        {/* ── Platform Activity (original content) ────────────── */}
+        {activeTab === "platform" && (
+          <>
 
         {showHacktoberfestTracker && <HacktoberfestTracker />}
 
@@ -1184,6 +1504,8 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
                 </div>
               </>
             )}
+          </>
+        )}
           </>
         )}
       </div>

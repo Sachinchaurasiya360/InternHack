@@ -3,6 +3,7 @@ import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";
 import { OpensourceStreakController } from "./opensource-streak.controller.js";
 import { OpensourceProgramController } from "./opensource-program.controller.js";
+import { GithubSyncController } from "./github-sync.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
@@ -11,6 +12,7 @@ export const opensourceRouter = Router();
 const controller = new OpensourceController();
 const streakController = new OpensourceStreakController();
 const programController = new OpensourceProgramController();
+const githubSyncController = new GithubSyncController();
 
 // ─── Public Routes ─────────────────────────────────────────────
 
@@ -195,6 +197,28 @@ opensourceRouter.get("/streak", authMiddleware, requireRole("STUDENT"), (req, re
 
 opensourceRouter.post("/streak/tick", authMiddleware, requireRole("STUDENT"), usageLimit("STREAK_TICK"),
   (req, res, next) => streakController.tickStreak(req, res, next),
+);
+
+// ─── GitHub Connection & Sync ────────────────────────────────────
+opensourceRouter.get("/github/url", authMiddleware, requireRole("STUDENT"), (req, res) =>
+  githubSyncController.getAuthUrl(req, res)
+);
+
+// Callback doesn't require role restriction, just active student auth session via cookie
+opensourceRouter.get("/github/callback", authMiddleware, (req, res) =>
+  githubSyncController.callback(req, res)
+);
+
+opensourceRouter.get("/github/status", authMiddleware, requireRole("STUDENT"), (req, res) =>
+  githubSyncController.getStatus(req, res)
+);
+
+opensourceRouter.post("/github/sync", authMiddleware, requireRole("STUDENT"), (req, res) =>
+  githubSyncController.sync(req, res)
+);
+
+opensourceRouter.post("/github/disconnect", authMiddleware, requireRole("STUDENT"), (req, res) =>
+  githubSyncController.disconnect(req, res)
 );
 
 // ─── Programs ────────────────────────────────────────────────────

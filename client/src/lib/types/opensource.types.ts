@@ -134,3 +134,13 @@ export interface GSoCStats {
   technologies: { name: string; count: number }[];
   topics: { name: string; count: number }[];
 }
+
+export interface GitHubConnectionStatus {
+  isConnected: boolean;
+  githubUsername?: string;
+  connectedAt?: string;
+  lastSyncAt?: string;
+  prsMerged?: number;
+  reposContributed?: number;
+  publicRepos?: number;
+}

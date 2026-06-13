@@ -72,6 +72,7 @@ import { initServiceProviders } from "./lib/ai-provider-registry.js";
 import { startFollowUpCron, stopFollowUpCron } from "./cron/scheduled-emails.js";
 import { startAIPipelineCrons, stopAIPipelineCrons } from "./cron/internhack-ai.cron.js";
 import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
+import { startGithubSyncCron, stopGithubSyncCron } from "./cron/github-sync.cron.js";
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
@@ -391,6 +392,14 @@ const server = app.listen(PORT, async () => {
     name: "Subscription Expiry Cron",
     priority: 10,
     fn: () => stopSubscriptionExpiryCron(),
+  });
+
+  // Start GitHub sync cron (daily at midnight)
+  startGithubSyncCron();
+  shutdownManager.register({
+    name: "GitHub Sync Cron",
+    priority: 10,
+    fn: () => stopGithubSyncCron(),
   });
 
   // Start InternHack AI pipeline crons

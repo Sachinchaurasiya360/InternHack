@@ -108,6 +108,7 @@ model user {
   ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
   programInterests          programInterest[]
   guideCertificates         guideCertificate[]           @relation("UserCertificates")
+  githubConnection          githubConnection?
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -1643,4 +1644,21 @@ model guideCertificate {
   @@index([userId])
   @@index([token])
 }
+
+model githubConnection {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @unique
+  githubUsername   String
+  accessToken      String   // Encrypted token string
+  connectedAt      DateTime @default(now())
+  lastSyncAt       DateTime @default(now())
+  prsMerged        Int      @default(0)
+  reposContributed Int      @default(0)
+  publicRepos      Int      @default(0)
+
+  user             user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 
