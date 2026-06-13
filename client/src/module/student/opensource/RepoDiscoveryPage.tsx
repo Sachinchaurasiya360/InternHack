@@ -505,9 +505,9 @@ export default function RepoDiscoveryPage() {
         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-0 border-t border-l border-stone-200 dark:border-white/10">
           <Link
             to="/student/opensource/analytics"
-            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-900 dark:hover:bg-stone-50 transition-colors"
+            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-900 dark:hover:bg-stone-800 transition-colors"
           >
-            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-stone-900/10 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-lime-400/10 flex items-center justify-center shrink-0">
               <BarChart3 className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
             </div>
             <div className="flex-1 min-w-0">
@@ -517,7 +517,7 @@ export default function RepoDiscoveryPage() {
                   analytics
                 </p>
               </div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-stone-900">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-white">
                 Track your contributions
               </p>
             </div>
@@ -530,9 +530,9 @@ export default function RepoDiscoveryPage() {
               if (!user) { window.location.href = "/login"; return; }
               setShowSuggestModal(true);
             }}
-            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 cursor-pointer hover:bg-stone-900 dark:hover:bg-stone-50 transition-colors text-left"
+            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 cursor-pointer hover:bg-stone-900 dark:hover:bg-stone-800 transition-colors text-left"
           >
-            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-stone-900/10 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-lime-400/10 flex items-center justify-center shrink-0">
               <Plus className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
             </div>
             <div className="flex-1 min-w-0">
@@ -542,7 +542,7 @@ export default function RepoDiscoveryPage() {
                   suggest
                 </p>
               </div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-stone-900">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-white">
                 Know a great repo? Submit it
               </p>
             </div>
