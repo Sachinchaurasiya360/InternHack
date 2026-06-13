@@ -6,7 +6,7 @@ const items = [
     icon: Users,
     value: "25,000+",
     label: "Students",
-    accent: "from-indigo-500/12 to-transparent",
+    accent: "from-lime-500/12 to-transparent",
   },
   {
     icon: Briefcase,
@@ -31,7 +31,7 @@ const items = [
 export function StatsSection() {
   return (
     <section className="relative py-16 bg-white dark:bg-[#030303] overflow-hidden">
-      <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-transparent to-rose-500/5 blur-3xl dark:block hidden" />
+      <div className="absolute inset-0 bg-linear-to-br from-lime-500/5 via-transparent to-rose-500/5 blur-3xl dark:block hidden" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-6">
