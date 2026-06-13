@@ -262,9 +262,6 @@ export const queryKeys = {
     similar: (id: number) => ["dsa", "similar", id] as const,
     approaches: (slug: string) => ["dsa", "approaches", slug] as const,
   },
-  interviewDashboard: {
-  mine: () => ["interview-dashboard", "mine"] as const,
-},
   // Roadmaps
   roadmaps: {
     all: ["roadmaps"] as const,

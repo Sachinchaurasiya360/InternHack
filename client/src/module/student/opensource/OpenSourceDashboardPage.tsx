@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, type ReactNode } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import {
   Flame,
   BookOpen,
   GitPullRequest,
   Trophy,
   ArrowRight,
+  ArrowUpRight,
   Bookmark,
   Activity,
   Clock,
@@ -15,6 +17,7 @@ import {
   Star,
   GitFork,
   AlertCircle,
+  CalendarClock,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -33,6 +36,46 @@ interface ActiveIssue {
   claimedAt: string;
 }
 
+// ─── Motion ──────────────────────────────────────────────────
+const fadeUp = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  },
+};
+const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.07 } } };
+
+// ─── Shared chrome ───────────────────────────────────────────
+const CARD =
+  "rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900";
+
+// Mono section eyebrow with the signature lime tick, plus an optional action.
+function SectionLabel({ children, action }: { children: ReactNode; action?: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-stone-500">
+        <span className="h-1.5 w-1.5 bg-lime-400" />
+        {children}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+function ActionLink({ to, children }: { to: string; children: ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="group inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.15em] text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors no-underline"
+    >
+      {children}
+      <ArrowUpRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+    </Link>
+  );
+}
+
 // ─── Child Components (React.memo) ───────────────────────────
 
 // Repository Card Component
@@ -42,34 +85,38 @@ export const RecommendedRepoRow = React.memo(function RecommendedRepoRow({
   repo: OpenSourceRepo;
 }) {
   return (
-    <div className="flex items-center justify-between p-4 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900/40 hover:border-stone-400 dark:hover:border-white/20 transition-all">
+    <a
+      href={repo.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex items-center gap-3.5 rounded-lg border border-stone-200 dark:border-white/10 bg-stone-50/60 dark:bg-stone-950/40 p-3.5 no-underline transition-all hover:border-lime-400/60 dark:hover:border-lime-400/40 hover:bg-white dark:hover:bg-stone-800/60"
+    >
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-stone-900 dark:bg-stone-700 text-sm font-bold text-stone-50">
+        {(repo.name?.[0] ?? "?").toUpperCase()}
+      </div>
       <div className="min-w-0 flex-1">
-        <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">
+        <h4 className="truncate text-sm font-bold text-stone-900 dark:text-stone-50">
           {repo.owner}/{repo.name}
         </h4>
-        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 line-clamp-1">
+        <p className="mt-0.5 line-clamp-1 text-xs text-stone-500 dark:text-stone-400">
           {repo.description}
         </p>
-        <div className="flex items-center gap-3 mt-2 text-[10px] font-mono text-stone-400">
-          <span className="px-1.5 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 rounded-md font-semibold">
+        <div className="mt-1.5 flex items-center gap-2.5 text-[10px] font-mono text-stone-400">
+          <span className="rounded bg-stone-200/70 dark:bg-stone-800 px-1.5 py-0.5 font-semibold text-stone-600 dark:text-stone-300">
             {repo.language}
           </span>
-          <span className="flex items-center gap-0.5">
-            <Star className="w-3 h-3 text-amber-400" />
+          <span className="flex items-center gap-1">
+            <Star className="h-3 w-3 text-stone-400" />
             {repo.stars.toLocaleString()}
           </span>
-          <span className="flex items-center gap-0.5">
-            <GitFork className="w-3 h-3 text-stone-400" />
+          <span className="flex items-center gap-1">
+            <GitFork className="h-3 w-3 text-stone-400" />
             {repo.forks.toLocaleString()}
           </span>
         </div>
       </div>
-      <Button asChild size="sm" variant="ghost" className="rounded-md shrink-0 ml-4">
-        <a href={repo.url} target="_blank" rel="noopener noreferrer">
-          Contribute <ArrowRight className="w-3.5 h-3.5 ml-1" />
-        </a>
-      </Button>
-    </div>
+      <ArrowRight className="h-4 w-4 shrink-0 text-stone-300 dark:text-stone-600 transition-all group-hover:translate-x-0.5 group-hover:text-lime-500" />
+    </a>
   );
 });
 
@@ -100,43 +147,40 @@ export const ActiveIssueRow = React.memo(function ActiveIssueRow({
   }, [issue.claimedAt]);
 
   return (
-    <div className="p-4 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900/40 hover:border-stone-300 dark:hover:border-white/15 transition-all">
-      <div className="flex items-start justify-between gap-4">
+    <div className="group relative rounded-lg border border-stone-200 dark:border-white/10 bg-stone-50/60 dark:bg-stone-950/40 p-4 transition-all hover:border-stone-300 dark:hover:border-white/20">
+      <span className="absolute left-0 top-4 bottom-4 w-0.5 rounded-r bg-lime-400/70" />
+      <div className="flex items-start justify-between gap-4 pl-2.5">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-stone-400 font-bold uppercase tracking-wider">
-              {issue.repo}
-            </span>
-            <span className="text-[10px] font-mono text-lime-500 font-bold">
-              #{issue.number}
-            </span>
+          <div className="flex items-center gap-2 text-[10px] font-mono">
+            <span className="font-bold uppercase tracking-wider text-stone-400">{issue.repo}</span>
+            <span className="font-bold text-lime-600 dark:text-lime-400">#{issue.number}</span>
           </div>
-          <h4 className="text-sm font-semibold text-stone-900 dark:text-stone-50 mt-1 line-clamp-2">
+          <h4 className="mt-1 line-clamp-2 text-sm font-semibold text-stone-900 dark:text-stone-50">
             {issue.title}
           </h4>
-          <span className="inline-flex items-center gap-1 mt-2 text-[10px] text-stone-400 font-mono">
-            <Clock className="w-3 h-3 text-stone-400" />
+          <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-mono text-stone-400">
+            <Clock className="h-3 w-3" />
             Claimed {timeAgoStr || "Recently"}
           </span>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex shrink-0 items-center gap-1.5">
           <Button
             size="sm"
             variant="ghost"
             onClick={() => onComplete(issue.id)}
-            className="rounded-md h-7 w-7 p-0 text-stone-500 hover:text-lime-500 hover:bg-lime-500/10"
+            className="h-7 w-7 rounded-md p-0 text-stone-500 hover:bg-lime-500/10 hover:text-lime-600 dark:hover:text-lime-400"
             title="Mark Completed"
           >
-            <Check className="w-4 h-4" />
+            <Check className="h-4 w-4" />
           </Button>
           <Button
             size="sm"
             variant="ghost"
             onClick={() => onAbandon(issue.id)}
-            className="rounded-md h-7 w-7 p-0 text-stone-500 hover:text-destructive hover:bg-destructive/10"
+            className="h-7 w-7 rounded-md p-0 text-stone-500 hover:bg-destructive/10 hover:text-destructive"
             title="Abandon Issue"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -175,14 +219,15 @@ export const DeadlineCountdownRow = React.memo(function DeadlineCountdownRow({
   }, [targetDate]);
 
   return (
-    <div className="flex items-center justify-between p-3 border border-stone-200 dark:border-white/10 rounded-md bg-stone-50 dark:bg-stone-900/60 shadow-inner">
-      <div className="min-w-0">
-        <p className="text-xs font-bold text-stone-800 dark:text-stone-200 truncate">
-          {title}
-        </p>
-        <span className="text-[10px] text-stone-400">Applications/Submissions</span>
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 dark:border-white/10 bg-stone-50/60 dark:bg-stone-950/40 p-3.5">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <CalendarClock className="h-4 w-4 shrink-0 text-stone-400" />
+        <div className="min-w-0">
+          <p className="truncate text-xs font-bold text-stone-800 dark:text-stone-200">{title}</p>
+          <span className="text-[10px] text-stone-400">Applications and submissions</span>
+        </div>
       </div>
-      <span className="text-xs font-mono font-bold text-lime-600 dark:text-lime-400 whitespace-nowrap bg-lime-500/10 px-2.5 py-1 rounded-md">
+      <span className="whitespace-nowrap rounded-md bg-lime-400/15 px-2.5 py-1 text-xs font-mono font-bold tabular-nums text-lime-700 dark:text-lime-300">
         {timeLeft}
       </span>
     </div>
@@ -290,6 +335,13 @@ export default function OpenSourceDashboardPage() {
   // Extract student's first name
   const studentFirstName = user?.name ? user.name.split(" ")[0] : "Priya";
 
+  // Editorial date stamp for the hero
+  const todayLabel = new Date().toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+  });
+
   // Tab items
   const tabs = [
     { name: "Dashboard", href: "/student/opensource", active: true },
@@ -381,19 +433,19 @@ export default function OpenSourceDashboardPage() {
       id: 1,
       text: "Sarah K. submitted a PR to Twenty (+50 XP)",
       time: "10m ago",
-      icon: <GitPullRequest className="w-3.5 h-3.5 text-lime-500" />,
+      icon: <GitPullRequest className="h-3.5 w-3.5 text-lime-600 dark:text-lime-400" />,
     },
     {
       id: 2,
       text: "Alex M. started GSoC proposal draft",
       time: "1h ago",
-      icon: <Trophy className="w-3.5 h-3.5 text-amber-500" />,
+      icon: <Trophy className="h-3.5 w-3.5 text-stone-500" />,
     },
     {
       id: 3,
       text: "Vikram R. reached a 10-day contribution streak!",
       time: "3h ago",
-      icon: <Flame className="w-3.5 h-3.5 text-orange-500" />,
+      icon: <Flame className="h-3.5 w-3.5 text-lime-600 dark:text-lime-400" />,
     },
   ];
 
@@ -401,114 +453,162 @@ export default function OpenSourceDashboardPage() {
   const [gsocDeadline] = useState(() => Date.now() + 15 * 86400 * 1000 + 4 * 3600 * 1000);
   const [lfxDeadline] = useState(() => Date.now() + 32 * 86400 * 1000 + 12 * 3600 * 1000);
 
+  const stats = [
+    { label: "Guides Complete", value: String(completedSteps), icon: BookOpen, accent: false },
+    { label: "Bookmarked Repos", value: String(bookmarks.length), icon: Bookmark, accent: false },
+    { label: "Current Streak", value: `${streakData?.currentStreak ?? 5}`, suffix: "d", icon: Flame, accent: true },
+    {
+      label: "Contributions",
+      value: String(myRequestsData?.filter((r) => r.status === "APPROVED").length ?? 3),
+      icon: Activity,
+      accent: false,
+    },
+  ];
+
   return (
-    <div className="pb-16 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 transition-colors">
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 space-y-6">
-        
-        {/* Navigation Tab Bar (Top) */}
-        <div className="flex items-center gap-2 border-b border-stone-200 dark:border-white/10 pb-4 overflow-x-auto whitespace-nowrap">
+    <div className="bg-stone-50 pb-16 text-stone-900 transition-colors dark:bg-stone-950 dark:text-stone-50">
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        animate="visible"
+        className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-8"
+      >
+        {/* ── Tab navigation ── */}
+        <motion.nav
+          variants={fadeUp}
+          className="flex items-center gap-1 overflow-x-auto border-b border-stone-200 whitespace-nowrap dark:border-white/10"
+        >
           {tabs.map((tab) => (
             <Link
               key={tab.name}
               to={tab.href}
-              className={`px-4 py-2 text-sm font-semibold transition-colors rounded-md ${
+              className={`relative px-3.5 pb-3.5 pt-1 text-sm font-semibold no-underline transition-colors ${
                 tab.active
-                  ? "bg-lime-500 text-stone-950 font-bold shadow-sm"
-                  : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-200/50 dark:hover:bg-white/5"
+                  ? "text-stone-900 dark:text-stone-50"
+                  : "text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50"
               }`}
             >
               {tab.name}
+              {tab.active && (
+                <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-lime-400" />
+              )}
             </Link>
           ))}
-        </div>
+        </motion.nav>
 
-        {/* Greeting & Streak (Full Width) */}
-        <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl" role="img" aria-label="wave">
-              👋
-            </span>
-            <div>
-              <h2 className="text-xl font-bold tracking-tight">
-                {getGreeting()}, {studentFirstName}
-              </h2>
-              <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
-                Welcome back to your open-source central dashboard.
+        {/* ── Hero: greeting + streak ── */}
+        <motion.section
+          variants={fadeUp}
+          className="relative overflow-hidden rounded-2xl border border-stone-800 bg-stone-900 p-6 sm:p-8"
+        >
+          {/* dotted texture */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+              backgroundSize: "26px 26px",
+            }}
+          />
+          {/* lime corner glow */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-20 -top-24 h-56 w-56 rounded-full bg-lime-400/20 blur-3xl"
+          />
+          <div className="relative flex flex-wrap items-end justify-between gap-6">
+            <div className="min-w-0">
+              <div className="mb-4 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-stone-400">
+                <span className="h-1.5 w-1.5 animate-pulse bg-lime-400" />
+                {todayLabel}
+              </div>
+              <h1 className="text-3xl font-bold leading-none tracking-tight text-white sm:text-4xl">
+                {getGreeting()},{" "}
+                <span className="text-lime-400">{studentFirstName}.</span>
+              </h1>
+              <p className="mt-3 max-w-md text-sm leading-relaxed text-stone-400">
+                Welcome back to your open source command center. Pick up where you left off and keep
+                the momentum going.
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800/80 px-4 py-2.5 rounded-md border border-stone-200/50 dark:border-white/5 shrink-0">
-            <Flame className="w-5 h-5 text-lime-500 fill-lime-500 animate-pulse" />
-            <span className="text-sm font-bold text-stone-800 dark:text-stone-200">
-              <span className="text-lime-500 font-extrabold">{streakData?.currentStreak ?? 5}-day</span> streak — keep it up!
-            </span>
-          </div>
-        </div>
 
-        {/* Continue Learning & Recommended for You Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Continue Learning Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col justify-between space-y-4">
-            <div>
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-                continue learning
+            {/* Streak stat block */}
+            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-sm">
+              <Flame className="h-7 w-7 fill-lime-400 text-lime-400" />
+              <div>
+                <div className="text-2xl font-bold leading-none tabular-nums text-white">
+                  {streakData?.currentStreak ?? 5}
+                  <span className="ml-1 text-sm font-semibold text-lime-400">day</span>
+                </div>
+                <div className="mt-1 text-[10px] font-mono uppercase tracking-[0.15em] text-stone-400">
+                  Current streak
+                </div>
               </div>
-              <h3 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 mt-2">
+            </div>
+          </div>
+        </motion.section>
+
+        {/* ── Continue Learning + Recommended ── */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Continue Learning */}
+          <motion.div
+            variants={fadeUp}
+            className={`${CARD} relative flex flex-col justify-between overflow-hidden p-6`}
+          >
+            <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-lime-400" />
+            <div>
+              <SectionLabel>continue learning</SectionLabel>
+              <h3 className="mt-3 text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
                 {nextIncompleteItem?.title || "First PR Roadmap"}
               </h3>
-              <p className="text-sm text-stone-600 dark:text-stone-400 mt-2 line-clamp-2">
-                {nextIncompleteItem?.description || "Master the end-to-end contributor workflow from picking your issue to having your PR merged."}
+              <p className="mt-2 line-clamp-2 text-sm text-stone-600 dark:text-stone-400">
+                {nextIncompleteItem?.description ||
+                  "Master the end to end contributor workflow, from picking your issue to having your PR merged."}
               </p>
             </div>
 
-            <div className="space-y-3 pt-2">
+            <div className="space-y-3 pt-6">
               <div className="flex items-center justify-between text-xs font-mono text-stone-500">
-                <span>Progress: {progressPercent}%</span>
-                <span>
-                  {completedSteps} / {totalSteps} Steps Complete
+                <span className="tabular-nums">{progressPercent}% complete</span>
+                <span className="tabular-nums">
+                  {completedSteps} / {totalSteps} steps
                 </span>
               </div>
-              <div className="w-full bg-stone-100 dark:bg-stone-800 rounded-md h-2 relative overflow-hidden">
-                <div
-                  className="bg-lime-500 h-full rounded-md transition-all duration-500"
-                  style={{ width: `${progressPercent}%` }}
+              <div className="relative h-2 w-full overflow-hidden rounded-full bg-stone-100 dark:bg-stone-800">
+                <motion.div
+                  className="h-full rounded-full bg-lime-400"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercent}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
                 />
               </div>
               <div className="flex justify-end pt-2">
                 <Button
                   asChild
                   variant="primary"
-                  className="rounded-md bg-lime-500 hover:bg-lime-400 text-stone-950 font-bold border-none"
+                  className="rounded-lg border-none bg-lime-500 font-bold text-stone-950 hover:bg-lime-400"
                 >
                   <Link to={nextIncompleteItem?.href || "/student/opensource/first-pr"}>
-                    Continue Next Step <ArrowRight className="w-4 h-4 ml-2" />
+                    Continue next step <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Recommended for You Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-                recommended for you
-              </div>
-              <Link
-                to="/student/opensource/discover"
-                className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-lime-500 transition-colors"
-              >
-                Browse all &rarr;
-              </Link>
-            </div>
-
-            <div className="flex-1 space-y-3">
+          {/* Recommended for You */}
+          <motion.div variants={fadeUp} className={`${CARD} flex flex-col space-y-4 p-6`}>
+            <SectionLabel action={<ActionLink to="/student/opensource/discover">Browse all</ActionLink>}>
+              recommended for you
+            </SectionLabel>
+            <div className="flex-1 space-y-2.5">
               {recommendedLoading ? (
-                <div className="text-center py-8 text-stone-400 text-xs">
-                  Loading recommendations...
+                <div className="space-y-2.5">
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="h-17 animate-pulse rounded-lg border border-stone-200 bg-stone-100/60 dark:border-white/10 dark:bg-stone-800/40"
+                    />
+                  ))}
                 </div>
               ) : (
                 displayRecommended.map((repo) => (
@@ -516,36 +616,29 @@ export default function OpenSourceDashboardPage() {
                 ))
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        {/* Active Issues & Program Countdown Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Active Issues Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-                active issues ({activeIssues.length})
-              </div>
-            </div>
-
-            <div className="flex-1 space-y-3">
+        {/* ── Active Issues + Program Countdown ── */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Active Issues */}
+          <motion.div variants={fadeUp} className={`${CARD} flex flex-col space-y-4 p-6`}>
+            <SectionLabel>active issues ({activeIssues.length})</SectionLabel>
+            <div className="flex-1 space-y-2.5">
               {activeIssues.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-10 text-center space-y-3 border border-dashed border-stone-200 dark:border-white/10 rounded-md bg-stone-50/50 dark:bg-stone-900/10">
-                  <AlertCircle className="w-8 h-8 text-stone-400" />
+                <div className="flex flex-col items-center justify-center space-y-3 rounded-lg border border-dashed border-stone-200 bg-stone-50/50 py-10 text-center dark:border-white/10 dark:bg-stone-900/10">
+                  <AlertCircle className="h-8 w-8 text-stone-300 dark:text-stone-600" />
                   <div>
                     <p className="text-sm font-semibold text-stone-600 dark:text-stone-300">
                       No tracked issues
                     </p>
-                    <p className="text-xs text-stone-400 mt-1">
+                    <p className="mt-1 text-xs text-stone-400">
                       Go to repo discovery and label issues to track them.
                     </p>
                   </div>
                   <Button asChild size="sm" variant="ghost" className="rounded-md">
                     <Link to="/student/opensource/discover">
-                      Find issues <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                      Find issues <ArrowRight className="ml-1 h-3.5 w-3.5" />
                     </Link>
                   </Button>
                 </div>
@@ -560,125 +653,93 @@ export default function OpenSourceDashboardPage() {
                 ))
               )}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Program Countdown Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-                program countdown
-              </div>
-              <Link
-                to="/student/opensource/programs"
-                className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-lime-500 transition-colors"
-              >
-                Track program deadlines &rarr;
-              </Link>
-            </div>
-
-            <div className="flex-1 space-y-3">
+          {/* Program Countdown */}
+          <motion.div variants={fadeUp} className={`${CARD} flex flex-col space-y-4 p-6`}>
+            <SectionLabel
+              action={<ActionLink to="/student/opensource/programs">Track deadlines</ActionLink>}
+            >
+              program countdown
+            </SectionLabel>
+            <div className="flex-1 space-y-2.5">
               <DeadlineCountdownRow title="GSoC 2026 Submission deadline" targetDate={gsocDeadline} />
               <DeadlineCountdownRow title="LFX Fall Mentorship deadline" targetDate={lfxDeadline} />
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        {/* Community Pulse & Your Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Community Pulse Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-              community pulse
-            </div>
-
-            <div className="flex-1 space-y-4 pt-1">
-              {pulseFeed.map((item) => (
-                <div key={item.id} className="flex items-start gap-3">
-                  <div className="mt-0.5 p-1 bg-stone-100 dark:bg-stone-800 rounded-md shrink-0 border border-stone-200/30 dark:border-white/5">
+        {/* ── Community Pulse + Your Stats ── */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Community Pulse */}
+          <motion.div variants={fadeUp} className={`${CARD} flex flex-col space-y-4 p-6`}>
+            <SectionLabel>community pulse</SectionLabel>
+            <div className="flex-1 space-y-1">
+              {pulseFeed.map((item, i) => (
+                <div
+                  key={item.id}
+                  className={`flex items-start gap-3 py-2.5 ${
+                    i !== pulseFeed.length - 1
+                      ? "border-b border-stone-100 dark:border-white/5"
+                      : ""
+                  }`}
+                >
+                  <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-stone-200/60 bg-stone-50 dark:border-white/5 dark:bg-stone-800">
                     {item.icon}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-stone-700 dark:text-stone-300 font-medium">
+                    <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
                       {item.text}
                     </p>
-                    <span className="text-[10px] font-mono text-stone-400 mt-1 block">
+                    <span className="mt-0.5 block text-[10px] font-mono text-stone-400">
                       {item.time}
                     </span>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Your Stats Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-              your stats
+          {/* Your Stats */}
+          <motion.div variants={fadeUp} className={`${CARD} flex flex-col space-y-4 p-6`}>
+            <SectionLabel>your stats</SectionLabel>
+            <div className="grid flex-1 grid-cols-2 gap-px overflow-hidden rounded-lg border border-stone-200 bg-stone-200 dark:border-white/10 dark:bg-white/10">
+              {stats.map((stat) => {
+                const Icon = stat.icon;
+                return (
+                  <div
+                    key={stat.label}
+                    className="flex flex-col justify-between bg-white p-4 dark:bg-stone-900"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+                        {stat.label}
+                      </span>
+                      <Icon
+                        className={`h-4 w-4 ${
+                          stat.accent ? "text-lime-500" : "text-stone-400 dark:text-stone-500"
+                        }`}
+                      />
+                    </div>
+                    <p
+                      className={`mt-3 text-3xl font-bold tabular-nums ${
+                        stat.accent ? "text-lime-500" : "text-stone-900 dark:text-stone-50"
+                      }`}
+                    >
+                      {stat.value}
+                      {stat.suffix && (
+                        <span className="ml-0.5 text-base font-semibold text-stone-400">
+                          {stat.suffix}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
-
-            <div className="grid grid-cols-2 gap-4 flex-1">
-              
-              {/* Box 1 */}
-              <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
-                    Guides Complete
-                  </span>
-                  <BookOpen className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-                </div>
-                <p className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-2">
-                  {completedSteps}
-                </p>
-              </div>
-
-              {/* Box 2 */}
-              <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
-                    Bookmarked Repos
-                  </span>
-                  <Bookmark className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-                </div>
-                <p className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-2">
-                  {bookmarks.length}
-                </p>
-              </div>
-
-              {/* Box 3 */}
-              <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
-                    Current Streak
-                  </span>
-                  <Flame className="w-4 h-4 text-lime-500" />
-                </div>
-                <p className="text-2xl font-bold text-lime-500 mt-2">
-                  {streakData?.currentStreak ?? 5} days
-                </p>
-              </div>
-
-              {/* Box 4 */}
-              <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
-                    Contributions
-                  </span>
-                  <Activity className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-                </div>
-                <p className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-2">
-                  {myRequestsData?.filter((r) => r.status === "APPROVED").length ?? 3}
-                </p>
-              </div>
-
-            </div>
-          </div>
+          </motion.div>
         </div>
-
-      </div>
+      </motion.div>
     </div>
   );
 }
