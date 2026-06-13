@@ -2,7 +2,6 @@ import { prisma } from "../../database/db.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { Prisma } from "@prisma/client";
 import type { UserRole, JobStatus } from "@prisma/client";
-import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 
 export class AdminPlatformService {
   async getPlatformDashboard() {
