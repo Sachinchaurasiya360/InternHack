@@ -75,7 +75,19 @@ export class TeammateController {
         result.data.receiverId,
       );
       res.status(201).json(invite);
-    } catch (err) {
+    } catch (err: any) {
+      if (err.message === "SELF_INVITE") {
+        res.status(400).json({ message: "You cannot invite yourself" });
+        return;
+      }
+      if (err.message === "NO_HACKATHON") {
+        res.status(404).json({ message: "No hackathon found to invite to" });
+        return;
+      }
+      if (err.message === "DUPLICATE_INVITE") {
+        res.status(409).json({ message: "Invitation already sent" });
+        return;
+      }
       next(err);
     }
   }
@@ -111,12 +123,20 @@ export class TeammateController {
   // PATCH /invitations/:id/accept
   async acceptInvitation(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
       const id = Number(req.params["id"]);
       if (isNaN(id)) {
         res.status(400).json({ message: "Invalid invitation id" });
         return;
       }
-      const result = await this.teammateService.acceptInvitation(id);
+      const result = await this.teammateService.acceptInvitation(id, req.user.id);
+      if (!result) {
+        res.status(404).json({ message: "Invitation not found" });
+        return;
+      }
       res.json(result);
     } catch (err) {
       next(err);
@@ -126,12 +146,20 @@ export class TeammateController {
   // PATCH /invitations/:id/reject
   async rejectInvitation(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
       const id = Number(req.params["id"]);
       if (isNaN(id)) {
         res.status(400).json({ message: "Invalid invitation id" });
         return;
       }
-      const result = await this.teammateService.rejectInvitation(id);
+      const result = await this.teammateService.rejectInvitation(id, req.user.id);
+      if (!result) {
+        res.status(404).json({ message: "Invitation not found" });
+        return;
+      }
       res.json(result);
     } catch (err) {
       next(err);

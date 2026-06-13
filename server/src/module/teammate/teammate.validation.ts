@@ -9,6 +9,6 @@ export const createProfileSchema = z.object({
 });
 
 export const inviteSchema = z.object({
-  hackathonId: z.number(),
+  hackathonId: z.number().optional(),
   receiverId: z.number(),
 });
