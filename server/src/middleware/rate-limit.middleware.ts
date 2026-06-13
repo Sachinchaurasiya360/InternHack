@@ -10,12 +10,11 @@ export const aiRoadmapLimiter = rateLimit({
   store: createRateLimitStore("ai-roadmap"),
   keyGenerator: (req) => {
     // Prefer user ID if authenticated, fallback to IP
-    const defaultIp = req.ip || "unknown_ip";
     const user = (req as any).user;
     if (user && user.id) {
       return `user_${user.id}`;
     }
-     return ipKeyGenerator(req.ip || "unknown_ip");
+    return ipKeyGenerator(req.ip || "unknown_ip");
   },
   message: { 
     message: "Too many AI roadmap generation requests. Please try again later."
@@ -29,7 +28,7 @@ export const contactLimiter = rateLimit({
   legacyHeaders: false,
   store: createRateLimitStore("contact"),
   keyGenerator: (req) => {
-    return req.ip || "unknown_ip";
+    return ipKeyGenerator(req.ip || "unknown_ip");
   },
   message: {
     message: "Too many contact submissions. Please try again later."

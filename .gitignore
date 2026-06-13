@@ -2,6 +2,7 @@
 server/.env
 client/.env
 node_modules/
+.local-postgres/
 
 # Backup files
 *.bak

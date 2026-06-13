@@ -24,6 +24,7 @@ import { AdminService } from "./module/admin/admin.service.js";
 import { AdminController } from "./module/admin/admin.controller.js";
 import { newsletterRouter } from "./module/newsletter/newsletter.routes.js";
 import { opensourceRouter } from "./module/opensource/opensource.routes.js";
+import { githubRouter } from "./module/github/github.routes.js";
 import { paymentRouter } from "./module/payment/payment.routes.js";
 import { blogRouter } from "./module/blog/blog.routes.js";
 import { gsocRouter } from "./module/gsoc/gsoc.routes.js";
@@ -76,6 +77,7 @@ import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/sche
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
+import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
@@ -253,6 +255,7 @@ app.use("/api/companies", companyRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/opensource", opensourceRouter);
+app.use("/api/github", githubRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/blog", blogRouter);
 app.use("/api/gsoc", gsocRouter);
@@ -440,6 +443,20 @@ const server = app.listen(PORT, async () => {
     fn: () => stopSignalsCleanupCron(),
   });
 
+  const runGithubContributionsCron =
+    process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] !== "false");
+  if (runGithubContributionsCron) {
+    startGithubContributionsCron(process.env["GITHUB_CONTRIBUTIONS_CRON"] || "0 2 * * *");
+    shutdownManager.register({
+      name: "GitHub Contributions Cron",
+      priority: 10,
+      fn: () => stopGithubContributionsCron(),
+    });
+  } else {
+    logger.info("GitHub contributions cron disabled on this process");
+  }
+
   // Register Redis disconnect
   if (redis) {
     shutdownManager.register({
@@ -471,4 +488,3 @@ const server = app.listen(PORT, async () => {
 app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
-

@@ -106,6 +106,7 @@ export const queryKeys = {
     trend: (startDate?: string, endDate?: string) => ["opensource", "trend", startDate, endDate] as const,
     hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
     streak: () => ["opensource", "streak"] as const,
+    githubConnection: () => ["opensource", "github-connection"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
