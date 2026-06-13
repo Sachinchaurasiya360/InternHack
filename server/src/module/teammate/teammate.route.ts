@@ -11,9 +11,11 @@ const teammateController = new TeammateController(teammateService);
 
 export const teammateRouter = Router();
 
-// ── Public: browse all profiles (with optional filter query params) ──
+// ── Authenticated: browse all profiles (with optional filter query params) ──
 teammateRouter.get(
   "/",
+  authMiddleware,
+  requireRole("STUDENT"),
   (req, res, next) => teammateController.getProfiles(req, res, next),
 );
 

@@ -1060,6 +1060,7 @@ model hackathonTeamInvitation {
 
   receiver user @relation("HackathonInviteReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
 
+  @@unique([hackathonId, senderId, receiverId])
   @@index([hackathonId])
   @@index([senderId])
   @@index([receiverId])

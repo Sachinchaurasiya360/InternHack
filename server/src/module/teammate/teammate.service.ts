@@ -1,4 +1,4 @@
-import { prisma } from "../../database/db.ts";
+import { prisma } from "../../database/db.js";
 
 export class TeammateService {
   async createProfile(userId: number, data: any) {
@@ -64,10 +64,34 @@ export class TeammateService {
     });
   }
 
-  async sendInvitation(senderId: number, hackathonId: number, receiverId: number) {
-    return prisma.hackathonTeamInvitation.create({
-      data: { senderId, receiverId, hackathonId },
-    });
+  async sendInvitation(senderId: number, hackathonId: number | undefined, receiverId: number) {
+    if (senderId === receiverId) {
+      throw new Error("SELF_INVITE");
+    }
+
+    let targetHackathonId = hackathonId;
+    if (!targetHackathonId) {
+      const firstHack = await prisma.hackathon.findFirst();
+      if (!firstHack) {
+        throw new Error("NO_HACKATHON");
+      }
+      targetHackathonId = firstHack.id;
+    }
+
+    try {
+      return await prisma.hackathonTeamInvitation.create({
+        data: {
+          senderId,
+          receiverId,
+          hackathonId: targetHackathonId,
+        },
+      });
+    } catch (err: any) {
+      if (err.code === "P2002") {
+        throw new Error("DUPLICATE_INVITE");
+      }
+      throw err;
+    }
   }
 
   async getMyInvitations(userId: number) {
@@ -75,7 +99,13 @@ export class TeammateService {
       where: { receiverId: userId },
       include: {
         sender: {
-          select: { id: true, name: true, profilePic: true },
+          select: {
+            id: true,
+            name: true,
+            profilePic: true,
+            college: true,
+            teammateProfile: true,
+          },
         },
         hackathon: {
           select: { id: true, name: true },
@@ -90,7 +120,13 @@ export class TeammateService {
       where: { senderId: userId },
       include: {
         receiver: {
-          select: { id: true, name: true, profilePic: true },
+          select: {
+            id: true,
+            name: true,
+            profilePic: true,
+            college: true,
+            teammateProfile: true,
+          },
         },
         hackathon: {
           select: { id: true, name: true },
@@ -100,14 +136,26 @@ export class TeammateService {
     });
   }
 
-  async acceptInvitation(id: number) {
+  async acceptInvitation(id: number, receiverId: number) {
+    const invite = await prisma.hackathonTeamInvitation.findUnique({
+      where: { id },
+    });
+    if (!invite || invite.receiverId !== receiverId) {
+      return null;
+    }
     return prisma.hackathonTeamInvitation.update({
       where: { id },
       data: { status: "ACCEPTED" },
     });
   }
 
-  async rejectInvitation(id: number) {
+  async rejectInvitation(id: number, receiverId: number) {
+    const invite = await prisma.hackathonTeamInvitation.findUnique({
+      where: { id },
+    });
+    if (!invite || invite.receiverId !== receiverId) {
+      return null;
+    }
     return prisma.hackathonTeamInvitation.update({
       where: { id },
       data: { status: "REJECTED" },
