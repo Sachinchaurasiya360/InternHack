@@ -29,8 +29,26 @@ const CATEGORY_DESCRIPTION: Record<TrackCategory, string> = {
   web3: "Smart contracts, DeFi, and blockchain from first principles.",
 };
 
+function getCompletedTrackIds(): string[] {
+  const completed: string[] = [];
+  const trackIds = TRACKS.map((t) => t.id);
+  for (const id of trackIds) {
+    try {
+      const raw = localStorage.getItem(`${id}-progress`);
+      if (!raw) continue;
+      const progress = JSON.parse(raw);
+      const values = Object.values(progress) as { completed?: boolean }[];
+      if (values.length > 0 && values.every((v) => v?.completed)) completed.push(id);
+    } catch {
+      // ignore
+    }
+  }
+  return completed;
+}
+
 export default function LearnHubPage() {
   const [search, setSearch] = useState("");
+  const completedTrackIds = useMemo(() => getCompletedTrackIds(), []);
   const [activeCategory, setActiveCategory] = useState<TrackCategory | "All">("All");
   const [activeDifficulty, setActiveDifficulty] = useState("All");
   const [sortBy, setSortBy] = useState("popular");

@@ -8,7 +8,9 @@ import {
   X,
   Loader2,
   Search,
+  BookOpen,
 } from "lucide-react";
+import type { SolutionStep } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
@@ -22,6 +24,15 @@ interface DsaTopic {
   orderIndex: number;
 }
 
+interface DsaProblemAdmin {
+  id: number;
+  title: string;
+  slug: string;
+  difficulty: string;
+  solutionSteps?: SolutionStep[] | null;
+  solutionCode?: string | null;
+}
+
 const inputClass =
   "w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-sm";
 const labelClass = "text-sm font-medium text-gray-300";
@@ -33,6 +44,13 @@ export default function AdminDsaPage() {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
+  const [walkthroughProblem, setWalkthroughProblem] = useState<DsaProblemAdmin | null>(null);
+  const [walkthroughSteps, setWalkthroughSteps] = useState<SolutionStep[]>([]);
+  const [walkthroughCode, setWalkthroughCode] = useState("");
+  const [walkthroughSearch, setWalkthroughSearch] = useState("");
+  const [walkthroughProblems, setWalkthroughProblems] = useState<DsaProblemAdmin[]>([]);
+  const [walkthroughTab, setWalkthroughTab] = useState<"topics" | "walkthrough">("topics");
+  const [savingWalkthrough, setSavingWalkthrough] = useState(false);
 
   const fetchTopics = useCallback(() => {
     setLoading(true);
@@ -101,6 +119,64 @@ export default function AdminDsaPage() {
       toast.error("Failed to save topic");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const searchWalkthroughProblems = async () => {
+    if (!walkthroughSearch.trim()) return;
+    try {
+      const { data } = await api.get("/admin/dsa/problems", {
+        params: { search: walkthroughSearch, limit: 10 },
+      });
+      setWalkthroughProblems(data.problems ?? []);
+    } catch {
+      toast.error("Failed to search problems");
+    }
+  };
+
+  const loadWalkthrough = async (problem: DsaProblemAdmin) => {
+    try {
+      const { data } = await api.get(`/admin/dsa/problems/${problem.id}`);
+      setWalkthroughProblem(data.problem);
+      setWalkthroughSteps(data.problem.solutionSteps ?? []);
+      setWalkthroughCode(data.problem.solutionCode ?? "");
+    } catch {
+      toast.error("Failed to load problem");
+    }
+  };
+
+  const addStep = () => {
+    setWalkthroughSteps((prev) => [
+      ...prev,
+      {
+        stepNumber: prev.length + 1,
+        description: "",
+        variables: {},
+        highlightLine: undefined,
+        isKeyStep: false,
+      },
+    ]);
+  };
+
+  const removeStep = (idx: number) => {
+    setWalkthroughSteps((prev) =>
+      prev.filter((_, i) => i !== idx).map((s, i) => ({ ...s, stepNumber: i + 1 }))
+    );
+  };
+
+  const saveWalkthrough = async () => {
+    if (!walkthroughProblem) return;
+    setSavingWalkthrough(true);
+    try {
+      await api.put(`/admin/dsa/problems/${walkthroughProblem.id}/walkthrough`, {
+        solutionSteps: walkthroughSteps,
+        solutionCode: walkthroughCode || null,
+      });
+      toast.success("Walkthrough saved!");
+    } catch {
+      toast.error("Failed to save walkthrough");
+    } finally {
+      setSavingWalkthrough(false);
     }
   };
 
@@ -192,16 +268,196 @@ export default function AdminDsaPage() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Code2 className="w-6 h-6 text-indigo-400" />
-          <h1 className="text-2xl font-bold text-white">DSA Topics</h1>
+          <h1 className="text-2xl font-bold text-white">DSA Management</h1>
         </div>
-        <button
-          onClick={handleCreate}
-          className="px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition-colors flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" /> Add Topic
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setWalkthroughTab("walkthrough")}
+            className={`px-4 py-2.5 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${
+              walkthroughTab === "walkthrough"
+                ? "bg-lime-600 text-white"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            <BookOpen className="w-4 h-4" /> Walkthroughs
+          </button>
+          <button
+            onClick={() => setWalkthroughTab("topics")}
+            className={`px-4 py-2.5 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${
+              walkthroughTab === "topics"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            <Code2 className="w-4 h-4" /> Topics
+          </button>
+          {walkthroughTab === "topics" && (
+            <button
+              onClick={handleCreate}
+              className="px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" /> Add Topic
+            </button>
+          )}
+        </div>
       </div>
 
+      {walkthroughTab === "walkthrough" && (
+        <div className="space-y-4">
+          {/* Problem search */}
+          <div className="flex gap-2">
+            <input
+              className={inputClass + " flex-1"}
+              placeholder="Search problems to add walkthrough..."
+              value={walkthroughSearch}
+              onChange={(e) => setWalkthroughSearch(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && searchWalkthroughProblems()}
+            />
+            <button
+              onClick={searchWalkthroughProblems}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 text-sm"
+            >
+              Search
+            </button>
+          </div>
+
+          {/* Problem results */}
+          {walkthroughProblems.length > 0 && !walkthroughProblem && (
+            <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+              {walkthroughProblems.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => loadWalkthrough(p)}
+                  className="w-full flex items-center justify-between px-4 py-3 border-b border-gray-800 hover:bg-gray-800 text-left"
+                >
+                  <span className="text-sm text-white">{p.title}</span>
+                  <span className={`text-xs font-mono ${
+                    p.difficulty === "Easy" ? "text-green-400" :
+                    p.difficulty === "Medium" ? "text-amber-400" : "text-red-400"
+                  }`}>{p.difficulty}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Walkthrough editor */}
+          {walkthroughProblem && (
+            <div className="bg-gray-900 rounded-xl border border-gray-800 p-5 space-y-5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-white">{walkthroughProblem.title}</h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setWalkthroughProblem(null); setWalkthroughSteps([]); setWalkthroughCode(""); }}
+                    className="px-3 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 text-sm flex items-center gap-2"
+                  >
+                    <X className="w-4 h-4" /> Close
+                  </button>
+                  <button
+                    onClick={saveWalkthrough}
+                    disabled={savingWalkthrough}
+                    className="px-3 py-2 bg-lime-600 text-white rounded-lg hover:bg-lime-500 text-sm flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {savingWalkthrough ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              {/* Solution code */}
+              <div>
+                <label className={labelClass}>Solution Code (optional)</label>
+                <textarea
+                  className={inputClass + " font-mono"}
+                  rows={8}
+                  value={walkthroughCode}
+                  onChange={(e) => setWalkthroughCode(e.target.value)}
+                  placeholder="Paste the solution code here..."
+                />
+              </div>
+
+              {/* Steps */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <label className={labelClass}>Steps ({walkthroughSteps.length})</label>
+                  <button
+                    onClick={addStep}
+                    className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 text-xs flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Step
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {walkthroughSteps.map((step, idx) => (
+                    <div key={idx} className="bg-gray-800 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-mono text-indigo-400">Step {step.stepNumber}</span>
+                        <button onClick={() => removeStep(idx)} className="text-red-400 hover:text-red-300">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <textarea
+                        className={inputClass}
+                        rows={2}
+                        placeholder="Step description (e.g. i=0, val=2, need=7, cache={} → cache={2:0})"
+                        value={step.description}
+                        onChange={(e) => setWalkthroughSteps((prev) =>
+                          prev.map((s, i) => i === idx ? { ...s, description: e.target.value } : s)
+                        )}
+                      />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className={labelClass + " text-xs"}>Highlight Line #</label>
+                          <input
+                            type="number"
+                            className={inputClass}
+                            placeholder="e.g. 5"
+                            value={step.highlightLine ?? ""}
+                            onChange={(e) => setWalkthroughSteps((prev) =>
+                              prev.map((s, i) => i === idx ? { ...s, highlightLine: parseInt(e.target.value) || undefined } : s)
+                            )}
+                          />
+                        </div>
+                        <div className="flex items-end pb-2">
+                          <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={step.isKeyStep ?? false}
+                              onChange={(e) => setWalkthroughSteps((prev) =>
+                                prev.map((s, i) => i === idx ? { ...s, isKeyStep: e.target.checked } : s)
+                              )}
+                              className="rounded"
+                            />
+                            Key step
+                          </label>
+                        </div>
+                      </div>
+                      <div>
+                        <label className={labelClass + " text-xs"}>Variables (JSON)</label>
+                        <input
+                          className={inputClass + " font-mono"}
+                          placeholder='{"i": "0", "val": "2", "cache": "{}"}'
+                          value={JSON.stringify(step.variables)}
+                          onChange={(e) => {
+                            try {
+                              const parsed = JSON.parse(e.target.value);
+                              setWalkthroughSteps((prev) =>
+                                prev.map((s, i) => i === idx ? { ...s, variables: parsed } : s)
+                              );
+                            } catch { /* invalid json */ }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {walkthroughTab === "topics" && (
+      <div>
       <div className="mb-4 relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
         <input
@@ -285,7 +541,9 @@ export default function AdminDsaPage() {
               )}
             </tbody>
           </table>
-        </div>
+      </div>
+      )}
+      </div>
       )}
     </div>
   );
