@@ -52,6 +52,7 @@ const AptitudeCategoriesPage = lazyWithRetry(() => import("./module/student/apti
 const AptitudeTopicPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTopicPage"));
 const AptitudeCompaniesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
 const DsaTopicsPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicsPage"));
+const DsaAnalyticsPage = lazyWithRetry(() => import("./module/student/dsa/DsaAnalyticsPage"));
 const DsaTopicDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicDetailPage"));
 const DsaCompaniesPage = lazyWithRetry(() => import("./module/student/dsa/DsaCompaniesPage"));
 const DsaPatternsPage = lazyWithRetry(() => import("./module/student/dsa/DsaPatternsPage"));
@@ -437,6 +438,7 @@ function App() {
               <Route path="sql/:sectionSlug" element={<SqlExercisePage />} />
               <Route path="sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
               <Route path="dsa" element={<DsaTopicsPage />} />
+              <Route path="dsa/analytics" element={<ProtectedRoute role="STUDENT"><DsaAnalyticsPage /></ProtectedRoute>} />
               <Route path="dsa/companies" element={<DsaCompaniesPage />} />
               <Route path="dsa/patterns" element={<DsaPatternsPage />} />
               <Route path="dsa/lists" element={<DsaListsPage />} />

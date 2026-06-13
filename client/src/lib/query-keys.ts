@@ -257,6 +257,7 @@ export const queryKeys = {
     importStatus: () => ["dsa", "import-status"] as const,
     streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
+    analytics: () => ["dsa", "analytics"] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
     approaches: (slug: string) => ["dsa", "approaches", slug] as const,
   },
