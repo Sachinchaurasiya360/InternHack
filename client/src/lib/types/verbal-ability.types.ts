@@ -41,3 +41,4 @@ export interface SubtopicInfo {
   companies: string[];
   completionPercentage: number;
 }
+
