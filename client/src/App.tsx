@@ -235,6 +235,7 @@ const SignalDetailPage = lazyWithRetry(() => import("./module/student/signals/Si
 const InterviewsDirectoryPage = lazyWithRetry(() => import("./module/student/interviews/InterviewsDirectoryPage"));
 const InterviewExperienceDetailPage = lazyWithRetry(() => import("./module/student/interviews/InterviewExperienceDetailPage"));
 const ShareInterviewPage = lazyWithRetry(() => import("./module/student/interviews/ShareInterviewPage"));
+const InterviewReadinessPage = lazyWithRetry(() => import("./module/student/learn/InterviewReadinessPage"));
 const InterviewDashboardPage = lazyWithRetry(
   () => import("./module/student/interviews/InterviewDashboardPage")
 );
@@ -557,6 +558,7 @@ function App() {
               <Route path="checkout" element={<CheckoutPage />} />
               <Route path="profile" element={<StudentProfilePage />} />
               <Route path="roadmaps" element={<RoadmapDashboardPage />} />
+              <Route path="learn/readiness" element={<InterviewReadinessPage />} />
             </Route>
 
             {/* Recruiter protected routes */}

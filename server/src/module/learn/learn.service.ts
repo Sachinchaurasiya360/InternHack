@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
 import type { InterviewProgressAction, BulkInterviewProgressInput } from "./learn.validation.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export interface InterviewProgressDto {
   completedIds: string[];
@@ -56,6 +57,54 @@ async function runRepeatableRead<T>(operation: (tx: Prisma.TransactionClient) =>
 }
 
 export class LearnService {
+  async calculateReadinessReport(userId: string, body: { targetRole: string; companyTier: string; availableTime: string }) {
+    const { targetRole, companyTier, availableTime } = body;
+
+    // 1. Fetch real student data from the database
+    const userProgress = await this.prisma.interviewProgress.findMany({
+      where: { userId },
+      include: { question: true }
+    });
+
+    const completedLessons = await this.prisma.userLesson.findMany({
+      where: { userId, completed: true }
+    });
+
+    // 2. Format a comprehensive prompt summary context for Gemini
+    const systemContextPrompt = `
+      You are an elite technical interviewer evaluating an InternHack student.
+      
+      Student Target Parameters:
+      - Role: ${targetRole}
+      - Target Tier: ${companyTier}
+      - Preparation Window: ${availableTime}
+      
+      Actual Platform Analytics Data:
+      - Total Interview Questions Solved: ${userProgress.length}
+      - Completed Lessons Count: ${completedLessons.length}
+      
+      Analyze their progress objectively. Return a raw JSON payload containing:
+      {
+        "overallReadiness": number (0-100),
+        "estimatedTimeToReady": "string",
+        "todaysPriority": "string",
+        "strongAreas": [{"topic": "string", "score": number}],
+        "gapAreas": [{"topic": "string", "score": number}],
+        "mockInterviewQuestion": {"title": "string", "description": "string"}
+      }
+    `;
+
+    try {
+      // Execute the official SDK call using your system configuration elements
+      const response = await this.geminiProvider.generateJSON(systemContextPrompt);
+      return JSON.parse(response);
+    } catch (error) {
+      console.error("Gemini API execution failure:", error);
+      
+      // Throw a standard error matching InternHack's architecture instead of a custom class
+      throw new Error("Failed to generate AI evaluation metrics. Please try again.");
+    }
+  }
   async getInterviewProgress(userId: number): Promise<InterviewProgressDto> {
     const progress = await prisma.userInterviewProgress.findUnique({
       where: { userId },
