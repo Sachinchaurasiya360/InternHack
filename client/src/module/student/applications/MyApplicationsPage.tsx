@@ -19,6 +19,7 @@ import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { EmptyState } from "../../../components/ui/EmptyState";
 import { ApplicationNotes } from "./ApplicationNotes";
 import toast from "@/components/ui/toast";
+import { usePaginationReset } from "../../../hooks/usePaginationReset";
 import type { PendingDelete } from "@/lib/types/actions.types";
 
 function Kicker({ children }: { children: React.ReactNode }) {
@@ -240,6 +241,7 @@ export default function MyApplicationsPage() {
     () => setPage(1),
   ]);
 
+  usePaginationReset(setPage, [debouncedSearch, statusFilter]);
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch, statusFilter]);

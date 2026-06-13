@@ -34,6 +34,7 @@ import type {
   Pagination,
   ScrapedJob,
 } from "../../../lib/types";
+import { usePaginationReset } from "../../../hooks/usePaginationReset";
 import JobCard from "./component/jobcard";
 import { GridBackground } from "../../../components/ui/GridBackground";
 import { TagList } from "../../../components/ui/TagList";
@@ -149,6 +150,11 @@ export default function JobBrowsePage() {
   const [page, setPage] = useState(1);
   const [extPage, setExtPage] = useState(1);
   const [scrPage, setScrPage] = useState(1);
+
+  usePaginationReset(setPage, [debouncedSearch, debouncedLocation, selectedTags, hideExpired, debouncedSalaryMin, debouncedSalaryMax]);
+  usePaginationReset(setExtPage, [debouncedSearch, debouncedLocation, selectedTags]);
+  usePaginationReset(setScrPage, [debouncedSearch, debouncedLocation, selectedTags]);
+
   const [salaryMin, setSalaryMin] = useState("");
   const [salaryMax, setSalaryMax] = useState("");
   const debouncedSalaryMin = useDebounce(salaryMin, 500);
@@ -160,6 +166,18 @@ export default function JobBrowsePage() {
 
   // Sync location filter to URL and reset pages when it or search changes
   useEffect(() => {
+    timerRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+      setDebouncedLocation(locationFilter);
+
+      const next = new URLSearchParams(searchParams);
+      if (search) next.set("search", search);
+      else next.delete("search");
+      if (locationFilter) next.set("location", locationFilter);
+      else next.delete("location");
+      setSearchParams(next, { replace: true });
+    }, 400);
+    return () => clearTimeout(timerRef.current);
     setPage(1);
     setExtPage(1);
     setScrPage(1);
@@ -267,9 +285,6 @@ export default function JobBrowsePage() {
     if (updated.length > 0) next.set("tags", updated.join(","));
     else next.delete("tags");
     setSearchParams(next, { replace: true });
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
   };
 
   const clearAll = useCallback(() => {
@@ -279,6 +294,7 @@ export default function JobBrowsePage() {
     setSalaryMin("");
     setSalaryMax("");
     setSearchParams({});
+  };
     setPage(1);
     setExtPage(1);
     setScrPage(1);
@@ -290,6 +306,10 @@ export default function JobBrowsePage() {
     setShowSuggestions(false);
     setActiveSuggestion(-1);
   };
+  const submitSearch = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setDebouncedSearch(search);
+    setDebouncedLocation(locationFilter);
   // submitSearch: immediately flush location to URL (search is already synced by hook)
   const submitSearch = useCallback(() => {
     setPage(1);
@@ -558,7 +578,7 @@ export default function JobBrowsePage() {
                   type="number"
                   min={0}
                   value={salaryMin}
-                  onChange={(e) => { setSalaryMin(e.target.value); setPage(1); }}
+                  onChange={(e) => { setSalaryMin(e.target.value); }}
                   className="w-28 pl-9 pr-2 py-1.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-xs text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   placeholder="0"
                 />
@@ -571,7 +591,7 @@ export default function JobBrowsePage() {
                   type="number"
                   min={0}
                   value={salaryMax}
-                  onChange={(e) => { setSalaryMax(e.target.value); setPage(1); }}
+                  onChange={(e) => { setSalaryMax(e.target.value); }}
                   className="w-28 pl-9 pr-2 py-1.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-xs text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   placeholder="∞"
                 />

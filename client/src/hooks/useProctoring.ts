@@ -388,7 +388,9 @@ export function useProctoring(config: ProctoringConfig) {
     document.body.classList.add("proctored-test");
 
     // Override clipboard API
-    const origWrite = navigator.clipboard?.writeText?.bind(navigator.clipboard);
+    const origWriteText = navigator.clipboard?.writeText?.bind(navigator.clipboard);
+    const origWrite = navigator.clipboard?.write?.bind(navigator.clipboard);
+
     if (navigator.clipboard) {
       navigator.clipboard.writeText = async () => {};
       navigator.clipboard.write = async () => {};
@@ -409,8 +411,9 @@ export function useProctoring(config: ProctoringConfig) {
       document.body.classList.remove("proctored-test");
       if (graceTimerRef.current) clearInterval(graceTimerRef.current);
       // Restore clipboard API
-      if (navigator.clipboard && origWrite) {
-        navigator.clipboard.writeText = origWrite;
+      if (navigator.clipboard) {
+        if (origWriteText) navigator.clipboard.writeText = origWriteText;
+        if (origWrite) navigator.clipboard.write = origWrite;
       }
     };
   }, [enabled, maxTabSwitches, syncState, pushWarning, checkThresholds, startGracePeriod, clearGracePeriod]);
