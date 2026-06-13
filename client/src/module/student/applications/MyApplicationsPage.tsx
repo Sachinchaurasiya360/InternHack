@@ -7,6 +7,7 @@ import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import api from "../../../lib/axios";
+import { getStatusBorderColor } from "../../../lib/application-colors";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application, ExternalApplication } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
@@ -33,24 +34,6 @@ function CompanyMark({ label }: { label: string }) {
   );
 }
 
-function statusClass(status: string) {
-  switch (status) {
-    case "APPLIED":
-      return "text-stone-900 dark:text-stone-50 border-stone-300 dark:border-white/20";
-    case "IN_PROGRESS":
-      return "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60";
-    case "SHORTLISTED":
-      return "text-lime-700 dark:text-lime-400 border-lime-400";
-    case "HIRED":
-      return "text-lime-700 dark:text-lime-400 border-lime-400 bg-lime-50 dark:bg-lime-950/40";
-    case "REJECTED":
-      return "text-red-600 dark:text-red-400 border-red-300 dark:border-red-900/60";
-    case "WITHDRAWN":
-      return "text-stone-400 border-stone-200 dark:border-white/10";
-    default:
-      return "text-stone-500 border-stone-200 dark:border-white/10";
-  }
-}
 
 const ApplicationCard = React.memo(function ApplicationCard({
   app,
@@ -86,7 +69,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
               </div>
             </div>
             <span
-              className={`inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border rounded-md ${statusClass(app.status)}`}
+              className={`inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border rounded-md ${getStatusBorderColor(app.status)}`}
             >
               {app.status.replace("_", " ")}
             </span>
