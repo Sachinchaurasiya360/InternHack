@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import ContributionCoachPanel from "./ContributionCoachPanel";
 import CoachFloatingButton from "./CoachFloatingButton";
 import { LearningPathProvider } from "./learning-paths.context";
+import { LearningPathSidebar } from "./components/LearningPathSidebar";
 import StreakFlame from "./StreakFlame";
 import { LearningPathSidebar } from "./components/LearningPathSidebar";
 

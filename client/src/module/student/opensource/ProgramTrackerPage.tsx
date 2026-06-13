@@ -9,6 +9,7 @@ import {
   Bookmark, Download,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { markLearningPathMilestone } from "./learning-paths.data";
 import api from "../../../lib/axios";
@@ -26,9 +27,21 @@ function nextDate(month: number, day: number, hour = 23, minute = 59): string {
 export type FocusArea = "DEVELOPMENT" | "TECHNICAL_WRITING" | "DESIGN" | "RESEARCH";
 export type ProgramDifficulty = "Beginner" | "Intermediate" | "Advanced";
 
+const STATUS_STYLE: Record<Program["status"], string> = {
+  Annual: "bg-lime-100 text-lime-800 dark:bg-lime-900/30 dark:text-lime-300",
+  Ongoing: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+  Batch: "bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200",
+};
+
+const ELIGIBILITY_STYLE: Record<Program["eligibilityType"], string> = {
+  Students: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+  "Open to All": "bg-lime-100 text-lime-800 dark:bg-lime-900/30 dark:text-lime-300",
+  "Diversity-focused": "bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200",
+};
+
 interface Program {
   id: number;
-  slug: string;
+  slug?: string;
   name: string;
   short: string;
   description: string;
@@ -48,13 +61,13 @@ interface Program {
   color: string;
   bgColor: string;
   tags: string[];
-  requirements: string[];
-  timeline: { phase: string; dates: string }[];
-  howToApply: string[];
+  requirements?: string[];
+  timeline?: { phase: string; dates: string }[];
+  howToApply?: string[];
   applicationStart?: string;
   applicationDeadline?: string;
-  difficulty: ProgramDifficulty;
-  focusArea: FocusArea;
+  difficulty?: ProgramDifficulty;
+  focusArea?: FocusArea;
 }
 
 const PROGRAMS: Program[] = [
@@ -475,6 +488,61 @@ const PROGRAMS: Program[] = [
   },
 {
     id: 10,
+
+
+{
+  slug: "rails-girls-summer-of-code",
+  name: "Rails Girls Summer of Code",
+  short: "RGSoC",
+  description:
+    "A fellowship program for women and non-binary coders contributing to open source Ruby on Rails projects with coaching support and a monthly stipend.",
+  fullDescription:
+    "Rails Girls Summer of Code is a fellowship program that awards teams of two students a monthly stipend to work on open source Ruby on Rails projects. Participants also receive coaching from local tech companies. The program aims to increase diversity in open source.",
+  eligibility:
+    "Women, non-binary people, and transgender individuals who can code",
+  eligibilityType: "Diversity-focused",
+  stipend: "$1,500/month (3 months)",
+  stipendPaid: true,
+  stipendRange: "Medium",
+  window: "Mar – July",
+  status: "Annual",
+  region: "Global",
+  website: "https://railsgirlssummerofcode.org",
+  applyUrl: "https://railsgirlssummerofcode.org",
+  color: "text-rose-700",
+  bgColor: "bg-rose-50 border-rose-200",
+  tags: ["ruby", "diversity", "paid"],
+  requirements: [
+    "Identify as a woman or non-binary individual",
+    "Formation of a team of two students applying together",
+    "Appointment of a local coach to support your learning",
+    "Basic proficiency in Ruby, Rails, or the project's primary language",
+    "Ability to commit full-time (40h/week) for the 3-month duration",
+    "Verified enrollment in a university or bootcamp at the time of application",
+  ],
+  timeline: [
+    { phase: "Team Formation & Application", dates: "January – February" },
+    { phase: "Selection & Project Matching", dates: "March – April" },
+    { phase: "Program Launch & Kick-off", dates: "June" },
+    { phase: "Coding & Community Building", dates: "July – September" },
+    { phase: "Final Reports & Performance Review", dates: "October" },
+  ],
+  howToApply: [
+    "Find a coding partner and form a team of two",
+    "Locate a local coach or mentor to supervise your work",
+    "Browse the project list on the RGSoC website",
+    "Write a joint proposal detailing your interest and project choice",
+    "Submit the application via the official RGSoC platform",
+    "Participate in an interview process if your proposal is shortlisted",
+  ],
+  difficulty: "Intermediate",
+  focusArea: "DEVELOPMENT",
+},
+
+{
+  id: 14,
+  // next object continues here...
+}
     slug: "xorg-foundation-mentorship",
     name: "X.Org Foundation Mentorship",
     short: "X.Org",
@@ -1435,7 +1503,7 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
             </button>
             <button
               type="button"
-              onClick={() => onToggleTrack(program.slug, !tracked)}
+              onClick={() => program.slug && onToggleTrack(program.slug, !tracked)}
               className={`flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold rounded-md border transition-colors cursor-pointer ${
                 tracked
                   ? "text-lime-700 dark:text-lime-400 bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800/30"
@@ -1487,7 +1555,7 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
                   Requirements
                 </h4>
                 <ul className="space-y-2">
-                  {program.requirements.map((r, i) => (
+                  {(program.requirements ?? []).map((r, i) => (
                     <li
                       key={i}
                       className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400"
@@ -1504,7 +1572,7 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
                   Timeline
                 </h4>
                 <div className="space-y-2">
-                  {program.timeline.map((t, i) => (
+                  {(program.timeline ?? []).map((t, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <div className="w-1.5 h-1.5 rounded-md bg-stone-400 mt-1.5 shrink-0" />
                       <div>
@@ -1523,7 +1591,7 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
                   How to Apply
                 </h4>
                 <ol className="space-y-2">
-                  {program.howToApply.map((step, i) => (
+                  {(program.howToApply ?? []).map((step, i) => (
                     <li
                       key={i}
                       className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400"
@@ -1686,7 +1754,7 @@ export default function ProgramTrackerPage() {
         return dateB - dateA;
       });
     } else if (sortBy === "stipend-desc") {
-      const rank = { High: 3, Medium: 2, "Low/None": 1 };
+      const rank: Record<string, number> = { High: 3, Medium: 2, "Low/None": 1 };
       list.sort((a, b) => {
         const aVal = rank[a.stipendRange] || 0;
         const bVal = rank[b.stipendRange] || 0;
@@ -1699,8 +1767,8 @@ export default function ProgramTrackerPage() {
     return list;
   }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy, activeFocus, showTrackedOnly, programsSource, trackedSlugs]);
 
-  const totalStipend = programsSource.filter((p) => p.stipendPaid).length;
-  const highStipend = programsSource.filter((p) => p.stipendRange === "High").length;
+  const totalStipend = programsSource.filter((p: Program) => p.stipendPaid).length;
+  const highStipend = programsSource.filter((p: Program) => p.stipendRange === "High").length;
 
   const programEventsSchema = PROGRAMS.map((p) => ({
     "@context": "https://schema.org",

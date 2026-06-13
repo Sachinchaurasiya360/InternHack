@@ -8,11 +8,12 @@ import {
   Filter,
   X,
   Maximize2,
+  Flame,
+  TrendingUp,
   Download,
   ChevronDown,
   ArrowLeft,
   BarChart3,
-  Flame,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
@@ -258,6 +259,8 @@ function TrendEmptyState({
 }
 
 // ─── Page ───────────────────────────────────────────────────────
+
+
 export default function OpenSourceAnalyticsPage() {
   useEffect(() => {
     markLearningPathMilestone("leaderboard");
@@ -311,7 +314,7 @@ export default function OpenSourceAnalyticsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
+const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
     queryKey: queryKeys.opensource.trend(startMonth, endMonth),
     queryFn: () => api.get("/opensource/analytics/trend", { params: { startDate: startMonth, endDate: endMonth } }).then((r) => r.data),
     staleTime: 5 * 60 * 1000,
@@ -328,9 +331,9 @@ export default function OpenSourceAnalyticsPage() {
   const contributionTotal = contributionTrendData?.total ?? 0;
   const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
   const showContributionEmptyState =
-  contributionTotal === 0 &&
-  contributionTrend.length > 0 &&
-  contributionTrend.every((entry) => entry.count === 0);
+    contributionTotal === 0 &&
+    contributionTrend.length > 0 &&
+    contributionTrend.every((entry) => entry.count === 0);
 
   const downloadBlob = (content: string, filename: string, type: string) => {
     const blob = new Blob([content], { type });
@@ -343,19 +346,41 @@ export default function OpenSourceAnalyticsPage() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-
   const handleExportCSV = () => {
     if (!contributionTrend || contributionTrend.length === 0) return;
     const header = "Month,Label,Contributions";
     const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
     downloadBlob([header, ...rows].join("\n"), `oss-contributions-${startMonth}-${endMonth}.csv`, "text/csv;charset=utf-8;");
   };
-
   const handleExportJSON = () => {
     if (!contributionTrend || contributionTrend.length === 0) return;
     const json = JSON.stringify({ range: { start: startMonth, end: endMonth }, contributions: contributionTrend }, null, 2);
     downloadBlob(json, `oss-contributions-${startMonth}-${endMonth}.json`, "application/json");
   };
+
+  const currentStreak = (() => {
+    let count = 0;
+    let i = contributionTrend.length - 1;
+    // The most recent month is still in progress: a zero there shouldn't break an
+    // otherwise active streak, so skip it before counting backwards.
+    if (i >= 0 && contributionTrend[i].count === 0) i--;
+    for (; i >= 0; i--) {
+      if (contributionTrend[i].count > 0) count++;
+      else break;
+    }
+    return count;
+  })();
+
+  const longestStreak = (() => {
+    let max = 0, cur = 0;
+    for (const point of contributionTrend) {
+      cur = point.count > 0 ? cur + 1 : 0;
+      max = Math.max(max, cur);
+    }
+    return max;
+  })();
+
+  // ─── Derive filter options ──────────────────────────────────
 
   const years = useMemo(() => {
     const set = new Set<number>();
@@ -687,6 +712,27 @@ export default function OpenSourceAnalyticsPage() {
               )
             }
           >
+            {!trendIsLoading && !trendIsError && contributionTrend.length > 0 && (
+              <div className="mb-4">
+                {currentStreak === 0 ? (
+                  <div className="flex items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
+                    <Flame className="w-4 h-4 text-stone-400" />
+                    No active streak. Contribute this month to start one.
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center gap-2 bg-stone-100 dark:bg-white/5 px-3 py-2 rounded-md text-sm font-medium text-stone-700 dark:text-stone-300">
+                      <Flame className="w-4 h-4 text-lime-500" />
+                      Current streak: {currentStreak} month{currentStreak !== 1 ? "s" : ""}
+                    </div>
+                    <div className="flex items-center gap-2 bg-stone-100 dark:bg-white/5 px-3 py-2 rounded-md text-sm font-medium text-stone-700 dark:text-stone-300">
+                      <TrendingUp className="w-4 h-4 text-lime-500" />
+                      Longest streak: {longestStreak} month{longestStreak !== 1 ? "s" : ""}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             {trendIsLoading ? (
               <TrendSkeleton />
             ) : hasContributionActivity ? (

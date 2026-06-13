@@ -10,6 +10,8 @@ import type { CustomFieldDefinition } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 interface RoundInput {
   name: string;
@@ -118,14 +120,7 @@ export default function CreateJobPage() {
     <div className="relative text-stone-900 dark:text-stone-50">
       <SEO title="Create Job" noIndex />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-4xl mx-auto">
         {/* Editorial header */}

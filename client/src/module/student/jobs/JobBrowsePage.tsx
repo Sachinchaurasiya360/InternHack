@@ -27,6 +27,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { CARD_BASE } from "../../../lib/card-styles";
 import { useSaveJob } from "../../../hooks/useSaveJob";
+import { useClearFilters } from "../../../hooks/useClearFilters";
 import type {
   ExternalJob,
   Job,
@@ -34,6 +35,8 @@ import type {
   ScrapedJob,
 } from "../../../lib/types";
 import JobCard from "./component/jobcard";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 const FILTER_TAGS = [
   "Frontend",
@@ -301,19 +304,18 @@ export default function JobBrowsePage() {
     setScrPage(1);
   };
 
-  const clearAll = () => {
-    setSearch("");
-    setLocationFilter("");
-    setDebouncedSearch("");
-    setDebouncedLocation("");
-    setSelectedTags([]);
-    setSalaryMin("");
-    setSalaryMax("");
-    setSearchParams({});
-    setPage(1);
-    setExtPage(1);
-    setScrPage(1);
-  };
+  const clearAll = useClearFilters([
+    () => setSearch(""),
+    () => setLocationFilter(""),
+    () => setDebouncedSearch(""),
+    () => setDebouncedLocation(""),
+    () => setSelectedTags([]),
+    () => setSalaryMin(""),
+    () => setSalaryMax(""),
+    () => setPage(1),
+    () => setExtPage(1),
+    () => setScrPage(1),
+  ]);
 
   const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
   const selectSuggestion = (location: string) => {
@@ -393,15 +395,9 @@ export default function JobBrowsePage() {
 
       {!isInsideLayout && <Navbar />}
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+
+      <GridBackground />
+
 
       <div className="relative max-w-6xl mx-auto px-6 pt-8 pb-20">
         {/* Editorial header */}

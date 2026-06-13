@@ -1,3 +1,4 @@
+import { fadeUp, stagger } from "@/lib/motion-variants";
 import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
@@ -33,6 +34,8 @@ import ReviewCard from "./ReviewCard";
 import ReviewForm from "./ReviewForm";
 import SuggestEditModal from "./SuggestEditModal";
 import InterviewExperienceSection from "./InterviewExperienceSection";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 const SIZE_LABELS: Record<string, string> = {
   STARTUP: "Startup (1-10)",
@@ -42,8 +45,6 @@ const SIZE_LABELS: Record<string, string> = {
   ENTERPRISE: "Enterprise (1000+)",
 };
 
-const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
-const stagger = { show: { transition: { staggerChildren: 0.07 } } };
 
 
 
@@ -228,16 +229,8 @@ export default function CompanyDetailPage() {
 
   const page = (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 relative">
-      {/* Grid line backdrop */}
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
+
 
       <div className={`relative max-w-6xl mx-auto px-6 pb-16 ${isInsideLayout ? "" : "pt-24"}`}>
         {/* Back link */}

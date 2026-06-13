@@ -79,10 +79,10 @@ export class StudentService {
       }
 
       // Check application badges (fire-and-forget)
-      badgeService.checkAndAwardBadges(studentId, "first_application").catch(() => {});
-      badgeService.checkAndAwardBadges(studentId, "job_apply").catch(() => {});
+      badgeService.checkAndAwardBadges(studentId, "first_application").catch((err) => console.error("Badge check failed (first_application):", err));
+      badgeService.checkAndAwardBadges(studentId, "job_apply").catch((err) => console.error("Badge check failed (job_apply):", err));
       // Check 10-application milestone (fire-and-forget)
-      this.checkApplicationMilestone(studentId).catch(() => {});
+      this.checkApplicationMilestone(studentId).catch((err) => console.error("Failed to check application milestone:", err));
 
       return application;
     } catch (err) {
@@ -270,10 +270,10 @@ Rules:
       });
 
       // Check application badges (fire-and-forget)
-      badgeService.checkAndAwardBadges(studentId, "first_application").catch(() => {});
-      badgeService.checkAndAwardBadges(studentId, "job_apply").catch(() => {});
+      badgeService.checkAndAwardBadges(studentId, "first_application").catch((err) => console.error("Badge check failed (first_application):", err));
+      badgeService.checkAndAwardBadges(studentId, "job_apply").catch((err) => console.error("Badge check failed (job_apply):", err));
       // Check 10-application milestone (fire-and-forget)
-      this.checkApplicationMilestone(studentId).catch(() => {});
+      this.checkApplicationMilestone(studentId).catch((err) => console.error("Failed to check application milestone:", err));
       return application;
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
@@ -350,7 +350,7 @@ Rules:
           "Browse More Jobs",
           "https://www.internhack.xyz/jobs",
         );
-        sendEmail({ to: user.email, subject: "You hit 10 applications! Keep it up", html }).catch(() => {});
+        sendEmail({ to: user.email, subject: "You hit 10 applications! Keep it up", html }).catch((err) => console.error("Failed to send milestone email:", err));
       }
     }
   }

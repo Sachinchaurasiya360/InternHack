@@ -18,6 +18,8 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 import api from "../../../lib/axios";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 async function getServerProgress() {
   const { data } = await api.get("/interview-progress");
@@ -267,14 +269,7 @@ export default function InterviewQuestionPage() {
         canonicalUrl={canonicalUrl(`/learn/interview/${sectionSlug}/${questionId}`)}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-4xl mx-auto">
         {/* Editorial header */}

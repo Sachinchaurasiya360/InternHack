@@ -5,13 +5,9 @@ const badgeService = new BadgeService();
 
 export class OpensourceStreakService {
   async getStreak(userId: number) {
-    const streak = await prisma.opensourceStreak.upsert({
-      where: { userId },
-      update: {},
-      create: { userId },
-    });
-
-    return streak;
+    const existing = await prisma.opensourceStreak.findUnique({ where: { userId } });
+    if (existing) return existing;
+    return prisma.opensourceStreak.create({ data: { userId } });
   }
 
   async tickStreak(userId: number, action: "guide_step" | "repo_suggestion" | "pr_merged") {
@@ -19,11 +15,8 @@ export class OpensourceStreakService {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayEnd = new Date(todayStart.getTime() + 86400000);
 
-    const streak = await prisma.opensourceStreak.upsert({
-      where: { userId },
-      update: {},
-      create: { userId },
-    });
+    const existing = await prisma.opensourceStreak.findUnique({ where: { userId } });
+    const streak = existing ?? await prisma.opensourceStreak.create({ data: { userId } });
 
     const lastActivity = streak?.lastActivityAt;
 
@@ -69,7 +62,7 @@ export class OpensourceStreakService {
     if (!todayLastActivity) {
       badgeService.checkAndAwardBadges(userId, "oss_streak", {
         streak: newCurrentStreak,
-      }).catch(() => {});
+      }).catch((err) => console.error("Badge check failed (oss_streak):", err));
     }
 
     return updated;
