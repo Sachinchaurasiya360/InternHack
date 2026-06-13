@@ -52,7 +52,6 @@ export default function LearnHubPage() {
   const [activeCategory, setActiveCategory] = useState<TrackCategory | "All">("All");
   const [activeDifficulty, setActiveDifficulty] = useState("All");
   const [sortBy, setSortBy] = useState("popular");
-
   const { data: recData, isLoading: loadingRecs } = useQuery<{ weakAreas: WeakArea[] }>({
     queryKey: ["learn-recommendations"],
     queryFn: () => api.get<{ weakAreas: WeakArea[] }>("/student/recommendations").then((r) => r.data),
@@ -61,7 +60,7 @@ export default function LearnHubPage() {
   });
   const weakAreas = recData?.weakAreas ?? [];
   const { progressMap } = useTrackProgress();
-
+  const completedTrackIds = useMemo(() => getCompletedTrackIds(), []);
 const grouped = useMemo(() => {
     let filtered = TRACKS;
 
@@ -375,7 +374,7 @@ const grouped = useMemo(() => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {group.tracks.map((track, idx) => (
-                  <TrackCard key={track.id} track={track} index={idx} progress={progressMap[track.id]} />
+                  <TrackCard key={track.id} track={track} index={idx} completedTrackIds={completedTrackIds} progress={progressMap[track.id]} />
                 ))}
               </div>
             </section>
