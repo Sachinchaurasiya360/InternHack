@@ -74,11 +74,6 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-  label: "Interview Dashboard",
-  to: "/student/interview-dashboard",
-  icon: Calendar,
-},
-  {
     label: "account",
     items: [
       { to: "/student/profile", icon: UserCircle, label: "My Profile" },

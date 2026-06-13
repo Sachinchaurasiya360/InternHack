@@ -6,6 +6,7 @@ import {
   Info, ArrowUpRight, RotateCcw, Lightbulb, Eye, Code2,
 } from "lucide-react";
 import { CodeBlock } from "../../../components/ui/CodeBlock";
+import { GridBackground } from "../../../components/ui/GridBackground";
 import { sections, lessons } from "./data";
 import type { HtmlProgress, PracticeExercise } from "./data/types";
 import HtmlEditor from "./components/HtmlEditor";
