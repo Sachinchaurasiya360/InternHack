@@ -1,11 +1,128 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
-import { motion } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Eye, EyeOff, Check, X } from "lucide-react";
 import toast from "@/components/ui/toast";
 import api from "../../lib/axios";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
+
+const PASSWORD_CRITERIA = [
+  { id: "length",    label: "At least 8 characters",  test: (p: string) => p.length >= 8 },
+  { id: "uppercase", label: "One uppercase letter",    test: (p: string) => /[A-Z]/.test(p) },
+  { id: "lowercase", label: "One lowercase letter",    test: (p: string) => /[a-z]/.test(p) },
+  { id: "number",    label: "One number",              test: (p: string) => /[0-9]/.test(p) },
+  { id: "special",   label: "One special character",  test: (p: string) => /[\W_]/.test(p) },
+] as const;
+
+type StrengthLevel = 0 | 1 | 2 | 3 | 4 | 5;
+
+function getPasswordStrength(password: string): StrengthLevel {
+  if (!password) return 0;
+  const passed = PASSWORD_CRITERIA.filter((c) => c.test(password)).length;
+  return passed as StrengthLevel;
+}
+
+const STRENGTH_META: Record<
+  StrengthLevel,
+  { label: string; segmentClass: string; labelClass: string }
+> = {
+  0: { label: "",       segmentClass: "bg-stone-200 dark:bg-stone-700", labelClass: "" },
+  1: { label: "Weak",   segmentClass: "bg-red-500",                     labelClass: "text-red-500" },
+  2: { label: "Weak",   segmentClass: "bg-red-500",                     labelClass: "text-red-500" },
+  3: { label: "Fair",   segmentClass: "bg-amber-400",                   labelClass: "text-amber-500" },
+  4: { label: "Good",   segmentClass: "bg-lime-400",                    labelClass: "text-lime-600 dark:text-lime-400" },
+  5: { label: "Strong", segmentClass: "bg-lime-400",                    labelClass: "text-lime-600 dark:text-lime-400" },
+};
+
+const PasswordStrengthIndicator = React.memo(function PasswordStrengthIndicator({
+  password,
+}: {
+  password: string;
+}) {
+  const strength = getPasswordStrength(password);
+  const meta = STRENGTH_META[strength];
+
+  if (!password) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.2 }}
+      className="mt-2 space-y-2"
+      aria-live="polite"
+    >
+      <div className="flex items-center gap-2">
+        <div className="flex gap-1 flex-1">
+          {([1, 2, 3, 4, 5] as StrengthLevel[]).map((level) => (
+            <motion.div
+              key={level}
+              className="h-1 flex-1 rounded-sm overflow-hidden bg-stone-200 dark:bg-stone-700"
+            >
+              <motion.div
+                className={`h-full ${
+                  strength >= level ? meta.segmentClass : ""
+                }`}
+                initial={{ width: "0%" }}
+                animate={{ width: strength >= level ? "100%" : "0%" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              />
+            </motion.div>
+          ))}
+        </div>
+        <AnimatePresence mode="wait">
+          {meta.label && (
+            <motion.span
+              key={meta.label}
+              initial={{ opacity: 0, x: 4 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -4 }}
+              transition={{ duration: 0.2 }}
+              className={`text-xs font-mono font-bold w-12 text-right ${meta.labelClass}`}
+            >
+              {meta.label}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <ul className="space-y-1" aria-label="Password requirements">
+        {PASSWORD_CRITERIA.map((criterion) => {
+          const passed = criterion.test(password);
+          return (
+            <li
+              key={criterion.id}
+              className="flex items-center gap-1.5 text-xs font-mono"
+            >
+              <span
+                className={`flex items-center justify-center w-3.5 h-3.5 ${
+                  passed ? "text-lime-600 dark:text-lime-400" : "text-stone-400"
+                }`}
+              >
+                {passed ? (
+                  <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                ) : (
+                  <X className="w-3.5 h-3.5" strokeWidth={3} />
+                )}
+              </span>
+              <span
+                className={`transition-colors ${
+                  passed
+                    ? "text-stone-600 dark:text-stone-400"
+                    : "text-stone-400 dark:text-stone-600"
+                }`}
+              >
+                {criterion.label}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </motion.div>
+  );
+});
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -84,8 +201,24 @@ export default function ForgotPasswordPage() {
         setError("Please enter the complete 6-digit code");
         return;
       }
-      if (newPassword.length < 6) {
-        setError("Password must be at least 6 characters");
+      if (newPassword.length < 8) {
+        setError("Password must be at least 8 characters");
+        return;
+      }
+      if (!/[A-Z]/.test(newPassword)) {
+        setError("Password must contain at least one uppercase letter");
+        return;
+      }
+      if (!/[a-z]/.test(newPassword)) {
+        setError("Password must contain at least one lowercase letter");
+        return;
+      }
+      if (!/[0-9]/.test(newPassword)) {
+        setError("Password must contain at least one number");
+        return;
+      }
+      if (!/[\W_]/.test(newPassword)) {
+        setError("Password must contain at least one special character");
         return;
       }
       if (newPassword !== confirmPassword) {
@@ -224,9 +357,9 @@ export default function ForgotPasswordPage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black transition-colors pr-10 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                    placeholder="Min. 6 characters"
+                    placeholder="Min. 8 chars (A-Z, a-z, 0-9, symbol)"
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"
@@ -236,6 +369,13 @@ export default function ForgotPasswordPage() {
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
+                </div>
+                <div id="password-strength">
+                  <AnimatePresence>
+                    {newPassword && (
+                      <PasswordStrengthIndicator password={newPassword} />
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
 
@@ -252,7 +392,7 @@ export default function ForgotPasswordPage() {
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black transition-colors pr-10 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                     placeholder="Re-enter your password"
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"

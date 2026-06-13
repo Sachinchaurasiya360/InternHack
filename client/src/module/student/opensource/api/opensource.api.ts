@@ -39,3 +39,20 @@ export async function patchFirstPRProgress(stepId: string, completed: boolean): 
   const { data } = await api.patch<FirstPRProgressResponse>("/opensource/first-pr/progress", body);
   return getCompletedStepIds(data);
 }
+
+export interface Certificate {
+  token: string;
+  studentName: string;
+  guideName: string;
+  issuedAt: string;
+}
+
+export async function issueCertificate(guideName: string): Promise<Certificate> {
+  const { data } = await api.post<{ certificate: Certificate }>("/opensource/certificate/issue", { guideName });
+  return data.certificate;
+}
+
+export async function fetchCertificate(token: string): Promise<Certificate> {
+  const { data } = await api.get<{ certificate: Certificate }>(`/opensource/certificate/${token}`);
+  return data.certificate;
+}

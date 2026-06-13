@@ -185,8 +185,6 @@ export const OssContributionHeatmap = React.memo(function OssContributionHeatmap
           blockRadius={2}
           fontSize={10}
           showMonthLabels={true}
-          hideTotalCount
-          hideColorLegend
           labels={{
             months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],

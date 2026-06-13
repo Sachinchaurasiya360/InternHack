@@ -174,4 +174,64 @@ export class AdminOpensourceService {
     if (!repo) throw new Error("Repository not found");
     return prisma.opensourceRepo.delete({ where: { id: repoId } });
   }
+
+  async getGuideFeedbackAnalytics() {
+    const feedback = await prisma.guideFeedback.findMany({
+      select: { guideId: true, stepId: true, rating: true, reason: true },
+    });
+
+    const totalFeedback = feedback.length;
+    const thumbsUp = feedback.filter((f) => f.rating === "up").length;
+    const globalSatisfactionRate = totalFeedback > 0 ? (thumbsUp / totalFeedback) * 100 : 0;
+
+    const statsMap = new Map<string, { total: number; up: number; reasons: Record<string, number> }>();
+
+    feedback.forEach((f) => {
+      const key = `${f.guideId}:${f.stepId}`;
+      if (!statsMap.has(key)) {
+        statsMap.set(key, { total: 0, up: 0, reasons: {} });
+      }
+      const s = statsMap.get(key)!;
+      s.total++;
+      if (f.rating === "up") s.up++;
+      if (f.reason) {
+        s.reasons[f.reason] = (s.reasons[f.reason] || 0) + 1;
+      }
+    });
+
+    const stepStats = Array.from(statsMap.entries()).map(([key, s]) => {
+      const [guideId, stepId] = key.split(":");
+      return {
+        guideId,
+        stepId,
+        total: s.total,
+        up: s.up,
+        satisfactionRate: (s.up / s.total) * 100,
+        reasons: s.reasons,
+      };
+    });
+
+    // 3. Bottom 5 Steps (where total responses > 5)
+    const bottom5Steps = stepStats
+      .filter((s) => s.total > 5)
+      .sort((a, b) => a.satisfactionRate - b.satisfactionRate)
+      .slice(0, 5);
+
+    // 4. Preset Drop-off Reasons Global Summary
+    const reasonSummary: Record<string, number> = {};
+    feedback.forEach((f) => {
+      if (f.reason) {
+        reasonSummary[f.reason] = (reasonSummary[f.reason] || 0) + 1;
+      }
+    });
+
+    return {
+      global: {
+        totalFeedback,
+        satisfactionRate: globalSatisfactionRate,
+      },
+      bottom5Steps,
+      reasonSummary,
+    };
+  }
 }

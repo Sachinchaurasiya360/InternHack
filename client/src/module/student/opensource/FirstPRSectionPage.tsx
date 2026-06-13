@@ -10,6 +10,7 @@ import {
   Lightbulb,
   Info,
 } from "lucide-react";
+import { VideoEmbed } from "../../../components/ui/VideoEmbed";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
@@ -44,6 +45,7 @@ interface Step {
   commands: Command[];
   resources: Resource[];
   tips: string[];
+  videoUrl?: string;
 }
 
 function CommandBlock({ label, code }: Command) {
@@ -273,6 +275,16 @@ export default function FirstPRSectionPage() {
             <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
               {step.mentor_guidance}
             </div>
+          </motion.div>
+        )}
+
+        {step.videoUrl && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.12 }}
+          >
+            <VideoEmbed url={step.videoUrl} title={`Watch: ${step.title}`} />
           </motion.div>
         )}
 

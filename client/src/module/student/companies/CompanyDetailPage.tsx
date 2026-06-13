@@ -1,3 +1,4 @@
+import { fadeUp, stagger } from "@/lib/motion-variants";
 import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
@@ -33,6 +34,8 @@ import ReviewCard from "./ReviewCard";
 import ReviewForm from "./ReviewForm";
 import SuggestEditModal from "./SuggestEditModal";
 import InterviewExperienceSection from "./InterviewExperienceSection";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 const SIZE_LABELS: Record<string, string> = {
   STARTUP: "Startup (1-10)",
@@ -42,8 +45,6 @@ const SIZE_LABELS: Record<string, string> = {
   ENTERPRISE: "Enterprise (1000+)",
 };
 
-const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
-const stagger = { show: { transition: { staggerChildren: 0.07 } } };
 
 
 
@@ -88,30 +89,7 @@ function Kicker({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CompanyLogo({ src, label }: { src?: string | null; label: string }) {
-  if (src) {
-    return (
-      <img
-        src={src.startsWith("http") ? src : `${SERVER_URL}${src}`}
-        alt={label}
-        className="w-16 h-16 sm:w-20 sm:h-20 rounded-md object-cover border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 shrink-0"
-      />
-    );
-  }
-  return (
-    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-2xl sm:text-3xl font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
-
-function ContactMark({ label }: { label: string }) {
-  return (
-    <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
 export default function CompanyDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -228,16 +206,8 @@ export default function CompanyDetailPage() {
 
   const page = (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 relative">
-      {/* Grid line backdrop */}
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
+
 
       <div className={`relative max-w-6xl mx-auto px-6 pb-16 ${isInsideLayout ? "" : "pt-24"}`}>
         {/* Back link */}
@@ -255,7 +225,7 @@ export default function CompanyDetailPage() {
           <motion.div variants={fadeUp}>
             <Kicker>company / profile</Kicker>
             <div className="mt-4 flex flex-col sm:flex-row sm:items-start gap-5">
-              <CompanyLogo src={company.logo} label={company.name} />
+              <CompanyMark name={company.name} logo={company.logo} size="xl" />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
                   <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
@@ -584,7 +554,7 @@ export default function CompanyDetailPage() {
                         className="pb-4 border-b border-stone-100 dark:border-white/5 last:pb-0 last:border-b-0"
                       >
                         <div className="flex items-start gap-3">
-                          <ContactMark label={contact.name} />
+                          <CompanyMark name={contact.name} size="sm" />
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">
                               {contact.name}

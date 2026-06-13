@@ -37,6 +37,10 @@ export interface Track {
   lessonCountKey?: string;
   /** Absolute path override. When present, the card links here instead of `/learn/${path}`. */
   to?: string;
+  /** Track IDs that should be completed before starting this track. */
+  prerequisites?: string[];
+  /** Human-readable prerequisite hint shown on the card. */
+  prerequisiteText?: string;
   tags?: string[];
   difficulty?: "Beginner" | "Intermediate" | "Advanced";
   createdAt?: string;
@@ -151,6 +155,8 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "css",
+    prerequisites: ["html"],
+    prerequisiteText: "You should know HTML basics before starting CSS",
     salary: "Avg ₹8 LPA",
   },
   {
@@ -167,6 +173,8 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "javascript",
+    prerequisites: ["html"],
+    prerequisiteText: "You should know HTML basics before starting JavaScript",
     salary: "Avg ₹10 LPA",
   },
   {
@@ -183,6 +191,8 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "typescript",
+    prerequisites: ["javascript"],
+    prerequisiteText: "You should know JavaScript fundamentals before starting TypeScript",
     salary: "Avg ₹13 LPA",
   },
   {
@@ -199,6 +209,8 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "react",
+    prerequisites: ["html", "javascript"],
+    prerequisiteText: "You should know HTML basics and JavaScript fundamentals before starting React",
     salary: "Avg ₹14 LPA",
   },
 
@@ -217,6 +229,8 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "nodejs",
+    prerequisites: ["javascript"],
+    prerequisiteText: "You should know JavaScript fundamentals before starting Node.js",
     salary: "Avg ₹12 LPA",
   },
   {
@@ -249,6 +263,8 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "fastapi",
+    prerequisites: ["python"],
+    prerequisiteText: "You should know Python basics before starting FastAPI",
     salary: "Avg ₹11 LPA",
   },
   {
@@ -265,6 +281,8 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "flask",
+    prerequisites: ["python"],
+    prerequisiteText: "You should know Python basics before starting Flask",
     salary: "Avg ₹10 LPA",
   },
   {
@@ -281,6 +299,8 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "django",
+    prerequisites: ["python"],
+    prerequisiteText: "You should know Python basics before starting Django",
     salary: "Avg ₹12 LPA",
   },
 

@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
   Puzzle, CheckCircle2, ChevronRight, ChevronLeft, ExternalLink,
-  ArrowRight, Search, BookOpen,
+  ArrowRight, Search, BookOpen, Eye,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -14,12 +14,16 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Button } from "../../../components/ui/button";
 import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import DsaPatternVisualizer from "./components/DsaPatternVisualizer";
+import { PATTERN_VIZ } from "./data/dsa-pattern-viz.data";
 
 export default function DsaPatternsPage() {
   const { user } = useAuthStore();
   const [selectedPattern, setSelectedPattern] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [patternSearch, setPatternSearch] = useState("");
+  const [showViz, setShowViz] = useState(false);
+  const patternVizData = selectedPattern ? PATTERN_VIZ[selectedPattern] : null;
 
   const { data: patterns, isLoading } = useQuery({
     queryKey: queryKeys.dsa.patterns(),
@@ -223,16 +227,35 @@ export default function DsaPatternsPage() {
                     </p>
                   )}
                 </div>
-                <button
-                  onClick={() => { setSelectedPattern(null); setPage(1); }}
-                  className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors cursor-pointer shrink-0"
-                >
-                  all patterns /
-                </button>
+                <div className="flex items-center gap-2">
+                  {patternVizData && (
+                    <button
+                      onClick={() => setShowViz((v) => !v)}
+                      className={`text-[10px] font-mono uppercase tracking-widest transition-colors cursor-pointer shrink-0 flex items-center gap-1 ${
+                        showViz
+                          ? "text-lime-700 dark:text-lime-400"
+                          : "text-stone-500 dark:text-stone-400 hover:text-lime-600 dark:hover:text-lime-400"
+                      }`}
+                    >
+                      <Eye className="w-3 h-3" />
+                      {showViz ? "problems /" : "visualize /"}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => { setSelectedPattern(null); setPage(1); setShowViz(false); }}
+                    className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors cursor-pointer shrink-0"
+                  >
+                    all patterns /
+                  </button>
+                </div>
               </div>
             </motion.div>
 
-            {problemsLoading && !problemData ? (
+            {showViz && patternVizData ? (
+              <DsaPatternVisualizer data={patternVizData} />
+            ) : null}
+
+            {!showViz && problemsLoading && !problemData ? (
               <div className="space-y-2">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="h-16 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md animate-pulse" />

@@ -29,12 +29,28 @@ const CATEGORY_DESCRIPTION: Record<TrackCategory, string> = {
   web3: "Smart contracts, DeFi, and blockchain from first principles.",
 };
 
+function getCompletedTrackIds(): string[] {
+  const completed: string[] = [];
+  const trackIds = TRACKS.map((t) => t.id);
+  for (const id of trackIds) {
+    try {
+      const raw = localStorage.getItem(`${id}-progress`);
+      if (!raw) continue;
+      const progress = JSON.parse(raw);
+      const values = Object.values(progress) as { completed?: boolean }[];
+      if (values.length > 0 && values.every((v) => v?.completed)) completed.push(id);
+    } catch {
+      // ignore
+    }
+  }
+  return completed;
+}
+
 export default function LearnHubPage() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<TrackCategory | "All">("All");
   const [activeDifficulty, setActiveDifficulty] = useState("All");
   const [sortBy, setSortBy] = useState("popular");
-
   const { data: recData, isLoading: loadingRecs } = useQuery<{ weakAreas: WeakArea[] }>({
     queryKey: ["learn-recommendations"],
     queryFn: () => api.get<{ weakAreas: WeakArea[] }>("/student/recommendations").then((r) => r.data),
@@ -43,7 +59,7 @@ export default function LearnHubPage() {
   });
   const weakAreas = recData?.weakAreas ?? [];
   const { progressMap } = useTrackProgress();
-
+  const completedTrackIds = useMemo(() => getCompletedTrackIds(), []);
 const grouped = useMemo(() => {
     let filtered = TRACKS;
 
@@ -357,7 +373,7 @@ const grouped = useMemo(() => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {group.tracks.map((track, idx) => (
-                  <TrackCard key={track.id} track={track} index={idx} progress={progressMap[track.id]} />
+                  <TrackCard key={track.id} track={track} index={idx} completedTrackIds={completedTrackIds} progress={progressMap[track.id]} />
                 ))}
               </div>
             </section>

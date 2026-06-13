@@ -9,6 +9,20 @@ export const syncLeetCodeSchema = z.object({
   leetcodeUsername: z.string().min(1, "LeetCode username is required").max(100),
 });
 
+export const addLabelSchema = z.object({
+  label: z
+    .string()
+    .trim()
+    .min(1, "Label cannot be empty")
+    .max(40, "Label too long"),
+});
+export type AddLabelInput = z.infer<typeof addLabelSchema>;
+
+export const removeLabelSchema = z.object({
+  label: z.string().trim().min(1, "Label cannot be empty").max(40),
+});
+export type RemoveLabelInput = z.infer<typeof removeLabelSchema>;
+
 export const codeReviewResponseSchema = z.object({
   timeComplexity: z.string(),
   spaceComplexity: z.string(),

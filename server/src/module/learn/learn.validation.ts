@@ -13,5 +13,19 @@ export const bulkInterviewProgressSchema = z.object({
   lastVisitedId: questionIdSchema.nullish(),
 });
 
+export const getReadinessReportSchema = {
+  body: z.object({
+    targetRole: z.string({
+      error: "Target role specification is required",
+    }),
+    companyTier: z.string({
+      error: "Company tier preference is required",
+    }),
+    availableTime: z.string({
+      error: "Available preparation timeline is required",
+    }),
+  }),
+};
+
 export type InterviewProgressAction = z.infer<typeof interviewProgressActionSchema>["action"];
 export type BulkInterviewProgressInput = z.infer<typeof bulkInterviewProgressSchema>;

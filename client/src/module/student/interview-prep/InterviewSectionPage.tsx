@@ -1,3 +1,5 @@
+import { SELECT_CLASS } from "@/lib/form-styles";
+import { ProgressBar } from "../../../components/ui/ProgressBar";
 import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
@@ -6,19 +8,18 @@ import { sections, questions } from "./data";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
+import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { useQuery } from "@tanstack/react-query";
+import { MetaChip } from "../../../components/ui/MetaChip";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
+
 
 const DIFF_STYLE: Record<string, string> = {
   Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
   Intermediate: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
   Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
-};
-
-const FILTER_STYLE: Record<string, string> = {
-  Beginner: "text-green-700 dark:text-green-400 border-green-200 dark:border-green-900/60 bg-green-50 dark:bg-green-900/20",
-  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-900/20",
-  Advanced: "text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-900/20",
 };
 
 const TYPE_STYLE: Record<string, string> = {
@@ -29,22 +30,15 @@ const TYPE_STYLE: Record<string, string> = {
   Experience:  "text-rose-700 dark:text-rose-400 border-rose-300 dark:border-rose-900/60",
 };
 
-function MetaChip({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider border rounded-md ${className || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
-      {children}
-    </span>
-  );
-}
+
 
 export default function InterviewSectionPage() {
   const { sectionSlug } = useParams();
   const basePath = "/learn/interview";
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-
-  const [diffFilter, setDiffFilter] = useState<
-    "all" | "Beginner" | "Intermediate" | "Advanced"
-  >("all");
+  const [activeDifficulty, setActiveDifficulty] = useState("All");
+  const [selectedCompany, setSelectedCompany] = useState("All");
+  const [sortBy, setSortBy] = useState("frequency");
 
   const { data: progressData, isLoading } = useQuery({
     queryKey: ["interview-progress"],
@@ -61,10 +55,42 @@ export default function InterviewSectionPage() {
     [sectionSlug],
   );
 
-  const filteredQuestions = useMemo(() => {
-    if (diffFilter === "all") return sectionQuestions;
-    return sectionQuestions.filter((q) => q.difficulty === diffFilter);
-  }, [sectionQuestions, diffFilter]);
+  const availableCompanies = useMemo(() => {
+    const companies = new Set<string>();
+    sectionQuestions.forEach((q) => {
+      if (q.companies) {
+        q.companies.forEach((c) => companies.add(c));
+      }
+    });
+    return Array.from(companies).sort();
+  }, [sectionQuestions]);
+
+  // Filter and sort the questions
+  const filteredAndSortedQuestions = useMemo(() => {
+    let result = [...sectionQuestions];
+
+    // 1. Difficulty Filter
+    if (activeDifficulty !== "All") {
+      result = result.filter((q) => q.difficulty === activeDifficulty);
+    }
+
+    // 2. Company Filter
+    if (selectedCompany !== "All") {
+      result = result.filter((q) => q.companies?.includes(selectedCompany));
+    }
+
+    // 3. Sorting
+    result.sort((a, b) => {
+      if (sortBy === "frequency") {
+        return (b.frequency || 0) - (a.frequency || 0); // Highest first
+      } else if (sortBy === "order") {
+        return a.orderIndex - b.orderIndex; // Original order
+      }
+      return 0;
+    });
+
+    return result;
+  }, [sectionQuestions, activeDifficulty, selectedCompany, sortBy]);
 
   if (section && !section.freeTier && !isAuthenticated) {
     return <Navigate to={basePath} replace />;
@@ -96,14 +122,7 @@ export default function InterviewSectionPage() {
         canonicalUrl={canonicalUrl(`/learn/interview/${sectionSlug}`)}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}
@@ -150,24 +169,13 @@ export default function InterviewSectionPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="mb-8 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md"
+          className="mb-8"
         >
-          <div className="flex items-center justify-between gap-4 mb-2">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              {isLoading ? "syncing progress" : "section progress"}
-            </span>
-            <span className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 tabular-nums">
-              {completedCount} / {sectionQuestions.length}
-            </span>
-          </div>
-          <div className="w-full h-1 bg-stone-100 dark:bg-stone-800 overflow-hidden rounded-sm">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="h-full bg-lime-400"
-            />
-          </div>
+          <ProgressBar
+            value={completedCount}
+            max={sectionQuestions.length}
+            label={isLoading ? "syncing progress" : "section progress"}
+          />
         </motion.div>
 
         {/* Section header */}
@@ -186,44 +194,85 @@ export default function InterviewSectionPage() {
           </span>
         </div>
 
-        <div className="flex items-center gap-2 mb-6 flex-wrap">
-          {(["all", "Beginner", "Intermediate", "Advanced"] as const).map((d) => (
-            <button
-              key={d}
-              type="button"
-              onClick={() => setDiffFilter(d)}
-              className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest
-                rounded-md border transition-all duration-200 cursor-pointer
-                ${diffFilter === d
-                  ? d === "all"
-                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 shadow-md scale-105"
-                    : `${FILTER_STYLE[d]} shadow-md scale-105`
-                  : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
-                }`}
+        {/* Controls Panel */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 bg-stone-50 dark:bg-stone-900/50 p-4 rounded-md border border-stone-200 dark:border-white/10">
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Difficulty Chips */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Difficulty</span>
+              <div className="flex gap-1 bg-white dark:bg-stone-950 p-1 rounded-md border border-stone-200 dark:border-white/10">
+                {["All", "Beginner", "Intermediate", "Advanced"].map((level) => (
+                  <Button
+                    key={level}
+                    variant="ghost"
+                    onClick={() => setActiveDifficulty(level)}
+                    className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md transition-all cursor-pointer ${
+                      activeDifficulty === level
+                        ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm"
+                        : "bg-transparent border-transparent shadow-none text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800"
+                    }`}
+                  >
+                    {level}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="w-px h-6 bg-stone-300 dark:bg-stone-700 hidden sm:block" />
+
+            {/* Company Dropdown */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Company</span>
+              <select
+                value={selectedCompany}
+                onChange={(e) => setSelectedCompany(e.target.value)}
+                className={SELECT_CLASS}
+              >
+                <option value="All">All Companies</option>
+                {availableCompanies.map((company) => (
+                  <option key={company} value={company}>
+                    {company}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Sort</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className={SELECT_CLASS}
             >
-              {d === "all" ? "all levels" : d}
-            </button>
-          ))}
+              <option value="frequency">Most Frequent</option>
+              <option value="order">Curated Order</option>
+            </select>
+          </div>
         </div>
 
         {/* Question list */}
-        {filteredQuestions.length === 0 ? (
+        {filteredAndSortedQuestions.length === 0 ? (
           <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
             <p className="text-sm text-stone-600 dark:text-stone-400">
-              {diffFilter === "all" ? "No questions in this section yet." : "No questions match this level."}
+              No questions match your filters.
             </p>
-            {diffFilter !== "all" && (
+            {(activeDifficulty !== "All" || selectedCompany !== "All") && (
               <button 
-                onClick={() => setDiffFilter("all")}
-                className="mt-2 text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline"
+                onClick={() => {
+                  setActiveDifficulty("All");
+                  setSelectedCompany("All");
+                }}
+                className="mt-2 text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline cursor-pointer"
               >
-                Clear filter
+                Clear filters
               </button>
             )}
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            {filteredQuestions.map((question, i) => {
+            {filteredAndSortedQuestions.map((question, i) => {
               const isCompleted = completedIds.includes(question.id);
               return (
                 <motion.div

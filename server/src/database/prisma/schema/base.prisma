@@ -49,7 +49,9 @@ model user {
   achievements          Json                        @default("[]")
   leetcodeUrl           String?
   unsubscribeDigest     Boolean                     @default(false)
+  trackedPrograms       String[]                    @default([])
   tokenVersion          Int                         @default(0)
+  ossTier               String?
   adminProfile          adminProfile?               @relation("AdminProfile")
   applications          application[]               @relation("StudentApplications")
   atsScores             atsScore[]                  @relation("StudentAtsScores")
@@ -60,7 +62,8 @@ model user {
   contributions         companyContribution[]       @relation("UserContributions")
   companyReviews        companyReview[]             @relation("UserReviews")
   dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
-  dsaProblemReports     dsaProblemReport[]          
+  dsaProblemLabels      dsaProblemLabel[]           @relation("StudentDsaProblemLabels")
+  dsaProblemReports     dsaProblemReport[]
   emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
   employeeProfile       employee?                   @relation("EmployeeUser")
   postedJobs            job[]                       @relation("RecruiterJobs")
@@ -84,6 +87,7 @@ model user {
   jobAgentEmailLogs     jobAgentEmailLog[]          @relation("UserJobAgentEmailLogs")
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
+  opensourceStreak      opensourceStreak?
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
   guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
@@ -101,6 +105,9 @@ model user {
   contentViews              contentView[]                @relation("UserContentViews")
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
+  ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
+  programInterests          programInterest[]
+  guideCertificates         guideCertificate[]           @relation("UserCertificates")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -181,12 +188,12 @@ model round {
   timeLimitSecs       Int?
   autoGrade           Boolean           @default(false)
   activateAt          DateTime?
+  isArchived          Boolean           @default(false)
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   job                 job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   roundSubmissions    roundSubmission[]
 
-  @@unique([jobId, orderIndex])
   @@unique([jobId, name])
   @@index([jobId])
 }
@@ -493,12 +500,38 @@ model opensourceRepo {
   trending      Boolean        @default(false)
   hacktoberfest Boolean        @default(false)
   lastUpdated   DateTime       @default(now())
+  githubStatsUpdatedAt DateTime?
+  healthScore          Int            @default(0)
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
+  bookmarks   opensourceBookmark[]
 
   @@index([domain])
   @@index([difficulty])
   @@index([language])
+}
+
+model opensourceBookmark {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  repoId    Int
+  createdAt DateTime        @default(now())
+  user      user            @relation("UserOssBookmarks", fields: [userId], references: [id], onDelete: Cascade)
+  repo      opensourceRepo  @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, repoId])
+  @@index([userId])
+}
+
+model programInterest {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  programId Int
+  createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, programId])
+  @@index([userId])
 }
 
 model repoRequest {
@@ -666,6 +699,7 @@ model dsaProblem {
   testCases        dsaTestCase[]
   submissions      dsaSubmission[]
   reports          dsaProblemReport[]
+  labels           dsaProblemLabel[]
 
   @@index([difficulty])
   @@index([leetcodeId])
@@ -707,6 +741,20 @@ model dsaBookmark {
 
   @@unique([studentId, problemId])
   @@index([studentId])
+}
+
+model dsaProblemLabel {
+  id        Int        @id @default(autoincrement())
+  userId    Int
+  problemId Int
+  label     String
+  createdAt DateTime   @default(now())
+  user      user       @relation("StudentDsaProblemLabels", fields: [userId], references: [id], onDelete: Cascade)
+  problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId, label])
+  @@index([userId])
+  @@index([problemId])
 }
 
 model dsaTestCase {
@@ -1339,6 +1387,8 @@ enum UsageAction {
   AI_JOB_CHAT
   CODE_RUN
   GITHUB_STATS
+  ROADMAP_GENERATION
+  STREAK_TICK
 }
 
 enum EmailCampaignStatus {
@@ -1488,6 +1538,7 @@ model guideFeedback {
   stepId    String
   userId    Int
   rating    String
+  reason    String?
   createdAt DateTime @default(now())
 
   user user @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1518,6 +1569,54 @@ model contentView {
   @@index([createdAt])
 }
 
+model opensourceStreak {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @unique
+  currentStreak   Int       @default(0)
+  longestStreak   Int       @default(0)
+  lastActivityAt  DateTime?
+  totalDays       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ossProgram {
+  id                  Int       @id @default(autoincrement())
+  slug                String    @unique
+  name                String
+  short               String
+  description         String
+  fullDescription     String?
+  eligibility         String?
+  eligibilityType     String?
+  stipend             String?
+  stipendPaid         String?
+  stipendRange        String?
+  window              String?
+  region              String?
+  website             String?
+  applyUrl            String?
+  color               String?
+  bgColor             String?
+  tags                String[]  @default([])
+  requirements        String[]  @default([])
+  timeline            Json?
+  howToApply          String?
+  applicationStart    DateTime?
+  applicationDeadline DateTime?
+  resultsDate         DateTime?
+  programStart        DateTime?
+  programEnd          DateTime?
+  active              Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([active])
+  @@index([slug])
+}
+
 model coachAdvice {
   id        Int      @id @default(autoincrement())
   userId    Int
@@ -1529,5 +1628,19 @@ model coachAdvice {
 
   @@index([userId])
   @@index([createdAt])
+}
+
+model guideCertificate {
+  id          Int      @id @default(autoincrement())
+  token       String   @unique @default(cuid())
+  userId      Int
+  guideName   String
+  issuedAt    DateTime @default(now())
+  studentName String
+  user        user     @relation("UserCertificates", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideName])
+  @@index([userId])
+  @@index([token])
 }
 

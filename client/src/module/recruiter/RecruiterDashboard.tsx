@@ -23,6 +23,8 @@ import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { SEO } from "../../components/SEO";
 import { Button } from "../../components/ui/button";
 import { useAuthStore } from "../../lib/auth.store";
+import { GridBackground } from "../../components/ui/GridBackground";
+
 
 interface DashboardData {
   totalJobs: number;
@@ -93,14 +95,7 @@ function RecruiterDashboardInner() {
       <SEO title="Recruiter Dashboard" noIndex />
 
       {/* Faint vertical rule pattern, same as student editorial pages */}
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}
@@ -423,7 +418,11 @@ function DashboardSkeleton() {
   );
 }
 
-function getInitials(name: string) {
+function getInitials(name?: string): string {
+  if (!name?.trim()) {
+    return '?';
+  }
+
   return name
     .split(" ")
     .map((n) => n[0])

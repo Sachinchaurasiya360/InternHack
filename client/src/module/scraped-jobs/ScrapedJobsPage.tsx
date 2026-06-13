@@ -1,14 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
-  MapPin,
   ChevronDown,
   Globe,
   Filter,
-  ArrowUpRight,
 } from "lucide-react";
 import { LocationDropdown } from "../../components/ui/LocationDropdown";
 import { PaginationControls } from "../../components/ui/PaginationControls";

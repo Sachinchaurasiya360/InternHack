@@ -59,7 +59,7 @@ export class JobFeedService {
     await prisma.userJobPreference.update({
       where: { userId },
       data: { dismissedJobIds: { push: match.jobIndexId } },
-    }).catch(() => {}); // pref may not exist yet
+    }).catch((err) => console.error("Failed to dismiss job:", err)); // pref may not exist yet
   }
 
   async save(userId: number, matchId: number) {
@@ -129,7 +129,7 @@ export class JobFeedService {
     });
 
     // Re-generate embedding asynchronously
-    jobIndexService.generateUserEmbedding(userId).catch(() => {});
+    jobIndexService.generateUserEmbedding(userId).catch((err) => console.error("Failed to generate user embedding:", err));
 
     await cacheDel(prefKey(userId));
     return pref;

@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
 CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, Search, BookOpen, TrendingUp, Target, Download, X, List,
+  Lock, Search, BookOpen, TrendingUp, Target, Download, X, List, BarChart3,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Button } from "../../../components/ui/button";
@@ -13,7 +13,8 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaTopicsResponse, DsaProgress, LeetcodeImportStatus, DsaTopic, User } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
-import { canonicalUrl } from "../../../lib/seo.utils";
+import { canonicalUrl,SITE_URL } from "../../../lib/seo.utils";
+import { courseSchema, breadcrumbSchema, faqSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
 import { LeetCodeSync } from "./components/LeetCodeSync";
@@ -274,7 +275,12 @@ const clearFilters = () => {
     { to: "/learn/dsa/companies", icon: Building2, label: "companies" },
     { to: "/learn/dsa/patterns", icon: Puzzle, label: "patterns" },
     { to: "/learn/dsa/lists", icon: List, label: "lists" },
-    ...(user ? [{ to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" }] : []),
+    ...(user
+      ? [
+          { to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" },
+          { to: "/learn/dsa/analytics", icon: BarChart3, label: "analytics" },
+        ]
+      : []),
   ];
 
   return (
@@ -284,6 +290,23 @@ const clearFilters = () => {
         description="Practice data structures and algorithms problems organized by topic. Track your progress across arrays, trees, graphs, dynamic programming, and more."
         keywords="DSA practice, data structures, algorithms, leetcode, coding interview, arrays, trees, graphs, dynamic programming"
         canonicalUrl={canonicalUrl("/learn/dsa")}
+        structuredData={[
+          courseSchema({
+            name: "DSA Practice — Data Structures & Algorithms | InternHack",
+            description: "Practice data structures and algorithms problems organized by topic. Track your progress across arrays, trees, graphs, dynamic programming, and more.",
+            url: `${SITE_URL}/learn/dsa`,
+          }),
+          breadcrumbSchema([
+            { name: "Home", url: SITE_URL },
+            { name: "Learn", url: `${SITE_URL}/learn` },
+            { name: "DSA", url: `${SITE_URL}/learn/dsa` },
+          ]),
+          faqSchema([
+            { question: "Is this DSA course free?", answer: "Yes, the Data Structures and Algorithms course on InternHack is completely free with no sign-up required." },
+            { question: "What will I learn in this DSA course?", answer: "You will learn arrays, stacks, queues, trees, graphs, sorting algorithms, dynamic programming, and problem-solving patterns." },
+            { question: "Why is DSA important for interviews?", answer: "DSA is essential for coding interviews at top tech companies as it tests your problem-solving and algorithmic thinking skills." },
+          ]),
+        ]}
       />
 
       <div className="max-w-6xl mx-auto px-3 sm:px-8 py-8">

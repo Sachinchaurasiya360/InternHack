@@ -7,7 +7,7 @@ const analyticsService = new AnalyticsService();
 export const trackContentView = async (req: Request, res: Response) => {
   try {
     const data = trackContentSchema.parse(req.body);
-    const userId = (req as any).user?.id; // Optional userId from auth middleware
+    const userId = req.user?.id; // Optional userId from auth middleware
 
     await analyticsService.trackContentView({
       ...data,

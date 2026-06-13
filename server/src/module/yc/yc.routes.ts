@@ -294,7 +294,7 @@ router.get("/companies/:slug", cacheMiddleware(1800, "yc:detail"), async (req: R
             where: { id: company.id },
             data: { scrapedAt: new Date() },
           })
-          .catch(() => {});
+          .catch((err) => console.error("Failed to update scrapedAt:", err));
       }
     }
 

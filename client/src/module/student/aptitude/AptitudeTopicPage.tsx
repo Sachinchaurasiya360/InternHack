@@ -16,6 +16,8 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import { sanitizeHtml } from "../../../lib/sanitize";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 type QuestionResult = AptitudeAnswerResult;
 
@@ -187,14 +189,7 @@ export default function AptitudeTopicPage() {
         canonicalUrl={canonicalUrl(`/learn/aptitude/${slug}/practice`)}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}
