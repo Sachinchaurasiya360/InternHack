@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, GitPullRequest, ArrowRight, Trophy, Clock, Copy, Linkedin, Check } from "lucide-react";
+import { CheckCircle2, GitPullRequest, ArrowRight, Trophy, Clock } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -14,6 +14,7 @@ import {
   type Certificate
 } from "./api/opensource.api";
 import guideData from "./data/open-source-guide.json";
+import GuideCompletionSection from "./components/GuideCompletionSection";
 import { useAuthStore } from "../../../lib/auth.store";
 import { useCoachStore } from "./stores/coach.store";
 import { notifyLearningPathProgressChanged } from "./learning-paths.data";
@@ -46,7 +47,6 @@ export default function FirstPRRoadmapPage() {
   const { user } = useAuthStore();
   const triggerCoach = useCoachStore((s: any) => s.triggerCoach);
   const [cert, setCert] = useState<Certificate | null>(null);
-  const [copying, setCopying] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -63,22 +63,6 @@ export default function FirstPRRoadmapPage() {
     return () => { isMounted = false; };
   }, []);
 
-
-  const copyCertLink = () => {
-    if (!cert) return;
-    const url = `${window.location.origin}/certificate/${cert.token}`;
-    navigator.clipboard.writeText(url);
-    setCopying(true);
-    toast.success("Certificate link copied!");
-    setTimeout(() => setCopying(false), 2000);
-  };
-
-  const shareLinkedIn = () => {
-    if (!cert) return;
-    const url = `${window.location.origin}/certificate/${cert.token}`;
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-    window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
-  };
 
   const toggle = useCallback(
     (id: string) => {
@@ -286,61 +270,57 @@ export default function FirstPRRoadmapPage() {
       {/* ── Completion banner ───────────────────────────── */}
       <AnimatePresence>
         {allDone && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mb-8 relative rounded-md border border-stone-900 dark:border-white/10 bg-stone-900 overflow-hidden"
-          >
-            <div
-              aria-hidden
-              className="absolute inset-0 pointer-events-none opacity-[0.06]"
-              style={{
-                backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-                backgroundSize: "28px 28px",
-              }}
+          <>
+            <GuideCompletionSection
+              headline="You're an open source contributor!"
+              subtitle={`You've completed all ${totalSteps} steps. Time to find your next issue!`}
+              certificateGuideName="First PR Roadmap"
+              accentWord="contributor"
             />
-            <div className="relative p-6 flex items-start gap-4">
-              <div className="w-12 h-12 rounded-md bg-lime-400/15 border border-lime-400/30 flex items-center justify-center shrink-0">
-                <Trophy className="w-6 h-6 text-lime-400" />
-              </div>
-              <div className="flex-1">
-                <p className="text-base font-bold text-white leading-tight">
-                  Roadmap complete. You are ready to contribute.
-                </p>
-                <p className="text-sm text-stone-400 mt-1">
-                  {totalSteps} / {totalSteps} steps done. Your first pull request is within reach.
-                </p>
-                <div className="flex gap-3 mt-4 flex-wrap items-center">
-                  <Link
-                    to="/student/opensource"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-lime-400 text-stone-950 rounded-md text-xs font-bold hover:bg-lime-300 transition-colors no-underline"
-                  >
-                    Discover repos <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                  <button
-                    onClick={() => setShowResetConfirm(true)}
-                    className="text-xs font-mono uppercase tracking-widest text-stone-400 hover:text-stone-300 transition-colors bg-transparent border-0 cursor-pointer"
-                  >
-                    Reset progress
-                  </button>
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="mb-8 relative rounded-md border border-stone-900 dark:border-white/10 bg-stone-900 overflow-hidden"
+            >
+              <div
+                aria-hidden
+                className="absolute inset-0 pointer-events-none opacity-[0.06]"
+                style={{
+                  backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+                  backgroundSize: "28px 28px",
+                }}
+              />
+              <div className="relative p-6 flex items-start gap-4">
+                <div className="w-12 h-12 rounded-md bg-lime-400/15 border border-lime-400/30 flex items-center justify-center shrink-0">
+                  <Trophy className="w-6 h-6 text-lime-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-base font-bold text-white leading-tight">
+                    Roadmap complete. You are ready to contribute.
+                  </p>
+                  <p className="text-sm text-stone-400 mt-1">
+                    {totalSteps} / {totalSteps} steps done. Your first pull request is within reach.
+                  </p>
+                  <div className="flex gap-3 mt-4 flex-wrap items-center">
+                    <Link
+                      to="/student/opensource"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-lime-400 text-stone-950 rounded-md text-xs font-bold hover:bg-lime-300 transition-colors no-underline"
+                    >
+                      Discover repos <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => setShowResetConfirm(true)}
+                      className="text-xs font-mono uppercase tracking-widest text-stone-400 hover:text-stone-300 transition-colors bg-transparent border-0 cursor-pointer"
+                    >
+                      Reset progress
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              {cert && (
-                <div className="flex gap-3 mt-4 flex-wrap">
-                  <Button variant="secondary" size="sm" onClick={copyCertLink}>
-                    {copying ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
-                    {copying ? "Copied" : "Copy Certificate"}
-                  </Button>
-                  <Button variant="secondary" size="sm" onClick={shareLinkedIn}>
-                    <Linkedin className="w-4 h-4 mr-2 fill-current" />
-                    Share on LinkedIn
-                  </Button>
-                </div>
-              )}
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 

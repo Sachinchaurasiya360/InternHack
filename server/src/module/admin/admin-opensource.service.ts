@@ -176,15 +176,13 @@ export class AdminOpensourceService {
   }
 
   async getGuideFeedbackAnalytics() {
-    // 1. Satisfaction Rate
-    const totalFeedback = await prisma.guideFeedback.count();
-    const thumbsUp = await prisma.guideFeedback.count({ where: { rating: "up" } });
-    const globalSatisfactionRate = totalFeedback > 0 ? (thumbsUp / totalFeedback) * 100 : 0;
-
-    // 2. Aggregate by guide and step using raw feed
     const feedback = await prisma.guideFeedback.findMany({
       select: { guideId: true, stepId: true, rating: true, reason: true },
     });
+
+    const totalFeedback = feedback.length;
+    const thumbsUp = feedback.filter((f) => f.rating === "up").length;
+    const globalSatisfactionRate = totalFeedback > 0 ? (thumbsUp / totalFeedback) * 100 : 0;
 
     const statsMap = new Map<string, { total: number; up: number; reasons: Record<string, number> }>();
 

@@ -1,15 +1,15 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {CheckCircle2, ArrowRight, Trophy, Copy, Linkedin, Check} from "lucide-react";
+import {CheckCircle2, ArrowRight, Trophy} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
+import GuideCompletionSection from "./GuideCompletionSection";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
 import { NextInPathCard } from "./NextInPathCard";
 import { issueCertificate, type Certificate } from "../api/opensource.api";
-import toast from "../../../../components/ui/toast";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { useEffect } from "react";
 
@@ -28,11 +28,13 @@ interface Props {
   ogImage?: string;
   icon: LucideIcon;
   iconColor: string;         // e.g. "text-emerald-500"
+  certificateGuideName?: string;
 }
 
 export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
+  certificateGuideName,
   ogImage,
 }: Props) {
   const [completed, setCompleted] = useState<Set<string>>(() => {
@@ -42,7 +44,6 @@ export default function GuideListPage({
     } catch { return new Set(); }
   });
   const [cert, setCert] = useState<Certificate | null>(null);
-  const [copying, setCopying] = useState(false);
   const { user } = useAuthStore();
 
   const toggle = useCallback((id: string) => {
@@ -86,22 +87,6 @@ export default function GuideListPage({
         .catch(console.error);
     }
   }, [allDone, cert, title, user]);
-
-  const copyCertLink = () => {
-    if (!cert) return;
-    const url = `${window.location.origin}/certificate/${cert.token}`;
-    navigator.clipboard.writeText(url);
-    setCopying(true);
-    toast.success("Certificate link copied!");
-    setTimeout(() => setCopying(false), 2000);
-  };
-
-  const shareLinkedIn = () => {
-    if (!cert) return;
-    const url = `${window.location.origin}/certificate/${cert.token}`;
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-    window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
-  };
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
@@ -175,30 +160,25 @@ export default function GuideListPage({
 
       {/* Completion banner */}
       <AnimatePresence>
-        {allDone && (
+        {allDone && certificateGuideName && (
+          <GuideCompletionSection
+            headline="All sections completed!"
+            subtitle={`You've completed all ${totalSteps} sections. Apply this knowledge to your next contribution!`}
+            certificateGuideName={certificateGuideName}
+            accentWord="completed"
+          />
+        )}
+        {allDone && !certificateGuideName && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 flex items-center gap-4"
+            className="mb-8 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900 p-5 flex items-center gap-4"
           >
-            <Trophy className="w-8 h-8 text-green-500 shrink-0" />
+            <Trophy className="w-8 h-8 text-lime-500 shrink-0" />
             <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">All sections completed!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">You've completed all {totalSteps} sections. Apply this knowledge to your next contribution!</p>
-              
-              {cert && (
-                <div className="flex gap-3 mt-4 flex-wrap">
-                  <Button variant="secondary" size="sm" onClick={copyCertLink} className="bg-white dark:bg-green-900/40">
-                    {copying ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
-                    {copying ? "Copied" : "Copy Certificate"}
-                  </Button>
-                  <Button variant="secondary" size="sm" onClick={shareLinkedIn} className="bg-white dark:bg-green-900/40">
-                    <Linkedin className="w-4 h-4 mr-2 fill-current" />
-                    Share on LinkedIn
-                  </Button>
-                </div>
-              )}
+              <p className="text-base font-bold text-stone-900 dark:text-stone-50">All sections completed!</p>
+              <p className="text-sm text-stone-600 dark:text-stone-400 mt-0.5">You've completed all {totalSteps} sections. Apply this knowledge to your next contribution!</p>
             </div>
           </motion.div>
         )}

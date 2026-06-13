@@ -78,6 +78,7 @@ import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cro
 import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
+import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
@@ -441,6 +442,14 @@ const server = app.listen(PORT, async () => {
     name: "Signals Cleanup Cron",
     priority: 10,
     fn: () => stopSignalsCleanupCron(),
+  });
+
+  // Start OSS deadline alert cron (daily at 9 AM)
+  startDeadlineAlertCron();
+  shutdownManager.register({
+    name: "Deadline Alert Cron",
+    priority: 10,
+    fn: () => stopDeadlineAlertCron(),
   });
 
   const runGithubContributionsCron =

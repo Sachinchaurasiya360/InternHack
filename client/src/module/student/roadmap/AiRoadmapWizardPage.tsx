@@ -10,6 +10,11 @@ import {
   Plus,
   X,
   Map as MapIcon,
+  Zap,
+  Clock,
+  BookOpen,
+  Crown,
+  Eye,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
@@ -22,45 +27,186 @@ import type { DayOfWeek, RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
 
-type Background = "CS_STUDENT" | "SELF_TAUGHT" | "CAREER_SWITCHER" | "HOBBYIST" | "WORKING_PRO";
+interface RoadmapPreview {
+  slug: string;
+  enrollmentId: number;
+  title: string;
+  sections: { title: string; estimatedHours: number }[];
+  totalHours: number;
+}
+
+const TEMPLATES = [
+  {
+    id: "fullstack",
+    title: "Full-Stack in 3 months",
+    description: "React + Node + Postgres. Ship a SaaS from scratch.",
+    goalDescription:
+      "I want to become a full-stack developer and build a SaaS product in 3 months using React, Node.js, and PostgreSQL.",
+    experienceLevel: "SOME" as const,
+    background: "SELF_TAUGHT" as const,
+    goal: "JOB_READY" as const,
+    mustInclude: ["React", "Node.js", "PostgreSQL", "REST APIs"],
+    hoursPerWeek: 15,
+  },
+  {
+    id: "frontend",
+    title: "Frontend in 6 weeks",
+    description: "HTML → CSS → JS → React. Fast track to UI dev.",
+    goalDescription:
+      "I want to master frontend development in 6 weeks covering HTML, CSS, JavaScript, and React to get a junior frontend job.",
+    experienceLevel: "NEW" as const,
+    background: "CAREER_SWITCHER" as const,
+    goal: "JOB_READY" as const,
+    mustInclude: ["HTML", "CSS", "JavaScript", "React"],
+    hoursPerWeek: 20,
+  },
+  {
+    id: "backend-python",
+    title: "Backend Python in 2 months",
+    description: "Python + FastAPI + databases. Build production APIs.",
+    goalDescription:
+      "I want to learn backend development with Python, FastAPI, and PostgreSQL to build and deploy production-ready REST APIs in 2 months.",
+    experienceLevel: "SOME" as const,
+    background: "CS_STUDENT" as const,
+    goal: "SIDE_PROJECT" as const,
+    mustInclude: ["Python", "FastAPI", "PostgreSQL", "Docker"],
+    hoursPerWeek: 12,
+  },
+  {
+    id: "dsa-faang",
+    title: "DSA prep for FAANG in 90 days",
+    description: "Arrays to DP. Interview patterns for top tech companies.",
+    goalDescription:
+      "I want to prepare for FAANG coding interviews in 90 days by mastering data structures, algorithms, and common interview patterns.",
+    experienceLevel: "SOME" as const,
+    background: "WORKING_PRO" as const,
+    goal: "JOB_READY" as const,
+    mustInclude: [
+      "Arrays",
+      "Trees",
+      "Graphs",
+      "Dynamic Programming",
+      "System Design",
+    ],
+    hoursPerWeek: 10,
+  },
+];
+type Background =
+  | "CS_STUDENT"
+  | "SELF_TAUGHT"
+  | "CAREER_SWITCHER"
+  | "HOBBYIST"
+  | "WORKING_PRO";
 type Experience = "NEW" | "SOME" | "EXPERIENCED";
 type Goal = "JOB_READY" | "SIDE_PROJECT" | "SCHOOL" | "CURIOUS";
 
 const DAYS: DayOfWeek[] = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 const DAY_LABEL: Record<DayOfWeek, string> = {
-  MON: "Mon", TUE: "Tue", WED: "Wed", THU: "Thu", FRI: "Fri", SAT: "Sat", SUN: "Sun",
+  MON: "Mon",
+  TUE: "Tue",
+  WED: "Wed",
+  THU: "Thu",
+  FRI: "Fri",
+  SAT: "Sat",
+  SUN: "Sun",
 };
 
 const EXPERIENCE_OPTS: { value: Experience; label: string; body: string }[] = [
   { value: "NEW", label: "Brand new", body: "Never coded, or very little." },
-  { value: "SOME", label: "Some experience", body: "Tutorials, school, side projects." },
-  { value: "EXPERIENCED", label: "Experienced", body: "Comfortable building, want depth." },
+  {
+    value: "SOME",
+    label: "Some experience",
+    body: "Tutorials, school, side projects.",
+  },
+  {
+    value: "EXPERIENCED",
+    label: "Experienced",
+    body: "Comfortable building, want depth.",
+  },
 ];
 
 const BACKGROUND_OPTS: { value: Background; label: string; body: string }[] = [
-  { value: "CS_STUDENT", label: "CS student", body: "In college or a CS program." },
+  {
+    value: "CS_STUDENT",
+    label: "CS student",
+    body: "In college or a CS program.",
+  },
   { value: "SELF_TAUGHT", label: "Self-taught", body: "Learning on your own." },
-  { value: "CAREER_SWITCHER", label: "Career switcher", body: "From a non-tech field." },
-  { value: "WORKING_PRO", label: "Working pro", body: "Already in tech, leveling up." },
+  {
+    value: "CAREER_SWITCHER",
+    label: "Career switcher",
+    body: "From a non-tech field.",
+  },
+  {
+    value: "WORKING_PRO",
+    label: "Working pro",
+    body: "Already in tech, leveling up.",
+  },
   { value: "HOBBYIST", label: "Hobbyist", body: "Just for fun." },
 ];
 
 const GOAL_OPTS: { value: Goal; label: string; body: string }[] = [
-  { value: "JOB_READY", label: "Get job ready", body: "Build a portfolio that lands interviews." },
-  { value: "SIDE_PROJECT", label: "Build a side project", body: "I have an idea and want to ship it." },
-  { value: "SCHOOL", label: "School / coursework", body: "Reinforce what I'm learning in class." },
-  { value: "CURIOUS", label: "Curious", body: "I just want to understand the stack." },
+  {
+    value: "JOB_READY",
+    label: "Get job ready",
+    body: "Build a portfolio that lands interviews.",
+  },
+  {
+    value: "SIDE_PROJECT",
+    label: "Build a side project",
+    body: "I have an idea and want to ship it.",
+  },
+  {
+    value: "SCHOOL",
+    label: "School / coursework",
+    body: "Reinforce what I'm learning in class.",
+  },
+  {
+    value: "CURIOUS",
+    label: "Curious",
+    body: "I just want to understand the stack.",
+  },
 ];
 
 const STEPS = [
-  { id: 0, label: "goal", title: "What do you want to learn?", body: "One sentence is enough. Be specific." },
-  { id: 1, label: "level", title: "How far along are you?", body: "Helps us skip what you already know." },
-  { id: 2, label: "context", title: "Tell us your story", body: "Background and what you want out of this." },
-  { id: 3, label: "topics", title: "Specific tools or topics?", body: "Optional. Anything that must be in or stay out." },
-  { id: 4, label: "pace", title: "How much time can you give?", body: "We pace the plan to your real schedule." },
+  {
+    id: 0,
+    label: "goal",
+    title: "What do you want to learn?",
+    body: "One sentence is enough. Be specific.",
+  },
+  {
+    id: 1,
+    label: "level",
+    title: "How far along are you?",
+    body: "Helps us skip what you already know.",
+  },
+  {
+    id: 2,
+    label: "context",
+    title: "Tell us your story",
+    body: "Background and what you want out of this.",
+  },
+  {
+    id: 3,
+    label: "topics",
+    title: "Specific tools or topics?",
+    body: "Optional. Anything that must be in or stay out.",
+  },
+  {
+    id: 4,
+    label: "pace",
+    title: "How much time can you give?",
+    body: "We pace the plan to your real schedule.",
+  },
 ];
 
-function Chrome({ children, sidebarWidth, collapsed, sidebar }: {
+function Chrome({
+  children,
+  sidebarWidth,
+  collapsed,
+  sidebar,
+}: {
   children: ReactNode;
   sidebarWidth: number;
   collapsed: boolean;
@@ -71,9 +217,13 @@ function Chrome({ children, sidebarWidth, collapsed, sidebar }: {
       <div className="hidden lg:block">
         <Navbar sidebarOffset={sidebarWidth} />
       </div>
-      <div className="lg:hidden"><Navbar /></div>
+      <div className="lg:hidden">
+        <Navbar />
+      </div>
       {sidebar}
-      <div className={`pt-16 lg:pt-24 transition-all duration-300 ${collapsed ? "lg:ml-18" : "lg:ml-64"}`}>
+      <div
+        className={`pt-16 lg:pt-24 transition-all duration-300 ${collapsed ? "lg:ml-18" : "lg:ml-64"}`}
+      >
         {children}
       </div>
     </div>
@@ -95,7 +245,24 @@ export default function AiRoadmapWizardPage() {
   const [mustInclude, setMustInclude] = useState<string[]>([]);
   const [avoid, setAvoid] = useState<string[]>([]);
   const [hoursPerWeek, setHoursPerWeek] = useState(8);
-  const [preferredDays, setPreferredDays] = useState<DayOfWeek[]>(["MON", "WED", "SAT"]);
+  const [preferredDays, setPreferredDays] = useState<DayOfWeek[]>([
+    "MON",
+    "WED",
+    "SAT",
+  ]);
+
+  // Submission
+  // Usage counter
+  const [usageCount, setUsageCount] = useState<number | null>(null);
+  const [usageLimit, setUsageLimit] = useState<number>(5);
+  const [isPro, setIsPro] = useState(false);
+
+  // Template
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [showTemplates, setShowTemplates] = useState(true);
+
+  // Preview
+  const [preview, setPreview] = useState<RoadmapPreview | null>(null);
 
   // Submission
   const [submitting, setSubmitting] = useState(false);
@@ -103,30 +270,38 @@ export default function AiRoadmapWizardPage() {
   const [dismissedWarning, setDismissedWarning] = useState(false);
 
   // Existing enrollments link
-  const { data: enrollmentsData } = useQuery({
+const { data: enrollmentsData } = useQuery({
     queryKey: queryKeys.roadmaps.enrollments(),
     queryFn: () => api.get<{ enrollments: RoadmapEnrollmentListItem[] }>("/roadmaps/me/enrollments").then(res => res.data),
     enabled: !!user,
     staleTime: 2 * 60 * 1000,
   });
-
   const enrollments = enrollmentsData?.enrollments || [];
-
   const similarEnrollment = (() => {
     if (!user) return null;
     const userAiRoadmaps = enrollments.filter(e => e.roadmap.ownerUserId === user.id);
     const normalize = (str: string) => str.toLowerCase().replace(/[^\w\s]/g, "");
     const goalNorm = normalize(goalDescription);
     if (!goalNorm) return null;
-    
     return userAiRoadmaps.find(e => {
       const titleNorm = normalize(e.roadmap.title);
       return titleNorm.includes(goalNorm) || goalNorm.includes(titleNorm);
     });
   })();
-  
   const [forceCreate, setForceCreate] = useState(false);
 
+  useEffect(() => {
+    let mounted = true;
+    api.get<{ used: number; limit: number; isPro: boolean }>("/roadmaps/ai/usage")
+      .then((res) => {
+        if (!mounted) return;
+        setUsageCount(res.data.used);
+        setUsageLimit(res.data.limit);
+        setIsPro(res.data.isPro);
+      })
+      .catch(() => { /* ok — hide counter if endpoint missing */ });
+    return () => { mounted = false; };
+  }, []);
   // Rotating loading copy
   useEffect(() => {
     if (!submitting) return;
@@ -134,8 +309,23 @@ export default function AiRoadmapWizardPage() {
     return () => clearInterval(id);
   }, [submitting]);
 
+  const applyTemplate = (templateId: string) => {
+    const t = TEMPLATES.find((t) => t.id === templateId);
+    if (!t) return;
+    setGoalDescription(t.goalDescription);
+    setExperienceLevel(t.experienceLevel);
+    setBackground(t.background);
+    setGoal(t.goal);
+    setMustInclude(t.mustInclude);
+    setHoursPerWeek(t.hoursPerWeek);
+    setSelectedTemplate(templateId);
+    setShowTemplates(false);
+  };
+
   const toggleDay = (d: DayOfWeek) => {
-    setPreferredDays((prev) => prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]);
+    setPreferredDays((prev) =>
+      prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d],
+    );
   };
 
   const canProceed = (() => {
@@ -147,23 +337,33 @@ export default function AiRoadmapWizardPage() {
   const submit = async (force = false) => {
     setSubmitting(true);
     try {
-      const res = await api.post<{ slug: string; enrollmentId: number }>(
-        "/roadmaps/ai/generate",
-        {
-          goalDescription: goalDescription.trim(),
-          experienceLevel,
-          background,
-          goal,
-          hoursPerWeek,
-          preferredDays,
-          knownSkills,
-          mustInclude,
-          avoid,
-          forceCreate: force,
-        },
-      );
-      toast.success("Your roadmap is ready");
-      navigate(`/learn/roadmaps/${res.data.slug}`);
+const res = await api.post<{
+        slug: string;
+        enrollmentId: number;
+        title: string;
+        sections: { title: string; estimatedHours: number }[];
+        totalHours: number;
+      }>("/roadmaps/ai/generate", {
+        goalDescription: goalDescription.trim(),
+        experienceLevel,
+        background,
+        goal,
+        hoursPerWeek,
+        preferredDays,
+        knownSkills,
+        mustInclude,
+        avoid,
+        forceCreate: force,
+      });
+      toast.success("Your roadmap is ready — preview it before enrolling");
+      setPreview({
+        slug: res.data.slug,
+        enrollmentId: res.data.enrollmentId,
+        title: res.data.title ?? "Your Custom Roadmap",
+        sections: res.data.sections ?? [],
+        totalHours: res.data.totalHours ?? 0,
+      });
+      setSubmitting(false);
     } catch (err) {
       const axiosErr = err as { response?: { status?: number; data?: { message?: string; roadmap?: { title: string; slug: string } } } };
       if (axiosErr.response?.status === 409) {
@@ -188,10 +388,7 @@ export default function AiRoadmapWizardPage() {
                   View existing
                 </Link>
                 <button
-                  onClick={() => {
-                    toast.dismiss();
-                    submit(true);
-                  }}
+                  onClick={() => { toast.dismiss(); submit(true); }}
                   className="text-xs font-bold text-lime-600 dark:text-lime-400 hover:underline bg-transparent border-0 p-0 cursor-pointer"
                 >
                   Create anyway
@@ -208,10 +405,88 @@ export default function AiRoadmapWizardPage() {
       setSubmitting(false);
     }
   };
-
   const chromeProps = { sidebarWidth, collapsed, sidebar };
   const stepMeta = STEPS[step];
   const progress = ((step + 1) / STEPS.length) * 100;
+
+  // ── Preview screen ──
+  if (preview) {
+    return (
+      <Chrome {...chromeProps}>
+        <div className="max-w-2xl mx-auto px-6 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-4">
+              <Eye className="w-3.5 h-3.5 text-lime-500" />
+              preview before enrolling
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 mb-2">
+              {preview.title}
+            </h1>
+            <div className="flex items-center gap-3 mb-8 text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span className="inline-flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5" />
+                {preview.sections.length} sections
+              </span>
+              <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+              <span className="inline-flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />~{preview.totalHours}h total
+              </span>
+            </div>
+
+            {preview.sections.length > 0 ? (
+              <div className="space-y-2 mb-8">
+                {preview.sections.map((s, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.04 }}
+                    className="flex items-center justify-between gap-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-3"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-[10px] font-mono tabular-nums text-stone-400 shrink-0">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-sm font-medium text-stone-900 dark:text-stone-50 truncate">
+                        {s.title}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-stone-400 shrink-0">
+                      ~{s.estimatedHours}h
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="mb-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-6 text-center text-sm text-stone-500">
+                Section details not available — you can still enroll and explore
+                the full roadmap.
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 flex-wrap">
+              <button
+                onClick={() => setPreview(null)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 border border-stone-300 dark:border-stone-700 rounded-xl text-sm font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" /> Adjust
+              </button>
+              <button
+                onClick={() => navigate(`/learn/roadmaps/${preview.slug}`)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 hover:bg-lime-300 text-stone-950 rounded-xl text-sm font-mono uppercase tracking-widest font-bold transition-colors"
+              >
+                <ArrowRight className="w-4 h-4" /> Enroll now
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </Chrome>
+    );
+  }
 
   if (submitting) {
     return (
@@ -251,7 +526,12 @@ export default function AiRoadmapWizardPage() {
               <motion.span
                 key={i}
                 animate={{ y: [0, -8, 0], opacity: [0.4, 1, 0.4] }}
-                transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15, ease: "easeInOut" }}
+                transition={{
+                  duration: 1.2,
+                  repeat: Infinity,
+                  delay: i * 0.15,
+                  ease: "easeInOut",
+                }}
                 className="h-2 w-2 rounded-full bg-lime-500"
               />
             ))}
@@ -268,8 +548,107 @@ export default function AiRoadmapWizardPage() {
       <div className="relative max-w-3xl mx-auto px-6 pb-16">
         {/* Decorative gradient */}
         <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-200 h-150 bg-linear-to-br from-lime-100 via-transparent to-stone-100 dark:from-lime-900/20 dark:via-transparent dark:to-stone-900/30 rounded-full blur-3xl opacity-60" />
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-200 h-150 bg-gradient-to-br from-lime-100 via-transparent to-stone-100 dark:from-lime-900/20 dark:via-transparent dark:to-stone-950/50 rounded-full blur-3xl" />
         </div>
+
+        {/* Generation counter */}
+        {usageCount !== null && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 mt-2"
+          >
+            <div
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest border ${
+                isPro
+                  ? "bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800 text-lime-700 dark:text-lime-400"
+                  : usageCount >= usageLimit
+                    ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
+                    : "bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400"
+              }`}
+            >
+              {isPro ? (
+                <>
+                  <Crown className="w-3.5 h-3.5" /> Unlimited generations on Pro
+                </>
+              ) : (
+                <>
+                  <Zap className="w-3.5 h-3.5" /> AI roadmaps this month:{" "}
+                  {usageCount} / {usageLimit} —{" "}
+                  {usageCount >= usageLimit
+                    ? "limit reached"
+                    : `${usageLimit - usageCount} left`}
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Template picker */}
+        {showTemplates && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-8"
+          >
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 mb-3">
+              start from a template or build from scratch
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+              {TEMPLATES.map((t, i) => (
+                <motion.button
+                  key={t.id}
+                  type="button"
+                  onClick={() => applyTemplate(t.id)}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`text-left p-4 rounded-xl border transition-colors cursor-pointer ${
+                    selectedTemplate === t.id
+                      ? "border-lime-400 bg-lime-50 dark:bg-lime-950/30"
+                      : "border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-400 dark:hover:border-stone-600"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-bold text-stone-950 dark:text-stone-50">
+                      {t.title}
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
+                    {t.description}
+                  </p>
+                </motion.button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowTemplates(false)}
+              className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
+            >
+              skip — build from scratch →
+            </button>
+          </motion.div>
+        )}
+
+        {!showTemplates && selectedTemplate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mb-6"
+          >
+            <button
+              type="button"
+              onClick={() => setShowTemplates(true)}
+              className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:text-lime-700 dark:hover:text-lime-300 transition-colors"
+            >
+              ✓ Using template:{" "}
+              {TEMPLATES.find((t) => t.id === selectedTemplate)?.title} — change
+              →
+            </button>
+          </motion.div>
+        )}
 
         {enrollments.length > 0 && (
           <motion.div
@@ -280,7 +659,7 @@ export default function AiRoadmapWizardPage() {
           >
             <Link
               to="/student/roadmaps"
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-lime-400 dark:hover:border-lime-600 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-50 transition-colors no-underline"
+              className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-lime-400 dark:hover:border-lime-600 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 transition-colors"
             >
               <MapIcon className="w-3.5 h-3.5 text-lime-500" />
               {enrollments.length} active
@@ -365,7 +744,9 @@ export default function AiRoadmapWizardPage() {
           </div>
           <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-stone-400 tabular-nums">
             <span>{stepMeta.label}</span>
-            <span>{Math.round(progress)}% / step {step + 1} of {STEPS.length}</span>
+            <span>
+              {Math.round(progress)}% / step {step + 1} of {STEPS.length}
+            </span>
           </div>
         </motion.div>
 
@@ -381,7 +762,9 @@ export default function AiRoadmapWizardPage() {
             <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-950 dark:text-stone-50 mb-2">
               {stepMeta.title}
             </h2>
-            <p className="text-sm text-stone-500 dark:text-stone-400 mb-8">{stepMeta.body}</p>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mb-8">
+              {stepMeta.body}
+            </p>
 
             {step === 0 && (
               <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6">
@@ -415,8 +798,12 @@ export default function AiRoadmapWizardPage() {
                     onClick={() => setExperienceLevel(o.value)}
                     delay={0.05 + i * 0.04}
                   >
-                    <p className="text-sm font-bold text-stone-950 dark:text-stone-50">{o.label}</p>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">{o.body}</p>
+                    <p className="text-sm font-bold text-stone-950 dark:text-stone-50">
+                      {o.label}
+                    </p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+                      {o.body}
+                    </p>
                   </Pickable>
                 ))}
               </div>
@@ -436,8 +823,12 @@ export default function AiRoadmapWizardPage() {
                         onClick={() => setBackground(o.value)}
                         delay={0.05 + i * 0.04}
                       >
-                        <p className="text-sm font-bold text-stone-950 dark:text-stone-50">{o.label}</p>
-                        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">{o.body}</p>
+                        <p className="text-sm font-bold text-stone-950 dark:text-stone-50">
+                          {o.label}
+                        </p>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+                          {o.body}
+                        </p>
                       </Pickable>
                     ))}
                   </div>
@@ -454,8 +845,12 @@ export default function AiRoadmapWizardPage() {
                         onClick={() => setGoal(o.value)}
                         delay={0.1 + i * 0.04}
                       >
-                        <p className="text-sm font-bold text-stone-950 dark:text-stone-50">{o.label}</p>
-                        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">{o.body}</p>
+                        <p className="text-sm font-bold text-stone-950 dark:text-stone-50">
+                          {o.label}
+                        </p>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+                          {o.body}
+                        </p>
                       </Pickable>
                     ))}
                   </div>
@@ -500,11 +895,17 @@ export default function AiRoadmapWizardPage() {
                       key={hoursPerWeek}
                       initial={{ scale: 1.1 }}
                       animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 18,
+                      }}
                       className="font-display text-4xl font-bold text-stone-950 dark:text-stone-50 tabular-nums"
                     >
                       {hoursPerWeek}
-                      <span className="text-base text-stone-400 font-normal ml-1">h</span>
+                      <span className="text-base text-stone-400 font-normal ml-1">
+                        h
+                      </span>
                     </motion.span>
                   </div>
                   <input
@@ -568,9 +969,18 @@ export default function AiRoadmapWizardPage() {
                     what happens next
                   </p>
                   <ul className="space-y-2 text-sm">
-                    <li className="flex items-start gap-2"><Check className="w-4 h-4 mt-0.5 shrink-0 text-lime-400" /> AI drafts a roadmap based on your answers</li>
-                    <li className="flex items-start gap-2"><Check className="w-4 h-4 mt-0.5 shrink-0 text-lime-400" /> We generate a personalized PDF and email it to you</li>
-                    <li className="flex items-start gap-2"><Check className="w-4 h-4 mt-0.5 shrink-0 text-lime-400" /> You land on the interactive canvas to start tracking</li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 mt-0.5 shrink-0 text-lime-400" />{" "}
+                      AI drafts a roadmap based on your answers
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 mt-0.5 shrink-0 text-lime-400" />{" "}
+                      We generate a personalized PDF and email it to you
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 mt-0.5 shrink-0 text-lime-400" />{" "}
+                      You land on the interactive canvas to start tracking
+                    </li>
                   </ul>
                 </motion.div>
               </div>
@@ -606,14 +1016,21 @@ export default function AiRoadmapWizardPage() {
               </button>
             </motion.div>
           )}
-
           <div className="flex items-center justify-between">
-            <Button variant="ghost" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
+            <Button
+              variant="ghost"
+              onClick={() => setStep((s) => Math.max(0, s - 1))}
+              disabled={step === 0}
+            >
               <ChevronLeft className="w-4 h-4" />
               Back
             </Button>
             {step < STEPS.length - 1 ? (
-              <Button variant="mono" onClick={() => setStep((s) => s + 1)} disabled={!canProceed}>
+              <Button
+                variant="mono"
+                onClick={() => setStep((s) => s + 1)}
+                disabled={!canProceed}
+              >
                 Next
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -631,10 +1048,18 @@ export default function AiRoadmapWizardPage() {
   );
 }
 
-// ── Subcomponents ─────────────────────────────────────────────────────────
+// ── Subcomponents ────────────────────────────────────────────────────────────
 function Pickable({
-  active, onClick, children, delay = 0,
-}: { active: boolean; onClick: () => void; children: ReactNode; delay?: number }) {
+  active,
+  onClick,
+  children,
+  delay = 0,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+  delay?: number;
+}) {
   return (
     <motion.button
       type="button"
@@ -655,7 +1080,11 @@ function Pickable({
 }
 
 function ChipsField({
-  label, hint, values, onChange, placeholder,
+  label,
+  hint,
+  values,
+  onChange,
+  placeholder,
 }: {
   label: string;
   hint: string;
@@ -690,8 +1119,12 @@ function ChipsField({
   return (
     <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5">
       <div className="flex items-baseline justify-between mb-3">
-        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400">{label}</p>
-        <p className="text-[10px] font-mono text-stone-400 tabular-nums">{values.length}/20</p>
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400">
+          {label}
+        </p>
+        <p className="text-[10px] font-mono text-stone-400 tabular-nums">
+          {values.length}/20
+        </p>
       </div>
       <div className="flex flex-wrap gap-1.5 mb-2">
         <AnimatePresence>
@@ -729,7 +1162,7 @@ function ChipsField({
           type="button"
           onClick={add}
           disabled={!input.trim()}
-          className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-lime-400 dark:hover:bg-lime-400 hover:text-stone-950 disabled:opacity-50 disabled:hover:bg-stone-100 dark:disabled:hover:bg-stone-800 cursor-pointer transition-colors border-0 text-stone-500 dark:text-stone-400"
+          className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-lime-400 dark:hover:bg-lime-400 hover:text-stone-950 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus className="w-3.5 h-3.5" />
         </button>

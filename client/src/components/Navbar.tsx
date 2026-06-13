@@ -130,25 +130,26 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                 );
               })();
               return (
-                <Link key={item.href} to={item.href} aria-current={active ? "page" : undefined} className="no-underline">
-                  <button
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "no-underline group relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-300",
+                    active
+                      ? "text-stone-900 dark:text-stone-50"
+                      : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50",
+                  )}
+                >
+                  {item.label}
+                  <span
                     className={cn(
-                      "group relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-300 bg-transparent border-0 cursor-pointer",
+                      "absolute left-1/2 -translate-x-1/2 -bottom-0.5 h-[2px] rounded-full bg-lime-400 transition-all duration-300 ease-out origin-center",
                       active
-                        ? "text-stone-900 dark:text-stone-50"
-                        : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50",
+                        ? "w-full scale-x-100 opacity-100"
+                        : "w-full scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100",
                     )}
-                  >
-                    {item.label}
-                    <span
-                      className={cn(
-                        "absolute left-1/2 -translate-x-1/2 -bottom-0.5 h-[2px] rounded-full bg-lime-400 transition-all duration-300 ease-out origin-center",
-                        active
-                          ? "w-full scale-x-100 opacity-100"
-                          : "w-full scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100",
-                      )}
-                    />
-                  </button>
+                  />
                 </Link>
               );
             })}
@@ -209,17 +210,13 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                     </div>
                   </PopoverHeader>
                   <PopoverBody className="space-y-1 px-2 py-1.5">
-                    <Link to={dashboardLink} className="no-underline">
-                      <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-700 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-300 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors text-left cursor-pointer bg-transparent border-0">
-                        <LayoutDashboard className="w-4 h-4" />
-                        Dashboard
-                      </button>
+                    <Link to={dashboardLink} className="no-underline w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-700 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-300 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors">
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard
                     </Link>
-                    <Link to={profileLink} className="no-underline">
-                      <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-700 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-300 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors text-left cursor-pointer bg-transparent border-0">
-                        <Settings className="w-4 h-4" />
-                        Settings
-                      </button>
+                    <Link to={profileLink} className="no-underline w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-700 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-300 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-colors">
+                      <Settings className="w-4 h-4" />
+                      Settings
                     </Link>
                   </PopoverBody>
                   <PopoverFooter>
@@ -235,15 +232,11 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               </Popover>
             ) : (
               <>
-                <Link to="/login" className="no-underline">
-                  <button className="px-3 py-1.5 text-sm text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50 transition-colors font-medium rounded-md bg-transparent border-0 cursor-pointer">
-                    Sign In
-                  </button>
+                <Link to="/login" className="no-underline px-3 py-1.5 text-sm text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-50 transition-colors font-medium rounded-md">
+                  Sign In
                 </Link>
-                <Link to="/register" className="no-underline">
-                  <button className="px-4 py-2 bg-lime-400 text-stone-950 text-sm font-bold rounded-md hover:bg-lime-300 transition-colors cursor-pointer border-0">
-                    Start free
-                  </button>
+                <Link to="/register" className="no-underline px-4 py-2 bg-lime-400 text-stone-950 text-sm font-bold rounded-md hover:bg-lime-300 transition-colors">
+                  Start free
                 </Link>
               </>
             )}
@@ -307,17 +300,13 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                     </div>
                   </PopoverHeader>
                   <PopoverBody className="space-y-1 px-2 py-1.5">
-                    <Link to={dashboardLink} className="no-underline">
-                      <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5 rounded-md transition-colors text-left cursor-pointer bg-transparent border-0">
-                        <LayoutDashboard className="w-4 h-4" />
-                        Dashboard
-                      </button>
+                    <Link to={dashboardLink} className="no-underline w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5 rounded-md transition-colors">
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard
                     </Link>
-                    <Link to={profileLink} className="no-underline">
-                      <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5 rounded-md transition-colors text-left cursor-pointer bg-transparent border-0">
-                        <Settings className="w-4 h-4" />
-                        Settings
-                      </button>
+                    <Link to={profileLink} className="no-underline w-full flex items-center gap-2 px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5 rounded-md transition-colors">
+                      <Settings className="w-4 h-4" />
+                      Settings
                     </Link>
                   </PopoverBody>
                   <PopoverFooter>
@@ -400,11 +389,9 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                       <Link
                         to="/register"
                         onClick={() => setIsOpen(false)}
-                        className="block no-underline"
+                        className="block no-underline w-full px-4 py-2.5 bg-lime-400 text-stone-950 text-sm font-bold rounded-md hover:bg-lime-300 transition-colors"
                       >
-                        <button className="w-full px-4 py-2.5 bg-lime-400 text-stone-950 text-sm font-bold rounded-md hover:bg-lime-300 transition-colors border-0">
-                          Start free
-                        </button>
+                        Start free
                       </Link>
                     </>
                   )}

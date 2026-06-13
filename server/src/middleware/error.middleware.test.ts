@@ -13,6 +13,7 @@ vi.mock("../database/db.js", () => ({
 // We need real Prisma error classes, so import them directly
 import { Prisma } from "@prisma/client";
 import { errorMiddleware } from "./error.middleware.js";
+import { FileUploadError } from "../lib/errors.js";
 
 // ── Helpers ─────────────────────────────────────────────────────────
 function mockReq(overrides: Partial<Request> = {}): Request {
@@ -120,14 +121,14 @@ describe("errorMiddleware", () => {
     });
   });
 
-  // ── Multer / file upload errors ───────────────────────────────────
-  describe("Multer / file upload errors", () => {
+  // ── File upload errors ───────────────────────────────────
+  describe("File upload errors", () => {
     it.each([
       "File type not allowed",
       "Only PDF and Word documents are allowed",
       "Only JPEG, PNG, and WebP images are allowed",
     ])('should return 400 for "%s"', (message) => {
-      const err = new Error(message);
+      const err = new FileUploadError(message);
       const req = mockReq();
       const res = mockRes();
 

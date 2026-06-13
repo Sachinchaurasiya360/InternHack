@@ -394,6 +394,20 @@ export class AuthService {
     };
   }
 
+  async deleteAccount(userId: number, password: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { password: true },
+    });
+    if (!user) throw new Error("User not found");
+
+    const isValid = await comparePassword(password, user.password);
+    if (!isValid) throw new Error("Incorrect password");
+
+    await prisma.user.delete({ where: { id: userId } });
+    invalidateVersionCache(userId);
+  }
+
   private readonly profileSelect = {
     id: true,
     name: true,
@@ -515,7 +529,7 @@ export class AuthService {
     });
 
     // Check profile_complete badge (fire-and-forget)
-    badgeService.checkAndAwardBadges(userId, "profile_complete").catch(() => {});
+    badgeService.checkAndAwardBadges(userId, "profile_complete").catch((err) => console.error("Badge check failed (profile_complete):", err));
 
     if (user.resumes.length > 0) {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
@@ -538,8 +552,10 @@ export class AuthService {
     return user;
   }
 
-  async getPublicProfile(identifier: string) {
-    const cacheKey = `profile:public:${identifier}`;
+  async getPublicProfile(identifier: string, visitor?: { id: number; role: string }) {
+    // Because public profiles vary by visitor authorization, include role in cache key if authorized
+    const isVisitorAuthorized = visitor?.role === "ADMIN" || visitor?.role === "RECRUITER";
+    const cacheKey = `profile:public:${identifier}:${isVisitorAuthorized ? "auth" : "guest"}`;
     const cached = await cacheGet(cacheKey);
     if (cached) return cached as never;
 
@@ -568,12 +584,26 @@ export class AuthService {
       });
     }
 
-    if (!user || user.role !== "STUDENT" || !user.isProfilePublic) {
+    if (!user || user.role !== "STUDENT") {
       throw new Error("User not found");
     }
 
+    const isOwner = visitor?.id === user.id;
+
+    if (!user.isProfilePublic && !isOwner && !isVisitorAuthorized) {
+      throw new Error("Profile is private");
+    }
+
     const { atsScores, ...rest } = user;
-    if (rest.resumes.length > 0) {
+    
+    // Sanitize for unauthorized guest viewers
+    if (!isOwner && !isVisitorAuthorized) {
+      delete (rest as any).email;
+      delete (rest as any).contactNo;
+      // We will keep resumes for now as per normal portfolio behavior, but sensitive identifiers are stripped.
+    }
+
+    if (rest.resumes && rest.resumes.length > 0) {
       (rest as Record<string, unknown>).resumes = await signUrls(rest.resumes);
     }
     if (rest.profilePic) {

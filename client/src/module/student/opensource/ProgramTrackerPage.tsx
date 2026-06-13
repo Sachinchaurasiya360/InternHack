@@ -1,13 +1,19 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
   Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus,
+  Bookmark, Download,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { markLearningPathMilestone } from "./learning-paths.data";
+import api from "../../../lib/axios";
+import { useAuthStore } from "../../../lib/auth.store";
+import toast from "../../../components/ui/toast";
 
 function nextDate(month: number, day: number, hour = 23, minute = 59): string {
   const now = new Date();
@@ -20,8 +26,21 @@ function nextDate(month: number, day: number, hour = 23, minute = 59): string {
 export type FocusArea = "DEVELOPMENT" | "TECHNICAL_WRITING" | "DESIGN" | "RESEARCH";
 export type ProgramDifficulty = "Beginner" | "Intermediate" | "Advanced";
 
+const STATUS_STYLE: Record<Program["status"], string> = {
+  Annual: "bg-lime-100 text-lime-800 dark:bg-lime-900/30 dark:text-lime-300",
+  Ongoing: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+  Batch: "bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200",
+};
+
+const ELIGIBILITY_STYLE: Record<Program["eligibilityType"], string> = {
+  Students: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
+  "Open to All": "bg-lime-100 text-lime-800 dark:bg-lime-900/30 dark:text-lime-300",
+  "Diversity-focused": "bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200",
+};
+
 interface Program {
   id: number;
+  slug?: string;
   name: string;
   short: string;
   description: string;
@@ -41,18 +60,19 @@ interface Program {
   color: string;
   bgColor: string;
   tags: string[];
-  requirements: string[];
-  timeline: { phase: string; dates: string }[];
-  howToApply: string[];
+  requirements?: string[];
+  timeline?: { phase: string; dates: string }[];
+  howToApply?: string[];
   applicationStart?: string;
   applicationDeadline?: string;
-  difficulty: ProgramDifficulty;
-  focusArea: FocusArea;
+  difficulty?: ProgramDifficulty;
+  focusArea?: FocusArea;
 }
 
 const PROGRAMS: Program[] = [
   {
     id: 1,
+    slug: "google-summer-of-code",
     name: "Google Summer of Code",
     short: "GSoC",
     description: "The world's largest open source mentorship program. Students work 12–22 weeks on a coding project for an accepted organization, guided by expert mentors.",
@@ -101,6 +121,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 2,
+    slug: "lfx-mentorship",
     name: "LFX Mentorship",
     short: "LFX",
     description: "Linux Foundation's mentorship program connecting contributors to CNCF, Hyperledger, and other LF projects. Three cohorts per year with competitive stipends.",
@@ -147,6 +168,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 3,
+    slug: "mlh-fellowship",
     name: "MLH Fellowship",
     short: "MLH",
     description: "A 12-week remote internship alternative where participants contribute to open source projects used by real companies, earning a stipend and career coaching.",
@@ -190,6 +212,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 4,
+    slug: "outreachy",
     name: "Outreachy",
     short: "Outreachy",
     description: "Paid, remote internships in open source and open science for people subject to systemic bias in the tech industry. One of the highest stipends available.",
@@ -236,6 +259,94 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 5,
+    slug: "hacktoberfest",
+    name: "Hacktoberfest",
+    short: "Hacktoberfest",
+    description:
+      "DigitalOcean's annual October celebration of open source. Complete 4 PRs/MRs during October to earn a digital badge and swag from sponsors.",
+    fullDescription:
+      "Hacktoberfest is a month-long celebration of open source software run by DigitalOcean every October. Participants who submit 4 qualifying pull requests to any participating GitHub or GitLab repositories earn a digital badge and may qualify for limited-edition physical swag.",
+    eligibility: "Anyone globally, 18+ or with parental consent",
+    eligibilityType: "Open to All",
+    stipend: "Digital badge + limited swag",
+    stipendPaid: false,
+    stipendRange: "Low/None",
+    window: "October (every year)",
+    status: "Annual",
+    region: "Global",
+    website: "https://hacktoberfest.com",
+    applyUrl: "https://hacktoberfest.com",
+    startDate: "2026-10-01",
+    color: "text-orange-700",
+    bgColor: "bg-orange-50 border-orange-200",
+    tags: ["beginner-friendly", "open-source", "october", "swag"],
+    requirements: [
+      "Register at hacktoberfest.com in October",
+      "Submit 4 pull requests to participating repos",
+      "PRs must be accepted/approved (not spam or trivial)",
+      "GitHub or GitLab account required",
+    ],
+    timeline: [
+      { phase: "Registration Opens", dates: "September / early October" },
+      { phase: "Contribution Period", dates: "October 1–31" },
+      { phase: "Review Period", dates: "November (14 days after Oct 31)" },
+      { phase: "Swag Orders", dates: "November–January" },
+    ],
+    howToApply: [
+      "Create an account on hacktoberfest.com during October",
+      "Link your GitHub or GitLab account",
+      "Find repos with the 'hacktoberfest' topic label",
+      "Submit 4 quality pull requests during October",
+      "Wait for your PRs to be reviewed and accepted",
+    ],
+  },
+  {
+    id: 6,
+    slug: "girlscript-summer-of-code",
+    name: "GirlScript Summer of Code",
+    short: "GSSoC",
+    description:
+      "India's largest open source program, inspired by GSoC. Runs March–May connecting Indian students with mentors from 100+ open source projects.",
+    fullDescription:
+      "GirlScript Summer of Code (GSSoC) is a 3-month open source program conducted by the GirlScript Foundation. It is primarily focused on Indian students and aims to help them get started with contributing to open source. Top contributors receive certificates, swag, and job referrals.",
+    eligibility: "Open to all - primarily Indian students but anyone can join",
+    eligibilityType: "Open to All",
+    stipend: "Certificates + swag + job referrals for top contributors",
+    stipendPaid: false,
+    stipendRange: "Low/None",
+    window: "March – May",
+    status: "Annual",
+    region: "India (open globally)",
+    website: "https://gssoc.girlscript.tech",
+    applyUrl: "https://gssoc.girlscript.tech",
+    deadline: "2026-05-31",
+    color: "text-pink-700",
+    bgColor: "bg-pink-50 border-pink-200",
+    tags: ["india", "beginner-friendly", "certificates", "gssoc"],
+    requirements: [
+      "No strict eligibility - students and beginners welcome",
+      "GitHub account required",
+      "Commit to contributing throughout March–May",
+      "Register on the GSSoC portal before the deadline",
+    ],
+    timeline: [
+      { phase: "Registrations (Contributors)", dates: "February" },
+      { phase: "Project Registrations (Orgs)", dates: "January–February" },
+      { phase: "Coding Period Begins", dates: "March 1" },
+      { phase: "Coding Period Ends", dates: "May 31" },
+      { phase: "Results & Certificates", dates: "June" },
+    ],
+    howToApply: [
+      "Register at gssoc.girlscript.tech as a contributor",
+      "Browse listed projects and choose 2–3 to contribute to",
+      "Introduce yourself in the project's communication channel",
+      "Start picking up issues labeled 'gssoc' or 'good first issue'",
+      "Submit PRs and earn points based on issue difficulty",
+    ],
+  },
+  {
+    id: 7,
+    slug: "season-of-docs",
     name: "Season of Docs",
     short: "GSoD",
     description: "Google's program pairing technical writers with open source orgs to improve documentation. Organizations receive funds to pay writers directly.",
@@ -368,6 +479,7 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 8,
+    slug: "hyperledger-mentorship",
     name: "Hyperledger Mentorship",
     short: "Hyperledger",
     description: "Linux Foundation's blockchain project offers mentorships for contributors to Hyperledger Fabric, Besu, Aries, and other enterprise blockchain frameworks.",
@@ -382,8 +494,8 @@ const PROGRAMS: Program[] = [
     region: "Global",
     website: "https://wiki.hyperledger.org/display/INTERN",
     applyUrl: "https://mentorship.lfx.linuxfoundation.org",
-    color: "text-gray-700",
-    bgColor: "bg-gray-50 border-gray-200",
+    color: "text-stone-700",
+    bgColor: "bg-stone-50 border-stone-200",
     tags: ["blockchain", "hyperledger", "go", "enterprise", "lfx"],
     requirements: [
       "Students and developers 18+ with some programming experience",
@@ -414,6 +526,30 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 9,
+    slug: "mlh-localhost",
+    name: "MLH Localhost",
+    short: "MLH Localhost",
+    description:
+      "Hands-on technical workshops by Major League Hacking helping students learn new technologies through building. Free to attend, no stipend.",
+    fullDescription:
+      "MLH Localhost is a series of free technical workshops focused on helping students learn new technologies by building projects. Topics span Git, APIs, ML, security, and more. Hosted in partnership with GitHub, Google, and other tech companies.",
+    eligibility: "Students globally",
+    eligibilityType: "Students",
+    stipend: "Free learning + digital certificates",
+    stipendPaid: false,
+    stipendRange: "Low/None",
+    window: "Year-round, multiple events",
+    status: "Ongoing",
+    region: "Global (virtual)",
+    website: "https://mlh.io",
+    applyUrl: "https://mlh.io/events",
+    color: "text-violet-700",
+    bgColor: "bg-violet-50 border-violet-200",
+    tags: ["workshops", "learning", "free", "beginner"],
+  },
+  {
+    id: 13,
+    slug: "gnome-internship",
     name: "GNOME Internship",
     short: "GNOME",
     description: "Internship program for GNOME project development and UX.",
@@ -459,6 +595,56 @@ const PROGRAMS: Program[] = [
   },
   {
     id: 10,
+    slug: "rails-girls-summer-of-code",
+    name: "Rails Girls Summer of Code",
+    short: "RGSoC",
+    description:
+      "A fellowship program for women and non-binary coders contributing to open source Ruby on Rails projects with coaching support and a monthly stipend.",
+    fullDescription:
+      "Rails Girls Summer of Code is a fellowship program that awards teams of two students a monthly stipend to work on open source Ruby on Rails projects. Participants also receive coaching from local tech companies. The program aims to increase diversity in open source.",
+    eligibility:
+      "Women, non-binary people, and transgender individuals who can code",
+    eligibilityType: "Diversity-focused",
+    stipend: "$1,500/month (3 months)",
+    stipendPaid: true,
+    stipendRange: "Medium",
+    window: "Mar – July",
+    status: "Annual",
+    region: "Global",
+    website: "https://railsgirlssummerofcode.org",
+    applyUrl: "https://railsgirlssummerofcode.org",
+    color: "text-rose-700",
+    bgColor: "bg-rose-50 border-rose-200",
+    tags: ["ruby", "diversity", "paid"],
+    requirements: [
+      "Identify as a woman or non-binary individual",
+      "Formation of a team of two students applying together",
+      "Appointment of a local coach to support your learning",
+      "Basic proficiency in Ruby, Rails, or the project's primary language",
+      "Ability to commit full-time (40h/week) for the 3-month duration",
+      "Verified enrollment in a university or bootcamp at the time of application",
+    ],
+    timeline: [
+      { phase: "Team Formation & Application", dates: "January – February" },
+      { phase: "Selection & Project Matching", dates: "March – April" },
+      { phase: "Program Launch & Kick-off", dates: "June" },
+      { phase: "Coding & Community Building", dates: "July – September" },
+      { phase: "Final Reports & Performance Review", dates: "October" },
+    ],
+    howToApply: [
+      "Find a coding partner and form a team of two",
+      "Locate a local coach or mentor to supervise your work",
+      "Browse the project list on the RGSoC website",
+      "Write a joint proposal detailing your interest and project choice",
+      "Submit the application via the official RGSoC platform",
+      "Participate in an interview process if your proposal is shortlisted",
+    ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT",
+  },
+  {
+    id: 14,
+    slug: "xorg-foundation-mentorship",
     name: "X.Org Foundation Mentorship",
     short: "X.Org",
     description: "Mentorship for graphics stack development and infrastructure.",
@@ -551,6 +737,7 @@ const PROGRAMS: Program[] = [
   {
     id: 12,
     name: "Open Mainframe Project",
+    slug: "open-mainframe-project",
     short: "OMP",
     description: "Bringing newcomers to mainframe and enterprise computing.",
     fullDescription: "Mentorship focused on enterprise Linux, Zowe, and mainframe projects.",
@@ -574,6 +761,113 @@ const PROGRAMS: Program[] = [
       "Ability to work in a diverse, global team across timezones",
       "Commitment to the 12-week program duration (Spring or Summer)",
       "Completion of the 'Mainframe 101' basics or equivalent training",
+    ],
+    timeline: [
+      { phase: "LFX Mentorship Cycle Opening", dates: "Quarterly" },
+      { phase: "Project Choice & Application", dates: "Month 1" },
+      { phase: "Admissions & Onboarding", dates: "Month 2" },
+      { phase: "Active Mainframe Mentorship", dates: "Month 3 – 5" },
+      { phase: "Final Evaluation & Demo Day", dates: "Month 6" },
+    ],
+    howToApply: [
+      "Create a profile on the LFX Mentorship platform",
+      "Filter projects using the 'Open Mainframe Project' tag",
+      "Choose 1-3 specific projects (Zowe, COBOL Check, etc.)",
+      "Submit a resume and statement on enterprise computing interest",
+      "Attend Open Mainframe community meetings for visibility",
+      "Complete technical tests or screening interviews with OMP mentors",
+    ],
+    difficulty: "Intermediate",
+    focusArea: "DEVELOPMENT"
+  },
+  {
+    id: 15,
+    slug: "open-mainframe-project-mentorship",
+    name: "Open Mainframe Project Mentorship",
+    short: "OMP",
+    description: "Bringing newcomers to mainframe and enterprise computing.",
+    fullDescription: "Mentorship focused on enterprise Linux, Zowe, and mainframe projects.",
+    eligibility: "Enrolled students.",
+    eligibilityType: "Students",
+    stipend: "$3,000 – $6,600",
+    stipendPaid: true,
+    stipendRange: "High",
+    window: "3 cohorts/year",
+    status: "Ongoing",
+    region: "Global",
+    website: "https://www.openmainframeproject.org",
+    applyUrl: "https://mentorship.lfx.linuxfoundation.org",
+    color: "text-slate-800",
+    bgColor: "bg-slate-50 border-slate-200",
+    tags: ["mainframe", "enterprise", "cobol"],
+    requirements: [
+      "Basic Java or Python",
+      "Curiosity about enterprise computing",
+    ],
+    timeline: [{ phase: "Via LFX Mentorship cycles", dates: "Jan, May, Sep" }],
+    howToApply: [
+      "Search Open Mainframe on LFX Mentorship",
+      "Apply to a listed project",
+    ],
+  },
+  {
+    id: 16,
+    slug: "kubernetes-release-team-shadow",
+    name: "Kubernetes Release Team Shadow",
+    short: "K8s Shadow",
+    description:
+      "Shadow members in the Kubernetes release team, contributing to one of the most critical CI/CD cycles in cloud native software. Unpaid but extremely prestigious.",
+    fullDescription:
+      "The Kubernetes Release Team Shadow Program allows contributors to shadow members of the Kubernetes release team. Shadows assist with documentation, communication, CI signal, and release notes across each 3-month Kubernetes release cycle.",
+    eligibility: "Kubernetes contributors with some prior contribution history",
+    eligibilityType: "Open to All",
+    stipend: "Unpaid - strong resume credential",
+    stipendPaid: false,
+    stipendRange: "Low/None",
+    window: "3 times/year (aligned with K8s releases)",
+    status: "Ongoing",
+    region: "Global (remote)",
+    website: "https://github.com/kubernetes/sig-release",
+    applyUrl:
+      "https://github.com/kubernetes/sig-release/tree/master/release-team",
+    color: "text-sky-700",
+    bgColor: "bg-sky-50 border-sky-200",
+    tags: ["kubernetes", "cloud-native", "prestigious", "go", "devops"],
+    requirements: [
+      "Prior Kubernetes contributions (even small PRs count)",
+      "Familiarity with Go and Kubernetes concepts",
+      "Ability to attend weekly release team meetings",
+      "Available ~5 hours/week for 3 months",
+    ],
+  },
+  {
+    id: 12,
+    slug: "kubernetes-release-team-shadow",
+    name: "Kubernetes Release Team Shadow",
+    short: "K8s Shadow",
+    description:
+      "Shadow members in the Kubernetes release team, contributing to one of the most critical CI/CD cycles in cloud native software. Unpaid but extremely prestigious.",
+    fullDescription:
+      "The Kubernetes Release Team Shadow Program allows contributors to shadow members of the Kubernetes release team. Shadows assist with documentation, communication, CI signal, and release notes across each 3-month Kubernetes release cycle.",
+    eligibility: "Kubernetes contributors with some prior contribution history",
+    eligibilityType: "Open to All",
+    stipend: "Unpaid - strong resume credential",
+    stipendPaid: false,
+    stipendRange: "Low/None",
+    window: "3 times/year (aligned with K8s releases)",
+    status: "Ongoing",
+    region: "Global (remote)",
+    website: "https://github.com/kubernetes/sig-release",
+    applyUrl:
+      "https://github.com/kubernetes/sig-release/tree/master/release-team",
+    color: "text-sky-700",
+    bgColor: "bg-sky-50 border-sky-200",
+    tags: ["kubernetes", "cloud-native", "prestigious", "go", "devops"],
+    requirements: [
+      "Prior Kubernetes contributions (even small PRs count)",
+      "Familiarity with Go and Kubernetes concepts",
+      "Ability to attend weekly release team meetings",
+      "Available ~5 hours/week for 3 months",
     ],
     timeline: [
       { phase: "LFX Mentorship Cycle Opening", dates: "Quarterly" },
@@ -1152,15 +1446,41 @@ const getProgramBrowserRoute = (program: Program) => {
 };
 
 // ─── Program Card ─────────────────────────────────────────────
-function ProgramCard({ program }: { program: Program }) {
+function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tracked: boolean; onToggleTrack: (slug: string, track: boolean) => void }) {
   const [expanded, setExpanded] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const localStipendEstimate = program.stipendPaid ? getLocalStipendEstimate(program.stipend) : null;
   const urgency = getUrgency(program);
-  const cd = getCountdown(program);
+
+  const handleDownloadIcs = async () => {
+    setDownloading(true);
+    try {
+      const res = await api.get(`/opensource/programs/${program.slug}/ics`);
+      const data = res.data;
+      if (data.events) {
+        for (const event of data.events) {
+          const blob = new Blob([event.content], { type: "text/calendar;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = event.filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+      }
+    } catch {
+      toast.error("Could not download calendar file");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
-    <div className="bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors overflow-hidden rounded-md">
-      {/* Closing soon indicator */}
+    <div
+      className={`bg-white dark:bg-stone-900 rounded-2xl border shadow-sm overflow-hidden transition-shadow hover:shadow-md ${program.bgColor}`}
+    >
       {urgency?.level === "critical" && (
         <div className="flex items-center gap-2 px-5 py-2 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900">
           <motion.span
@@ -1177,20 +1497,30 @@ function ProgramCard({ program }: { program: Program }) {
       <div className="p-5">
         {/* Header row */}
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3 min-w-0">
-            <div className="inline-flex items-center justify-center h-10 w-10 rounded-md bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 shrink-0 text-xs font-bold">
-              {program.short.slice(0, 4)}
+          <div className="flex items-center gap-3 min-w-0">
+            {urgency?.level === "closed" && (
+              <span className="px-2.5 py-1 rounded-md text-xs font-bold shrink-0 bg-stone-500 text-white">
+                Closed
+              </span>
+            )}
+            <div
+              className={`px-2.5 py-1 rounded-md text-xs font-bold shrink-0 ${program.bgColor} ${program.color} border`}
+            >
+              {program.short}
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 leading-tight">
+              <h3 className="text-base font-bold text-stone-900 dark:text-white leading-tight">
                 {program.name}
               </h3>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                <span
+                  className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${STATUS_STYLE[program.status]}`}
+                >
                   {program.status}
                 </span>
-                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700 shrink-0" />
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <span
+                  className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${ELIGIBILITY_STYLE[program.eligibilityType]}`}
+                >
                   {program.eligibilityType}
                 </span>
                 {urgency?.level === "closed" && (
@@ -1206,78 +1536,90 @@ function ProgramCard({ program }: { program: Program }) {
           {/* Stipend */}
           <div className="text-right shrink-0">
             {program.stipendPaid ? (
+              <div className="flex items-center justify-end gap-1 text-emerald-700">
+                <DollarSign className="w-3.5 h-3.5" />
+                <span className="text-sm font-bold">
+                  {program.stipend.split(" ")[0]}
+                </span>
+              </div>
+            ) : (
+              <span className="text-xs text-stone-400 font-medium">
+                No stipend
+              </span>
+            )}
+            {program.stipendPaid && (
               <>
-                <div className="flex items-center justify-end gap-1">
-                  <DollarSign className="w-3.5 h-3.5 text-lime-600 dark:text-lime-400" />
-                  <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
-                    {program.stipend.split(" ")[0]}
-                  </span>
-                </div>
-                <p className="text-[10px] font-mono text-stone-500 mt-0.5">{program.stipend}</p>
+                <p className="text-xs text-stone-400 mt-0.5">USD {program.stipend}</p>
                 {localStipendEstimate && (
                   <p
-                    className="text-[10px] font-mono text-lime-600 dark:text-lime-400 mt-0.5"
+                    className="text-xs font-mono text-lime-600 dark:text-lime-400 mt-0.5"
                     title="Approximate local value based on current exchange rates."
                   >
                     {localStipendEstimate}
                   </p>
                 )}
               </>
-            ) : (
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">
-                no stipend
-              </span>
             )}
           </div>
         </div>
 
-        <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-4">
+        <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-3">
           {program.description}
         </p>
 
-        {/* Meta row */}
-        <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-4">
-          <span className="flex items-center gap-1.5 text-xs text-stone-500">
+        {/* Key info row */}
+        <div className="flex flex-wrap gap-4 mt-3 text-xs text-stone-500">
+          <span className="flex items-center gap-1">
             <Calendar className="w-3.5 h-3.5 text-stone-400" />
             {program.window}
           </span>
-          <span className="flex items-center gap-1.5 text-xs text-stone-500">
+          <span className="flex items-center gap-1">
             <Globe className="w-3.5 h-3.5 text-stone-400" />
             {program.region}
           </span>
-          <span className="flex items-center gap-1.5 text-xs text-stone-500">
+          <span className="flex items-center gap-1">
             <Users className="w-3.5 h-3.5 text-stone-400" />
-            {program.eligibility.length > 50 ? program.eligibility.slice(0, 50) + "…" : program.eligibility}
+            {program.eligibility.length > 50
+              ? program.eligibility.slice(0, 50) + "…"
+              : program.eligibility}
           </span>
         </div>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-x-3 gap-y-1 mt-3">
           {program.tags.slice(0, 4).map((t) => (
-            <span key={t} className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+            <span
+              key={t}
+              className="px-2 py-0.5 bg-stone-50 dark:bg-stone-800 text-stone-500 text-[10px] rounded-md border border-stone-100 dark:border-stone-700"
+            >
               #{t}
             </span>
           ))}
         </div>
 
         {/* Countdown */}
-        {cd && (
-          <div className="flex items-center gap-1.5 mt-3 text-xs font-mono text-stone-500">
-            <span className="h-1.5 w-1.5 bg-lime-400 shrink-0" />
-            {cd.text}
-          </div>
-        )}
-
-        {/* Action row */}
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-stone-100 dark:border-white/5">
-          <button
-            type="button"
+        {(() => {
+          const cd = getCountdown(program);
+          return cd ? (
+            <div
+              className={`flex items-center gap-1 mt-2 text-xs ${cd.className}`}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              {cd.text}
+            </div>
+          ) : null;
+        })()}
+        {/* Expand / CTA row */}
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-100 dark:border-stone-800">
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setExpanded(!expanded)}
-            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
+            className="text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
           >
             {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             {expanded ? "less" : "full details"}
-          </button>
+          </Button>
 
           <div className="flex gap-2">
             {program.applicationDeadline ? (
@@ -1285,28 +1627,46 @@ function ProgramCard({ program }: { program: Program }) {
                 href={getGoogleCalendarUrl(program)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-white/5 hover:bg-stone-100 dark:hover:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md transition-colors no-underline"
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-md border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer no-underline"
               >
                 <CalendarPlus className="w-3 h-3" /> Calendar
               </a>
             ) : (
-              <div className="inline-flex items-center gap-1 px-3 py-1.5 text-xs text-stone-400 bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md">
-                <Calendar className="w-3 h-3" /> TBA
+              <div className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-stone-500 dark:text-stone-400 bg-stone-50 dark:bg-stone-800/50 rounded-md border border-stone-200 dark:border-stone-800">
+                <Calendar className="w-3 h-3" /> Deadline: TBA
               </div>
             )}
-            <a
-              href={program.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-white/5 hover:bg-stone-100 dark:hover:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md transition-colors no-underline"
+            <button
+              type="button"
+              onClick={handleDownloadIcs}
+              disabled={downloading}
+              className="flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-md border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer disabled:opacity-50"
+              title="Download .ics calendar file"
             >
-              <Globe className="w-3 h-3" /> Website <ExternalLink className="w-3 h-3 opacity-50" />
+              <Download className="w-3 h-3" />
+            </button>
+            <button
+              type="button"
+              onClick={() => program.slug && onToggleTrack(program.slug, !tracked)}
+              className={`flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold rounded-md border transition-colors cursor-pointer ${
+                tracked
+                  ? "text-lime-700 dark:text-lime-400 bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800/30"
+                  : "text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700"
+              }`}
+              title={tracked ? "Stop tracking" : "Track this program"}
+            >
+              <Bookmark className={`w-3 h-3 ${tracked ? "fill-current" : ""}`} />
+            </button>
+            <a href={program.website} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-md border border-stone-200 dark:border-stone-700 no-underline transition-colors">
+
+              <Globe className="w-3 h-3" /> Website <ExternalLink className="w-3 h-3 opacity-60" />
             </a>
             <a
               href={program.applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-stone-950 bg-lime-400 hover:bg-lime-300 rounded-md no-underline transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold text-white dark:text-stone-950 bg-stone-950 dark:bg-white hover:bg-stone-800 dark:hover:bg-stone-200 rounded-md no-underline transition-colors"
             >
               Apply <ExternalLink className="w-3 h-3 opacity-70" />
             </a>
@@ -1329,19 +1689,22 @@ function ProgramCard({ program }: { program: Program }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="overflow-hidden border-t border-stone-100 dark:border-white/5"
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden border-t border-stone-100 dark:border-stone-800"
           >
-            <div className="p-5 bg-stone-50 dark:bg-stone-900/50 grid md:grid-cols-3 gap-6">
+            <div className="p-5 bg-stone-50 dark:bg-stone-950 grid md:grid-cols-3 gap-6">
+              {/* Requirements */}
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">
-                  <span className="h-1.5 w-1.5 bg-lime-400" />
-                  requirements
-                </div>
-                <ul className="space-y-2.5">
-                  {program.requirements.map((r, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-lime-500 dark:text-lime-400 shrink-0 mt-0.5" />
+                <h4 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wide mb-3">
+                  Requirements
+                </h4>
+                <ul className="space-y-2">
+                  {(program.requirements ?? []).map((r, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                       {r}
                     </li>
                   ))}
@@ -1349,17 +1712,18 @@ function ProgramCard({ program }: { program: Program }) {
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">
-                  <span className="h-1.5 w-1.5 bg-lime-400" />
-                  timeline
-                </div>
-                <div className="space-y-2.5">
-                  {program.timeline.map((t, i) => (
-                    <div key={i} className="flex items-start gap-2.5">
-                      <div className="w-1.5 h-1.5 bg-stone-300 dark:bg-stone-600 mt-1.5 shrink-0" />
+                <h4 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wide mb-3">
+                  Timeline
+                </h4>
+                <div className="space-y-2">
+                  {(program.timeline ?? []).map((t, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 rounded-md bg-stone-400 mt-1.5 shrink-0" />
                       <div>
-                        <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">{t.phase}</p>
-                        <p className="text-[10px] font-mono text-stone-500">{t.dates}</p>
+                        <p className="text-xs font-medium text-stone-900 dark:text-white">
+                          {t.phase}
+                        </p>
+                        <p className="text-[10px] text-stone-500">{t.dates}</p>
                       </div>
                     </div>
                   ))}
@@ -1367,15 +1731,17 @@ function ProgramCard({ program }: { program: Program }) {
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">
-                  <span className="h-1.5 w-1.5 bg-lime-400" />
-                  how to apply
-                </div>
-                <ol className="space-y-2.5">
-                  {program.howToApply.map((step, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400">
-                      <span className="text-[10px] font-bold tabular-nums text-lime-600 dark:text-lime-400 shrink-0 mt-0.5 w-4">
-                        {i + 1}.
+                <h4 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wide mb-3">
+                  How to Apply
+                </h4>
+                <ol className="space-y-2">
+                  {(program.howToApply ?? []).map((step, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-xs text-stone-600 dark:text-stone-400"
+                    >
+                      <span className="w-4 h-4 rounded-md bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                        {i + 1}
                       </span>
                       {step}
                     </li>
@@ -1419,12 +1785,45 @@ export default function ProgramTrackerPage() {
 
   const savedFilters = getSavedFilters();
 
+  const { user } = useAuthStore();
+  const queryClient = useQueryClient();
+
+  const { data: serverPrograms } = useQuery({
+    queryKey: ["opensource-programs"],
+    queryFn: () => api.get("/opensource/programs").then((r) => r.data.programs),
+    staleTime: 600000,
+  });
+
+  const { data: trackedData } = useQuery({
+    queryKey: ["opensource-programs-tracked"],
+    queryFn: () => api.get("/opensource/programs/tracked/mine").then((r) => r.data.programs),
+    staleTime: 60000,
+    enabled: !!user,
+  });
+
+  const trackMutation = useMutation({
+    mutationFn: (body: { slug: string; tracked: boolean }) =>
+      api.post("/opensource/programs/track", body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["opensource-programs-tracked"] });
+    },
+    onError: () => {
+      toast.error("Failed to update tracking");
+    },
+  });
+
+  const trackedSlugs = useMemo(() => {
+    if (!trackedData) return new Set<string>();
+    return new Set(trackedData.map((p: any) => p.slug));
+  }, [trackedData]);
+
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>(savedFilters.status);
   const [selectedEligibility, setSelectedEligibility] = useState<string>(savedFilters.eligibility);
   const [activeFocus, setActiveFocus] = useState<string>("All");
   const [selectedStipend, setSelectedStipend] = useState<string>(savedFilters.stipend);
   const [sortBy, setSortBy] = useState<string>(savedFilters.sortBy);
+  const [showTrackedOnly, setShowTrackedOnly] = useState(false);
 
   // Save filters to localStorage whenever they change
   useEffect(() => {
@@ -1443,15 +1842,36 @@ export default function ProgramTrackerPage() {
     }
   }, [selectedStatus, selectedEligibility, selectedStipend, sortBy]);
 
+  const programsSource = useMemo(() => {
+    if (serverPrograms && serverPrograms.length > 0) {
+      return serverPrograms.map((p: any) => ({
+        ...p,
+        status: p.window === "Ongoing" ? "Ongoing" : "Annual",
+        eligibilityType: p.eligibilityType || "Open to All",
+        stipendPaid: !!p.stipend,
+        stipendRange: p.stipendRange || "Medium",
+        startDate: p.applicationStart,
+        website: p.website || "",
+        applyUrl: p.applyUrl || "",
+        timeline: p.timeline || [],
+        howToApply: p.howToApply || "",
+      }));
+    }
+    return PROGRAMS;
+  }, [serverPrograms]);
+
   const filtered = useMemo(() => {
-    let list = [...PROGRAMS];
+    let list = [...programsSource];
+    if (showTrackedOnly) {
+      list = list.filter((p) => trackedSlugs.has(p.slug));
+    }
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.description.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.toLowerCase().includes(q)),
+          (p.tags && p.tags.some((t: string) => t.toLowerCase().includes(q))),
       );
     }
     if (selectedStatus !== "All")
@@ -1478,7 +1898,7 @@ export default function ProgramTrackerPage() {
         return dateB - dateA;
       });
     } else if (sortBy === "stipend-desc") {
-      const rank = { High: 3, Medium: 2, "Low/None": 1 };
+      const rank: Record<string, number> = { High: 3, Medium: 2, "Low/None": 1 };
       list.sort((a, b) => {
         const aVal = rank[a.stipendRange] || 0;
         const bVal = rank[b.stipendRange] || 0;
@@ -1489,10 +1909,10 @@ export default function ProgramTrackerPage() {
       list.sort((a, b) => a.name.localeCompare(b.name));
     }
     return list;
-  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy, activeFocus]);
+  }, [search, selectedStatus, selectedEligibility, selectedStipend, sortBy, activeFocus, showTrackedOnly, programsSource, trackedSlugs]);
 
-  const totalStipend = PROGRAMS.filter((p) => p.stipendPaid).length;
-  const highStipend = PROGRAMS.filter((p) => p.stipendRange === "High").length;
+  const totalStipend = programsSource.filter((p: Program) => p.stipendPaid).length;
+  const highStipend = programsSource.filter((p: Program) => p.stipendRange === "High").length;
 
   const programEventsSchema = PROGRAMS.map((p) => ({
     "@context": "https://schema.org",
@@ -1517,6 +1937,53 @@ export default function ProgramTrackerPage() {
         ogImage="/og/og-programs.png"
         structuredData={programEventsSchema}
       />
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 mb-8 p-8">
+        <div className="relative">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-md bg-emerald-500 flex items-center justify-center shadow-lg">
+              <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
+                Open Source Program Tracker
+              </h1>
+              <p className="text-sm text-emerald-700">
+                Track deadlines, stipends, and how to apply for every major
+                program
+              </p>
+            </div>
+          </div>
+          <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl mb-6 leading-relaxed">
+            All major open source programs in one place - with deadlines,
+            stipends, eligibility, and step-by-step application guides. Set
+            reminders and apply before windows close.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { label: "Programs Listed", value: programsSource.length },
+              { label: "Paid Programs", value: totalStipend },
+              { label: "High Stipend ($5k+)", value: highStipend },
+              {
+                label: "Diversity Programs",
+                value: programsSource.filter(
+                  (p: any) => p.eligibilityType === "Diversity-focused",
+                ).length,
+              },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="bg-white/70 dark:bg-stone-900/70 rounded-md px-4 py-2 border border-emerald-100 dark:border-emerald-800"
+              >
+                <p className="text-lg font-bold text-stone-900 dark:text-white leading-none">
+                  {s.value}
+                </p>
+                <p className="text-xs text-stone-500 mt-0.5">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── Hero ──────────────────────────────────────────── */}
       <div className="relative border-b border-stone-200 dark:border-white/10 pb-10 mb-8 overflow-hidden">
@@ -1598,14 +2065,10 @@ export default function ProgramTrackerPage() {
 
       {/* ── Next deadline sticky bar ───────────────────────── */}
       {NEXT_DEADLINE && (
-        <div className="sticky top-0 z-10 mb-6 bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-4 py-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <motion.span
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              className="h-1.5 w-1.5 bg-lime-400 shrink-0"
-            />
-            <p className="text-xs font-mono text-stone-600 dark:text-stone-400">
+        <div className="sticky top-0 z-10 mb-5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 rounded-md px-4 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <p className="text-xs font-medium text-stone-700 dark:text-stone-300">
               Next deadline:{" "}
               <span className="font-bold text-stone-900 dark:text-stone-50">{NEXT_DEADLINE.program.name}</span>
               {" "}closes in{" "}
@@ -1632,10 +2095,10 @@ export default function ProgramTrackerPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search programs..."
-            className="w-full pl-9 pr-4 py-2.5 border border-stone-200 dark:border-white/10 rounded-md text-sm focus:outline-none focus:border-lime-400 dark:focus:border-lime-400 bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 transition-colors"
+            className="w-full pl-9 pr-4 py-2.5 border border-stone-200 dark:border-stone-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 bg-white dark:bg-stone-800 dark:text-white dark:placeholder-stone-500"
           />
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           {[
             { label: "Status", value: selectedStatus, options: STATUS_OPTIONS, set: setSelectedStatus },
             { label: "Eligibility", value: selectedEligibility, options: ELIGIBILITY_OPTIONS, set: setSelectedEligibility },
@@ -1643,26 +2106,21 @@ export default function ProgramTrackerPage() {
             { label: "Stipend", value: selectedStipend, options: STIPEND_OPTIONS, set: setSelectedStipend },
           ].map(({ label, value, options, set }) => (
             <div key={label} className="relative group">
-              <button
-                type="button"
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 hover:border-stone-400 dark:hover:border-white/30 transition-colors cursor-pointer"
-              >
-                <Filter className="w-3 h-3 text-stone-400" />
-                <span className="text-stone-400 font-mono">{label}:</span>
-                <span className="font-bold text-stone-900 dark:text-stone-50">{value}</span>
-                <ChevronDown className="w-3 h-3 text-stone-400" />
-              </button>
-              <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[170px] max-h-[200px] overflow-y-auto rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
+              <Button variant="secondary" size="sm">
+                <Filter className="w-3 h-3" />
+                <span className="text-stone-400">{label}:</span>
+                <span className="font-semibold text-stone-900 dark:text-white">
+                  {value}
+                </span>
+                <ChevronDown className="w-3 h-3 opacity-50" />
+              </Button>
+              <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[170px] max-h-[200px] overflow-y-auto rounded-md border border-stone-100 dark:border-stone-700 bg-white dark:bg-stone-800 p-1 shadow-xl group-hover:block">
                 {options.map((opt) => (
                   <button
                     key={opt}
                     type="button"
                     onClick={() => set(opt)}
-                    className={`w-full text-left px-3 py-1.5 text-xs rounded transition-colors cursor-pointer border-0 ${
-                      value === opt
-                        ? "bg-lime-400/15 text-lime-700 dark:text-lime-400 font-bold"
-                        : "text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5"
-                    }`}
+                    className={`w-full justify-start ${value === opt ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-stone-600 dark:text-stone-300"}`}
                   >
                     {opt}
                   </button>
@@ -1670,58 +2128,52 @@ export default function ProgramTrackerPage() {
               </div>
             </div>
           ))}
-          <div className="relative group">
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 hover:border-stone-400 dark:hover:border-white/30 transition-colors cursor-pointer"
+          {!!user && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowTrackedOnly((prev) => !prev)}
+              className={showTrackedOnly ? "bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800 text-lime-700 dark:text-lime-400 font-medium" : "text-stone-600 dark:text-stone-300"}
             >
-              <Calendar className="w-3 h-3 text-stone-400" />
-              <span className="text-stone-400 font-mono">Sort:</span>
-              <span className="font-bold text-stone-900 dark:text-stone-50">{SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? "Default"}</span>
-              <ChevronDown className="w-3 h-3 text-stone-400" />
-            </button>
-            <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
-              {SORT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setSortBy(opt.value)}
-                  className={`w-full text-left px-3 py-1.5 text-xs rounded transition-colors cursor-pointer border-0 ${
-                    sortBy === opt.value
-                      ? "bg-lime-400/15 text-lime-700 dark:text-lime-400 font-bold"
-                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default") && (
-            <button
-              type="button"
-              onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); }}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 hover:border-stone-400 dark:hover:border-white/30 text-stone-500 transition-colors cursor-pointer"
+              <Bookmark className={`w-3.5 h-3.5 mr-1.5 ${showTrackedOnly ? "fill-current" : ""}`} />
+              Tracked only
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortBy((prev) => (prev === "deadline" ? "default" : "deadline"))}
+            className={sortBy === "deadline" ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-medium" : "text-stone-600 dark:text-stone-300"}
+          >
+            <Calendar className="w-3.5 h-3.5 mr-1.5" />
+            Sort by deadline
+          </Button>
+          {(selectedStatus !== "All" || selectedEligibility !== "All" || selectedStipend !== "All" || search || sortBy !== "default" || showTrackedOnly) && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => { setSearch(""); setSelectedStatus("All"); setSelectedEligibility("All"); setSelectedStipend("All"); setSortBy("default"); setShowTrackedOnly(false); }}
+              className="text-stone-500"
             >
               <X className="w-3.5 h-3.5" /> Clear
-            </button>
+            </Button>
           )}
         </div>
       </div>
 
-      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-5">
+      <p className="text-sm text-stone-400 mb-5">
         Showing{" "}
-        <span className="font-bold text-stone-900 dark:text-stone-50">
+        <span className="font-semibold text-stone-900 dark:text-white">
           {filtered.length}
         </span>{" "}
-        of {PROGRAMS.length} programs
+        of {programsSource.length} programs
       </p>
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 border border-stone-200 dark:border-white/10 rounded-md bg-stone-50 dark:bg-stone-950">
-          <GraduationCap className="w-10 h-10 text-stone-200 dark:text-stone-700 mx-auto mb-3" />
-          <p className="text-xs font-mono uppercase tracking-widest text-stone-400">
+        <div className="text-center py-16 bg-stone-50 dark:bg-stone-950 rounded-2xl">
+          <GraduationCap className="w-10 h-10 text-stone-200 mx-auto mb-3" />
+          <p className="text-sm text-stone-500 font-medium">
             No programs match your filters
           </p>
         </div>
@@ -1734,7 +2186,11 @@ export default function ProgramTrackerPage() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <ProgramCard program={program} />
+              <ProgramCard
+                program={program}
+                tracked={trackedSlugs.has(program.slug)}
+                onToggleTrack={(slug, track) => trackMutation.mutate({ slug, tracked: track })}
+              />
             </motion.div>
           ))}
         </div>

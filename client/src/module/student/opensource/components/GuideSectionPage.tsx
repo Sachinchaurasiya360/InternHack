@@ -5,6 +5,7 @@ import {
   ArrowRight, ChevronLeft, ChevronRight,
   CheckCircle2, ExternalLink, Lightbulb, Info,
 } from "lucide-react";
+import { VideoEmbed } from "../../../../components/ui/VideoEmbed";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { CodeBlock } from "../../../../components/ui/CodeBlock";
@@ -28,6 +29,7 @@ interface Step {
   resources: Resource[];
   tips: string[];
   quiz?: QuizQuestion[];
+  videoUrl?: string;
 }
 
 interface Props {
@@ -126,12 +128,20 @@ if (!step) return <Navigate to={basePath} replace />;
   const isDone = completed.has(step.id);
 
   return (
-    <div className="relative pb-12">
+    <div className="relative pb-28 sm:pb-12">
       <SEO
         title={`${step.title} - ${seoSuffix}`}
         description={step.description}
         canonicalUrl={canonicalUrl(`${basePath}/${sectionSlug}`)}
       />
+
+      {/* Mobile progress bar, fixed at top */}
+      <div className="fixed top-0 left-0 right-0 z-30 h-1 bg-stone-200 dark:bg-stone-800 sm:hidden">
+        <div
+          className="h-full bg-lime-400 transition-all duration-500"
+          style={{ width: `${((stepIndex + 1) / steps.length) * 100}%` }}
+        />
+      </div>
 
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-stone-100 dark:bg-stone-900/20 rounded-full blur-3xl opacity-40" />
@@ -202,6 +212,16 @@ if (!step) return <Navigate to={basePath} replace />;
             <div className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
               {step.mentor_guidance}
             </div>
+          </motion.div>
+        )}
+
+        {step.videoUrl && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.12 }}
+          >
+            <VideoEmbed url={step.videoUrl} title={`Watch: ${step.title}`} />
           </motion.div>
         )}
 
@@ -403,6 +423,41 @@ if (!step) return <Navigate to={basePath} replace />;
             )}
           </div>
         </motion.div>
+    </div>
+
+      {/* Mobile fixed bottom nav */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-2 sm:hidden">
+        <button
+          type="button"
+          onClick={() => prev && navigate(`${basePath}/${prev.id}`)}
+          disabled={!prev}
+          aria-label="Previous step"
+          className="flex items-center justify-center min-w-[44px] min-h-[44px] rounded-xl border border-gray-200 dark:border-gray-700 disabled:opacity-30 disabled:cursor-not-allowed text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+
+        <button
+          type="button"
+          onClick={toggleComplete}
+          className={`flex-1 min-h-[44px] rounded-xl text-sm font-bold transition-colors ${
+            isDone
+              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+              : "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
+          }`}
+        >
+          {isDone ? "✓ Completed" : "Mark Complete"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => next && navigate(`${basePath}/${next.id}`)}
+          disabled={!next}
+          aria-label="Next step"
+          className="flex items-center justify-center min-w-[44px] min-h-[44px] rounded-xl border border-gray-200 dark:border-gray-700 disabled:opacity-30 disabled:cursor-not-allowed text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
+import { FileUploadError } from "../lib/errors.js";
 
 const ADMIN_ALERT_EMAIL = "mrsachinchaurasiya@gmail.com";
 
@@ -60,7 +61,7 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
       userAgent: req.headers["user-agent"] || null,
       requestBody: sanitizeBody(req.body) ?? Prisma.DbNull,
     },
-  }).catch((dbErr) => {
+    }).catch((dbErr) => {
     console.error("[ErrorLog] Failed to write:", dbErr);
   });
 
@@ -81,7 +82,7 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
         <pre style="margin-top:16px;padding:12px;background:#1f2937;color:#f9fafb;border-radius:6px;overflow:auto;font-size:12px">${rawDetails}</pre>
       `,
       text: `Server Error ${statusCode}\n${req.method} ${path}\n${message}\n\n${rawDetails}`,
-    }).catch(() => {});
+    }).catch((e) => console.error("[ErrorLog] Admin alert email failed:", e));
   }
 }
 
@@ -111,10 +112,8 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
     return;
   }
 
-  // Multer / file upload errors
-  if (err.message === "File type not allowed" ||
-      err.message === "Only PDF and Word documents are allowed" ||
-      err.message === "Only JPEG, PNG, and WebP images are allowed") {
+  // File upload errors
+  if (err instanceof FileUploadError) {
     respond(req, res, 400, err.message, err);
     return;
   }

@@ -10,9 +10,8 @@ export const aiRoadmapLimiter = rateLimit({
   store: createRateLimitStore("ai-roadmap"),
   keyGenerator: (req) => {
     // Prefer user ID if authenticated, fallback to IP
-    const user = (req as any).user;
-    if (user && user.id) {
-      return `user_${user.id}`;
+    if (req.user?.id) {
+      return `user_${req.user.id}`;
     }
     return ipKeyGenerator(req.ip || "unknown_ip");
   },

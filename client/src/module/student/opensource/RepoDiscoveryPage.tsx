@@ -505,9 +505,9 @@ export default function RepoDiscoveryPage() {
         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-0 border-t border-l border-stone-200 dark:border-white/10">
           <Link
             to="/student/opensource/analytics"
-            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-900 dark:hover:bg-stone-50 transition-colors"
+            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-900 dark:hover:bg-stone-800 transition-colors"
           >
-            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-stone-900/10 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-lime-400/10 flex items-center justify-center shrink-0">
               <BarChart3 className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
             </div>
             <div className="flex-1 min-w-0">
@@ -517,7 +517,7 @@ export default function RepoDiscoveryPage() {
                   analytics
                 </p>
               </div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-stone-900">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-white">
                 Track your contributions
               </p>
             </div>
@@ -530,9 +530,9 @@ export default function RepoDiscoveryPage() {
               if (!user) { window.location.href = "/login"; return; }
               setShowSuggestModal(true);
             }}
-            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 cursor-pointer hover:bg-stone-900 dark:hover:bg-stone-50 transition-colors text-left"
+            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 cursor-pointer hover:bg-stone-900 dark:hover:bg-stone-800 transition-colors text-left"
           >
-            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-stone-900/10 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-lime-400/10 flex items-center justify-center shrink-0">
               <Plus className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
             </div>
             <div className="flex-1 min-w-0">
@@ -542,7 +542,7 @@ export default function RepoDiscoveryPage() {
                   suggest
                 </p>
               </div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-stone-900">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-white">
                 Know a great repo? Submit it
               </p>
             </div>
@@ -641,7 +641,7 @@ export default function RepoDiscoveryPage() {
 
 
         {/* Filter bar */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-4 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           {/* Domain chips */}
           {REPO_DOMAINS.map((d) => {
             const active = selectedDomain === d.key;
@@ -650,10 +650,11 @@ export default function RepoDiscoveryPage() {
                 key={d.key}
                 type="button"
                 onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
-                className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${active
-                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                  : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-                  }`}
+                className={`inline-flex items-center px-3 py-2.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
+                  active
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                    : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+                }`}
               >
                 {d.label}
               </button>
@@ -664,10 +665,11 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => setShowSaved((v) => !v)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${showSaved
-              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
-              }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-2.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              showSaved
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
+            }`}
           >
             <Bookmark className="w-3 h-3" />
             Saved {bookmarks.length > 0 && `(${bookmarks.length})`}
@@ -818,80 +820,75 @@ export default function RepoDiscoveryPage() {
         </div>
 
         {/* Expanded filters */}
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden mb-6"
+        {/* Mobile filter bottom sheet */}
+<AnimatePresence>
+  {showFilters && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-40 bg-stone-950/50 sm:hidden"
+      onClick={() => setShowFilters(false)}
+    >
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="absolute bottom-0 left-0 right-0 bg-white dark:bg-stone-900 rounded-t-xl p-5 pb-8 border-t border-stone-200 dark:border-white/10"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-10 h-1 bg-stone-200 dark:bg-stone-700 rounded-full mx-auto mb-5" />
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">Filters</p>
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">difficulty</label>
+            <select
+              value={selectedDifficulty}
+              onChange={(e) => updateFilter("difficulty", e.target.value)}
+              className="w-full px-3 py-3 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none"
             >
-              <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-                <div>
-                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
-                    difficulty
-                  </label>
-                  <select
-                    value={selectedDifficulty}
-                    onChange={(e) => updateFilter("difficulty", e.target.value)}
-                    className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
-                  >
-                    {DIFFICULTY_OPTIONS.map((d) => (
-                      <option key={d.key} value={d.key}>{d.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
-                    language
-                  </label>
-
-                  <select
-                    value={selectedLanguage}
-                    disabled={languageMode === "auto"}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setSearchParams((prev) => {
-                        const params = new URLSearchParams(prev);
-                        params.delete("language");
-
-                        if (value !== "ALL") {
-                          params.append("language", value);
-                        }
-
-                        params.set("page", "1");
-                        return params;
-                      }, { replace: true });
-                    }}
-                    className={`px-3 ${languageMode === "auto" ? "opacity-50 cursor-not-allowed" : ""} py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25`}
-                  >
-                    <option value="ALL">All Languages</option>
-                    {languages.map((lang) => (
-                      <option key={lang} value={lang}>
-                        {lang}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {activeFilters > 0 && (
-                  <div className="flex items-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearchParams(new URLSearchParams(), { replace: true });
-                        setInputValue("");
-                      }}
-                      className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer py-2"
-                    >
-                      / clear all
-                    </button>
-                  </div>
-                )}
-              </div>
-            </motion.div>
+              {DIFFICULTY_OPTIONS.map((d) => (
+                <option key={d.key} value={d.key}>{d.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">language</label>
+            <select
+              value={selectedLanguage}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearchParams((prev) => {
+                  const params = new URLSearchParams(prev);
+                  params.delete("language");
+                  if (value !== "ALL") params.append("language", value);
+                  params.set("page", "1");
+                  return params;
+                }, { replace: true });
+              }}
+              className="w-full px-3 py-3 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none"
+            >
+              <option value="ALL">All Languages</option>
+              {languages.map((lang) => (
+                <option key={lang} value={lang}>{lang}</option>
+              ))}
+            </select>
+          </div>
+          {activeFilters > 0 && (
+            <button
+              type="button"
+              onClick={() => { setSearchParams(new URLSearchParams(), { replace: true }); setInputValue(""); setShowFilters(false); }}
+              className="text-sm text-red-500 font-medium py-2 text-left"
+            >
+              Clear all filters
+            </button>
           )}
-        </AnimatePresence>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
         {/* Results count */}
         <div className="flex items-center justify-between mb-4">

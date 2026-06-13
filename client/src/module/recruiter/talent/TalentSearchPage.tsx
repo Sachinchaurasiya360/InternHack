@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search as SearchIcon,
@@ -42,6 +42,57 @@ const defaultFilters: TalentFilters = {
   jobStatus: "",
 };
 
+const talentFilterKeys: (keyof TalentFilters)[] = [
+  "search",
+  "skills",
+  "verifiedSkills",
+  "college",
+  "graduationYearMin",
+  "graduationYearMax",
+  "minAtsScore",
+  "location",
+  "jobStatus",
+];
+
+function parsePositiveInt(value: string | null, fallback: number) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function parseAtsScore(value: string | null) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return defaultFilters.minAtsScore;
+  return Math.min(100, Math.max(0, parsed));
+}
+
+function getFiltersFromSearchParams(searchParams: URLSearchParams): TalentFilters {
+  return {
+    search: searchParams.get("search") ?? defaultFilters.search,
+    skills: searchParams.get("skills") ?? defaultFilters.skills,
+    verifiedSkills: searchParams.get("verifiedSkills") ?? defaultFilters.verifiedSkills,
+    college: searchParams.get("college") ?? defaultFilters.college,
+    graduationYearMin: searchParams.get("graduationYearMin") ?? defaultFilters.graduationYearMin,
+    graduationYearMax: searchParams.get("graduationYearMax") ?? defaultFilters.graduationYearMax,
+    minAtsScore: parseAtsScore(searchParams.get("minAtsScore")),
+    location: searchParams.get("location") ?? defaultFilters.location,
+    jobStatus: searchParams.get("jobStatus") ?? defaultFilters.jobStatus,
+  };
+}
+
+function buildTalentSearchParams(filters: TalentFilters, page = 1) {
+  const params = new URLSearchParams();
+  talentFilterKeys.forEach((key) => {
+    const value = filters[key];
+    if (key === "minAtsScore") {
+      if ((value as number) > 0) params.set(key, String(value));
+      return;
+    }
+    if (value) params.set(key, String(value));
+  });
+  if (page > 1) params.set("page", String(page));
+  return params;
+}
+
 const JOB_STATUS_OPTIONS = [
   { key: "", label: "All" },
   { key: "LOOKING", label: "Looking" },
@@ -61,9 +112,21 @@ const labelClass =
   "block text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1.5";
 
 export default function TalentSearchPage() {
-  const [filters, setFilters] = useState<TalentFilters>(defaultFilters);
-  const [appliedFilters, setAppliedFilters] = useState<TalentFilters>(defaultFilters);
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParamsKey = searchParams.toString();
+  const appliedFilters = useMemo(
+    () => getFiltersFromSearchParams(new URLSearchParams(searchParamsKey)),
+    [searchParamsKey],
+  );
+  const page = useMemo(
+    () => parsePositiveInt(new URLSearchParams(searchParamsKey).get("page"), 1),
+    [searchParamsKey],
+  );
+  const [draftFilters, setDraftFilters] = useState(() => ({
+    source: searchParamsKey,
+    values: appliedFilters,
+  }));
+  const filters = draftFilters.source === searchParamsKey ? draftFilters.values : appliedFilters;
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: savedIdsData } = useQuery({
@@ -99,25 +162,30 @@ export default function TalentSearchPage() {
   });
 
   const applyFilters = useCallback(() => {
-    setAppliedFilters({ ...filters });
-    setPage(1);
-  }, [filters]);
+    const nextParams = buildTalentSearchParams(filters);
+    setDraftFilters({ source: nextParams.toString(), values: filters });
+    setSearchParams(nextParams);
+  }, [filters, setSearchParams]);
 
   const clearFilters = useCallback(() => {
-    setFilters(defaultFilters);
-    setAppliedFilters(defaultFilters);
-    setPage(1);
-  }, []);
+    const nextParams = new URLSearchParams();
+    setDraftFilters({ source: nextParams.toString(), values: defaultFilters });
+    setSearchParams(nextParams);
+  }, [setSearchParams]);
 
   const updateFilter = <K extends keyof TalentFilters>(key: K, value: TalentFilters[K]) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    setDraftFilters({ source: searchParamsKey, values: { ...filters, [key]: value } });
   };
 
   const setJobStatus = (status: string) => {
     const next = { ...filters, jobStatus: status };
-    setFilters(next);
-    setAppliedFilters(next);
-    setPage(1);
+    const nextParams = buildTalentSearchParams(next);
+    setDraftFilters({ source: nextParams.toString(), values: next });
+    setSearchParams(nextParams);
+  };
+
+  const setPage = (nextPage: number) => {
+    setSearchParams(buildTalentSearchParams(appliedFilters, nextPage));
   };
 
   const students = data?.students ?? [];

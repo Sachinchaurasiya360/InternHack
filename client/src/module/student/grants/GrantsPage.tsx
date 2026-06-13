@@ -24,6 +24,8 @@ import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./gran
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Link } from "react-router";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 function resolveGrantLogo(logo: string, website: string): string {
   if (logo && !logo.includes("placehold.co")) return logo;
@@ -203,14 +205,7 @@ export default function GrantsPage() {
         canonicalUrl={canonicalUrl("/grants")}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}

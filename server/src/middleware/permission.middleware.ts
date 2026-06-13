@@ -14,7 +14,7 @@ async function getUserPermissions(userId: number): Promise<string[]> {
     include: { role: { select: { permissions: true } } },
   });
 
-  const permissions = [...new Set(userRoles.flatMap((ur) => ur.role.permissions))];
+  const permissions = [...new Set(userRoles.flatMap((ur) => ur.role.permissions as string[]))] as string[];
   permCache.set(userId, { permissions, expiresAt: Date.now() + CACHE_TTL });
   return permissions;
 }

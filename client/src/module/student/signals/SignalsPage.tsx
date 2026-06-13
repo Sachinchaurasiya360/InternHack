@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useClearFilters } from "../../../hooks/useClearFilters";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -128,12 +129,12 @@ export default function SignalsPage() {
     setPage(1);
   };
 
-  const clearFilters = () => {
-    setSearch("");
-    setSearchInput("");
-    setSource("");
-    setPage(1);
-  };
+  const clearFilters = useClearFilters([
+    () => setSearch(""),
+    () => setSearchInput(""),
+    () => setSource(""),
+    () => setPage(1),
+  ]);
 
   const changeKind = (next: SignalKind) => {
     setKind(next);

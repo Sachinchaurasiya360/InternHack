@@ -1,11 +1,16 @@
+import { formatDate } from "../../../lib/date-utils";
+import { FilterChip } from "../../../components/ui/FilterChip";
 import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
 import { BadgeProgressWidget } from "../opensource/components/BadgeProgressWidget";
 import { Link } from "react-router";
+import { useClearFilters } from "../../../hooks/useClearFilters";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
 import api from "../../../lib/axios";
+import { getStatusBorderColor } from "../../../lib/application-colors";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application, ExternalApplication } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
@@ -14,6 +19,7 @@ import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { EmptyState } from "../../../components/ui/EmptyState";
 import { ApplicationNotes } from "./ApplicationNotes";
 import toast from "@/components/ui/toast";
+import type { PendingDelete } from "@/lib/types/actions.types";
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -24,32 +30,8 @@ function Kicker({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CompanyMark({ label }: { label: string }) {
-  return (
-    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
-function statusClass(status: string) {
-  switch (status) {
-    case "APPLIED":
-      return "text-stone-900 dark:text-stone-50 border-stone-300 dark:border-white/20";
-    case "IN_PROGRESS":
-      return "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60";
-    case "SHORTLISTED":
-      return "text-lime-700 dark:text-lime-400 border-lime-400";
-    case "HIRED":
-      return "text-lime-700 dark:text-lime-400 border-lime-400 bg-lime-50 dark:bg-lime-950/40";
-    case "REJECTED":
-      return "text-red-600 dark:text-red-400 border-red-300 dark:border-red-900/60";
-    case "WITHDRAWN":
-      return "text-stone-400 border-stone-200 dark:border-white/10";
-    default:
-      return "text-stone-500 border-stone-200 dark:border-white/10";
-  }
-}
 
 const ApplicationCard = React.memo(function ApplicationCard({
   app,
@@ -64,7 +46,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
   return (
     <div className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
       <div className="flex items-start gap-4">
-        <CompanyMark label={app.job?.company || "?"} />
+        <CompanyMark name={app.job?.company || "?"} />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -85,7 +67,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
               </div>
             </div>
             <span
-              className={`inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border rounded-md ${statusClass(app.status)}`}
+              className={`inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border rounded-md ${getStatusBorderColor(app.status)}`}
             >
               {app.status.replace("_", " ")}
             </span>
@@ -98,11 +80,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
           <span className="flex items-center gap-1.5">
             <Clock className="w-3 h-3" />
             Applied{" "}
-            {new Date(app.createdAt).toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })}
+            {formatDate(app.createdAt)}
           </span>
           {totalRounds > 0 && (
             <span className="flex items-center gap-1.5">
@@ -160,7 +138,7 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
         external
       </span>
       <div className="flex items-start gap-4 pr-16">
-        <CompanyMark label={app.adminJob.company || "?"} />
+        <CompanyMark name={app.adminJob.company || "?"} />
         <div className="flex-1 min-w-0">
           <Link
             to={app.adminJob.slug ? `/jobs/ext/${app.adminJob.slug}` : "#"}
@@ -189,11 +167,7 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
         <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
           <Clock className="w-3 h-3" />
           Applied{" "}
-          {new Date(app.createdAt).toLocaleDateString("en-IN", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
+          {formatDate(app.createdAt)}
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -250,28 +224,25 @@ function sortApplications(
   });
 }
 
-type PendingDelete =
-  | { kind: "internal"; id: number }
-  | { kind: "external"; id: number };
 
 export default function MyApplicationsPage() {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const { inputValue: search, setInputValue: setSearch, debouncedValue: debouncedSearch } =
+    useSearchWithDebounce({ delay: 200 });
   const [page, setPage] = useState(1);
-  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 200);
-    return () => clearTimeout(t);
-  }, [search]);
+  const clearFilters = useClearFilters([
+    () => setSearch(""),
+    () => setStatusFilter("ALL"),
+    () => setPage(1),
+  ]);
 
   useEffect(() => {
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  setPage(1);
-}, [debouncedSearch, statusFilter]);
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -300,7 +271,7 @@ export default function MyApplicationsPage() {
   }, [applications, debouncedSearch, sortOption, statusFilter]);
 
   const filteredExternal = useMemo(() => {
-    let base = !debouncedSearch.trim()
+    const base = !debouncedSearch.trim()
       ? externalApplications
       : externalApplications.filter(
         (a) =>
@@ -314,13 +285,13 @@ export default function MyApplicationsPage() {
       if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
       return 0;
     });
-  }, [externalApplications, debouncedSearch, sortOption, statusFilter]);
+  }, [externalApplications, debouncedSearch, sortOption]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;
 
   const deleteMutation = useMutation({
-    mutationFn: async (item: PendingDelete) => {
+    mutationFn: async (item: NonNullable<PendingDelete>) => {
       if (item.kind === "internal") {
         await api.delete(`/student/applications/${item.id}`);
       } else {
@@ -452,20 +423,12 @@ export default function MyApplicationsPage() {
       {/* Status Filter Tabs */}
       <div className="flex flex-wrap gap-2 mb-8">
         {STATUS_TABS.map((tab) => (
-          <button
+          <FilterChip
             key={tab}
-            onClick={() => {
-              setStatusFilter(tab);
-              setPage(1);
-            }}
-            className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-all ${
-              statusFilter === tab
-                ? "bg-lime-400 text-stone-900 border-lime-400"
-                : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 dark:hover:border-white/30"
-            }`}
-          >
-            {tab.replace("_", " ")}
-          </button>
+            label={tab.replace("_", " ")}
+            active={statusFilter === tab}
+            onClick={() => { setStatusFilter(tab); setPage(1); }}
+          />
         ))}
       </div>
 
@@ -487,7 +450,6 @@ export default function MyApplicationsPage() {
         </select>
       </div>
 
-
       {/* Search */}
 
       
@@ -495,6 +457,7 @@ export default function MyApplicationsPage() {
         <BadgeProgressWidget />
       </div>
       
+
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
@@ -510,10 +473,7 @@ export default function MyApplicationsPage() {
       {isFiltered && (
         <div className="mb-6">
           <button
-            onClick={() => {
-              setSearch("");
-              setStatusFilter("ALL");
-            }}
+            onClick={clearFilters}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
           >
             <X className="w-3 h-3" /> clear all filters
@@ -548,10 +508,7 @@ export default function MyApplicationsPage() {
             action={
               <button
                 type="button"
-                onClick={() => {
-                  setSearch("");
-                  setStatusFilter("ALL");
-                }}
+                onClick={clearFilters}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer mt-2"
               >
                 Clear all filters
@@ -565,9 +522,9 @@ export default function MyApplicationsPage() {
             | { kind: "internal"; app: Application }
             | { kind: "external"; app: ExternalApplication }
           > = [
-              ...filtered.map((app) => ({ kind: "internal" as const, app })),
-              ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
-            ];
+            ...filtered.map((app) => ({ kind: "internal" as const, app })),
+            ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
+          ];
           const totalResults = combined.length;
           const totalPages = Math.max(1, Math.ceil(totalResults / PAGE_SIZE));
           const safePage = Math.min(page, totalPages);

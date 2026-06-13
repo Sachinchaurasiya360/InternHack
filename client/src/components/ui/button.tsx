@@ -351,6 +351,7 @@ function Button({
   underline,
   asChild = false,
   placeholder = false,
+  type = "button",
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
@@ -361,6 +362,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
+      type={type}
       className={cn(
         buttonVariants({
           variant,

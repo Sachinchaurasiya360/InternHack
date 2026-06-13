@@ -135,23 +135,24 @@ export class AuthController {
 
   async getPublicProfile(req: Request, res: Response) {
     try {
-      if (!req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
-      if (req.user.role !== "RECRUITER" && req.user.role !== "ADMIN") {
-        return res.status(403).json({ message: "Not authorized" });
-      }
-
       const identifier = (req.params["identifier"] || req.params["id"]) as string;
       if (!identifier) {
         return res.status(400).json({ message: "Invalid user identifier" });
       }
 
-      const profile = await this.authService.getPublicProfile(identifier);
+      // Pass visitor context (req.user) to the service so it can decide what to return
+      const visitor = req.user ? { id: req.user.id, role: req.user.role } : undefined;
+      const profile = await this.authService.getPublicProfile(identifier, visitor);
+      
       return res.status(200).json({ profile });
     } catch (error) {
-      if (error instanceof Error && error.message === "User not found") {
-        return res.status(404).json({ message: error.message });
+      if (error instanceof Error) {
+        if (error.message === "User not found") {
+          return res.status(404).json({ message: error.message });
+        }
+        if (error.message === "Profile is private") {
+          return res.status(403).json({ message: "This profile is private." });
+        }
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -258,6 +259,23 @@ export class AuthController {
         ? 429
         : 400;
       return res.status(statusCode).json({ message: errorMessage });
+    }
+  }
+
+  async deleteAccount(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const { password } = req.body as { password: string };
+      await this.authService.deleteAccount(req.user.id, password);
+      clearTokenCookie(res);
+      return res.status(200).json({ message: "Account deleted successfully" });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Incorrect password") {
+        return res.status(401).json({ message: error.message });
+      }
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
     }
   }
 }

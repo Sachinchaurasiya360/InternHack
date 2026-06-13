@@ -24,15 +24,15 @@ export const cacheMiddleware = (ttl?: number, keyPrefix?: string) => {
       : getCacheConfig(req.originalUrl || req.url);
 
     // Don't cache private (user-specific) endpoints unless authenticated
-    if (cacheConfig.private && !(req as any).user) {
+    if (cacheConfig.private && !req.user) {
       return next();
     }
 
     // Include user ID in cache key for authenticated requests to prevent
     // data leakage between users with identical endpoints but different auth context
     let key = cacheConfig.key;
-    if ((req as any).user && (req as any).user.id) {
-      key += `:user:${(req as any).user.id}`;
+    if (req.user?.id) {
+      key += `:user:${req.user.id}`;
     }
     key += `:${req.originalUrl || req.url}`;
 

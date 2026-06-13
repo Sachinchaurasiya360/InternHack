@@ -1,3 +1,4 @@
+import { SELECT_CLASS } from "@/lib/form-styles";
 import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
@@ -10,6 +11,8 @@ import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { MetaChip } from "../../../components/ui/MetaChip";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 
 const DIFF_STYLE: Record<string, string> = {
@@ -118,14 +121,7 @@ export default function InterviewSectionPage() {
         canonicalUrl={canonicalUrl(`/learn/interview/${sectionSlug}`)}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}
@@ -241,7 +237,7 @@ export default function InterviewSectionPage() {
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className="text-sm bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-lime-400 cursor-pointer"
+                className={SELECT_CLASS}
               >
                 <option value="All">All Companies</option>
                 {availableCompanies.map((company) => (
@@ -259,7 +255,7 @@ export default function InterviewSectionPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="text-sm bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-lime-400 cursor-pointer"
+              className={SELECT_CLASS}
             >
               <option value="frequency">Most Frequent</option>
               <option value="order">Curated Order</option>

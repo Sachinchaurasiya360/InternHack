@@ -109,7 +109,7 @@ export class InterviewExperienceController {
       const experience = await service.create(req.user.id, parsed.data);
 
       // Fire-and-forget: award badges for submissions
-      badgeService.checkAndAwardBadges(req.user.id, "interview_share").catch(() => {});
+      badgeService.checkAndAwardBadges(req.user.id, "interview_share").catch((err) => console.error("Badge check failed (interview_share):", err));
 
       res.status(201).json({ experience });
     } catch (err) {
