@@ -11,15 +11,18 @@ import ScrollProgressBar from "./components/common/ScrollProgressBar";
 import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
-function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>): LazyExoticComponent<T> {
+
+function lazyWithRetry<T extends ComponentType<unknown>>(
+  factory: () => Promise<{ default: T }>,
+): LazyExoticComponent<T> {
   return lazy(
     () =>
       factory().catch((err: unknown) => {
         const key = "chunk_reload";
         if (!sessionStorage.getItem(key)) {
-          sessionStorage.setItem("1", "1");
+          sessionStorage.setItem(key, "1");
           window.location.reload();
-          return new Promise<never>(() => { }); // never resolves, page is reloading
+          return new Promise<never>(() => {}); // never resolves, page is reloading
         }
         sessionStorage.removeItem(key);
         throw err;
@@ -239,6 +242,8 @@ const InterviewReadinessPage = lazyWithRetry(() => import("./module/student/lear
 const InterviewDashboardPage = lazyWithRetry(
   () => import("./module/student/interviews/InterviewDashboardPage")
 );
+
+const FindTeammates = lazyWithRetry(() => import("./module/teammate/pages/FindTeammates"));
 // Admin pages
 const AdminLoginPage = lazyWithRetry(() => import("./module/admin/AdminLoginPage"));
 const AdminLayout = lazyWithRetry(() => import("./module/admin/AdminLayout"));
@@ -351,7 +356,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/verify/:token" element={<SkillVerificationBadgePage />} />
+<Route path="/verify/:token" element={<SkillVerificationBadgePage />} />
             <Route path="/jobs" element={<JobBrowseOrRedirect />} />
             <Route path="/jobs/t/:slug" element={<JobLandingPage />} />
             <Route path="/jobs/:id" element={<JobDetailOrRedirect />} />
@@ -362,14 +367,21 @@ function App() {
             <Route path="/companies" element={<CompanyListOrRedirect />} />
             <Route path="/companies/:slug" element={<CompanyDetailOrRedirect />} />
             <Route path="/yc/:slug" element={<YCCompanyOrRedirect />} />
+
             <Route path="/certificate/:token" element={<CertificateViewPage />} />
+
+
 
 
             <Route path="/ats-score" element={<PublicAtsPage />} />
             <Route path="/grants" element={<GrantsPage />} />
 
+
             {/* Public Profile without auth wrapper */}
             <Route path="/student/profile/public/:identifier" element={<PublicProfilePage />} />
+
+
+
             <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
             <Route path="/recruiter/login" element={<Navigate to="/login?role=RECRUITER" replace />} />
             <Route path="/recruiter/register" element={<Navigate to="/register?role=RECRUITER" replace />} />
@@ -382,8 +394,19 @@ function App() {
             <Route path="/roadmaps/generate" element={<ProtectedRoute role="STUDENT"><AiRoadmapWizardPage /></ProtectedRoute>} />
             <Route path="/roadmaps/:slug/enroll" element={<ProtectedRoute role="STUDENT"><RoadmapEnrollPage /></ProtectedRoute>} />
             <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
-            <Route path="/learn/roadmaps/certificates/:slug/:enrollmentId" element={<RoadmapCertificatePage />}/>
-            <Route path="/learn/roadmaps/certificates" element={<ProtectedRoute role="STUDENT"><RoadmapCertificatesGalleryPage /></ProtectedRoute>}/>
+<Route
+  path="/learn/roadmaps/certificates/:slug/:enrollmentId"
+  element={<RoadmapCertificatePage />}
+/>
+
+<Route
+  path="/learn/roadmaps/certificates"
+  element={
+    <ProtectedRoute role="STUDENT">
+      <RoadmapCertificatesGalleryPage />
+    </ProtectedRoute>
+  }
+/>
             <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
             <Route path="/blog" element={<BlogListPage />} />
             <Route path="/contributors" element={<ContributorsPage />} />
@@ -399,8 +422,15 @@ function App() {
             <Route path="/learn" element={<LearnLayout />}>
               <Route index element={<LearnHubPage />} />
               <Route path="challenges" element={<BuildChallengesPage />} />
-              <Route path="mentors" element={<MentorMatchingPage />} />
-              <Route path="skill-tests" element={<ProtectedRoute role="STUDENT"><SkillVerificationPage /></ProtectedRoute>} />
+<Route path="mentors" element={<MentorMatchingPage />} />
+<Route
+  path="skill-tests"
+  element={
+    <ProtectedRoute role="STUDENT">
+      <SkillVerificationPage />
+    </ProtectedRoute>
+  }
+/>
               <Route path="javascript" element={<JsLessonsPage />} />
               <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
               <Route path="javascript/:sectionSlug/:lessonId" element={<JsLessonDetailPage />} />
@@ -527,10 +557,22 @@ function App() {
                 <Route path="discover" element={<RepoDiscoveryPage />} />
                 <Route path="gsoc" element={<GSoCReposPage />} />
                 <Route path="programs" element={<ProgramTrackerPage />} />
-                <Route path="outreachy-orgs" element={<OrgBrowserPage key="OUTREACHY" programType="OUTREACHY" />} />
-                <Route path="lfx-projects" element={<OrgBrowserPage key="LFX" programType="LFX" />} />
-                <Route path="season-of-docs" element={<OrgBrowserPage key="SEASON_OF_DOCS" programType="SEASON_OF_DOCS" />} />
-                <Route path="mlh" element={<OrgBrowserPage key="MLH" programType="MLH" />} />
+                <Route
+                  path="outreachy-orgs"
+                  element={<OrgBrowserPage key="OUTREACHY" programType="OUTREACHY" />}
+                />
+                <Route
+                  path="lfx-projects"
+                  element={<OrgBrowserPage key="LFX" programType="LFX" />}
+                />
+                <Route
+                  path="season-of-docs"
+                  element={<OrgBrowserPage key="SEASON_OF_DOCS" programType="SEASON_OF_DOCS" />}
+                />
+                <Route
+                  path="mlh"
+                  element={<OrgBrowserPage key="MLH" programType="MLH" />}
+                />
                 <Route path="first-pr" element={<FirstPRRoadmapPage />} />
                 <Route path="first-pr/:sectionSlug" element={<FirstPRSectionPage />} />
                 <Route path="gsoc-proposal" element={<GSoCProposalPage />} />
@@ -545,22 +587,28 @@ function App() {
                 <Route path="cicd" element={<CICDGuidePage />} />
                 <Route path="cicd/:sectionSlug" element={<CICDGuideSectionPage />} />
                 <Route path="hackathon-prep" element={<HackathonGuidePage />} />
-                <Route path="hackathon-prep/:sectionSlug" element={<HackathonGuideSectionPage />} />
+                <Route
+                  path="hackathon-prep/:sectionSlug"
+                  element={<HackathonGuideSectionPage />}
+                />
                 <Route path="my-submissions" element={<MySubmissionsPage />} />
               </Route>
               <Route path="ai-agent" element={<JobAgentPage />} />
               <Route path="signals" element={<SignalsPage />} />
               <Route path="signals/:id" element={<SignalDetailPage />} />
               <Route path="interviews" element={<InterviewsDirectoryPage />} />
+
               <Route path="interviews/dashboard" element={<InterviewDashboardPage />} />
+
+
               <Route path="interviews/share" element={<ShareInterviewPage />} />
               <Route path="interviews/:id" element={<InterviewExperienceDetailPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
               <Route path="profile" element={<StudentProfilePage />} />
               <Route path="roadmaps" element={<RoadmapDashboardPage />} />
               <Route path="learn/readiness" element={<InterviewReadinessPage />} />
+              <Route path="teammates" element={<FindTeammates />} />
             </Route>
-
             {/* Recruiter protected routes */}
             <Route path="/recruiters" element={<ProtectedRoute role="RECRUITER"><RecruiterLayout /></ProtectedRoute>}>
               <Route index element={<RecruiterDashboard />} />
