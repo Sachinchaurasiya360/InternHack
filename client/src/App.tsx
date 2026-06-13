@@ -69,6 +69,7 @@ const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/Gov
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
 const CertificateViewPage = lazyWithRetry(() => import("./module/student/opensource/CertificateViewPage"));
+const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage"));
 
 // Legal pages
 const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
@@ -452,6 +453,20 @@ function App() {
               <Route path="system-design/:levelId/:lessonSlug" element={<SystemDesignLessonPage />} />
               <Route path="aptitude" element={<AptitudeCategoriesPage />} />
               <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
+              <Route path="aptitude/verbal-ability" element={<VerbalAbilityPage />} />
+              
+              {/* Legacy Verbal Route Redirects to Unified Dashboard */}
+              <Route path="aptitude/synonyms" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/synonyms/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/reading-comprehension" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/reading-comprehension/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/sentence-correction" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/sentence-correction/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/para-jumbles" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/para-jumbles/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/error-spotting" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+              <Route path="aptitude/error-spotting/practice" element={<Navigate to="/learn/aptitude/verbal-ability" replace />} />
+
               <Route path="aptitude/:slug" element={<AptitudeTheoryPage />} />
               <Route path="aptitude/:slug/practice" element={<AptitudeTopicPage />} />
               <Route path="blockchain" element={<BlockchainLessonsPage />} />
