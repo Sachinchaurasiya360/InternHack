@@ -44,6 +44,8 @@ import { Button } from "../../../components/ui/button";
 import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { SkillTest, SkillTestAttempt, VerifiedSkill, TestDifficulty } from "../../../lib/types";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 /* ------------------------------------------------------------------ */
 /*  Skill icon + color mapping                                         */
@@ -243,14 +245,7 @@ export default function SkillVerificationPage() {
 
   return (
     <div className="relative text-stone-900 dark:text-stone-50">
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}

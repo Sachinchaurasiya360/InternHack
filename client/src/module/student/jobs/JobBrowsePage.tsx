@@ -35,6 +35,8 @@ import type {
   ScrapedJob,
 } from "../../../lib/types";
 import JobCard from "./component/jobcard";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 const FILTER_TAGS = [
   "Frontend",
@@ -393,15 +395,9 @@ export default function JobBrowsePage() {
 
       {!isInsideLayout && <Navbar />}
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+
+      <GridBackground />
+
 
       <div className="relative max-w-6xl mx-auto px-6 pt-8 pb-20">
         {/* Editorial header */}
