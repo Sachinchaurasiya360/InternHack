@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Bookmark, MapPin, IndianRupee, Clock, Trash2, ArrowUpRight, Briefcase } from "lucide-react";
 import { Link } from "react-router";
 import api from "../../../lib/axios";
+import { TagList } from "../../../components/ui/TagList";
 import { MetaChip } from "../../../components/ui/MetaChip";
 import { EmptyState } from "../../../components/ui/EmptyState";
 import { queryKeys } from "../../../lib/query-keys";
@@ -130,13 +131,7 @@ export default function SavedJobsPage() {
                     )
                   )}
                 </div>
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {job.tags?.slice(0, 3).map((tag) => (
-                    <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <TagList tags={job.tags} />
                 <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
                   <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
                   <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />

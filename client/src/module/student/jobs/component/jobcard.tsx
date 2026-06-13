@@ -1,6 +1,9 @@
 import React from "react";
 import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
+import { TagList } from "../../../../components/ui/TagList";
+const cardBase =
+  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
 import { CARD_BASE } from "../../../../lib/card-styles";
 
 import { CompanyMark } from "../../../../components/ui/CompanyMark";
@@ -72,18 +75,7 @@ const JobCard = React.memo(function JobCard({
       {metaChips && <div className="flex flex-wrap gap-1.5 mb-4">{metaChips}</div>}
 
       {/* Tags */}
-      {tags && tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-lg text-xs font-mono uppercase tracking-wider"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      <TagList tags={tags} tagClassName="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-lg text-xs font-mono uppercase tracking-wider" />
 
       {/* Footer */}
       <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
