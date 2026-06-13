@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Link, useSearchParams, useLocation } from "react-router";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -609,7 +609,7 @@ export default function CompanyListPage() {
     queryKey: queryKeys.companies.list(companyQueryParams),
     queryFn: () => api.get("/companies", { params: companyQueryParams }).then((r) => r.data),
     staleTime: 10 * 60 * 1000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const companies = companiesData?.companies ?? [];
@@ -648,7 +648,7 @@ export default function CompanyListPage() {
     queryFn: () => api.get("/yc/companies", { params: ycQueryParams }).then((r) => r.data),
     enabled: activeTab === "yc",
     staleTime: 60 * 60 * 1000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const ycCompanies = ycData?.companies ?? [];
@@ -675,7 +675,7 @@ export default function CompanyListPage() {
     queryFn: () => api.get("/professors", { params: profQueryParams }).then((r) => r.data),
     enabled: activeTab === "professors",
     staleTime: 60 * 60 * 1000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const professors = profData?.professors ?? [];

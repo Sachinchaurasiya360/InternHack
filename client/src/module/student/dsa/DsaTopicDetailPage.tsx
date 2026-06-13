@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useParams, Link, Navigate } from "react-router";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Circle, ExternalLink,
@@ -48,7 +48,7 @@ export default function DsaTopicDetailPage() {
       return api.get<DsaTopicDetail>(`/dsa/topics/${slug}?${params}`).then((r) => r.data);
     },
     enabled: !!slug,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 
