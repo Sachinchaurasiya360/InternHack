@@ -1,5 +1,5 @@
 import { FilterChip } from "../../../components/ui/FilterChip";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,7 +28,6 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { CARD_BASE } from "../../../lib/card-styles";
 import { useSaveJob } from "../../../hooks/useSaveJob";
-import { useClearFilters } from "../../../hooks/useClearFilters";
 import type {
   ExternalJob,
   Job,
@@ -38,7 +37,7 @@ import type {
 import JobCard from "./component/jobcard";
 import { GridBackground } from "../../../components/ui/GridBackground";
 import { TagList } from "../../../components/ui/TagList";
-
+import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
 
 const FILTER_TAGS = [
   "Frontend",
@@ -138,16 +137,12 @@ export default function JobBrowsePage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+  const { inputValue: search, setInputValue: setSearch, debouncedValue: debouncedSearch } =
+    useSearchWithDebounce({ paramName: "search", delay: 400, resetParams: [] });
   const [locationFilter, setLocationFilter] = useState(
     () => searchParams.get("location") ?? "",
   );
-  const [debouncedSearch, setDebouncedSearch] = useState(
-    () => searchParams.get("search") ?? "",
-  );
-  const [debouncedLocation, setDebouncedLocation] = useState(
-    () => searchParams.get("location") ?? "",
-  );
+  const debouncedLocation = useDebounce(locationFilter, 400);
   const [selectedTags, setSelectedTags] = useState<string[]>(
     () => searchParams.get("tags")?.split(",").filter(Boolean) ?? [],
   );
@@ -163,24 +158,17 @@ export default function JobBrowsePage() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
 
-  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
+  // Sync location filter to URL and reset pages when it or search changes
   useEffect(() => {
-    timerRef.current = setTimeout(() => {
-      setDebouncedSearch(search);
-      setDebouncedLocation(locationFilter);
-      setPage(1);
-
-      const next = new URLSearchParams(searchParams);
-      if (search) next.set("search", search);
-      else next.delete("search");
-      if (locationFilter) next.set("location", locationFilter);
-      else next.delete("location");
-      setSearchParams(next, { replace: true });
-    }, 400);
-    return () => clearTimeout(timerRef.current);
+    setPage(1);
+    setExtPage(1);
+    setScrPage(1);
+    const next = new URLSearchParams(searchParams);
+    if (locationFilter) next.set("location", locationFilter);
+    else next.delete("location");
+    setSearchParams(next, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, locationFilter]);
+  }, [debouncedLocation, debouncedSearch]);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: queryKeys.jobs.list({
@@ -284,18 +272,17 @@ export default function JobBrowsePage() {
     setScrPage(1);
   };
 
-  const clearAll = useClearFilters([
-    () => setSearch(""),
-    () => setLocationFilter(""),
-    () => setDebouncedSearch(""),
-    () => setDebouncedLocation(""),
-    () => setSelectedTags([]),
-    () => setSalaryMin(""),
-    () => setSalaryMax(""),
-    () => setPage(1),
-    () => setExtPage(1),
-    () => setScrPage(1),
-  ]);
+  const clearAll = useCallback(() => {
+    setSearch("");
+    setLocationFilter("");
+    setSelectedTags([]);
+    setSalaryMin("");
+    setSalaryMax("");
+    setSearchParams({});
+    setPage(1);
+    setExtPage(1);
+    setScrPage(1);
+  }, [setSearch, setSearchParams]);
 
   const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
   const selectSuggestion = (location: string) => {
@@ -303,18 +290,15 @@ export default function JobBrowsePage() {
     setShowSuggestions(false);
     setActiveSuggestion(-1);
   };
-  const submitSearch = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setDebouncedSearch(search);
-    setDebouncedLocation(locationFilter);
+  // submitSearch: immediately flush location to URL (search is already synced by hook)
+  const submitSearch = useCallback(() => {
     setPage(1);
     setExtPage(1);
     setScrPage(1);
     const next = new URLSearchParams(searchParams);
-    if (search) next.set("search", search); else next.delete("search");
     if (locationFilter) next.set("location", locationFilter); else next.delete("location");
     setSearchParams(next, { replace: true });
-  };
+  }, [locationFilter, searchParams, setSearchParams]);
   const filteredExtJobs = React.useMemo(() => extData?.jobs ?? [], [extData?.jobs]);
   const scrapedJobs = React.useMemo(() => scrData?.jobs ?? [], [scrData?.jobs]);
   const scrapedPagination = scrData?.pagination;
