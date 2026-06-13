@@ -1,3 +1,4 @@
+import { FilterChip } from "../../../components/ui/FilterChip";
 import React, { useState, useEffect, useRef } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
@@ -614,24 +615,21 @@ export default function JobBrowsePage() {
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
               filter /
             </span>
-            {FILTER_TAGS.map((tag, i) => {
-              const active = selectedTags.includes(tag);
-              return (
-                <motion.button
-                  key={tag}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.02, duration: 0.2 }}
-                  onClick={() => toggleTag(tag)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${active
-                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                    }`}
-                >
-                  {tag}
-                </motion.button>
-              );
-            })}
+            {FILTER_TAGS.map((tag, i) => (
+               <motion.div
+               key={tag}
+               initial={{ opacity: 0, y: 6 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: i * 0.02, duration: 0.2 }}
+             >
+               <FilterChip
+                label={tag}
+                active={selectedTags.includes(tag)}
+                onClick={() => toggleTag(tag)}
+              />
+            </motion.div>
+          ))}
+              
 
             <label
               className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors cursor-pointer select-none ${hideExpired
