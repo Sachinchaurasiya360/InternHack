@@ -16,13 +16,13 @@ export const bulkInterviewProgressSchema = z.object({
 export const getReadinessReportSchema = {
   body: z.object({
     targetRole: z.string({
-      required_error: "Target role specification is required",
+      error: "Target role specification is required",
     }),
     companyTier: z.string({
-      required_error: "Company tier preference is required",
+      error: "Company tier preference is required",
     }),
     availableTime: z.string({
-      required_error: "Available preparation timeline is required",
+      error: "Available preparation timeline is required",
     }),
   }),
 };
