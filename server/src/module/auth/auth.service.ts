@@ -552,8 +552,10 @@ export class AuthService {
     return user;
   }
 
-  async getPublicProfile(identifier: string) {
-    const cacheKey = `profile:public:${identifier}`;
+  async getPublicProfile(identifier: string, visitor?: { id: number; role: string }) {
+    // Because public profiles vary by visitor authorization, include role in cache key if authorized
+    const isVisitorAuthorized = visitor?.role === "ADMIN" || visitor?.role === "RECRUITER";
+    const cacheKey = `profile:public:${identifier}:${isVisitorAuthorized ? "auth" : "guest"}`;
     const cached = await cacheGet(cacheKey);
     if (cached) return cached as never;
 
@@ -582,12 +584,26 @@ export class AuthService {
       });
     }
 
-    if (!user || user.role !== "STUDENT" || !user.isProfilePublic) {
+    if (!user || user.role !== "STUDENT") {
       throw new Error("User not found");
     }
 
+    const isOwner = visitor?.id === user.id;
+
+    if (!user.isProfilePublic && !isOwner && !isVisitorAuthorized) {
+      throw new Error("Profile is private");
+    }
+
     const { atsScores, ...rest } = user;
-    if (rest.resumes.length > 0) {
+    
+    // Sanitize for unauthorized guest viewers
+    if (!isOwner && !isVisitorAuthorized) {
+      delete (rest as any).email;
+      delete (rest as any).contactNo;
+      // We will keep resumes for now as per normal portfolio behavior, but sensitive identifiers are stripped.
+    }
+
+    if (rest.resumes && rest.resumes.length > 0) {
       (rest as Record<string, unknown>).resumes = await signUrls(rest.resumes);
     }
     if (rest.profilePic) {

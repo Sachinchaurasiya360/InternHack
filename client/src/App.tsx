@@ -367,7 +367,8 @@ function App() {
             <Route path="/ats-score" element={<PublicAtsPage />} />
             <Route path="/grants" element={<GrantsPage />} />
 
-
+            {/* Public Profile without auth wrapper */}
+            <Route path="/student/profile/public/:identifier" element={<PublicProfilePage />} />
             <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
             <Route path="/recruiter/login" element={<Navigate to="/login?role=RECRUITER" replace />} />
             <Route path="/recruiter/register" element={<Navigate to="/register?role=RECRUITER" replace />} />
