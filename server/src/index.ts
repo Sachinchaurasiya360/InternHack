@@ -24,6 +24,7 @@ import { AdminService } from "./module/admin/admin.service.js";
 import { AdminController } from "./module/admin/admin.controller.js";
 import { newsletterRouter } from "./module/newsletter/newsletter.routes.js";
 import { opensourceRouter } from "./module/opensource/opensource.routes.js";
+import { githubRouter } from "./module/github/github.routes.js";
 import { paymentRouter } from "./module/payment/payment.routes.js";
 import { blogRouter } from "./module/blog/blog.routes.js";
 import { gsocRouter } from "./module/gsoc/gsoc.routes.js";
@@ -75,6 +76,8 @@ import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
+import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
+import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
@@ -253,6 +256,7 @@ app.use("/api/companies", companyRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/opensource", opensourceRouter);
+app.use("/api/github", githubRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/blog", blogRouter);
 app.use("/api/gsoc", gsocRouter);
@@ -432,6 +436,14 @@ const server = app.listen(PORT, async () => {
     fn: () => stopAnalyticsReportCron(),
   });
 
+  // Start signals cleanup cron (weekly Sunday at 2 AM)
+  startSignalsCleanupCron();
+  shutdownManager.register({
+    name: "Signals Cleanup Cron",
+    priority: 10,
+    fn: () => stopSignalsCleanupCron(),
+  });
+
   // Start OSS deadline alert cron (daily at 9 AM)
   startDeadlineAlertCron();
   shutdownManager.register({
@@ -439,6 +451,20 @@ const server = app.listen(PORT, async () => {
     priority: 10,
     fn: () => stopDeadlineAlertCron(),
   });
+
+  const runGithubContributionsCron =
+    process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] !== "false");
+  if (runGithubContributionsCron) {
+    startGithubContributionsCron(process.env["GITHUB_CONTRIBUTIONS_CRON"] || "0 2 * * *");
+    shutdownManager.register({
+      name: "GitHub Contributions Cron",
+      priority: 10,
+      fn: () => stopGithubContributionsCron(),
+    });
+  } else {
+    logger.info("GitHub contributions cron disabled on this process");
+  }
 
   // Register Redis disconnect
   if (redis) {
@@ -471,4 +497,3 @@ const server = app.listen(PORT, async () => {
 app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
-

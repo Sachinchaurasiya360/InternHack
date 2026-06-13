@@ -89,6 +89,7 @@ model user {
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   opensourceStreak      opensourceStreak?
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  githubConnection      githubConnection?           @relation("UserGithubConnection")
   guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   firstPrProgress       studentFirstPrProgress[]    @relation("StudentFirstPrProgress")
@@ -555,6 +556,60 @@ model repoRequest {
 
   @@index([status])
   @@index([userId])
+}
+
+model githubConnection {
+  id                 Int                     @id @default(autoincrement())
+  userId             Int                     @unique
+  githubUsername     String
+  accessToken        String                  @db.Text
+  connectedAt        DateTime                @default(now())
+  lastSyncAt         DateTime?
+  syncStatus         GithubSyncStatus        @default(PENDING)
+  syncError          String?
+  prsMerged          Int                     @default(0)
+  reposContributed   Int                     @default(0)
+  publicRepos        Int                     @default(0)
+  contributedStars   Int                     @default(0)
+  recentPullRequests githubPullRequest[]     @relation("GithubConnectionPullRequests")
+  contributedRepos   githubContributedRepo[] @relation("GithubConnectionRepos")
+  user               user                    @relation("UserGithubConnection", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([githubUsername])
+  @@index([lastSyncAt])
+}
+
+model githubPullRequest {
+  id           Int              @id @default(autoincrement())
+  connectionId Int
+  githubId     String
+  title        String
+  url          String
+  number       Int
+  mergedAt     DateTime
+  repoName     String
+  repoUrl      String
+  repoStars    Int              @default(0)
+  language     String?
+  connection   githubConnection @relation("GithubConnectionPullRequests", fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, githubId])
+  @@index([connectionId, mergedAt])
+}
+
+model githubContributedRepo {
+  id            Int              @id @default(autoincrement())
+  connectionId  Int
+  nameWithOwner String
+  url           String
+  stars         Int              @default(0)
+  language      String?
+  mergedPrs     Int              @default(0)
+  lastMergedAt  DateTime?
+  connection    githubConnection @relation("GithubConnectionRepos", fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, nameWithOwner])
+  @@index([connectionId, stars])
 }
 
 model blogPost {
@@ -1339,6 +1394,13 @@ enum RepoRequestStatus {
   REJECTED
 }
 
+enum GithubSyncStatus {
+  PENDING
+  SYNCING
+  SUCCESS
+  FAILED
+}
+
 enum RepoDomain {
   AI
   WEB
@@ -1629,7 +1691,6 @@ model coachAdvice {
   @@index([userId])
   @@index([createdAt])
 }
-
 model guideCertificate {
   id          Int      @id @default(autoincrement())
   token       String   @unique @default(cuid())
@@ -1643,4 +1704,3 @@ model guideCertificate {
   @@index([userId])
   @@index([token])
 }
-

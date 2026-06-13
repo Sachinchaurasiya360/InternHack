@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { Link, useSearchParams } from "react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
 import {
@@ -14,6 +14,15 @@ import {
   ChevronDown,
   ArrowLeft,
   BarChart3,
+  CheckCircle2,
+  ExternalLink,
+  GitPullRequest,
+  Github,
+  Loader2,
+  RefreshCw,
+  ShieldCheck,
+  Star,
+  Trash2,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
@@ -46,6 +55,8 @@ import { markLearningPathMilestone } from "./learning-paths.data";
 import type {
   GSoCOrganization,
   GSoCStats,
+  GithubConnectionResponse,
+  GithubConnectionSummary,
   OpenSourceContributionTrendResponse,
 } from "../../../lib/types";
 import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
@@ -258,6 +269,230 @@ function TrendEmptyState({
   );
 }
 
+function formatDate(value: string | null) {
+  if (!value) return "Never";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
+function GithubMetricCard({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string | number;
+  icon: React.ComponentType<{ className?: string }>;
+}) {
+  return (
+    <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+          {label}
+        </p>
+        <Icon className="h-4 w-4 text-lime-500" />
+      </div>
+      <p className="mt-3 text-2xl font-bold text-stone-900 dark:text-stone-50">
+        {typeof value === "number" ? value.toLocaleString() : value}
+      </p>
+    </div>
+  );
+}
+
+function GithubEmptyConnection({
+  onConnect,
+  connecting,
+}: {
+  onConnect: () => void;
+  connecting: boolean;
+}) {
+  return (
+    <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-8 text-center">
+      <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-md border border-stone-200 bg-stone-50 dark:border-white/10 dark:bg-white/5">
+        <Github className="h-7 w-7 text-stone-900 dark:text-stone-50" />
+      </div>
+      <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
+        Verify your real open-source work
+      </h2>
+      <p className="mx-auto mt-2 max-w-xl text-sm text-stone-500 dark:text-stone-400">
+        Connect GitHub to sync merged public pull requests, contributed repositories, and stars from non-fork projects.
+      </p>
+      <Button onClick={onConnect} disabled={connecting} className="mt-6">
+        {connecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Github className="h-4 w-4" />}
+        Connect GitHub
+      </Button>
+    </div>
+  );
+}
+
+function RealContributionsView({
+  data,
+  isLoading,
+  onConnect,
+  onSync,
+  onDisconnect,
+  connecting,
+  syncing,
+  disconnecting,
+}: {
+  data?: GithubConnectionResponse;
+  isLoading: boolean;
+  onConnect: () => void;
+  onSync: () => void;
+  onDisconnect: () => void;
+  connecting: boolean;
+  syncing: boolean;
+  disconnecting: boolean;
+}) {
+  if (isLoading) {
+    return (
+      <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-8">
+        <div className="flex items-center gap-3 text-sm text-stone-500 dark:text-stone-400">
+          <Loader2 className="h-4 w-4 animate-spin text-lime-500" />
+          Loading GitHub connection...
+        </div>
+      </div>
+    );
+  }
+
+  if (!data?.connected || !data.connection) {
+    return <GithubEmptyConnection onConnect={onConnect} connecting={connecting} />;
+  }
+
+  const connection: GithubConnectionSummary = data.connection;
+  const isSyncing = syncing || connection.syncStatus === "SYNCING";
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
+            <div className="mb-2 flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <ShieldCheck className="h-3.5 w-3.5 text-lime-500" />
+              verified github connection
+            </div>
+            <h2 className="truncate text-xl font-bold text-stone-900 dark:text-stone-50">
+              @{connection.githubUsername}
+            </h2>
+            <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+              Last synced {formatDate(connection.lastSyncAt)}
+              {connection.syncStatus === "FAILED" && connection.syncError ? ` · ${connection.syncError}` : ""}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="secondary" size="sm">
+              <a href={connection.profileUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-4 w-4" />
+                Profile
+              </a>
+            </Button>
+            <Button onClick={onSync} disabled={isSyncing} variant="secondary" size="sm">
+              {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              Sync
+            </Button>
+            <Button onClick={onDisconnect} disabled={disconnecting} variant="destructive" size="sm">
+              {disconnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Disconnect
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <GithubMetricCard label="merged prs" value={connection.prsMerged} icon={GitPullRequest} />
+        <GithubMetricCard label="repos contributed" value={connection.reposContributed} icon={CheckCircle2} />
+        <GithubMetricCard label="public repos" value={connection.publicRepos} icon={Github} />
+        <GithubMetricCard label="stars on repos" value={connection.contributedStars} icon={Star} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+        <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
+          <div className="mb-4 flex items-center gap-1.5">
+            <div className="h-1 w-1 bg-lime-400" />
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              recent merged pull requests
+            </p>
+          </div>
+          {connection.recentPullRequests.length === 0 ? (
+            <p className="rounded-md border border-dashed border-stone-200 dark:border-white/10 p-6 text-center text-sm text-stone-500 dark:text-stone-400">
+              No merged public pull requests found in non-fork repositories yet.
+            </p>
+          ) : (
+            <div className="divide-y divide-stone-100 dark:divide-white/10">
+              {connection.recentPullRequests.map((pr) => (
+                <a
+                  key={pr.id}
+                  href={pr.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block py-3 no-underline transition-colors hover:bg-stone-50 dark:hover:bg-white/5"
+                >
+                  <div className="flex items-start justify-between gap-4 px-2">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-50">
+                        {pr.title}
+                      </p>
+                      <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                        {pr.repoName} #{pr.number} · merged {formatDate(pr.mergedAt)}
+                      </p>
+                    </div>
+                    <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-stone-400" />
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
+          <div className="mb-4 flex items-center gap-1.5">
+            <div className="h-1 w-1 bg-lime-400" />
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              contributed repositories
+            </p>
+          </div>
+          {connection.contributedRepos.length === 0 ? (
+            <p className="rounded-md border border-dashed border-stone-200 dark:border-white/10 p-6 text-center text-sm text-stone-500 dark:text-stone-400">
+              Repositories will appear here after GitHub sync finds merged PRs.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {connection.contributedRepos.slice(0, 12).map((repo) => (
+                <a
+                  key={repo.id}
+                  href={repo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-md border border-stone-100 p-3 no-underline transition-colors hover:border-stone-300 dark:border-white/10 dark:hover:border-white/25"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-50">
+                        {repo.nameWithOwner}
+                      </p>
+                      <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                        {repo.mergedPrs} merged PR{repo.mergedPrs === 1 ? "" : "s"}
+                        {repo.language ? ` · ${repo.language}` : ""}
+                      </p>
+                    </div>
+                    <span className="inline-flex shrink-0 items-center gap-1 text-xs font-mono text-stone-500 dark:text-stone-400">
+                      <Star className="h-3 w-3 text-lime-500" />
+                      {repo.stars.toLocaleString()}
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ───────────────────────────────────────────────────────
 
 
@@ -267,6 +502,11 @@ export default function OpenSourceAnalyticsPage() {
   }, []);
 
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"internhack" | "github">(
+    searchParams.get("github") === "connected" ? "github" : "internhack",
+  );
   const isPremium =
     user?.subscriptionStatus === "ACTIVE" &&
     user?.subscriptionPlan !== "FREE" &&
@@ -325,6 +565,45 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
     queryFn: () => api.get("/opensource/streak").then((r) => r.data.streak as OpenSourceStreak),
     staleTime: 60000,
   });
+
+  const { data: githubConnectionData, isLoading: githubConnectionIsLoading } = useQuery<GithubConnectionResponse>({
+    queryKey: queryKeys.opensource.githubConnection(),
+    queryFn: () => api.get("/github/connection").then((r) => r.data),
+    staleTime: 60 * 1000,
+  });
+
+  const connectGithubMutation = useMutation({
+    mutationFn: async () => {
+      const res = await api.post<{ authUrl: string }>("/github/connect");
+      return res.data.authUrl;
+    },
+    onSuccess: (authUrl) => {
+      window.location.href = authUrl;
+    },
+  });
+
+  const syncGithubMutation = useMutation({
+    mutationFn: async () => api.post<GithubConnectionResponse>("/github/sync").then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
+    },
+  });
+
+  const disconnectGithubMutation = useMutation({
+    mutationFn: async () => api.delete<GithubConnectionResponse>("/github/connection").then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
+    },
+  });
+
+  useEffect(() => {
+    if (searchParams.get("github") === "connected") {
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
+      const next = new URLSearchParams(searchParams);
+      next.delete("github");
+      setSearchParams(next, { replace: true });
+    }
+  }, [queryClient, searchParams, setSearchParams]);
 
   const allOrgs = useMemo(() => orgsData ?? [], [orgsData]);
   const contributionTrend = contributionTrendData?.trend ?? [];
@@ -509,28 +788,6 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
     return <LoadingScreen />;
   }
 
-  // Empty state: student has zero contributions (skip during Hacktoberfest mode so tracker is visible)
-  if (!showHacktoberfestTracker && !trendIsLoading && !trendIsError && contributionTotal === 0) {
-    return (
-      <div className="pb-16">
-        <SEO title="Open Source Analytics" noIndex />
-        <div className="flex flex-col items-center justify-center py-32 text-center">
-          <div className="w-14 h-14 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center mb-5">
-            <BarChart3 className="w-7 h-7 text-lime-500" />
-          </div>
-          <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mb-2">
-            No contributions tracked yet
-          </h2>
-          <p className="text-sm text-stone-500 dark:text-stone-400 max-w-sm mb-6">
-            Submit a repo suggestion and get it approved to start tracking your open source journey.
-          </p>
-          <Link to="/student/opensource">
-            <Button variant="primary">Discover Repositories</Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
   return (
     <div className="pb-16">
       <SEO title="Open Source Analytics" noIndex />
@@ -564,6 +821,47 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
         </div>
 
         {showHacktoberfestTracker && <HacktoberfestTracker />}
+
+        <div className="mb-8 flex flex-wrap items-center gap-2 rounded-md border border-stone-200 bg-white p-1 dark:border-white/10 dark:bg-stone-900">
+          <button
+            type="button"
+            onClick={() => setActiveTab("internhack")}
+            className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
+              activeTab === "internhack"
+                ? "bg-stone-900 text-white dark:bg-white dark:text-stone-950"
+                : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-stone-50"
+            }`}
+          >
+            <BarChart3 className="h-4 w-4" />
+            InternHack Tracked
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("github")}
+            className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
+              activeTab === "github"
+                ? "bg-stone-900 text-white dark:bg-white dark:text-stone-950"
+                : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-stone-50"
+            }`}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Real Contributions
+          </button>
+        </div>
+
+        {activeTab === "github" ? (
+          <RealContributionsView
+            data={githubConnectionData}
+            isLoading={githubConnectionIsLoading}
+            onConnect={() => connectGithubMutation.mutate()}
+            onSync={() => syncGithubMutation.mutate()}
+            onDisconnect={() => disconnectGithubMutation.mutate()}
+            connecting={connectGithubMutation.isPending}
+            syncing={syncGithubMutation.isPending}
+            disconnecting={disconnectGithubMutation.isPending}
+          />
+        ) : (
+          <>
 
         {/* ── Contribution Heatmap ─────────────────────────────── */}
         <div className="mb-8">
@@ -1184,6 +1482,8 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
                 </div>
               </>
             )}
+          </>
+        )}
           </>
         )}
       </div>
