@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
 import {
   AlertCircle,
   Filter,
@@ -863,54 +862,6 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
         ) : (
           <>
 
-        {/* ── Contribution Heatmap ─────────────────────────────── */}
-        <div className="mb-8">
-          <div className="flex items-center gap-1.5 mb-3">
-            <div className="h-1 w-1 bg-lime-400" />
-            <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-              your contributions
-            </p>
-          </div>
-          <OssContributionHeatmap />
-
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
-              From
-              <input
-                type="month"
-                value={startMonth}
-                onChange={(e) => setStartMonth(e.target.value)}
-                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
-              />
-            </label>
-            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
-              To
-              <input
-                type="month"
-                value={endMonth}
-                onChange={(e) => setEndMonth(e.target.value)}
-                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
-              />
-            </label>
-            <button
-              onClick={handleExportCSV}
-              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
-              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              CSV
-            </button>
-            <button
-              onClick={handleExportJSON}
-              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
-              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              JSON
-            </button>
-          </div>
-        </div>
-
         {/* ── Streak ──────────────────────────────────────────── */}
         <div className="mb-8">
           <motion.div
@@ -972,6 +923,42 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
 
         {/* ── Monthly Contribution Activity ────────────────── */}
         <div className="mb-8">
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
+              From
+              <input
+                type="month"
+                value={startMonth}
+                onChange={(e) => setStartMonth(e.target.value)}
+                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
+              />
+            </label>
+            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
+              To
+              <input
+                type="month"
+                value={endMonth}
+                onChange={(e) => setEndMonth(e.target.value)}
+                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
+              />
+            </label>
+            <button
+              onClick={handleExportCSV}
+              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
+              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              CSV
+            </button>
+            <button
+              onClick={handleExportJSON}
+              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
+              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              JSON
+            </button>
+          </div>
           <ChartCard
             title="Monthly Contribution Activity"
             subtitle={
