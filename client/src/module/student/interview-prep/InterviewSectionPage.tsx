@@ -1,4 +1,5 @@
 import { SELECT_CLASS } from "@/lib/form-styles";
+import { ProgressBar } from "../../../components/ui/ProgressBar";
 import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
@@ -168,24 +169,13 @@ export default function InterviewSectionPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="mb-8 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md"
+          className="mb-8"
         >
-          <div className="flex items-center justify-between gap-4 mb-2">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              {isLoading ? "syncing progress" : "section progress"}
-            </span>
-            <span className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 tabular-nums">
-              {completedCount} / {sectionQuestions.length}
-            </span>
-          </div>
-          <div className="w-full h-1 bg-stone-100 dark:bg-stone-800 overflow-hidden rounded-sm">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="h-full bg-lime-400"
-            />
-          </div>
+          <ProgressBar
+            value={completedCount}
+            max={sectionQuestions.length}
+            label={isLoading ? "syncing progress" : "section progress"}
+          />
         </motion.div>
 
         {/* Section header */}
@@ -206,7 +196,6 @@ export default function InterviewSectionPage() {
 
         {/* Controls Panel */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8 bg-stone-50 dark:bg-stone-900/50 p-4 rounded-md border border-stone-200 dark:border-white/10">
-          
           <div className="flex items-center gap-4 flex-wrap">
             {/* Difficulty Chips */}
             <div className="flex items-center gap-2">
@@ -215,7 +204,7 @@ export default function InterviewSectionPage() {
                 {["All", "Beginner", "Intermediate", "Advanced"].map((level) => (
                   <Button
                     key={level}
-                    variant="ghost" 
+                    variant="ghost"
                     onClick={() => setActiveDifficulty(level)}
                     className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md transition-all cursor-pointer ${
                       activeDifficulty === level
