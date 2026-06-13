@@ -54,7 +54,33 @@ export class InterviewService {
       },
     });
   }
-
+  async getStudentInterviews(studentId: number) {
+  return prisma.interview.findMany({
+    where: {
+      application: {
+        studentId,
+      },
+    },
+    include: {
+      application: {
+        select: {
+          id: true,
+          status: true,
+          job: {
+            select: {
+              title: true,
+              company: true,
+              location: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      scheduledAt: "asc",
+    },
+  });
+}
   async getAll(recruiterId: number, query: InterviewQuery) {
     const where: Prisma.interviewWhereInput = {
       application: { job: { recruiterId } },
