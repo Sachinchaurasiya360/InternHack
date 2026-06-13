@@ -339,7 +339,7 @@ export default function VerbalAbilityPage() {
             {activeSubtopic ? (
               <button
                 onClick={() => setActiveSubtopic(null)}
-                className="group inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer"
+                className="group inline-flex items-center gap-2 text-xs text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
                 Back to Dashboard
@@ -347,7 +347,7 @@ export default function VerbalAbilityPage() {
             ) : (
               <Link
                 to="/learn/aptitude"
-                className="group inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors"
+                className="group inline-flex items-center gap-2 text-xs text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors"
               >
                 <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
                 Back to Aptitude
