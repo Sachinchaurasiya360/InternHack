@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // Barrel file — re-exports all domain types so existing imports stay unchanged.
 export * from "./types/ai.types";
 export * from "./types/user.types";
@@ -11,10 +10,14 @@ export * from "./types/roadmap.types";
 export * from "./types/interview.types";
 export * from "./types/learning.types";
 export * from "./types/misc.types";
-=======
-export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL" | "CLAUDE";
-export type AIServiceType = "ATS_SCORE" | "COVER_LETTER" | "RESUME_GEN" | "LATEX_CHAT" | "EMAIL_CHAT";
 
+export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL" | "CLAUDE";
+export type AIServiceType =
+  | "ATS_SCORE"
+  | "COVER_LETTER"
+  | "RESUME_GEN"
+  | "LATEX_CHAT"
+  | "EMAIL_CHAT";
 export interface AIServiceConfig {
   id: number;
   service: AIServiceType;
@@ -1528,4 +1531,4 @@ export interface InterviewCompanyListResponse {
   };
 }
 
->>>>>>> bd01a324 (feat(dsa): add interactive solution walkthrough with variable state visualization)
+export * from "./types/verbal-ability.types";
