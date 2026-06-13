@@ -1,7 +1,7 @@
 import type {
   ReadingComprehensionPassage,
   VerbalQuestionItem,
-} from "../../../../lib/types/verbal-ability.types";
+} from "../../../../lib/types/verbal-ability.types"; 
 
 export const mockReadingComprehension: ReadingComprehensionPassage[] = [
   {
