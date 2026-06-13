@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, ArrowRight, Check, X } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, ArrowLeft, Check, X } from "lucide-react";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { SEO } from "../../components/SEO";
 import { GoogleAuthButton } from "../../components/GoogleAuthButton";
+import { Button } from "../../components/ui/button";
 
 const PASSWORD_CRITERIA = [
   { id: "length",    label: "At least 8 characters",  test: (p: string) => p.length >= 8 },
@@ -351,6 +352,20 @@ export default function RegisterPage() {
           transition={{ duration: 0.4 }}
           className="w-full max-w-md"
         >
+          <div className="mb-8">
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              className="text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 border-stone-300 dark:border-white/10"
+            >
+              <Link to="/">
+                <ArrowLeft />
+                Back to Home
+              </Link>
+            </Button>
+          </div>
+
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
             <span className="h-1.5 w-1.5 bg-lime-400" />
             create account
