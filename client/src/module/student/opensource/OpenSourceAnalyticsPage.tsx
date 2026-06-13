@@ -14,7 +14,6 @@ import {
   ChevronDown,
   ArrowLeft,
   BarChart3,
-  Flame,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
@@ -332,9 +331,10 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
   const contributionTotal = contributionTrendData?.total ?? 0;
   const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
   const showContributionEmptyState =
-  contributionTotal === 0 &&
-  contributionTrend.length > 0 &&
-  contributionTrend.every((entry) => entry.count === 0);
+    contributionTotal === 0 &&
+    contributionTrend.length > 0 &&
+    contributionTrend.every((entry) => entry.count === 0);
+
   const downloadBlob = (content: string, filename: string, type: string) => {
     const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
@@ -360,7 +360,11 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
 
   const currentStreak = (() => {
     let count = 0;
-    for (let i = contributionTrend.length - 1; i >= 0; i--) {
+    let i = contributionTrend.length - 1;
+    // The most recent month is still in progress: a zero there shouldn't break an
+    // otherwise active streak, so skip it before counting backwards.
+    if (i >= 0 && contributionTrend[i].count === 0) i--;
+    for (; i >= 0; i--) {
       if (contributionTrend[i].count > 0) count++;
       else break;
     }
@@ -674,18 +678,46 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
             title="Monthly Contribution Activity"
             subtitle={
               trendIsLoading
-? "Loading your approved open source contribution history"
-                : `Approved repo requests ${startMonth}–${endMonth}${contributionTotal ? ` · ${contributionTotal} total` : ""}`
+                ? "loading your approved open source contribution history"
+                : `approved repo requests ${startMonth}–${endMonth}${contributionTotal ? ` · ${contributionTotal} total` : ""}`
             }
             index={0}
-            className="lg:col-span-2"
+            expandedChildren={
+              trendIsLoading ? (
+                <TrendSkeleton />
+              ) : trendIsError ? (
+                <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
+              ) : showContributionEmptyState ? (
+                <TrendEmptyState
+                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+                  showButton
+                />
+              ) : hasContributionActivity ? (
+                <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
+                    <XAxis dataKey="label" tick={{ fill: "#78716c", fontSize: 12 }} />
+                    <YAxis allowDecimals={false} tick={{ fill: "#78716c", fontSize: 12 }} />
+                    <Tooltip {...tooltipStyle} />
+                    <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
+                  </BarChart>
+                </ResponsiveContainer>
+                </AccessibleChart>
+              ) : (
+                <TrendEmptyState
+                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+                  showButton
+                />
+              )
+            }
           >
             {!trendIsLoading && !trendIsError && contributionTrend.length > 0 && (
               <div className="mb-4">
                 {currentStreak === 0 ? (
                   <div className="flex items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
                     <Flame className="w-4 h-4 text-stone-400" />
-                    No active streak — contribute this month to start one!
+                    No active streak. Contribute this month to start one.
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-3">
@@ -699,40 +731,35 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
                     </div>
                   </div>
                 )}
-                
               </div>
             )}
             {trendIsLoading ? (
-              <div className="flex items-end gap-2 h-[300px] px-4 animate-pulse">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="flex-1 bg-gray-200 rounded-t-lg" style={{ height: `${40 + i * 10}%` }} />
-                ))}
-              </div>
+              <TrendSkeleton />
             ) : hasContributionActivity ? (
+              <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="label" tick={{ fill: "#374151", fontSize: 12 }} />
-                  <YAxis allowDecimals={false} tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
+                  <XAxis dataKey="label" tick={{ fill: "#78716c", fontSize: 12 }} />
+                  <YAxis allowDecimals={false} tick={{ fill: "#78716c", fontSize: 12 }} />
                   <Tooltip {...tooltipStyle} />
-                  <Bar dataKey="count" fill="#0ea5e9" radius={[8, 8, 0, 0]} name="Approved contributions" />
+                  <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
                 </BarChart>
               </ResponsiveContainer>
+              </AccessibleChart>
             ) : trendIsError ? (
-              <div className="flex flex-col items-center justify-center h-[300px] text-gray-400 text-sm gap-2">
-                <TrendingUp className="w-8 h-8 text-gray-300" />
-                <p>We could not load your contribution trend right now. Try again in a moment.</p>
-              </div>
+              <TrendEmptyState
+                message="We could not load your contribution trend right now. Try again in a moment."
+              />
             ) : (
-              <div className="flex flex-col items-center justify-center h-[300px] text-gray-400 text-sm gap-2">
-                <TrendingUp className="w-8 h-8 text-gray-300" />
-                <p>Approve a repository suggestion to start tracking your monthly open source activity here.</p>
-              </div>
+              <TrendEmptyState
+                message="Submit a repo suggestion and get it approved to start tracking your open source journey."
+                showButton
+              />
             )}
           </ChartCard>
+        </div>
 
-         </div>
-      )}
           {/* Contributions by Domain */}
           {(trendIsLoading || (contributionTrendData?.domains && contributionTrendData.domains.length > 0) || (contributionTrendData && contributionTrendData.total === 0)) && (
             <motion.div
