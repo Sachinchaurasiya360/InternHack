@@ -7,6 +7,7 @@ import { LearningPathProvider } from "./learning-paths.context";
 import { LearningPathSidebar } from "./components/LearningPathSidebar";
 import StreakFlame from "./StreakFlame";
 
+
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
   discover: "Discover Repos",

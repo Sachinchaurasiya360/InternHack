@@ -79,6 +79,7 @@ import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-a
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
+import { teammateRouter } from "./module/teammate/teammate.route.js";
 
 const logger = createLogger("Index");
 
@@ -293,7 +294,7 @@ app.use("/api/roadmaps", roadmapRouter);
 app.use("/api/analytics", analyticsRouter);
 app.use("/api/learn", learnRouter);
 app.use("/api/coach", coachRouter);
-
+app.use("/api/teammates", teammateRouter);
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
 // Public external jobs endpoints (no auth)

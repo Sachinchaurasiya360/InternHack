@@ -16,8 +16,8 @@ interface EducationSectionProps {
   collegeSuggestions: CollegeSuggestion[];
   collegeLoading: boolean;
   showCollegeSuggestions: boolean;
-  collegeInputRef: React.RefObject<HTMLInputElement | null>;
-  collegeDropdownRef: React.RefObject<HTMLDivElement | null>;
+  collegeInputRef: React.RefObject<HTMLInputElement>;
+  collegeDropdownRef: React.RefObject<HTMLDivElement>;
   onCollegeChange: (value: string) => void;
   onCollegeFocus: () => void;
   onSelectCollege: (name: string) => void;

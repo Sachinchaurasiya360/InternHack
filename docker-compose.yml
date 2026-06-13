@@ -15,8 +15,8 @@ services:
       timeout: 5s
       retries: 10
     # Map only if you need host tools against DB; uncomment if nothing else uses port 5432 locally.
-    # ports:
-    #   - "5432:5432"
+    ports:
+      - "5433:5432"
 
   server:
     build:

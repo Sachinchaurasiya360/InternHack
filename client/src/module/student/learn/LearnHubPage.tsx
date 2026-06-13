@@ -373,7 +373,13 @@ const grouped = useMemo(() => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {group.tracks.map((track, idx) => (
-                  <TrackCard key={track.id} track={track} index={idx} completedTrackIds={completedTrackIds} progress={progressMap[track.id]} />
+<TrackCard
+  key={track.id}
+  track={track}
+  index={idx}
+  completedTrackIds={completedTrackIds}
+  progress={progressMap[track.id]}
+/>
                 ))}
               </div>
             </section>

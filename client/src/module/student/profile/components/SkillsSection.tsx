@@ -9,8 +9,8 @@ interface SkillsSectionProps {
   showSkillSuggestions: boolean;
   filteredSkillSuggestions: string[];
   verifiedMap: Map<string, VerifiedSkill>;
-  skillInputRef: React.RefObject<HTMLInputElement | null>;
-  skillDropdownRef: React.RefObject<HTMLDivElement | null>;
+  skillInputRef: React.RefObject<HTMLInputElement>;
+  skillDropdownRef: React.RefObject<HTMLDivElement>;
   onSkillInputChange: (value: string) => void;
   onSkillInputFocus: () => void;
   onAddSkill: (name?: string) => void;
