@@ -7,12 +7,8 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
+import { DIFFICULTY_STYLE } from "../../../lib/difficulty-styles";
 
-const DIFF_STYLE: Record<string, string> = {
-  Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
-  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
-  Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
-};
 
 const FILTER_STYLE: Record<string, string> = {
   Beginner: "text-green-700 dark:text-green-400 border-green-200 dark:border-green-900/60 bg-green-50 dark:bg-green-900/20",
@@ -276,7 +272,7 @@ export default function InterviewSectionPage() {
                     </div>
 
                     <span className="hidden sm:inline-flex shrink-0">
-                      <MetaChip className={DIFF_STYLE[question.difficulty]}>
+                      <MetaChip className={DIFFICULTY_STYLE[question.difficulty]}>
                         {question.difficulty}
                       </MetaChip>
                     </span>
