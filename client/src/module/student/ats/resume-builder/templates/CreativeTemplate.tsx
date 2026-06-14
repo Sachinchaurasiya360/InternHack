@@ -134,7 +134,7 @@ export default function CreativeTemplate({
   return (
     <div className="w-full bg-white text-gray-800 font-sans text-[11px] leading-relaxed flex">
       {/* Left Accent Strip */}
-      <div className="w-[30%] bg-gradient-to-b from-violet-600 to-indigo-700 text-white p-5 shrink-0">
+      <div className="w-[30%] bg-linear-to-b from-violet-600 to-indigo-700 text-white p-5 shrink-0">
         {/* Avatar placeholder */}
         <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold text-white mb-4 mx-auto">
           {personalInfo.fullName ? personalInfo.fullName.charAt(0).toUpperCase() : "?"}
