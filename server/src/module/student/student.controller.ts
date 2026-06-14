@@ -82,14 +82,16 @@ export class StudentController {
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
 
+      const userId = req.user.id;
+
       // Fetch user plan and usage count in parallel.
       const [user, used] = await Promise.all([
         prisma.user.findUnique({
-          where: { id: req.user.id },
+          where: { id: userId },
           select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
         }),
         prisma.usageLog.count({
-          where: { userId: req.user.id, action: "MOCK_INTERVIEW", createdAt: { gte: startOfMonth } },
+          where: { userId, action: "MOCK_INTERVIEW", createdAt: { gte: startOfMonth } },
         }),
       ]);
       if (!user) return res.status(401).json({ message: "User not found" });
@@ -97,12 +99,23 @@ export class StudentController {
       const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
       if (tier === "FREE") return res.status(403).json({ message: "Upgrade to Premium to book mock interviews." });
 
-      if (used >= 1) return res.status(429).json({ message: "Monthly mock interview limit reached.", used, limit: 1 });
+      await prisma.$transaction(async (tx) => {
+        const currentUsed = await tx.usageLog.count({
+          where: { userId, action: "MOCK_INTERVIEW", createdAt: { gte: startOfMonth } },
+        });
 
-      await prisma.usageLog.create({ data: { userId: req.user.id, action: "MOCK_INTERVIEW" } });
+        if (currentUsed >= 1) {
+          throw new Error("MONTHLY_LIMIT");
+        }
+
+        await tx.usageLog.create({ data: { userId, action: "MOCK_INTERVIEW" } });
+      });
 
       return res.json({ message: "Mock interview booked successfully", used: used + 1, limit: 1 });
     } catch (err) {
+      if (err instanceof Error && err.message === "MONTHLY_LIMIT") {
+        return res.status(429).json({ message: "Monthly mock interview limit reached.", used: 1, limit: 1 });
+      }
       next(err);
     }
   }
