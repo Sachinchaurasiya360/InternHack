@@ -3,8 +3,9 @@ import { StudyBuddyService } from "../study-buddy.service.js";
 import { prisma } from "../../../database/db.js";
 
 // Mock the prisma dependency
-vi.mock("../../../database/db.js", () => ({
-  prisma: {
+vi.mock("../../../database/db.js", () => {
+  const mockPrisma = {
+    $transaction: vi.fn(async (cb) => cb(mockPrisma)),
     roadmapStudyBuddyPreference: {
       findUnique: vi.fn(),
       upsert: vi.fn(),
@@ -19,8 +20,9 @@ vi.mock("../../../database/db.js", () => ({
       findUnique: vi.fn(),
       findMany: vi.fn(),
     },
-  },
-}));
+  };
+  return { prisma: mockPrisma };
+});
 
 describe("StudyBuddyService", () => {
   let service: StudyBuddyService;
@@ -190,13 +192,15 @@ describe("StudyBuddyService", () => {
   });
 
   describe("optOut", () => {
-    it("should disable preferences, deactivate active pairing, and return nothing", async () => {
+    it("should disable preferences, deactivate active pairing, and trigger rematch for buddy", async () => {
       const mockPref = { id: 1, userId: 1, roadmapId: 10, enabled: false };
       const mockActivePair = { id: 5, studentAId: 1, studentBId: 2, active: true };
 
       vi.mocked(prisma.roadmapStudyBuddyPreference.upsert).mockResolvedValue(mockPref as any);
       vi.mocked(prisma.roadmapStudyBuddyPair.findFirst).mockResolvedValue(mockActivePair as any);
       vi.mocked(prisma.roadmapStudyBuddyPair.update).mockResolvedValue({ ...mockActivePair, active: false } as any);
+
+      const findSpy = vi.spyOn(service, "findAndCreateMatch").mockResolvedValue(null);
 
       await service.optOut(1, 10);
 
@@ -209,6 +213,7 @@ describe("StudyBuddyService", () => {
         where: { id: 5 },
         data: { active: false },
       });
+      expect(findSpy).toHaveBeenCalledWith(2, 10);
     });
   });
 
@@ -254,6 +259,7 @@ describe("StudyBuddyService", () => {
 
     it("should match candidates based on scoring algorithm and create pairing", async () => {
       // User has no active pair
+      vi.mocked(prisma.roadmapStudyBuddyPair.findFirst).mockResolvedValue(null);
       vi.mocked(prisma.roadmapStudyBuddyPair.findFirst)
         .mockResolvedValueOnce(null) // for user's existing active pair check
         .mockResolvedValueOnce(null); // for user's last deactivated pair check (lastPair)

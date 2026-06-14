@@ -6,6 +6,15 @@ import { withAdvisoryLock } from "../utils/cron-lock.js";
 
 let cronJob: cron.ScheduledTask | null = null;
 
+interface DigestBuddyData {
+  name: string;
+  completedThisWeek: number;
+  percentComplete: number;
+  completedTotal: number;
+  difference: number;
+  bothMadeProgress: boolean;
+}
+
 type DigestRoadmap = {
   title: string;
   slug: string;
@@ -13,6 +22,7 @@ type DigestRoadmap = {
   completedThisWeek: number;
   nextTopicTitle: string | null;
   nextTopicSlug: string | null;
+  buddy: DigestBuddyData | null;
 };
 
 type DigestEnrollment = {
@@ -55,7 +65,7 @@ function buildDigestRoadmap(
   ).length;
   const nextTopic = topics.find((topic) => progressByTopicId.get(topic.id)?.status !== "COMPLETED") ?? null;
 
-  let buddyData: any = null;
+  let buddyData: DigestBuddyData | null = null;
   if (buddyProgress) {
     const buddyCompleted = buddyProgress.topicProgress.filter((p) => p.status === "COMPLETED").length;
     const buddyPct = buddyProgress.totalTopics === 0 ? 0 : Math.round((buddyCompleted / buddyProgress.totalTopics) * 100);
@@ -81,7 +91,7 @@ function buildDigestRoadmap(
     nextTopicTitle: nextTopic?.title ?? null,
     nextTopicSlug: nextTopic?.slug ?? null,
     buddy: buddyData,
-  } as any;
+  };
 }
 
 async function getActiveDigestEnrollments(): Promise<DigestEnrollment[]> {
@@ -127,9 +137,11 @@ export async function sendWeeklyRoadmapDigests(): Promise<void> {
   });
 
   const pairMap = new Map<string, { buddyId: number }>();
+  const activePairRoadmapIds = new Set<number>();
   for (const pair of activePairs) {
     pairMap.set(`${pair.studentAId}_${pair.roadmapId}`, { buddyId: pair.studentBId });
     pairMap.set(`${pair.studentBId}_${pair.roadmapId}`, { buddyId: pair.studentAId });
+    activePairRoadmapIds.add(pair.roadmapId);
   }
 
   // 2. Fetch progress info for paired buddies
@@ -138,6 +150,7 @@ export async function sendWeeklyRoadmapDigests(): Promise<void> {
   const buddyEnrollments = await prisma.roadmapEnrollment.findMany({
     where: {
       userId: { in: buddyIds },
+      roadmapId: { in: Array.from(activePairRoadmapIds) },
       status: "ACTIVE",
     },
     include: {

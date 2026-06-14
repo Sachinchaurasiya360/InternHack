@@ -568,7 +568,7 @@ export default function RoadmapCanvasPage() {
 
   const { data: profileData } = useQuery({
     queryKey: queryKeys.profile.me(),
-    queryFn: () => api.get<{ user: { college: string | null } }>("/student/profile").then((r) => r.data),
+    queryFn: () => api.get<{ user: { college: string | null } }>("/auth/me").then((r) => r.data),
   });
   const hasCollege = Boolean(profileData?.user?.college);
 
@@ -1250,10 +1250,10 @@ export default function RoadmapCanvasPage() {
             </button>
 
             {studyBuddyData && (
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => setShowBuddyDrawer(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-stone-800 text-stone-50 text-xs font-bold rounded-md hover:bg-stone-700 transition-colors border-0 cursor-pointer"
               >
                 <Users className="w-3.5 h-3.5 text-lime-400" />
                 {studyBuddyData.status === "MATCHED"
@@ -1261,7 +1261,7 @@ export default function RoadmapCanvasPage() {
                   : studyBuddyData.status === "SEARCHING"
                     ? "Buddy: Searching..."
                     : "Find Study Buddy"}
-              </button>
+              </Button>
             )}
 
             <button
@@ -1659,7 +1659,7 @@ export default function RoadmapCanvasPage() {
                             <h4 className="text-xs font-bold text-stone-900 dark:text-stone-100">
                               Smart Matching Algorithm
                             </h4>
-                            <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                            <p className="text-xs text-stone-500 dark:text-stone-400">
                               Pairs you based on current completion rates, completed topics count, and experience level.
                             </p>
                           </div>
@@ -1677,13 +1677,13 @@ export default function RoadmapCanvasPage() {
                               <span className="text-xs font-bold text-stone-900 dark:text-stone-100">
                                 Match within your college
                               </span>
-                              <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                              <p className="text-xs text-stone-500 dark:text-stone-400">
                                 Prioritize matching with peers from {profileData?.user?.college}.
                               </p>
                             </div>
                           </label>
                         ) : (
-                          <div className="flex items-start gap-2.5 text-xs text-stone-450 dark:text-stone-450">
+                          <div className="flex items-start gap-2.5 text-xs text-stone-500 dark:text-stone-500">
                             <GraduationCap className="w-4 h-4 shrink-0 mt-0.5" />
                             <span>
                               College match unavailable. Set your college in your profile to allow matching with campus peers.
@@ -1752,7 +1752,7 @@ export default function RoadmapCanvasPage() {
                           Your Accountability Partner
                         </h3>
                         
-                        <div className="flex items-center gap-4 bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-850 rounded-xl p-4">
+                        <div className="flex items-center gap-4 bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 rounded-xl p-4">
                           <div className="flex items-center justify-center w-12 h-12 bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-lg font-bold rounded-lg shrink-0">
                             {studyBuddyData.buddy.name.charAt(0).toUpperCase()}
                           </div>
@@ -1762,14 +1762,14 @@ export default function RoadmapCanvasPage() {
                             </h4>
                             <div className="flex flex-col gap-1">
                               {studyBuddyData.buddy.college && (
-                                <div className="flex items-center gap-1.5 text-xs text-stone-550 dark:text-stone-400">
+                                <div className="flex items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400">
                                   <GraduationCap className="w-3.5 h-3.5 shrink-0" />
-                                  <span className="truncate max-w-[200px]">
+                                  <span className="truncate max-w-48">
                                     {studyBuddyData.buddy.college}
                                   </span>
                                 </div>
                               )}
-                              <div className="flex items-center gap-3 text-[11px] font-mono text-stone-450 dark:text-stone-400">
+                              <div className="flex items-center gap-3 text-xs font-mono text-stone-500 dark:text-stone-400">
                                 <span>Exp: {studyBuddyData.buddy.experienceLevel}</span>
                                 {studyBuddyData.buddy.currentStreak > 0 && (
                                   <span className="flex items-center gap-1 text-amber-500">
@@ -1791,34 +1791,34 @@ export default function RoadmapCanvasPage() {
                         <div className="space-y-4">
                           {/* User progress */}
                           <div className="space-y-1.5">
-                            <div className="flex items-center justify-between text-xs font-bold text-stone-850 dark:text-stone-200">
+                            <div className="flex items-center justify-between text-xs font-bold text-stone-800 dark:text-stone-200">
                               <span>You</span>
                               <span className="font-mono">{summary.percentComplete}%</span>
                             </div>
-                            <div className="h-2 bg-stone-250 dark:bg-stone-800 rounded-full overflow-hidden">
+                            <div className="h-2 bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-lime-400 rounded-full transition-all duration-500"
                                 style={{ width: `${summary.percentComplete}%` }}
                               />
                             </div>
-                            <div className="text-[10px] text-stone-450 dark:text-stone-400 font-mono text-right">
+                            <div className="text-xs text-stone-500 dark:text-stone-400 font-mono text-right">
                               {summary.completedTopics} of {summary.totalTopics} topics complete
                             </div>
                           </div>
 
                           {/* Buddy progress */}
                           <div className="space-y-1.5">
-                            <div className="flex items-center justify-between text-xs font-bold text-stone-850 dark:text-stone-200">
+                            <div className="flex items-center justify-between text-xs font-bold text-stone-800 dark:text-stone-200">
                               <span>{studyBuddyData.buddy.name}</span>
                               <span className="font-mono">{studyBuddyData.buddy.percentComplete}%</span>
                             </div>
-                            <div className="h-2 bg-stone-250 dark:bg-stone-800 rounded-full overflow-hidden">
+                            <div className="h-2 bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-amber-400 rounded-full transition-all duration-500"
                                 style={{ width: `${studyBuddyData.buddy.percentComplete}%` }}
                               />
                             </div>
-                            <div className="text-[10px] text-stone-450 dark:text-stone-400 font-mono text-right">
+                            <div className="text-xs text-stone-500 dark:text-stone-400 font-mono text-right">
                               {studyBuddyData.buddy.completedTopics} of {summary.totalTopics} topics complete
                             </div>
                           </div>
@@ -1839,7 +1839,7 @@ export default function RoadmapCanvasPage() {
                           {rematchMutation.isPending ? "Rematching..." : "Request Rematch"}
                         </Button>
                         <Button
-                          variant="destructive"
+                          variant="danger"
                           className="w-full justify-center"
                           disabled={optOutMutation.isPending}
                           onClick={() => {
