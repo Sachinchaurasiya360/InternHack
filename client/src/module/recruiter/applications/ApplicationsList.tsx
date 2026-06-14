@@ -3,7 +3,7 @@ import toast from "../../../components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, Search, Filter, Loader2, Upload } from "lucide-react";
+import { ArrowLeft, Search, Filter, Loader2, Upload, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
@@ -21,19 +21,23 @@ export default function ApplicationsList() {
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
   const [pendingAdvanceApp, setPendingAdvanceApp] = useState<Application | null>(null);
+  const [sortBy, setSortBy] = useState<"name" | "createdAt" | "status" | "">("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "">("");
 
   // Reset to page 1 when search or filter changes
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
-  }, [debouncedSearch, statusFilter]);
+  }, [debouncedSearch, statusFilter, sortBy, sortOrder]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["applications", jobId, page, statusFilter, debouncedSearch],
+    queryKey: ["applications", jobId, page, statusFilter, debouncedSearch, sortBy, sortOrder],
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), limit: "10" });
       if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
       if (statusFilter) params.set("status", statusFilter);
+      if (sortBy) params.set("sortBy", sortBy);
+      if (sortOrder) params.set("sortOrder", sortOrder);
       const res = await api.get(`/recruiter/jobs/${jobId}/applications?${params}`);
       return {
         applications: res.data.applications as Application[],
@@ -76,6 +80,24 @@ export default function ApplicationsList() {
         return next;
       });
     }
+  };
+
+  const handleSort = (field: "name" | "createdAt" | "status") => {
+    if (sortBy === field) {
+      if (sortOrder === "asc") setSortOrder("desc");
+      else if (sortOrder === "desc") {
+        setSortBy("");
+        setSortOrder("");
+      }
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const renderSortIcon = (field: "name" | "createdAt" | "status") => {
+    if (sortBy !== field) return <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />;
+    return sortOrder === "asc" ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />;
   };
 
   return (
@@ -179,10 +201,16 @@ export default function ApplicationsList() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Candidate</th>
-                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Status</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3 cursor-pointer select-none group" onClick={() => handleSort("name")}>
+                    <div className="flex items-center gap-1.5 group-hover:text-gray-700 dark:group-hover:text-gray-300">Candidate {renderSortIcon("name")}</div>
+                  </th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3 cursor-pointer select-none group" onClick={() => handleSort("status")}>
+                    <div className="flex items-center gap-1.5 group-hover:text-gray-700 dark:group-hover:text-gray-300">Status {renderSortIcon("status")}</div>
+                  </th>
                   <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Rounds</th>
-                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Applied</th>
+                  <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3 cursor-pointer select-none group" onClick={() => handleSort("createdAt")}>
+                    <div className="flex items-center gap-1.5 group-hover:text-gray-700 dark:group-hover:text-gray-300">Applied {renderSortIcon("createdAt")}</div>
+                  </th>
                   <th scope="col" className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Actions</th>
                 </tr>
               </thead>

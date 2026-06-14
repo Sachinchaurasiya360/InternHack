@@ -109,6 +109,8 @@ export const applicationFilterSchema = z.object({
   status: z.enum(["APPLIED", "IN_PROGRESS", "SHORTLISTED", "REJECTED", "HIRED", "WITHDRAWN"]).optional(),
   roundId: z.coerce.number().int().optional(),
   search: z.string().optional(),
+  sortBy: z.enum(["name", "createdAt", "status"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
 });
 
 export const talentSearchSchema = z.object({

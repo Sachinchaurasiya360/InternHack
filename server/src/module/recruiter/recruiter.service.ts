@@ -78,6 +78,8 @@ interface ApplicationFilter {
   status?: string | undefined;
   roundId?: number | undefined;
   search?: string | undefined;
+  sortBy?: "name" | "createdAt" | "status" | undefined;
+  sortOrder?: "asc" | "desc" | undefined;
 }
 
 interface EvaluationCriterion {
@@ -305,12 +307,21 @@ export class RecruiterService {
 
     const skip = (filter.page - 1) * filter.limit;
 
+    let orderBy: Prisma.applicationOrderByWithRelationInput = { createdAt: "desc" };
+    if (filter.sortBy === "name") {
+      orderBy = { student: { name: filter.sortOrder || "asc" } };
+    } else if (filter.sortBy === "createdAt") {
+      orderBy = { createdAt: filter.sortOrder || "desc" };
+    } else if (filter.sortBy === "status") {
+      orderBy = { status: filter.sortOrder || "asc" };
+    }
+
     const [applications, total] = await Promise.all([
       prisma.application.findMany({
         where,
         skip,
         take: filter.limit,
-        orderBy: { createdAt: "desc" },
+        orderBy,
         include: {
           student: { select: { id: true, name: true, email: true, profilePic: true, resumes: true } },
           roundSubmissions: {
