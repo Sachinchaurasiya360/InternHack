@@ -28,6 +28,7 @@ export function LoginGate({ open, onClose }: LoginGateProps) {
           >
             <button
               onClick={onClose}
+              aria-label="Close dialog"
               className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
               <X className="w-4 h-4" />
