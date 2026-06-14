@@ -119,16 +119,266 @@ export default function AtsScorePage() {
   const navigate = useNavigate();
 
   const handleDownloadPdf = async () => {
-    if (!result) return;
-
-    const { jsPDF } = await import("jspdf");
-
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
+  if (!result) return;
+  
+  const jsPDF = (await import('jspdf')).default;
+  const doc = new jsPDF();
+  
+  let y = 20;
+  let currentPage = 1;
+  const pageHeight = doc.internal.pageSize.height;
+  const pageWidth = doc.internal.pageSize.width;
+  
+  // Helper: Add footer on every page
+  const addFooter = () => {
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(200, 200, 200);
+      doc.line(20, pageHeight - 15, pageWidth - 20, pageHeight - 15);
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.text('internhack.xyz', 20, pageHeight - 8);
+      doc.text(`Page ${i}`, pageWidth - 30, pageHeight - 8);
+    }
+  };
+  
+  // Helper: Check page break
+  const checkPageBreak = (neededSpace: number) => {
+    if (y + neededSpace > pageHeight - 25) {
+      doc.addPage();
+      y = 20;
+      currentPage++;
+    }
+  };
+  
+  // ============ HEADER BAND (Cover) ============
+  doc.setFillColor(28, 25, 23);
+  doc.rect(0, 0, pageWidth, 45, 'F');
+  
+  doc.setFontSize(10);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  
+  // INTERNHACK wordmark with spacing
+  const wordmark = 'INTERNHACK';
+  let xPos = 20;
+  for (let i = 0; i < wordmark.length; i++) {
+    doc.text(wordmark[i], xPos, 18);
+    xPos += doc.getTextWidth(wordmark[i]) + 2.5;
+  }
+  
+  // Subtitle
+  doc.setFontSize(8);
+  doc.setTextColor(132, 204, 22);
+  doc.setFont('helvetica', 'normal');
+  doc.text('ATS ANALYSIS REPORT', 20, 28);
+  
+  // Resume filename & date (right-aligned)
+  doc.setFontSize(9);
+  doc.setTextColor(255, 255, 255);
+  const dateStr = new Date().toLocaleDateString('en-US', { 
+    year: 'numeric', month: 'short', day: 'numeric' 
+  });
+  const resumeFileName = getResumeName(result.resumeUrl);
+  doc.text(`Resume: ${resumeFileName}`, pageWidth - 20, 18, { align: 'right' });
+  doc.text(`Generated: ${dateStr}`, pageWidth - 20, 28, { align: 'right' });
+  
+  y = 65;
+  
+  // ============ SCORE HERO BLOCK ============
+  checkPageBreak(50);
+  
+  // Large score number
+  doc.setFontSize(36);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`${result.overallScore}%`, 20, y);
+  
+  // Tier label
+  let tierText = '';
+  let tierColor: [number, number, number] = [0, 0, 0];
+  if (result.overallScore >= 80) {
+    tierText = 'EXCELLENT';
+    tierColor = [34, 197, 94];
+  } else if (result.overallScore >= 60) {
+    tierText = 'GOOD';
+    tierColor = [132, 204, 22];
+  } else if (result.overallScore >= 40) {
+    tierText = 'NEEDS WORK';
+    tierColor = [234, 179, 8];
+  } else {
+    tierText = 'POOR';
+    tierColor = [239, 68, 68];
+  }
+  
+  doc.setFontSize(12);
+  doc.setTextColor(tierColor[0], tierColor[1], tierColor[2]);
+  doc.text(tierText, 20, y + 12);
+  
+  // Stat strip
+  y += 28;
+  checkPageBreak(30);
+  
+  doc.setFillColor(245, 245, 245);
+  doc.rect(20, y, pageWidth - 40, 25, 'F');
+  
+  const stats = [
+    { label: 'Categories Scored', value: Object.keys(result.categoryScores).length },
+    { label: 'Keywords Found', value: result.keywordAnalysis.found?.length || 0 },
+    { label: 'Keywords Missing', value: result.keywordAnalysis.missing?.length || 0 },
+    { label: 'Suggestions', value: result.suggestions?.length || 0 }
+  ];
+  
+  const statWidth = (pageWidth - 40) / stats.length;
+  doc.setFontSize(9);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'normal');
+  
+  stats.forEach((stat, idx) => {
+    const statX = 20 + (idx * statWidth);
+    doc.text(stat.label, statX + 5, y + 10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(stat.value.toString(), statX + 5, y + 20);
+    doc.setFont('helvetica', 'normal');
+  });
+  
+  y += 35;
+  
+  // ============ CATEGORY SCORES SECTION ============
+  const categoryEntries = Object.entries(result.categoryScores);
+  if (categoryEntries.length) {
+    checkPageBreak(40);
+    
+    doc.setFillColor(220, 252, 231);
+    doc.rect(20, y, pageWidth - 40, 30 + (categoryEntries.length * 8), 'F');
+    
+    doc.setFillColor(34, 197, 94);
+    doc.rect(20, y, 50, 8, 'F');
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text('CATEGORY SCORES', 22, y + 5.5);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    let catY = y + 18;
+    
+    categoryEntries.forEach(([name, score]) => {
+      const displayName = CATEGORY_LABELS[name] ?? name;
+      doc.text(`${displayName}: ${score}%`, 25, catY);
+      catY += 8;
     });
-
+    
+    y += 35 + (categoryEntries.length * 8);
+  }
+  
+  // ============ KEYWORDS SECTION ============
+  if (result.keywordAnalysis) {
+    checkPageBreak(40);
+    
+    const foundKw = result.keywordAnalysis.found || [];
+    const missingKw = result.keywordAnalysis.missing || [];
+    const totalKwHeight = (foundKw.length + missingKw.length) * 5 + 20;
+    
+    doc.setFillColor(254, 252, 232);
+    doc.rect(20, y, pageWidth - 40, 40 + totalKwHeight, 'F');
+    
+    doc.setFillColor(234, 179, 8);
+    doc.rect(20, y, 45, 8, 'F');
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text('KEYWORDS', 22, y + 5.5);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    let kwY = y + 18;
+    
+    if (foundKw.length) {
+      doc.text('✓ Keywords Found:', 25, kwY);
+      kwY += 6;
+      foundKw.forEach((kw: string) => {
+        doc.text(`• ${kw}`, 30, kwY);
+        kwY += 5;
+      });
+      kwY += 3;
+    }
+    
+    if (missingKw.length) {
+      doc.setTextColor(239, 68, 68);
+      doc.text('✗ Keywords Missing:', 25, kwY);
+      kwY += 6;
+      doc.setTextColor(0, 0, 0);
+      missingKw.forEach((kw: string) => {
+        doc.text(`• ${kw}`, 30, kwY);
+        kwY += 5;
+      });
+    }
+    
+    y += 50 + totalKwHeight;
+  }
+  
+  // ============ SUGGESTIONS SECTION ============
+  const suggestions = result.suggestions || [];
+  if (suggestions.length) {
+    checkPageBreak(40);
+    
+    let suggTextHeight = 0;
+    const suggestionLines: string[][] = [];
+    suggestions.forEach((suggestion: any) => {
+      const text = typeof suggestion === "string" ? suggestion : (suggestion as { suggestion?: string }).suggestion ?? String(suggestion);
+      const lines = doc.splitTextToSize(text, pageWidth - 80);
+      suggestionLines.push(lines);
+      suggTextHeight += lines.length * 5 + 3;
+    });
+    
+    doc.setFillColor(224, 231, 255);
+    doc.rect(20, y, pageWidth - 40, 30 + suggTextHeight, 'F');
+    
+    doc.setFillColor(99, 102, 241);
+    doc.rect(20, y, 55, 8, 'F');
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text('SUGGESTIONS', 22, y + 5.5);
+    
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+    let suggY = y + 18;
+    
+    suggestionLines.forEach((lines, idx) => {
+      lines.forEach((line: string) => {
+        doc.text(`• ${line}`, 25, suggY);
+        suggY += 5;
+      });
+      suggY += 3;
+    });
+    
+    y += 35 + suggTextHeight;
+  }
+  
+  // ============ FINAL PAGE CTA ============
+  checkPageBreak(50);
+  doc.addPage();
+  y = 60;
+  
+  doc.setFillColor(245, 245, 245);
+  doc.rect(30, y, pageWidth - 60, 40, 'F');
+  doc.setDrawColor(200, 200, 200);
+  doc.rect(30, y, pageWidth - 60, 40, 'D');
+  
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  doc.text('Improve your score — re-upload after applying these suggestions at', pageWidth / 2, y + 18, { align: 'center' });
+  doc.setFontSize(10);
+  doc.setTextColor(132, 204, 22);
+  doc.text('internhack.xyz/student/ats/score', pageWidth / 2, y + 32, { align: 'center' });
+  
+  // Add footers to all pages
+  addFooter();
+  
+  // Save PDF
+  const fileName = `ats-report-${new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(fileName);
+};
     const dateStr = new Date().toISOString().slice(0, 10);
     const filename = `ats-report-${dateStr}.pdf`;
 
