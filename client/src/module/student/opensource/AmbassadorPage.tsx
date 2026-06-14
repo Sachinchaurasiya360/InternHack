@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+
 import {
   Award,
   Copy,
@@ -71,7 +71,7 @@ export default function AmbassadorPage() {
   const [shareDesc, setShareDesc] = useState("");
   const [showShareForm, setShowShareForm] = useState(false);
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["ambassador", "me"],
     queryFn: () => api.get<AmbassadorStatus>("/ambassador/me").then((r) => r.data),
   });

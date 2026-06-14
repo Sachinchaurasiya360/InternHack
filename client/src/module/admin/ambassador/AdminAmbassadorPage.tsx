@@ -294,7 +294,7 @@ export default function AdminAmbassadorPage() {
                                       </Button>
                                       <Button
                                         size="sm"
-                                        variant="danger"
+                                        variant="destructive"
                                         onClick={(e) => { e.stopPropagation(); reviewMutation.mutate({ id: a.id, status: "REJECTED", adminNotes: "Rejected by admin" }); }}
                                         disabled={reviewMutation.isPending}
                                       >
@@ -315,7 +315,8 @@ export default function AdminAmbassadorPage() {
 
                 {ambassadorsQuery.data?.pagination && (
                   <PaginationControls
-                    pagination={ambassadorsQuery.data.pagination}
+                    currentPage={ambassadorsQuery.data.pagination.page}
+                    totalPages={Math.ceil(ambassadorsQuery.data.pagination.total / ambassadorsQuery.data.pagination.limit)}
                     onPageChange={setPage}
                   />
                 )}
@@ -472,7 +473,7 @@ function AmbassadorDetailView({
                         <Button size="sm" onClick={() => onReviewShare(share.id, "APPROVED")}>
                           <CheckCircle className="w-3.5 h-3.5" /> Approve
                         </Button>
-                        <Button size="sm" variant="danger" onClick={() => onReviewShare(share.id, "REJECTED")}>
+                        <Button size="sm" variant="destructive" onClick={() => onReviewShare(share.id, "REJECTED")}>
                           <XCircle className="w-3.5 h-3.5" /> Reject
                         </Button>
                       </div>
@@ -492,7 +493,7 @@ function AmbassadorDetailView({
               <Button className="w-full" onClick={() => onReview("APPROVED")}>
                 <CheckCircle className="w-4 h-4" /> Approve & Grant Premium
               </Button>
-              <Button className="w-full" variant="danger" onClick={() => onReview("REJECTED")}>
+              <Button className="w-full" variant="destructive" onClick={() => onReview("REJECTED")}>
                 <XCircle className="w-4 h-4" /> Reject
               </Button>
             </div>
@@ -571,7 +572,7 @@ function SharesTab({ ambassadors, onReview, onCopy }: {
                           <Button size="sm" onClick={() => onReview({ shareId: share.id, status: "APPROVED" })}>
                             <CheckCircle className="w-3.5 h-3.5" /> Approve
                           </Button>
-                          <Button size="sm" variant="danger" onClick={() => onReview({ shareId: share.id, status: "REJECTED" })}>
+                          <Button size="sm" variant="destructive" onClick={() => onReview({ shareId: share.id, status: "REJECTED" })}>
                             <XCircle className="w-3.5 h-3.5" /> Reject
                           </Button>
                         </div>
