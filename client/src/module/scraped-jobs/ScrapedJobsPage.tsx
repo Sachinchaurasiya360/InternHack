@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Search,
   ChevronDown,
@@ -104,7 +104,7 @@ export default function ScrapedJobsPage() {
       const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData) => previousData,
     retry: 1,
   });
 

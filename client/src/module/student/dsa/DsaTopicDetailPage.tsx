@@ -5,7 +5,6 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
-  keepPreviousData,
 } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -79,7 +78,7 @@ export default function DsaTopicDetailPage() {
         .then((r) => r.data);
     },
     enabled: !!slug,
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData) => previousData,
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 

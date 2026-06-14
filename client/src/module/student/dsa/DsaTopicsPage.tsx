@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -225,7 +225,7 @@ const clearFilters = () => {
       const params = qs.toString() ? `?${qs.toString()}` : "";
       return api.get<DsaTopicsResponse>(`/dsa/topics${params}`).then((r) => r.data);
     },
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData) => previousData,
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
   const topics = topicsData?.topics;

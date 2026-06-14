@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -35,7 +35,7 @@ export default function DsaPatternsPage() {
     queryKey: queryKeys.dsa.pattern(selectedPattern!, page),
     queryFn: () => api.get<DsaPaginatedProblems>(`/dsa/patterns/${selectedPattern}?page=${page}&limit=50`).then((r) => r.data),
     enabled: !!selectedPattern,
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData) => previousData,
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 

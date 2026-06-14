@@ -1,6 +1,6 @@
 import { fadeUp, stagger } from "@/lib/motion-variants";
 import { useState } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
 import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
@@ -122,7 +122,7 @@ export default function CompanyDetailPage() {
     queryKey: [...queryKeys.companies.reviews(slug!), sortBy],
     queryFn: () => api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data),
     enabled: !!slug,
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData) => previousData,
     staleTime: 5 * 60 * 1000,
   });
 
