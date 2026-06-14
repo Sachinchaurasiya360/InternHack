@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import {
   FileText,
@@ -23,6 +23,8 @@ import type { Pagination } from "../../../lib/types";
 import type { BlogPost } from "@/lib/types";
 import { CATEGORY_LABELS } from "../../blog/components/BlogCard";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 type StatusFilter = "ALL" | "DRAFT" | "PUBLISHED";
 
@@ -35,6 +37,7 @@ export default function AdminBlogPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const limit = 10;
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   // Debounce search
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
@@ -58,7 +61,7 @@ export default function AdminBlogPage() {
       const res = await api.get("/blog/admin/posts", { params });
       return res.data;
     },
-    placeholderData: keepPreviousData,
+    placeholderData: (prev: { posts: BlogPost[]; pagination: Pagination } | undefined) => prev,
   });
 
   const posts = data?.posts ?? [];
@@ -93,8 +96,11 @@ export default function AdminBlogPage() {
   });
 
   const handleDelete = (id: number, title: string) => {
-    if (!confirm(`Delete "${title}"? This action cannot be undone.`)) return;
-    deleteMutation.mutate(id);
+    showConfirm({
+      title: "Delete Blog Post",
+      description: `Are you sure you want to delete the post "${title}"? This action cannot be undone.`,
+      onConfirm: () => deleteMutation.mutate(id),
+    });
   };
 
   const formatDate = (dateStr: string) =>
@@ -277,6 +283,7 @@ export default function AdminBlogPage() {
           showingInfo={{ total: pagination.total, limit: pagination.limit }}
         />
       )}
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

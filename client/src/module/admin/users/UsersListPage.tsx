@@ -7,6 +7,8 @@ import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import type { AdminUser, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 export default function UsersListPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -14,6 +16,7 @@ export default function UsersListPage() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const fetchUsers = async (page = 1) => {
     setLoading(true);
@@ -50,16 +53,21 @@ export default function UsersListPage() {
     }
   };
 
-  const deleteUser = async (userId: number, userName: string) => {
-    if (!confirm(`Are you sure you want to delete ${userName}? This cannot be undone.`)) return;
-    try {
-      await api.delete(`/admin/users/${userId}`);
-      toast.success("User deleted");
-      fetchUsers(pagination.page);
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      toast.error(error.response?.data?.message || "Failed to delete user");
-    }
+  const deleteUser = (userId: number, userName: string) => {
+    showConfirm({
+      title: "Delete User",
+      description: `Are you sure you want to delete ${userName}? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/admin/users/${userId}`);
+          toast.success("User deleted");
+          fetchUsers(pagination.page);
+        } catch (err: unknown) {
+          const error = err as { response?: { data?: { message?: string } } };
+          toast.error(error.response?.data?.message || "Failed to delete user");
+        }
+      }
+    });
   };
 
   return (
@@ -171,6 +179,7 @@ export default function UsersListPage() {
           showingInfo={{ total: pagination.total, limit: pagination.limit }}
         />
       </div>
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

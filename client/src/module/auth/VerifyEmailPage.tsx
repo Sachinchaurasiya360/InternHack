@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
 import toast from "@/components/ui/toast";
+import { ArrowLeft } from "lucide-react";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { Navbar } from "../../components/Navbar";
@@ -131,6 +132,12 @@ export default function VerifyEmailPage() {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 mb-6 no-underline transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
+          </Link>
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold mt-6 text-gray-900 dark:text-white">Verify Your Email</h1>
             <p className="text-gray-500 dark:text-gray-500 mt-1">

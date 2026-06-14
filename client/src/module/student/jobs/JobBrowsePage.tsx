@@ -3,7 +3,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { LoadingSpinner } from "../../../components/shared/LoadingSpinner";
 import {
   Search,
   MapPin,
@@ -195,7 +196,7 @@ export default function JobBrowsePage() {
       return res.data as { jobs: Job[]; pagination: Pagination };
     },
     staleTime: 60_000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const { data: extData } = useQuery({
@@ -223,7 +224,7 @@ export default function JobBrowsePage() {
       };
     },
     staleTime: 60_000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const { data: scrData } = useQuery({
@@ -246,7 +247,7 @@ export default function JobBrowsePage() {
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
     staleTime: 60_000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const { data: savedIds } = useQuery({
@@ -722,7 +723,7 @@ export default function JobBrowsePage() {
         {isLoading ? (
           <div className="py-20 text-center">
             <div className="inline-flex flex-col items-center gap-3">
-              <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+              <LoadingSpinner size="md" />
               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 loading roles...
               </span>
@@ -760,7 +761,7 @@ export default function JobBrowsePage() {
             {isLoading ? (
               <div className="py-20 text-center">
                 <div className="inline-flex flex-col items-center gap-3">
-                  <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+                  <LoadingSpinner size="md" />
                   <span className="text-xs font-mono uppercase tracking-widest text-stone-500">loading roles...</span>
                 </div>
               </div>
@@ -770,7 +771,7 @@ export default function JobBrowsePage() {
                 <div className="relative">
                   {isFetching && (
                     <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
-                      <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+                      <LoadingSpinner size="md" />
                     </div>
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

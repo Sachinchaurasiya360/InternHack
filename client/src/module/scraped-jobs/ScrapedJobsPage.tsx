@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
 import {
   Search,
   ChevronDown,
@@ -104,7 +105,7 @@ export default function ScrapedJobsPage() {
       const res = await api.get(`/scraped-jobs?${params}`);
       return res.data as { jobs: ScrapedJob[]; pagination: Pagination };
     },
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
     retry: 1,
   });
 
@@ -232,7 +233,7 @@ export default function ScrapedJobsPage() {
           </div>
         ) : isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+            <LoadingSpinner size="lg" />
           </div>
         ) : jobs.length === 0 ? (
           <>
@@ -249,7 +250,7 @@ export default function ScrapedJobsPage() {
             <div className="relative">
               {isFetching && !isLoading && (
                 <div className="absolute inset-0 bg-stone-50/70 dark:bg-stone-950/70 z-10 flex items-center justify-center rounded-md">
-                  <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+                  <LoadingSpinner size="md" />
                 </div>
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

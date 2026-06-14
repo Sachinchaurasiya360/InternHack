@@ -11,6 +11,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { Job } from "../../../lib/types";
 import { useSaveJob } from "../../../hooks/useSaveJob";
 import { CARD_BASE } from "../../../lib/card-styles";
+import { LoadingSpinner } from "../../../components/shared/LoadingSpinner";
 export default function SavedJobsPage() {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.savedJobs.list(),
@@ -65,7 +66,7 @@ export default function SavedJobsPage() {
       {isLoading ? (
         <div className="py-20 text-center">
           <div className="inline-flex flex-col items-center gap-3">
-            <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+            <LoadingSpinner size="md" />
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
               loading saved jobs...
             </span>

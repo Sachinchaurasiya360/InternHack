@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { DsaExecutionResult } from "../../../../lib/types";
 import { Button } from "../../../../components/ui/button";
+import { LoadingSpinner } from "../../../../components/shared/LoadingSpinner";
 
 interface Props {
   result: DsaExecutionResult | null;
@@ -22,7 +23,7 @@ export function DsaTestResults({ result, isRunning }: Props) {
   if (isRunning) {
     return (
       <div className="p-6 flex flex-col items-center justify-center gap-3 text-gray-400">
-        <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner size="lg" variant="emerald" />
         <p className="text-sm font-medium">
           Running code against test cases...
         </p>

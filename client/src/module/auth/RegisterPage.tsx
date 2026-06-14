@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, ArrowRight, Check, X } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, ArrowLeft, Check, X } from "lucide-react";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { SEO } from "../../components/SEO";
@@ -351,6 +351,12 @@ export default function RegisterPage() {
           transition={{ duration: 0.4 }}
           className="w-full max-w-md"
         >
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 mb-5 no-underline transition-colors animate-fade-in"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
+          </Link>
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-5">
             <span className="h-1.5 w-1.5 bg-lime-400" />
             create account

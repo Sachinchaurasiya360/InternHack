@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   BookOpen,
   ChevronLeft,
@@ -97,7 +97,7 @@ export default function BlogListPage() {
       return res.data;
     },
 
-    placeholderData: keepPreviousData,
+    placeholderData: (prev: { posts: BlogPost[]; pagination: Pagination } | undefined) => prev,
   });
 
   // Featured posts

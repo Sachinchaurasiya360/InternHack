@@ -16,6 +16,8 @@ import toast from "../../../components/ui/toast";
 import { queryKeys } from "../../../lib/query-keys";
 import api from "../../../lib/axios";
 import type { InterviewExperience, InterviewExperienceCompany, InterviewListResponse } from "../../../lib/types";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 import {
   deleteExperience,
   listExperiences,
@@ -35,6 +37,7 @@ export default function AdminInterviewsPage() {
   const [search, setSearch] = useState("");
   const [preview, setPreview] = useState<InterviewExperience | null>(null);
   const [linkTarget, setLinkTarget] = useState<InterviewExperience | null>(null);
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const queryParams = useMemo(
     () => ({
@@ -258,8 +261,11 @@ export default function AdminInterviewsPage() {
                         ) : null}
                         <button
                           onClick={() => {
-                            if (confirm("Delete this experience permanently?"))
-                              deleteMutation.mutate(e.id);
+                            showConfirm({
+                              title: "Delete Interview Experience",
+                              description: "Are you sure you want to delete this interview experience permanently? This action cannot be undone.",
+                              onConfirm: () => deleteMutation.mutate(e.id),
+                            });
                           }}
                           className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded transition-colors"
                           title="Delete"
@@ -323,6 +329,7 @@ export default function AdminInterviewsPage() {
           }}
         />
       ) : null}
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

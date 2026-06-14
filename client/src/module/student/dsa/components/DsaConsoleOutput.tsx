@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import type { DsaExecutionResult } from "../../../../lib/types";
+import { LoadingSpinner } from "../../../../components/shared/LoadingSpinner";
 
 interface Props {
   result: DsaExecutionResult | null;
@@ -10,7 +11,7 @@ export function DsaConsoleOutput({ result, isRunning }: Props) {
   if (isRunning) {
     return (
       <div className="p-6 flex flex-col items-center justify-center gap-3 text-gray-400">
-        <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner size="lg" variant="emerald" />
         <p className="text-sm font-medium">Executing...</p>
       </div>
     );

@@ -4,6 +4,8 @@ import { Loader2, Send, Mail, FlaskConical } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 type RoleFilter = "ALL" | "STUDENT" | "RECRUITER" | "ADMIN";
 type PlanFilter = "ALL" | "FREE" | "MONTHLY" | "YEARLY";
@@ -16,6 +18,7 @@ export default function AdminBroadcastEmailPage() {
   const [plan, setPlan] = useState<PlanFilter>("ALL");
   const [verified, setVerified] = useState<VerifiedFilter>("ALL");
   const [testEmail, setTestEmail] = useState("");
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const buildPayload = (asTest: boolean) => ({
     subject,
@@ -120,7 +123,13 @@ export default function AdminBroadcastEmailPage() {
 
           <button
             onClick={() => {
-              if (confirm("Send this email to all matching users?")) sendMutation.mutate(false);
+              showConfirm({
+                title: "Send Broadcast Email",
+                description: "Are you sure you want to send this email to all matching users? This action cannot be undone.",
+                confirmLabel: "Send",
+                confirmVariant: "primary",
+                onConfirm: () => sendMutation.mutate(false),
+              });
             }}
             disabled={!canSend}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50"
@@ -130,6 +139,7 @@ export default function AdminBroadcastEmailPage() {
           </button>
         </div>
       </div>
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

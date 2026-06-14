@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { LoadingSpinner } from "../../../components/shared/LoadingSpinner";
 import { motion } from "framer-motion";
 import { MapPin, IndianRupee, Clock, ArrowLeft, Briefcase } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
@@ -87,10 +88,9 @@ export default function JobLandingPage() {
             ? `${meta.totalJobs} open position${meta.totalJobs !== 1 ? "s" : ""}`
             : "Loading..."}
         </p>
-
         {isLoading && (
           <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <LoadingSpinner size="lg" variant="indigo" />
           </div>
         )}
 

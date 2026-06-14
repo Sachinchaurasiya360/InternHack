@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Link, useSearchParams, useLocation } from "react-router";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { LoadingSpinner } from "../../../components/shared/LoadingSpinner";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -146,7 +147,7 @@ function Spinner() {
   return (
     <div className="py-20 text-center">
       <div className="inline-flex flex-col items-center gap-3">
-        <div className="w-6 h-6 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
+        <LoadingSpinner size="md" />
         <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
           loading...
         </span>
@@ -611,7 +612,7 @@ export default function CompanyListPage() {
     queryKey: queryKeys.companies.list(companyQueryParams),
     queryFn: () => api.get("/companies", { params: companyQueryParams }).then((r) => r.data),
     staleTime: 10 * 60 * 1000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const companies = companiesData?.companies ?? [];
@@ -650,7 +651,7 @@ export default function CompanyListPage() {
     queryFn: () => api.get("/yc/companies", { params: ycQueryParams }).then((r) => r.data),
     enabled: activeTab === "yc",
     staleTime: 60 * 60 * 1000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const ycCompanies = ycData?.companies ?? [];
@@ -677,7 +678,7 @@ export default function CompanyListPage() {
     queryFn: () => api.get("/professors", { params: profQueryParams }).then((r) => r.data),
     enabled: activeTab === "professors",
     staleTime: 60 * 60 * 1000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
   });
 
   const professors = profData?.professors ?? [];

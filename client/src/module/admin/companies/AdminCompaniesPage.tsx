@@ -8,11 +8,15 @@ import api, { SERVER_URL } from "../../../lib/axios";
 import type { Company, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
+
 export default function AdminCompaniesPage() {
   const [companies, setCompanies] = useState<(Company & { createdBy?: { name: string; email: string }; _count?: { reviews: number; contacts: number } })[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const fetchCompanies = useCallback(async () => {
     setLoading(true);
@@ -40,15 +44,20 @@ export default function AdminCompaniesPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this company?")) return;
-    try {
-      await api.delete(`/admin/companies/${id}`);
-      toast.success("Company deleted");
-      fetchCompanies();
-    } catch {
-      toast.error("Failed to delete company");
-    }
+  const handleDelete = (id: number) => {
+    showConfirm({
+      title: "Delete Company",
+      description: "Are you sure you want to delete this company? This action cannot be undone.",
+      onConfirm: async () => {
+        try {
+          await api.delete(`/admin/companies/${id}`);
+          toast.success("Company deleted");
+          fetchCompanies();
+        } catch {
+          toast.error("Failed to delete company");
+        }
+      }
+    });
   };
 
   return (
@@ -129,6 +138,7 @@ export default function AdminCompaniesPage() {
           onPageChange={setPage}
         />
       )}
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }
