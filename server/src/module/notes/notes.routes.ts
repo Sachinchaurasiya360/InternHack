@@ -20,7 +20,7 @@ notesRouter.get(
   "/",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("CODE_RUN"),
+  usageLimit("JOB_APPLICATION"),
   validateQuery(notesQuerySchema),
   (req, res, next) => notesController.getNotes(req, res, next)
 );
@@ -29,7 +29,7 @@ notesRouter.get(
   "/:contentType/:contentId",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("CODE_RUN"),
+  usageLimit("JOB_APPLICATION"),
   validateParams(noteParamSchema),
   (req, res, next) => notesController.getNote(req, res, next)
 );
@@ -38,7 +38,7 @@ notesRouter.put(
   "/:contentType/:contentId",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("CODE_RUN"),
+  usageLimit("JOB_APPLICATION"),
   validateParams(noteParamSchema),
   validateBody(saveNoteSchema),
   (req, res, next) => notesController.saveNote(req, res, next)
@@ -48,7 +48,7 @@ notesRouter.delete(
   "/:contentType/:contentId",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("CODE_RUN"),
+  usageLimit("JOB_APPLICATION"),
   validateParams(noteParamSchema),
   (req, res, next) => notesController.deleteNote(req, res, next)
 );

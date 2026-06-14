@@ -24,6 +24,7 @@ export const NotesPanel = React.memo(function NotesPanel({
   const initialLoadRef = useRef(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const noteRef = useRef(note);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     noteRef.current = note;
@@ -53,6 +54,7 @@ export const NotesPanel = React.memo(function NotesPanel({
               : undefined;
           if (status === 404) {
             setNote("");
+            initialLoadRef.current = false;
           } else {
             setError("Failed to load notes.");
           }
@@ -74,18 +76,43 @@ export const NotesPanel = React.memo(function NotesPanel({
   }, [contentType, contentId]);
 
   const handleSave = useCallback(async (valueToSave: string) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setSaving(true);
     setSaveStatus("saving");
     setError(null);
     try {
-      await api.put(`/notes/${contentType}/${contentId}`, { note: valueToSave });
-      setSaveStatus("saved");
+      await api.put(
+        `/notes/${contentType}/${contentId}`,
+        { note: valueToSave },
+        { signal: controller.signal }
+      );
+      if (abortControllerRef.current === controller) {
+        setSaveStatus("saved");
+      }
     } catch (err: unknown) {
-      setSaveStatus("error");
-      setError("Failed to save note.");
-      toast.error("Failed to save note.");
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "name" in err &&
+        ((err as any).name === "CanceledError" || (err as any).name === "AbortError")
+      ) {
+        return;
+      }
+      if (abortControllerRef.current === controller) {
+        setSaveStatus("error");
+        setError("Failed to save note.");
+        toast.error("Failed to save note.");
+      }
     } finally {
-      setSaving(false);
+      if (abortControllerRef.current === controller) {
+        setSaving(false);
+      }
     }
   }, [contentType, contentId]);
 
