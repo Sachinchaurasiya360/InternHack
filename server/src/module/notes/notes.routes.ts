@@ -2,7 +2,6 @@ import { Router } from "express";
 import { NotesController } from "./notes.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
-import { usageLimit } from "../../middleware/usage-limit.middleware.js";
 import {
   noteParamSchema,
   saveNoteSchema,
@@ -20,7 +19,6 @@ notesRouter.get(
   "/",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("JOB_APPLICATION"),
   validateQuery(notesQuerySchema),
   (req, res, next) => notesController.getNotes(req, res, next)
 );
@@ -29,7 +27,6 @@ notesRouter.get(
   "/:contentType/:contentId",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("JOB_APPLICATION"),
   validateParams(noteParamSchema),
   (req, res, next) => notesController.getNote(req, res, next)
 );
@@ -38,7 +35,6 @@ notesRouter.put(
   "/:contentType/:contentId",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("JOB_APPLICATION"),
   validateParams(noteParamSchema),
   validateBody(saveNoteSchema),
   (req, res, next) => notesController.saveNote(req, res, next)
@@ -48,7 +44,6 @@ notesRouter.delete(
   "/:contentType/:contentId",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("JOB_APPLICATION"),
   validateParams(noteParamSchema),
   (req, res, next) => notesController.deleteNote(req, res, next)
 );
