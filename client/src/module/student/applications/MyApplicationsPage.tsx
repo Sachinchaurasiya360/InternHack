@@ -1,26 +1,19 @@
-import { formatDate } from "../../../lib/date-utils";
-import { FilterChip } from "../../../components/ui/FilterChip";
 import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
-import { BadgeProgressWidget } from "../opensource/components/BadgeProgressWidget";
 import { Link } from "react-router";
-import { useClearFilters } from "../../../hooks/useClearFilters";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
 import api from "../../../lib/axios";
-import { getStatusBorderColor } from "../../../lib/application-colors";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application, ExternalApplication } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
-import { EmptyState } from "../../../components/ui/EmptyState";
 import { ApplicationNotes } from "./ApplicationNotes";
 import toast from "@/components/ui/toast";
 import { usePaginationReset } from "../../../hooks/usePaginationReset";
-import type { PendingDelete } from "@/lib/types/actions.types";
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -31,8 +24,24 @@ function Kicker({ children }: { children: React.ReactNode }) {
   );
 }
 
-import { CompanyMark } from "../../../components/ui/CompanyMark";
-
+function statusClass(status: string) {
+  switch (status) {
+    case "APPLIED":
+      return "text-stone-900 dark:text-stone-50 border-stone-300 dark:border-white/20";
+    case "IN_PROGRESS":
+      return "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60";
+    case "SHORTLISTED":
+      return "text-lime-700 dark:text-lime-400 border-lime-400";
+    case "HIRED":
+      return "text-lime-700 dark:text-lime-400 border-lime-400 bg-lime-50 dark:bg-lime-950/40";
+    case "REJECTED":
+      return "text-red-600 dark:text-red-400 border-red-300 dark:border-red-900/60";
+    case "WITHDRAWN":
+      return "text-stone-400 border-stone-200 dark:border-white/10";
+    default:
+      return "text-stone-500 border-stone-200 dark:border-white/10";
+  }
+}
 
 const ApplicationCard = React.memo(function ApplicationCard({
   app,
@@ -68,7 +77,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
               </div>
             </div>
             <span
-              className={`inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border rounded-md ${getStatusBorderColor(app.status)}`}
+              className={`inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border rounded-md ${statusClass(app.status)}`}
             >
               {app.status.replace("_", " ")}
             </span>
@@ -81,7 +90,11 @@ const ApplicationCard = React.memo(function ApplicationCard({
           <span className="flex items-center gap-1.5">
             <Clock className="w-3 h-3" />
             Applied{" "}
-            {formatDate(app.createdAt)}
+            {new Date(app.createdAt).toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
           </span>
           {totalRounds > 0 && (
             <span className="flex items-center gap-1.5">
@@ -168,7 +181,11 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
         <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
           <Clock className="w-3 h-3" />
           Applied{" "}
-          {formatDate(app.createdAt)}
+          {new Date(app.createdAt).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -225,26 +242,26 @@ function sortApplications(
   });
 }
 
+type PendingDelete =
+  | { kind: "internal"; id: number }
+  | { kind: "external"; id: number };
 
 export default function MyApplicationsPage() {
   const queryClient = useQueryClient();
-  const { inputValue: search, setInputValue: setSearch, debouncedValue: debouncedSearch } =
-    useSearchWithDebounce({ delay: 200 });
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null);
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
-  const clearFilters = useClearFilters([
-    () => setSearch(""),
-    () => setStatusFilter("ALL"),
-    () => setPage(1),
-  ]);
-
-  usePaginationReset(setPage, [debouncedSearch, statusFilter]);
   useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, statusFilter]);
+    const t = setTimeout(() => setDebouncedSearch(search), 200);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Sync page when filters change
+  usePaginationReset(setPage, [debouncedSearch, statusFilter]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -273,7 +290,7 @@ export default function MyApplicationsPage() {
   }, [applications, debouncedSearch, sortOption, statusFilter]);
 
   const filteredExternal = useMemo(() => {
-    const base = !debouncedSearch.trim()
+    let base = !debouncedSearch.trim()
       ? externalApplications
       : externalApplications.filter(
         (a) =>
@@ -281,19 +298,23 @@ export default function MyApplicationsPage() {
           a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
 
+    if (statusFilter !== "ALL") {
+      base = base.filter((a) => a.status === statusFilter);
+    }
+
     return [...base].sort((a, b) => {
       if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
       return 0;
     });
-  }, [externalApplications, debouncedSearch, sortOption]);
+  }, [externalApplications, debouncedSearch, sortOption, statusFilter]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;
 
   const deleteMutation = useMutation({
-    mutationFn: async (item: NonNullable<PendingDelete>) => {
+    mutationFn: async (item: PendingDelete) => {
       if (item.kind === "internal") {
         await api.delete(`/student/applications/${item.id}`);
       } else {
@@ -425,12 +446,19 @@ export default function MyApplicationsPage() {
       {/* Status Filter Tabs */}
       <div className="flex flex-wrap gap-2 mb-8">
         {STATUS_TABS.map((tab) => (
-          <FilterChip
+          <button
             key={tab}
-            label={tab.replace("_", " ")}
-            active={statusFilter === tab}
-            onClick={() => { setStatusFilter(tab); setPage(1); }}
-          />
+            onClick={() => {
+              setStatusFilter(tab);
+            }}
+            className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-all ${
+              statusFilter === tab
+                ? "bg-lime-400 text-stone-900 border-lime-400"
+                : "border-stone-200 dark:border-white/10 text-stone-500 hover:border-stone-400 dark:hover:border-white/30"
+            }`}
+          >
+            {tab.replace("_", " ")}
+          </button>
         ))}
       </div>
 
@@ -452,14 +480,34 @@ export default function MyApplicationsPage() {
         </select>
       </div>
 
+      <div className="mb-5 flex flex-wrap gap-2">
+  {[
+    "ALL",
+    "APPLIED",
+    "IN_PROGRESS",
+    "SHORTLISTED",
+    "HIRED",
+    "REJECTED",
+    "WITHDRAWN",
+  ].map((status) => (
+    <button
+      key={status}
+      onClick={() => {
+        setStatusFilter(status);
+      }}
+      className={`px-3 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
+        statusFilter === status
+          ? "bg-lime-400 text-stone-900 border-lime-400"
+          : "border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30"
+      }`}
+    >
+      {status.replace("_", " ")}
+    </button>
+  ))}
+</div>
       {/* Search */}
 
       
-      <div className="mb-6">
-        <BadgeProgressWidget />
-      </div>
-      
-
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
@@ -475,7 +523,10 @@ export default function MyApplicationsPage() {
       {isFiltered && (
         <div className="mb-6">
           <button
-            onClick={clearFilters}
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("ALL");
+            }}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
           >
             <X className="w-3 h-3" /> clear all filters
@@ -503,30 +554,28 @@ export default function MyApplicationsPage() {
           </Link>
         </div>
       ) : filtered.length === 0 && filteredExternal.length === 0 ? (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <EmptyState
-            icon={<Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
-            title="No applications match your current filters"
-            action={
-              <button
-                type="button"
-                onClick={clearFilters}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer mt-2"
-              >
-                Clear all filters
-              </button>
-            }
-          />
-        </motion.div>
+        <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
+          <Search className="w-8 h-8 text-stone-400 mx-auto mb-3" />
+          <p className="text-sm text-stone-500">No applications match your current filters.</p>
+          <button
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("ALL");
+            }}
+            className="mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 bg-transparent border-0 cursor-pointer"
+          >
+            Clear all filters
+          </button>
+        </div>
       ) : (
         (() => {
           const combined: Array<
             | { kind: "internal"; app: Application }
             | { kind: "external"; app: ExternalApplication }
           > = [
-            ...filtered.map((app) => ({ kind: "internal" as const, app })),
-            ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
-          ];
+              ...filtered.map((app) => ({ kind: "internal" as const, app })),
+              ...filteredExternal.map((app) => ({ kind: "external" as const, app })),
+            ];
           const totalResults = combined.length;
           const totalPages = Math.max(1, Math.ceil(totalResults / PAGE_SIZE));
           const safePage = Math.min(page, totalPages);

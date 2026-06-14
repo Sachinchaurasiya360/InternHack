@@ -131,16 +131,10 @@ export default function SignalsPage() {
     setSearch(searchInput.trim());
   };
 
-  const clearFilters = () => {
-    setSearch("");
-    setSearchInput("");
-    setSource("");
-  };
   const clearFilters = useClearFilters([
     () => setSearch(""),
     () => setSearchInput(""),
     () => setSource(""),
-    () => setPage(1),
   ]);
 
   const changeKind = (next: SignalKind) => {

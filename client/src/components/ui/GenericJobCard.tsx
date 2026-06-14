@@ -1,34 +1,14 @@
 import React from "react";
 import { Link } from "react-router";
 import { MapPin, IndianRupee, Wallet, ArrowUpRight, Bookmark } from "lucide-react";
+import { CompanyMark } from "./CompanyMark";
+import { MetaChip } from "./MetaChip";
+import { TagList } from "./TagList";
 
 const SALARY_HAS_CURRENCY = /[₹$€£¥]|\b(USD|EUR|GBP|INR|JPY|CAD|AUD)\b/i;
 
 const cardBase =
   "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
-
-export function CompanyMark({ label }: { label: string }) {
-  return (
-    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
-
-export function MetaChip({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-      <span className="text-stone-400">{icon}</span>
-      {children}
-    </span>
-  );
-}
 
 export interface GenericJobCardProps {
   title: string;
@@ -90,7 +70,7 @@ export const GenericJobCard = React.memo(function GenericJobCard({
 
       {/* Header row */}
       <div className={`flex items-start gap-3 mb-3 ${badge ? "pr-20" : ""}`}>
-        <CompanyMark label={company || "?"} />
+        <CompanyMark name={company || "?"} />
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
             {title || "Open Role"}
@@ -114,28 +94,19 @@ export const GenericJobCard = React.memo(function GenericJobCard({
       )}
 
       {/* Meta chips (location, salary, or custom) */}
-      {metaChips ? (
-        <div className="flex flex-wrap gap-1.5 mb-4">{metaChips}</div>
-      ) : (
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{location}</MetaChip>}
-          {salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{salary}</MetaChip>}
-        </div>
-      )}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {metaChips ? (
+          metaChips
+        ) : (
+          <>
+            {location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{location}</MetaChip>}
+            {salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{salary}</MetaChip>}
+          </>
+        )}
+      </div>
 
       {/* Tags */}
-      {tags && tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      <TagList tags={tags} max={3} />
 
       {/* Save Button (Optional) */}
       {onSaveToggle !== undefined && (
