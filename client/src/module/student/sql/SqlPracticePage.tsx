@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, ArrowRight, Terminal, BookOpen, TrendingUp, Lock } from "lucide-react";
 import { sections, exercises } from "./data/exercises";
 import { SEO } from "../../../components/SEO";
-import { canonicalUrl } from "../../../lib/seo.utils";
+import { canonicalUrl,SITE_URL } from "../../../lib/seo.utils";
+import { courseSchema, breadcrumbSchema, faqSchema } from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -90,6 +91,23 @@ export default function SqlPracticePage() {
         description="Practice SQL queries with interactive exercises. Learn SELECT, JOIN, GROUP BY, subqueries, and more with an in-browser SQL engine."
         keywords="SQL practice, SQL exercises, learn SQL, SQL queries, SQL tutorial, interactive SQL"
         canonicalUrl={canonicalUrl("/learn/sql")}
+        structuredData={[
+          courseSchema({
+            name: "SQL Practice — Interactive SQL Exercises | InternHack",
+            description: "Practice SQL queries with interactive exercises. Learn SELECT, JOIN, GROUP BY, subqueries, and more with an in-browser SQL engine.",
+            url: `${SITE_URL}/learn/sql`,
+          }),
+          breadcrumbSchema([
+            { name: "Home", url: SITE_URL },
+            { name: "Learn", url: `${SITE_URL}/learn` },
+            { name: "SQL", url: `${SITE_URL}/learn/sql` },
+          ]),
+          faqSchema([
+            { question: "Is this SQL course free?", answer: "Yes, the SQL course on InternHack is completely free with no sign-up required." },
+            { question: "What will I learn in this SQL course?", answer: "You will learn SELECT queries, JOINs, GROUP BY, subqueries, indexes, and basic database design principles." },
+            { question: "Which database does this SQL course use?", answer: "The course covers standard SQL applicable to MySQL, PostgreSQL, and SQLite." },
+          ]),
+        ]}
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8">

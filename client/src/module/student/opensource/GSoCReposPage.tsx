@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, type ReactNode } from "react";
+
+import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,6 +29,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
+import { markLearningPathMilestone } from "./learning-paths.data";
 
 const WISHLIST_KEY = "gsoc_wishlist";
 
@@ -41,7 +43,7 @@ function useWishlist() {
     }
   });
 
-  const toggle = (id: number) => {
+  const toggle = useCallback((id: number) => {
     setWishlist((prev) => {
       const next = prev.includes(id)
         ? prev.filter((x) => x !== id)
@@ -49,9 +51,9 @@ function useWishlist() {
       localStorage.setItem(WISHLIST_KEY, JSON.stringify(next));
       return next;
     });
-  };
+  }, []);
 
-  const has = (id: number) => wishlist.includes(id);
+  const has = useCallback((id: number) => wishlist.includes(id), [wishlist]);
   return { wishlist, toggle, has };
 }
 
@@ -187,23 +189,120 @@ function FilterDropdown({
   );
 }
 
+function SearchableFilterDropdown({
+  label,
+  icon,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  icon: ReactNode;
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const filtered = options.filter((opt) =>
+    opt.toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    <div className="relative group">
+      <button
+        type="button"
+        className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-stone-300 bg-white px-3 text-xs font-mono uppercase tracking-widest text-stone-600 transition-colors hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
+      >
+        <span className="text-stone-400">{icon}</span>
+        <span>{label}</span>
+        <span className="max-w-28 truncate font-bold normal-case tracking-normal text-stone-900 dark:text-stone-50">
+          {value}
+        </span>
+        <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+      </button>
+      <div className="absolute left-0 top-full z-20 mt-1 hidden max-h-96 min-w-64 flex-col rounded-md border border-stone-200 bg-white p-1 shadow-xl group-hover:flex dark:border-white/10 dark:bg-stone-900">
+        <div className="sticky top-0 z-10 border-b border-stone-100 bg-white p-2 dark:border-white/5 dark:bg-stone-900">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-stone-400" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={`Search ${label}...`}
+              className="w-full rounded bg-stone-100 py-1.5 pl-7 pr-7 text-xs outline-none focus:ring-1 focus:ring-lime-400 dark:bg-white/5"
+              autoFocus
+            />
+            {query && (
+              <button
+                onClick={() => setQuery("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="overflow-y-auto max-h-64 flex-1 p-1">
+          {filtered.length === 0 ? (
+            <div className="px-3 py-4 text-center">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                No matches found
+              </p>
+            </div>
+          ) : (
+            filtered.map((opt) => {
+              const active = opt === value;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => {
+                    onChange(opt);
+                    setQuery("");
+                  }}
+                  className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${active
+                      ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
+                      : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
+                    }`}
+                >
+                  <span className="truncate">{opt}</span>
+                  {active && <span className="h-1 w-1 bg-lime-400" />}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }) => {
   const currentYear = new Date().getFullYear();
   const yearsRange = Array.from({ length: currentYear - 2015 }, (_, i) => 2016 + i);
 
   return (
-    <div className="mb-4 flex items-center gap-1" aria-label={`GSoC Participation History (2016-${currentYear})`}>
+    <div
+      className="mb-4 flex items-center gap-1"
+      aria-label={`GSoC Participation History (2016-${currentYear})`}
+    >
       {yearsRange.map((year) => {
         const participated = participatedYears.includes(year);
         return (
           <div
             key={year}
-            title={participated ? `${year}: Participated` : `${year}: Did not participate`}
-            className={`h-1.5 w-1.5 rounded-sm transition-transform duration-200 hover:scale-125 cursor-help ${
+            title={
               participated
+                ? `${year}: Participated`
+                : `${year}: Did not participate`
+            }
+            className={`h-1.5 w-1.5 cursor-help rounded-sm transition-transform duration-200 hover:scale-125 ${participated
                 ? "bg-lime-500"
                 : "bg-stone-200 dark:bg-stone-700"
-            }`}
+              }`}
           />
         );
       })}
@@ -211,21 +310,37 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
   );
 };
 
-function GSoCOrgCard({
+const GSoCOrgCard = memo(function GSoCOrgCard({
   org,
-  onClick,
+  onSelect,
   wishlisted,
   onWishlistToggle,
 }: {
   org: GSoCOrganization;
-  onClick: () => void;
+  onSelect: (org: GSoCOrganization) => void;
   wishlisted: boolean;
-  onWishlistToggle: (e: React.MouseEvent) => void;
+  onWishlistToggle: (orgId: number, event: React.MouseEvent) => void;
 }) {
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
+  const handleSelect = () => onSelect(org);
+  const handleWishlistClick = (event: React.MouseEvent) => onWishlistToggle(org.id, event);
 
   return (
-    <div role="button" tabIndex={0} onClick={onClick} onKeyDown={(e) => e.key === "Enter" && onClick()} className={cardBase}>
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleSelect}
+      onKeyDown={(e) => {
+        const isSpace = e.key === " " || e.key === "Spacebar" || e.code === "Space";
+        if (isSpace) {
+          e.preventDefault();
+        }
+        if (e.key === "Enter" || isSpace) {
+          handleSelect();
+        }
+      }}
+      className={cardBase}
+    >
       <div className="mb-3 flex items-start gap-3">
         <OrgMark org={org} />
         <div className="min-w-0 flex-1">
@@ -268,7 +383,7 @@ function GSoCOrgCard({
 
       <button
         type="button"
-        onClick={onWishlistToggle}
+        onClick={handleWishlistClick}
         className="mb-3 flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest transition-colors"
         aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
       >
@@ -293,7 +408,7 @@ function GSoCOrgCard({
       </div>
     </div>
   );
-}
+});
 
 interface GSoCOrgModalProps {
   org: GSoCOrganization;
@@ -597,6 +712,10 @@ function GSoCOrgModal({
 }
 
 export default function GSoCReposPage() {
+  useEffect(() => {
+    markLearningPathMilestone("gsoc-orgs");
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   // 1. Initialize state strictly from URL params
@@ -619,7 +738,7 @@ export default function GSoCReposPage() {
   const { wishlist, toggle, has } = useWishlist();
   const [showWishlist, setShowWishlist] = useState(false);
 
-  
+
   // ---> CHANGED TO useRef TO FIX STALE CLOSURES <---
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const limit = 18;
@@ -627,13 +746,26 @@ export default function GSoCReposPage() {
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
     };
+  }, []);
+
+  const clearPendingSearchTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
   }, []);
 
   // FIX 2: Functional updater.
   // This ensures that delayed debounced calls always use the freshest URL state.
   const updateFilter = (key: string, value: string) => {
+    if (key === "q") {
+      clearPendingSearchTimer();
+    }
     setSearchParams(
       (prev) => {
         const newParams = new URLSearchParams(prev);
@@ -652,18 +784,31 @@ export default function GSoCReposPage() {
   // ---> UPDATED TO USE timerRef <---
   const handleSearch = (value: string) => {
     setSearch(value);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    
+    clearPendingSearchTimer();
+
     timerRef.current = setTimeout(() => {
       updateFilter("q", value);
     }, 400);
   };
 
   const clearFilters = () => {
+    clearPendingSearchTimer();
     setSearch("");
     setSearchParams({}, { replace: true });
     setPage(1);
   };
+
+  const handleOrgClick = useCallback((org: GSoCOrganization) => {
+    setSelectedOrg(org);
+  }, [setSelectedOrg]);
+
+  const handleWishlistToggle = useCallback(
+    (orgId: number, event: React.MouseEvent) => {
+      event.stopPropagation();
+      toggle(orgId);
+    },
+    [toggle]
+  );
 
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
@@ -724,7 +869,7 @@ export default function GSoCReposPage() {
   ];
   const techOptions = [
     "All",
-    ...(stats?.technologies.slice(0, 30).map((tech) => tech.name) ?? []),
+    ...(stats?.technologies.map((tech) => tech.name) ?? []),
   ];
 
   const hasFilters =
@@ -810,7 +955,7 @@ export default function GSoCReposPage() {
             options={yearOptions}
             onChange={(value) => updateFilter("year", value)}
           />
-          <FilterDropdown
+          <SearchableFilterDropdown
             icon={<Code2 className="h-3.5 w-3.5" />}
             label="tech"
             value={selectedTech}
@@ -830,11 +975,10 @@ export default function GSoCReposPage() {
           <button
             type="button"
             onClick={() => setShowWishlist((prev) => !prev)}
-            className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-mono uppercase tracking-widest transition-colors ${
-              showWishlist
+            className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-mono uppercase tracking-widest transition-colors ${showWishlist
                 ? "border-lime-400 bg-lime-400 text-stone-950"
                 : "border-stone-300 bg-white text-stone-600 hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400"
-            }`}
+              }`}
           >
             <Heart
               className={`h-3.5 w-3.5 ${showWishlist ? "fill-stone-950" : ""}`}
@@ -888,12 +1032,9 @@ export default function GSoCReposPage() {
                 >
                   <GSoCOrgCard
                     org={org}
-                    onClick={() => setSelectedOrg(org)}
+                    onSelect={handleOrgClick}
                     wishlisted={has(org.id)}
-                    onWishlistToggle={(e) => {
-                      e.stopPropagation();
-                      toggle(org.id);
-                    }}
+                    onWishlistToggle={handleWishlistToggle}
                   />
                 </motion.div>
               ))}

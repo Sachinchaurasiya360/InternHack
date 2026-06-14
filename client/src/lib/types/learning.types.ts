@@ -33,6 +33,7 @@ export interface DsaProblem {
   solved: boolean;
   notes?: string | null;
   bookmarked?: boolean;
+  labels?: string[];
 }
 
 export interface DsaTopicDetail {
@@ -46,6 +47,14 @@ export interface DsaTopicDetail {
   totalPages: number;
   page: number;
   problems: DsaProblem[];
+}
+
+export interface SolutionStep {
+  stepNumber: number;
+  description: string;
+  variables: Record<string, string>;
+  highlightLine?: number;
+  isKeyStep?: boolean;
 }
 
 export interface DsaProblemDetail {
@@ -70,12 +79,19 @@ export interface DsaProblemDetail {
   acceptanceRate?: string;
   totalAccepted?: number;
   totalSubmissions?: number;
-  similarQuestions?: { title: string; slug: string; difficulty: string; url: string }[];
+  similarQuestions?: {
+    title: string;
+    slug: string;
+    difficulty: string;
+    url: string;
+  }[];
   category?: string;
   isPremium: boolean;
   solved: boolean;
   bookmarked: boolean;
   notes?: string | null;
+  solutionSteps?: SolutionStep[] | null;
+  solutionCode?: string | null;
 }
 
 export interface DsaProgress {
@@ -86,6 +102,12 @@ export interface DsaProgress {
     medium: { total: number; solved: number };
     hard: { total: number; solved: number };
   };
+}
+
+export interface DsaApproachEntry {
+  title: string;
+  complexity: string;
+  content: string;
 }
 
 export interface DsaSimilarProblem {
@@ -99,6 +121,7 @@ export interface DsaSimilarProblem {
 export interface DsaCompany {
   name: string;
   count: number;
+  solved: number;
 }
 
 export interface DsaPattern {
@@ -106,10 +129,26 @@ export interface DsaPattern {
   count: number;
 }
 
+export interface DsaCompanyTrackStats {
+  company: string;
+  total: number;
+  solved: number;
+  difficultyBreakdown: Record<string, { total: number; solved: number }>;
+}
+
 export interface DsaSheetStats {
   name: string;
   total: number;
   solved: number;
+}
+
+export interface DsaList {
+  slug: string;
+  title: string;
+  description: string;
+  total: number;
+  solved: number;
+  estimatedHours: number;
 }
 
 export interface DsaBookmarkItem {
@@ -125,8 +164,42 @@ export interface DsaBookmarkItem {
   sheets: string[];
   acceptanceRate?: string;
   solved: boolean;
+  labels?: string[];
   createdAt: string;
 }
+
+// ── DSA custom problem labels (tagging) ──
+
+export interface DsaMyLabelsResponse {
+  /** Map of problemId → labels the student attached to that problem. */
+  byProblem: Record<number, string[]>;
+  /** Distinct, sorted list of every custom label the student has created. */
+  allLabels: string[];
+}
+
+export interface DsaLabelMutationResponse {
+  problemId: number;
+  label: string;
+  /** The problem's full label set after the mutation. */
+  labels: string[];
+}
+
+export interface DsaSystemLabel {
+  label: string;
+  emoji: string;
+}
+
+/** System-suggested labels surfaced in the label dropdown. */
+export const DSA_SYSTEM_LABELS: DsaSystemLabel[] = [
+  { emoji: "⭐", label: "Important" },
+  { emoji: "🔄", label: "Need Revisit" },
+  { emoji: "💼", label: "Was Asked in Interview" },
+  { emoji: "🏆", label: "Contest Problem" },
+  { emoji: "✅", label: "Company-specific" },
+];
+
+/** Maximum labels a student may attach to one problem (mirrors the server cap). */
+export const DSA_MAX_LABELS_PER_PROBLEM = 5;
 
 export interface DsaCompanyProblem {
   id: number;
@@ -181,6 +254,55 @@ export interface DsaExecutionResult {
   submissionId: number;
 }
 
+export interface DsaCodeReview {
+  timeComplexity: string;
+  spaceComplexity: string;
+  readability: {
+    score: number;
+    feedback: string;
+  };
+  edgeCases: string[];
+  suggestions: string[];
+}
+
+export interface DsaStreak {
+  currentStreak: number;
+  longestStreak: number;
+  solvedToday: boolean;
+  lastSolvedDate: string | null;
+  activeDays: string[];
+}
+
+export interface DsaTopicAccuracy {
+  topic: string;
+  total: number;
+  solved: number;
+  percentage: number;
+}
+
+export interface DsaWeeklyTrend {
+  weekStart: string;
+  count: number;
+}
+
+export interface DsaMonthlyTrend {
+  month: string;
+  count: number;
+}
+
+export interface DsaAnalytics {
+  totalSolved: number;
+  totalProblems: number;
+  byDifficulty: {
+    easy: { total: number; solved: number };
+    medium: { total: number; solved: number };
+    hard: { total: number; solved: number };
+  };
+  topicAccuracy: DsaTopicAccuracy[];
+  weeklyTrend: DsaWeeklyTrend[];
+  monthlyTrend: DsaMonthlyTrend[];
+}
+
 export interface DsaSubmissionSummary {
   id: number;
   language: DsaLanguage;
@@ -209,7 +331,11 @@ export interface LeetcodeImportPreview {
   newSolves: number;
   token: string;
   preview: LeetcodeImportPreviewItem[];
-  lastImport?: { importedAt: string; username: string | null; source: string } | null;
+  lastImport?: {
+    importedAt: string;
+    username: string | null;
+    source: string;
+  } | null;
 }
 
 export interface LeetcodeImportResult {
@@ -268,6 +394,8 @@ export interface AptitudeQuestion {
   topicSlug?: string;
 }
 
+export type AptitudeDifficultyLevel = "EASY" | "MEDIUM" | "HARD";
+
 export interface AptitudeTopicDetail {
   id: number;
   name: string;
@@ -276,9 +404,19 @@ export interface AptitudeTopicDetail {
   categoryName: string;
   categorySlug: string;
   totalQuestions: number;
+  currentDifficulty?: AptitudeDifficultyLevel;
   page: number;
   totalPages: number;
   questions: AptitudeQuestion[];
+}
+
+export interface AptitudeAnswerResult {
+  correct: boolean;
+  correctAnswer: string;
+  explanation?: string;
+  currentDifficulty: AptitudeDifficultyLevel;
+  previousDifficulty: AptitudeDifficultyLevel;
+  difficultyChange: "increased" | "decreased" | null;
 }
 
 export interface AptitudeCompany {
@@ -299,4 +437,24 @@ export interface AptitudeProgress {
   totalAnswered: number;
   totalCorrect: number;
   currentStreak: number;
+}
+
+export interface AptitudeWeakAreaTopic {
+  topicId: number;
+  topicName: string;
+  topicSlug: string;
+  categoryName: string;
+  categorySlug: string;
+  answered: number;
+  correct: number;
+  accuracy: number;
+  isWeak: boolean;
+}
+
+export interface AptitudeWeakAreas {
+  totalAnswered: number;
+  minimumAnswered: number;
+  isReady: boolean;
+  topics: AptitudeWeakAreaTopic[];
+  focusRecommendations: AptitudeWeakAreaTopic[];
 }

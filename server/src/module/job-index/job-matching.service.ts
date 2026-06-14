@@ -126,20 +126,29 @@ export class JobMatchingService {
           cutoff,
         );
 
-        for (const row of results) {
-          const job = await prisma.jobIndex.findUnique({ where: { id: row.id } });
-          if (!job) continue;
+        if (results.length === 0) continue;
 
+        const jobIds = results.map((r) => r.id);
+        const jobs = await prisma.jobIndex.findMany({ where: { id: { in: jobIds } } });
+        const jobMap = new Map(jobs.map((j) => [j.id, j]));
+
+        const upserts = results.flatMap((row) => {
+          const job = jobMap.get(row.id);
+          if (!job) return [];
           const scores = this.computeMatch(pref, job, row.similarity);
-          if (scores.score < 0.3) continue;
-          if (pref.dismissedJobIds.includes(job.id)) continue;
+          if (scores.score < 0.3 || pref.dismissedJobIds.includes(job.id)) return [];
+          return [
+            prisma.jobMatch.upsert({
+              where: { userId_jobIndexId: { userId: pref.userId, jobIndexId: job.id } },
+              create: { userId: pref.userId, jobIndexId: job.id, ...scores },
+              update: scores,
+            }),
+          ];
+        });
 
-          await prisma.jobMatch.upsert({
-            where: { userId_jobIndexId: { userId: pref.userId, jobIndexId: job.id } },
-            create: { userId: pref.userId, jobIndexId: job.id, ...scores },
-            update: scores,
-          });
-          matchCount++;
+        if (upserts.length > 0) {
+          await prisma.$transaction(upserts);
+          matchCount += upserts.length;
         }
       } catch {
         // pgvector / embedding columns not set up yet, skip silently

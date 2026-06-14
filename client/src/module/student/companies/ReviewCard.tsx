@@ -1,13 +1,10 @@
 import { User } from "lucide-react";
 import StarRating from "./StarRating";
 import type { CompanyReview } from "../../../lib/types";
+import { formatDate } from "../../../lib/date-utils";
 
 export default function ReviewCard({ review }: { review: CompanyReview }) {
-  const date = new Date(review.createdAt).toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const date = formatDate(review.createdAt);
 
   return (
     <div className="bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-100 dark:border-gray-800">

@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
 import type { InterviewProgressAction, BulkInterviewProgressInput } from "./learn.validation.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export interface InterviewProgressDto {
   completedIds: string[];
@@ -56,6 +57,19 @@ async function runRepeatableRead<T>(operation: (tx: Prisma.TransactionClient) =>
 }
 
 export class LearnService {
+  async calculateReadinessReport(_input: {
+    userId: number | string;
+    targetRole: string;
+    companyTier: string;
+    availableTime: string;
+  }) {
+    // TODO(#1943): This feature (AI interview readiness report) was merged but its
+    // implementation referenced Prisma models that do not exist
+    // (prisma.interviewProgress, prisma.userLesson) and an unwired `geminiProvider`.
+    // Stubbed to keep the build green. Reimplement against `userInterviewProgress`
+    // and a real Gemini provider (see lib/providers/gemini.provider.ts) before exposing.
+    throw new Error("Interview readiness report is not yet available.");
+  }
   async getInterviewProgress(userId: number): Promise<InterviewProgressDto> {
     const progress = await prisma.userInterviewProgress.findUnique({
       where: { userId },

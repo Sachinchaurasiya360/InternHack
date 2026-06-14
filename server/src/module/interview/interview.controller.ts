@@ -4,7 +4,28 @@ import { createInterviewSchema, updateInterviewSchema, interviewFeedbackSchema, 
 
 export class InterviewController {
   constructor(private readonly interviewService: InterviewService) {}
+  async getStudentInterviews(req: Request, res: Response) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Authentication required",
+      });
+    }
 
+    const interviews =
+      await this.interviewService.getStudentInterviews(
+        req.user.id
+      );
+
+    return res.json({ interviews });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+}
   async create(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -28,8 +49,9 @@ export class InterviewController {
   async getAll(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
-      const query = interviewQuerySchema.parse(req.query);
-      const data = await this.interviewService.getAll(req.user.id, query);
+      const parsed = interviewQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const data = await this.interviewService.getAll(req.user.id, parsed.data);
       return res.json(data);
     } catch (error) {
       console.error(error);

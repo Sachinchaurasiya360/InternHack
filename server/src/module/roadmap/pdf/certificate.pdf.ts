@@ -112,20 +112,20 @@ export async function generateCertificatePdf(input: CertificateInput): Promise<B
     });
 
     // Signature line
-    doc.rect(cx - 80, H - 115, 160, 0.5).fill(colors.faintest);
+    doc.rect(cx - 80, H - 117, 160, 0.5).fill(colors.faintest);
     doc.fillColor(colors.faint).fontSize(9).font("Helvetica");
-    doc.text("InternHack Team", MARGIN, H - 100, {
+    doc.text("InternHack Team", MARGIN, H - 110, {
       width: W - MARGIN * 2,
       align: "center",
     });
 
     // Bottom footer rule
-    doc.rect(MARGIN, H - 60, W - MARGIN * 2, 0.5).fill(colors.faintest);
-    doc.fillColor(colors.faint).fontSize(7.5).font("Helvetica");
+    doc.rect(MARGIN, H - 90, W - MARGIN * 2, 0.5).fill(colors.faintest);
+    doc.fillColor(colors.faint).fontSize(7).font("Helvetica");
     doc.text(
       `INTERNHACK · CERTIFICATE OF COMPLETION · ${input.roadmapTitle.toUpperCase()}`,
       MARGIN,
-      H - 46,
+      H - 80,
       { width: W - MARGIN * 2, align: "center", characterSpacing: 1 },
     );
 

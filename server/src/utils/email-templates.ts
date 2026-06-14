@@ -1404,6 +1404,48 @@ export function jobAgentJobsEmailHtml(args: JobAgentJobsEmailArgs): string {
 </html>`;
 }
 
+export function deadlineAlertEmailHtml(name: string, programName: string, daysAway: number, deadline: Date): string {
+  const firstName = name.split(" ")[0] || name;
+  const deadlineStr = deadline.toLocaleDateString("en-US", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric",
+  });
+  const urgencyColor = daysAway <= 3 ? "#dc2626" : daysAway <= 7 ? "#ea580c" : "#a3e635";
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Deadline Reminder: ${programName}</title></head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:'Segoe UI',Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td style="background:#0a0a0a;padding:28px 24px;text-align:center;">
+  <h1 style="margin:0;font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.5px;">InternHack</h1>
+</td></tr>
+<tr><td style="padding:28px 24px;">
+  <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Deadline Reminder</h2>
+  <p style="margin:0 0 20px;font-size:15px;color:#52525b;line-height:1.6;">Hi ${firstName},</p>
+  <p style="margin:0 0 20px;font-size:15px;color:#52525b;line-height:1.6;">
+    <strong>${programName}</strong> ${
+      daysAway === 0 ? "deadline is today!" :
+      daysAway === 1 ? "deadline is tomorrow!" :
+      `deadline is in ${daysAway} days`
+    }
+  </p>
+  <div style="background:#fafafa;border:1px solid #e4e4e7;border-radius:8px;padding:20px;margin-bottom:20px;">
+    <p style="margin:0 0 8px;font-size:13px;color:#71717a;">Application Deadline</p>
+    <p style="margin:0;font-size:18px;font-weight:700;color:${urgencyColor};">${deadlineStr}</p>
+  </div>
+  <p style="margin:0 0 20px;font-size:15px;color:#52525b;line-height:1.6;">
+    Visit your InternHack Program Tracker to prepare a strong application.
+  </p>
+  <a href="https://internhack.xyz/student/opensource/programs"
+     style="display:inline-block;background:#18181b;color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 28px;border-radius:6px;">
+    Open Program Tracker
+  </a>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
 export function jobAgentJobsEmailText(args: JobAgentJobsEmailArgs): string {
   const firstName = args.studentName.split(" ")[0] || args.studentName || "there";
   const contextLine = args.context ? `\nBased on: "${snippet(args.context, 200)}"\n` : "";

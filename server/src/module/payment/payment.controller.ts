@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import type { PaymentService } from "./payment.service.js";
+import { createOrderSchema } from "./payment.validation.js";
 
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
@@ -11,17 +12,9 @@ export class PaymentController {
         return;
       }
 
-      const { plan, billing } = req.body;
-
-      if (!plan || !["pro"].includes(plan)) {
-        res.status(400).json({ message: "Invalid plan. Must be 'pro'" });
-        return;
-      }
-
-      if (!billing || !["monthly", "yearly"].includes(billing)) {
-        res.status(400).json({ message: "Invalid billing. Must be 'monthly' or 'yearly'" });
-        return;
-      }
+      const body = createOrderSchema.safeParse(req.body);
+      if (!body.success) return res.status(400).json({ message: "Validation failed", errors: body.error.flatten() });
+      const { plan, billing } = body.data;
 
       const result = await this.paymentService.createCheckoutSession(
         req.user.id,

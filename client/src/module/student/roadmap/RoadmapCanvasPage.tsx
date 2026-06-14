@@ -43,7 +43,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
-import { RoadmapCompletionModal } from "./RoadmapCompletionModal";
+import  RoadmapCompletionModal from "./RoadmapCompletionModal";
 import { Button } from "../../../components/ui/button";
 import { Navbar } from "../../../components/Navbar";
 import { useStudentSidebar } from "../../../components/StudentSidebar";
@@ -481,7 +481,9 @@ export default function RoadmapCanvasPage() {
         );
         setWeakTopicTitles(slugs);
       })
-      .catch(() => { });
+      .catch((err) => {
+        console.error("Failed to fetch recommendations:", err);
+      });
   }, []);
 
   const toggleSection = useCallback((id: number) => {
@@ -496,7 +498,7 @@ export default function RoadmapCanvasPage() {
    const [showEditModal, setShowEditModal] = useState(false);
   const [title, setTitle] = useState("");
   const [shortDescription, setShortDescription] = useState("");
-  const [level, setLevel] = useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED">(
+  const [level, setLevel] = useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS">(
     "BEGINNER",
   );
   // Track previous percentComplete so we only fire the modal on the transition to 100
@@ -630,11 +632,9 @@ export default function RoadmapCanvasPage() {
 
     setShowEditModal(false);
 
-    const detail = await api.get<EnrollmentResponse>(
-      `/roadmaps/me/enrollments/${enrollmentId}`,
-    );
-
-    setData(detail.data);
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId!),
+    });
   } catch {
     toast.error("Failed to update roadmap");
   }
@@ -1649,6 +1649,8 @@ export default function RoadmapCanvasPage() {
         {showCompletionModal && (
           <RoadmapCompletionModal
             roadmapName={data.enrollment.roadmap.title}
+            enrollmentId={String(data.enrollment.id)}
+            roadmapSlug={data.enrollment.roadmap.slug}
             onClose={() => setShowCompletionModal(false)}
           />
         )}

@@ -15,7 +15,7 @@ import {
 const logger = createLogger("RecruiterController");
 
 export class RecruiterController {
-  constructor(private readonly recruiterService: RecruiterService) {}
+  constructor(private readonly recruiterService: RecruiterService) { }
 
   // ==================== ROUND MANAGEMENT ====================
 
@@ -34,6 +34,7 @@ export class RecruiterController {
     } catch (error) {
       if (error instanceof Error) {
         if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
+        if ((error as any).statusCode === 422) return res.status(422).json({ message: error.message });
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
@@ -77,6 +78,7 @@ export class RecruiterController {
     } catch (error) {
       if (error instanceof Error) {
         if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
+        if ((error as any).statusCode === 422) return res.status(422).json({ message: error.message });
         if (error.message === "Job not found" || error.message === "Round not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
@@ -137,7 +139,9 @@ export class RecruiterController {
       const jobId = parseInt(String(req.params["jobId"]), 10);
       if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
 
-      const filter = applicationFilterSchema.parse(req.query);
+      const parsed = applicationFilterSchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const filter = parsed.data;
       const data = await this.recruiterService.getApplications(jobId, req.user.id, filter);
       return res.status(200).json(data);
     } catch (error) {
@@ -183,6 +187,7 @@ export class RecruiterController {
       return res.status(200).json({ message: "Application status updated", application });
     } catch (error) {
       if (error instanceof Error) {
+        if ((error as any).statusCode === 409) return res.status(409).json({ message: error.message });
         if (error.message === "Application not found") return res.status(404).json({ message: error.message });
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
@@ -254,7 +259,7 @@ export class RecruiterController {
       return res.status(200).json({ message: "Submission evaluated successfully", submission });
     } catch (error) {
       if (error instanceof Error) {
-// Fix for #1116: Catch our custom 422 JSON parse error from the service
+        // Fix for #1116: Catch our custom 422 JSON parse error from the service
         const status = (error as Error & { status?: number }).status;
         if (status === 422) return res.status(422).json({ message: error.message });
 
@@ -289,7 +294,11 @@ export class RecruiterController {
       const result = talentSearchSchema.safeParse(req.query);
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
 
-      const data = await this.recruiterService.searchTalent(result.data);
+      const filters = { ...result.data };
+      const q = (req.query as Record<string, unknown>).q as string | undefined;
+      if (q && !filters.search) filters.search = q;
+
+      const data = await this.recruiterService.searchTalent(filters);
       return res.status(200).json(data);
     } catch (error) {
       logger.error("Failed to search talent", error);

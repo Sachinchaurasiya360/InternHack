@@ -21,6 +21,21 @@ interface TaskQuery {
 }
 
 export class HRTaskService {
+  private async _checkTaskAccess(taskId: number, context: { employeeId: number; isAdmin: boolean }, requireManagerAccess = false) {
+    if (context.isAdmin) return;
+    const task = await prisma.hrTask.findUnique({
+      where: { id: taskId },
+      include: { assignee: { select: { reportingManagerId: true } } },
+    });
+    if (!task) throw new Error("Task not found");
+
+    if (task.creatorId === context.employeeId) return;
+    if (!requireManagerAccess && task.assigneeId === context.employeeId) return;
+    if (task.assignee?.reportingManagerId === context.employeeId) return;
+
+    throw new Error("Not authorized");
+  }
+
   async create(creatorId: number, data: CreateTaskData) {
     return prisma.hrTask.create({
       data: {
@@ -38,6 +53,29 @@ export class HRTaskService {
         creator: { select: { id: true, firstName: true, lastName: true } },
       },
     });
+  }
+
+  async getAllTasks(query: TaskQuery) {
+    const where: Prisma.hrTaskWhereInput = {};
+    if (query.status) where.status = query.status;
+    if (query.priority) where.priority = query.priority;
+
+    const [tasks, total] = await Promise.all([
+      prisma.hrTask.findMany({
+        where,
+        include: {
+          assignee: { select: { id: true, firstName: true, lastName: true } },
+          creator: { select: { id: true, firstName: true, lastName: true } },
+          _count: { select: { subTasks: true } },
+        },
+        orderBy: [{ priority: "desc" }, { dueDate: "asc" }],
+        skip: (query.page - 1) * query.limit,
+        take: query.limit,
+      }),
+      prisma.hrTask.count({ where }),
+    ]);
+
+    return { tasks, pagination: { page: query.page, limit: query.limit, total, totalPages: Math.ceil(total / query.limit) } };
   }
 
   async getMyTasks(employeeId: number, query: TaskQuery) {
@@ -93,7 +131,8 @@ export class HRTaskService {
     return { tasks, pagination: { page: query.page, limit: query.limit, total, totalPages: Math.ceil(total / query.limit) } };
   }
 
-  async getById(id: number) {
+  async getById(id: number, context: { employeeId: number; isAdmin: boolean }) {
+    await this._checkTaskAccess(id, context, false);
     const task = await prisma.hrTask.findUnique({
       where: { id },
       include: {
@@ -110,7 +149,11 @@ export class HRTaskService {
     return task;
   }
 
-  async update(id: number, data: { title?: string | undefined; description?: string | undefined; assigneeId?: number | undefined; priority?: TaskPriority | undefined; dueDate?: string | null | undefined; labels?: string[] | undefined; parentTaskId?: number | null | undefined }) {
+  async update(id: number, data: { title?: string | undefined; description?: string | undefined; assigneeId?: number | undefined; priority?: TaskPriority | undefined; dueDate?: string | null | undefined; labels?: string[] | undefined; parentTaskId?: number | null | undefined }, context: { employeeId: number; isAdmin: boolean }) {
+    await this._checkTaskAccess(id, context, false);
+    if (data.assigneeId !== undefined) {
+      await this._checkTaskAccess(id, context, true);
+    }
     const task = await prisma.hrTask.findUnique({ where: { id } });
     if (!task) throw new Error("Task not found");
 
@@ -125,7 +168,8 @@ export class HRTaskService {
     });
   }
 
-  async updateStatus(id: number, status: TaskStatus) {
+  async updateStatus(id: number, status: TaskStatus, context: { employeeId: number; isAdmin: boolean }) {
+    await this._checkTaskAccess(id, context, false);
     const task = await prisma.hrTask.findUnique({ where: { id } });
     if (!task) throw new Error("Task not found");
 
@@ -135,7 +179,8 @@ export class HRTaskService {
     return prisma.hrTask.update({ where: { id }, data });
   }
 
-  async addComment(id: number, comment: { userId: number; text: string }) {
+  async addComment(id: number, comment: { userId: number; text: string }, context: { employeeId: number; isAdmin: boolean }) {
+    await this._checkTaskAccess(id, context, false);
     const task = await prisma.hrTask.findUnique({ where: { id } });
     if (!task) throw new Error("Task not found");
 

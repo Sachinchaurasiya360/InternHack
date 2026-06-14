@@ -24,6 +24,8 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 interface ListResponse {
   roadmaps: RoadmapListItem[];
@@ -88,11 +90,26 @@ export default function RoadmapsLandingPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: communityData } = useQuery({
+    queryKey: queryKeys.roadmaps.community(),
+    queryFn: () => api.get<{ roadmaps: RoadmapListItem[] }>("/roadmaps/community").then(res => res.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const roadmaps = useMemo(() => roadmapsData?.roadmaps || [], [roadmapsData]);
   const enrollments = useMemo(() => {
     if (enrollmentsError) return []; // Fallback to empty but we'll show error below
     return enrollmentsData?.enrollments || [];
   }, [enrollmentsData, enrollmentsError]);
+  const completedEnrollments = useMemo(
+    () =>
+      enrollments.filter((e) =>
+        e.topicProgress.length > 0 &&
+        e.topicProgress.every((p) => p.status === "COMPLETED")
+      ),
+    [enrollments]
+  );
+  const completedCount = completedEnrollments.length;
   const loading = roadmapsLoading;
   const error = (roadmapsError || (isStudent && enrollmentsError)) ? "Could not load roadmaps. Please try again." : null;
 
@@ -131,7 +148,13 @@ export default function RoadmapsLandingPage() {
 
   // Secondary client-side filtering for ultra-smooth UX while API loads
   const filtered = useMemo(() => {
-    let result = roadmaps;
+    let result = roadmaps.filter((r) => {
+      const enrollment = enrollments.find((e) => e.roadmap.slug === r.slug);
+      if (!enrollment) return true;
+      const isCompleted = enrollment.topicProgress.length > 0 && enrollment.topicProgress.every((p) => p.status === "COMPLETED");
+      return !isCompleted;
+    });
+
     const needle = debouncedSearch.trim().toLowerCase();
     
     if (needle) {
@@ -148,15 +171,18 @@ export default function RoadmapsLandingPage() {
     }
     
     if (tag) {
-      result = result.filter(r => r.tags.includes(tag));
+      result = result.filter(r =>
+        r.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
+      );
     }
-
     if (category) {
-      result = result.filter(r => r.tags.includes(category));
+      result = result.filter(r =>
+        r.tags.map(t => t.toLowerCase()).includes(category.toLowerCase())
+      );
     }
     
     return result;
-  }, [roadmaps, debouncedSearch, level, tag, category]);
+  }, [roadmaps, enrollments, debouncedSearch, level, tag, category]);
 
   // "In progress" is built directly from enrollments so AI-generated roadmaps
   // (isPublished: false) are included even though they're absent from the
@@ -164,6 +190,8 @@ export default function RoadmapsLandingPage() {
   const inProgressEnrollments = useMemo(() => {
     const needle = debouncedSearch.trim().toLowerCase();
     return enrollments.filter((e) => {
+      const isCompleted = e.topicProgress.length > 0 && e.topicProgress.every((p) => p.status === "COMPLETED");
+      if (isCompleted) return false;
       const r = e.roadmap;
       if (needle) {
         const matchesText =
@@ -173,8 +201,8 @@ export default function RoadmapsLandingPage() {
         if (!matchesText) return false;
       }
       if (level && level !== "ALL_LEVELS" && r.level && r.level !== level) return false;
-      if (tag && !(r.tags ?? []).includes(tag)) return false;
-      if (category && !(r.tags ?? []).includes(category)) return false;
+      if (tag && !(r.tags ?? []).map(t => t.toLowerCase()).includes(tag.toLowerCase())) return false;
+      if (category && !(r.tags ?? []).map(t => t.toLowerCase()).includes(category.toLowerCase())) return false;
       return true;
     });
   }, [enrollments, debouncedSearch, level, tag, category]);
@@ -212,14 +240,7 @@ export default function RoadmapsLandingPage() {
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pb-16">
         {/* Vertical column gridlines, same atmosphere as the Learn hub */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-          style={{
-            backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-            backgroundSize: "120px 100%",
-          }}
-        />
+        <GridBackground />
 
         <div className="relative">
           {/* Editorial header */}
@@ -259,12 +280,20 @@ export default function RoadmapsLandingPage() {
                 </span>
               </span>
               {isStudent && (
+                <>
                 <span>
                   enrolled
                   <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-2">
                     {enrollments.length}
                   </span>
                 </span>
+                <span>
+                  completed
+                  <span className="text-lime-600 dark:text-lime-500 text-sm font-bold tabular-nums ml-2">
+                    {completedCount}
+                  </span>
+                </span>
+                </>
               )}
               <span>
                 free
@@ -272,6 +301,42 @@ export default function RoadmapsLandingPage() {
               </span>
             </div>
           </motion.div>
+
+          {/* Certificates CTA */}
+          {isStudent && completedCount > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-6"
+            >
+              <Link
+                to="/learn/roadmaps/certificates"
+                className="group relative block overflow-hidden bg-lime-400 text-stone-950 rounded-md p-5 sm:p-6 no-underline border border-lime-500 hover:bg-lime-300 transition-colors"
+              >
+                <div className="relative flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] mb-1">
+                      certificates
+                    </p>
+
+                    <p className="text-lg font-bold leading-tight">
+                      View all certificates
+                    </p>
+
+                    <p className="text-sm mt-1 opacity-80">
+                      Browse and share your completed roadmap certificates.
+                    </p>
+                  </div>
+
+                  <ArrowUpRight
+                    className="w-5 h-5 shrink-0 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
+                    aria-hidden="true"
+                  />
+                </div>
+              </Link>
+            </motion.div>
+          )}
 
           {/* AI generate CTA */}
           <motion.div
@@ -457,6 +522,19 @@ export default function RoadmapsLandingPage() {
                   <RoadmapCard key={r.id} roadmap={r} index={idx} />
                 ))}
               </RoadmapSection>
+
+              {communityData && communityData.roadmaps.length > 0 && (
+                <RoadmapSection
+                  label="community"
+                  title="Made by the community"
+                  count={communityData.roadmaps.length}
+                  className="mt-14"
+                >
+                  {communityData.roadmaps.map((r, idx) => (
+                    <CommunityRoadmapCard key={r.id} roadmap={r} index={idx} />
+                  ))}
+                </RoadmapSection>
+              )}
 
               {/* Footer hint */}
               {isStudent && enrollments.length > 0 && (
@@ -702,6 +780,82 @@ function RoadmapCard({
                 <span className="inline-flex items-center gap-1">
                   <Users className="w-3 h-3" aria-hidden="true" />
                   <span>{roadmap.enrolledCount} enrolled</span>
+                </span>
+              )}
+            </div>
+            <ArrowUpRight
+              className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all"
+              aria-hidden="true"
+            />
+          </div>
+        </Link>
+      </motion.div>
+    </li>
+  );
+}
+
+function CommunityRoadmapCard({
+  roadmap,
+  index,
+}: {
+  roadmap: RoadmapListItem;
+  index: number;
+}) {
+  const MAX_STAGGER = 8;
+  const delay = 0.05 + Math.min(index, MAX_STAGGER) * 0.04;
+
+  return (
+    <li>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay, duration: 0.4 }}
+      >
+        <Link
+          to={`/roadmaps/${roadmap.slug}`}
+          aria-label={roadmap.title}
+          className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2"
+        >
+          <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5" aria-hidden="true">
+            <span className="h-1 w-1 bg-lime-400" />
+            ai
+          </span>
+
+          <div className="flex items-start gap-3 mb-3 pr-16">
+            <div
+              className="w-10 h-10 rounded-md bg-lime-50 dark:bg-lime-900/20 border border-lime-200 dark:border-lime-800/40 flex items-center justify-center shrink-0"
+              aria-hidden="true"
+            >
+              <Wand2 className="w-5 h-5 text-lime-600 dark:text-lime-500" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
+                {roadmap.title}
+              </h3>
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
+                {roadmap.level.replace("_", " ").toLowerCase()}
+              </span>
+            </div>
+          </div>
+
+          <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
+            {roadmap.shortDescription}
+          </p>
+
+          <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
+            <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <span className="inline-flex items-center gap-1">
+                <Clock className="w-3 h-3" aria-hidden="true" />
+                <span>{roadmap.estimatedHours}h</span>
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <BookOpen className="w-3 h-3" aria-hidden="true" />
+                <span>{roadmap.topicCount} topics</span>
+              </span>
+              {roadmap.creatorName && (
+                <span className="inline-flex items-center gap-1">
+                  <Users className="w-3 h-3" aria-hidden="true" />
+                  <span className="truncate max-w-24">{roadmap.creatorName}</span>
                 </span>
               )}
             </div>

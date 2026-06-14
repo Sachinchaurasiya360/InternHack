@@ -3,15 +3,17 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, Building2, ArrowUpRight, Brain, BookOpen, MessageSquare, Search, X } from "lucide-react";
+import { CheckCircle2, Building2, ArrowUpRight, Brain, BookOpen, MessageSquare, Search, X, AlertTriangle, Target } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
+import type { AptitudeCategory, AptitudeProgress, AptitudeWeakAreas } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Button } from "../../../components/ui/button";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 // — Streak Banner ———————————————————————————————————————————
 type StreakBannerProps = { streak: number };
@@ -38,6 +40,95 @@ function StreakBanner({ streak }: StreakBannerProps) {
   );
 }
 
+function WeakAreaDashboard({ weakAreas }: { weakAreas?: AptitudeWeakAreas }) {
+  if (!weakAreas) return null;
+
+  const topics = weakAreas.topics.slice(0, 8);
+  const focusTopics = weakAreas.focusRecommendations;
+
+  if (!weakAreas.isReady) {
+    return (
+      <div className="mb-8 rounded-md border border-stone-200 bg-white px-5 py-4 dark:border-white/10 dark:bg-stone-900">
+        <div className="flex items-start gap-3">
+          <Target className="mt-0.5 h-4 w-4 shrink-0 text-lime-600 dark:text-lime-400" />
+          <div>
+            <p className="text-sm font-bold text-stone-900 dark:text-stone-50">Weak area analysis unlocks at 20 answers</p>
+            <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+              Answer {Math.max(weakAreas.minimumAnswered - weakAreas.totalAnswered, 0)} more question{weakAreas.minimumAnswered - weakAreas.totalAnswered === 1 ? "" : "s"} to get topic-level recommendations.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-8 rounded-md border border-stone-200 bg-white px-5 py-5 dark:border-white/10 dark:bg-stone-900">
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            diagnosis / weak areas
+          </span>
+          <h2 className="mt-1 text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
+            Your accuracy by topic
+          </h2>
+        </div>
+        <span className="rounded-md border border-stone-200 px-2 py-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:border-white/10">
+          {weakAreas.totalAnswered} answered
+        </span>
+      </div>
+
+      {focusTopics.length > 0 && (
+        <div className="mb-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 dark:border-red-900/70 dark:bg-red-950/30">
+          <div className="mb-2 flex items-center gap-2 text-sm font-bold text-red-800 dark:text-red-300">
+            <AlertTriangle className="h-4 w-4" />
+            Focus on these 3 topics
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {focusTopics.map((topic) => (
+              <Link
+                key={topic.topicId}
+                to={`/learn/aptitude/${topic.topicSlug}`}
+                className="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-red-700 no-underline transition-colors hover:bg-red-100 dark:bg-red-950 dark:text-red-200 dark:hover:bg-red-900"
+              >
+                {topic.topicName} · {topic.accuracy}%
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        {topics.map((topic) => (
+          <Link
+            key={topic.topicId}
+            to={`/learn/aptitude/${topic.topicSlug}`}
+            className="block no-underline"
+          >
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <div className="min-w-0">
+                <span className="font-semibold text-stone-800 dark:text-stone-100">{topic.topicName}</span>
+                <span className="ml-2 text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                  {topic.answered} answered
+                </span>
+              </div>
+              <span className={`font-mono font-bold tabular-nums ${topic.isWeak ? "text-red-600 dark:text-red-400" : "text-lime-700 dark:text-lime-400"}`}>
+                {topic.accuracy}%
+              </span>
+            </div>
+            <div className="mt-1 h-2 overflow-hidden rounded-sm bg-stone-100 dark:bg-stone-800">
+              <div
+                className={`h-full ${topic.isWeak ? "bg-red-500" : "bg-lime-500"}`}
+                style={{ width: `${topic.accuracy}%` }}
+              />
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function AptitudeCategoriesPage() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<string>("all");
@@ -52,6 +143,13 @@ export default function AptitudeCategoriesPage() {
   const { data: progress, isSuccess } = useQuery({
     queryKey: queryKeys.aptitude.progress(),
     queryFn: () => api.get<AptitudeProgress>("/aptitude/progress").then((r) => r.data),
+    enabled: !!user,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+  const { data: weakAreas } = useQuery({
+    queryKey: queryKeys.aptitude.weakAreas(),
+    queryFn: () => api.get<AptitudeWeakAreas>("/aptitude/weak-areas").then((r) => r.data),
     enabled: !!user,
     staleTime: 2 * 60 * 1000,
     refetchOnWindowFocus: true,
@@ -93,14 +191,7 @@ const clearFilters = () => {
       />
             {user && isSuccess && <StreakBanner streak={progress.currentStreak} />}
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}
@@ -216,6 +307,8 @@ const clearFilters = () => {
             </div>
           </motion.div>
         )}
+
+        {user && <WeakAreaDashboard weakAreas={weakAreas} />}
 
         {/* Tabs + Search */}
         <motion.div

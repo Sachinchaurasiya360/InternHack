@@ -11,6 +11,8 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
 import api from "../../../lib/axios"
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 const STORAGE_KEY = "interview-progress";
 
@@ -156,14 +158,7 @@ export default function InterviewLessonsPage() {
         ]}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}

@@ -1,15 +1,20 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Award, ArrowRight,
   Trophy,
-  Clock,
+  Clock
 } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
+import GuideCompletionSection from "./components/GuideCompletionSection";
+import { notifyLearningPathProgressChanged } from "./learning-paths.data";
+import { NextInPathCard } from "./components/NextInPathCard";
+import { issueCertificate, type Certificate } from "./api/opensource.api";
+import { useAuthStore } from "../../../lib/auth.store";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -54,11 +59,15 @@ export default function GSoCProposalPage() {
     }
   });
 
+  const [cert, setCert] = useState<Certificate | null>(null);
+  const { user } = useAuthStore();
+
   const toggle = useCallback((id: string) => {
     setCompleted((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
+      notifyLearningPathProgressChanged();
       return next;
     });
   }, []);
@@ -71,6 +80,31 @@ export default function GSoCProposalPage() {
     .filter((s) => completed.has(s.id))
     .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
   const remainingMinutes = totalEstimatedMinutes - completedMinutes;
+
+  useEffect(() => {
+    if (allDone && !cert && user) {
+      issueCertificate("GSoC Proposal Guide")
+        .then(setCert)
+        .catch(console.error);
+    }
+  }, [allDone, cert, user]);
+
+
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "GSoC Proposal Writing Guide - Step by Step",
+    "description": "Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure.",
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+    "totalTime": `PT${totalEstimatedMinutes}M`,
+    "step": STEPS.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.title,
+      "text": s.description || "Follow the visual walkthrough steps."
+    }))
+  };
+
   return (
     <div className="relative pb-12">
       <SEO
@@ -79,6 +113,7 @@ export default function GSoCProposalPage() {
         keywords="GSoC proposal guide, Google Summer of Code, GSoC tips, open source proposal, GSoC application"
         canonicalUrl={canonicalUrl("/student/opensource/gsoc-proposal")}
         ogImage="/og/og-gsoc-proposal.png"
+        structuredData={howToSchema}
       />
 
       {/* Atmospheric background */}
@@ -139,18 +174,12 @@ export default function GSoCProposalPage() {
       {/* Completion banner */}
       <AnimatePresence>
         {allDone && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 flex items-center gap-4"
-          >
-            <Trophy className="w-8 h-8 text-green-500 shrink-0" />
-            <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">You've completed the guide!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline.</p>
-            </div>
-          </motion.div>
+          <GuideCompletionSection
+            headline="You've completed the guide!"
+            subtitle="Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline."
+            certificateGuideName="GSoC Proposal Guide"
+            accentWord="guide"
+          />
         )}
       </AnimatePresence>
 
@@ -219,6 +248,9 @@ export default function GSoCProposalPage() {
           );
         })}
       </div>
+
+      <NextInPathCard currentSlug="gsoc-proposal" completed={allDone} />
     </div>
   );
 }
+

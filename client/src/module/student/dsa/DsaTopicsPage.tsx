@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
 CheckCircle2, Building2, Puzzle, Bookmark, ArrowRight,
-  Lock, Search, BookOpen, TrendingUp, Target, Download, X,
+  Lock, Search, BookOpen, TrendingUp, Target, Download, X, List, BarChart3,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { Button } from "../../../components/ui/button";
@@ -13,13 +13,16 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaTopicsResponse, DsaProgress, LeetcodeImportStatus, DsaTopic, User } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
-import { canonicalUrl } from "../../../lib/seo.utils";
+import { canonicalUrl,SITE_URL } from "../../../lib/seo.utils";
+import { courseSchema, breadcrumbSchema, faqSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
 import { LeetCodeSync } from "./components/LeetCodeSync";
 import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 import { DsaHeatmap } from "./components/DsaHeatmap";
+import { DsaStreakWidget } from "./components/DsaStreakWidget";
 import { ResultCount } from "../../../components/ui/ResultCount";
+import { buildTopicAccuracy } from "./topic-accuracy";
 
 const TOPICS_PER_PAGE = 20;
 const IMPORT_ENABLED = import.meta.env["VITE_LEETCODE_IMPORT_ENABLED"] !== "false";
@@ -234,6 +237,12 @@ const clearFilters = () => {
     enabled: !!user,
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
+  const { data: allTopicsData } = useQuery({
+    queryKey: queryKeys.dsa.topics("__all__"),
+    queryFn: () => api.get<DsaTopicsResponse>("/dsa/topics").then((r) => r.data),
+    enabled: !!user && filterKey !== "",
+    staleTime: 15 * 24 * 60 * 60 * 1000,
+  });
 
   const { data: importStatus } = useQuery({
     queryKey: queryKeys.dsa.importStatus(),
@@ -251,6 +260,8 @@ const clearFilters = () => {
   const totalTopics = topics?.length ?? 0;
   const totalPages = Math.ceil(totalTopics / TOPICS_PER_PAGE);
   const paginatedTopics = topics?.slice((page - 1) * TOPICS_PER_PAGE, page * TOPICS_PER_PAGE);
+  const allTopicsForHeatmap = filterKey === "" ? topics ?? [] : allTopicsData?.topics ?? topics ?? [];
+  const { topicAccuracy, strongestTopic, needsWorkTopic, notStartedTopic } = buildTopicAccuracy(allTopicsForHeatmap);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -263,7 +274,13 @@ const clearFilters = () => {
   const quickLinks = [
     { to: "/learn/dsa/companies", icon: Building2, label: "companies" },
     { to: "/learn/dsa/patterns", icon: Puzzle, label: "patterns" },
-    ...(user ? [{ to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" }] : []),
+    { to: "/learn/dsa/lists", icon: List, label: "lists" },
+    ...(user
+      ? [
+          { to: "/learn/dsa/bookmarks", icon: Bookmark, label: "bookmarks" },
+          { to: "/learn/dsa/analytics", icon: BarChart3, label: "analytics" },
+        ]
+      : []),
   ];
 
   return (
@@ -273,6 +290,23 @@ const clearFilters = () => {
         description="Practice data structures and algorithms problems organized by topic. Track your progress across arrays, trees, graphs, dynamic programming, and more."
         keywords="DSA practice, data structures, algorithms, leetcode, coding interview, arrays, trees, graphs, dynamic programming"
         canonicalUrl={canonicalUrl("/learn/dsa")}
+        structuredData={[
+          courseSchema({
+            name: "DSA Practice — Data Structures & Algorithms | InternHack",
+            description: "Practice data structures and algorithms problems organized by topic. Track your progress across arrays, trees, graphs, dynamic programming, and more.",
+            url: `${SITE_URL}/learn/dsa`,
+          }),
+          breadcrumbSchema([
+            { name: "Home", url: SITE_URL },
+            { name: "Learn", url: `${SITE_URL}/learn` },
+            { name: "DSA", url: `${SITE_URL}/learn/dsa` },
+          ]),
+          faqSchema([
+            { question: "Is this DSA course free?", answer: "Yes, the Data Structures and Algorithms course on InternHack is completely free with no sign-up required." },
+            { question: "What will I learn in this DSA course?", answer: "You will learn arrays, stacks, queues, trees, graphs, sorting algorithms, dynamic programming, and problem-solving patterns." },
+            { question: "Why is DSA important for interviews?", answer: "DSA is essential for coding interviews at top tech companies as it tests your problem-solving and algorithmic thinking skills." },
+          ]),
+        ]}
       />
 
       <div className="max-w-6xl mx-auto px-3 sm:px-8 py-8">
@@ -422,7 +456,17 @@ const clearFilters = () => {
           </motion.div>
         )}
 
-        {/* Heatmap (logged-in) */}
+        {/* Streak widget + Heatmap (logged-in) */}
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="mb-4"
+          >
+            <DsaStreakWidget />
+          </motion.div>
+        )}
         {user && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -430,6 +474,85 @@ const clearFilters = () => {
             transition={{ delay: 0.09 }}
           >
             <DsaHeatmap />
+          </motion.div>
+        )}
+
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.095 }}
+            className="mb-8"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-1 w-1 bg-lime-400"></div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                topic accuracy heatmap
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-t border-l border-stone-200 dark:border-white/10 mb-4">
+              <div className="p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
+                  / strongest
+                </p>
+                <p className="text-sm text-stone-800 dark:text-stone-200">
+                  You&apos;re strongest in:{" "}
+                  <span className="font-semibold text-stone-900 dark:text-stone-50">
+                    {strongestTopic ? `${strongestTopic.name} (${strongestTopic.pct}%)` : "No started topics yet"}
+                  </span>
+                </p>
+              </div>
+              <div className="p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
+                  / needs work
+                </p>
+                <p className="text-sm text-stone-800 dark:text-stone-200">
+                  Needs work:{" "}
+                  <span className="font-semibold text-stone-900 dark:text-stone-50">
+                    {needsWorkTopic ? `${needsWorkTopic.name} (${needsWorkTopic.pct}%)` : "None right now"}
+                  </span>
+                </p>
+              </div>
+              <div className="p-3 sm:p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1">
+                  / not started
+                </p>
+                <p className="text-sm text-stone-800 dark:text-stone-200">
+                  Not started:{" "}
+                  <span className="font-semibold text-stone-900 dark:text-stone-50">
+                    {notStartedTopic ? notStartedTopic.name : "All topics started"}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-3 sm:p-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                {topicAccuracy.map((topic) => {
+                  const colorClass =
+                    topic.pct > 70
+                      ? "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/30 dark:text-emerald-200 dark:border-emerald-800"
+                      : topic.pct >= 40
+                      ? "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/30 dark:text-amber-200 dark:border-amber-800"
+                      : "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950/30 dark:text-rose-200 dark:border-rose-800";
+
+                  return (
+                    <Link
+                      key={topic.id}
+                      to={`/learn/dsa/${topic.slug}`}
+                      title={`${topic.name}: ${topic.solvedCount}/${topic.problemCount} solved (${topic.pct}%)`}
+                      className={`min-h-16 rounded-md border px-2.5 py-2 transition-colors hover:opacity-90 no-underline ${colorClass}`}
+                    >
+                      <div className="text-[11px] font-mono uppercase tracking-widest opacity-80 truncate mb-1">
+                        {topic.pct}%
+                      </div>
+                      <div className="text-xs font-medium truncate">{topic.name}</div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           </motion.div>
         )}
 

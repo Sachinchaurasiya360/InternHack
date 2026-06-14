@@ -63,9 +63,9 @@ export class PayrollController {
 
   async getMyPayslips(req: Request, res: Response) {
     try {
-      const employeeId = Number(req.query["employeeId"]);
-      if (isNaN(employeeId)) return res.status(400).json({ message: "employeeId required" });
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
+      const employeeId = req.user.id;
       const payslips = await this.payrollService.getMyPayslips(employeeId);
       return res.json({ payslips });
     } catch (error) {

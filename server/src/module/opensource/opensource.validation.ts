@@ -13,6 +13,8 @@ export const opensourceListQuerySchema = z.object({
   sortBy: z.enum(opensourceSortFields).optional(),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
   trending: z.enum(["true", "false"]).optional(),
+  hacktoberfest: z.enum(["true", "false"]).optional(),
+  highlyActive: z.enum(["true", "false"]).optional(),
   ids: z.string().regex(/^\d+(,\d+)*$/, "Must be a comma-separated list of numeric IDs").optional(), // Comma-separated string of numeric IDs
 }).transform(({ sort, ...query }) => ({
   ...query,
@@ -21,6 +23,11 @@ export const opensourceListQuerySchema = z.object({
 
 export const repoIdSchema = z.object({
   id: z.coerce.number().int().positive("Invalid repo ID"),
+});
+
+export const repoOwnerNameSchema = z.object({
+  owner: z.string().min(1).max(200),
+  name: z.string().min(1).max(300),
 });
 
 export const submitRepoRequestSchema = z.object({
@@ -105,4 +112,22 @@ export const approveRequestOverrideSchema = z.object({
 export const firstPrProgressUpdateSchema = z.object({
   stepId: z.string().min(1, "Step ID is required").max(200),
   completed: z.boolean(),
+});
+
+export const guideFeedbackSchema = z.object({
+  guideId: z.string().min(1, "Guide ID is required"),
+  stepId: z.string().min(1, "Step ID is required"),
+  rating: z.enum(["up", "down"]),
+  reason: z.string().optional(),
+});
+
+export const bookmarkBodySchema = z.object({
+  repoId: z.number().int().positive("repoId must be a positive integer"),
+});
+
+export const bulkMigrateBookmarksSchema = z.object({
+  repoIds: z
+    .array(z.number().int().positive())
+    .min(1, "At least one repoId is required")
+    .max(500, "Cannot migrate more than 500 bookmarks at once"),
 });

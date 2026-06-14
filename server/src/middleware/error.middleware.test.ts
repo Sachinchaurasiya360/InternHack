@@ -13,6 +13,7 @@ vi.mock("../database/db.js", () => ({
 // We need real Prisma error classes, so import them directly
 import { Prisma } from "@prisma/client";
 import { errorMiddleware } from "./error.middleware.js";
+import { FileUploadError } from "../lib/errors.js";
 
 // ── Helpers ─────────────────────────────────────────────────────────
 function mockReq(overrides: Partial<Request> = {}): Request {
@@ -120,14 +121,14 @@ describe("errorMiddleware", () => {
     });
   });
 
-  // ── Multer / file upload errors ───────────────────────────────────
-  describe("Multer / file upload errors", () => {
+  // ── File upload errors ───────────────────────────────────
+  describe("File upload errors", () => {
     it.each([
       "File type not allowed",
       "Only PDF and Word documents are allowed",
       "Only JPEG, PNG, and WebP images are allowed",
     ])('should return 400 for "%s"', (message) => {
-      const err = new Error(message);
+      const err = new FileUploadError(message);
       const req = mockReq();
       const res = mockRes();
 
@@ -233,6 +234,43 @@ describe("errorMiddleware", () => {
         token: "[REDACTED]",
         cvv: "[REDACTED]",
         name: "Test User",
+      });
+    });
+
+    it("should redact deeply nested sensitive fields in request body before logging", async () => {
+      const { prisma } = await import("../database/db.js");
+      const err = new Error("User not found");
+      const req = mockReq({
+        body: {
+          email: "user@test.com",
+          data: {
+            profile: {
+              password: "secret123",
+              cvv: "123",
+            }
+          },
+          items: [{ token: "jwt-token" }],
+        },
+      });
+      const res = mockRes();
+
+      errorMiddleware(err, req, res, noop);
+
+      // Give the async create a tick to resolve
+      await new Promise((r) => setTimeout(r, 10));
+
+      expect(prisma.errorLog.create).toHaveBeenCalled();
+      const callArg = (prisma.errorLog.create as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+      const body = callArg?.data?.requestBody;
+      expect(body).toEqual({
+        email: "user@test.com",
+        data: {
+          profile: {
+            password: "[REDACTED]",
+            cvv: "[REDACTED]",
+          }
+        },
+        items: [{ token: "[REDACTED]" }],
       });
     });
   });

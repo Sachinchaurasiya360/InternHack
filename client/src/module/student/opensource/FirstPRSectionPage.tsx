@@ -10,6 +10,7 @@ import {
   Lightbulb,
   Info,
 } from "lucide-react";
+import { VideoEmbed } from "../../../components/ui/VideoEmbed";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
@@ -21,6 +22,7 @@ import {
 import guideData from "./data/open-source-guide.json";
 import { useKeyboardNavigation } from "../../../hooks/useKeyboardNavigation";
 import { ReadingProgressBar } from "../../../components/ReadingProgressBar";
+import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource {
@@ -43,6 +45,7 @@ interface Step {
   commands: Command[];
   resources: Resource[];
   tips: string[];
+  videoUrl?: string;
 }
 
 function CommandBlock({ label, code }: Command) {
@@ -109,15 +112,18 @@ export default function FirstPRSectionPage() {
       return next;
     });
 
-    void patchFirstPRProgress(step.id, !isCurrentlyCompleted).catch(() => {
-      setCompleted((prev) => {
-        const rolledBack = new Set(prev);
-        if (isCurrentlyCompleted) rolledBack.add(step.id);
-        else rolledBack.delete(step.id);
-        return rolledBack;
+    void patchFirstPRProgress(step.id, !isCurrentlyCompleted)
+      .then(() => notifyLearningPathProgressChanged())
+      .catch(() => {
+        setCompleted((prev) => {
+          const rolledBack = new Set(prev);
+          if (isCurrentlyCompleted) rolledBack.add(step.id);
+          else rolledBack.delete(step.id);
+          return rolledBack;
+        });
+        notifyLearningPathProgressChanged();
+        toast.error("Failed to update progress. Please try again.");
       });
-      toast.error("Failed to update progress. Please try again.");
-    });
   }, [completed, step]);
 
   // ---> FIX: Define variables and call hook BEFORE the early return <---
@@ -269,6 +275,16 @@ export default function FirstPRSectionPage() {
             <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
               {step.mentor_guidance}
             </div>
+          </motion.div>
+        )}
+
+        {step.videoUrl && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.12 }}
+          >
+            <VideoEmbed url={step.videoUrl} title={`Watch: ${step.title}`} />
           </motion.div>
         )}
 

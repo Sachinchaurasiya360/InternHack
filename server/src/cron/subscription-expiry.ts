@@ -38,8 +38,8 @@ async function expireSubscriptions(): Promise<void> {
   // Invalidate cache for each user
   const { cacheDel } = await import("../utils/cache.js");
   for (const userId of userIds) {
-    await cacheDel(`profile:me:${userId}`).catch(() => {});
-    await cacheDel(`profile:public:${userId}`).catch(() => {});
+    await cacheDel(`profile:me:${userId}`).catch((err) => console.error("Failed to invalidate profile cache:", err));
+    await cacheDel(`profile:public:${userId}`).catch((err) => console.error("Failed to invalidate profile cache:", err));
   }
 
   console.log(`[Cron] Expired ${userIds.length} subscription(s) and cleared profile cache.`);

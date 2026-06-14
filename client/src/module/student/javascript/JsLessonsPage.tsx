@@ -6,9 +6,15 @@ import { sections, lessons } from "./data";
 import type { JsProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
-import { courseSchema, breadcrumbSchema } from "../../../lib/structured-data";
+import {
+  courseSchema,
+  breadcrumbSchema,
+  faqSchema,
+} from "../../../lib/structured-data";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 const FREE_LIMIT = 5;
 
@@ -21,31 +27,61 @@ function getLocalProgress(): JsProgress {
 }
 
 const LEVEL_STYLE: Record<string, string> = {
-  Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
-  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
-  Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
+  Beginner:
+    "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
+  Intermediate:
+    "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
+  Advanced:
+    "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
 
-function MetaChip({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function MetaChip({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider border rounded-md ${className || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider border rounded-md ${className || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}
+    >
       {children}
     </span>
   );
 }
 
-function RingProgress({ progress, complete }: { progress: number; complete?: boolean }) {
+function RingProgress({
+  progress,
+  complete,
+}: {
+  progress: number;
+  complete?: boolean;
+}) {
   const r = 24;
   const circ = 2 * Math.PI * r;
   const offset = circ - (progress / 100) * circ;
   return (
     <div className="relative w-14 h-14 shrink-0">
       <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
-        <circle cx="28" cy="28" r={r} fill="none" className="stroke-stone-100 dark:stroke-stone-800" strokeWidth="4" />
         <circle
-          cx="28" cy="28" r={r}
+          cx="28"
+          cy="28"
+          r={r}
           fill="none"
-          className={complete ? "stroke-lime-500" : "stroke-stone-900 dark:stroke-stone-50"}
+          className="stroke-stone-100 dark:stroke-stone-800"
+          strokeWidth="4"
+        />
+        <circle
+          cx="28"
+          cy="28"
+          r={r}
+          fill="none"
+          className={
+            complete
+              ? "stroke-lime-500"
+              : "stroke-stone-900 dark:stroke-stone-50"
+          }
           strokeWidth="4"
           strokeLinecap="round"
           strokeDasharray={`${circ}`}
@@ -69,16 +105,21 @@ export default function JsLessonsPage() {
   const sectionStats = useMemo(() => {
     return sections.map((section) => {
       const sectionLessons = lessons.filter((l) => l.sectionId === section.id);
-      const completed = sectionLessons.filter((l) => progress[l.id]?.completed).length;
+      const completed = sectionLessons.filter(
+        (l) => progress[l.id]?.completed,
+      ).length;
       const total = sectionLessons.length;
       const hasInterview = sectionLessons.some((l) => l.isInterviewQuestion);
       return { ...section, completed, total, hasInterview };
     });
   }, [progress]);
 
-  const totalCompleted = Object.values(progress).filter((p) => p.completed).length;
+  const totalCompleted = Object.values(progress).filter(
+    (p) => p.completed,
+  ).length;
   const totalLessons = lessons.length;
-  const overallPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+  const overallPct =
+    totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
 
   return (
     <div className="relative text-stone-900 dark:text-stone-50 pb-12">
@@ -99,17 +140,27 @@ export default function JsLessonsPage() {
             { name: "Learn", url: `${SITE_URL}/learn` },
             { name: "JavaScript", url: `${SITE_URL}/learn/javascript` },
           ]),
+          faqSchema([
+            {
+              question: "Is this JavaScript course free?",
+              answer:
+                "Yes, the JavaScript course on InternHack is completely free with no sign-up required.",
+            },
+            {
+              question: "What will I learn in this JavaScript course?",
+              answer:
+                "You will learn variables, functions, DOM manipulation, async/await, ES6+ features, and real-world projects.",
+            },
+            {
+              question: "Is JavaScript hard to learn?",
+              answer:
+                "With structured learning like InternHack's JavaScript track, beginners can get started quickly and build real projects.",
+            },
+          ]),
         ]}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto px-3 sm:px-0">
         {/* Editorial header */}
@@ -138,7 +189,8 @@ export default function JsLessonsPage() {
               </span>
             </h1>
             <p className="mt-3 text-sm text-stone-500 max-w-md">
-              Closures, async/await, prototypes, the event loop, and every interview favourite, walked from first principles to production.
+              Closures, async/await, prototypes, the event loop, and every
+              interview favourite, walked from first principles to production.
             </p>
           </div>
           <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -207,7 +259,10 @@ export default function JsLessonsPage() {
         {/* Section grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sectionStats.map((section, idx) => {
-            const pct = section.total > 0 ? Math.round((section.completed / section.total) * 100) : 0;
+            const pct =
+              section.total > 0
+                ? Math.round((section.completed / section.total) * 100)
+                : 0;
             const basePath = "/learn/javascript";
             const isComplete = pct === 100 && section.total > 0;
             const isLocked = idx >= FREE_LIMIT && !isAuthenticated;
@@ -267,9 +322,13 @@ export default function JsLessonsPage() {
 
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   <MetaChip>
-                    {isLocked ? `${section.total} lessons` : `${section.completed} / ${section.total} done`}
+                    {isLocked
+                      ? `${section.total} lessons`
+                      : `${section.completed} / ${section.total} done`}
                   </MetaChip>
-                  <MetaChip className={LEVEL_STYLE[section.level]}>{section.level}</MetaChip>
+                  <MetaChip className={LEVEL_STYLE[section.level]}>
+                    {section.level}
+                  </MetaChip>
                   {section.hasInterview && (
                     <MetaChip className="text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60">
                       <Star className="w-3 h-3" /> interview
@@ -279,7 +338,11 @@ export default function JsLessonsPage() {
 
                 <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
                   <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
-                    {isLocked ? "sign in to unlock" : isComplete ? "review section" : "open lessons"}
+                    {isLocked
+                      ? "sign in to unlock"
+                      : isComplete
+                        ? "review section"
+                        : "open lessons"}
                   </span>
                   <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
                 </div>

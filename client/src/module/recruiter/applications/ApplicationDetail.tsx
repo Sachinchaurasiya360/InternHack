@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import toast from "../../../components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate } from "react-router";
@@ -11,6 +11,7 @@ import {
   Clock,
   FileText,
   ShieldCheck,
+  Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import api, { SERVER_URL } from "../../../lib/axios";
@@ -99,8 +100,10 @@ export default function ApplicationDetail() {
     null,
   );
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
+  const evalTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const [isAdvancing, setIsAdvancing] = useState(false);
 
-const fetchDetail = useCallback(async (signal) => {
+const fetchDetail = useCallback(async (signal?: AbortSignal) => {
     try {
       const res = await api.get(
         `/recruiter/applications/${applicationId}`,
@@ -108,18 +111,25 @@ const fetchDetail = useCallback(async (signal) => {
       );
       return res.data.application;
     } catch (err) {
-      if (err.name !== "CanceledError" && err.name !== "AbortError") {
+      if (err instanceof Error && err.name !== "CanceledError" && err.name !== "AbortError") {
         console.error(err);
       }
       throw err;
     }
   }, [applicationId]);
 
+  const loadData = useCallback(async () => {
+    const applicationData = await fetchDetail(undefined);
+    if (applicationData) {
+      setApplication(applicationData);
+    }
+  }, [fetchDetail]);
+
   useEffect(() => {
     const controller = new AbortController();
     let isMounted = true;
 
-    const loadData = async () => {
+    const initialLoad = async () => {
       try {
         setLoading(true);
         const applicationData = await fetchDetail(controller.signal);
@@ -136,7 +146,7 @@ const fetchDetail = useCallback(async (signal) => {
       }
     };
 
-    loadData();
+    initialLoad();
 
     return () => {
       isMounted = false;
@@ -155,11 +165,14 @@ const fetchDetail = useCallback(async (signal) => {
 
   const handleAdvance = async () => {
     try {
+      setIsAdvancing(true);
       await api.patch(`/recruiter/applications/${applicationId}/advance`);
-      fetchDetail();
+      await loadData();
       toast.success("Application advanced");
     } catch {
       toast.error("Failed to advance");
+    } finally {
+      setIsAdvancing(false);
     }
   };
 
@@ -168,12 +181,18 @@ const fetchDetail = useCallback(async (signal) => {
       await api.patch(`/recruiter/applications/${applicationId}/status`, {
         status,
       });
-      fetchDetail();
+      await loadData();
       toast.success("Status updated");
     } catch {
       toast.error("Failed to update status");
     }
   };
+
+  useEffect(() => {
+    if (evaluatingRoundId === null && evalTriggerRef.current) {
+      evalTriggerRef.current.focus();
+    }
+  }, [evaluatingRoundId]);
 
   if (loading)
     return (
@@ -239,9 +258,15 @@ const fetchDetail = useCallback(async (signal) => {
             </select>
             <Button
               onClick={handleAdvance}
-              className="px-4 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200"
+              disabled={isAdvancing}
+              className={`flex items-center gap-2 px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors ${
+                isAdvancing 
+                  ? "bg-black/50 dark:bg-white/50 text-white dark:text-gray-950 cursor-not-allowed" 
+                  : "bg-black dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-200"
+              }`}
             >
-              Advance
+              {isAdvancing && <Loader2 className="w-4 h-4 animate-spin" />}
+              {isAdvancing ? "Advancing..." : "Advance"}
             </Button>
           </div>
         </div>
@@ -388,11 +413,12 @@ const fetchDetail = useCallback(async (signal) => {
                     </span>
                   )}
                   <Button
-                    onClick={() =>
+                    onClick={(e) => {
+                      evalTriggerRef.current = e.currentTarget;
                       setEvaluatingRoundId(
                         evaluatingRoundId === sub.roundId ? null : sub.roundId,
-                      )
-                    }
+                      );
+                    }}
                     className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-300"
                   >
                     {evaluatingRoundId === sub.roundId ? "Close" : "Evaluate"}
@@ -434,7 +460,8 @@ const fetchDetail = useCallback(async (signal) => {
                     criteria={sub.round?.evaluationCriteria || []}
                     onComplete={() => {
                       setEvaluatingRoundId(null);
-                      fetchDetail();
+                      evalTriggerRef.current?.focus();
+                      loadData();
                     }}
                   />
                 </div>
@@ -449,7 +476,7 @@ const fetchDetail = useCallback(async (signal) => {
 
 function getStatusIcon(status: string) {
   switch (status) {
-case "COMPLETED":
+    case "COMPLETED":
       return <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />;
     case "IN_PROGRESS":
       return <Clock className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />;

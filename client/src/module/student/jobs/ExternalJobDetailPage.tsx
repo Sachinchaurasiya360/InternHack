@@ -25,14 +25,7 @@ function Kicker({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CompanyMark({ label, size = "md" }: { label: string; size?: "md" | "lg" }) {
-  const dims = size === "lg" ? "w-14 h-14 text-xl" : "w-10 h-10 text-sm";
-  return (
-    <div className={`${dims} rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 font-bold`}>
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
 export default function ExternalJobDetailPage() {
   const { slug } = useParams();
@@ -44,7 +37,7 @@ export default function ExternalJobDetailPage() {
   const [applied, setApplied] = useState(false);
 
   const { data: job, isLoading, error } = useQuery({
-    queryKey: ["external-job", slug],
+    queryKey: queryKeys.externalJobs.detail(slug!),
     queryFn: async () => {
       const res = await api.get(`/external-jobs/${slug}`);
       return res.data.job as ExternalJob;
@@ -55,7 +48,7 @@ export default function ExternalJobDetailPage() {
   });
 
   const { data: similarJobs = [] } = useQuery({
-    queryKey: ["external-job-similar", job?.id],
+    queryKey: queryKeys.externalJobs.similar(job?.id as number),
     queryFn: async () => {
       const res = await api.get(`/external-jobs`, { params: { limit: 20 } });
       const all = (res.data.jobs || []) as ExternalJob[];
@@ -76,7 +69,7 @@ export default function ExternalJobDetailPage() {
   });
 
   useQuery({
-    queryKey: ["external-job-status", job?.id],
+    queryKey: queryKeys.externalJobs.status(job?.id as number),
     queryFn: async () => {
       const res = await api.get(`/student/external-jobs/${job!.id}/status`);
       if (res.data.applied) setApplied(true);
@@ -175,7 +168,7 @@ export default function ExternalJobDetailPage() {
           <motion.div variants={fadeUp} className="mb-8">
             <Kicker>external / posting</Kicker>
             <div className="mt-4 flex items-start gap-4">
-              <CompanyMark label={job.company || "?"} size="lg" />
+              <CompanyMark name={job.company || "?"} size="lg" />
               <div className="flex-1 min-w-0">
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
                   {job.role || "Untitled Role"}
@@ -289,7 +282,7 @@ export default function ExternalJobDetailPage() {
                   >
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex items-start gap-3 min-w-0">
-                        <CompanyMark label={s.company || "?"} />
+                        <CompanyMark name={s.company || "?"} />
                         <div className="flex-1 min-w-0">
                           <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate leading-tight">
                             {s.role || "Untitled Role"}

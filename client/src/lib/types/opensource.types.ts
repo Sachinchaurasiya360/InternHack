@@ -20,9 +20,11 @@ export interface OpenSourceRepo {
   tags: string[];
   highlights: string[];
   trending: boolean;
+  hacktoberfest: boolean;
   lastUpdated: string;
   createdAt: string;
   updatedAt: string;
+  healthScore: number;
   matchedSkills?: string[];
 }
 
@@ -62,6 +64,71 @@ export interface OpenSourceContributionTrendResponse {
   domains: { domain: string; count: number }[];
 }
 
+export interface HacktoberfestProgressNode {
+  id: number;
+  label: string;
+  description: string;
+  completed: boolean;
+}
+
+export interface HacktoberfestProgressResponse {
+  completed: number;
+  goal: number;
+  percent: number;
+  nodes: HacktoberfestProgressNode[];
+  stats: {
+    approvedContributions: number;
+    repoSuggestions: number;
+    firstPrStepsCompleted: number;
+    firstPrTotalSteps: number;
+  };
+}
+
+export type GithubSyncStatus = "PENDING" | "SYNCING" | "SUCCESS" | "FAILED";
+
+export interface GithubPullRequestSummary {
+  id: number;
+  title: string;
+  url: string;
+  number: number;
+  mergedAt: string;
+  repoName: string;
+  repoUrl: string;
+  repoStars: number;
+  language: string | null;
+}
+
+export interface GithubContributedRepoSummary {
+  id: number;
+  nameWithOwner: string;
+  url: string;
+  stars: number;
+  language: string | null;
+  mergedPrs: number;
+  lastMergedAt: string | null;
+}
+
+export interface GithubConnectionSummary {
+  id: number;
+  githubUsername: string;
+  profileUrl: string;
+  connectedAt: string;
+  lastSyncAt: string | null;
+  syncStatus: GithubSyncStatus;
+  syncError: string | null;
+  prsMerged: number;
+  reposContributed: number;
+  publicRepos: number;
+  contributedStars: number;
+  recentPullRequests: GithubPullRequestSummary[];
+  contributedRepos: GithubContributedRepoSummary[];
+}
+
+export interface GithubConnectionResponse {
+  connected: boolean;
+  connection: GithubConnectionSummary | null;
+}
+
 // GSoC Organizations
 export interface GSoCOrganization {
   id: number;
@@ -92,6 +159,17 @@ export interface GSoCOrganization {
   mailingList?: string;
   ideasUrl?: string;
   guideUrl?: string;
+}
+
+export interface OpenSourceStreak {
+  id: number;
+  userId: number;
+  currentStreak: number;
+  longestStreak: number;
+  lastActivityAt: string | null;
+  totalDays: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GSoCStats {

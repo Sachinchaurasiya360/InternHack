@@ -37,10 +37,16 @@ export interface Track {
   lessonCountKey?: string;
   /** Absolute path override. When present, the card links here instead of `/learn/${path}`. */
   to?: string;
+  /** Track IDs that should be completed before starting this track. */
+  prerequisites?: string[];
+  /** Human-readable prerequisite hint shown on the card. */
+  prerequisiteText?: string;
   tags?: string[];
   difficulty?: "Beginner" | "Intermediate" | "Advanced";
   createdAt?: string;
   enrolledStudents?: number;
+  /** Average salary range for this skill in India (e.g. "Avg ₹14 LPA"). Source: Glassdoor, AmbitionBox. */
+  salary?: string;
 }
 
 export const TRACKS: Track[] = [
@@ -101,6 +107,7 @@ export const TRACKS: Track[] = [
     kind: "lesson",
     category: "practice",
     stat: "Animated lessons",
+    salary: "Avg ₹35 LPA",
   },
   {
     id: "aptitude",
@@ -132,6 +139,7 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "html",
+    salary: "Avg ₹8 LPA",
   },
   {
     id: "css",
@@ -147,6 +155,9 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "css",
+    prerequisites: ["html"],
+    prerequisiteText: "You should know HTML basics before starting CSS",
+    salary: "Avg ₹8 LPA",
   },
   {
     id: "javascript",
@@ -162,6 +173,9 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "javascript",
+    prerequisites: ["html"],
+    prerequisiteText: "You should know HTML basics before starting JavaScript",
+    salary: "Avg ₹10 LPA",
   },
   {
     id: "typescript",
@@ -177,6 +191,9 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "typescript",
+    prerequisites: ["javascript"],
+    prerequisiteText: "You should know JavaScript fundamentals before starting TypeScript",
+    salary: "Avg ₹13 LPA",
   },
   {
     id: "react",
@@ -192,6 +209,9 @@ export const TRACKS: Track[] = [
     category: "frontend",
     stat: "Lessons",
     lessonCountKey: "react",
+    prerequisites: ["html", "javascript"],
+    prerequisiteText: "You should know HTML basics and JavaScript fundamentals before starting React",
+    salary: "Avg ₹14 LPA",
   },
 
   // ── Backend ──
@@ -209,6 +229,9 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "nodejs",
+    prerequisites: ["javascript"],
+    prerequisiteText: "You should know JavaScript fundamentals before starting Node.js",
+    salary: "Avg ₹12 LPA",
   },
   {
     id: "python",
@@ -224,6 +247,7 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "python",
+    salary: "Avg ₹13 LPA",
   },
   {
     id: "fastapi",
@@ -239,6 +263,9 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "fastapi",
+    prerequisites: ["python"],
+    prerequisiteText: "You should know Python basics before starting FastAPI",
+    salary: "Avg ₹11 LPA",
   },
   {
     id: "flask",
@@ -254,6 +281,9 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "flask",
+    prerequisites: ["python"],
+    prerequisiteText: "You should know Python basics before starting Flask",
+    salary: "Avg ₹10 LPA",
   },
   {
     id: "django",
@@ -269,6 +299,9 @@ export const TRACKS: Track[] = [
     category: "backend",
     stat: "Lessons",
     lessonCountKey: "django",
+    prerequisites: ["python"],
+    prerequisiteText: "You should know Python basics before starting Django",
+    salary: "Avg ₹12 LPA",
   },
 
   // ── Data ──
@@ -285,6 +318,7 @@ export const TRACKS: Track[] = [
     kind: "lesson",
     category: "data",
     stat: "188 Exercises",
+    salary: "Avg ₹8 LPA",
   },
   {
     id: "data-analytics",
@@ -299,6 +333,7 @@ export const TRACKS: Track[] = [
     category: "data",
     stat: "Lessons",
     lessonCountKey: "data-analytics",
+    salary: "Avg ₹15 LPA",
   },
 
   // ── Web3 ──
@@ -316,6 +351,7 @@ export const TRACKS: Track[] = [
     category: "web3",
     stat: "35 Projects",
     difficulty: "Beginner", //mock testing
+    salary: "Avg ₹16 LPA",
   },
 ];
 

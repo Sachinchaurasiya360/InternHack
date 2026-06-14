@@ -24,6 +24,7 @@ import { AdminService } from "./module/admin/admin.service.js";
 import { AdminController } from "./module/admin/admin.controller.js";
 import { newsletterRouter } from "./module/newsletter/newsletter.routes.js";
 import { opensourceRouter } from "./module/opensource/opensource.routes.js";
+import { githubRouter } from "./module/github/github.routes.js";
 import { paymentRouter } from "./module/payment/payment.routes.js";
 import { blogRouter } from "./module/blog/blog.routes.js";
 import { gsocRouter } from "./module/gsoc/gsoc.routes.js";
@@ -54,7 +55,6 @@ import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
 import { contactRouter } from "./module/contact/contact.routes.js";
-// import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
@@ -76,6 +76,9 @@ import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
+import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
+import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
+import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
@@ -253,6 +256,7 @@ app.use("/api/companies", companyRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/opensource", opensourceRouter);
+app.use("/api/github", githubRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/blog", blogRouter);
 app.use("/api/gsoc", gsocRouter);
@@ -296,7 +300,6 @@ app.use("/api/coach", coachRouter);
 
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
-// app.use("/api/hackathons", hackathonRouter);
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
 // Public ingest endpoint, external websites POST jobs here with API key
@@ -433,6 +436,36 @@ const server = app.listen(PORT, async () => {
     fn: () => stopAnalyticsReportCron(),
   });
 
+  // Start signals cleanup cron (weekly Sunday at 2 AM)
+  startSignalsCleanupCron();
+  shutdownManager.register({
+    name: "Signals Cleanup Cron",
+    priority: 10,
+    fn: () => stopSignalsCleanupCron(),
+  });
+
+  // Start OSS deadline alert cron (daily at 9 AM)
+  startDeadlineAlertCron();
+  shutdownManager.register({
+    name: "Deadline Alert Cron",
+    priority: 10,
+    fn: () => stopDeadlineAlertCron(),
+  });
+
+  const runGithubContributionsCron =
+    process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] !== "false");
+  if (runGithubContributionsCron) {
+    startGithubContributionsCron(process.env["GITHUB_CONTRIBUTIONS_CRON"] || "0 2 * * *");
+    shutdownManager.register({
+      name: "GitHub Contributions Cron",
+      priority: 10,
+      fn: () => stopGithubContributionsCron(),
+    });
+  } else {
+    logger.info("GitHub contributions cron disabled on this process");
+  }
+
   // Register Redis disconnect
   if (redis) {
     shutdownManager.register({
@@ -464,4 +497,3 @@ const server = app.listen(PORT, async () => {
 app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
-

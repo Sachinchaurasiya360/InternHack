@@ -1,19 +1,31 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useSearchParams } from "react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
 import {
   AlertCircle,
   Filter,
   X,
   Maximize2,
+  Flame,
+  TrendingUp,
   Download,
   ChevronDown,
   ArrowLeft,
   BarChart3,
+  CheckCircle2,
+  ExternalLink,
+  GitPullRequest,
+  Github,
+  Loader2,
+  RefreshCw,
+  ShieldCheck,
+  Star,
+  Trash2,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
+import { useAuthStore } from "../../../lib/auth.store";
 import {
   PieChart,
   Pie,
@@ -38,11 +50,18 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { Button } from "../../../components/ui/button";
 import { SEO } from "../../../components/SEO";
+import { markLearningPathMilestone } from "./learning-paths.data";
 import type {
   GSoCOrganization,
   GSoCStats,
+  GithubConnectionResponse,
+  GithubConnectionSummary,
   OpenSourceContributionTrendResponse,
 } from "../../../lib/types";
+import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
+import { HacktoberfestTracker } from "./HacktoberfestTracker";
+import type { OpenSourceStreak } from "../../../lib/types";
+import { STREAK_RESET_HOURS, STREAK_RISK_HOURS } from "./streakConstants";
 
 // ─── Theme ──────────────────────────────────────────────────────
 const CHART_COLORS = [
@@ -116,7 +135,7 @@ function ChartModal({ open, onClose, title, subtitle, children }: { open: boolea
               <div>
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <div className="h-1 w-1 bg-lime-400" />
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400">{subtitle}</p>
+                  <p className="text-xs font-mono uppercase tracking-widest text-stone-400">{subtitle}</p>
                 </div>
                 <h3 className="text-base font-bold text-stone-50">{title}</h3>
               </div>
@@ -135,6 +154,27 @@ function ChartModal({ open, onClose, title, subtitle, children }: { open: boolea
         </>
       )}
     </AnimatePresence>
+  );
+}
+
+// ─── Accessible Chart ─────────────────────────────────────────────────
+function AccessibleChart({
+  label,
+  caption,
+  children,
+}: {
+  label: string;
+  caption: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <figure role="img" aria-label={label} tabIndex={0}>
+      {children}
+
+      <figcaption className="sr-only">
+        {caption}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -160,7 +200,7 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
           <div>
             <div className="flex items-center gap-1.5 mb-0.5">
               <div className="h-1 w-1 bg-lime-400" />
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{subtitle}</p>
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">{subtitle}</p>
             </div>
             <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50">{title}</h3>
           </div>
@@ -228,13 +268,265 @@ function TrendEmptyState({
   );
 }
 
+function formatDate(value: string | null) {
+  if (!value) return "Never";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
+function GithubMetricCard({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string | number;
+  icon: React.ComponentType<{ className?: string }>;
+}) {
+  return (
+    <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+          {label}
+        </p>
+        <Icon className="h-4 w-4 text-lime-500" />
+      </div>
+      <p className="mt-3 text-2xl font-bold text-stone-900 dark:text-stone-50">
+        {typeof value === "number" ? value.toLocaleString() : value}
+      </p>
+    </div>
+  );
+}
+
+function GithubEmptyConnection({
+  onConnect,
+  connecting,
+}: {
+  onConnect: () => void;
+  connecting: boolean;
+}) {
+  return (
+    <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-8 text-center">
+      <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-md border border-stone-200 bg-stone-50 dark:border-white/10 dark:bg-white/5">
+        <Github className="h-7 w-7 text-stone-900 dark:text-stone-50" />
+      </div>
+      <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
+        Verify your real open-source work
+      </h2>
+      <p className="mx-auto mt-2 max-w-xl text-sm text-stone-500 dark:text-stone-400">
+        Connect GitHub to sync merged public pull requests, contributed repositories, and stars from non-fork projects.
+      </p>
+      <Button onClick={onConnect} disabled={connecting} className="mt-6">
+        {connecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Github className="h-4 w-4" />}
+        Connect GitHub
+      </Button>
+    </div>
+  );
+}
+
+function RealContributionsView({
+  data,
+  isLoading,
+  onConnect,
+  onSync,
+  onDisconnect,
+  connecting,
+  syncing,
+  disconnecting,
+}: {
+  data?: GithubConnectionResponse;
+  isLoading: boolean;
+  onConnect: () => void;
+  onSync: () => void;
+  onDisconnect: () => void;
+  connecting: boolean;
+  syncing: boolean;
+  disconnecting: boolean;
+}) {
+  if (isLoading) {
+    return (
+      <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-8">
+        <div className="flex items-center gap-3 text-sm text-stone-500 dark:text-stone-400">
+          <Loader2 className="h-4 w-4 animate-spin text-lime-500" />
+          Loading GitHub connection...
+        </div>
+      </div>
+    );
+  }
+
+  if (!data?.connected || !data.connection) {
+    return <GithubEmptyConnection onConnect={onConnect} connecting={connecting} />;
+  }
+
+  const connection: GithubConnectionSummary = data.connection;
+  const isSyncing = syncing || connection.syncStatus === "SYNCING";
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
+            <div className="mb-2 flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <ShieldCheck className="h-3.5 w-3.5 text-lime-500" />
+              verified github connection
+            </div>
+            <h2 className="truncate text-xl font-bold text-stone-900 dark:text-stone-50">
+              @{connection.githubUsername}
+            </h2>
+            <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+              Last synced {formatDate(connection.lastSyncAt)}
+              {connection.syncStatus === "FAILED" && connection.syncError ? ` · ${connection.syncError}` : ""}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="secondary" size="sm">
+              <a href={connection.profileUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-4 w-4" />
+                Profile
+              </a>
+            </Button>
+            <Button onClick={onSync} disabled={isSyncing} variant="secondary" size="sm">
+              {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              Sync
+            </Button>
+            <Button onClick={onDisconnect} disabled={disconnecting} variant="destructive" size="sm">
+              {disconnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Disconnect
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <GithubMetricCard label="merged prs" value={connection.prsMerged} icon={GitPullRequest} />
+        <GithubMetricCard label="repos contributed" value={connection.reposContributed} icon={CheckCircle2} />
+        <GithubMetricCard label="public repos" value={connection.publicRepos} icon={Github} />
+        <GithubMetricCard label="stars on repos" value={connection.contributedStars} icon={Star} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+        <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
+          <div className="mb-4 flex items-center gap-1.5">
+            <div className="h-1 w-1 bg-lime-400" />
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              recent merged pull requests
+            </p>
+          </div>
+          {connection.recentPullRequests.length === 0 ? (
+            <p className="rounded-md border border-dashed border-stone-200 dark:border-white/10 p-6 text-center text-sm text-stone-500 dark:text-stone-400">
+              No merged public pull requests found in non-fork repositories yet.
+            </p>
+          ) : (
+            <div className="divide-y divide-stone-100 dark:divide-white/10">
+              {connection.recentPullRequests.map((pr) => (
+                <a
+                  key={pr.id}
+                  href={pr.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block py-3 no-underline transition-colors hover:bg-stone-50 dark:hover:bg-white/5"
+                >
+                  <div className="flex items-start justify-between gap-4 px-2">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-50">
+                        {pr.title}
+                      </p>
+                      <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                        {pr.repoName} #{pr.number} · merged {formatDate(pr.mergedAt)}
+                      </p>
+                    </div>
+                    <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-stone-400" />
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
+          <div className="mb-4 flex items-center gap-1.5">
+            <div className="h-1 w-1 bg-lime-400" />
+            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              contributed repositories
+            </p>
+          </div>
+          {connection.contributedRepos.length === 0 ? (
+            <p className="rounded-md border border-dashed border-stone-200 dark:border-white/10 p-6 text-center text-sm text-stone-500 dark:text-stone-400">
+              Repositories will appear here after GitHub sync finds merged PRs.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {connection.contributedRepos.slice(0, 12).map((repo) => (
+                <a
+                  key={repo.id}
+                  href={repo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-md border border-stone-100 p-3 no-underline transition-colors hover:border-stone-300 dark:border-white/10 dark:hover:border-white/25"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-50">
+                        {repo.nameWithOwner}
+                      </p>
+                      <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                        {repo.mergedPrs} merged PR{repo.mergedPrs === 1 ? "" : "s"}
+                        {repo.language ? ` · ${repo.language}` : ""}
+                      </p>
+                    </div>
+                    <span className="inline-flex shrink-0 items-center gap-1 text-xs font-mono text-stone-500 dark:text-stone-400">
+                      <Star className="h-3 w-3 text-lime-500" />
+                      {repo.stars.toLocaleString()}
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ───────────────────────────────────────────────────────
+
+
 export default function OpenSourceAnalyticsPage() {
+  useEffect(() => {
+    markLearningPathMilestone("leaderboard");
+  }, []);
+
+  const { user } = useAuthStore();
+  const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"internhack" | "github">(
+    searchParams.get("github") === "connected" ? "github" : "internhack",
+  );
+  const isPremium =
+    user?.subscriptionStatus === "ACTIVE" &&
+    user?.subscriptionPlan !== "FREE" &&
+    user?.subscriptionEndDate &&
+    new Date(user.subscriptionEndDate) > new Date();
+  const showHacktoberfestTracker = isHacktoberfestMode();
+
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [filterYear, setFilterYear] = useState<string>("ALL");
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
   const [filterTech, setFilterTech] = useState<string>("ALL");
   const [showFilters, setShowFilters] = useState(false);
+
+  const now = Date.now(); // eslint-disable-line react-hooks/purity
+
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  const defaultStart = sixMonthsAgo.toISOString().slice(0, 7);
+  const today = new Date().toISOString().slice(0, 7);
+  const [startMonth, setStartMonth] = useState(defaultStart);
+  const [endMonth, setEndMonth] = useState(today);
 
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
@@ -261,38 +553,112 @@ export default function OpenSourceAnalyticsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
-    queryKey: queryKeys.opensource.trend(),
-    queryFn: () => api.get("/opensource/analytics/trend").then((r) => r.data),
+const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
+    queryKey: queryKeys.opensource.trend(startMonth, endMonth),
+    queryFn: () => api.get("/opensource/analytics/trend", { params: { startDate: startMonth, endDate: endMonth } }).then((r) => r.data),
     staleTime: 5 * 60 * 1000,
   });
+
+  const { data: streakData } = useQuery({
+    queryKey: queryKeys.opensource.streak(),
+    queryFn: () => api.get("/opensource/streak").then((r) => r.data.streak as OpenSourceStreak),
+    staleTime: 60000,
+  });
+
+  const { data: githubConnectionData, isLoading: githubConnectionIsLoading } = useQuery<GithubConnectionResponse>({
+    queryKey: queryKeys.opensource.githubConnection(),
+    queryFn: () => api.get("/github/connection").then((r) => r.data),
+    staleTime: 60 * 1000,
+  });
+
+  const connectGithubMutation = useMutation({
+    mutationFn: async () => {
+      const res = await api.post<{ authUrl: string }>("/github/connect");
+      return res.data.authUrl;
+    },
+    onSuccess: (authUrl) => {
+      window.location.href = authUrl;
+    },
+  });
+
+  const syncGithubMutation = useMutation({
+    mutationFn: async () => api.post<GithubConnectionResponse>("/github/sync").then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
+    },
+  });
+
+  const disconnectGithubMutation = useMutation({
+    mutationFn: async () => api.delete<GithubConnectionResponse>("/github/connection").then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
+    },
+  });
+
+  useEffect(() => {
+    if (searchParams.get("github") === "connected") {
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
+      const next = new URLSearchParams(searchParams);
+      next.delete("github");
+      setSearchParams(next, { replace: true });
+    }
+  }, [queryClient, searchParams, setSearchParams]);
 
   const allOrgs = useMemo(() => orgsData ?? [], [orgsData]);
   const contributionTrend = contributionTrendData?.trend ?? [];
   const contributionTotal = contributionTrendData?.total ?? 0;
   const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
   const showContributionEmptyState =
-  contributionTotal === 0 &&
-  contributionTrend.length > 0 &&
-  contributionTrend.every((entry) => entry.count === 0);
+    contributionTotal === 0 &&
+    contributionTrend.length > 0 &&
+    contributionTrend.every((entry) => entry.count === 0);
 
-  const handleExportCSV = () => {
-    if (!contributionTrend || contributionTrend.length === 0) return;
-
-    const header = "Month,Label,Contributions";
-    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
-    const csv = [header, ...rows].join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const downloadBlob = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "my-oss-contributions.csv";
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+  const handleExportCSV = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+    const header = "Month,Label,Contributions";
+    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
+    downloadBlob([header, ...rows].join("\n"), `oss-contributions-${startMonth}-${endMonth}.csv`, "text/csv;charset=utf-8;");
+  };
+  const handleExportJSON = () => {
+    if (!contributionTrend || contributionTrend.length === 0) return;
+    const json = JSON.stringify({ range: { start: startMonth, end: endMonth }, contributions: contributionTrend }, null, 2);
+    downloadBlob(json, `oss-contributions-${startMonth}-${endMonth}.json`, "application/json");
+  };
+
+  const currentStreak = (() => {
+    let count = 0;
+    let i = contributionTrend.length - 1;
+    // The most recent month is still in progress: a zero there shouldn't break an
+    // otherwise active streak, so skip it before counting backwards.
+    if (i >= 0 && contributionTrend[i].count === 0) i--;
+    for (; i >= 0; i--) {
+      if (contributionTrend[i].count > 0) count++;
+      else break;
+    }
+    return count;
+  })();
+
+  const longestStreak = (() => {
+    let max = 0, cur = 0;
+    for (const point of contributionTrend) {
+      cur = point.count > 0 ? cur + 1 : 0;
+      max = Math.max(max, cur);
+    }
+    return max;
+  })();
+
+  // ─── Derive filter options ──────────────────────────────────
 
   const years = useMemo(() => {
     const set = new Set<number>();
@@ -409,93 +775,196 @@ export default function OpenSourceAnalyticsPage() {
     );
   };
 
+  if (!isPremium) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16">
+        <PremiumUpgradeCTA feature="Open Source Analytics" />
+      </div>
+    );
+  }
+
   if (isLoading) {
     return <LoadingScreen />;
   }
 
-  // Empty state: student has zero contributions
-  if (!trendIsLoading && !trendIsError && contributionTotal === 0) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 text-center">
-        <div className="bg-indigo-50 rounded-full p-6 mb-5">
-          <BarChart3 className="w-12 h-12 text-indigo-400" />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">
-          No contributions tracked yet
-        </h2>
-        <p className="text-gray-500 max-w-md mb-8">
-          Submit a repo suggestion and get it approved to start tracking
-          your open source journey.
-        </p>
-        <Link
-          to="/student/opensource"
-          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
-        >
-          Discover Repositories →
-        </Link>
-      </div>
-    );
-  }
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+    <div className="pb-16">
       <SEO title="Open Source Analytics" noIndex />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8">
+      <div className="max-w-6xl mx-auto">
 
         {/* Editorial header */}
-        <div className="mb-8">
-          <div className="flex items-end justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5 leading-tight">
-                Open Source Analytics
-              </h1>
-              <p className="text-sm text-stone-600 dark:text-stone-400">
-                {allOrgs.length > 0
-                  ? `${orgs.length} of ${allOrgs.length} GSoC organizations${hasActiveFilter ? " (filtered)" : ""}${stats ? ` · ${stats.years.length} years · ${stats.technologies.length} technologies` : ""}`
-                  : "Your contribution activity and open source stats."
-                }
-              </p>
+        <div className="mt-6 mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-8">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+              <span className="h-1.5 w-1.5 bg-lime-400" />
+              open source / analytics
             </div>
-            <Link
-              to="/student/opensource"
-              className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
-            >
-              <ArrowLeft className="w-3 h-3" />
-              back to repos
-            </Link>
-          </div>
-        </div>
-
-        {/* ── Contribution Heatmap ─────────────────────────────── */}
-        <div className="mb-8">
-          <div className="flex items-center gap-1.5 mb-3">
-            <div className="h-1 w-1 bg-lime-400" />
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-              your contributions
+            <h1 className="mt-3 text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
+              Open Source Analytics
+            </h1>
+            <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+              {allOrgs.length > 0
+                ? `${orgs.length} of ${allOrgs.length} GSoC organizations${hasActiveFilter ? " (filtered)" : ""}${stats ? ` · ${stats.years.length} years · ${stats.technologies.length} technologies` : ""}`
+                : "Your contribution activity and open source stats."
+              }
             </p>
           </div>
-          <OssContributionHeatmap />
+          <Link
+            to="/student/opensource"
+            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline shrink-0"
+          >
+            <ArrowLeft className="w-3 h-3" />
+            back to repos
+          </Link>
+        </div>
 
-          <div className="mt-3 flex items-center gap-3">
+        {showHacktoberfestTracker && <HacktoberfestTracker />}
+
+        <div className="mb-8 flex flex-wrap items-center gap-2 rounded-md border border-stone-200 bg-white p-1 dark:border-white/10 dark:bg-stone-900">
+          <button
+            type="button"
+            onClick={() => setActiveTab("internhack")}
+            className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
+              activeTab === "internhack"
+                ? "bg-stone-900 text-white dark:bg-white dark:text-stone-950"
+                : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-stone-50"
+            }`}
+          >
+            <BarChart3 className="h-4 w-4" />
+            InternHack Tracked
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("github")}
+            className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
+              activeTab === "github"
+                ? "bg-stone-900 text-white dark:bg-white dark:text-stone-950"
+                : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-stone-50"
+            }`}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Real Contributions
+          </button>
+        </div>
+
+        {activeTab === "github" ? (
+          <RealContributionsView
+            data={githubConnectionData}
+            isLoading={githubConnectionIsLoading}
+            onConnect={() => connectGithubMutation.mutate()}
+            onSync={() => syncGithubMutation.mutate()}
+            onDisconnect={() => disconnectGithubMutation.mutate()}
+            connecting={connectGithubMutation.isPending}
+            syncing={syncGithubMutation.isPending}
+            disconnecting={disconnectGithubMutation.isPending}
+          />
+        ) : (
+          <>
+
+        {/* ── Streak ──────────────────────────────────────────── */}
+        <div className="mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.03, duration: 0.4 }}
+            className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5"
+          >
+            <div className="flex items-center gap-1.5 mb-4">
+              <div className="h-1 w-1 bg-lime-400" />
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                streak
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-8">
+              <div className="flex items-center gap-3">
+                <Flame className={`w-8 h-8 ${streakData && streakData.currentStreak > 0 ? "text-lime-500" : "text-stone-400"}`} />
+                <div>
+                  <p className="text-2xl font-bold text-stone-900 dark:text-stone-50">
+                    {streakData?.currentStreak ?? 0}
+                  </p>
+                  <p className="text-xs text-stone-500">day streak</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-6 text-sm">
+                <div>
+                  <p className="font-bold text-stone-900 dark:text-stone-50">{streakData?.longestStreak ?? 0}</p>
+                  <p className="text-xs text-stone-500">longest</p>
+                </div>
+                <div>
+                  <p className="font-bold text-stone-900 dark:text-stone-50">{streakData?.totalDays ?? 0}</p>
+                  <p className="text-xs text-stone-500">total days</p>
+                </div>
+                {streakData?.lastActivityAt && (
+                  <div>
+                    <p className="font-bold text-stone-900 dark:text-stone-50">
+                      {Math.floor((now - new Date(streakData.lastActivityAt).getTime()) / 3600000)}h
+                    </p>
+                    <p className="text-xs text-stone-500">since last activity</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            {streakData && streakData.currentStreak > 0 && streakData.lastActivityAt && (() => {
+              const hoursSince = (now - new Date(streakData.lastActivityAt).getTime()) / 3600000;
+              const hoursRemaining = Math.max(0, STREAK_RESET_HOURS - hoursSince);
+              if (hoursSince >= STREAK_RISK_HOURS) {
+                return (
+                  <div className="mt-4 flex items-center gap-2 text-xs text-orange-500 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/30 rounded-md px-3 py-2">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>Your streak is at risk. Contribute within the next {Math.ceil(hoursRemaining)} hours to keep it alive.</span>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+          </motion.div>
+        </div>
+
+        {/* ── Monthly Contribution Activity ────────────────── */}
+        <div className="mb-8">
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
+              From
+              <input
+                type="month"
+                value={startMonth}
+                onChange={(e) => setStartMonth(e.target.value)}
+                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
+              />
+            </label>
+            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
+              To
+              <input
+                type="month"
+                value={endMonth}
+                onChange={(e) => setEndMonth(e.target.value)}
+                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
+              />
+            </label>
             <button
               onClick={handleExportCSV}
               disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
               className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
-              Export CSV
+              CSV
+            </button>
+            <button
+              onClick={handleExportJSON}
+              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
+              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              JSON
             </button>
           </div>
-        </div>
-
-        {/* ── Monthly Contribution Activity ────────────────── */}
-        <div className="mb-8">
           <ChartCard
             title="Monthly Contribution Activity"
             subtitle={
               trendIsLoading
                 ? "loading your approved open source contribution history"
-                : `approved repo requests in the last 6 months${contributionTotal ? ` · ${contributionTotal} total` : ""}`
+                : `approved repo requests ${startMonth}–${endMonth}${contributionTotal ? ` · ${contributionTotal} total` : ""}`
             }
             index={0}
             expandedChildren={
@@ -509,6 +978,7 @@ export default function OpenSourceAnalyticsPage() {
                   showButton
                 />
               ) : hasContributionActivity ? (
+                <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -518,6 +988,7 @@ export default function OpenSourceAnalyticsPage() {
                     <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
                   </BarChart>
                 </ResponsiveContainer>
+                </AccessibleChart>
               ) : (
                 <TrendEmptyState
                   message="Submit a repo suggestion and get it approved to start tracking your open source journey."
@@ -526,9 +997,31 @@ export default function OpenSourceAnalyticsPage() {
               )
             }
           >
+            {!trendIsLoading && !trendIsError && contributionTrend.length > 0 && (
+              <div className="mb-4">
+                {currentStreak === 0 ? (
+                  <div className="flex items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
+                    <Flame className="w-4 h-4 text-stone-400" />
+                    No active streak. Contribute this month to start one.
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center gap-2 bg-stone-100 dark:bg-white/5 px-3 py-2 rounded-md text-sm font-medium text-stone-700 dark:text-stone-300">
+                      <Flame className="w-4 h-4 text-lime-500" />
+                      Current streak: {currentStreak} month{currentStreak !== 1 ? "s" : ""}
+                    </div>
+                    <div className="flex items-center gap-2 bg-stone-100 dark:bg-white/5 px-3 py-2 rounded-md text-sm font-medium text-stone-700 dark:text-stone-300">
+                      <TrendingUp className="w-4 h-4 text-lime-500" />
+                      Longest streak: {longestStreak} month{longestStreak !== 1 ? "s" : ""}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             {trendIsLoading ? (
               <TrendSkeleton />
             ) : hasContributionActivity ? (
+              <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -538,6 +1031,7 @@ export default function OpenSourceAnalyticsPage() {
                   <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
                 </BarChart>
               </ResponsiveContainer>
+              </AccessibleChart>
             ) : trendIsError ? (
               <TrendEmptyState
                 message="We could not load your contribution trend right now. Try again in a moment."
@@ -561,7 +1055,7 @@ export default function OpenSourceAnalyticsPage() {
             >
               <div className="flex items-center gap-1.5 mb-4">
                 <div className="h-1 w-1 bg-lime-400" />
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                   contributions / by domain
                 </span>
               </div>
@@ -633,7 +1127,7 @@ export default function OpenSourceAnalyticsPage() {
                   <Filter className="w-3 h-3" />
                   Filters
                   {activeFilterCount > 0 && (
-                    <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-md bg-stone-950 text-lime-400 text-[10px] font-mono">
+                    <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-md bg-stone-950 text-lime-400 text-xs font-mono">
                       {activeFilterCount}
                     </span>
                   )}
@@ -644,7 +1138,7 @@ export default function OpenSourceAnalyticsPage() {
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
+                    className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer"
                   >
                     / clear all
                   </button>
@@ -661,7 +1155,7 @@ export default function OpenSourceAnalyticsPage() {
                   >
                     <div className="flex flex-wrap gap-4 mt-3 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
                       <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Year</label>
+                        <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Year</label>
                         <select
                           value={filterYear}
                           onChange={(e) => setFilterYear(e.target.value)}
@@ -672,7 +1166,7 @@ export default function OpenSourceAnalyticsPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Category</label>
+                        <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Category</label>
                         <select
                           value={filterCategory}
                           onChange={(e) => setFilterCategory(e.target.value)}
@@ -683,7 +1177,7 @@ export default function OpenSourceAnalyticsPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Technology</label>
+                        <label className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">Technology</label>
                         <select
                           value={filterTech}
                           onChange={(e) => setFilterTech(e.target.value)}
@@ -701,7 +1195,7 @@ export default function OpenSourceAnalyticsPage() {
 
             {/* ── Results label ───────────────────────────────── */}
             <div className="mb-4">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                 <span className="text-stone-900 dark:text-stone-50">{orgs.length}</span>
                 {" "}organization{orgs.length !== 1 ? "s" : ""}
                 {hasActiveFilter && " (filtered)"}
@@ -719,7 +1213,7 @@ export default function OpenSourceAnalyticsPage() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="mt-3 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline cursor-pointer bg-transparent border-0"
+                  className="mt-3 text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline cursor-pointer bg-transparent border-0"
                 >
                   / clear filters
                 </button>
@@ -731,7 +1225,7 @@ export default function OpenSourceAnalyticsPage() {
               <>
                 <div className="flex items-center gap-1.5 mb-4">
                   <div className="h-1 w-1 bg-lime-400" />
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                     gsoc organization charts
                   </p>
                 </div>
@@ -741,6 +1235,7 @@ export default function OpenSourceAnalyticsPage() {
                   {/* 1 - Category Distribution (Pie) */}
                   <ChartCard title="Category Distribution" subtitle="organizations by category" index={0}
                     expandedChildren={
+                      <AccessibleChart label="Pie chart showing distribution of GSoC organizations by category" caption="Pie chart representing the number of GSoC organizations across different categories such as web, security, development tools, and programming languages.">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie data={categoryData} cx="50%" cy="50%" innerRadius="25%" outerRadius="45%" dataKey="value" paddingAngle={2} stroke="none">
@@ -750,8 +1245,10 @@ export default function OpenSourceAnalyticsPage() {
                           <Legend formatter={(v) => <span className="text-sm text-stone-400">{v}</span>} />
                         </PieChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Pie chart showing distribution of GSoC organizations by category" caption="Pie chart representing the number of GSoC organizations across different categories such as web, security, development tools, and programming languages.">
                     <ResponsiveContainer width="100%" height={260}>
                       <PieChart>
                         <Pie data={categoryData} cx="50%" cy="50%" innerRadius={55} outerRadius={95} dataKey="value" paddingAngle={2} stroke="none">
@@ -761,11 +1258,13 @@ export default function OpenSourceAnalyticsPage() {
                         <Legend formatter={(v) => <span className="text-xs text-stone-500 dark:text-stone-400">{v}</span>} wrapperStyle={{ fontSize: 10 }} />
                       </PieChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 2 - Year Trend (Line) */}
                   <ChartCard title="Year-wise Participation" subtitle="organizations per year" index={1}
                     expandedChildren={
+                      <AccessibleChart label="Line chart showing GSoC organization participation by year" caption="Line chart displaying the number of organizations participating in Google Summer of Code each year.">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={yearTrendData}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -775,8 +1274,10 @@ export default function OpenSourceAnalyticsPage() {
                           <Line type="monotone" dataKey="count" stroke="#a3e635" strokeWidth={2.5} dot={{ r: 4, fill: "#a3e635" }} activeDot={{ r: 6 }} name="Organizations" />
                         </LineChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Line chart showing GSoC organization participation by year" caption="Line chart displaying the number of organizations participating in Google Summer of Code each year.">
                     <ResponsiveContainer width="100%" height={260}>
                       <LineChart data={yearTrendData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -786,11 +1287,13 @@ export default function OpenSourceAnalyticsPage() {
                         <Line type="monotone" dataKey="count" stroke="#a3e635" strokeWidth={2} dot={{ r: 3, fill: "#a3e635" }} activeDot={{ r: 5 }} name="Organizations" />
                       </LineChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 3 - Top Technologies */}
                   <ChartCard title="Top Technologies" subtitle="most common across orgs" index={2}
                     expandedChildren={
+                      <AccessibleChart label="Horizontal bar chart showing the most commonly used technologies across GSoC organizations" caption="Horizontal bar chart displaying the technologies most frequently used by GSoC organizations, ranked by organization count.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -802,8 +1305,10 @@ export default function OpenSourceAnalyticsPage() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Horizontal bar chart showing the most commonly used technologies across GSoC organizations" caption="Horizontal bar chart displaying the technologies most frequently used by GSoC organizations, ranked by organization count.">
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -815,11 +1320,13 @@ export default function OpenSourceAnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 4 - Top Topics */}
                   <ChartCard title="Top Topics" subtitle="most common topics" index={3}
                     expandedChildren={
+                      <AccessibleChart label="Horizontal bar chart showing the most common topics across GSoC organizations" caption="Horizontal bar chart displaying the most common project topics and focus areas among GSoC organizations.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -831,8 +1338,10 @@ export default function OpenSourceAnalyticsPage() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Horizontal bar chart showing the most common topics across GSoC organizations" caption="Horizontal bar chart displaying the most common project topics and focus areas among GSoC organizations.">
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -844,11 +1353,13 @@ export default function OpenSourceAnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 5 - Top Orgs by Projects */}
                   <ChartCard title="Top Organizations by Projects" subtitle="most gsoc projects" index={4}
                     expandedChildren={
+                      <AccessibleChart label="Bar chart showing GSoC organizations with the highest number of projects" caption="Bar chart displaying the top GSoC organizations ranked by total number of Google Summer of Code projects.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={topProjectsData} margin={{ left: 10 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -860,8 +1371,10 @@ export default function OpenSourceAnalyticsPage() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Bar chart showing GSoC organizations with the highest number of projects" caption="Bar chart displaying the top GSoC organizations ranked by total number of Google Summer of Code projects.">
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={topProjectsData} margin={{ left: 10 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -873,11 +1386,13 @@ export default function OpenSourceAnalyticsPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
 
                   {/* 6 - Longevity Distribution */}
                   <ChartCard title="Longevity Distribution" subtitle="years active in gsoc" index={5}
                     expandedChildren={
+                      <AccessibleChart label="Bar chart showing how long organizations have participated in GSoC" caption="Bar chart displaying the number of organizations grouped by years of participation in Google Summer of Code.">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={yearCountData}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -887,8 +1402,10 @@ export default function OpenSourceAnalyticsPage() {
                           <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Organizations" />
                         </BarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     }
                   >
+                    <AccessibleChart label="Bar chart showing how long organizations have participated in GSoC" caption="Bar chart displaying the number of organizations grouped by years of participation in Google Summer of Code.">
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={yearCountData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
@@ -898,6 +1415,7 @@ export default function OpenSourceAnalyticsPage() {
                         <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Organizations" />
                       </BarChart>
                     </ResponsiveContainer>
+                    </AccessibleChart>
                   </ChartCard>
                 </div>
 
@@ -905,7 +1423,7 @@ export default function OpenSourceAnalyticsPage() {
                 <div className="bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 p-5">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <div className="h-1 w-1 bg-lime-400" />
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">comparison</p>
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">comparison</p>
                   </div>
                   <h3 className="text-sm font-bold text-stone-900 dark:text-stone-50 mb-4">Organization Comparison</h3>
                   <div className="flex flex-wrap gap-1.5 mb-5 max-h-24 overflow-y-auto">
@@ -928,6 +1446,7 @@ export default function OpenSourceAnalyticsPage() {
 
                   {selectedOrgs.length >= 2 ? (
                     <div className="max-w-xl mx-auto">
+                      <AccessibleChart label="Radar chart comparing selected GSoC organizations" caption="Radar chart comparing selected organizations based on projects, years active, technologies, and topics.">
                       <ResponsiveContainer width="100%" height={300}>
                         <RadarChart data={radarData}>
                           <PolarGrid stroke="rgba(120,113,108,0.2)" />
@@ -940,6 +1459,7 @@ export default function OpenSourceAnalyticsPage() {
                           <Tooltip {...tooltipStyle} />
                         </RadarChart>
                       </ResponsiveContainer>
+                      </AccessibleChart>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center h-32 text-stone-400 dark:text-stone-500 text-sm">
@@ -949,6 +1469,8 @@ export default function OpenSourceAnalyticsPage() {
                 </div>
               </>
             )}
+          </>
+        )}
           </>
         )}
       </div>

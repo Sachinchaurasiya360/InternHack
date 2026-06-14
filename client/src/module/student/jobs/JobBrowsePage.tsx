@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import { FilterChip } from "../../../components/ui/FilterChip";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,15 +13,21 @@ import {
   X,
   Landmark,
   ArrowUpRight,
+  Bookmark,
 } from "lucide-react";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { ResultCount } from "../../../components/ui/ResultCount";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
+import { MetaChip } from "../../../components/ui/MetaChip";
+import { EmptyState } from "../../../components/ui/EmptyState";
+
 import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { CARD_BASE } from "../../../lib/card-styles";
+import { useSaveJob } from "../../../hooks/useSaveJob";
 import type {
   ExternalJob,
   Job,
@@ -28,6 +35,9 @@ import type {
   ScrapedJob,
 } from "../../../lib/types";
 import JobCard from "./component/jobcard";
+import { GridBackground } from "../../../components/ui/GridBackground";
+import { TagList } from "../../../components/ui/TagList";
+import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
 
 const FILTER_TAGS = [
   "Frontend",
@@ -43,43 +53,21 @@ const FILTER_TAGS = [
 
 const SALARY_HAS_CURRENCY = /[₹$€£¥]|\b(USD|EUR|GBP|INR|JPY|CAD|AUD)\b/i;
 
-const cardBase =
-  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
-function CompanyMark({ label }: { label: string }) {
-  return (
-    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
 
-function MetaChip({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-white/10 rounded-md">
-      <span className="text-stone-400">{icon}</span>
-      {children}
-    </span>
-  );
-}
 
 const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: ExternalJob }) {
   const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
-    <Link to={job.slug ? `/jobs/ext/${job.slug}` : "#"} className={cardBase}>
+    <Link to={job.slug ? `/jobs/ext/${job.slug}` : "#"} className={CARD_BASE}>
       <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
         <span className="h-1 w-1 bg-lime-400" />
         external
       </span>
       <div className="flex items-start gap-3 mb-3 pr-16">
-        <CompanyMark label={job.company || "?"} />
+        <CompanyMark name={job.company || "?"} />
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
             {job.role || "Open Role"}
@@ -98,15 +86,7 @@ const ExternalJobCard = React.memo(function ExternalJobCard({ job }: { job: Exte
         {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
         {job.salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{job.salary}</MetaChip>}
       </div>
-      {job.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {job.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      <TagList tags={job.tags} />
       <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
         <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
         <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
@@ -119,13 +99,13 @@ const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: Scrape
   const salaryHasCurrency = job.salary ? SALARY_HAS_CURRENCY.test(job.salary) : false;
   const SalaryIcon = salaryHasCurrency ? Wallet : IndianRupee;
   return (
-    <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer" className={cardBase}>
+    <a href={job.applicationUrl} target="_blank" rel="noopener noreferrer" className={CARD_BASE}>
       <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 inline-flex items-center gap-1.5">
         <span className="h-1 w-1 bg-lime-400" />
         {job.source}
       </span>
       <div className="flex items-start gap-3 mb-3 pr-20">
-        <CompanyMark label={job.company || "?"} />
+        <CompanyMark name={job.company || "?"} />
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
             {job.title || "Open Role"}
@@ -144,15 +124,7 @@ const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: Scrape
         {job.location && <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>}
         {job.salary && <MetaChip icon={<SalaryIcon className="w-3 h-3" />}>{job.salary}</MetaChip>}
       </div>
-      {job.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {job.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      <TagList tags={job.tags} />
       <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
         <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
         <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
@@ -165,16 +137,12 @@ export default function JobBrowsePage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+  const { inputValue: search, setInputValue: setSearch, debouncedValue: debouncedSearch } =
+    useSearchWithDebounce({ paramName: "search", delay: 400, resetParams: [] });
   const [locationFilter, setLocationFilter] = useState(
     () => searchParams.get("location") ?? "",
   );
-  const [debouncedSearch, setDebouncedSearch] = useState(
-    () => searchParams.get("search") ?? "",
-  );
-  const [debouncedLocation, setDebouncedLocation] = useState(
-    () => searchParams.get("location") ?? "",
-  );
+  const debouncedLocation = useDebounce(locationFilter, 400);
   const [selectedTags, setSelectedTags] = useState<string[]>(
     () => searchParams.get("tags")?.split(",").filter(Boolean) ?? [],
   );
@@ -190,24 +158,17 @@ export default function JobBrowsePage() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
 
-  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
+  // Sync location filter to URL and reset pages when it or search changes
   useEffect(() => {
-    timerRef.current = setTimeout(() => {
-      setDebouncedSearch(search);
-      setDebouncedLocation(locationFilter);
-      setPage(1);
-
-      const next = new URLSearchParams(searchParams);
-      if (search) next.set("search", search);
-      else next.delete("search");
-      if (locationFilter) next.set("location", locationFilter);
-      else next.delete("location");
-      setSearchParams(next, { replace: true });
-    }, 400);
-    return () => clearTimeout(timerRef.current);
+    setPage(1);
+    setExtPage(1);
+    setScrPage(1);
+    const next = new URLSearchParams(searchParams);
+    if (locationFilter) next.set("location", locationFilter);
+    else next.delete("location");
+    setSearchParams(next, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, locationFilter]);
+  }, [debouncedLocation, debouncedSearch]);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: queryKeys.jobs.list({
@@ -288,6 +249,15 @@ export default function JobBrowsePage() {
     placeholderData: keepPreviousData,
   });
 
+  const { data: savedIds } = useQuery({
+    queryKey: queryKeys.savedJobs.list(),
+    queryFn: () => api.get("/student/saved-jobs").then((res) => res.data.jobs as Job[]),
+    staleTime: 30_000,
+    select: (jobs) => new Set(jobs.map((j) => j.id)),
+  });
+
+  const { toggleSave } = useSaveJob();
+
   const toggleTag = (tag: string) => {
     const updated = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)
@@ -302,11 +272,9 @@ export default function JobBrowsePage() {
     setScrPage(1);
   };
 
-  const clearAll = () => {
+  const clearAll = useCallback(() => {
     setSearch("");
     setLocationFilter("");
-    setDebouncedSearch("");
-    setDebouncedLocation("");
     setSelectedTags([]);
     setSalaryMin("");
     setSalaryMax("");
@@ -314,7 +282,7 @@ export default function JobBrowsePage() {
     setPage(1);
     setExtPage(1);
     setScrPage(1);
-  };
+  }, [setSearch, setSearchParams]);
 
   const hasFilters = search || locationFilter || selectedTags.length > 0 || salaryMin || salaryMax;
   const selectSuggestion = (location: string) => {
@@ -322,18 +290,15 @@ export default function JobBrowsePage() {
     setShowSuggestions(false);
     setActiveSuggestion(-1);
   };
-  const submitSearch = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setDebouncedSearch(search);
-    setDebouncedLocation(locationFilter);
+  // submitSearch: immediately flush location to URL (search is already synced by hook)
+  const submitSearch = useCallback(() => {
     setPage(1);
     setExtPage(1);
     setScrPage(1);
     const next = new URLSearchParams(searchParams);
-    if (search) next.set("search", search); else next.delete("search");
     if (locationFilter) next.set("location", locationFilter); else next.delete("location");
     setSearchParams(next, { replace: true });
-  };
+  }, [locationFilter, searchParams, setSearchParams]);
   const filteredExtJobs = React.useMemo(() => extData?.jobs ?? [], [extData?.jobs]);
   const scrapedJobs = React.useMemo(() => scrData?.jobs ?? [], [scrData?.jobs]);
   const scrapedPagination = scrData?.pagination;
@@ -394,15 +359,9 @@ export default function JobBrowsePage() {
 
       {!isInsideLayout && <Navbar />}
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+
+      <GridBackground />
+
 
       <div className="relative max-w-6xl mx-auto px-6 pt-8 pb-20">
         {/* Editorial header */}
@@ -435,30 +394,41 @@ export default function JobBrowsePage() {
               listings, updated daily.
             </p>
           </div>
-          <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
-            {typeof internalTotal === "number" && internalTotal > 0 && (
-              <span>
-                internal{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {internalTotal}
+          <div className="flex flex-col items-end gap-3">
+            <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-stone-500">
+              {typeof internalTotal === "number" && internalTotal > 0 && (
+                <span>
+                  internal{" "}
+                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                    {internalTotal}
+                  </span>
                 </span>
-              </span>
-            )}
-            {typeof externalTotal === "number" && (
-              <span>
-                external{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {externalTotal}
+              )}
+              {typeof externalTotal === "number" && (
+                <span>
+                  external{" "}
+                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                    {externalTotal}
+                  </span>
                 </span>
-              </span>
-            )}
-            {typeof scrapedTotal === "number" && (
-              <span>
-                scraped{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {scrapedTotal}
+              )}
+              {typeof scrapedTotal === "number" && (
+                <span>
+                  scraped{" "}
+                  <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+                    {scrapedTotal}
+                  </span>
                 </span>
-              </span>
+              )}
+            </div>
+            {isInsideLayout && (
+              <Link
+                to="/student/jobs/saved"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline"
+              >
+                <Bookmark className="w-3.5 h-3.5" />
+                saved jobs
+              </Link>
             )}
           </div>
         </motion.div>
@@ -614,24 +584,21 @@ export default function JobBrowsePage() {
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mr-1">
               filter /
             </span>
-            {FILTER_TAGS.map((tag, i) => {
-              const active = selectedTags.includes(tag);
-              return (
-                <motion.button
-                  key={tag}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.02, duration: 0.2 }}
-                  onClick={() => toggleTag(tag)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${active
-                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                    }`}
-                >
-                  {tag}
-                </motion.button>
-              );
-            })}
+            {FILTER_TAGS.map((tag, i) => (
+               <motion.div
+               key={tag}
+               initial={{ opacity: 0, y: 6 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: i * 0.02, duration: 0.2 }}
+             >
+               <FilterChip
+                label={tag}
+                active={selectedTags.includes(tag)}
+                onClick={() => toggleTag(tag)}
+              />
+            </motion.div>
+          ))}
+              
 
             <label
               className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md border transition-colors cursor-pointer select-none ${hideExpired
@@ -762,22 +729,22 @@ export default function JobBrowsePage() {
             </div>
           </div>
         ) : (data?.jobs ?? []).length === 0 ? (
-          <motion.div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4">
-            <div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50">No jobs match your filters</p>
-              <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-2">
-                try adjusting your search or filters
-              </p>
-            </div>
-            {hasFilters && (
-              <button
-                type="button"
-                onClick={clearAll}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" /> Clear filters
-              </button>
-            )}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <EmptyState
+              title="No jobs match your filters"
+              description="try adjusting your search or filters"
+              action={
+                hasFilters ? (
+                  <button
+                    type="button"
+                    onClick={clearAll}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" /> Clear filters
+                  </button>
+                ) : undefined
+              }
+            />
           </motion.div>
         ) : (
           <>
@@ -809,31 +776,45 @@ export default function JobBrowsePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {(data?.jobs ?? []).map((job, i) => (
                       <motion.div key={job.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-                        <JobCard
-                          to={`/jobs/${job.id}`}
-                          company={job.company || "C"}
-                          title={job.title}
-                          description={job.description}
-                          tags={job.tags}
-                          rightMeta={job._count ? `${job._count.applications} applied` : undefined}
-                          metaChips={
-                            <>
-                              <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
-                              <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
-                              {job.deadline && (
-                                new Date(job.deadline) < new Date() ? (
-                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 rounded-md">
-                                    <Clock className="w-3 h-3" /> expired
-                                  </span>
-                                ) : (
-                                  <MetaChip icon={<Clock className="w-3 h-3" />}>
-                                    {new Date(job.deadline).toLocaleDateString()}
-                                  </MetaChip>
-                                )
-                              )}
-                            </>
-                          }
-                        />
+                        <div className="relative">
+                          <JobCard
+                            to={`/jobs/${job.id}`}
+                            company={job.company || "C"}
+                            title={job.title}
+                            description={job.description}
+                            tags={job.tags}
+                            rightMeta={job._count ? `${job._count.applications} applied` : undefined}
+                            metaChips={
+                              <>
+                                <MetaChip icon={<MapPin className="w-3 h-3" />}>{job.location}</MetaChip>
+                                <MetaChip icon={<IndianRupee className="w-3 h-3" />}>{job.salary}</MetaChip>
+                                {job.deadline && (
+                                  new Date(job.deadline) < new Date() ? (
+                                    <MetaChip icon={<Clock className="w-3 h-3" />} className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40">
+                                      expired
+                                    </MetaChip>
+                                  ) : (
+                                    <MetaChip icon={<Clock className="w-3 h-3" />}>
+                                      {new Date(job.deadline).toLocaleDateString()}
+                                    </MetaChip>
+                                  )
+                                )}
+                              </>
+                            }
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSave({ jobId: job.id, isSaved: savedIds?.has(job.id) ?? false }); }}
+                            className={`absolute top-2 right-2 p-1.5 rounded-md transition-colors border-0 bg-transparent cursor-pointer z-10 ${
+                              savedIds?.has(job.id)
+                                ? "text-lime-600 dark:text-lime-400 hover:bg-lime-50 dark:hover:bg-lime-900/20"
+                                : "text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
+                            }`}
+                            title={savedIds?.has(job.id) ? "Remove from saved" : "Save job"}
+                          >
+                            <Bookmark className={`w-4 h-4 ${savedIds?.has(job.id) ? "fill-lime-600 dark:fill-lime-400" : ""}`} />
+                          </button>
+                        </div>
                       </motion.div>
                     ))}
                   </div>
