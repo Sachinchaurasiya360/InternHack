@@ -1,13 +1,10 @@
-﻿export const DIFFICULTY_STYLE: Record<string, string> = {
-  Beginner:
-    "border border-emerald-400 text-emerald-400 dark:border-emerald-400 dark:text-emerald-400",
-  Intermediate:
-    "border border-yellow-400 text-yellow-400 dark:border-yellow-400 dark:text-yellow-400",
-  Advanced:
-    "border border-red-400 text-red-400 dark:border-red-400 dark:text-red-400",
-  Easy: "text-emerald-500 dark:text-emerald-400",
-  Medium: "text-yellow-500 dark:text-yellow-400",
-  Hard: "text-red-500 dark:text-red-400",
+export const DIFFICULTY_STYLE: Record<string, string> = {
+  Beginner: "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
+  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
+  Advanced: "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
+  Easy: "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
+  Medium: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
+  Hard: "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
 
 export const DIFF_COLOR: Record<string, string> = DIFFICULTY_STYLE;
