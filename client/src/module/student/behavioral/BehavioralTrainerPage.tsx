@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, memo } from "react";
 import { motion } from "framer-motion";
 import {
   Bot,
@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
-import { evaluateStarResponse, type StarEvaluationResult } from "./api/behavioral.api";
+import { evaluateStarResponse, type StarEvaluationResult, type SectionEvaluation } from "./api/behavioral.api";
+import { useAuthStore } from "../../../lib/auth.store";
 
 const SESSIONS_KEY = "behavioral_sessions_used";
 const MAX_FREE_SESSIONS = 5;
@@ -55,6 +56,7 @@ const BEHAVIORAL_QUESTIONS = [
 type Stage = "form" | "loading" | "results";
 
 export default function BehavioralTrainerPage() {
+  const { user } = useAuthStore();
   const [usedSessions, setUsedSessions] = useState(getUsedSessions);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [situation, setSituation] = useState("");
@@ -63,7 +65,14 @@ export default function BehavioralTrainerPage() {
   const [result, setResult] = useState("");
   const [stage, setStage] = useState<Stage>("form");
   const [evaluation, setEvaluation] = useState<StarEvaluationResult | null>(null);
-  const [isPremium, setIsPremium] = useState(false);
+  const [isPremium, setIsPremium] = useState(() => {
+    return !!(
+      user?.subscriptionStatus === "ACTIVE" &&
+      user?.subscriptionPlan !== "FREE" &&
+      user?.subscriptionEndDate &&
+      new Date(user.subscriptionEndDate) > new Date()
+    );
+  });
   const [error, setError] = useState<string | null>(null);
 
   const isSessionsExhausted = !isPremium && usedSessions >= MAX_FREE_SESSIONS;
@@ -149,7 +158,7 @@ export default function BehavioralTrainerPage() {
             <Clock className="w-4 h-4 text-stone-400" />
             <span className="text-xs text-stone-600 dark:text-stone-400">
               {isSessionsExhausted
-                ? "Free sessions used — upgrade for unlimited practice"
+                ? "Free sessions used: upgrade for unlimited practice"
                 : `${usedSessions} of ${MAX_FREE_SESSIONS} free sessions used`}
             </span>
           </div>
@@ -205,7 +214,7 @@ export default function BehavioralTrainerPage() {
                   id="situation"
                   label="Situation"
                   hint="What was the context? When and where did this happen?"
-                  target="2–3 sentences"
+                  target="2-3 sentences"
                   value={situation}
                   onChange={setSituation}
                   minChars={10}
@@ -214,7 +223,7 @@ export default function BehavioralTrainerPage() {
                   id="task"
                   label="Task"
                   hint="What were you responsible for? What goal were you working toward?"
-                  target="1–2 sentences"
+                  target="1-2 sentences"
                   value={task}
                   onChange={setTask}
                   minChars={5}
@@ -223,7 +232,7 @@ export default function BehavioralTrainerPage() {
                   id="action"
                   label="Action"
                   hint="What specific steps did YOU take? Use 'I' statements."
-                  target="3–4 sentences"
+                  target="3-4 sentences"
                   value={action}
                   onChange={setAction}
                   minChars={10}
@@ -232,7 +241,7 @@ export default function BehavioralTrainerPage() {
                   id="result"
                   label="Result"
                   hint="What was the outcome? Quantify with metrics if possible."
-                  target="1–2 sentences"
+                  target="1-2 sentences"
                   value={result}
                   onChange={setResult}
                   minChars={5}
@@ -301,7 +310,7 @@ export default function BehavioralTrainerPage() {
                     <span
                       className={`text-2xl font-bold ${
                         evaluation.overallScore >= 7
-                          ? "text-emerald-600 dark:text-emerald-400"
+                          ? "text-lime-600 dark:text-lime-400"
                           : evaluation.overallScore >= 4
                             ? "text-amber-600 dark:text-amber-400"
                             : "text-red-600 dark:text-red-400"
@@ -313,30 +322,9 @@ export default function BehavioralTrainerPage() {
 
                   {/* Section evaluations */}
                   <div className="space-y-2.5">
-                    {(["situation", "task", "action", "result"] as const).map((key) => {
-                      const section = evaluation[key];
-                      return (
-                        <div
-                          key={key}
-                          className={`flex items-start gap-3 px-3.5 py-2.5 rounded-md border ${
-                            section.addressed
-                              ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800"
-                              : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
-                          }`}
-                        >
-                          {section.addressed ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                          ) : (
-                            <XCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-stone-700 dark:text-stone-300 capitalize mb-0.5">{key}</p>
-                            <p className="text-xs text-stone-500 dark:text-stone-400">{section.specificity}</p>
-                            <p className="text-xs text-stone-600 dark:text-stone-300 mt-0.5">{section.feedback}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
+                    {(["situation", "task", "action", "result"] as const).map((name) => (
+                      <SectionEvalCard key={name} name={name} section={evaluation[name]} />
+                    ))}
                   </div>
                 </div>
 
@@ -374,7 +362,7 @@ export default function BehavioralTrainerPage() {
                       Model STAR Answer
                     </p>
                   </div>
-                  <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-wrap font-mono text-xs">
+                   <p className="text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-wrap font-mono text-xs">
                     {evaluation.modelAnswer}
                   </p>
                 </div>
@@ -425,9 +413,9 @@ function StarField({
           <label htmlFor={`star-${id}`} className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
             {label}
           </label>
-          <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-0.5">{hint}</p>
+          <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">{hint}</p>
         </div>
-        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 whitespace-nowrap">
+        <span className="text-xs font-mono text-stone-400 dark:text-stone-500 whitespace-nowrap">
           Target: {target}
         </span>
       </div>
@@ -441,13 +429,42 @@ function StarField({
         placeholder={`Describe the ${label.toLowerCase()}...`}
       />
       <div className="flex items-center justify-between px-4 py-1.5 border-t border-stone-100 dark:border-stone-700">
-        <span className={`text-[10px] ${isValid ? "text-emerald-500" : "text-stone-400 dark:text-stone-500"}`}>
+        <span className={`text-xs ${isValid ? "text-lime-500" : "text-stone-400 dark:text-stone-500"}`}>
           {isValid ? "✓ Adequate length" : `Min ${minChars} characters`}
         </span>
-        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500">
+        <span className="text-xs font-mono text-stone-400 dark:text-stone-500">
           {value.length}
         </span>
       </div>
     </div>
   );
 }
+
+const SectionEvalCard = memo(function SectionEvalCard({
+  name,
+  section,
+}: {
+  name: string;
+  section: SectionEvaluation;
+}) {
+  return (
+    <div
+      className={`flex items-start gap-3 px-3.5 py-2.5 rounded-md border ${
+        section.addressed
+          ? "bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800"
+          : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+      }`}
+    >
+      {section.addressed ? (
+        <CheckCircle2 className="w-4 h-4 text-lime-500 shrink-0 mt-0.5" />
+      ) : (
+        <XCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-bold text-stone-700 dark:text-stone-300 capitalize mb-0.5">{name}</p>
+        <p className="text-xs text-stone-500 dark:text-stone-400">{section.specificity}</p>
+        <p className="text-xs text-stone-600 dark:text-stone-300 mt-0.5">{section.feedback}</p>
+      </div>
+    </div>
+  );
+});

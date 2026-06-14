@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Search, ArrowUpRight, MessageSquare } from "lucide-react";
+import { Search, ArrowUpRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
@@ -249,25 +249,6 @@ const grouped = useMemo(() => {
               </p>
               <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
                 Connect with engineers from Google, Microsoft, Amazon, Netflix & more for 1:1 guidance
-              </p>
-            </div>
-          </div>
-          <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
-        </Link>
-        <Link
-          to="/learn/interview/behavioral-interview/trainer"
-          className="group flex items-center justify-between bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-5 py-4 hover:border-lime-400 dark:hover:border-lime-400 transition-colors no-underline"
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center shrink-0">
-              <MessageSquare className="w-4 h-4 text-stone-600 dark:text-stone-400" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
-                STAR Method Trainer
-              </p>
-              <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
-                Master behavioral interview questions step-by-step using AI-powered feedback
               </p>
             </div>
           </div>

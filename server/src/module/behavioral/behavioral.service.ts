@@ -13,9 +13,9 @@ Action: "${input.action}"
 Result: "${input.result}"
 
 Evaluate each STAR section on these criteria:
-1. **addressed** (boolean) — Does the section adequately answer its purpose?
-2. **specificity** (string) — Is it specific enough? Mention good points like quantification ("20% improvement") or flag vagueness ("too general").
-3. **feedback** (string) — A short actionable sentence.
+1. **addressed** (boolean): Does the section adequately answer its purpose?
+2. **specificity** (string): Is it specific enough? Mention good points like quantification ("20% improvement") or flag vagueness ("too general").
+3. **feedback** (string): A short actionable sentence.
 
 Then estimate speaking time based on total word count (~150 words/min), and provide a model answer that demonstrates the ideal STAR structure for this question.
 
@@ -33,7 +33,7 @@ Return ONLY this exact JSON shape:
 
 Rules:
 - overallScore must be an integer 0-10
-- estimatedSpeakingTime should compare to a target of ~2 minutes (e.g., "2 minutes 30 seconds — aim for under 2 minutes" or "1 minute 45 seconds — good length")
+- estimatedSpeakingTime should compare to a target of ~2 minutes (e.g., "2 minutes 30 seconds: aim for under 2 minutes" or "1 minute 45 seconds: good length")
 - modelAnswer should be a complete, polished STAR response written in first person
 - Do NOT wrap JSON in markdown code fences
 - Do NOT include any text before or after the JSON`;
@@ -81,12 +81,17 @@ function buildFallback(input: EvaluateStarInput): StarEvaluationResult {
     input.action.split(/\s+/).length +
     input.result.split(/\s+/).length;
 
-  const speakingTime = `${Math.ceil(wordCount / 150)} minutes ${Math.ceil((wordCount % 150) / 2.5)} seconds`;
+  const totalSeconds = Math.max(1, Math.ceil((wordCount / 150) * 60));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const minPart = `${minutes} minute${minutes !== 1 ? "s" : ""}`;
+  const secPart = seconds > 0 ? ` ${seconds} second${seconds !== 1 ? "s" : ""}` : "";
+  const speakingTime = `${minPart}${secPart}`;
 
   return {
     situation: {
       addressed: input.situation.length >= 60,
-      specificity: input.situation.length >= 60 ? "Adequate context provided" : "Too brief — add more context",
+      specificity: input.situation.length >= 60 ? "Adequate context provided" : "Too brief: add more context",
       feedback: input.situation.length >= 60
         ? "Good context, consider adding a specific time frame."
         : "Expand with when and where this took place.",
@@ -100,7 +105,7 @@ function buildFallback(input: EvaluateStarInput): StarEvaluationResult {
     },
     action: {
       addressed: input.action.length >= 100,
-      specificity: input.action.length >= 100 ? "Detailed steps described" : "Too vague — list specific actions",
+      specificity: input.action.length >= 100 ? "Detailed steps described" : "Too vague: list specific actions",
       feedback: input.action.length >= 100
         ? "Good detail, try to order steps chronologically."
         : "Break down what YOU specifically did into 2-3 concrete steps.",
@@ -113,7 +118,7 @@ function buildFallback(input: EvaluateStarInput): StarEvaluationResult {
         : "Add a concrete outcome with metrics if possible.",
     },
     overallScore: Math.min(10, Math.max(1, Math.round(wordCount / 50))),
-    estimatedSpeakingTime: `${speakingTime} — aim for under 2 minutes`,
+    estimatedSpeakingTime: `${speakingTime}: aim for under 2 minutes`,
     modelAnswer: `When I worked at [Company], our team faced [specific challenge]. As the [role], I was responsible for [key task]. I took the following steps: [action 1], [action 2], [action 3]. As a result, [quantified outcome]. This experience taught me [lesson].`,
     overallFeedback: "Your response covers the STAR structure. Focus on adding specific metrics and concrete details to make your answer more impactful.",
   };
