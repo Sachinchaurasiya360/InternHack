@@ -55,4 +55,54 @@ export async function issueCertificate(guideName: string): Promise<Certificate> 
 export async function fetchCertificate(token: string): Promise<Certificate> {
   const { data } = await api.get<{ certificate: Certificate }>(`/opensource/certificate/${token}`);
   return data.certificate;
+}
+
+// ── GSoC Proposal AI Review ───────────────────────────────────────────────────
+
+export interface ScoreDimension {
+  score: number;
+  label: string;
+}
+
+export interface ReviewSuggestion {
+  category: "Timeline Clarity" | "Deliverables" | "About Me" | "Organization Alignment" | "Structure & Length";
+  critique: string;
+  fix: string;
+}
+
+export interface GsocReviewResult {
+  scores: {
+    timelineClarity: ScoreDimension;
+    deliverables: ScoreDimension;
+    aboutMe: ScoreDimension;
+    orgAlignment: ScoreDimension;
+    structureLength: ScoreDimension;
+  };
+  overallScore: number;
+  suggestions: ReviewSuggestion[];
+  benchmark: {
+    status: string;
+    winningTemplate: string;
+  };
+  fallbackUsed: boolean;
+}
+
+export interface GsocReviewUsage {
+  used: number;
+  limit: number;
+  tier: string;
+}
+
+export interface GsocReviewResponse {
+  review: GsocReviewResult;
+  usage?: GsocReviewUsage;
+}
+
+export async function reviewGSoCProposal(body: {
+  draft: string;
+  targetOrg?: string;
+  targetStack?: string;
+}): Promise<GsocReviewResponse> {
+  const { data } = await api.post<GsocReviewResponse>("/gsoc/proposal-review", body);
+  return data;
 }
