@@ -432,8 +432,6 @@ export class DsaImportService {
         code: "TOKEN_EXPIRED",
       });
 
-    pendingImports.delete(token);
-
     if (pending.rows.length === 0) {
       return { imported: 0, skipped: 0, importedAt: new Date().toISOString() };
     }
@@ -458,6 +456,8 @@ export class DsaImportService {
           imported: created.count,
         },
       });
+
+      pendingImports.delete(token);
 
       return created;
     });
