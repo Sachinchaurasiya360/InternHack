@@ -63,6 +63,7 @@ import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
 import { recommendationRouter } from "./module/recommendation/recommendation.routes.js";
 import { learnRouter } from "./module/learn/learn.routes.js";
+import { notesRouter } from "./module/notes/notes.routes.js";
 import analyticsRouter from "./module/analytics/analytics.routes.js";
 import { healthRouter } from "./module/health/health.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
@@ -295,6 +296,7 @@ app.use("/api/milestones", milestoneRouter);
 app.use("/api/roadmaps", roadmapRouter);
 app.use("/api/analytics", analyticsRouter);
 app.use("/api/learn", learnRouter);
+app.use("/api/notes", notesRouter);
 
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
