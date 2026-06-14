@@ -481,7 +481,7 @@ function App() {
               <Route path="exam-prep/:examId/mock" element={<ExamMockPage />} />
               <Route path="exam-prep/:examId/section/:sectionId" element={<ExamSectionPage />} />
               <Route path="interview" element={<InterviewLessonsPage />} />
-              <Route path="interview/behavioral/trainer" element={<BehavioralTrainerPage />} />
+              <Route path="interview/behavioral-interview/trainer" element={<BehavioralTrainerPage />} />
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
               <Route path="notes" element={<ProtectedRoute role="STUDENT"><NotesDashboardPage /></ProtectedRoute>} />

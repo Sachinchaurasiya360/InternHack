@@ -21,6 +21,7 @@ import {
   Lock,
   BrainCircuit,
   Radar,
+  MessageSquare,
 } from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 
@@ -54,6 +55,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/learn", icon: GraduationCap, label: "Learning Hub" },
       { to: "/student/skill-verification", icon: ShieldCheck, label: "Skill Tests" },
       { to: "/student/mock-interview", icon: Video, label: "Mock Interview", premium: true },
+      { to: "/learn/interview/behavioral-interview/trainer", icon: MessageSquare, label: "STAR Method Trainer" },
     ],
   },
   {
