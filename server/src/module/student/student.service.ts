@@ -599,16 +599,18 @@ Rules:
   }
 
   async unsaveJob(jobId: number, studentId: number) {
-    const pref = await prisma.userJobPreference.findUnique({
-      where: { userId: studentId },
-      select: { savedJobIds: true },
-    });
-    if (!pref) return;
+    await prisma.$transaction(async (tx) => {
+      const pref = await tx.userJobPreference.findUnique({
+        where: { userId: studentId },
+        select: { savedJobIds: true },
+      });
+      if (!pref) return;
 
-    const updated = pref.savedJobIds.filter((id) => id !== jobId);
-    await prisma.userJobPreference.update({
-      where: { userId: studentId },
-      data: { savedJobIds: updated },
+      const updated = pref.savedJobIds.filter((id) => id !== jobId);
+      await tx.userJobPreference.update({
+        where: { userId: studentId },
+        data: { savedJobIds: updated },
+      });
     });
   }
 
