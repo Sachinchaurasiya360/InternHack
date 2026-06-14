@@ -15,6 +15,7 @@ import {
   topicSlugParam,
   updateProgressSchema,
   updateRoadmapSchema,
+  shareTokenSchema
 } from "./roadmap.validation.js";
 import {
   buildWeeklyPlan,
@@ -927,13 +928,16 @@ export async function getPublicCertificateMeta(
   try {
     const slug = req.params.slug;
 
-    const shareToken = req.params.shareToken;
+    const shareToken = typeof req.params.shareToken === "string" ? req.params.shareToken : undefined;
 
     const parsed = roadmapSlugParam.safeParse({
       slug,
     });
 
-    if (!parsed.success || !shareToken) {      validationError(
+    const shareTokenParsed = shareTokenSchema.safeParse(shareToken);
+
+    if (!parsed.success || !shareTokenParsed.success) {     
+       validationError(
         res,
         parsed.success
           ? { shareToken: ["Invalid share token"] }
@@ -944,7 +948,7 @@ export async function getPublicCertificateMeta(
 
     const enrollment = await prisma.roadmapEnrollment.findFirst({
       where: {
-        shareToken: shareToken,
+        shareToken: shareTokenParsed.data,
         roadmap: {
           slug: parsed.data.slug,
         },
@@ -1018,14 +1022,16 @@ export async function getPublicCertificate(
   try {
     const slug = req.params.slug;
 
-    const shareToken = req.params.shareToken;
+    const shareToken = typeof req.params.shareToken === "string" ? req.params.shareToken : undefined;
 
     const parsed = roadmapSlugParam.safeParse({
       slug: slug,
     });
 
-    if (!parsed.success || !shareToken) {      
-      validationError(
+    const shareTokenParsed = shareTokenSchema.safeParse(shareToken);
+
+    if (!parsed.success || !shareTokenParsed.success) {     
+       validationError(
         res,
         parsed.success
           ? { shareToken: ["Invalid share token"] }
@@ -1036,7 +1042,7 @@ export async function getPublicCertificate(
 
     const enrollment = await prisma.roadmapEnrollment.findFirst({
       where: {
-        shareToken: shareToken,
+        shareToken: shareTokenParsed.data,
         roadmap: {
           slug: parsed.data.slug,
         },

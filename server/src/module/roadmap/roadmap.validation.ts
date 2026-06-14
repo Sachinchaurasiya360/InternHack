@@ -6,6 +6,8 @@ export const roadmapSlugParam = z.object({
   slug: z.string().regex(SLUG_RE, "Invalid roadmap slug"),
 });
 
+export const shareTokenSchema = z.cuid2();
+
 export const topicSlugParam = z.object({
   slug: z.string().regex(SLUG_RE),
   topicSlug: z.string().regex(SLUG_RE),
