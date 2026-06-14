@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 export function ReadingProgressBar() {
   const [progress, setProgress] = useState(0);
+  const frameRef = useRef(0);
 
   useEffect(() => {
-    let frame = 0;
-
     const updateProgress = () => {
-      cancelAnimationFrame(frame);
-
-      frame = requestAnimationFrame(() => {
+      frameRef.current = requestAnimationFrame(() => {
         const scrollTop = window.scrollY;
         const scrollHeight =
           document.documentElement.scrollHeight - window.innerHeight;
@@ -28,7 +25,7 @@ export function ReadingProgressBar() {
     window.addEventListener("resize", updateProgress);
 
     return () => {
-      cancelAnimationFrame(frame);
+      cancelAnimationFrame(frameRef.current);
       window.removeEventListener("scroll", updateProgress);
       window.removeEventListener("resize", updateProgress);
     };
