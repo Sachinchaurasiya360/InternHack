@@ -382,7 +382,7 @@ const res = await api.post<{
           toast.warning(
             <div className="flex flex-col gap-2 p-1 text-left">
               <p className="font-bold">Similar roadmap exists</p>
-              <p className="text-[10px] opacity-70">We found &quot;{duplicate.title}&quot; which seems similar to your goal.</p>
+              <p className="text-[10px] opacity-70">We found "{duplicate.title}" which seems similar to your goal.</p>
               <div className="flex items-center gap-3 mt-1">
                 <Link to={`/learn/roadmaps/${duplicate.slug}`} className="text-xs font-bold text-stone-950 dark:text-stone-50 hover:underline">
                   View existing
