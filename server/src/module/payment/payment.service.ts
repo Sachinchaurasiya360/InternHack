@@ -105,7 +105,6 @@ export class PaymentService {
           await prisma.payment.updateMany({
             where: { dodoPaymentId: payment.checkout_session_id },
             data: {
-              dodoPaymentId: payment.payment_id,
               amount: payment.total_amount,
               currency: payment.currency,
               status: "SUCCESS",
@@ -121,7 +120,6 @@ export class PaymentService {
           await prisma.payment.updateMany({
             where: { dodoPaymentId: payment.checkout_session_id },
             data: {
-              dodoPaymentId: payment.payment_id,
               status: "FAILED",
             },
           });
