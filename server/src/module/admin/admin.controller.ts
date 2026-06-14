@@ -121,7 +121,7 @@ export class AdminController {
 
   async getUserById(req: Request, res: Response) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid user ID" });
 
       const user = await this.adminService.getUserById(id);
@@ -137,7 +137,7 @@ export class AdminController {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid user ID" });
 
       const result = updateUserStatusSchema.safeParse(req.body);
@@ -159,7 +159,7 @@ export class AdminController {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid user ID" });
 
       await this.adminService.deleteUser(id, req.user.id);
@@ -192,7 +192,7 @@ export class AdminController {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
 
       const result = adminUpdateJobStatusSchema.safeParse(req.body);
@@ -211,7 +211,7 @@ export class AdminController {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
 
       await this.adminService.deleteJob(id, req.user.id);
@@ -288,7 +288,7 @@ export class AdminController {
 
   async updateCompany(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       const result = updateCompanySchema.safeParse(req.body);
@@ -312,7 +312,7 @@ export class AdminController {
 
   async approveCompany(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       const company = await this.adminService.approveCompany(id);
@@ -330,7 +330,7 @@ export class AdminController {
 
   async deleteCompany(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       await this.adminService.deleteCompany(id);
@@ -360,7 +360,7 @@ export class AdminController {
 
   async updateReviewStatus(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid review ID" }); return; }
 
       const result = updateReviewStatusSchema.safeParse(req.body);
@@ -399,7 +399,7 @@ export class AdminController {
     try {
       if (!req.user) { res.status(401).json({ message: "Authentication required" }); return; }
 
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid contribution ID" }); return; }
 
       const result = updateContributionStatusSchema.safeParse(req.body);
@@ -423,7 +423,7 @@ export class AdminController {
     try {
       if (!req.user) { res.status(401).json({ message: "Authentication required" }); return; }
 
-      const companyId = parseInt(String(req.params["id"]), 10);
+      const companyId = Number(req.params["id"]);
       if (isNaN(companyId)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       const result = addContactAdminSchema.safeParse(req.body);
@@ -444,7 +444,7 @@ export class AdminController {
 
   async updateContact(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid contact ID" }); return; }
 
       const result = updateContactSchema.safeParse(req.body);
@@ -465,7 +465,7 @@ export class AdminController {
 
   async deleteContact(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid contact ID" }); return; }
 
       await this.adminService.deleteContact(id);
@@ -492,7 +492,7 @@ export class AdminController {
 
   async getRepo(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid repo ID" }); return; }
 
       const repo = await this.adminService.getRepo(id);
@@ -522,7 +522,7 @@ export class AdminController {
 
   async updateRepo(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid repo ID" }); return; }
 
       const result = updateRepoSchema.safeParse(req.body);
@@ -543,7 +543,7 @@ export class AdminController {
 
   async deleteRepo(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid repo ID" }); return; }
 
       await this.adminService.deleteRepo(id);
@@ -568,7 +568,7 @@ export class AdminController {
 
   async getDsaTopic(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
       const topic = await this.adminService.getDsaTopic(id);
       res.json({ topic });
@@ -589,7 +589,7 @@ export class AdminController {
 
   async updateDsaTopic(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
       const result = updateDsaTopicSchema.safeParse(req.body);
       if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
@@ -603,7 +603,7 @@ export class AdminController {
 
   async deleteDsaTopic(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
       await this.adminService.deleteDsaTopic(id);
       res.json({ message: "DSA topic deleted" });
@@ -624,7 +624,7 @@ export class AdminController {
 
   async updateDsaProblem(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
       const result = updateDsaProblemSchema.safeParse(req.body);
       if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
@@ -638,7 +638,7 @@ export class AdminController {
 
   async deleteDsaProblem(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
       await this.adminService.deleteDsaProblem(id);
       res.json({ message: "DSA problem deleted" });
@@ -660,7 +660,7 @@ export class AdminController {
 
   async getAptitudeCategory(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid category ID" }); return; }
       const category = await this.adminService.getAptitudeCategory(id);
       res.json({ category });
@@ -681,7 +681,7 @@ export class AdminController {
 
   async updateAptitudeCategory(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid category ID" }); return; }
       const result = updateAptitudeCategorySchema.safeParse(req.body);
       if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
@@ -695,7 +695,7 @@ export class AdminController {
 
   async deleteAptitudeCategory(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid category ID" }); return; }
       await this.adminService.deleteAptitudeCategory(id);
       res.json({ message: "Category deleted" });
@@ -716,7 +716,7 @@ export class AdminController {
 
   async updateAptitudeTopic(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
       const result = updateAptitudeTopicSchema.safeParse(req.body);
       if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
@@ -730,7 +730,7 @@ export class AdminController {
 
   async deleteAptitudeTopic(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
       await this.adminService.deleteAptitudeTopic(id);
       res.json({ message: "Topic deleted" });
@@ -759,7 +759,7 @@ export class AdminController {
 
   async updateAptitudeQuestion(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid question ID" }); return; }
       const result = updateAptitudeQuestionSchema.safeParse(req.body);
       if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
@@ -773,7 +773,7 @@ export class AdminController {
 
   async deleteAptitudeQuestion(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid question ID" }); return; }
       await this.adminService.deleteAptitudeQuestion(id);
       res.json({ message: "Question deleted" });
@@ -795,7 +795,7 @@ export class AdminController {
 
   async getAdminSkillTest(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid test ID" }); return; }
       const test = await this.adminService.getAdminSkillTest(id);
       res.json({ test });
@@ -817,7 +817,7 @@ export class AdminController {
 
   async updateAdminSkillTest(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid test ID" }); return; }
       const result = updateSkillTestAdminSchema.safeParse(req.body);
       if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
@@ -831,7 +831,7 @@ export class AdminController {
 
   async deleteAdminSkillTest(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid test ID" }); return; }
       await this.adminService.deleteAdminSkillTest(id);
       res.json({ message: "Skill test deleted" });
@@ -843,7 +843,7 @@ export class AdminController {
 
   async toggleSkillTestActive(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid test ID" }); return; }
       const { isActive } = req.body;
       if (typeof isActive !== "boolean") { res.status(400).json({ message: "isActive is required" }); return; }
@@ -867,7 +867,7 @@ export class AdminController {
 
   async getHackathon(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid hackathon ID" }); return; }
       const hackathon = await this.adminService.getHackathon(id);
       res.json({ hackathon });
@@ -888,7 +888,7 @@ export class AdminController {
 
   async updateHackathon(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid hackathon ID" }); return; }
       const result = updateHackathonSchema.safeParse(req.body);
       if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
@@ -902,7 +902,7 @@ export class AdminController {
 
   async deleteHackathon(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) { res.status(400).json({ message: "Invalid hackathon ID" }); return; }
       await this.adminService.deleteHackathon(id);
       res.json({ message: "Hackathon deleted" });
@@ -984,7 +984,7 @@ export class AdminController {
 
   async updateExternalJob(req: Request, res: Response) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
       const result = updateAdminJobSchema.safeParse(req.body);
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
@@ -999,7 +999,7 @@ export class AdminController {
 
   async deleteExternalJob(req: Request, res: Response) {
     try {
-      const id = parseInt(String(req.params["id"]), 10);
+      const id = Number(req.params["id"]);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
       await this.adminService.deleteExternalJob(id);
       return res.status(200).json({ message: "External job deleted" });
