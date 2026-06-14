@@ -17,7 +17,7 @@ function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<
       factory().catch((err: unknown) => {
         const key = "chunk_reload";
         if (!sessionStorage.getItem(key)) {
-          sessionStorage.setItem("1", "1");
+          sessionStorage.setItem(key, "1");
           window.location.reload();
           return new Promise<never>(() => { }); // never resolves, page is reloading
         }
