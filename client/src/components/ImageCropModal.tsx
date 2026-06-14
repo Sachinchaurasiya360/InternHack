@@ -38,6 +38,7 @@ export default function ImageCropModal({ imageSrc, aspect, onCrop, onClose }: Pr
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const onCropComplete = useCallback((_: Area, pixels: Area) => {
     setCroppedArea(pixels);
@@ -51,6 +52,7 @@ export default function ImageCropModal({ imageSrc, aspect, onCrop, onClose }: Pr
       onCrop(blob);
     } catch {
       setSaving(false);
+      setError("Failed to crop image. Please try again.");
     }
   };
 
@@ -80,6 +82,13 @@ export default function ImageCropModal({ imageSrc, aspect, onCrop, onClose }: Pr
             onCropComplete={onCropComplete}
           />
         </div>
+
+        {/* Error message */}
+        {error && (
+          <div className="px-5 py-2 bg-red-50 dark:bg-red-900/20 border-b border-red-100 dark:border-red-800">
+            <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+          </div>
+        )}
 
         {/* Zoom + Actions */}
         <div className="px-5 py-4 border-t border-gray-100 dark:border-gray-800 space-y-4">
