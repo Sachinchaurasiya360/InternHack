@@ -593,8 +593,12 @@ Rules:
       where: { userId: studentId },
       create: { userId: studentId, savedJobIds: [jobId] },
       update: { savedJobIds: { push: jobId } },
-    }).catch(() => {
-      // If push caused a duplicate (same id in array), silently succeed
+    }).catch((err: any) => {
+      // If push caused a duplicate (e.g. unique constraint), silently succeed
+      if (err.code === "P2002") {
+        return;
+      }
+      throw err;
     });
   }
 
