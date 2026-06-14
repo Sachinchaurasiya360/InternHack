@@ -37,7 +37,9 @@ export class HRTaskController {
       const context = await this.getEmployeeIdOrAdmin(req);
       if (!context) return res.status(403).json({ message: "Employee record not found" });
 
-      const query = taskQuerySchema.parse(req.query);
+      const parsed = taskQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       if (context.isAdmin) {
         const data = await this.taskService.getAllTasks(query);
         return res.json(data);
@@ -55,7 +57,9 @@ export class HRTaskController {
       const context = await this.getEmployeeIdOrAdmin(req);
       if (!context) return res.status(403).json({ message: "Employee record not found" });
 
-      const query = taskQuerySchema.parse(req.query);
+      const parsed = taskQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       if (context.isAdmin) {
         const data = await this.taskService.getAllTasks(query);
         return res.json(data);

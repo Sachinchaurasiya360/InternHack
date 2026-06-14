@@ -26,7 +26,9 @@ export class EmployeeController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const query = employeeQuerySchema.parse(req.query);
+      const parsed = employeeQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       const data = await this.employeeService.getAll(query);
       return res.json(data);
     } catch (error) {

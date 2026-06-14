@@ -20,7 +20,9 @@ export class ReimbursementController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const query = reimbursementQuerySchema.parse(req.query);
+      const parsed = reimbursementQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       const data = await this.reimbursementService.getAll(query);
       return res.json(data);
     } catch (error) {

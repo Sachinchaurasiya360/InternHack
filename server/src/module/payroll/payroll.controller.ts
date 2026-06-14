@@ -24,7 +24,9 @@ export class PayrollController {
 
   async getRecords(req: Request, res: Response) {
     try {
-      const query = payrollQuerySchema.parse(req.query);
+      const parsed = payrollQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       const data = await this.payrollService.getRecords(query);
       return res.json(data);
     } catch (error) {
@@ -89,7 +91,9 @@ export class PayrollController {
 
   async getContractorPayments(req: Request, res: Response) {
     try {
-      const query = payrollQuerySchema.parse(req.query);
+      const parsed = payrollQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       const data = await this.payrollService.getContractorPayments(query);
       return res.json(data);
     } catch (error) {

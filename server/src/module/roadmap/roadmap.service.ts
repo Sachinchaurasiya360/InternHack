@@ -119,6 +119,32 @@ export function buildWeeklyPlan(
   return { plan, targetEndDate };
 }
 
+function getDatabaseTagsForFilter(val: string): string[] {
+  const norm = val.toLowerCase().replace(/[\s-.]/g, "");
+  if (norm === "node" || norm === "nodejs") {
+    return ["node", "node.js", "nodejs"];
+  }
+  if (norm === "sql") {
+    return ["sql", "postgres", "postgresql", "mysql"];
+  }
+  if (norm === "systemdesign") {
+    return ["system design", "system-design", "systemdesign"];
+  }
+  if (norm === "frontend") {
+    return ["frontend", "fullstack", "full-stack", "full stack"];
+  }
+  if (norm === "backend") {
+    return ["backend", "fullstack", "full-stack", "full stack"];
+  }
+  if (norm === "fullstack") {
+    return ["fullstack", "full-stack", "full stack"];
+  }
+  if (norm === "ai") {
+    return ["ai", "machine-learning", "machine learning"];
+  }
+  return [val.toLowerCase(), norm];
+}
+
 export async function listPublishedRoadmaps(opts: {
   page: number;
   limit: number;
@@ -138,15 +164,26 @@ export async function listPublishedRoadmaps(opts: {
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
     andConditions.push({
-      level: opts.level as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS",
+      level: {
+        in: [opts.level as "BEGINNER" | "INTERMEDIATE" | "ADVANCED", "ALL_LEVELS"],
+      },
     });
   }
 
-  const tagFilters: string[] = [];
-  if (opts.tag) tagFilters.push(opts.tag.toLowerCase());
-  if (opts.category) tagFilters.push(opts.category.toLowerCase());
-  if (tagFilters.length > 0) {
-    andConditions.push({ tags: { hasSome: tagFilters } });
+  if (opts.tag) {
+    andConditions.push({
+      tags: {
+        hasSome: getDatabaseTagsForFilter(opts.tag),
+      },
+    });
+  }
+
+  if (opts.category) {
+    andConditions.push({
+      tags: {
+        hasSome: getDatabaseTagsForFilter(opts.category),
+      },
+    });
   }
 
   if (opts.search) {

@@ -30,7 +30,12 @@ export class InternshipController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = createGovInternshipSchema.parse(req.body);
+      const parsed = createGovInternshipSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+        return;
+      }
+      const data = parsed.data;
       const result = await service.create(data);
       res.status(201).json(result);
     } catch (err) {
@@ -46,7 +51,12 @@ export class InternshipController {
         return;
       }
       const id = Number(idStr);
-      const data = updateGovInternshipSchema.parse(req.body);
+      const parsed = updateGovInternshipSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+        return;
+      }
+      const data = parsed.data;
       const result = await service.update(id, data);
       res.json(result);
     } catch (err) {

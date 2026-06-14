@@ -23,7 +23,9 @@ export class PerformanceController {
       const employeeId = Number(req.query["employeeId"]);
       if (isNaN(employeeId)) return res.status(400).json({ message: "employeeId required" });
 
-      const query = reviewQuerySchema.parse(req.query);
+      const parsed = reviewQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       const data = await this.performanceService.getMyReviews(employeeId, query);
       return res.json(data);
     } catch (error) {
@@ -37,7 +39,9 @@ export class PerformanceController {
       const reviewerId = Number(req.query["reviewerId"]);
       if (isNaN(reviewerId)) return res.status(400).json({ message: "reviewerId required" });
 
-      const query = reviewQuerySchema.parse(req.query);
+      const parsed = reviewQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       const data = await this.performanceService.getTeamReviews(reviewerId, query);
       return res.json(data);
     } catch (error) {

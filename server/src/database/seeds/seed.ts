@@ -10,6 +10,9 @@
  */
 
 import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import {
   PrismaClient,
   JobStatus,
@@ -1545,6 +1548,121 @@ async function seedGsocOrgs() {
   log("GSoC Organizations", count);
 }
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+async function seedRoadmaps() {
+  const roadmapSeedDir = path.resolve(__dirname, "../../module/roadmap/seed");
+  const files = ["full-stack.json", "ai-engineer.json"];
+
+  let count = 0;
+  for (const filename of files) {
+    const filePath = path.join(roadmapSeedDir, filename);
+    if (!fs.existsSync(filePath)) {
+      console.warn(`  ⚠ Seed file not found: ${filePath}`);
+      continue;
+    }
+
+    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    const existing = await prisma.roadmap.findUnique({
+      where: { slug: data.slug }
+    });
+
+    if (existing) {
+      await prisma.roadmap.update({
+        where: { slug: data.slug },
+        data: {
+          title: data.title,
+          shortDescription: data.shortDescription,
+          description: data.description,
+          level: data.level,
+          estimatedHours: data.estimatedHours,
+          outcomes: data.outcomes,
+          prerequisites: data.prerequisites,
+          faqs: data.faqs,
+          tags: data.tags,
+        }
+      });
+      count++;
+      continue;
+    }
+
+    // Create the roadmap
+    const createdRoadmap = await prisma.roadmap.create({
+      data: {
+        slug: data.slug,
+        title: data.title,
+        shortDescription: data.shortDescription,
+        description: data.description,
+        level: data.level,
+        estimatedHours: data.estimatedHours,
+        outcomes: data.outcomes,
+        prerequisites: data.prerequisites,
+        faqs: data.faqs,
+        tags: data.tags,
+        isPublished: true,
+      }
+    });
+
+    // Create sections, topics, resources
+    if (data.sections && Array.isArray(data.sections)) {
+      for (let sIndex = 0; sIndex < data.sections.length; sIndex++) {
+        const sectionData = data.sections[sIndex];
+        const createdSection = await prisma.roadmapSection.create({
+          data: {
+            roadmapId: createdRoadmap.id,
+            slug: sectionData.slug,
+            title: sectionData.title,
+            summary: sectionData.summary,
+            orderIndex: sIndex,
+          }
+        });
+
+        if (sectionData.topics && Array.isArray(sectionData.topics)) {
+          for (let tIndex = 0; tIndex < sectionData.topics.length; tIndex++) {
+            const topicData = sectionData.topics[tIndex];
+            const createdTopic = await prisma.roadmapTopic.create({
+              data: {
+                sectionId: createdSection.id,
+                slug: topicData.slug,
+                title: topicData.title,
+                summary: topicData.summary,
+                contentMd: topicData.contentMd,
+                estimatedHours: topicData.estimatedHours ?? 2,
+                difficulty: topicData.difficulty ?? 2,
+                orderIndex: tIndex,
+                prerequisiteSlugs: topicData.prerequisiteSlugs ?? [],
+                miniProject: topicData.miniProject,
+                selfCheck: topicData.selfCheck,
+              }
+            });
+
+            if (topicData.resources && Array.isArray(topicData.resources)) {
+              for (let rIndex = 0; rIndex < topicData.resources.length; rIndex++) {
+                const resourceData = topicData.resources[rIndex];
+                await prisma.roadmapResource.create({
+                  data: {
+                    topicId: createdTopic.id,
+                    kind: resourceData.kind,
+                    title: resourceData.title,
+                    url: resourceData.url,
+                    source: resourceData.source,
+                    isFree: resourceData.isFree ?? true,
+                    orderIndex: rIndex,
+                  }
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+
+    count++;
+  }
+  log("Roadmaps", count);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────
 async function main() {
   console.log("\n🌱 Seeding InternHack database...\n");
@@ -1565,6 +1683,7 @@ async function main() {
   await seedProfessors();
   await seedBlogPosts();
   await seedGsocOrgs();
+  await seedRoadmaps();
   console.log("\n✅ Seed complete!\n");
 }
 

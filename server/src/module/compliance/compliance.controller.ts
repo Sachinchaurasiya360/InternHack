@@ -25,7 +25,9 @@ export class ComplianceController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const query = complianceQuerySchema.parse(req.query);
+      const parsed = complianceQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       const data = await this.complianceService.getAll(query);
       return res.json(data);
     } catch (error) {

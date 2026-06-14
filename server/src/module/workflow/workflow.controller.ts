@@ -103,7 +103,9 @@ export class WorkflowController {
 
   async getInstances(req: Request, res: Response) {
     try {
-      const query = workflowQuerySchema.parse(req.query);
+      const parsed = workflowQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const query = parsed.data;
       const data = await this.workflowService.getInstances(query);
       return res.json(data);
     } catch (error) {
