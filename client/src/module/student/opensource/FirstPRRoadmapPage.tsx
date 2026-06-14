@@ -16,7 +16,6 @@ import {
 import guideData from "./data/open-source-guide.json";
 import GuideCompletionSection from "./components/GuideCompletionSection";
 import { useAuthStore } from "../../../lib/auth.store";
-import { useCoachStore } from "./stores/coach.store";
 import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 import { NextInPathCard } from "./components/NextInPathCard";
 
@@ -45,7 +44,6 @@ export default function FirstPRRoadmapPage() {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuthStore();
-  const triggerCoach = useCoachStore((s: any) => s.triggerCoach);
   const [cert, setCert] = useState<Certificate | null>(null);
 
   useEffect(() => {
@@ -68,7 +66,6 @@ export default function FirstPRRoadmapPage() {
     (id: string) => {
       const isCurrentlyCompleted = completed.has(id);
       const nextCompleted = !isCurrentlyCompleted;
-      const isCompletingLastStep = nextCompleted && completed.size === STEPS.length - 1;
 
       setCompleted((prev: Set<string>) => {
         const next = new Set(prev);
@@ -76,13 +73,6 @@ export default function FirstPRRoadmapPage() {
         else next.delete(id);
         return next;
       });
-
-      if (isCompletingLastStep) {
-        triggerCoach({
-          trigger: "FIRST_PR_COMPLETE",
-          context: { skills: user?.skills || [], completedGuides: ["First Pull Request Roadmap"] },
-        });
-      }
 
       void patchFirstPRProgress(id, nextCompleted)
         .then(() => notifyLearningPathProgressChanged())
@@ -97,7 +87,7 @@ export default function FirstPRRoadmapPage() {
           toast.error("Failed to update progress. Please try again.");
         });
     },
-    [completed, triggerCoach, user],
+    [completed],
   );
 
   const totalSteps = STEPS.length;

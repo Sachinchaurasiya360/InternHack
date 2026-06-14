@@ -47,6 +47,10 @@ function formatRawError(err: Error): string {
 }
 
 function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?: Error): void {
+  // Only persist error logs (and alert) in production. In development we rely
+  // on the console output from errorMiddleware and skip the DB write entirely.
+  if (process.env["NODE_ENV"] !== "production") return;
+
   const path = req.originalUrl || req.url;
 
   prisma.errorLog.create({
