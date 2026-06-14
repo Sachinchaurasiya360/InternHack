@@ -70,7 +70,8 @@ const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/Gov
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
 const CertificateViewPage = lazyWithRetry(() => import("./module/student/opensource/CertificateViewPage"));
-const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage")); 
+const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage"));
+const BehavioralTrainerPage = lazyWithRetry(() => import("./module/student/behavioral/BehavioralTrainerPage"));
 
 // Legal pages
 const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
@@ -480,6 +481,7 @@ function App() {
               <Route path="exam-prep/:examId/mock" element={<ExamMockPage />} />
               <Route path="exam-prep/:examId/section/:sectionId" element={<ExamSectionPage />} />
               <Route path="interview" element={<InterviewLessonsPage />} />
+              <Route path="interview/behavioral/trainer" element={<BehavioralTrainerPage />} />
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
               <Route path="notes" element={<ProtectedRoute role="STUDENT"><NotesDashboardPage /></ProtectedRoute>} />
