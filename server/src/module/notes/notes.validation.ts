@@ -1,5 +1,6 @@
-import { z } from "zod";
+import { z, type ZodSchema } from "zod";
 import { NoteContentType } from "@prisma/client";
+import type { Request, Response, NextFunction } from "express";
 
 export const noteParamSchema = z.object({
   contentType: z.nativeEnum(NoteContentType),
@@ -14,3 +15,36 @@ export const notesQuerySchema = z.object({
   contentType: z.nativeEnum(NoteContentType).optional(),
   search: z.string().optional(),
 });
+
+export const validateQuery = (schema: ZodSchema) =>
+  (req: Request, res: Response, next: NextFunction): void => {
+    const result = schema.safeParse(req.query);
+    if (!result.success) {
+      res.status(400).json({ message: "Validation failed", errors: result.error.flatten().fieldErrors });
+      return;
+    }
+    req.query = result.data as any;
+    next();
+  };
+
+export const validateParams = (schema: ZodSchema) =>
+  (req: Request, res: Response, next: NextFunction): void => {
+    const result = schema.safeParse(req.params);
+    if (!result.success) {
+      res.status(400).json({ message: "Validation failed", errors: result.error.flatten().fieldErrors });
+      return;
+    }
+    req.params = result.data as any;
+    next();
+  };
+
+export const validateBody = (schema: ZodSchema) =>
+  (req: Request, res: Response, next: NextFunction): void => {
+    const result = schema.safeParse(req.body);
+    if (!result.success) {
+      res.status(400).json({ message: "Validation failed", errors: result.error.flatten().fieldErrors });
+      return;
+    }
+    req.body = result.data as any;
+    next();
+  };

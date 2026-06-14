@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -49,6 +49,136 @@ const CONTENT_TYPE_BADGES = {
   APTITUDE_QUESTION: "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 border-amber-200 dark:border-amber-900/50",
 };
 
+interface NoteCardProps {
+  note: Note;
+  isExpanded: boolean;
+  isConfirmingDelete: boolean;
+  badgeClass: string;
+  onDelete: (note: Note) => void;
+  onCancelDelete: () => void;
+  onConfirmDeleteId: (id: number) => void;
+  onToggleExpand: (note: Note) => void;
+}
+
+export const NoteCard = React.memo(function NoteCard({
+  note,
+  isExpanded,
+  isConfirmingDelete,
+  badgeClass,
+  onDelete,
+  onCancelDelete,
+  onConfirmDeleteId,
+  onToggleExpand,
+}: NoteCardProps) {
+  return (
+    <motion.div
+      layout="position"
+      className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-lg p-5 hover:shadow-xs transition-shadow flex flex-col"
+    >
+      {/* Card Header */}
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className={`px-2 py-0.5 border text-xs font-mono uppercase tracking-wider rounded-sm ${badgeClass}`}>
+            {CONTENT_TYPE_LABELS[note.contentType]}
+          </span>
+          <span className="text-xs font-mono text-stone-400 dark:text-stone-500 flex items-center gap-1">
+            <Calendar className="w-3 h-3" />
+            {new Date(note.updatedAt).toLocaleDateString()}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1">
+          {note.url && (
+            <Link
+              to={note.url}
+              title="Open original resource"
+              className="p-1.5 rounded-md hover:bg-stone-100 dark:hover:bg-white/5 text-stone-500 hover:text-stone-900 dark:hover:text-stone-300 transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Link>
+          )}
+
+          {isConfirmingDelete ? (
+            <div className="flex items-center gap-1 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-md p-0.5">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(note)}
+                className="px-2 py-0.5 text-xs font-mono uppercase font-bold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xs h-auto min-h-0"
+              >
+                Yes
+              </Button>
+              <span className="text-xs text-stone-400 font-mono">|</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onCancelDelete}
+                className="px-2 py-0.5 text-xs font-mono uppercase text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5 rounded-xs h-auto min-h-0"
+              >
+                No
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onConfirmDeleteId(note.id)}
+              title="Delete note"
+              className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/15 text-stone-400 hover:text-red-500 dark:text-stone-500 dark:hover:text-red-400 transition-colors h-auto min-h-0"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Title */}
+      <h3 className="mt-3 text-base font-bold text-stone-900 dark:text-stone-50">
+        {note.url ? (
+          <Link to={note.url} className="hover:underline">
+            {note.title}
+          </Link>
+        ) : (
+          note.title
+        )}
+      </h3>
+
+      {/* Note Content Preview / Editor */}
+      <div className="mt-3 flex-1">
+        {!isExpanded ? (
+          <p className="text-sm text-stone-600 dark:text-stone-300 line-clamp-3 leading-relaxed whitespace-pre-wrap">
+            {note.note}
+          </p>
+        ) : (
+          <div className="mt-2">
+            <NotesPanel contentType={note.contentType} contentId={note.contentId} />
+          </div>
+        )}
+      </div>
+
+      {/* Toggle Button */}
+      <div className="mt-4 pt-3 border-t border-stone-100 dark:border-white/5 flex justify-end">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onToggleExpand(note)}
+          className="text-xs font-mono uppercase tracking-wider flex items-center gap-1 h-8 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
+        >
+          {isExpanded ? (
+            <>
+              <ChevronUp className="w-3.5 h-3.5" /> Close Editor
+            </>
+          ) : (
+            <>
+              <ChevronDown className="w-3.5 h-3.5" /> Read &amp; Edit Note
+            </>
+          )}
+        </Button>
+      </div>
+    </motion.div>
+  );
+});
+
 export default function NotesDashboardPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -79,14 +209,14 @@ export default function NotesDashboardPage() {
     },
   });
 
-  const handleDelete = (note: Note) => {
+  const handleDelete = useCallback((note: Note) => {
     deleteMutation.mutate({
       contentType: note.contentType,
       contentId: note.contentId,
     });
-  };
+  }, [deleteMutation]);
 
-  const toggleExpand = (note: Note) => {
+  const toggleExpand = useCallback((note: Note) => {
     if (expandedNoteId === note.id) {
       // Refresh notes list on close to update the truncated preview text
       queryClient.invalidateQueries({ queryKey: queryKeys.notes.list() });
@@ -94,7 +224,15 @@ export default function NotesDashboardPage() {
     } else {
       setExpandedNoteId(note.id);
     }
-  };
+  }, [expandedNoteId, queryClient]);
+
+  const handleCancelDelete = useCallback(() => {
+    setConfirmDeleteId(null);
+  }, []);
+
+  const handleConfirmDeleteId = useCallback((id: number) => {
+    setConfirmDeleteId(id);
+  }, []);
 
   // Perform filtering, searching and sorting client-side
   const filteredAndSortedNotes = useMemo(() => {
@@ -249,7 +387,7 @@ export default function NotesDashboardPage() {
           {/* Filtering bar */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Tabs */}
-            <div className="flex flex-wrap items-center gap-1 bg-stone-100 dark:bg-stone-850 p-1 rounded-md max-w-full overflow-x-auto">
+            <div className="flex flex-wrap items-center gap-1 bg-stone-100 dark:bg-stone-800 p-1 rounded-md max-w-full overflow-x-auto">
               {tabs.map((tab) => (
                 <Button
                   key={tab}
@@ -300,7 +438,7 @@ export default function NotesDashboardPage() {
           <div className="py-16 text-center border border-red-200 dark:border-red-900/30 bg-red-50/50 dark:bg-red-950/10 rounded-lg">
             <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
             <p className="text-sm font-semibold text-red-700 dark:text-red-400">Failed to load study notes</p>
-            <p className="text-xs text-stone-550 dark:text-stone-400 mt-1">Please try refreshing the page.</p>
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">Please try refreshing the page.</p>
           </div>
         ) : filteredAndSortedNotes.length === 0 ? (
           <div className="py-20 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-lg bg-white/50 dark:bg-stone-900/20">
@@ -320,106 +458,17 @@ export default function NotesDashboardPage() {
               const badgeClass = CONTENT_TYPE_BADGES[note.contentType] || "";
 
               return (
-                <motion.div
+                <NoteCard
                   key={note.id}
-                  layout="position"
-                  className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-lg p-5 hover:shadow-xs transition-shadow flex flex-col"
-                >
-                  {/* Card Header */}
-                  <div className="flex items-start justify-between gap-4 flex-wrap">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`px-2 py-0.5 border text-[9px] font-mono uppercase tracking-wider rounded-sm ${badgeClass}`}>
-                        {CONTENT_TYPE_LABELS[note.contentType]}
-                      </span>
-                      <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(note.updatedAt).toLocaleDateString()}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      {note.url && (
-                        <Link
-                          to={note.url}
-                          title="Open original resource"
-                          className="p-1.5 rounded-md hover:bg-stone-100 dark:hover:bg-white/5 text-stone-500 hover:text-stone-900 dark:hover:text-stone-300 transition-colors"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Link>
-                      )}
-
-                      {isConfirmingDelete ? (
-                        <div className="flex items-center gap-1 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-md p-0.5">
-                          <button
-                            onClick={() => handleDelete(note)}
-                            className="px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xs"
-                          >
-                            Yes
-                          </button>
-                          <span className="text-[10px] text-stone-400 font-mono">|</span>
-                          <button
-                            onClick={() => setConfirmDeleteId(null)}
-                            className="px-2 py-0.5 text-[10px] font-mono uppercase text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5 rounded-xs"
-                          >
-                            No
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setConfirmDeleteId(note.id)}
-                          title="Delete note"
-                          className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/15 text-stone-400 hover:text-red-500 dark:text-stone-500 dark:hover:text-red-400 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="mt-3 text-base font-bold text-stone-900 dark:text-stone-50">
-                    {note.url ? (
-                      <Link to={note.url} className="hover:underline">
-                        {note.title}
-                      </Link>
-                    ) : (
-                      note.title
-                    )}
-                  </h3>
-
-                  {/* Note Content Preview / Editor */}
-                  <div className="mt-3 flex-1">
-                    {!isExpanded ? (
-                      <p className="text-sm text-stone-600 dark:text-stone-300 line-clamp-3 leading-relaxed whitespace-pre-wrap">
-                        {note.note}
-                      </p>
-                    ) : (
-                      <div className="mt-2">
-                        <NotesPanel contentType={note.contentType} contentId={note.contentId} />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Toggle Button */}
-                  <div className="mt-4 pt-3 border-t border-stone-100 dark:border-white/5 flex justify-end">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleExpand(note)}
-                      className="text-xs font-mono uppercase tracking-wider flex items-center gap-1 h-8 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
-                    >
-                      {isExpanded ? (
-                        <>
-                          <ChevronUp className="w-3.5 h-3.5" /> Close Editor
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="w-3.5 h-3.5" /> Read &amp; Edit Note
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </motion.div>
+                  note={note}
+                  isExpanded={isExpanded}
+                  isConfirmingDelete={isConfirmingDelete}
+                  badgeClass={badgeClass}
+                  onDelete={handleDelete}
+                  onCancelDelete={handleCancelDelete}
+                  onConfirmDeleteId={handleConfirmDeleteId}
+                  onToggleExpand={toggleExpand}
+                />
               );
             })}
           </div>

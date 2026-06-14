@@ -58,7 +58,7 @@ describe("NotesService", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe("Two Sum");
-      expect(result[0].url).toBe("/learn/dsa/problems/two-sum");
+      expect(result[0].url).toBe("/learn/dsa/problem/two-sum");
       expect(prisma.studentNote.findMany).toHaveBeenCalledWith({
         where: { userId: 1 },
         orderBy: { updatedAt: "desc" },
@@ -114,6 +114,14 @@ describe("NotesService", () => {
       expect(prisma.studentNote.upsert).not.toHaveBeenCalled();
     });
 
+    it("should reject malformed numeric contentId", async () => {
+      await expect(
+        notesService.saveNote(1, NoteContentType.DSA_PROBLEM, "12abc", "Hello")
+      ).rejects.toThrow("Problem not found");
+
+      expect(prisma.studentNote.upsert).not.toHaveBeenCalled();
+    });
+
     it("should delete the note if the text is empty", async () => {
       vi.mocked(prisma.dsaProblem.findUnique).mockResolvedValue({ id: 10 } as any);
 
@@ -130,6 +138,16 @@ describe("NotesService", () => {
       const result = await notesService.deleteNote(1, NoteContentType.DSA_PROBLEM, "10");
       expect(result.success).toBe(true);
       expect(prisma.studentNote.delete).toHaveBeenCalled();
+    });
+
+    it("should propagate non-P2025 delete failures", async () => {
+      const dbError = new Error("Database connection lost");
+      (dbError as any).code = "SOME_OTHER_ERROR";
+      vi.mocked(prisma.studentNote.delete).mockRejectedValueOnce(dbError);
+
+      await expect(
+        notesService.deleteNote(1, NoteContentType.DSA_PROBLEM, "10")
+      ).rejects.toThrow("Database connection lost");
     });
   });
 });

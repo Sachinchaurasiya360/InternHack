@@ -41,9 +41,17 @@ export const NotesPanel = React.memo(function NotesPanel({
           setSaveStatus("idle");
           initialLoadRef.current = false;
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (active) {
-          if (err?.response?.status === 404) {
+          const status =
+            typeof err === "object" &&
+            err !== null &&
+            "response" in err &&
+            typeof (err as any).response === "object" &&
+            (err as any).response !== null
+              ? (err as any).response.status
+              : undefined;
+          if (status === 404) {
             setNote("");
           } else {
             setError("Failed to load notes.");
@@ -72,7 +80,7 @@ export const NotesPanel = React.memo(function NotesPanel({
     try {
       await api.put(`/notes/${contentType}/${contentId}`, { note: valueToSave });
       setSaveStatus("saved");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSaveStatus("error");
       setError("Failed to save note.");
       toast.error("Failed to save note.");
@@ -127,7 +135,7 @@ export const NotesPanel = React.memo(function NotesPanel({
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest">
+        <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest">
           {saveStatus === "saving" && (
             <span className="flex items-center gap-1 text-amber-500">
               <Loader2 className="w-3 h-3 animate-spin" /> saving
@@ -150,20 +158,23 @@ export const NotesPanel = React.memo(function NotesPanel({
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
+          maxLength={4000}
           onBlur={triggerManualSave}
           placeholder="Add your personal notes, key takeaways, or solutions here... (autosaves)"
           className="w-full h-full min-h-[120px] p-4 text-sm bg-transparent border-0 outline-hidden resize-y focus:ring-0 text-stone-800 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-500 leading-relaxed font-sans"
         />
       </div>
 
-      <div className="flex items-center justify-between px-4 py-2 border-t border-stone-200 dark:border-white/10 bg-stone-50/50 dark:bg-stone-900/20 text-[10px] font-mono text-stone-500">
-        <span>{note.length} / 4000 characters</span>
+      <div className="flex items-center justify-between px-4 py-2 border-t border-stone-200 dark:border-white/10 bg-stone-50/50 dark:bg-stone-900/20 text-xs font-mono text-stone-500">
+        <span className={note.length >= 4000 ? "text-red-500 font-semibold" : note.length >= 3600 ? "text-amber-500" : "text-stone-500"}>
+          {note.length} / 4000 characters
+        </span>
         <Button
           size="sm"
           variant="outline"
           onClick={triggerManualSave}
           disabled={saving}
-          className="text-[10px] h-6 px-2 font-mono uppercase tracking-wider"
+          className="text-xs h-6 px-2 font-mono uppercase tracking-wider"
         >
           {saving ? (
             <Loader2 className="w-2.5 h-2.5 animate-spin mr-1" />

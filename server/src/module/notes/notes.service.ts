@@ -24,13 +24,31 @@ export class NotesService {
     return this.enrichNotes(notes);
   }
 
+  private strictlyParseAndNormalizeId(contentType: NoteContentType, contentId: string): string {
+    if (
+      contentType === NoteContentType.DSA_PROBLEM ||
+      contentType === NoteContentType.ROADMAP_TOPIC ||
+      contentType === NoteContentType.APTITUDE_QUESTION
+    ) {
+      if (!/^\d+$/.test(contentId)) {
+        if (contentType === NoteContentType.DSA_PROBLEM) throw new Error("Problem not found");
+        if (contentType === NoteContentType.ROADMAP_TOPIC) throw new Error("Topic not found");
+        if (contentType === NoteContentType.APTITUDE_QUESTION) throw new Error("Question not found");
+        throw new Error("Invalid numeric ID");
+      }
+      return String(parseInt(contentId, 10));
+    }
+    return contentId;
+  }
+
   async getNote(userId: number, contentType: NoteContentType, contentId: string) {
+    const normalizedId = this.strictlyParseAndNormalizeId(contentType, contentId);
     const note = await prisma.studentNote.findUnique({
       where: {
         userId_contentType_contentId: {
           userId,
           contentType,
-          contentId,
+          contentId: normalizedId,
         },
       },
     });
@@ -41,9 +59,8 @@ export class NotesService {
   }
 
   async saveNote(userId: number, contentType: NoteContentType, contentId: string, noteText: string) {
-    await this.validateContentExistence(contentType, contentId);
-
-    const trimmedNote = noteText.trim();
+    const normalizedId = this.strictlyParseAndNormalizeId(contentType, contentId);
+    const trimmedNote = (noteText || "").trim();
 
     if (!trimmedNote) {
       // If note is empty, delete it and return empty object
@@ -53,22 +70,31 @@ export class NotesService {
             userId_contentType_contentId: {
               userId,
               contentType,
-              contentId,
+              contentId: normalizedId,
             },
           },
         });
       } catch (err) {
-        // Ignore delete error if note didn't exist
+        if (
+          typeof err === "object" &&
+          err !== null &&
+          "code" in err &&
+          (err as any).code !== "P2025"
+        ) {
+          throw err;
+        }
       }
-      return { contentType, contentId, note: "" };
+      return { contentType, contentId: normalizedId, note: "" };
     }
+
+    await this.validateContentExistence(contentType, normalizedId);
 
     const saved = await prisma.studentNote.upsert({
       where: {
         userId_contentType_contentId: {
           userId,
           contentType,
-          contentId,
+          contentId: normalizedId,
         },
       },
       update: {
@@ -77,7 +103,7 @@ export class NotesService {
       create: {
         userId,
         contentType,
-        contentId,
+        contentId: normalizedId,
         note: trimmedNote,
       },
     });
@@ -86,18 +112,26 @@ export class NotesService {
   }
 
   async deleteNote(userId: number, contentType: NoteContentType, contentId: string) {
+    const normalizedId = this.strictlyParseAndNormalizeId(contentType, contentId);
     try {
       await prisma.studentNote.delete({
         where: {
           userId_contentType_contentId: {
             userId,
             contentType,
-            contentId,
+            contentId: normalizedId,
           },
         },
       });
     } catch (err) {
-      // Ignore if note didn't exist
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        (err as any).code !== "P2025"
+      ) {
+        throw err;
+      }
     }
     return { success: true };
   }
@@ -126,17 +160,17 @@ export class NotesService {
 
     const dsaIds = notes
       .filter((n) => n.contentType === NoteContentType.DSA_PROBLEM)
-      .map((n) => parseInt(n.contentId, 10))
+      .map((n) => parseInt(this.strictlyParseAndNormalizeId(n.contentType, n.contentId), 10))
       .filter((id) => !isNaN(id));
 
     const roadmapIds = notes
       .filter((n) => n.contentType === NoteContentType.ROADMAP_TOPIC)
-      .map((n) => parseInt(n.contentId, 10))
+      .map((n) => parseInt(this.strictlyParseAndNormalizeId(n.contentType, n.contentId), 10))
       .filter((id) => !isNaN(id));
 
     const aptitudeIds = notes
       .filter((n) => n.contentType === NoteContentType.APTITUDE_QUESTION)
-      .map((n) => parseInt(n.contentId, 10))
+      .map((n) => parseInt(this.strictlyParseAndNormalizeId(n.contentType, n.contentId), 10))
       .filter((id) => !isNaN(id));
 
     const [dsaProblems, roadmapTopics, aptitudeQuestions] = await Promise.all([
@@ -169,19 +203,19 @@ export class NotesService {
       let url = "";
 
       if (note.contentType === NoteContentType.DSA_PROBLEM) {
-        const p = dsaMap.get(parseInt(note.contentId, 10));
+        const p = dsaMap.get(parseInt(this.strictlyParseAndNormalizeId(note.contentType, note.contentId), 10));
         if (p) {
           title = p.title;
-          url = `/learn/dsa/problems/${p.slug}`;
+          url = `/learn/dsa/problem/${p.slug}`;
         }
       } else if (note.contentType === NoteContentType.ROADMAP_TOPIC) {
-        const t = roadmapMap.get(parseInt(note.contentId, 10));
+        const t = roadmapMap.get(parseInt(this.strictlyParseAndNormalizeId(note.contentType, note.contentId), 10));
         if (t) {
           title = t.title;
-          url = `/learn/roadmap/${t.section.roadmap.slug}/topics/${t.slug}`;
+          url = `/learn/roadmaps/${t.section.roadmap.slug}/${t.slug}`;
         }
       } else if (note.contentType === NoteContentType.APTITUDE_QUESTION) {
-        const q = aptitudeMap.get(parseInt(note.contentId, 10));
+        const q = aptitudeMap.get(parseInt(this.strictlyParseAndNormalizeId(note.contentType, note.contentId), 10));
         if (q) {
           const text = q.question.replace(/<[^>]*>/g, "");
           title = text.length > 50 ? text.substring(0, 50) + "..." : text;
@@ -192,8 +226,6 @@ export class NotesService {
           .split("-")
           .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" ");
-        // We'll let client build the full URL if sectionSlug isn't stored,
-        // or return a basic route template that client can resolve.
         url = `/learn/interview`;
       }
 

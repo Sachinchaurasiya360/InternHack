@@ -1726,5 +1726,6 @@ model studentNote {
   @@unique([userId, contentType, contentId])
   @@index([userId])
   @@index([contentType, contentId])
+  @@index([userId, updatedAt])
 }
 
