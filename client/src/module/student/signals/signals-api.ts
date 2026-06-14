@@ -96,8 +96,18 @@ export async function triggerIngest(): Promise<{
     duration: number;
   }>;
 }> {
-  const { data } = await api.post("/signals/trigger");
-  return data as never;
+  const { data } = await api.post<{
+    message: string;
+    results: Array<{
+      source: string;
+      signalsFound: number;
+      signalsCreated: number;
+      signalsUpdated: number;
+      error?: string;
+      duration: number;
+    }>;
+  }>("/signals/trigger");
+  return data;
 }
 
 export async function cleanupNoise(): Promise<{ removed: number }> {
