@@ -106,6 +106,7 @@ export const queryKeys = {
       ["opensource", "trend", startDate, endDate] as const,
     hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
     streak: () => ["opensource", "streak"] as const,
+    githubConnection: () => ["opensource", "github-connection"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
@@ -261,9 +262,6 @@ export const queryKeys = {
     similar: (id: number) => ["dsa", "similar", id] as const,
     approaches: (slug: string) => ["dsa", "approaches", slug] as const,
   },
-  interviewDashboard: {
-  mine: () => ["interview-dashboard", "mine"] as const,
-},
   // Roadmaps
   roadmaps: {
     all: ["roadmaps"] as const,

@@ -10,6 +10,7 @@ export * from "./types/roadmap.types";
 export * from "./types/interview.types";
 export * from "./types/learning.types";
 export * from "./types/misc.types";
+export * from "./types/verbal-ability.types";
 
 export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL" | "CLAUDE";
 export type AIServiceType =
