@@ -232,7 +232,7 @@ export default function RoadmapCertificatesGalleryPage() {
 
             {certificates.map((certificate) => (
             <CertificateCard key={certificate.shareToken} certificate={certificate}/>
-            ))}
+            ))}p
 
           </div>
         )}
