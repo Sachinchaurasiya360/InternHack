@@ -241,9 +241,11 @@ export class PaymentService {
     });
     if (!payment) return;
 
-    await prisma.user.update({
-      where: { id: payment.userId },
-      data: { subscriptionStatus: "CANCELLED" },
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: payment.userId },
+        data: { subscriptionStatus: "CANCELLED" },
+      });
     });
     await invalidateUserTierCache(payment.userId);
   }
@@ -255,12 +257,14 @@ export class PaymentService {
     });
     if (!payment) return;
 
-    await prisma.user.update({
-      where: { id: payment.userId },
-      data: {
-        subscriptionStatus: "EXPIRED",
-        subscriptionPlan: "FREE",
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: payment.userId },
+        data: {
+          subscriptionStatus: "EXPIRED",
+          subscriptionPlan: "FREE",
+        },
+      });
     });
     await invalidateUserTierCache(payment.userId);
   }
@@ -272,9 +276,11 @@ export class PaymentService {
     });
     if (!payment) return;
 
-    await prisma.user.update({
-      where: { id: payment.userId },
-      data: { subscriptionStatus: "EXPIRED" },
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: payment.userId },
+        data: { subscriptionStatus: "EXPIRED" },
+      });
     });
     await invalidateUserTierCache(payment.userId);
   }
@@ -286,12 +292,14 @@ export class PaymentService {
     });
     if (!payment) return;
 
-    await prisma.user.update({
-      where: { id: payment.userId },
-      data: {
-        subscriptionStatus: "ACTIVE",
-        subscriptionEndDate: new Date(sub.next_billing_date),
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: payment.userId },
+        data: {
+          subscriptionStatus: "ACTIVE",
+          subscriptionEndDate: new Date(sub.next_billing_date),
+        },
+      });
     });
     await invalidateUserTierCache(payment.userId);
   }
