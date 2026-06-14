@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
       >
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 no-underline">
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center rounded-xl">
+            <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center rounded-xl">
               <Shield className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold text-white">InternHack</span>
