@@ -31,10 +31,6 @@ const buttonVariants = cva(
         solid: '',
         dashed: '',
       },
-      underlined: {
-        solid: '',
-        dashed: '',
-      },
       size: {
         lg: 'h-10 rounded-md px-4 text-sm gap-1.5 [&_svg:not([class*=size-])]:size-4',
         md: 'h-8.5 rounded-md px-3 gap-1.5 text-[0.8125rem] leading-(--text-sm--line-height) [&_svg:not([class*=size-])]:size-4',
@@ -199,20 +195,7 @@ const buttonVariants = cva(
         className:
           'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
       },
-      {
-        variant: 'primary',
-        mode: 'link',
-        underlined: 'solid',
-        className:
-          'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
-      },
-      {
-        variant: 'primary',
-        mode: 'link',
-        underlined: 'dashed',
-        className:
-          'font-medium text-primary hover:text-primary/90 [&_svg]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
-      },
+
       {
         variant: 'inverse',
         mode: 'link',
@@ -228,20 +211,6 @@ const buttonVariants = cva(
           'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
       },
       {
-        variant: 'inverse',
-        mode: 'link',
-        underlined: 'solid',
-        className:
-          'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
-      },
-      {
-        variant: 'inverse',
-        mode: 'link',
-        underlined: 'dashed',
-        className:
-          'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
-      },
-      {
         variant: 'foreground',
         mode: 'link',
         underline: 'solid',
@@ -255,20 +224,7 @@ const buttonVariants = cva(
         className:
           'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
       },
-      {
-        variant: 'foreground',
-        mode: 'link',
-        underlined: 'solid',
-        className:
-          'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
-      },
-      {
-        variant: 'foreground',
-        mode: 'link',
-        underlined: 'dashed',
-        className:
-          'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
-      },
+
       {
         variant: 'primary',
         appearance: 'ghost',
@@ -347,7 +303,6 @@ function Button({
   mode,
   size,
   autoHeight,
-  underlined,
   underline,
   asChild = false,
   placeholder = false,
@@ -372,7 +327,6 @@ function Button({
           mode,
           autoHeight,
           placeholder,
-          underlined,
           underline,
           className,
         }),
