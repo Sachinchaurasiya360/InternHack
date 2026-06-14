@@ -22,15 +22,28 @@ import {
   getTopic,
   patchTopicProgress,
   postAiGenerate,
+  getAiUsage,
   postRecomputePace,
   updateRoadmap,
   postRegenerateSection,
   toggleShare,
 } from "./roadmap.controller.js";
+import {
+  getStudyBuddy,
+  postOptIn,
+  deleteOptIn,
+  postRematch,
+} from "./study-buddy.controller.js";
 
 export const roadmapRouter = Router();
 
+roadmapRouter.get("/:roadmapId/study-buddy", authMiddleware, getStudyBuddy);
+roadmapRouter.post("/:roadmapId/study-buddy/opt-in", authMiddleware, postOptIn);
+roadmapRouter.delete("/:roadmapId/study-buddy/opt-in", authMiddleware, deleteOptIn);
+roadmapRouter.post("/:roadmapId/study-buddy/rematch", authMiddleware, postRematch);
+
 roadmapRouter.post("/ai/generate", authMiddleware, aiRoadmapLimiter, usageLimit("ROADMAP_GENERATION", "monthly"), postAiGenerate);
+roadmapRouter.get("/ai/usage", authMiddleware, getAiUsage);
 roadmapRouter.get("/me/enrollments", authMiddleware, getMyEnrollments);
 roadmapRouter.get("/me/enrollments/analytics/batch", authMiddleware, getMyEnrollmentsAnalyticsBatch);
 roadmapRouter.get("/me/enrollments/:id/analytics", authMiddleware, getMyEnrollmentAnalytics);
