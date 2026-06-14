@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   RotateCcw,
   Briefcase,
@@ -187,9 +187,9 @@ export default function JobAgentPage() {
     setStreamingContent("");
     setStreamingJobs([]);
 
-    const apiBase = (
-      (import.meta.env["VITE_API_URL"] as string | undefined) ?? "/api"
-    ).replace(/\/$/, "");
+    // Reuse the axios instance's resolved baseURL so the streaming fetch can
+    // never drift from every other request (same env var, same fallback).
+    const apiBase = (api.defaults.baseURL ?? "").replace(/\/$/, "");
 
     try {
       const response = await fetch(`${apiBase}/job-agent/chat/stream`, {
