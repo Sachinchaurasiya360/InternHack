@@ -288,9 +288,9 @@ export default function RepoPublicPage() {
                     ))
                   ) : (
                     <div className="p-12 text-center">
-                      <p className="text-stone-500 mb-2">No active &quot;good first issue&quot; found</p>
+                      <p className="text-stone-500 mb-2">No active \u201Cgood first issue\u201D found</p>
                       <p className="text-xs text-stone-400">
-                        Check the full issue tracker for other beginner tags like &quot;help wanted&quot;.
+                        Check the full issue tracker for other beginner tags like \u201Chelp wanted\u201D.
                       </p>
                     </div>
                   )}
@@ -379,8 +379,8 @@ export default function RepoPublicPage() {
 
               <section className="border-l-4 border-primary pl-6 py-2">
                 <p className="text-stone-500 text-sm italic">
-                  &quot;Contributing to open source is one of the best ways to grow your network and career as a
-                  student developer.&quot;
+                  \u201CContributing to open source is one of the best ways to grow your network and career as a
+                  student developer.\u201D
                 </p>
                 <p className="text-xs font-bold text-stone-900 dark:text-white mt-2">— InternHack Team</p>
               </section>

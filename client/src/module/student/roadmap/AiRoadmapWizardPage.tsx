@@ -382,7 +382,7 @@ const res = await api.post<{
           toast.warning(
             <div className="flex flex-col gap-2 p-1 text-left">
               <p className="font-bold">Similar roadmap exists</p>
-              <p className="text-[10px] opacity-70">We found &quot;{duplicate.title}&quot; which seems similar to your goal.</p>
+              <p className="text-[10px] opacity-70">We found {"\u201C"}{duplicate.title}{"\u201D"} which seems similar to your goal.</p>
               <div className="flex items-center gap-3 mt-1">
                 <Link to={`/learn/roadmaps/${duplicate.slug}`} className="text-xs font-bold text-stone-950 dark:text-stone-50 hover:underline">
                   View existing
@@ -997,7 +997,7 @@ const res = await api.post<{
             >
               <div className="flex-1 text-sm">
                 <p className="font-medium mb-1">
-                  You already have a roadmap for &quot;{similarEnrollment.roadmap.title}&quot;.
+                  You already have a roadmap for {"\u201C"}{similarEnrollment.roadmap.title}{"\u201D"}.
                 </p>
                 <p className="opacity-80">Generating again will create a separate copy.</p>
                 <Link
