@@ -5,7 +5,7 @@ import { Slot } from '@radix-ui/react-slot';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'cursor-pointer group whitespace-nowrap focus-visible:outline-hidden inline-flex items-center justify-center has-data-[arrow=true]:justify-between whitespace-nowrap text-sm font-medium ring-offset-background transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0',
+  'cursor-pointer group whitespace-nowrap focus-visible:outline-hidden inline-flex items-center justify-center has-data-[arrow=true]:justify-between text-sm font-medium ring-offset-background transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -28,10 +28,8 @@ const buttonVariants = cva(
         ghost: '',
       },
       underline: {
-        solid: '',
-        dashed: '',
-      },
-      underlined: {
+        hover: '',
+        'hover-dashed': '',
         solid: '',
         dashed: '',
       },
@@ -188,84 +186,84 @@ const buttonVariants = cva(
       {
         variant: 'primary',
         mode: 'link',
-        underline: 'solid',
+        underline: 'hover',
         className:
           'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-solid',
       },
       {
         variant: 'primary',
         mode: 'link',
-        underline: 'dashed',
+        underline: 'hover-dashed',
         className:
           'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
       },
       {
         variant: 'primary',
         mode: 'link',
-        underlined: 'solid',
+        underline: 'solid',
         className:
           'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
       },
       {
         variant: 'primary',
         mode: 'link',
-        underlined: 'dashed',
+        underline: 'dashed',
         className:
           'font-medium text-primary hover:text-primary/90 [&_svg]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
       },
       {
         variant: 'inverse',
         mode: 'link',
-        underline: 'solid',
+        underline: 'hover',
         className:
           'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-solid',
       },
       {
         variant: 'inverse',
         mode: 'link',
-        underline: 'dashed',
+        underline: 'hover-dashed',
         className:
           'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
       },
       {
         variant: 'inverse',
         mode: 'link',
-        underlined: 'solid',
+        underline: 'solid',
         className:
           'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
       },
       {
         variant: 'inverse',
         mode: 'link',
-        underlined: 'dashed',
+        underline: 'dashed',
         className:
           'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
       },
       {
         variant: 'foreground',
         mode: 'link',
-        underline: 'solid',
+        underline: 'hover',
         className:
           'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-solid',
       },
       {
         variant: 'foreground',
         mode: 'link',
-        underline: 'dashed',
+        underline: 'hover-dashed',
         className:
           'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
       },
       {
         variant: 'foreground',
         mode: 'link',
-        underlined: 'solid',
+        underline: 'solid',
         className:
           'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
       },
       {
         variant: 'foreground',
         mode: 'link',
-        underlined: 'dashed',
+        underline: 'dashed',
         className:
           'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
       },
@@ -347,7 +345,6 @@ function Button({
   mode,
   size,
   autoHeight,
-  underlined,
   underline,
   asChild = false,
   placeholder = false,
@@ -372,7 +369,6 @@ function Button({
           mode,
           autoHeight,
           placeholder,
-          underlined,
           underline,
           className,
         }),

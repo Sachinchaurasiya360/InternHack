@@ -17,6 +17,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
 import { sanitizeHtml } from "../../../lib/sanitize";
 import { GridBackground } from "../../../components/ui/GridBackground";
+import { NotesPanel } from "../../../components/learning/NotesPanel";
 
 
 type QuestionResult = AptitudeAnswerResult;
@@ -491,6 +492,12 @@ export default function AptitudeTopicPage() {
                     />
                   </div>
                 </motion.div>
+              )}
+
+              {user && (
+                <div className="ml-0 sm:ml-12 mt-5 pt-5 border-t border-stone-200 dark:border-white/10">
+                  <NotesPanel contentType="APTITUDE_QUESTION" contentId={q.id} />
+                </div>
               )}
             </motion.div>
           )}

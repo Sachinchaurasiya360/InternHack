@@ -399,6 +399,7 @@ export default function CompanyDetailPage() {
                     </select>
                     {isAuthenticated && user?.role === "STUDENT" && (
                       <button
+                        type="button"
                         onClick={() => setShowReviewForm(true)}
                         className="inline-flex items-center gap-2 px-3 py-2 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 text-xs font-bold uppercase tracking-widest rounded-md hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors cursor-pointer whitespace-nowrap"
                       >
@@ -613,6 +614,7 @@ export default function CompanyDetailPage() {
                   </p>
                   <div className="mt-4 space-y-2">
                     <button
+                      type="button"
                       onClick={() => setShowEditModal(true)}
                       className="group w-full inline-flex items-center justify-between gap-2 px-4 py-2.5 rounded-md border border-stone-200 dark:border-white/10 text-sm font-medium text-stone-700 dark:text-stone-300 hover:border-stone-400 dark:hover:border-white/30 transition-colors cursor-pointer bg-transparent"
                     >

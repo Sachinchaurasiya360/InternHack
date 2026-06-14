@@ -1,8 +1,6 @@
 import { Fragment } from "react";
 import { Outlet, useLocation, Link } from "react-router";
 import { ChevronRight } from "lucide-react";
-import ContributionCoachPanel from "./ContributionCoachPanel";
-import CoachFloatingButton from "./CoachFloatingButton";
 import { LearningPathProvider } from "./learning-paths.context";
 import StreakFlame from "./StreakFlame";
 
@@ -83,8 +81,6 @@ export default function OpenSourceLayout() {
             <Outlet />
           </main>
         </div>
-        <ContributionCoachPanel />
-        <CoachFloatingButton />
         <div className="fixed bottom-4 right-4 z-40">
           <StreakFlame />
         </div>

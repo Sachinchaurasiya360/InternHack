@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { Request, Response, NextFunction } from "express";
 
 // ── Mock Prisma before importing the module under test ──────────────
@@ -205,7 +205,17 @@ describe("errorMiddleware", () => {
   });
 
   // ── Sensitive data sanitization ───────────────────────────────────
+  // DB logging only happens in production, so these run with NODE_ENV set.
   describe("sensitive data sanitization", () => {
+    let originalEnv: string | undefined;
+    beforeEach(() => {
+      originalEnv = process.env["NODE_ENV"];
+      process.env["NODE_ENV"] = "production";
+    });
+    afterEach(() => {
+      process.env["NODE_ENV"] = originalEnv;
+    });
+
     it("should redact sensitive fields in request body before logging", async () => {
       const { prisma } = await import("../database/db.js");
       const err = new Error("User not found");
@@ -272,6 +282,25 @@ describe("errorMiddleware", () => {
         },
         items: [{ token: "[REDACTED]" }],
       });
+    });
+  });
+
+  // ── Environment-gated logging ─────────────────────────────────────
+  describe("environment-gated logging", () => {
+    it("should NOT write to the error log DB outside production", async () => {
+      const originalEnv = process.env["NODE_ENV"];
+      try {
+        process.env["NODE_ENV"] = "development";
+        const { prisma } = await import("../database/db.js");
+        (prisma.errorLog.create as ReturnType<typeof vi.fn>).mockClear();
+
+        errorMiddleware(new Error("something broke"), mockReq(), mockRes(), noop);
+        await new Promise((r) => setTimeout(r, 10));
+
+        expect(prisma.errorLog.create).not.toHaveBeenCalled();
+      } finally {
+        process.env["NODE_ENV"] = originalEnv;
+      }
     });
   });
 });

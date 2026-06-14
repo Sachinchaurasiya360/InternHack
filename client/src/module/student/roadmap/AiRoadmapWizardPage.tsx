@@ -382,7 +382,7 @@ const res = await api.post<{
           toast.warning(
             <div className="flex flex-col gap-2 p-1 text-left">
               <p className="font-bold">Similar roadmap exists</p>
-              <p className="text-[10px] opacity-70">We found &quot;{duplicate.title}&quot; which seems similar to your goal.</p>
+              <p className="text-[10px] opacity-70">We found "{duplicate.title}" which seems similar to your goal.</p>
               <div className="flex items-center gap-3 mt-1">
                 <Link to={`/learn/roadmaps/${duplicate.slug}`} className="text-xs font-bold text-stone-950 dark:text-stone-50 hover:underline">
                   View existing
@@ -548,7 +548,7 @@ const res = await api.post<{
       <div className="relative max-w-3xl mx-auto px-6 pb-16">
         {/* Decorative gradient */}
         <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-200 h-150 bg-gradient-to-br from-lime-100 via-transparent to-stone-100 dark:from-lime-900/20 dark:via-transparent dark:to-stone-950/50 rounded-full blur-3xl" />
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-200 h-150 bg-linear-to-br from-lime-100 via-transparent to-stone-100 dark:from-lime-900/20 dark:via-transparent dark:to-stone-950/50 rounded-full blur-3xl" />
         </div>
 
         {/* Generation counter */}

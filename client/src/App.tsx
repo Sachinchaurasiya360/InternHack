@@ -17,7 +17,7 @@ function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<
       factory().catch((err: unknown) => {
         const key = "chunk_reload";
         if (!sessionStorage.getItem(key)) {
-          sessionStorage.setItem("1", "1");
+          sessionStorage.setItem(key, "1");
           window.location.reload();
           return new Promise<never>(() => { }); // never resolves, page is reloading
         }
@@ -133,6 +133,7 @@ const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPl
 const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewPage"));
 const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
+const NotesDashboardPage = lazyWithRetry(() => import("./module/student/learn/NotesDashboardPage"));
 const BuildChallengesPage = lazyWithRetry(() => import("./module/student/learn/challenges/BuildChallengesPage"));
 const MentorMatchingPage = lazyWithRetry(() => import("./module/student/learn/mentors/MentorMatchingPage"));
 const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
@@ -481,6 +482,7 @@ function App() {
               <Route path="interview" element={<InterviewLessonsPage />} />
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
+              <Route path="notes" element={<ProtectedRoute role="STUDENT"><NotesDashboardPage /></ProtectedRoute>} />
             </Route>
 
             {/* Legacy redirects */}

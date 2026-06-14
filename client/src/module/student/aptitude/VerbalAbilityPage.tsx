@@ -563,7 +563,7 @@ export default function VerbalAbilityPage() {
 
                               {/* Explanation */}
                               {hasSubmitted && q.explanation && (
-                                <div className="mt-4 p-4 bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-850 rounded-md text-xs space-y-1">
+                                <div className="mt-4 p-4 bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 rounded-md text-xs space-y-1">
                                   <div className="flex items-center gap-1.5 text-lime-600 dark:text-lime-400 font-bold uppercase tracking-wider font-mono">
                                     <Check className="w-3.5 h-3.5" /> Explanation
                                   </div>
@@ -719,7 +719,7 @@ export default function VerbalAbilityPage() {
 
                           {/* Explanation */}
                           {hasSubmitted && q.explanation && (
-                            <div className="mt-4 p-4 bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-850 rounded-md text-xs space-y-1">
+                            <div className="mt-4 p-4 bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 rounded-md text-xs space-y-1">
                               <div className="flex items-center gap-1.5 text-lime-600 dark:text-lime-400 font-bold uppercase tracking-wider font-mono">
                                 <Check className="w-3.5 h-3.5" /> Explanation
                               </div>
