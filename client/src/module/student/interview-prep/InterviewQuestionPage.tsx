@@ -18,10 +18,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 import api from "../../../lib/axios";
-import { GridBackground } from "../../../components/ui/GridBackground";
-import { NotesPanel } from "../../../components/learning/NotesPanel";
-
-
+import { DIFFICULTY_STYLE } from "../../../lib/difficulty-styles";
 async function getServerProgress() {
   const { data } = await api.get("/interview-progress");
   return data;
@@ -35,11 +32,7 @@ async function updateServerProgress(
   return data;
 }
 
-const DIFF_STYLE: Record<string, string> = {
-  Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
-  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
-  Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
-};
+
 
 const TYPE_STYLE: Record<string, string> = {
   Theory:      "text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-900/60",
@@ -315,7 +308,7 @@ export default function InterviewQuestionPage() {
           </h1>
 
           <div className="flex items-center gap-1.5 flex-wrap mt-4">
-            <MetaChip className={DIFF_STYLE[question.difficulty]}>{question.difficulty}</MetaChip>
+            <MetaChip className={DIFFICULTY_STYLE[question.difficulty]}>{question.difficulty}</MetaChip>
             <MetaChip className={TYPE_STYLE[question.type]}>{question.type}</MetaChip>
             {completed && (
               <MetaChip className="text-lime-600 dark:text-lime-400 border-lime-300 dark:border-lime-900/60">

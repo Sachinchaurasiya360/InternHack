@@ -10,17 +10,8 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
-import { useQuery } from "@tanstack/react-query";
-import { MetaChip } from "../../../components/ui/MetaChip";
-import { GridBackground } from "../../../components/ui/GridBackground";
+import { DIFFICULTY_STYLE } from "../../../lib/difficulty-styles";
 
-
-
-const DIFF_STYLE: Record<string, string> = {
-  Beginner:     "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
-  Intermediate: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
-  Advanced:     "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
-};
 
 const TYPE_STYLE: Record<string, string> = {
   Theory:      "text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-900/60",
@@ -328,7 +319,7 @@ export default function InterviewSectionPage() {
                     </div>
 
                     <span className="hidden sm:inline-flex shrink-0">
-                      <MetaChip className={DIFF_STYLE[question.difficulty]}>
+                      <MetaChip className={DIFFICULTY_STYLE[question.difficulty]}>
                         {question.difficulty}
                       </MetaChip>
                     </span>

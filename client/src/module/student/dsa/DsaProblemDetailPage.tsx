@@ -26,6 +26,7 @@ import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
 import { Button } from "@/components/ui/button";
+<<<<<<< HEAD
 import { DsaApproachesPanel } from "./components/DsaApproachesPanel";
 import { NotesPanel } from "../../../components/learning/NotesPanel";
 
@@ -34,6 +35,9 @@ const DIFF_STYLE: Record<string, string> = {
   Medium: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
   Hard: "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
 };
+=======
+import { DIFFICULTY_STYLE } from "../../../lib/difficulty-styles";
+>>>>>>> ab0c1eb6 (refactor: unify duplicate difficulty color style maps into shared DIFFICULTY_STYLE)
 
 const DEFAULT_CODE: Record<DsaLanguage, string> = {
   python: `import sys
@@ -299,7 +303,7 @@ export default function DsaProblemDetailPage() {
         {/* ── Top bar ── */}
         <div className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-stone-200 dark:border-white/10 shrink-0">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <MetaChip className={DIFF_STYLE[problem.difficulty]}>{problem.difficulty}</MetaChip>
+            <MetaChip className={DIFFICULTY_STYLE[problem.difficulty]}>{problem.difficulty}</MetaChip>
             <div className="min-w-0">
               <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
                 <span className="h-1 w-1 bg-lime-400" />
@@ -574,7 +578,7 @@ export default function DsaProblemDetailPage() {
                           {sq.title}
                         </span>
                         <div className="flex items-center gap-2 shrink-0">
-                          <MetaChip className={DIFF_STYLE[sq.difficulty]}>{sq.difficulty}</MetaChip>
+                          <MetaChip className={DIFFICULTY_STYLE[sq.difficulty]}>{sq.difficulty}</MetaChip>
                           <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
                         </div>
                       </Link>
@@ -854,7 +858,7 @@ export default function DsaProblemDetailPage() {
                     className="group block border border-stone-200 dark:border-white/10 rounded-md p-3.5 hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline bg-stone-50 dark:bg-stone-950"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider border rounded-md ${DIFF_STYLE[sp.difficulty] || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider border rounded-md ${DIFFICULTY_STYLE[sp.difficulty] || "text-stone-600 dark:text-stone-400 border-stone-200 dark:border-white/10"}`}>
                         {sp.difficulty}
                       </span>
                     </div>
