@@ -187,7 +187,7 @@ export default function SignalDetailPage() {
             <a
               href={signal.sourceUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-sm font-semibold hover:opacity-90 transition-opacity no-underline"
             >
               <ExternalLink className="w-4 h-4" />
@@ -197,7 +197,7 @@ export default function SignalDetailPage() {
               <a
                 href={careers}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-lime-400 hover:bg-lime-500 text-stone-900 rounded-md text-sm font-semibold transition-colors no-underline"
               >
                 <Briefcase className="w-4 h-4" />
@@ -208,7 +208,7 @@ export default function SignalDetailPage() {
               <a
                 href={signal.companyWebsite}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-900 dark:text-stone-50 rounded-md text-sm font-semibold hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
               >
                 <Globe className="w-4 h-4" />
