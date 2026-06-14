@@ -156,7 +156,7 @@ export default function FeaturedCarousel({
                   />
                 ) : (
                   <div
-                    className={`h-full w-full bg-gradient-to-br ${
+                    className={`h-full w-full bg-linear-to-br ${
                       GRADIENTS[
                         activePost.id % GRADIENTS.length
                       ]
