@@ -140,6 +140,8 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
     "Problem not found": 404,
     "Question not found": 404,
     "Pattern not found": 404,
+    "Upgrade to Premium to book mock interviews.": 403,
+    "Monthly mock interview limit reached.": 429,
   };
 
   const status = clientErrors[err.message];

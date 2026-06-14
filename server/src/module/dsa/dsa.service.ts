@@ -1333,10 +1333,14 @@ Return ONLY a JSON array, no markdown fences:
     let solvedToday = false;
 
     if (userId) {
+      const todayStart = new Date(`${today}T00:00:00.000Z`);
+      const tomorrowStart = new Date(todayStart.getTime() + 86_400_000);
+
       const submission = await prisma.dsaSubmission.findFirst({
         where: {
           studentId: userId,
           problemId: selected.id,
+          createdAt: { gte: todayStart, lt: tomorrowStart },
         },
       });
 
