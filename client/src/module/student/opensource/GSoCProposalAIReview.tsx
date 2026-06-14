@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Sparkles,
+  Bot,
   ChevronDown,
   ChevronUp,
   Loader2,
@@ -69,7 +69,7 @@ function ScoreRing({ score, label }: { score: number; label: string }) {
     <div className="flex flex-col items-center gap-1.5">
       <div className="relative w-16 h-16">
         <svg className="rotate-[-90deg]" viewBox="0 0 64 64" width="64" height="64">
-          <circle cx="32" cy="32" r={r} fill="none" stroke="currentColor" strokeWidth="5" className="text-gray-100 dark:text-gray-800" />
+          <circle cx="32" cy="32" r={r} fill="none" stroke="currentColor" strokeWidth="5" className="text-stone-100 dark:text-stone-800" />
           <circle
             cx="32" cy="32" r={r}
             fill="none"
@@ -84,7 +84,7 @@ function ScoreRing({ score, label }: { score: number; label: string }) {
           {score}
         </span>
       </div>
-      <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 text-center leading-tight max-w-14">{label}</span>
+      <span className="text-[10px] font-medium text-stone-500 dark:text-stone-400 text-center leading-tight max-w-14">{label}</span>
     </div>
   );
 }
@@ -97,16 +97,16 @@ function ReviewSkeleton() {
       <div className="flex gap-4 justify-center">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="flex flex-col items-center gap-2">
-            <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700" />
-            <div className="w-14 h-3 rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="w-16 h-16 rounded-full bg-stone-200 dark:bg-stone-700" />
+            <div className="w-14 h-3 rounded bg-stone-200 dark:bg-stone-700" />
           </div>
         ))}
       </div>
       {[...Array(3)].map((_, i) => (
-        <div key={i} className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
-          <div className="w-32 h-4 rounded bg-gray-200 dark:bg-gray-700" />
-          <div className="w-full h-3 rounded bg-gray-200 dark:bg-gray-700" />
-          <div className="w-4/5 h-3 rounded bg-gray-200 dark:bg-gray-700" />
+        <div key={i} className="rounded-md border border-stone-200 dark:border-stone-700 p-4 space-y-2">
+          <div className="w-32 h-4 rounded bg-stone-200 dark:bg-stone-700" />
+          <div className="w-full h-3 rounded bg-stone-200 dark:bg-stone-700" />
+          <div className="w-4/5 h-3 rounded bg-stone-200 dark:bg-stone-700" />
         </div>
       ))}
     </div>
@@ -187,33 +187,33 @@ export default function GSoCProposalAIReview() {
       <button
         id="gsoc-ai-review-toggle"
         onClick={() => setIsOpen((v) => !v)}
-        className="w-full flex items-center justify-between gap-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 px-5 py-4 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg transition-all duration-300 group"
+        className="w-full flex items-center justify-between gap-3 bg-white dark:bg-stone-900 rounded-md border border-stone-100 dark:border-stone-800 px-5 py-4 hover:border-stone-200 dark:hover:border-stone-700 hover:shadow-lg transition-all duration-300 group"
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-linear-to-br from-violet-500 to-indigo-600 flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-white" />
+          <div className="w-9 h-9 rounded-md bg-lime-400 flex items-center justify-center shrink-0">
+            <Bot className="w-4 h-4 text-white" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-bold text-gray-950 dark:text-white">AI Proposal Reviewer</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
+            <p className="text-sm font-bold text-stone-950 dark:text-white">AI Proposal Reviewer</p>
+            <p className="text-xs text-stone-400 dark:text-stone-500">
               Paste your draft · get section scores + targeted suggestions
             </p>
           </div>
           {usage && (
-            <span className="ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+            <span className="ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
               {usage.used}/{usage.limit} used
             </span>
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-lime-100 dark:bg-lime-900/30 text-lime-600 dark:text-lime-400">
             FREE · 3/mo
           </span>
           {isOpen ? (
-            <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
+            <ChevronUp className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
+            <ChevronDown className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors" />
           )}
         </div>
       </button>
@@ -229,7 +229,7 @@ export default function GSoCProposalAIReview() {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+            <div className="bg-white dark:bg-stone-900 rounded-md border border-stone-100 dark:border-stone-800 overflow-hidden">
 
               {/* Input section */}
               {!result && !loading && !isPremiumGated && (
@@ -237,8 +237,8 @@ export default function GSoCProposalAIReview() {
                   {/* Context fields */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label htmlFor="gsoc-target-org" className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">
-                        Target Organization <span className="font-normal text-gray-400">(optional)</span>
+                      <label htmlFor="gsoc-target-org" className="block text-xs font-semibold text-stone-500 dark:text-stone-400 mb-1.5">
+                        Target Organization <span className="font-normal text-stone-400">(optional)</span>
                       </label>
                       <input
                         id="gsoc-target-org"
@@ -247,12 +247,12 @@ export default function GSoCProposalAIReview() {
                         onChange={(e) => setTargetOrg(e.target.value)}
                         placeholder="e.g. Python Software Foundation"
                         maxLength={200}
-                        className="w-full text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-violet-400 dark:focus:border-violet-600 transition-colors"
+                        className="w-full text-sm px-3 py-2 rounded-md border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:border-lime-400 dark:focus:border-lime-600 transition-colors"
                       />
                     </div>
                     <div>
-                      <label htmlFor="gsoc-target-stack" className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">
-                        Target Tech Stack <span className="font-normal text-gray-400">(optional)</span>
+                      <label htmlFor="gsoc-target-stack" className="block text-xs font-semibold text-stone-500 dark:text-stone-400 mb-1.5">
+                        Target Tech Stack <span className="font-normal text-stone-400">(optional)</span>
                       </label>
                       <input
                         id="gsoc-target-stack"
@@ -261,14 +261,14 @@ export default function GSoCProposalAIReview() {
                         onChange={(e) => setTargetStack(e.target.value)}
                         placeholder="e.g. Python, Django, NumPy"
                         maxLength={200}
-                        className="w-full text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-violet-400 dark:focus:border-violet-600 transition-colors"
+                        className="w-full text-sm px-3 py-2 rounded-md border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:border-lime-400 dark:focus:border-lime-600 transition-colors"
                       />
                     </div>
                   </div>
 
                   {/* Draft textarea */}
                   <div>
-                    <label htmlFor="gsoc-draft-input" className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">
+                    <label htmlFor="gsoc-draft-input" className="block text-xs font-semibold text-stone-500 dark:text-stone-400 mb-1.5">
                       Paste your proposal section or full draft
                     </label>
                     <textarea
@@ -278,18 +278,18 @@ export default function GSoCProposalAIReview() {
                       onChange={(e) => setDraft(e.target.value.slice(0, MAX_CHARS))}
                       rows={8}
                       placeholder={`Paste your GSoC proposal draft here...\n\nFor best results, include:\n• Your timeline / milestone section\n• Deliverables with acceptance criteria\n• About me / past contributions\n• Why this org / project`}
-                      className="w-full text-sm px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-violet-400 dark:focus:border-violet-600 transition-colors resize-none font-mono leading-relaxed"
+                      className="w-full text-sm px-4 py-3 rounded-md border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:border-lime-400 dark:focus:border-lime-600 transition-colors resize-none font-mono leading-relaxed"
                     />
                     <div className="flex items-center justify-between mt-1.5 px-0.5">
-                      <span className="text-[10px] text-gray-400 dark:text-gray-500">Min 50 chars · evaluates timeline, deliverables, about me, org fit</span>
-                      <span className={`text-[10px] font-mono ${charPct > 0.9 ? "text-red-500" : "text-gray-400 dark:text-gray-500"}`}>
+                      <span className="text-[10px] text-stone-400 dark:text-stone-500">Min 50 chars · evaluates timeline, deliverables, about me, org fit</span>
+                      <span className={`text-[10px] font-mono ${charPct > 0.9 ? "text-red-500" : "text-stone-400 dark:text-stone-500"}`}>
                         {charCount.toLocaleString()} / {MAX_CHARS.toLocaleString()}
                       </span>
                     </div>
                   </div>
 
                   {error && (
-                    <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                    <div className="flex items-center gap-2 p-3 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
                       <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
                       <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
                     </div>
@@ -303,7 +303,7 @@ export default function GSoCProposalAIReview() {
                     disabled={draft.trim().length < 50}
                     className="w-full"
                   >
-                    <Sparkles className="w-4 h-4" />
+                    <Bot className="w-4 h-4" />
                     Analyse My Draft
                   </Button>
                 </div>
@@ -313,10 +313,10 @@ export default function GSoCProposalAIReview() {
               {loading && (
                 <div className="p-5 space-y-4">
                   <div className="flex items-center gap-3 py-3">
-                    <Loader2 className="w-5 h-5 text-violet-500 animate-spin" />
+                    <Loader2 className="w-5 h-5 text-lime-500 animate-spin" />
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Analysing your proposal…</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">Gemini is scoring 5 dimensions</p>
+                      <p className="text-sm font-semibold text-stone-900 dark:text-white">Analysing your proposal…</p>
+                      <p className="text-xs text-stone-400 dark:text-stone-500">Gemini is scoring 5 dimensions</p>
                     </div>
                   </div>
                   <ReviewSkeleton />
@@ -326,12 +326,12 @@ export default function GSoCProposalAIReview() {
               {/* Premium gate */}
               {isPremiumGated && !loading && (
                 <div className="p-8 flex flex-col items-center text-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-md bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
                     <Lock className="w-6 h-6 text-amber-600 dark:text-amber-400" />
                   </div>
                   <div>
-                    <p className="text-base font-bold text-gray-950 dark:text-white mb-1">Monthly limit reached</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs">
+                    <p className="text-base font-bold text-stone-950 dark:text-white mb-1">Monthly limit reached</p>
+                    <p className="text-sm text-stone-500 dark:text-stone-400 max-w-xs">
                       Free accounts get 3 AI reviews per month. Upgrade to Premium for unlimited reviews.
                     </p>
                   </div>
@@ -348,17 +348,17 @@ export default function GSoCProposalAIReview() {
 
               {/* Results */}
               {result && !loading && (
-                <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                <div className="divide-y divide-stone-100 dark:divide-stone-800">
 
                   {/* Score header */}
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <p className="text-sm font-bold text-gray-950 dark:text-white">Proposal Score</p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">Based on 5 evaluation dimensions</p>
+                        <p className="text-sm font-bold text-stone-950 dark:text-white">Proposal Score</p>
+                        <p className="text-xs text-stone-400 dark:text-stone-500">Based on 5 evaluation dimensions</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-sm font-bold ${scoreBg(result.overallScore)}`}>
+                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-sm font-bold ${scoreBg(result.overallScore)}`}>
                           <BarChart3 className={`w-3.5 h-3.5 ${scoreColor(result.overallScore)}`} />
                           <span className={scoreColor(result.overallScore)}>{result.overallScore}/10</span>
                         </div>
@@ -378,9 +378,9 @@ export default function GSoCProposalAIReview() {
                     </div>
 
                     {result.fallbackUsed && (
-                      <div className="mt-3 flex items-center gap-2 p-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                      <div className="mt-3 flex items-center gap-2 p-2.5 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                        <p className="text-xs text-amber-700 dark:text-amber-300">Scores estimated from static analysis — AI review unavailable</p>
+                        <p className="text-xs text-amber-700 dark:text-amber-300">Scores estimated from static analysis, AI review unavailable</p>
                       </div>
                     )}
                   </div>
@@ -395,8 +395,8 @@ export default function GSoCProposalAIReview() {
                           onClick={() => setActiveTab(tab.key)}
                           className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
                             activeTab === tab.key
-                              ? "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300"
-                              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                              ? "bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-300"
+                              : "text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800"
                           }`}
                         >
                           {tab.label}
@@ -419,11 +419,11 @@ export default function GSoCProposalAIReview() {
                       ).map(({ key, icon: Icon, label }) => {
                         const dim = result.scores[key];
                         return (
-                          <div key={key} className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl border ${scoreBg(dim.score)}`}>
+                          <div key={key} className={`flex items-center gap-3 px-3.5 py-2.5 rounded-md border ${scoreBg(dim.score)}`}>
                             <Icon className={`w-4 h-4 shrink-0 ${scoreColor(dim.score)}`} />
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">{label}</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{dim.label}</p>
+                              <p className="text-xs font-semibold text-stone-700 dark:text-stone-300">{label}</p>
+                              <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{dim.label}</p>
                             </div>
                             <span className={`text-sm font-bold shrink-0 ${scoreColor(dim.score)}`}>{dim.score}/10</span>
                           </div>
@@ -436,27 +436,27 @@ export default function GSoCProposalAIReview() {
                   {visibleSuggestions.length > 0 && (
                     <div className="px-5 py-4">
                       <div className="flex items-center gap-2 mb-3">
-                        <Lightbulb className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                        <p className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        <Lightbulb className="w-4 h-4 text-stone-400 dark:text-stone-500" />
+                        <p className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
                           Improvement Suggestions
                         </p>
                       </div>
                       <div className="space-y-3">
                         {visibleSuggestions.map((s, i) => (
-                          <div key={i} className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-gray-800/60">
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400">
+                          <div key={i} className="rounded-md border border-stone-200 dark:border-stone-700 overflow-hidden">
+                            <div className="flex items-center gap-2 px-4 py-2.5 bg-stone-50 dark:bg-stone-800/60">
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400">
                                 {s.category}
                               </span>
                             </div>
                             <div className="p-4 space-y-3">
                               <div>
                                 <p className="text-xs font-semibold text-red-600 dark:text-red-400 mb-1">⚠ Issue</p>
-                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{s.critique}</p>
+                                <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{s.critique}</p>
                               </div>
-                              <div className="border-t border-gray-100 dark:border-gray-700 pt-3">
+                              <div className="border-t border-stone-100 dark:border-stone-700 pt-3">
                                 <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-1">✓ Example Fix</p>
-                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-mono text-xs">{s.fix}</p>
+                                <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-wrap font-mono text-xs">{s.fix}</p>
                               </div>
                             </div>
                           </div>
@@ -468,8 +468,8 @@ export default function GSoCProposalAIReview() {
                   {activeTab !== "all" && visibleSuggestions.length === 0 && (
                     <div className="px-5 py-6 text-center">
                       <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">No issues in this category</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Focus on other sections</p>
+                      <p className="text-sm font-semibold text-stone-700 dark:text-stone-300">No issues in this category</p>
+                      <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">Focus on other sections</p>
                     </div>
                   )}
 
@@ -477,16 +477,16 @@ export default function GSoCProposalAIReview() {
                   <div className="px-5 py-4">
                     <div className="flex items-center gap-2 mb-3">
                       <Trophy className="w-4 h-4 text-amber-500" />
-                      <p className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      <p className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
                         Benchmark Comparison
                       </p>
                     </div>
                     <div className="space-y-3">
-                      <div className="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-                        <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Current Status</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{result.benchmark.status}</p>
+                      <div className="p-3.5 rounded-md bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700">
+                        <p className="text-xs font-semibold text-stone-600 dark:text-stone-300 mb-1">Current Status</p>
+                        <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{result.benchmark.status}</p>
                       </div>
-                      <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                      <div className="p-3.5 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
                         <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-1">What Winning Proposals Include</p>
                         <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">{result.benchmark.winningTemplate}</p>
                       </div>
@@ -495,8 +495,8 @@ export default function GSoCProposalAIReview() {
 
                   {/* Usage footer */}
                   {usage && (
-                    <div className="px-5 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-800/30">
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                    <div className="px-5 py-3 flex items-center justify-between bg-stone-50 dark:bg-stone-800/30">
+                      <p className="text-xs text-stone-400 dark:text-stone-500">
                         {usage.tier === "PREMIUM"
                           ? "Unlimited reviews (Premium)"
                           : `${usage.used} of ${usage.limit} monthly reviews used`}

@@ -79,7 +79,7 @@ Return ONLY this exact JSON shape:
     }
   ],
   "benchmark": {
-    "status": "Your abstract is X/10 — describe current state here",
+    "status": "Your abstract is X/10: describe current state here",
     "winningTemplate": "Accepted proposals in this category consistently include: (1) a data-backed problem statement, (2) explicit API contracts, (3) week-by-week milestones with buffer weeks, (4) named files from the org's codebase."
   }
 }
@@ -174,7 +174,7 @@ function buildFallback(input: GsocReviewInput): GsocReviewResult {
       deliverables:    { score: hasDeliverables ? 5 : 2, label: hasDeliverables ? "Some deliverables mentioned" : "No acceptance criteria found" },
       aboutMe:         { score: hasAboutMe ? 5 : 1, label: hasAboutMe ? "Some contribution links found" : "No GitHub links or PR references found" },
       orgAlignment:    { score: hasOrgAlign ? 5 : 2, label: hasOrgAlign ? "Some stack alignment found" : "Target tech stack not mentioned" },
-      structureLength: { score: wordCount > 300 ? 6 : wordCount > 150 ? 4 : 2, label: `~${wordCount} words — ${wordCount > 300 ? "adequate" : "too short"}` },
+      structureLength: { score: wordCount > 300 ? 6 : wordCount > 150 ? 4 : 2, label: `~${wordCount} words, ${wordCount > 300 ? "adequate" : "too short"}` },
     },
     overallScore: 3,
     suggestions: [
@@ -186,7 +186,7 @@ function buildFallback(input: GsocReviewInput): GsocReviewResult {
       {
         category: "Deliverables",
         critique: "Each deliverable needs a falsifiable acceptance criterion. 'Implement controller' is not a deliverable.",
-        fix: "Deliverable 1 — AI Review Endpoint: ✅ POST /api/gsoc/review returns { scores, suggestions } in < 4s. Returns 429 when free-tier user exceeds 3/month. Validated with Zod. Tested with Jest.",
+        fix: "Deliverable 1: AI Review Endpoint. POST /api/gsoc/review returns { scores, suggestions } in < 4s. Returns 429 when free-tier user exceeds 3/month. Validated with Zod. Tested with Jest.",
       },
       {
         category: "About Me",
@@ -200,7 +200,7 @@ function buildFallback(input: GsocReviewInput): GsocReviewResult {
       },
     ],
     benchmark: {
-      status: "Draft needs significant work — currently missing key winning-proposal signals.",
+      status: "Draft needs significant work, currently missing key winning-proposal signals.",
       winningTemplate: "Accepted proposals include: (1) Data-backed problem statement with acceptance rate stats, (2) explicit week-by-week timeline with buffer weeks, (3) falsifiable acceptance criteria table, (4) named files/patterns from the org's codebase, (5) community engagement evidence.",
     },
     fallbackUsed: true,
