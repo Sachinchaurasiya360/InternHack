@@ -23,7 +23,10 @@ export const validateQuery = (schema: ZodSchema) =>
       res.status(400).json({ message: "Validation failed", errors: result.error.flatten().fieldErrors });
       return;
     }
-    req.query = result.data as any;
+    for (const key of Object.keys(req.query)) {
+      delete req.query[key];
+    }
+    Object.assign(req.query, result.data);
     next();
   };
 
@@ -34,7 +37,10 @@ export const validateParams = (schema: ZodSchema) =>
       res.status(400).json({ message: "Validation failed", errors: result.error.flatten().fieldErrors });
       return;
     }
-    req.params = result.data as any;
+    for (const key of Object.keys(req.params)) {
+      delete req.params[key];
+    }
+    Object.assign(req.params, result.data);
     next();
   };
 
