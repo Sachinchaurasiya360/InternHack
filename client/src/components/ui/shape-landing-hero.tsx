@@ -1,11 +1,24 @@
-import { motion, AnimatePresence, useAnimation, useMotionValue, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useAnimation,
+  useMotionValue,
+  useReducedMotion,
+} from "framer-motion";
 import { Link } from "react-router";
 import { useEffect, useCallback, useState, useRef } from "react";
 import NumberFlow from "@number-flow/react";
 import { ArrowRight, Play, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/auth.store";
+import { CursorReactiveTileGrid } from "./cursor-tile-grid";
 
-const ROTATING_WORDS = ["offer.", "internship.", "interview.", "callback.", "dream job."];
+const ROTATING_WORDS = [
+  "offer.",
+  "internship.",
+  "interview.",
+  "callback.",
+  "dream job.",
+];
 
 const WINS = [
   { name: "Aarav", role: "SWE Intern", at: "Wipro" },
@@ -59,107 +72,111 @@ function HeroGeometric() {
 
   return (
     <section className="relative w-full overflow-hidden bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 border-b border-stone-200 dark:border-white/10">
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none dark:hidden"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(23,23,23,0.04) 1px, transparent 1px)",
-          backgroundSize: "140px 100%",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none hidden dark:block"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "140px 100%",
-        }}
-      />
+      <div className="relative isolate overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none dark:hidden"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, rgba(23,23,23,0.04) 1px, transparent 1px)",
+            backgroundSize: "140px 100%",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none hidden dark:block"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px)",
+            backgroundSize: "140px 100%",
+          }}
+        />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-10 md:pt-40 md:pb-14 text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.08 }}
-          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none"
-        >
-          Land the
-          <br />
-          <span className="relative inline-block align-baseline">
-            <AnimatePresence mode="wait">
+        <CursorReactiveTileGrid />
+
+        <div className="relative z-20 max-w-6xl mx-auto px-6 pt-32 pb-10 md:pt-40 md:pb-14 text-center min-h-205">
+          <motion.h1
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.08 }}
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none"
+          >
+            Land the
+            <br />
+            <span className="relative inline-block align-baseline">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={ROTATING_WORDS[wordIdx]}
+                  initial={{ y: 40, opacity: 0, filter: "blur(8px)" }}
+                  animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                  exit={{ y: -40, opacity: 0, filter: "blur(8px)" }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative z-10 inline-block"
+                >
+                  {ROTATING_WORDS[wordIdx]}
+                </motion.span>
+              </AnimatePresence>
               <motion.span
-                key={ROTATING_WORDS[wordIdx]}
-                initial={{ y: 40, opacity: 0, filter: "blur(8px)" }}
-                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                exit={{ y: -40, opacity: 0, filter: "blur(8px)" }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className="relative z-10 inline-block"
-              >
-                {ROTATING_WORDS[wordIdx]}
-              </motion.span>
-            </AnimatePresence>
-            <motion.span
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.7, delay: 0.9, ease: "easeOut" }}
-              aria-hidden
-              className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
-            />
-          </span>
-        </motion.h1>
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.7, delay: 0.9, ease: "easeOut" }}
+                aria-hidden
+                className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+              />
+            </span>
+          </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-8 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed"
-        >
-          InternHack scores your resume, sharpens your DSA, runs mock
-          interviews, and sends your application straight to recruiters hiring.
-        </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-8 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed"
+          >
+            InternHack scores your resume, sharpens your DSA, runs mock
+            interviews, and sends your application straight to recruiters hiring.
+          </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.28 }}
-          className="mt-10 flex flex-col sm:flex-row gap-3 justify-center items-center"
-        >
-          <Link to={getStartedHref} className="no-underline">
-            <button className="group inline-flex items-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0">
-              {isAuthenticated ? "Open dashboard" : "Start free"}
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </button>
-          </Link>
-          <a href="#demo" className="no-underline">
-            <button className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-stone-900 dark:text-stone-100 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
-              <Play className="w-4 h-4 fill-current" />
-              Watch 90s demo
-            </button>
-          </a>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.28 }}
+            className="mt-10 flex flex-col sm:flex-row gap-3 justify-center items-center"
+          >
+            <Link to={getStartedHref} className="no-underline">
+              <button className="group inline-flex items-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0">
+                {isAuthenticated ? "Open dashboard" : "Start free"}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </Link>
+            <a href="#demo" className="no-underline">
+              <button className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-stone-900 dark:text-stone-100 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                <Play className="w-4 h-4 fill-current" />
+                Watch 90s demo
+              </button>
+            </a>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.36 }}
-          className="mt-5 flex items-center justify-center gap-4 text-xs font-mono text-stone-500"
-        >
-          <span className="inline-flex items-center gap-1.5">
-            <Star className="w-3.5 h-3.5 fill-lime-400 stroke-lime-400" />
-            4.8 from 12k+ students
-          </span>
-          <span className="text-stone-300 dark:text-stone-700">·</span>
-          <span>free forever · ₹249/mo pro</span>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.36 }}
+            className="mt-5 flex items-center justify-center gap-4 text-xs font-mono text-stone-500"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <Star className="w-3.5 h-3.5 fill-lime-400 stroke-lime-400" />
+              4.8 from 12k+ students
+            </span>
+            <span className="text-stone-300 dark:text-stone-700">·</span>
+            <span>free forever · ₹249/mo pro</span>
+          </motion.div>
 
-        <AnimatedStats />
+          <AnimatedStats />
+        </div>
       </div>
 
       <WinsMarquee />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-10 border-t border-stone-200 dark:border-white/10">
+      <div className="relative z-20 max-w-6xl mx-auto px-6 py-10 border-t border-stone-200 dark:border-white/10">
         <div className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-4 text-center">
           Trusted by students at
         </div>
@@ -202,17 +219,9 @@ function AnimatedStats() {
       transition={{ duration: 0.6, delay: 0.5 }}
       className="mt-16 grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-xl overflow-hidden max-w-3xl mx-auto"
     >
-      <StatCell
-        value={values.resumes}
-        label="resumes scored"
-        suffix="+"
-      />
+      <StatCell value={values.resumes} label="resumes scored" suffix="+" />
       <StatCell value={values.roles} label="curated roles" suffix="+" />
-      <StatCell
-        value={values.placements}
-        label="offers landed"
-        suffix="+"
-      />
+      <StatCell value={values.placements} label="offers landed" suffix="+" />
     </motion.div>
   );
 }
@@ -229,7 +238,7 @@ function StatCell({
   return (
     <div className="bg-stone-50 dark:bg-stone-950 p-3 sm:p-5 min-w-0 flex flex-col items-center">
       <div className="text-lg sm:text-2xl md:text-4xl font-bold tracking-tight tabular-nums text-stone-900 dark:text-stone-50 w-[6ch] text-right">
-        <NumberFlow value={value} className="tabular-nums"/>
+        <NumberFlow value={value} className="tabular-nums" />
         {suffix && (
           <span className="text-lime-500 dark:text-lime-400">{suffix}</span>
         )}
@@ -243,7 +252,7 @@ function StatCell({
 
 function WinsMarquee() {
   const controls = useAnimation();
-  const x = useMotionValue(0)
+  const x = useMotionValue(0);
   const isPausedByClick = useRef(false);
   const shouldReduceMotion = useReducedMotion();
   const [isDragging, setIsDragging] = useState(false);
@@ -267,7 +276,7 @@ function WinsMarquee() {
 
   // Pause animation when tab is not active and resume when active again
   useEffect(() => {
-  const handleVisibilityChange = () => {
+    const handleVisibilityChange = () => {
       if (document.hidden) {
         controls.stop();
       } else if (
@@ -279,16 +288,10 @@ function WinsMarquee() {
       }
     };
 
-    document.addEventListener(
-      "visibilitychange",
-      handleVisibilityChange,
-    );
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      document.removeEventListener(
-        "visibilitychange",
-        handleVisibilityChange,
-      );
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [controls, shouldReduceMotion, isDragging, startAnimation]);
 
@@ -297,13 +300,13 @@ function WinsMarquee() {
   };
 
   const mouseLeave = () => {
-    if(!isPausedByClick.current){
+    if (!isPausedByClick.current) {
       startAnimation();
     }
   };
 
   const onclicked = () => {
-    if(isPausedByClick.current) {
+    if (isPausedByClick.current) {
       isPausedByClick.current = false;
       startAnimation();
     } else {
@@ -333,49 +336,47 @@ function WinsMarquee() {
         onClick={onclicked}
         className="cursor-pointer"
       >
-      <motion.div
-        className="flex gap-3 whitespace-nowrap w-max"
-        animate={ controls }
-        style={{ x }}
-        drag="x"
-        dragConstraints={{ left: -1200, right: 0 }}
-        dragElastic={0.08}
-        whileTap={{ cursor: "grabbing" }}
-        onDragStart={() => {
-          setIsDragging(true);
-          controls.stop();
-        }}
-        onDragEnd={() => {
-          setIsDragging(false);
+        <motion.div
+          className="flex gap-3 whitespace-nowrap w-max"
+          animate={controls}
+          style={{ x }}
+          drag="x"
+          dragConstraints={{ left: -1200, right: 0 }}
+          dragElastic={0.08}
+          whileTap={{ cursor: "grabbing" }}
+          onDragStart={() => {
+            setIsDragging(true);
+            controls.stop();
+          }}
+          onDragEnd={() => {
+            setIsDragging(false);
 
-          if (!isPausedByClick.current && !shouldReduceMotion) {
-            startAnimation();
-          }
-        }}
-      >
-        {row.map((w, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-lg"
-          >
-            <span className="h-6 w-6 rounded-md bg-lime-400/15 border border-lime-400/30 flex items-center justify-center text-xs font-bold text-lime-700 dark:text-lime-400">
-              {w.name[0]}
-            </span>
-            <span className="text-sm font-semibold text-stone-900 dark:text-stone-50">
-              {w.name}
-            </span>
-            <span className="text-xs font-mono text-stone-500">
-              {w.role}
-            </span>
-            <span className="text-stone-300 dark:text-stone-700">→</span>
-            <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
-              {w.at}
-            </span>
-          </div>
-        ))}
-      </motion.div>
+            if (!isPausedByClick.current && !shouldReduceMotion) {
+              startAnimation();
+            }
+          }}
+        >
+          {row.map((w, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-lg"
+            >
+              <span className="h-6 w-6 rounded-md bg-lime-400/15 border border-lime-400/30 flex items-center justify-center text-xs font-bold text-lime-700 dark:text-lime-400">
+                {w.name[0]}
+              </span>
+              <span className="text-sm font-semibold text-stone-900 dark:text-stone-50">
+                {w.name}
+              </span>
+              <span className="text-xs font-mono text-stone-500">{w.role}</span>
+              <span className="text-stone-300 dark:text-stone-700">→</span>
+              <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
+                {w.at}
+              </span>
+            </div>
+          ))}
+        </motion.div>
+      </div>
     </div>
-  </div>
   );
 }
 
