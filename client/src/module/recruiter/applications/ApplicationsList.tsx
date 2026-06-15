@@ -74,8 +74,10 @@ export default function ApplicationsList() {
       await api.patch(`/recruiter/applications/${appId}/status`, { status });
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       toast.success("Status updated");
+      announce(`Status updated to ${STATUS_LABELS[status] ?? status}.`);
     } catch {
       toast.error("Failed to update status");
+      announce("Failed to update status. Please try again.");
     } finally {
       setUpdatingId(null);
     }
@@ -88,9 +90,11 @@ export default function ApplicationsList() {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       toast.success("Application advanced");
+      announce("Application advanced to the next hiring stage.");
       setPendingAdvanceApp(null);
     } catch {
       toast.error("Failed to advance application");
+      announce("Failed to advance application. Please try again.");
     } finally {
       setAdvancingIds((current) => {
         const next = new Set(current);
@@ -103,6 +107,14 @@ export default function ApplicationsList() {
   return (
     <div>
       <SEO title="Applications" noIndex />
+      {/* Visually-hidden ARIA live region: announces status update / advance
+          outcomes to screen reader users. `polite` waits until the user is idle
+          so it does not interrupt them; `aria-atomic` re-reads the whole message.
+          Keyed on `announcement.key` so repeated identical outcomes remount the
+          node and are announced again. */}
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        <span key={announcement.key}>{announcement.text}</span>
+      </div>
       <ConfirmDialog
         open={pendingAdvanceApp !== null}
         title="Advance Candidate?"
