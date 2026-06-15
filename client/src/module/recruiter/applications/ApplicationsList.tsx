@@ -32,6 +32,17 @@ export default function ApplicationsList() {
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
   const [pendingAdvanceApp, setPendingAdvanceApp] = useState<Application | null>(null);
+  // Message announced to screen readers via the visually-hidden live region.
+  // We store an incrementing key alongside the text so that repeating the same
+  // outcome (e.g. retrying a failed update) still re-triggers an announcement —
+  // a live region does not re-announce when its text content is unchanged.
+  const [announcement, setAnnouncement] = useState<{ key: number; text: string }>(
+    { key: 0, text: "" },
+  );
+
+  const announce = (text: string) => {
+    setAnnouncement((prev) => ({ key: prev.key + 1, text }));
+  };
 
   // Reset to page 1 when search or filter changes
   useEffect(() => {
