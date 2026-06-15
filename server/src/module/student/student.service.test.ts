@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 
 const mocks = vi.hoisted(() => ({
   prisma: {
+    $transaction: vi.fn().mockImplementation((cb) => cb(mocks.prisma)),
     job: {
       findUnique: vi.fn(),
     },
