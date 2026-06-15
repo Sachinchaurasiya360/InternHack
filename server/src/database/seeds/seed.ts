@@ -1567,6 +1567,9 @@ async function seedRoadmaps() {
     const existing = await prisma.roadmap.findUnique({
       where: { slug: data.slug }
     });
+// Intentionally update only top-level roadmap fields.
+// Nested sections, topics, and resources are preserved to avoid
+// overwriting existing roadmap data and user progress.
 
     if (existing) {
       await prisma.roadmap.update({
