@@ -219,6 +219,12 @@ export class RecruiterService {
         data: { isArchived: true },
       });
 
+      // Fix for #1306: Nullify currentRoundId for applications currently in the deleted round
+      await tx.application.updateMany({
+        where: { currentRoundId: roundId },
+        data: { currentRoundId: null },
+      });
+
       const remainingRounds = await (txRound.findMany({
         where: { jobId, isArchived: false },
         orderBy: { orderIndex: "asc" },
