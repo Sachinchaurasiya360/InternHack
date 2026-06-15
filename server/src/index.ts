@@ -75,7 +75,6 @@ import { startAIPipelineCrons, stopAIPipelineCrons } from "./cron/internhack-ai.
 import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
-import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
@@ -427,14 +426,6 @@ const server = app.listen(PORT, async () => {
   } else {
     logger.info("Weekly digest cron disabled on this process");
   }
-
-  // Start the weekly analytics report cron (every Sunday at midnight)
-  startAnalyticsReportCron();
-  shutdownManager.register({
-    name: "Analytics Report Cron",
-    priority: 10,
-    fn: () => stopAnalyticsReportCron(),
-  });
 
   // Start signals cleanup cron (weekly Sunday at 2 AM)
   startSignalsCleanupCron();
