@@ -1813,7 +1813,7 @@ export default function ProgramTrackerPage() {
 
   const trackedSlugs = useMemo(() => {
     if (!trackedData) return new Set<string>();
-    return new Set(trackedData.map((p: any) => p.slug));
+    return new Set(trackedData.map(p => (p as Program).slug).filter(Boolean));
   }, [trackedData]);
 
   const [search, setSearch] = useState("");
@@ -1843,7 +1843,7 @@ export default function ProgramTrackerPage() {
 
   const programsSource = useMemo(() => {
     if (serverPrograms && serverPrograms.length > 0) {
-      return serverPrograms.map((p: any) => ({
+      return serverPrograms.map((p) => ({
         ...p,
         status: p.window === "Ongoing" ? "Ongoing" : "Annual",
         eligibilityType: p.eligibilityType || "Open to All",
