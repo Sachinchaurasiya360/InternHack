@@ -519,7 +519,7 @@ export default function OpenSourceAnalyticsPage() {
   const [filterTech, setFilterTech] = useState<string>("ALL");
   const [showFilters, setShowFilters] = useState(false);
 
-  const now = Date.now(); // eslint-disable-line react-hooks/purity
+  const now = Date.now();  
 
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
