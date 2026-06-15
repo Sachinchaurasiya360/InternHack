@@ -112,6 +112,7 @@ model user {
   ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
   programInterests          programInterest[]
   guideCertificates         guideCertificate[]           @relation("UserCertificates")
+  studentNotes              studentNote[]                @relation("StudentNotes")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -1756,3 +1757,27 @@ model guideCertificate {
   @@index([userId])
   @@index([token])
 }
+
+enum NoteContentType {
+  DSA_PROBLEM
+  ROADMAP_TOPIC
+  INTERVIEW_QUESTION
+  APTITUDE_QUESTION
+}
+
+model studentNote {
+  id          Int             @id @default(autoincrement())
+  userId      Int
+  contentType NoteContentType
+  contentId   String
+  note        String          @db.Text
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  user        user            @relation("StudentNotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentType, contentId])
+  @@index([userId])
+  @@index([contentType, contentId])
+  @@index([userId, updatedAt])
+}
+

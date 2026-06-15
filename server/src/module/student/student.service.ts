@@ -38,45 +38,46 @@ interface MockInterviewFeedbackResult {
 
 export class StudentService {
   async applyToJob(jobId: number, studentId: number, data: ApplyData) {
-    const firstRound = await prisma.$transaction(async (tx) => {
-      const job = await tx.job.findUnique({
-        where: { id: jobId },
-        include: { rounds: { orderBy: { orderIndex: "asc" }, take: 1 } },
-      });
-
-      if (!job) throw new Error("Job not found");
-      if (job.status !== "PUBLISHED") throw new Error("Job is not accepting applications");
-      if (job.deadline && new Date(job.deadline) < new Date()) throw new Error("Application deadline has passed");
-
-      return job.rounds[0];
-    });
-
     try {
-      const application = await prisma.application.create({
-        data: {
-          jobId,
-          studentId,
-          customFieldAnswers: JSON.parse(JSON.stringify(data.customFieldAnswers)),
-          resumeUrl: data.resumeUrl ?? null,
-          coverLetter: data.coverLetter ?? null,
-          currentRoundId: firstRound?.id ?? null,
-          status: "APPLIED",
-        },
-        include: {
-          job: { select: { id: true, title: true, company: true } },
-        },
-      });
+      const application = await prisma.$transaction(async (tx) => {
+        const job = await tx.job.findUnique({
+          where: { id: jobId },
+          include: { rounds: { orderBy: { orderIndex: "asc" }, take: 1 } },
+        });
 
-      // Create first round submission if rounds exist
-      if (firstRound) {
-        await prisma.roundSubmission.create({
+        if (!job) throw new Error("Job not found");
+        if (job.status !== "PUBLISHED") throw new Error("Job is not accepting applications");
+        if (job.deadline && new Date(job.deadline) < new Date()) throw new Error("Application deadline has passed");
+
+        const firstRound = job.rounds[0];
+
+        const app = await tx.application.create({
           data: {
-            applicationId: application.id,
-            roundId: firstRound.id,
-            status: "IN_PROGRESS",
+            jobId,
+            studentId,
+            customFieldAnswers: JSON.parse(JSON.stringify(data.customFieldAnswers)),
+            resumeUrl: data.resumeUrl ?? null,
+            coverLetter: data.coverLetter ?? null,
+            currentRoundId: firstRound?.id ?? null,
+            status: "APPLIED",
+          },
+          include: {
+            job: { select: { id: true, title: true, company: true } },
           },
         });
-      }
+
+        if (firstRound) {
+          await tx.roundSubmission.create({
+            data: {
+              applicationId: app.id,
+              roundId: firstRound.id,
+              status: "IN_PROGRESS",
+            },
+          });
+        }
+
+        return app;
+      });
 
       // Check application badges (fire-and-forget)
       badgeService.checkAndAwardBadges(studentId, "first_application").catch((err) => console.error("Badge check failed (first_application):", err));
@@ -593,8 +594,12 @@ Rules:
       where: { userId: studentId },
       create: { userId: studentId, savedJobIds: [jobId] },
       update: { savedJobIds: { push: jobId } },
-    }).catch(() => {
-      // If push caused a duplicate (same id in array), silently succeed
+    }).catch((err: any) => {
+      // If push caused a duplicate (e.g. unique constraint), silently succeed
+      if (err.code === "P2002") {
+        return;
+      }
+      throw err;
     });
   }
 

@@ -5,18 +5,25 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ExternalLink, CheckCircle2, Circle,
   Bookmark, BookmarkCheck, ChevronDown,
-  Building2, BarChart3, Lightbulb, StickyNote, Link2, ArrowUpRight,
-History,
-Terminal,
-Lock,
-Crown,
-Code2,
-ChevronLeft,
-ChevronRight,
-Play,
-Flag,
-X,
-Sparkles,
+import {
+  Building2,
+  BarChart3,
+  Lightbulb,
+  StickyNote,
+  Link2,
+  ArrowUpRight,
+  History,
+  Terminal,
+  Lock,
+  Crown,
+  Code2,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Flag,
+  X,
+  Sparkles,
+} from "lucide-react";
 } from "lucide-react";
 import type { SolutionStep } from "../../../lib/types";
 import toast from "@/components/ui/toast";
@@ -37,6 +44,7 @@ import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
 import { Button } from "@/components/ui/button";
 import { DsaApproachesPanel } from "./components/DsaApproachesPanel";
+import { NotesPanel } from "../../../components/learning/NotesPanel";
 
 const DIFF_STYLE: Record<string, string> = {
   Easy: "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
@@ -121,9 +129,7 @@ export default function DsaProblemDetailPage() {
 
   const [showAllCompanies, setShowAllCompanies] = useState(false);
   const [expandedHint, setExpandedHint] = useState<number | null>(null);
-  const [showNotes, setShowNotes] = useState(false);
   const [showNextPanel, setShowNextPanel] = useState(false);
-  const [noteValue, setNoteValue] = useState("");
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportMessage, setReportMessage] = useState("");
@@ -203,14 +209,6 @@ export default function DsaProblemDetailPage() {
     onError: () => toast.error("Failed to bookmark"),
   });
 
-  const notesMutation = useMutation({
-    mutationFn: ({ problemId, notes }: { problemId: number; notes: string }) =>
-      api.put(`/dsa/problems/${problemId}/notes`, { notes }).then((r) => r.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.dsa.problem(slug!) });
-      toast.success("Notes saved");
-    },
-  });
   // Report issue mutation
   const reportIssueMutation = useMutation({
     mutationFn: ({
@@ -562,55 +560,7 @@ export default function DsaProblemDetailPage() {
 
               {/* Notes */}
               {user && (
-                <div>
-                  <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
-                    <button
-                      onClick={() => {
-                        setShowNotes(!showNotes);
-                        if (!showNotes) setNoteValue(problem.notes ?? "");
-                      }}
-                      className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-stone-50 dark:hover:bg-stone-800/40 transition-colors"
-                    >
-                      <span className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400">
-                        <StickyNote className="w-3 h-3 text-stone-500" /> my notes
-                        {problem.notes && !showNotes && <span className="h-1 w-1 bg-lime-400" />}
-                      </span>
-                      <ChevronDown
-                        className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${showNotes ? "rotate-180" : ""
-                          }`}
-                      />
-                    </button>
-                    <AnimatePresence>
-                      {showNotes && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="px-4 pb-4">
-                            <textarea
-                              value={noteValue}
-                              onChange={(e) => setNoteValue(e.target.value)}
-                              className="w-full h-28 p-3 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-950 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 resize-none focus:outline-none focus:border-lime-400 transition-colors"
-                              placeholder="Write your approach, key observations..."
-                            />
-                            <div className="flex justify-end mt-2">
-                              <button
-                                onClick={() => notesMutation.mutate({ problemId: problem.id, notes: noteValue })}
-                                disabled={notesMutation.isPending}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest bg-stone-900 dark:bg-stone-50 border border-stone-900 dark:border-stone-50 text-stone-50 dark:text-stone-900 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 dark:hover:text-stone-900 transition-colors disabled:opacity-50"
-                              >
-                                {notesMutation.isPending ? "saving" : "save"}
-                              </button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
+                <NotesPanel contentType="DSA_PROBLEM" contentId={problem.id} />
               )}
               {/* Solution Walkthrough */}
               {problem.solutionSteps && problem.solutionSteps.length > 0 && (
