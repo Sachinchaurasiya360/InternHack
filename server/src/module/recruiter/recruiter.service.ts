@@ -722,15 +722,25 @@ export class RecruiterService {
       if (filter.graduationYearMax) where.graduationYear.lte = filter.graduationYearMax;
     }
     if (filter.skills) {
-      const skillList = filter.skills.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-      if (skillList.length > 0) {
-        where.skills = { hasSome: skillList };
+      const baseSkills = filter.skills.split(",").map((s) => s.trim()).filter(Boolean);
+      if (baseSkills.length > 0) {
+        const expandedSkills = baseSkills.flatMap((s) => {
+          const lower = s.toLowerCase();
+          const upper = s.toUpperCase();
+          const title = lower.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          return [s, lower, upper, title];
+        });
+        where.skills = { hasSome: Array.from(new Set(expandedSkills)) };
       }
     }
     if (filter.verifiedSkills) {
-      const vsList = filter.verifiedSkills.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-      if (vsList.length > 0) {
-        where.verifiedSkills = { some: { skillName: { in: vsList } } };
+      const baseVs = filter.verifiedSkills.split(",").map((s) => s.trim()).filter(Boolean);
+      if (baseVs.length > 0) {
+        where.verifiedSkills = {
+          some: {
+            OR: baseVs.map((s) => ({ skillName: { equals: s, mode: "insensitive" } })),
+          },
+        };
       }
     }
     if (filter.minAtsScore) {
