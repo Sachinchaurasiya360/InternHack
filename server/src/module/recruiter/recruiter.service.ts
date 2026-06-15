@@ -286,7 +286,10 @@ export class RecruiterService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const where: Prisma.applicationWhereInput = { jobId };
+    const where: Prisma.applicationWhereInput = { 
+      jobId,
+      student: { isActive: true }
+    };
 
     if (filter.status) {
       where.status = filter.status as ApplicationStatus;
@@ -296,6 +299,7 @@ export class RecruiterService {
 
     if (filter.search) {
       where.student = {
+        ...((where.student as Prisma.userWhereInput) || {}),
         OR: [
           { name: { contains: filter.search, mode: "insensitive" } },
           { email: { contains: filter.search, mode: "insensitive" } },
@@ -567,16 +571,16 @@ export class RecruiterService {
     const [totalJobs, activeJobs, totalApplications, applicationsByStatus] = await Promise.all([
       prisma.job.count({ where: { recruiterId } }),
       prisma.job.count({ where: { recruiterId, status: "PUBLISHED" } }),
-      prisma.application.count({ where: { job: { recruiterId } } }),
+      prisma.application.count({ where: { job: { recruiterId }, student: { isActive: true } } }),
       prisma.application.groupBy({
         by: ["status"],
-        where: { job: { recruiterId } },
+        where: { job: { recruiterId }, student: { isActive: true } },
         _count: { id: true },
       }),
     ]);
 
     const recentApplications = await prisma.application.findMany({
-      where: { job: { recruiterId } },
+      where: { job: { recruiterId }, student: { isActive: true } },
       take: 10,
       orderBy: { createdAt: "desc" },
       include: {
@@ -834,7 +838,7 @@ export class RecruiterService {
 
   async getSavedCandidates(recruiterId: number) {
     const saved = await prisma.savedCandidate.findMany({
-      where: { recruiterId },
+      where: { recruiterId, student: { isActive: true } },
       orderBy: { createdAt: "desc" },
       include: {
         student: {
