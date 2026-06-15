@@ -11,6 +11,17 @@ import { SEO } from "../../../components/SEO";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 
+// Human-readable labels for the status codes, reused in the SR announcement
+// so screen reader users hear "Shortlisted" rather than "SHORTLISTED".
+const STATUS_LABELS: Record<string, string> = {
+  APPLIED: "Applied",
+  IN_PROGRESS: "In Progress",
+  SHORTLISTED: "Shortlisted",
+  REJECTED: "Rejected",
+  HIRED: "Hired",
+  WITHDRAWN: "Withdrawn",
+};
+
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
   const queryClient = useQueryClient();
