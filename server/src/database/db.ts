@@ -20,7 +20,7 @@ function resolveSsl():
     return false;
   }
   // Local Postgres installs typically do not support TLS.
-  if (/localhost|127\.0\.0\.1/.test(rawConnectionString)) {
+  if (/localhost|127\.0\.0\.1|postgres/.test(rawConnectionString)) {
     return false;
   }
   return { rejectUnauthorized: false };
