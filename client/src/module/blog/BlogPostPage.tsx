@@ -37,7 +37,7 @@ import ShareButton from "./components/ShareButton";
 import RelatedArticles from "./components/RelatedArticles";
 import EmptyState from "./components/EmptyState";
 
-import { formatBlogDate } from "./utils/formatBlogDate";
+import { formatDate } from "../../lib/date-utils";
 import { calculateReadingTime } from "./utils/calculateReadingTime";
 
 import type { BlogPost } from "../../lib/types";
@@ -395,7 +395,7 @@ export default function BlogPostPage() {
                   {/* Date */}
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4" />
-                    {formatBlogDate(
+                    {formatDate(
                       post.publishedAt ?? post.createdAt
                     )}
                   </span>
