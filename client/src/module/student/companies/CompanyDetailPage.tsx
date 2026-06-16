@@ -114,7 +114,32 @@ export default function CompanyDetailPage() {
     error: companyError 
   } = useQuery<Company>({
     queryKey: queryKeys.companies.detail(slug!),
-    queryFn: () => api.get(`/companies/${slug}`).then((r) => r.data.company),
+    queryFn: async () => {
+      if (slug === "demo") {
+        return {
+          id: 1,
+          name: "Quantum Computing Labs",
+          slug: "demo",
+          description: "Quantum Computing Labs is at the forefront of next-generation computing architectures. We build scalable quantum processors to solve the world's most complex problems.",
+          industry: "Quantum Computing",
+          city: "San Francisco",
+          state: "CA",
+          size: "STARTUP",
+          foundedYear: 2021,
+          avgRating: 4.8,
+          reviewCount: 12,
+          website: "https://example.com",
+          logo: "https://api.dicebear.com/7.x/shapes/svg?seed=Quantum",
+          photos: [],
+          technologies: ["React", "TypeScript", "Python", "Q#", "C++"],
+          socialLinks: { linkedin: "https://linkedin.com", twitter: "https://twitter.com" },
+          hiringStatus: true,
+          contacts: [],
+          mission: "To bring quantum supremacy to everyday computing.",
+        } as unknown as Company;
+      }
+      return api.get(`/companies/${slug}`).then((r) => r.data.company);
+    },
     enabled: !!slug,
     staleTime: 15 * 60 * 1000,
   });
@@ -127,7 +152,10 @@ export default function CompanyDetailPage() {
     refetch: refetchReviews,
   } = useQuery<{ reviews: CompanyReview[] }>({
     queryKey: [...queryKeys.companies.reviews(slug!), sortBy],
-    queryFn: () => api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data),
+    queryFn: async () => {
+      if (slug === "demo") return { reviews: [] };
+      return api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data);
+    },
     enabled: !!slug,
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
@@ -301,7 +329,7 @@ export default function CompanyDetailPage() {
 
                   <div className="flex items-center gap-3 sm:ml-auto">
                     <Button
-                      variant="outline"
+                      variant="secondary"
                       onClick={handleExportPdf}
                       disabled={isExporting}
                       className="inline-flex items-center gap-2"
@@ -310,15 +338,17 @@ export default function CompanyDetailPage() {
                       {isExporting ? "Exporting..." : "Export to PDF"}
                     </Button>
                     {company.website && (
-                      <a
-                        href={company.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-900 text-sm font-semibold rounded-md hover:bg-lime-500 transition-colors no-underline"
-                      >
-                        <Globe className="w-4 h-4" /> Visit website
-                        <ArrowUpRight className="w-4 h-4" />
-                      </a>
+                      <Button variant="primary" asChild>
+                        <a
+                          href={company.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 no-underline"
+                        >
+                          <Globe className="w-4 h-4" /> Visit website
+                          <ArrowUpRight className="w-4 h-4" />
+                        </a>
+                      </Button>
                     )}
                   </div>
                 </div>
