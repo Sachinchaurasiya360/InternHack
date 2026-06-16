@@ -18,7 +18,7 @@
     "Willingness to read documentation and debug",
     "About 6 to 10 hours per week for 8 to 16 weeks"
   ],
-  "tags": ["fullstack", "javascript", "react", "node", "postgres", "career"],
+  "tags": ["fullstack", "frontend", "backend", "javascript", "react", "node", "node.js", "postgres", "sql", "system design", "system-design", "aws", "career"],
   "faqs": [
     { "q": "Do I need a CS degree?", "a": "No. The roadmap was built for self-taught learners. You only need consistency and a project mindset." },
     { "q": "How long will it take?", "a": "Eight weeks at twenty hours per week, sixteen weeks at ten hours per week. Your weekly plan is generated when you enroll." },

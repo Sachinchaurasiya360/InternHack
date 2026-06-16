@@ -15,6 +15,8 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import toast from "@/components/ui/toast";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 interface DsaTopic {
   id: number;
@@ -51,6 +53,7 @@ export default function AdminDsaPage() {
   const [walkthroughProblems, setWalkthroughProblems] = useState<DsaProblemAdmin[]>([]);
   const [walkthroughTab, setWalkthroughTab] = useState<"topics" | "walkthrough">("topics");
   const [savingWalkthrough, setSavingWalkthrough] = useState(false);
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const fetchTopics = useCallback(() => {
     setLoading(true);
@@ -83,18 +86,23 @@ export default function AdminDsaPage() {
     setCreating(true);
   };
 
-  const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`Delete "${name}"?`)) return;
-    try {
-      await api.delete(`/admin/dsa/topics/${id}`);
-      setTopics((prev) => prev.filter((t) => t.id !== id));
-      if (editing?.id === id) {
-        setEditing(null);
-        setCreating(false);
+  const handleDelete = (id: number, name: string) => {
+    showConfirm({
+      title: "Delete DSA Topic",
+      description: `Are you sure you want to delete the topic "${name}"? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/admin/dsa/topics/${id}`);
+          setTopics((prev) => prev.filter((t) => t.id !== id));
+          if (editing?.id === id) {
+            setEditing(null);
+            setCreating(false);
+          }
+        } catch {
+          toast.error("Failed to delete topic");
+        }
       }
-    } catch {
-      toast.error("Failed to delete topic");
-    }
+    });
   };
 
   const handleSave = async () => {
@@ -545,6 +553,7 @@ export default function AdminDsaPage() {
       )}
       </div>
       )}
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

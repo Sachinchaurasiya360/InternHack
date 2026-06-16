@@ -4,6 +4,8 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 interface SkillTestQuestion {
   question: string;
@@ -47,6 +49,7 @@ export default function AdminSkillTestsPage() {
   const [saving, setSaving] = useState(false);
   const [expandedQ, setExpandedQ] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const fetchTests = useCallback(() => {
     setLoading(true);
@@ -73,13 +76,18 @@ export default function AdminSkillTestsPage() {
     setExpandedQ(null);
   };
 
-  const handleDelete = async (id: number, title: string) => {
-    if (!confirm(`Delete "${title}"? All questions and student attempts will be removed.`)) return;
-    try {
-      await api.delete(`/admin/skill-tests/${id}`);
-      setTests((prev) => prev.filter((t) => t.id !== id));
-      if (editing?.id === id) { setEditing(null); setCreating(false); }
-    } catch { toast.error("Failed to delete"); }
+  const handleDelete = (id: number, title: string) => {
+    showConfirm({
+      title: "Delete Skill Test",
+      description: `Are you sure you want to delete "${title}"? All questions and student attempts will be removed. This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/admin/skill-tests/${id}`);
+          setTests((prev) => prev.filter((t) => t.id !== id));
+          if (editing?.id === id) { setEditing(null); setCreating(false); }
+        } catch { toast.error("Failed to delete"); }
+      }
+    });
   };
 
   const handleToggle = async (id: number, isActive: boolean) => {
@@ -316,6 +324,7 @@ export default function AdminSkillTestsPage() {
           </table>
         </div>
       )}
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

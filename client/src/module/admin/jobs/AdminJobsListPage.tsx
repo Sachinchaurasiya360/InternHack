@@ -6,6 +6,8 @@ import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import type { Pagination, JobStatus } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 interface AdminJob {
   id: number;
@@ -24,6 +26,7 @@ export default function AdminJobsListPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const fetchJobs = async (page = 1) => {
     setLoading(true);
@@ -60,16 +63,21 @@ export default function AdminJobsListPage() {
     }
   };
 
-  const deleteJob = async (jobId: number, jobTitle: string) => {
-    if (!confirm(`Delete "${jobTitle}"? This will also delete all applications.`)) return;
-    try {
-      await api.delete(`/admin/jobs/${jobId}`);
-      toast.success("Job deleted");
-      fetchJobs(pagination.page);
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      toast.error(error.response?.data?.message || "Failed to delete job");
-    }
+  const deleteJob = (jobId: number, jobTitle: string) => {
+    showConfirm({
+      title: "Delete Job Listing",
+      description: `Are you sure you want to delete "${jobTitle}"? This will also delete all applications. This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/admin/jobs/${jobId}`);
+          toast.success("Job deleted");
+          fetchJobs(pagination.page);
+        } catch (err: unknown) {
+          const error = err as { response?: { data?: { message?: string } } };
+          toast.error(error.response?.data?.message || "Failed to delete job");
+        }
+      }
+    });
   };
 
   return (
@@ -177,6 +185,7 @@ export default function AdminJobsListPage() {
           showingInfo={{ total: pagination.total, limit: pagination.limit }}
         />
       </div>
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

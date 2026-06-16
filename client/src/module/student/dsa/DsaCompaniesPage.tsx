@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, memo } from "react";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router";
 import {
   ArrowRight, Building2, CheckCircle2, Circle,
@@ -223,7 +223,7 @@ export default function DsaCompaniesPage() {
     queryKey: queryKeys.dsa.company(selectedCompany!, page),
     queryFn: () => api.get<DsaPaginatedProblems>(`/dsa/companies/${selectedCompany}?page=${page}&limit=50`).then((r) => r.data),
     enabled: !!selectedCompany,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev: DsaPaginatedProblems | undefined) => prev,
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 

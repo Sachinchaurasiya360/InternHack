@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useSearchParams } from "react-router";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Search as SearchIcon,
   SlidersHorizontal,
@@ -157,7 +157,7 @@ export default function TalentSearchPage() {
       const res = await api.get(`/recruiter/talent-search?${params}`);
       return res.data as TalentSearchResponse;
     },
-    placeholderData: keepPreviousData,
+    placeholderData: (prev: TalentSearchResponse | undefined) => prev,
     staleTime: 1000 * 60 * 5,
   });
 

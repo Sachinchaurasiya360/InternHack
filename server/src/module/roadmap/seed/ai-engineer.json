@@ -18,7 +18,7 @@
     "High-school math (algebra, basic stats). We refresh the rest",
     "About 6 to 12 hours per week for 10 to 16 weeks"
   ],
-  "tags": ["ai", "machine-learning", "llm", "deep-learning", "rag", "career"],
+  "tags": ["ai", "python", "machine-learning", "llm", "deep-learning", "rag", "system design", "system-design", "career"],
   "faqs": [
     { "q": "Do I need a math degree?", "a": "No. You need enough linear algebra, calculus, and statistics to follow what's happening. We point you to free, focused refreshers." },
     { "q": "Do I need a GPU?", "a": "Not really. Free tiers like Google Colab and Kaggle Notebooks are enough for everything in this roadmap." },

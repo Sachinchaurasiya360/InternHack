@@ -19,6 +19,8 @@ import type { HRDepartment } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { labelClass } from "./hr-utils";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 type Tab = "list" | "org";
 
@@ -34,6 +36,7 @@ export default function DepartmentsPage() {
   const [form, setForm] = useState({ name: "", description: "", parentId: "" });
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const { data: departments, isLoading } = useQuery({
     queryKey: hrKeys.departments.list(),
@@ -278,10 +281,13 @@ export default function DepartmentsPage() {
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
-                  <button
+                   <button
                     onClick={() => {
-                      if (confirm(`Delete "${dept.name}"?`))
-                        deleteMutation.mutate(dept.id);
+                      showConfirm({
+                        title: "Delete Department",
+                        description: `Are you sure you want to delete "${dept.name}"? This action cannot be undone.`,
+                        onConfirm: () => deleteMutation.mutate(dept.id),
+                      });
                     }}
                     title="Delete"
                     className="p-1.5 rounded-md text-stone-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -357,6 +363,7 @@ export default function DepartmentsPage() {
           </div>
         </div>
       </HRModal>
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

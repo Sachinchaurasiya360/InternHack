@@ -5,6 +5,8 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 interface AdminJob {
   id: number;
@@ -34,6 +36,7 @@ export default function AdminExternalJobsPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [jsonInput, setJsonInput] = useState("");
   const [jsonError, setJsonError] = useState("");
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const parseJsonInput = useCallback((raw: string) => {
     setJsonInput(raw);
@@ -277,7 +280,13 @@ export default function AdminExternalJobsPage() {
                   <button onClick={() => openEdit(job)} className="flex-1 flex items-center justify-center gap-1 p-2 text-xs text-gray-500 hover:text-black dark:hover:text-white">
                     <Pencil className="w-4 h-4" /> Edit
                   </button>
-                  <button onClick={() => { if (confirm("Delete this job?")) deleteMutation.mutate(job.id); }}
+                   <button onClick={() => {
+                     showConfirm({
+                       title: "Delete External Job",
+                       description: `Are you sure you want to delete the job listing for "${job.role}" at "${job.company}"? This action cannot be undone.`,
+                       onConfirm: () => deleteMutation.mutate(job.id),
+                     });
+                   }}
                     className="flex-1 flex items-center justify-center gap-1 p-2 text-xs text-gray-500 hover:text-red-600">
                     <Trash2 className="w-4 h-4" /> Delete
                   </button>
@@ -342,10 +351,16 @@ export default function AdminExternalJobsPage() {
                         <button onClick={() => openEdit(job)} className="p-1.5 text-gray-400 hover:text-black dark:hover:text-white">
                           <Pencil className="w-4 h-4" />
                         </button>
-                        <button onClick={() => { if (confirm("Delete this job?")) deleteMutation.mutate(job.id); }}
-                          className="p-1.5 text-gray-400 hover:text-red-600">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                         <button onClick={() => {
+                           showConfirm({
+                             title: "Delete External Job",
+                             description: `Are you sure you want to delete the job listing for "${job.role}" at "${job.company}"? This action cannot be undone.`,
+                             onConfirm: () => deleteMutation.mutate(job.id),
+                           });
+                         }}
+                           className="p-1.5 text-gray-400 hover:text-red-600">
+                           <Trash2 className="w-4 h-4" />
+                         </button>
                       </div>
                     </td>
                   </tr>
@@ -365,6 +380,7 @@ export default function AdminExternalJobsPage() {
           onPageChange={setPage}
         />
       )}
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

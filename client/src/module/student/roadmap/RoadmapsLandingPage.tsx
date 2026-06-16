@@ -57,6 +57,26 @@ function Chrome({ children, isStudent, sidebarWidth, collapsed, sidebar }: {
   );
 }
 
+const matchTagOrCategory = (tags: string[], filter: string) => {
+  const normFilter = filter.toLowerCase().replace(/[\s-.]/g, "");
+  return tags.some(t => {
+    const normTag = t.toLowerCase().replace(/[\s-.]/g, "");
+    if (normFilter === "node" || normFilter === "nodejs") {
+      return normTag === "node" || normTag === "nodejs";
+    }
+    if (normFilter === "sql") {
+      return normTag === "sql" || normTag === "postgres" || normTag === "postgresql" || normTag === "mysql";
+    }
+    if (normFilter === "systemdesign") {
+      return normTag === "systemdesign";
+    }
+    if (normFilter === "frontend" || normFilter === "backend") {
+      return normTag === normFilter || normTag === "fullstack";
+    }
+    return normTag === normFilter;
+  });
+};
+
 export default function RoadmapsLandingPage() {
   const { isAuthenticated, user } = useAuthStore();
   const isStudent = isAuthenticated && user?.role === "STUDENT";
@@ -167,18 +187,15 @@ export default function RoadmapsLandingPage() {
     }
     
     if (level && level !== "ALL_LEVELS") {
-      result = result.filter(r => r.level === level);
+      result = result.filter(r => r.level === level || r.level === "ALL_LEVELS");
     }
     
     if (tag) {
-      result = result.filter(r =>
-        r.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
-      );
+      result = result.filter(r => matchTagOrCategory(r.tags, tag));
     }
+    
     if (category) {
-      result = result.filter(r =>
-        r.tags.map(t => t.toLowerCase()).includes(category.toLowerCase())
-      );
+      result = result.filter(r => matchTagOrCategory(r.tags, category));
     }
     
     return result;
@@ -200,9 +217,9 @@ export default function RoadmapsLandingPage() {
           (r.tags ?? []).some((t) => t.toLowerCase().includes(needle));
         if (!matchesText) return false;
       }
-      if (level && level !== "ALL_LEVELS" && r.level && r.level !== level) return false;
-      if (tag && !(r.tags ?? []).map(t => t.toLowerCase()).includes(tag.toLowerCase())) return false;
-      if (category && !(r.tags ?? []).map(t => t.toLowerCase()).includes(category.toLowerCase())) return false;
+      if (level && level !== "ALL_LEVELS" && r.level && r.level !== level && r.level !== "ALL_LEVELS") return false;
+      if (tag && !matchTagOrCategory(r.tags ?? [], tag)) return false;
+      if (category && !matchTagOrCategory(r.tags ?? [], category)) return false;
       return true;
     });
   }, [enrollments, debouncedSearch, level, tag, category]);

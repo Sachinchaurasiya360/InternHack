@@ -5,6 +5,8 @@ import { ArrowLeft, Mail, Phone, Building2, Briefcase, FileText, ScanSearch, Map
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import { SEO } from "../../../components/SEO";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 interface ProjectItem {
   id: string;
@@ -75,6 +77,7 @@ export default function UserDetailPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   useEffect(() => {
     api.get(`/admin/users/${id}`).then((res) => {
@@ -98,17 +101,22 @@ export default function UserDetailPage() {
     }
   };
 
-  const deleteUser = async () => {
+  const deleteUser = () => {
     if (!user) return;
-    if (!confirm(`Are you sure you want to delete ${user.name}? This cannot be undone.`)) return;
-    try {
-      await api.delete(`/admin/users/${user.id}`);
-      toast.success("User deleted");
-      navigate("/admin/users");
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      toast.error(error.response?.data?.message || "Failed to delete user");
-    }
+    showConfirm({
+      title: "Delete User",
+      description: `Are you sure you want to delete ${user.name}? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/admin/users/${user.id}`);
+          toast.success("User deleted");
+          navigate("/admin/users");
+        } catch (err: unknown) {
+          const error = err as { response?: { data?: { message?: string } } };
+          toast.error(error.response?.data?.message || "Failed to delete user");
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -380,6 +388,7 @@ export default function UserDetailPage() {
           </div>
         </div>
       </motion.div>
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

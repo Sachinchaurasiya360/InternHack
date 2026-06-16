@@ -16,7 +16,7 @@
     <meta name="theme-color" content="#030712" />
     <meta name="application-name" content="InternHack" />
     <meta name="apple-mobile-web-app-title" content="InternHack" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="google-site-verification" content="qxZRRZCLQmN6aVtKU68ePK39IIqOwC4P_RzmstGC0KA" />
@@ -129,24 +129,26 @@
     </script>
 
     <!-- Preconnect to critical origins (preconnect supersedes dns-prefetch) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://api.internhack.xyz" />
-    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <!-- Preconnect to critical origins (preconnect supersedes dns-prefetch) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://api.internhack.xyz" />
+<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
-    <!-- Preload primary font weight to reduce LCP FOUT -->
-    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin />
+<!-- Fonts (non-blocking) -->
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+  rel="stylesheet"
+  media="print"
+  onload="this.media='all'"
+/>
 
-    <!-- Fonts (non-blocking) -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-    </noscript>
+<noscript>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+</noscript>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-4YT8LFNN50"></script>

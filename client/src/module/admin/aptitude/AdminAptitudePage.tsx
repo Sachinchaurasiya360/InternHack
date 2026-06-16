@@ -16,6 +16,8 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import toast from "@/components/ui/toast";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 interface AptitudeQuestion {
   id?: number;
@@ -81,6 +83,7 @@ export default function AdminAptitudePage() {
   const [view, setView] = useState<View>("list");
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   // Category editing
   const [editingCat, setEditingCat] = useState<AptitudeCategory | null>(null);
@@ -159,19 +162,19 @@ export default function AdminAptitudePage() {
     }
   };
 
-  const handleDeleteCategory = async (id: number, name: string) => {
-    if (
-      !confirm(
-        `Delete category "${name}"? All topics and questions will be removed.`,
-      )
-    )
-      return;
-    try {
-      await api.delete(`/admin/aptitude/categories/${id}`);
-      setCategories((prev) => prev.filter((c) => c.id !== id));
-    } catch {
-      toast.error("Failed to delete category");
-    }
+  const handleDeleteCategory = (id: number, name: string) => {
+    showConfirm({
+      title: "Delete Category",
+      description: `Are you sure you want to delete category "${name}"? All topics and questions will be removed. This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/admin/aptitude/categories/${id}`);
+          setCategories((prev) => prev.filter((c) => c.id !== id));
+        } catch {
+          toast.error("Failed to delete category");
+        }
+      }
+    });
   };
 
   // Topic CRUD
@@ -201,15 +204,19 @@ export default function AdminAptitudePage() {
     }
   };
 
-  const handleDeleteTopic = async (id: number, name: string) => {
-    if (!confirm(`Delete topic "${name}"? All questions will be removed.`))
-      return;
-    try {
-      await api.delete(`/admin/aptitude/topics/${id}`);
-      fetchCategories();
-    } catch {
-      toast.error("Failed to delete");
-    }
+  const handleDeleteTopic = (id: number, name: string) => {
+    showConfirm({
+      title: "Delete Topic",
+      description: `Are you sure you want to delete topic "${name}"? All questions will be removed. This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/admin/aptitude/topics/${id}`);
+          fetchCategories();
+        } catch {
+          toast.error("Failed to delete");
+        }
+      }
+    });
   };
 
   // Question CRUD
@@ -245,14 +252,19 @@ export default function AdminAptitudePage() {
     }
   };
 
-  const handleDeleteQuestion = async (id: number) => {
-    if (!confirm("Delete this question?")) return;
-    try {
-      await api.delete(`/admin/aptitude/questions/${id}`);
-      if (selectedTopic) fetchQuestions(selectedTopic.id, qPage);
-    } catch {
-      toast.error("Failed to delete");
-    }
+  const handleDeleteQuestion = (id: number) => {
+    showConfirm({
+      title: "Delete Question",
+      description: "Are you sure you want to delete this question? This action cannot be undone.",
+      onConfirm: async () => {
+        try {
+          await api.delete(`/admin/aptitude/questions/${id}`);
+          if (selectedTopic) fetchQuestions(selectedTopic.id, qPage);
+        } catch {
+          toast.error("Failed to delete");
+        }
+      }
+    });
   };
 
   // Question management view
@@ -571,6 +583,7 @@ export default function AdminAptitudePage() {
           totalPages={Math.ceil(qTotal / 20)}
           onPageChange={(p) => fetchQuestions(selectedTopic.id, p)}
         />
+        <ConfirmDialog {...confirmProps} />
       </div>
     );
   }
@@ -796,7 +809,7 @@ export default function AdminAptitudePage() {
                   </button>
                 </div>
               ))}
-              {(editingCat.topics ?? []).length === 0 && (
+              {((editingCat.topics ?? []).length === 0) && (
                 <p className="text-sm text-gray-500 py-4 text-center">
                   No topics yet
                 </p>
@@ -804,6 +817,7 @@ export default function AdminAptitudePage() {
             </div>
           </div>
         )}
+        <ConfirmDialog {...confirmProps} />
       </div>
     );
   }
@@ -942,6 +956,7 @@ export default function AdminAptitudePage() {
           </table>
         </div>
       )}
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

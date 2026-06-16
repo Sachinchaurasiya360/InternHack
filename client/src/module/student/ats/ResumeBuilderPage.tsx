@@ -23,6 +23,8 @@ import {
   GitPullRequest,
 } from "lucide-react";
 import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 import {
   SortableContext,
   useSortable,
@@ -415,6 +417,7 @@ const CertificationRow = React.memo(function CertificationRow({
 // ── Main ──────────────────────────────────────────────────────
 export default function ResumeBuilderPage() {
   const [data, setData] = useState<ResumeData>(loadSaved);
+  const { showConfirm, confirmProps } = useConfirmDelete();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>(loadTemplate);
   const [sectionOrder, setSectionOrder] = useState<string[]>(() => {
     try {
@@ -487,66 +490,69 @@ export default function ResumeBuilderPage() {
       return;
     }
 
-    const confirmed = confirm(
-      "Import your InternHack profile into the builder? This will overwrite current fields that have a profile equivalent."
-    );
-    if (!confirmed) return;
-
-    setData((d) => ({
-      ...d,
-      personalInfo: {
-        ...d.personalInfo,
-        fullName: user.name || d.personalInfo.fullName,
-        email: user.email || d.personalInfo.email,
-        phone: user.contactNo || d.personalInfo.phone,
-        location: user.location || d.personalInfo.location,
-        linkedIn: user.linkedinUrl || d.personalInfo.linkedIn,
-        portfolio: user.portfolioUrl || user.githubUrl || d.personalInfo.portfolio,
-      },
-      summary: user.bio || d.summary,
-      experience: user.company
-        ? [
-            {
+    showConfirm({
+      title: "Import Profile",
+      description: "Import your InternHack profile into the builder? This will overwrite current fields that have a profile equivalent.",
+      confirmLabel: "Import",
+      confirmVariant: "primary",
+      onConfirm: () => {
+        setData((d) => ({
+          ...d,
+          personalInfo: {
+            ...d.personalInfo,
+            fullName: user.name || d.personalInfo.fullName,
+            email: user.email || d.personalInfo.email,
+            phone: user.contactNo || d.personalInfo.phone,
+            location: user.location || d.personalInfo.location,
+            linkedIn: user.linkedinUrl || d.personalInfo.linkedIn,
+            portfolio: user.portfolioUrl || user.githubUrl || d.personalInfo.portfolio,
+          },
+          summary: user.bio || d.summary,
+          experience: user.company
+            ? [
+                {
+                  id: uid(),
+                  company: user.company,
+                  title: user.designation || "",
+                  startDate: "",
+                  endDate: "",
+                  current: true,
+                  description: "",
+                },
+                ...d.experience,
+              ]
+            : d.experience,
+          education: user.college
+            ? [
+                {
+                  id: uid(),
+                  institution: user.college,
+                  degree: "",
+                  field: "",
+                  startDate: "",
+                  endDate: user.graduationYear ? String(user.graduationYear) : "",
+                  gpa: "",
+                },
+                ...d.education,
+              ]
+            : d.education,
+          skills: user.skills && user.skills.length > 0
+            ? Array.from(new Set([...d.skills, ...user.skills]))
+            : d.skills,
+          projects: [
+            ...(user.projects ?? []).map<Project>((p) => ({
               id: uid(),
-              company: user.company,
-              title: user.designation || "",
-              startDate: "",
-              endDate: "",
-              current: true,
-              description: "",
-            },
-            ...d.experience,
-          ]
-        : d.experience,
-      education: user.college
-        ? [
-            {
-              id: uid(),
-              institution: user.college,
-              degree: "",
-              field: "",
-              startDate: "",
-              endDate: user.graduationYear ? String(user.graduationYear) : "",
-              gpa: "",
-            },
-            ...d.education,
-          ]
-        : d.education,
-      skills: user.skills && user.skills.length > 0
-        ? Array.from(new Set([...d.skills, ...user.skills]))
-        : d.skills,
-      projects: [
-        ...(user.projects ?? []).map<Project>((p) => ({
-          id: uid(),
-          name: p.title,
-          description: p.description,
-          techStack: p.techStack.join(", "),
-          link: p.liveUrl || p.repoUrl || "",
-        })),
-        ...d.projects,
-      ],
-    }));
-    toast.success("Profile imported into the builder.");
+              name: p.title,
+              description: p.description,
+              techStack: p.techStack.join(", "),
+              link: p.liveUrl || p.repoUrl || "",
+            })),
+            ...d.projects,
+          ],
+        }));
+        toast.success("Profile imported into the builder.");
+      }
+    });
   };
 
   const toggle = (key: string) =>
@@ -1156,6 +1162,7 @@ export default function ResumeBuilderPage() {
           </div>
         </div>
       </div>
+      <ConfirmDialog {...confirmProps} />
     </>
   );
 }

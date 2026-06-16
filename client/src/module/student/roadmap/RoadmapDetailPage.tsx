@@ -12,6 +12,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import type { Roadmap, RoadmapEnrollmentListItem } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
+import { LoadingSpinner } from "../../../components/shared/LoadingSpinner";
 
 function Chrome({ children, isStudent, sidebarWidth, collapsed, sidebar }: {
   children: ReactNode;
@@ -71,7 +72,7 @@ export default function RoadmapDetailPage() {
     return (
       <Chrome {...chromeProps}>
         <div className="flex items-center justify-center py-32">
-          <div className="h-8 w-8 border-2 border-stone-200 dark:border-stone-800 border-t-lime-500 rounded-full animate-spin" />
+          <LoadingSpinner size="lg" className="border-stone-200 dark:border-stone-800 border-t-lime-500" />
         </div>
       </Chrome>
     );

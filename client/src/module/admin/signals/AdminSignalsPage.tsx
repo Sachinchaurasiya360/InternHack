@@ -15,6 +15,8 @@ import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { queryKeys } from "../../../lib/query-keys";
 import type { FundingSignal, FundingSignalListResponse } from "../../../lib/types";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 import {
   cleanupNoise,
   createSignal,
@@ -122,6 +124,7 @@ export default function AdminSignalsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<FundingSignal | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const queryParams = useMemo(
     () => ({
@@ -419,8 +422,11 @@ export default function AdminSignalsPage() {
                         ) : null}
                         <button
                           onClick={() => {
-                            if (confirm(`Delete signal for ${s.companyName}?`))
-                              deleteMutation.mutate(s.id);
+                            showConfirm({
+                              title: "Delete Funding Signal",
+                              description: `Are you sure you want to delete the funding signal for "${s.companyName}"? This action cannot be undone.`,
+                              onConfirm: () => deleteMutation.mutate(s.id),
+                            });
                           }}
                           className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded transition-colors"
                           title="Delete"
@@ -526,6 +532,7 @@ export default function AdminSignalsPage() {
           submitting={createMutation.isPending || updateMutation.isPending}
         />
       ) : null}
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }

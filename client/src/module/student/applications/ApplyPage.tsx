@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { LoadingSpinner } from "../../../components/shared/LoadingSpinner";
 import { useParams, useNavigate, Link, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -279,7 +280,7 @@ export default function ApplyPage() {
             >
               {submitting ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/30 dark:border-gray-950/30 border-t-white dark:border-t-gray-950 rounded-full animate-spin" />
+                  <LoadingSpinner size="sm" variant="white" />
                   Submitting...
                 </>
               ) : (

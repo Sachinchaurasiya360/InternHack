@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Bookmark, CheckCircle2, Circle, ExternalLink } from "lucide-react";
 import api from "../../../../lib/axios";
 import { queryKeys } from "../../../../lib/query-keys";
@@ -37,7 +37,7 @@ export function PracticeTab({ topicSlug, limit = 50 }: PracticeTabProps) {
       if (diffParam) params.set("difficulty", diffParam);
       return api.get<DsaTopicDetail>(`/dsa/topics/${topicSlug}?${params}`).then((r) => r.data);
     },
-    placeholderData: keepPreviousData,
+    placeholderData: (prev) => prev,
     staleTime: 5 * 60 * 1000,
     retry: false,
   });

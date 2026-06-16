@@ -19,6 +19,8 @@ import type { CustomRole } from "./hr-types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { labelClass } from "./hr-utils";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { useConfirmDelete } from "../../../hooks/useConfirmDelete";
 
 type Tab = "roles" | "assign";
 
@@ -66,6 +68,7 @@ export default function RolesPage() {
   const [assignForm, setAssignForm] = useState({ userId: "", roleId: "" });
   const [assigned, setAssigned] = useState(false);
   const [search, setSearch] = useState("");
+  const { showConfirm, confirmProps } = useConfirmDelete();
 
   const { data: roles, isLoading } = useQuery({
     queryKey: hrKeys.roles.list(),
@@ -339,7 +342,11 @@ export default function RolesPage() {
                         </button>
                         <button
                           onClick={() => {
-                            if (confirm("Delete this role?")) deleteMutation.mutate(role.id);
+                            showConfirm({
+                              title: "Delete Role",
+                              description: `Are you sure you want to delete the "${role.name}" role? This action cannot be undone.`,
+                              onConfirm: () => deleteMutation.mutate(role.id),
+                            });
                           }}
                           title="Delete role"
                           className="p-1.5 rounded-md text-stone-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -483,6 +490,7 @@ export default function RolesPage() {
           </div>
         </div>
       </HRModal>
+      <ConfirmDialog {...confirmProps} />
     </div>
   );
 }
