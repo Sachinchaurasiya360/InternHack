@@ -9,6 +9,7 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "doctor": "tsx scripts/doctor.ts",
     "seed": "tsx src/database/seeds/seed.ts"
   },
   "keywords": [],
