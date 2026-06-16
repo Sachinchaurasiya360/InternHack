@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model user {
@@ -1472,6 +1473,15 @@ enum EmailLogStatus {
   PENDING
   SENT
   FAILED
+}
+
+model webhookEvent {
+  id          Int      @id @default(autoincrement())
+  eventId     String   @unique
+  type        String
+  processedAt DateTime @default(now())
+
+  @@index([eventId])
 }
 
 model contactSubmission {

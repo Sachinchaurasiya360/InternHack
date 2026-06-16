@@ -55,7 +55,7 @@ export class PaymentService {
     }
 
     // Fetch user name from DB for checkout display
-    const dbUser = await prisma.user.findUnique({
+    const dbUser = await db.user.findUnique({
       where: { id: userId },
       select: { name: true },
     });
@@ -97,6 +97,15 @@ export class PaymentService {
   async handleWebhook(rawBody: string, headers: Record<string, string>) {
     const event = this.requireDodo().webhooks.unwrap(rawBody, { headers });
 
+    // Idempotency: skip if already processed
+    const existing = await prisma.webhookEvent.findUnique({
+      where: { eventId: event.id },
+    });
+    if (existing) {
+      console.log(`[Webhook] Idempotency hit for event ${event.id}, skipping`);
+      return { idempotencyHit: true };
+    }
+
     switch (event.type) {
       case "payment.succeeded": {
         const payment = event.data;
@@ -129,7 +138,23 @@ export class PaymentService {
 
       case "subscription.active": {
         const sub = event.data;
-        await this.activateSubscription(sub);
+        await prisma.$transaction(async (tx) => {
+          // Double-check idempotency inside transaction
+          const existingTx = await tx.webhookEvent.findUnique({
+            where: { eventId: event.id },
+          });
+          if (existingTx) {
+            console.log(`[Webhook] Idempotency hit inside tx for event ${event.id}`);
+            return;
+          }
+          await this.activateSubscription(sub, tx);
+          await tx.webhookEvent.create({
+            data: {
+              eventId: event.id,
+              type: event.type,
+            },
+          });
+        });
         break;
       }
 
@@ -166,7 +191,11 @@ export class PaymentService {
 
   // ── Subscription lifecycle helpers ─────────────────────────────
 
-  private async activateSubscription(sub: { subscription_id: string; product_id: string; next_billing_date: string; metadata: Record<string, string> }) {
+  private async activateSubscription(
+    sub: { subscription_id: string; product_id: string; next_billing_date: string; metadata: Record<string, string> },
+    tx?: typeof prisma,
+  ) {
+
     const userId = Number(sub.metadata["userId"]);
     if (!userId || isNaN(userId)) {
       console.error("[Webhook] No userId in subscription metadata");
@@ -178,13 +207,14 @@ export class PaymentService {
 
     const now = new Date();
     const endDate = new Date(sub.next_billing_date);
+    const db = tx ?? prisma;
 
     // Wrap entire subscription activation in database transaction to prevent
     // race conditions where concurrent webhooks create duplicate records.
     // All operations must succeed atomically or entire transaction rolls back.
-    await prisma.$transaction(async (tx) => {
+    const runInTx = async (innerTx: typeof prisma) => {
       // Check if subscription is already active to prevent duplicate activations
-      const existingSubscription = await tx.user.findUnique({
+      const existingSubscription = await innerTx.user.findUnique({
         where: { id: userId },
         select: { subscriptionStatus: true },
       });
@@ -199,7 +229,7 @@ export class PaymentService {
       // Only link payments that have already been marked SUCCESS by the
       // payment.succeeded webhook. This prevents abandoned PENDING checkout
       // sessions from being incorrectly linked to the subscription.
-      const payment = await tx.payment.findFirst({
+      const payment = await innerTx.payment.findFirst({
         where: {
           userId,
           dodoSubscriptionId: null,
@@ -215,7 +245,7 @@ export class PaymentService {
         return;
       }
 
-      await tx.payment.update({
+      await innerTx.payment.update({
         where: { id: payment.id },
         data: {
           dodoSubscriptionId: sub.subscription_id,
@@ -223,7 +253,7 @@ export class PaymentService {
       });
 
       // Update user subscription status atomically
-      await tx.user.update({
+      await innerTx.user.update({
         where: { id: userId },
         data: {
           subscriptionPlan: plan,
@@ -232,13 +262,19 @@ export class PaymentService {
           subscriptionEndDate: endDate,
         },
       });
-    });
+    };
+
+    if (tx) {
+      await runInTx(tx);
+    } else {
+      await prisma.$transaction(runInTx);
+    }
 
     // Invalidate cache after transaction succeeds
     await invalidateUserTierCache(userId);
 
     // Send confirmation email
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: userId },
       select: { name: true, email: true },
     });

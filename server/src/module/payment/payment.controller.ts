@@ -40,18 +40,24 @@ export class PaymentController {
         "webhook-timestamp": req.headers["webhook-timestamp"] as string ?? "",
       };
 
-      await this.paymentService.handleWebhook(rawBody, headers);
+      const result = await this.paymentService.handleWebhook(rawBody, headers);
+
+      // Idempotency hit: return 200 immediately without re-processing
+      if (result && "idempotencyHit" in result) {
+        res.json({ received: true, idempotencyHit: true });
+        return;
+      }
 
       // Always return 200 quickly to acknowledge receipt
       res.json({ received: true });
     } catch (err) {
       console.error("[Webhook] Error processing webhook:", err);
-      // Still return 200 to avoid retries for known errors
-      // Return 401 only for signature verification failures
+      // Return 401 for signature verification failures — Dodo will retry
       if (err instanceof Error && err.message.includes("signature")) {
         res.status(401).json({ error: "Invalid signature" });
         return;
       }
+      // Return 500 for other errors so Dodo retries
       next(err);
     }
   }

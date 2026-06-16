@@ -87,7 +87,7 @@ const logger = createLogger("Index");
 
 
 // ── Validate required environment variables ──
-const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
+const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET", "DODO_PAYMENTS_WEBHOOK_KEY"] as const;
 for (const key of REQUIRED_ENV) {
   if (!process.env[key]) {
     throw new Error(`Missing required environment variable: ${key}`);
