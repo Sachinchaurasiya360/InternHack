@@ -258,12 +258,10 @@ export const queryKeys = {
     importStatus: () => ["dsa", "import-status"] as const,
     streak: () => ["dsa", "streak"] as const,
     activity: (year: number) => ["dsa", "activity", year] as const,
+    analytics: () => ["dsa", "analytics"] as const,
     similar: (id: number) => ["dsa", "similar", id] as const,
     approaches: (slug: string) => ["dsa", "approaches", slug] as const,
   },
-  interviewDashboard: {
-  mine: () => ["interview-dashboard", "mine"] as const,
-},
   // Roadmaps
   roadmaps: {
     all: ["roadmaps"] as const,
@@ -278,5 +276,10 @@ export const queryKeys = {
     topic: (slug: string, topicSlug: string) =>
       ["roadmaps", "topic", slug, topicSlug] as const,
     community: () => ["roadmaps", "community"] as const,
+  },
+  // Notes
+  notes: {
+    list: (filters?: Record<string, string | undefined>) => ["notes", "list", filters] as const,
+    detail: (contentType: string, contentId: string | number) => ["notes", "detail", contentType, contentId] as const,
   },
 };

@@ -942,6 +942,84 @@ export class DsaService {
     };
   }
 
+  // ── Analytics ───────────────────────────────────────────────────────
+
+  async getAnalytics(studentId: number) {
+    const progress = await this.getMyProgress(studentId);
+
+    const allProblems = await prisma.dsaProblem.findMany({
+      select: { id: true, difficulty: true, tags: true },
+    });
+    const solved = await prisma.studentDsaProgress.findMany({
+      where: { studentId, solved: true },
+      select: { problemId: true, solvedAt: true },
+    });
+    const solvedIds = new Set(solved.map((s) => s.problemId));
+
+    const topicAccuracy: Record<string, { total: number; solved: number }> = {};
+    for (const p of allProblems) {
+      for (const tag of p.tags) {
+        if (!topicAccuracy[tag]) topicAccuracy[tag] = { total: 0, solved: 0 };
+        topicAccuracy[tag].total++;
+        if (solvedIds.has(p.id)) topicAccuracy[tag].solved++;
+      }
+    }
+
+    const now = new Date();
+    const twelveWeeksAgo = new Date(now);
+    twelveWeeksAgo.setDate(twelveWeeksAgo.getDate() - 84);
+
+    const weeklyCounts = new Map<string, number>();
+    for (let i = 0; i < 12; i++) {
+      const weekStart = new Date(now);
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay() - i * 7);
+      const key = weekStart.toISOString().slice(0, 10);
+      weeklyCounts.set(key, 0);
+    }
+
+    for (const s of solved) {
+      const d = new Date(s.solvedAt);
+      const dayOfWeek = d.getDay();
+      const weekStart = new Date(d);
+      weekStart.setDate(d.getDate() - dayOfWeek);
+      const key = weekStart.toISOString().slice(0, 10);
+      if (weeklyCounts.has(key)) {
+        weeklyCounts.set(key, (weeklyCounts.get(key) || 0) + 1);
+      }
+    }
+
+    const weeklyTrend = Array.from(weeklyCounts.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([weekStart, count]) => ({ weekStart, count }));
+
+    const sixMonthsAgo = new Date(now);
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const monthlyCounts = new Map<string, number>();
+
+    for (const s of solved) {
+      const d = new Date(s.solvedAt);
+      if (d >= sixMonthsAgo) {
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        monthlyCounts.set(key, (monthlyCounts.get(key) || 0) + 1);
+      }
+    }
+
+    const monthlyTrend = Array.from(monthlyCounts.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([month, count]) => ({ month, count }));
+
+    return {
+      byDifficulty: progress.byDifficulty,
+      topicAccuracy: Object.entries(topicAccuracy)
+        .map(([topic, data]) => ({ topic, ...data, percentage: data.total > 0 ? Math.round((data.solved / data.total) * 100) : 0 }))
+        .sort((a, b) => a.percentage - b.percentage),
+      weeklyTrend,
+      monthlyTrend,
+      totalSolved: progress.totalSolved,
+      totalProblems: progress.totalProblems,
+    };
+  }
+
   // ── Test case generation (cached permanently) ──
 
   async getOrGenerateTestCases(problemId: number) {
@@ -1255,10 +1333,17 @@ Return ONLY a JSON array, no markdown fences:
     let solvedToday = false;
 
     if (userId) {
+      const todayStart = new Date(today + "T00:00:00.000Z");
+      const tomorrowStart = new Date(todayStart.getTime() + 86_400_000);
+
       const submission = await prisma.dsaSubmission.findFirst({
         where: {
           studentId: userId,
           problemId: selected.id,
+          createdAt: {
+            gte: todayStart,
+            lt: tomorrowStart,
+          },
         },
       });
 

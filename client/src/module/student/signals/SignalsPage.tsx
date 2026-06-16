@@ -450,7 +450,7 @@ const SignalCard = ({ signal }: SignalCardProps) => {
         <a
           href={signal.sourceUrl}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
           className="relative pointer-events-auto p-1 -m-1 text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
           title="Open original source"

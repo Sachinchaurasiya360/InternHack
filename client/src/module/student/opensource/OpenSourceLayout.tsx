@@ -1,10 +1,7 @@
 import { Fragment } from "react";
 import { Outlet, useLocation, Link } from "react-router";
 import { ChevronRight } from "lucide-react";
-import ContributionCoachPanel from "./ContributionCoachPanel";
-import CoachFloatingButton from "./CoachFloatingButton";
 import { LearningPathProvider } from "./learning-paths.context";
-import { LearningPathSidebar } from "./components/LearningPathSidebar";
 import StreakFlame from "./StreakFlame";
 
 const SEGMENT_NAMES: Record<string, string> = {
@@ -78,17 +75,12 @@ export default function OpenSourceLayout() {
   return (
     <LearningPathProvider>
       <div className="bg-stone-50 dark:bg-stone-950 min-h-[calc(100vh-4rem)]">
-        <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 pb-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:px-8">
+        <div className="mx-auto w-full max-w-7xl px-4 pb-12 lg:px-8">
           <main className="min-w-0 pb-20 sm:pb-0">
             <OpenSourceBreadcrumb />
             <Outlet />
           </main>
-          <div className="hidden lg:block pt-6 lg:sticky lg:top-20 lg:h-fit">
-            <LearningPathSidebar />
-          </div>
         </div>
-        <ContributionCoachPanel />
-        <CoachFloatingButton />
         <div className="fixed bottom-4 right-4 z-40">
           <StreakFlame />
         </div>

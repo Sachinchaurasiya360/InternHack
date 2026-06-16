@@ -1,37 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import {
   Flame,
   BookOpen,
-  GitPullRequest,
   Trophy,
   ArrowRight,
   Bookmark,
   Activity,
-  Clock,
-  Trash2,
-  Check,
   Star,
   GitFork,
-  AlertCircle,
+  Compass,
+  GraduationCap,
+  BarChart3,
+  Plus,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { useAuthStore } from "../../../lib/auth.store";
 import { queryKeys } from "../../../lib/query-keys";
 import api from "../../../lib/axios";
 import { useLearningPath } from "./learning-paths.context";
+import { formatCount } from "./_shared/repo-utils";
+import { SuggestRepoModal } from "./SuggestRepoModal";
 import type { OpenSourceRepo, OpenSourceStreak, RepoRequest } from "../../../lib/types";
 
-// Active Issue Type
-interface ActiveIssue {
-  id: number;
-  repo: string;
-  title: string;
-  number: number;
-  url: string;
-  claimedAt: string;
-}
+const STATUS_STYLE: Record<string, string> = {
+  PENDING:
+    "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-white/10",
+  APPROVED:
+    "bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-800",
+  REJECTED:
+    "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
+};
 
 // ─── Child Components (React.memo) ───────────────────────────
 
@@ -55,7 +56,7 @@ export const RecommendedRepoRow = React.memo(function RecommendedRepoRow({
             {repo.language}
           </span>
           <span className="flex items-center gap-0.5">
-            <Star className="w-3 h-3 text-amber-400" />
+            <Star className="w-3 h-3 text-stone-400" />
             {repo.stars.toLocaleString()}
           </span>
           <span className="flex items-center gap-0.5">
@@ -73,127 +74,13 @@ export const RecommendedRepoRow = React.memo(function RecommendedRepoRow({
   );
 });
 
-// Active Issue Row Component
-export const ActiveIssueRow = React.memo(function ActiveIssueRow({
-  issue,
-  onComplete,
-  onAbandon,
-}: {
-  issue: ActiveIssue;
-  onComplete: (id: number) => void;
-  onAbandon: (id: number) => void;
-}) {
-  const [timeAgoStr, setTimeAgoStr] = useState("");
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const elapsed = Date.now() - new Date(issue.claimedAt).getTime();
-      const hrs = Math.floor(elapsed / 3600000);
-      if (hrs < 24) {
-        setTimeAgoStr(hrs <= 0 ? "Just now" : `${hrs}h ago`);
-      } else {
-        const days = Math.floor(hrs / 24);
-        setTimeAgoStr(`${days}d ago`);
-      }
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [issue.claimedAt]);
-
-  return (
-    <div className="p-4 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900/40 hover:border-stone-300 dark:hover:border-white/15 transition-all">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-stone-400 font-bold uppercase tracking-wider">
-              {issue.repo}
-            </span>
-            <span className="text-[10px] font-mono text-lime-500 font-bold">
-              #{issue.number}
-            </span>
-          </div>
-          <h4 className="text-sm font-semibold text-stone-900 dark:text-stone-50 mt-1 line-clamp-2">
-            {issue.title}
-          </h4>
-          <span className="inline-flex items-center gap-1 mt-2 text-[10px] text-stone-400 font-mono">
-            <Clock className="w-3 h-3 text-stone-400" />
-            Claimed {timeAgoStr || "Recently"}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onComplete(issue.id)}
-            className="rounded-md h-7 w-7 p-0 text-stone-500 hover:text-lime-500 hover:bg-lime-500/10"
-            title="Mark Completed"
-          >
-            <Check className="w-4 h-4" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onAbandon(issue.id)}
-            className="rounded-md h-7 w-7 p-0 text-stone-500 hover:text-destructive hover:bg-destructive/10"
-            title="Abandon Issue"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-});
-
-// Deadline Timer Component
-export const DeadlineCountdownRow = React.memo(function DeadlineCountdownRow({
-  title,
-  targetDate,
-}: {
-  title: string;
-  targetDate: number;
-}) {
-  const [timeLeft, setTimeLeft] = useState("");
-
-  useEffect(() => {
-    const updateTimer = () => {
-      const difference = targetDate - Date.now();
-      if (difference <= 0) {
-        setTimeLeft("Deadline passed");
-        return;
-      }
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((difference / 1000 / 60) % 60);
-      const seconds = Math.floor((difference / 1000) % 60);
-
-      setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
-  }, [targetDate]);
-
-  return (
-    <div className="flex items-center justify-between p-3 border border-stone-200 dark:border-white/10 rounded-md bg-stone-50 dark:bg-stone-900/60 shadow-inner">
-      <div className="min-w-0">
-        <p className="text-xs font-bold text-stone-800 dark:text-stone-200 truncate">
-          {title}
-        </p>
-        <span className="text-[10px] text-stone-400">Applications/Submissions</span>
-      </div>
-      <span className="text-xs font-mono font-bold text-lime-600 dark:text-lime-400 whitespace-nowrap bg-lime-500/10 px-2.5 py-1 rounded-md">
-        {timeLeft}
-      </span>
-    </div>
-  );
-});
-
 // ─── Main Component ──────────────────────────────────────────
 
 export default function OpenSourceDashboardPage() {
   const { user } = useAuthStore();
   const { progress, nextIncompleteItem } = useLearningPath();
+  const [showSuggestModal, setShowSuggestModal] = useState(false);
+  const [showAllSubmissions, setShowAllSubmissions] = useState(false);
 
   // Streak state
   const { data: streakData } = useQuery({
@@ -203,7 +90,12 @@ export default function OpenSourceDashboardPage() {
     retry: false,
   });
 
-  const { data: myRequestsData } = useQuery({
+  const {
+    data: myRequests,
+    isLoading: isMyRequestsLoading,
+    isError: isMyRequestsError,
+    refetch: refetchMyRequests,
+  } = useQuery({
     queryKey: queryKeys.opensource.myRequests(),
     queryFn: () => api.get("/opensource/requests/mine").then((r) => r.data.requests as RepoRequest[]),
     enabled: !!user,
@@ -218,6 +110,29 @@ export default function OpenSourceDashboardPage() {
     retry: false,
   });
 
+  // Global open source stats for the header strip
+  const { data: globalStats } = useQuery({
+    queryKey: queryKeys.opensource.stats(),
+    queryFn: () =>
+      api
+        .get<{
+          totalRepos: number;
+          totalStars: number;
+          trendingCount: number;
+          languageCount: number;
+        }>("/opensource/stats")
+        .then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const stats = globalStats
+    ? {
+        totalRepos: globalStats.totalRepos,
+        totalStars: formatCount(globalStats.totalStars),
+        trendingCount: globalStats.trendingCount,
+      }
+    : null;
+
   // Local storage bookmarks for statistics card
   const [bookmarks] = useState<number[]>(() => {
     try {
@@ -227,57 +142,6 @@ export default function OpenSourceDashboardPage() {
       return [];
     }
   });
-
-  // Active issues tracker with localStorage persistence
-  const [activeIssues, setActiveIssues] = useState<ActiveIssue[]>(() => {
-    try {
-      const saved = localStorage.getItem("oss_active_issues");
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error("Failed to parse active issues", e);
-    }
-
-    // Default seeded active issues
-    return [
-      {
-        id: 1,
-        repo: "calcom/cal.com",
-        title: "Fix: Mobile responsive layout overflow on bookings page",
-        number: 14032,
-        url: "https://github.com/calcom/cal.com/issues/14032",
-        claimedAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
-      },
-      {
-        id: 2,
-        repo: "infisical/infisical",
-        title: "Feature: Add copy-to-clipboard button for environment variables",
-        number: 4321,
-        url: "https://github.com/infisical/infisical/issues/4321",
-        claimedAt: new Date(Date.now() - 6 * 3600 * 1000).toISOString(),
-      },
-    ];
-  });
-
-  // Sync active issues to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem("oss_active_issues", JSON.stringify(activeIssues));
-    } catch (e) {
-      console.warn("Failed to save active issues", e);
-    }
-  }, [activeIssues]);
-
-  // Active issue handlers
-  const handleCompleteIssue = (id: number) => {
-    setActiveIssues((prev) => prev.filter((issue) => issue.id !== id));
-    // Proactively increment approved contributions or trigger complete message
-    // In our front-end only implementation, we just clear and show a toast
-    alert("Amazing work! The issue has been marked as completed.");
-  };
-
-  const handleAbandonIssue = (id: number) => {
-    setActiveIssues((prev) => prev.filter((issue) => issue.id !== id));
-  };
 
   // Determine dynamic time-of-day greeting
   const getGreeting = () => {
@@ -289,16 +153,6 @@ export default function OpenSourceDashboardPage() {
 
   // Extract student's first name
   const studentFirstName = user?.name ? user.name.split(" ")[0] : "Priya";
-
-  // Tab items
-  const tabs = [
-    { name: "Dashboard", href: "/student/opensource", active: true },
-    { name: "Discover Repos", href: "/student/opensource/discover" },
-    { name: "Guides", href: "/student/opensource/discover#guides" },
-    { name: "GSoC Orgs", href: "/student/opensource/gsoc" },
-    { name: "Programs", href: "/student/opensource/programs" },
-    { name: "Analytics", href: "/student/opensource/analytics" },
-  ];
 
   // Learning Progress variables
   const totalSteps = progress.totalCount || 4;
@@ -375,79 +229,162 @@ export default function OpenSourceDashboardPage() {
     },
   ];
 
-  // Community pulse mock feed
-  const pulseFeed = [
-    {
-      id: 1,
-      text: "Sarah K. submitted a PR to Twenty (+50 XP)",
-      time: "10m ago",
-      icon: <GitPullRequest className="w-3.5 h-3.5 text-lime-500" />,
-    },
-    {
-      id: 2,
-      text: "Alex M. started GSoC proposal draft",
-      time: "1h ago",
-      icon: <Trophy className="w-3.5 h-3.5 text-amber-500" />,
-    },
-    {
-      id: 3,
-      text: "Vikram R. reached a 10-day contribution streak!",
-      time: "3h ago",
-      icon: <Flame className="w-3.5 h-3.5 text-orange-500" />,
-    },
-  ];
-
-  // Deadlines dates
-  const [gsocDeadline] = useState(() => Date.now() + 15 * 86400 * 1000 + 4 * 3600 * 1000);
-  const [lfxDeadline] = useState(() => Date.now() + 32 * 86400 * 1000 + 12 * 3600 * 1000);
-
   return (
     <div className="pb-16 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50 transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 space-y-6">
-        
-        {/* Navigation Tab Bar (Top) */}
-        <div className="flex items-center gap-2 border-b border-stone-200 dark:border-white/10 pb-4 overflow-x-auto whitespace-nowrap">
-          {tabs.map((tab) => (
-            <Link
-              key={tab.name}
-              to={tab.href}
-              className={`px-4 py-2 text-sm font-semibold transition-colors rounded-md ${
-                tab.active
-                  ? "bg-lime-500 text-stone-950 font-bold shadow-sm"
-                  : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-200/50 dark:hover:bg-white/5"
-              }`}
-            >
-              {tab.name}
-            </Link>
-          ))}
-        </div>
 
-        {/* Greeting & Streak (Full Width) */}
-        <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl" role="img" aria-label="wave">
-              👋
+        {/* Editorial header */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="h-1 w-1 bg-lime-400" />
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              learning / open source
             </span>
+          </div>
+          <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
-              <h2 className="text-xl font-bold tracking-tight">
-                {getGreeting()}, {studentFirstName}
-              </h2>
-              <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
-                Welcome back to your open-source central dashboard.
+              <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+                {getGreeting()},{" "}
+                <span className="relative inline-block">
+                  <span className="relative z-10">{studentFirstName}.</span>
+                  <motion.span
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+                    aria-hidden
+                    className="absolute bottom-0.5 left-0 right-0 h-2.5 sm:h-3 bg-lime-400 origin-left z-0"
+                  />
+                </span>
+              </h1>
+              <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 max-w-2xl">
+                Welcome back to your open source dashboard. Pick up where you left off, discover
+                new repos, and keep your streak alive.
               </p>
             </div>
+            <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+              {stats && (
+                <>
+                  <span>
+                    <span className="text-stone-900 dark:text-stone-50">{stats.totalRepos}</span> repos
+                  </span>
+                  <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                  <span>
+                    <span className="text-stone-900 dark:text-stone-50">{stats.totalStars}</span> stars
+                  </span>
+                  <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                  <span>
+                    <span className="text-lime-600 dark:text-lime-400">{stats.trendingCount}</span> trending
+                  </span>
+                  <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
+                </>
+              )}
+              <span className="inline-flex items-center gap-1.5">
+                <Flame className="w-3.5 h-3.5 text-lime-500 fill-lime-500" />
+                <span className="text-lime-600 dark:text-lime-400">
+                  {streakData?.currentStreak ?? 0}
+                </span>{" "}
+                day streak
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800/80 px-4 py-2.5 rounded-md border border-stone-200/50 dark:border-white/5 shrink-0">
-            <Flame className="w-5 h-5 text-lime-500 fill-lime-500 animate-pulse" />
-            <span className="text-sm font-bold text-stone-800 dark:text-stone-200">
-              <span className="text-lime-500 font-extrabold">{streakData?.currentStreak ?? 5}-day</span> streak — keep it up!
-            </span>
+        </div>
+
+        {/* Quick actions: track contributions + suggest a repo */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 border-t border-l border-stone-200 dark:border-white/10">
+          <Link
+            to="/student/opensource/analytics"
+            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-900 dark:hover:bg-stone-800 transition-colors"
+          >
+            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-lime-400/10 flex items-center justify-center shrink-0">
+              <BarChart3 className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <div className="h-1 w-1 bg-lime-400" />
+                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
+                  analytics
+                </p>
+              </div>
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-white">
+                Track your contributions
+              </p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (!user) {
+                window.location.href = "/login";
+                return;
+              }
+              setShowSuggestModal(true);
+            }}
+            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 cursor-pointer hover:bg-stone-900 dark:hover:bg-stone-800 transition-colors text-left"
+          >
+            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-lime-400/10 flex items-center justify-center shrink-0">
+              <Plus className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <div className="h-1 w-1 bg-lime-400" />
+                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
+                  suggest
+                </p>
+              </div>
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-white">
+                Know a great repo? Submit it
+              </p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+          </button>
+        </div>
+
+        {/* Explore (quick links to the open source sections) */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            <div className="h-1 w-1 bg-lime-400" />
+            explore
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { label: "discover", title: "Discover Repos", href: "/student/opensource/discover", icon: Compass },
+              { label: "guides", title: "Open Source Guides", href: "/student/opensource/discover#guides", icon: BookOpen },
+              { label: "gsoc", title: "GSoC Orgs", href: "/student/opensource/gsoc", icon: Trophy },
+              { label: "programs", title: "Programs", href: "/student/opensource/programs", icon: GraduationCap },
+            ].map((link) => {
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.title}
+                  to={link.href}
+                  className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md no-underline hover:border-stone-400 dark:hover:border-white/25 transition-colors"
+                >
+                  <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-lime-400/10 flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-600 dark:group-hover:text-lime-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <div className="h-1 w-1 bg-lime-400" />
+                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                        {link.label}
+                      </p>
+                    </div>
+                    <p className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">
+                      {link.title}
+                    </p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </Link>
+              );
+            })}
           </div>
         </div>
 
         {/* Continue Learning & Recommended for You Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
+
           {/* Continue Learning Card */}
           <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col justify-between space-y-4">
             <div>
@@ -519,166 +456,152 @@ export default function OpenSourceDashboardPage() {
           </div>
         </div>
 
-        {/* Active Issues & Program Countdown Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Active Issues Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-                active issues ({activeIssues.length})
-              </div>
+        {/* My Submissions */}
+        {!!user && (
+          <div>
+            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-3">
+              <div className="h-1 w-1 bg-lime-400" />
+              my submissions
             </div>
 
-            <div className="flex-1 space-y-3">
-              {activeIssues.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-10 text-center space-y-3 border border-dashed border-stone-200 dark:border-white/10 rounded-md bg-stone-50/50 dark:bg-stone-900/10">
-                  <AlertCircle className="w-8 h-8 text-stone-400" />
-                  <div>
-                    <p className="text-sm font-semibold text-stone-600 dark:text-stone-300">
-                      No tracked issues
-                    </p>
-                    <p className="text-xs text-stone-400 mt-1">
-                      Go to repo discovery and label issues to track them.
-                    </p>
-                  </div>
-                  <Button asChild size="sm" variant="ghost" className="rounded-md">
-                    <Link to="/student/opensource/discover">
-                      Find issues <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                    </Link>
-                  </Button>
-                </div>
-              ) : (
-                activeIssues.map((issue) => (
-                  <ActiveIssueRow
-                    key={issue.id}
-                    issue={issue}
-                    onComplete={handleCompleteIssue}
-                    onAbandon={handleAbandonIssue}
+            {isMyRequestsLoading && (
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-10 bg-stone-100 dark:bg-stone-800 rounded-md animate-pulse"
                   />
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Program Countdown Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-                program countdown
+                ))}
               </div>
-              <Link
-                to="/student/opensource/programs"
-                className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-lime-500 transition-colors"
-              >
-                Track program deadlines &rarr;
-              </Link>
-            </div>
+            )}
 
-            <div className="flex-1 space-y-3">
-              <DeadlineCountdownRow title="GSoC 2026 Submission deadline" targetDate={gsocDeadline} />
-              <DeadlineCountdownRow title="LFX Fall Mentorship deadline" targetDate={lfxDeadline} />
-            </div>
-          </div>
-        </div>
+            {!isMyRequestsLoading && isMyRequestsError && (
+              <div className="flex items-center justify-between py-2 px-1">
+                <p className="text-sm text-red-500">Failed to load submissions</p>
+                <button
+                  type="button"
+                  onClick={() => refetchMyRequests()}
+                  className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent"
+                >
+                  Retry ↻
+                </button>
+              </div>
+            )}
 
-        {/* Community Pulse & Your Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Community Pulse Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-              community pulse
-            </div>
+            {!isMyRequestsLoading && !isMyRequestsError && myRequests?.length === 0 && (
+              <p className="text-sm text-stone-400 dark:text-stone-500 py-2">
+                You haven't suggested any repos yet.
+              </p>
+            )}
 
-            <div className="flex-1 space-y-4 pt-1">
-              {pulseFeed.map((item) => (
-                <div key={item.id} className="flex items-start gap-3">
-                  <div className="mt-0.5 p-1 bg-stone-100 dark:bg-stone-800 rounded-md shrink-0 border border-stone-200/30 dark:border-white/5">
-                    {item.icon}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-stone-700 dark:text-stone-300 font-medium">
-                      {item.text}
-                    </p>
-                    <span className="text-[10px] font-mono text-stone-400 mt-1 block">
-                      {item.time}
+            {!isMyRequestsLoading && !isMyRequestsError && myRequests && myRequests.length > 0 && (
+              <div className="space-y-2">
+                {(showAllSubmissions ? myRequests : myRequests.slice(0, 3)).map((req) => (
+                  <div
+                    key={req.id}
+                    className="flex items-center justify-between px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-sm text-stone-700 dark:text-stone-300 truncate font-medium">
+                        {req.owner}/{req.name}
+                      </span>
+                      <span className="text-xs text-stone-400 shrink-0">
+                        {new Date(req.createdAt).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    <span
+                      className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-md border shrink-0 ml-3 ${STATUS_STYLE[req.status] ?? STATUS_STYLE.PENDING}`}
+                    >
+                      {req.status}
                     </span>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+
+                {myRequests.length > 3 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllSubmissions((v) => !v)}
+                    className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
+                  >
+                    {showAllSubmissions ? "Show less ↑" : `Show all ${myRequests.length} →`}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Your Stats */}
+        <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
+          <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
+            your stats
           </div>
 
-          {/* Your Stats Card */}
-          <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              <div className="h-1.5 w-1.5 bg-lime-400 rounded-md" />
-              your stats
+          <div className="grid grid-cols-2 gap-4 flex-1">
+
+            {/* Box 1 */}
+            <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+                  Guides Complete
+                </span>
+                <BookOpen className="w-4 h-4 text-stone-400 dark:text-stone-500" />
+              </div>
+              <p className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-2">
+                {completedSteps}
+              </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 flex-1">
-              
-              {/* Box 1 */}
-              <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
-                    Guides Complete
-                  </span>
-                  <BookOpen className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-                </div>
-                <p className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-2">
-                  {completedSteps}
-                </p>
+            {/* Box 2 */}
+            <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+                  Bookmarked Repos
+                </span>
+                <Bookmark className="w-4 h-4 text-stone-400 dark:text-stone-500" />
               </div>
-
-              {/* Box 2 */}
-              <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
-                    Bookmarked Repos
-                  </span>
-                  <Bookmark className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-                </div>
-                <p className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-2">
-                  {bookmarks.length}
-                </p>
-              </div>
-
-              {/* Box 3 */}
-              <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
-                    Current Streak
-                  </span>
-                  <Flame className="w-4 h-4 text-lime-500" />
-                </div>
-                <p className="text-2xl font-bold text-lime-500 mt-2">
-                  {streakData?.currentStreak ?? 5} days
-                </p>
-              </div>
-
-              {/* Box 4 */}
-              <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
-                    Contributions
-                  </span>
-                  <Activity className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-                </div>
-                <p className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-2">
-                  {myRequestsData?.filter((r) => r.status === "APPROVED").length ?? 3}
-                </p>
-              </div>
-
+              <p className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-2">
+                {bookmarks.length}
+              </p>
             </div>
+
+            {/* Box 3 */}
+            <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+                  Current Streak
+                </span>
+                <Flame className="w-4 h-4 text-lime-500" />
+              </div>
+              <p className="text-2xl font-bold text-lime-500 mt-2">
+                {streakData?.currentStreak ?? 0} days
+              </p>
+            </div>
+
+            {/* Box 4 */}
+            <div className="p-4 bg-stone-100/70 dark:bg-stone-800/60 rounded-md border border-stone-200/50 dark:border-white/5 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+                  Contributions
+                </span>
+                <Activity className="w-4 h-4 text-stone-400 dark:text-stone-500" />
+              </div>
+              <p className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-2">
+                {myRequests?.filter((r) => r.status === "APPROVED").length ?? 0}
+              </p>
+            </div>
+
           </div>
         </div>
 
       </div>
+
+      <SuggestRepoModal open={showSuggestModal} onClose={() => setShowSuggestModal(false)} />
     </div>
   );
 }

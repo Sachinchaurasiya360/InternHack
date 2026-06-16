@@ -9,13 +9,13 @@ import {
   Download,
   Map as MapIcon,
   Loader2,
-  X,
   Zap,
   AlertTriangle,
   CheckCircle2,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import api from "../../../lib/axios";
 import toast from "../../../components/ui/toast";
 import type { RoadmapEnrollmentListItem, RoadmapEnrollmentAnalytics } from "../../../lib/types";
@@ -87,6 +87,10 @@ export default function RoadmapDashboardPage() {
         e.topicProgress.length > 0 &&
         e.topicProgress.every((p) => p.status === "COMPLETED")
       )
+  );
+
+  const selectedEnrollment = enrollments.find(
+    (e) => e.id === selectedRoadmapId
   );
 
   const downloadPdf = async (id: number, slug: string) => {
@@ -428,83 +432,6 @@ export default function RoadmapDashboardPage() {
                     >
                       Leave Roadmap
                     </Button>
-
-                    {deleteDialogOpen && selectedRoadmapId === e.id && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center">
-                        <div
-                          className="fixed inset-0 bg-black/50"
-                          aria-hidden="true"
-                        />
-
-                        <div
-                          role="alertdialog"
-                          aria-modal="true"
-                          aria-labelledby="delete-dialog-title"
-                          aria-describedby="delete-dialog-desc"
-                          className="relative z-50 w-full max-w-sm rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-6 shadow-xl"
-                        >
-                          <Button
-                            variant="ghost"
-                            mode="icon"
-                            size="sm"
-                            onClick={handleDeleteClose}
-                            aria-label="Close dialog"
-                            disabled={isDeleting}
-                            className="absolute top-4 right-4"
-                          >
-                            <X className="w-4 h-4" aria-hidden="true" />
-                          </Button>
-
-                          <h2
-                            id="delete-dialog-title"
-                            className="text-lg font-bold text-gray-950 dark:text-white pr-8"
-                          >
-                            Leave Roadmap?
-                          </h2>
-                          <div
-                            id="delete-dialog-desc"
-                            className="mt-2 text-sm text-gray-600 dark:text-gray-400"
-                          >
-                            <p>
-                              <strong>
-                                Leaving "{e.roadmap.title}" will permanently
-                                erase all saved progress and topic completion
-                                data.
-                              </strong>
-                            </p>
-                            <p className="mt-1">
-                              Are you sure you want to leave this roadmap?
-                            </p>
-                          </div>
-
-                          <div className="mt-6 flex justify-end gap-3">
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={handleDeleteClose}
-                              disabled={isDeleting}
-                            >
-                              No
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={handleDeleteYes}
-                              disabled={isDeleting}
-                            >
-                              {isDeleting ? (
-                                <Loader2
-                                  className="w-4 h-4 animate-spin"
-                                  aria-hidden="true"
-                                />
-                              ) : (
-                                "Yes, leave"
-                              )}
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </motion.article>
@@ -512,6 +439,30 @@ export default function RoadmapDashboardPage() {
           })}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        title="Leave Roadmap?"
+        confirmLabel="Yes, leave"
+        cancelLabel="No"
+        confirmVariant="danger"
+        loading={isDeleting}
+        onCancel={handleDeleteClose}
+        onConfirm={handleDeleteYes}
+      >
+        {selectedEnrollment && (
+          <div className="space-y-4">
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+              <strong className="font-semibold text-stone-900 dark:text-white">
+                Leaving "{selectedEnrollment.roadmap.title}" will permanently erase all saved progress and topic completion data.
+              </strong>
+            </p>
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+              Are you sure you want to leave this roadmap?
+            </p>
+          </div>
+        )}
+      </ConfirmDialog>
     </main>
   );
 }

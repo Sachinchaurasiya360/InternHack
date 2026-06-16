@@ -1814,7 +1814,7 @@ export default function ProgramTrackerPage() {
 
   const trackedSlugs = useMemo(() => {
     if (!trackedData) return new Set<string>();
-    return new Set(trackedData.map((p: any) => p.slug));
+    return new Set(trackedData.map((p) => p.slug));
   }, [trackedData]);
 
   const [search, setSearch] = useState("");
@@ -1844,7 +1844,7 @@ export default function ProgramTrackerPage() {
 
   const programsSource = useMemo(() => {
     if (serverPrograms && serverPrograms.length > 0) {
-      return serverPrograms.map((p: any) => ({
+      return serverPrograms.map((p) => ({
         ...p,
         status: p.window === "Ongoing" ? "Ongoing" : "Annual",
         eligibilityType: p.eligibilityType || "Open to All",
@@ -1937,54 +1937,6 @@ export default function ProgramTrackerPage() {
         ogImage="/og/og-programs.png"
         structuredData={programEventsSchema}
       />
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 mb-8 p-8">
-        <div className="relative">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-md bg-emerald-500 flex items-center justify-center shadow-lg">
-              <GraduationCap className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
-                Open Source Program Tracker
-              </h1>
-              <p className="text-sm text-emerald-700">
-                Track deadlines, stipends, and how to apply for every major
-                program
-              </p>
-            </div>
-          </div>
-          <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl mb-6 leading-relaxed">
-            All major open source programs in one place - with deadlines,
-            stipends, eligibility, and step-by-step application guides. Set
-            reminders and apply before windows close.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { label: "Programs Listed", value: programsSource.length },
-              { label: "Paid Programs", value: totalStipend },
-              { label: "High Stipend ($5k+)", value: highStipend },
-              {
-                label: "Diversity Programs",
-                value: programsSource.filter(
-                  (p: any) => p.eligibilityType === "Diversity-focused",
-                ).length,
-              },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="bg-white/70 dark:bg-stone-900/70 rounded-md px-4 py-2 border border-emerald-100 dark:border-emerald-800"
-              >
-                <p className="text-lg font-bold text-stone-900 dark:text-white leading-none">
-                  {s.value}
-                </p>
-                <p className="text-xs text-stone-500 mt-0.5">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Hero ──────────────────────────────────────────── */}
       <div className="relative border-b border-stone-200 dark:border-white/10 pb-10 mb-8 overflow-hidden">
         <div

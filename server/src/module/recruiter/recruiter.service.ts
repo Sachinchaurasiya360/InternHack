@@ -14,7 +14,7 @@ const S3_BUCKET = process.env["AWS_S3_BUCKET"] || "";
 
 // isArchived and ossTier exist in the Prisma schema but the IDE's @prisma/client typegen
 // may be stale until TS server restarts. Cast narrowly to bypass IDE errors.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const anyRound = prisma.round as any;
 function isValidS3Url(url: string) {
   try {
@@ -210,7 +210,7 @@ export class RecruiterService {
     if (!round || round.jobId !== jobId) throw new Error("Round not found");
 
     await prisma.$transaction(async (tx) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const txRound = tx.round as any;
 
       // Archive the round and then re-index the remaining active rounds atomically.
@@ -452,7 +452,7 @@ export class RecruiterService {
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const txRound = tx.round as any;
       const rounds = (await txRound.findMany({
           where: { jobId: application.jobId, isArchived: false },
