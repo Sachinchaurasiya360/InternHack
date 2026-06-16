@@ -114,32 +114,7 @@ export default function CompanyDetailPage() {
     error: companyError 
   } = useQuery<Company>({
     queryKey: queryKeys.companies.detail(slug!),
-    queryFn: async () => {
-      if (slug === "demo") {
-        return {
-          id: 1,
-          name: "Quantum Computing Labs",
-          slug: "demo",
-          description: "Quantum Computing Labs is at the forefront of next-generation computing architectures. We build scalable quantum processors to solve the world's most complex problems.",
-          industry: "Quantum Computing",
-          city: "San Francisco",
-          state: "CA",
-          size: "STARTUP",
-          foundedYear: 2021,
-          avgRating: 4.8,
-          reviewCount: 12,
-          website: "https://example.com",
-          logo: "https://api.dicebear.com/7.x/shapes/svg?seed=Quantum",
-          photos: [],
-          technologies: ["React", "TypeScript", "Python", "Q#", "C++"],
-          socialLinks: { linkedin: "https://linkedin.com", twitter: "https://twitter.com" },
-          hiringStatus: true,
-          contacts: [],
-          mission: "To bring quantum supremacy to everyday computing.",
-        } as unknown as Company;
-      }
-      return api.get(`/companies/${slug}`).then((r) => r.data.company);
-    },
+    queryFn: () => api.get(`/companies/${slug}`).then((r) => r.data.company),
     enabled: !!slug,
     staleTime: 15 * 60 * 1000,
   });
@@ -152,10 +127,7 @@ export default function CompanyDetailPage() {
     refetch: refetchReviews,
   } = useQuery<{ reviews: CompanyReview[] }>({
     queryKey: [...queryKeys.companies.reviews(slug!), sortBy],
-    queryFn: async () => {
-      if (slug === "demo") return { reviews: [] };
-      return api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data);
-    },
+    queryFn: () => api.get(`/companies/${slug}/reviews?sort=${sortBy}`).then((r) => r.data),
     enabled: !!slug,
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
