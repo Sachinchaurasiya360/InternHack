@@ -53,13 +53,19 @@ export class AmbassadorService {
     });
     const reposContributed = githubRepoCount + approvedRepos;
 
-    const allUsers = await prisma.githubConnection.findMany({
-      where: { reposContributed: { gt: 0 } },
-      select: { userId: true, reposContributed: true },
-      orderBy: { reposContributed: "desc" },
-    });
-    const rankIndex = allUsers.findIndex((u) => u.userId === userId);
-    const leaderboardRank = rankIndex >= 0 ? rankIndex + 1 : null;
+    // Compute rank in a single SQL statement using ROW_NUMBER() rather than
+    // loading all rows into memory (avoids N connections in the cron loop).
+    const rankRows = await prisma.$queryRaw<{ rank: bigint }[]>`
+      SELECT rank
+      FROM (
+        SELECT "userId",
+               ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
+        FROM   "githubConnection"
+        WHERE  "reposContributed" > 0
+      ) ranked
+      WHERE "userId" = ${userId}
+    `;
+    const leaderboardRank = rankRows.length > 0 ? Number(rankRows[0]!.rank) : null;
     const inTop100 = leaderboardRank !== null && leaderboardRank <= 100;
 
     const accountAgeOk = accountAgeDays >= 30;
@@ -220,17 +226,19 @@ export class AmbassadorService {
     });
     if (!link) return null;
 
-    const existing = await prisma.referralConversion.findUnique({
-      where: { referredUserId },
-    });
-    if (existing) return null;
-
-    await prisma.referralConversion.create({
-      data: {
-        referralLinkId: link.id,
-        referredUserId,
-      },
-    });
+    // upsert is atomic — concurrent sign-ups won't both pass the existence
+    // check and then collide on the unique constraint.
+    try {
+      await prisma.referralConversion.upsert({
+        where: { referredUserId },
+        update: {},
+        create: { referralLinkId: link.id, referredUserId },
+      });
+    } catch (err) {
+      // Swallow unique-violation races; never surface to the caller
+      console.error("[Ambassador] referralConversion upsert race:", err);
+      return null;
+    }
 
     return link.ambassadorId;
   }
@@ -371,6 +379,10 @@ export class AmbassadorService {
       orderBy: { createdAt: "desc" },
       include: { reviewer: { select: { id: true, name: true } } },
     });
+  }
+
+  async getShareById(shareId: number) {
+    return prisma.ambassadorShare.findUnique({ where: { id: shareId } });
   }
 
   async submitShare(ambassadorId: number, platform: string, url: string, description?: string) {

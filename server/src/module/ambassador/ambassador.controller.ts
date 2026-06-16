@@ -123,12 +123,13 @@ export class AmbassadorController {
 
   async listAmbassadors(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await ambassadorService.listAmbassadors({
-        status: paramStr(req, "status"),
-        search: paramStr(req, "search"),
-        page: paramInt(req, "page", 1),
-        limit: paramInt(req, "limit", 20),
-      });
+      const { ambassadorQuerySchema } = await import("./ambassador.validation.js");
+      const parsed = ambassadorQuerySchema.safeParse(req.query);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Invalid query params", errors: parsed.error.flatten() });
+        return;
+      }
+      const result = await ambassadorService.listAmbassadors(parsed.data);
       res.json(result);
     } catch (err) {
       next(err);
@@ -173,8 +174,14 @@ export class AmbassadorController {
 
   async reviewShare(req: Request, res: Response, next: NextFunction) {
     try {
+      const shareId = paramId(req);
+      const existing = await ambassadorService.getShareById(shareId);
+      if (!existing) {
+        res.status(404).json({ message: "Share not found" });
+        return;
+      }
       const share = await ambassadorService.reviewShare(
-        paramId(req),
+        shareId,
         req.body.status,
         req.user!.id,
         req.body.adminNotes,
@@ -245,10 +252,10 @@ export class AmbassadorController {
 
   async getTopReferrers(req: Request, res: Response, next: NextFunction) {
     try {
-      const top = await ambassadorService.getTopReferrers(
-        paramStr(req, "month"),
-        typeof req.query["year"] === "string" ? parseInt(req.query["year"], 10) : undefined,
-      );
+      const month = paramStr(req, "month");
+      const yearRaw = req.query["year"];
+      const year = typeof yearRaw === "string" && /^\d{4}$/.test(yearRaw) ? parseInt(yearRaw, 10) : undefined;
+      const top = await ambassadorService.getTopReferrers(month, year);
       res.json({ topReferrers: top });
     } catch (err) {
       next(err);

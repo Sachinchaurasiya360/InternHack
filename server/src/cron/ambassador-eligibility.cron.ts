@@ -57,13 +57,18 @@ async function checkAndEnrollAmbassadors(): Promise<void> {
 
     if (reposContributed < 3) continue;
 
-    const allUsers = await prisma.githubConnection.findMany({
-      where: { reposContributed: { gt: 0 } },
-      select: { userId: true, reposContributed: true },
-      orderBy: { reposContributed: "desc" },
-    });
-    const rankIndex = allUsers.findIndex((u) => u.userId === user.id);
-    const leaderboardRank = rankIndex >= 0 ? rankIndex + 1 : null;
+    // Single SQL statement — avoids scanning all rows per user in the loop.
+    const rankRows = await prisma.$queryRaw<{ rank: bigint }[]>`
+      SELECT rank
+      FROM (
+        SELECT "userId",
+               ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
+        FROM   "githubConnection"
+        WHERE  "reposContributed" > 0
+      ) ranked
+      WHERE "userId" = ${user.id}
+    `;
+    const leaderboardRank = rankRows.length > 0 ? Number(rankRows[0]!.rank) : null;
     const inTop100 = leaderboardRank !== null && leaderboardRank <= 100;
 
     if (!inTop100) continue;
