@@ -58,43 +58,45 @@ export class StudyBuddyService {
           { studentBId: userId },
         ],
       },
-      include: {
-        studentA: {
+      select: {
+        studentAId: true,
+        studentBId: true,
+        matchedAt: true,
+      },
+    });
+
+    if (!pair) return null;
+
+    const buddyId = pair.studentAId === userId ? pair.studentBId : pair.studentAId;
+
+    const buddyUser = await prisma.user.findUnique({
+      where: { id: buddyId },
+      select: {
+        id: true,
+        name: true,
+        profilePic: true,
+        college: true,
+        roadmapEnrollments: {
+          where: { roadmapId },
           select: {
-            id: true,
-            name: true,
-            profilePic: true,
-            college: true,
-            roadmapEnrollments: {
-              where: { roadmapId },
-              include: { topicProgress: true, roadmap: { select: { topicCount: true } } },
-            },
-          },
-        },
-        studentB: {
-          select: {
-            id: true,
-            name: true,
-            profilePic: true,
-            college: true,
-            roadmapEnrollments: {
-              where: { roadmapId },
-              include: { topicProgress: true, roadmap: { select: { topicCount: true } } },
+            experienceLevel: true,
+            currentStreak: true,
+            roadmap: { select: { topicCount: true } },
+            topicProgress: {
+              where: { status: "COMPLETED" },
+              select: { id: true },
             },
           },
         },
       },
     });
 
-    if (!pair) return null;
+    if (!buddyUser) return null;
 
-    const isA = pair.studentAId === userId;
-    const buddyUser = isA ? pair.studentB : pair.studentA;
     const buddyEnrollment = buddyUser.roadmapEnrollments[0];
-
     if (!buddyEnrollment) return null;
 
-    const completedTopics = buddyEnrollment.topicProgress.filter((p) => p.status === "COMPLETED").length;
+    const completedTopics = buddyEnrollment.topicProgress.length;
     const totalCount = buddyEnrollment.roadmap.topicCount;
     const percentComplete = totalCount === 0 ? 0 : Math.round((completedTopics / totalCount) * 100);
 
@@ -207,9 +209,79 @@ export class StudyBuddyService {
    * Implementation of matching algorithm.
    */
   async findAndCreateMatch(userId: number, roadmapId: number) {
-    return prisma.$transaction(async (tx) => {
-      // 1. Check if user already has an active pairing
-      const existingPair = await tx.roadmapStudyBuddyPair.findFirst({
+    // 1. Check if user already has an active pairing (outside transaction)
+    const existingPair = await prisma.roadmapStudyBuddyPair.findFirst({
+      where: {
+        roadmapId,
+        active: true,
+        OR: [
+          { studentAId: userId },
+          { studentBId: userId },
+        ],
+      },
+    });
+    if (existingPair) return existingPair;
+
+    // 2. Fetch user enrollment & preferences (outside transaction)
+    const userEnrollment = await prisma.roadmapEnrollment.findUnique({
+      where: {
+        userId_roadmapId: { userId, roadmapId },
+      },
+      select: {
+        experienceLevel: true,
+        roadmap: { select: { topicCount: true } },
+        user: { select: { college: true } },
+        _count: {
+          select: {
+            topicProgress: {
+              where: { status: "COMPLETED" },
+            },
+          },
+        },
+      },
+    });
+    if (!userEnrollment) return null;
+
+    const preference = await prisma.roadmapStudyBuddyPreference.findUnique({
+      where: {
+        userId_roadmapId: { userId, roadmapId },
+      },
+    });
+    if (!preference || !preference.enabled) return null;
+
+    const preferSameCollege = preference.preferSameCollege;
+    const userCollege = userEnrollment.user.college;
+    const completedA = userEnrollment._count.topicProgress;
+    const totalTopics = userEnrollment.roadmap.topicCount;
+    const pctA = totalTopics === 0 ? 0 : Math.round((completedA / totalTopics) * 100);
+
+    // 3. Find immediate past buddy ID to exclude if possible (outside transaction)
+    const lastPair = await prisma.roadmapStudyBuddyPair.findFirst({
+      where: {
+        roadmapId,
+        active: false,
+        OR: [
+          { studentAId: userId },
+          { studentBId: userId },
+        ],
+      },
+      orderBy: { updatedAt: "desc" },
+      select: { studentAId: true, studentBId: true },
+    });
+    const lastBuddyId = lastPair
+      ? (lastPair.studentAId === userId ? lastPair.studentBId : lastPair.studentAId)
+      : null;
+
+    // 4. Fetch all active pairs to know who is already paired (outside transaction)
+    const activePairs = await prisma.roadmapStudyBuddyPair.findMany({
+      where: { roadmapId, active: true },
+      select: { studentAId: true, studentBId: true },
+    });
+    const pairedUserIds = new Set(activePairs.flatMap((p) => [p.studentAId, p.studentBId]));
+
+    // Double-check if the user themselves became paired concurrently
+    if (pairedUserIds.has(userId)) {
+      const currentActivePair = await prisma.roadmapStudyBuddyPair.findFirst({
         where: {
           roadmapId,
           active: true,
@@ -219,180 +291,163 @@ export class StudyBuddyService {
           ],
         },
       });
-      if (existingPair) return existingPair;
+      return currentActivePair;
+    }
 
-      // 2. Fetch user enrollment & preferences
-      const userEnrollment = await tx.roadmapEnrollment.findUnique({
-        where: {
-          userId_roadmapId: { userId, roadmapId },
+    // 5. Query candidate roadmap enrollments in same roadmap (outside transaction, using filtered _count)
+    const candidates = await prisma.roadmapEnrollment.findMany({
+      where: {
+        roadmapId,
+        status: "ACTIVE",
+        userId: { not: userId },
+        user: {
+          isActive: true,
+          studyBuddyPreferences: {
+            some: {
+              roadmapId,
+              enabled: true,
+            },
+          },
         },
-        include: {
-          topicProgress: true,
-          roadmap: { select: { topicCount: true } },
-          user: { select: { college: true } },
+      },
+      select: {
+        userId: true,
+        experienceLevel: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            college: true,
+            studyBuddyPreferences: {
+              where: { roadmapId },
+            },
+          },
         },
-      });
-      if (!userEnrollment) return null;
-
-      const preference = await tx.roadmapStudyBuddyPreference.findUnique({
-        where: {
-          userId_roadmapId: { userId, roadmapId },
+        _count: {
+          select: {
+            topicProgress: {
+              where: { status: "COMPLETED" },
+            },
+          },
         },
-      });
-      if (!preference || !preference.enabled) return null;
+      },
+    });
 
-      const preferSameCollege = preference.preferSameCollege;
-      const userCollege = userEnrollment.user.college;
-      const completedA = userEnrollment.topicProgress.filter((p) => p.status === "COMPLETED").length;
-      const totalTopics = userEnrollment.roadmap.topicCount;
-      const pctA = totalTopics === 0 ? 0 : Math.round((completedA / totalTopics) * 100);
+    // Filter out candidates that are already paired
+    let eligibleCandidates = candidates.filter((c) => !pairedUserIds.has(c.userId));
 
-      // 3. Find immediate past buddy ID to exclude if possible
-      const lastPair = await tx.roadmapStudyBuddyPair.findFirst({
+    if (eligibleCandidates.length === 0) return null;
+
+    // Filter out immediate past buddy IF there are other eligible candidates
+    const nonPastCandidates = eligibleCandidates.filter((c) => c.userId !== lastBuddyId);
+    if (nonPastCandidates.length > 0) {
+      eligibleCandidates = nonPastCandidates;
+    }
+
+    // 6. Score candidates
+    const scored = eligibleCandidates.map((cand) => {
+      let score = 0;
+
+      // College match (Boost: +10 pts)
+      const candCollege = cand.user.college;
+      const candPref = cand.user.studyBuddyPreferences[0];
+      const hasCollegeMatch =
+        userCollege &&
+        candCollege &&
+        userCollege.toLowerCase().trim() === candCollege.toLowerCase().trim();
+
+      if (hasCollegeMatch && (preferSameCollege || (candPref && candPref.preferSameCollege))) {
+        score += 10;
+      }
+
+      // Progress percentage match (Boost: up to 50 pts)
+      const completedB = cand._count.topicProgress;
+      const pctB = totalTopics === 0 ? 0 : Math.round((completedB / totalTopics) * 100);
+      const pctDiff = Math.abs(pctA - pctB);
+      score += (1 - pctDiff / 100) * 50;
+
+      // Topic count match (Boost: up to 30 pts)
+      const countDiff = Math.abs(completedA - completedB);
+      score += Math.max(0, 30 - countDiff * 2);
+
+      // Experience level match (Boost: +20 pts)
+      if (userEnrollment.experienceLevel === cand.experienceLevel) {
+        score += 20;
+      }
+
+      return { candidate: cand, score };
+    });
+
+    // Sort descending by score
+    scored.sort((a, b) => b.score - a.score);
+
+    // 7. Short transaction for matching / creation
+    return prisma.$transaction(async (tx) => {
+      // Re-verify that current user hasn't been paired concurrently
+      const userActivePair = await tx.roadmapStudyBuddyPair.findFirst({
         where: {
           roadmapId,
-          active: false,
+          active: true,
           OR: [
             { studentAId: userId },
             { studentBId: userId },
           ],
         },
-        orderBy: { updatedAt: "desc" },
       });
-      const lastBuddyId = lastPair
-        ? (lastPair.studentAId === userId ? lastPair.studentBId : lastPair.studentAId)
-        : null;
+      if (userActivePair) return userActivePair;
 
-      // 4. Fetch all active pairs to know who is already paired
-      const activePairs = await tx.roadmapStudyBuddyPair.findMany({
-        where: { roadmapId, active: true },
-      });
-      const pairedUserIds = new Set(activePairs.flatMap((p) => [p.studentAId, p.studentBId]));
+      for (const item of scored) {
+        const bestMatch = item.candidate;
+        if (userId === bestMatch.userId) continue;
 
-      // Double-check if the user themselves became paired concurrently
-      if (pairedUserIds.has(userId)) {
-        const currentActivePair = await tx.roadmapStudyBuddyPair.findFirst({
+        // Re-verify that candidate is not already paired concurrently
+        const isBuddyStillAvailable = await tx.roadmapStudyBuddyPair.findFirst({
           where: {
             roadmapId,
             active: true,
             OR: [
-              { studentAId: userId },
-              { studentBId: userId },
+              { studentAId: bestMatch.userId },
+              { studentBId: bestMatch.userId },
             ],
           },
         });
-        return currentActivePair;
-      }
 
-      // 5. Query candidate roadmap enrollments in same roadmap
-      const candidates = await tx.roadmapEnrollment.findMany({
-        where: {
-          roadmapId,
-          status: "ACTIVE",
-          userId: { not: userId },
-          user: {
-            isActive: true,
-            studyBuddyPreferences: {
-              some: {
+        if (!isBuddyStillAvailable) {
+          try {
+            return await tx.roadmapStudyBuddyPair.create({
+              data: {
                 roadmapId,
-                enabled: true,
+                studentAId: userId,
+                studentBId: bestMatch.userId,
+                active: true,
               },
-            },
-          },
-        },
-        include: {
-          topicProgress: true,
-          roadmap: { select: { topicCount: true } },
-          user: {
-            select: {
-              id: true,
-              name: true,
-              college: true,
-              studyBuddyPreferences: {
-                where: { roadmapId },
-              },
-            },
-          },
-        },
-      });
-
-      // Filter out candidates that are already paired
-      let eligibleCandidates = candidates.filter((c) => !pairedUserIds.has(c.userId));
-
-      if (eligibleCandidates.length === 0) return null;
-
-      // Filter out immediate past buddy IF there are other eligible candidates
-      const nonPastCandidates = eligibleCandidates.filter((c) => c.userId !== lastBuddyId);
-      if (nonPastCandidates.length > 0) {
-        eligibleCandidates = nonPastCandidates;
+            });
+          } catch (error: any) {
+            // Unhandled unique-violation race: P2002
+            if (error.code === "P2002") {
+              // Check if user themselves got paired concurrently
+              const concurrentUserPair = await tx.roadmapStudyBuddyPair.findFirst({
+                where: {
+                  roadmapId,
+                  active: true,
+                  OR: [
+                    { studentAId: userId },
+                    { studentBId: userId },
+                  ],
+                },
+              });
+              if (concurrentUserPair) {
+                return concurrentUserPair;
+              }
+              // Buddy got paired, try the next one in the sorted candidate list
+              continue;
+            }
+            throw error;
+          }
+        }
       }
 
-      // 6. Score candidates
-      const scored = eligibleCandidates.map((cand) => {
-        let score = 0;
-
-        // College match (Boost: +10 pts)
-        const candCollege = cand.user.college;
-        const candPref = cand.user.studyBuddyPreferences[0];
-        const hasCollegeMatch =
-          userCollege &&
-          candCollege &&
-          userCollege.toLowerCase().trim() === candCollege.toLowerCase().trim();
-
-        if (hasCollegeMatch && (preferSameCollege || (candPref && candPref.preferSameCollege))) {
-          score += 10;
-        }
-
-        // Progress percentage match (Boost: up to 50 pts)
-        const completedB = cand.topicProgress.filter((p) => p.status === "COMPLETED").length;
-        const pctB = cand.roadmap.topicCount === 0 ? 0 : Math.round((completedB / cand.roadmap.topicCount) * 100);
-        const pctDiff = Math.abs(pctA - pctB);
-        score += (1 - pctDiff / 100) * 50;
-
-        // Topic count match (Boost: up to 30 pts)
-        const countDiff = Math.abs(completedA - completedB);
-        score += Math.max(0, 30 - countDiff * 2);
-
-        // Experience level match (Boost: +20 pts)
-        if (userEnrollment.experienceLevel === cand.experienceLevel) {
-          score += 20;
-        }
-
-        return { candidate: cand, score };
-      });
-
-      // Sort descending by score
-      scored.sort((a, b) => b.score - a.score);
-
-      const bestMatch = scored[0]?.candidate;
-      if (!bestMatch) return null;
-
-      // 7. Create pair (prevent duplicate check and self-pairing)
-      if (userId === bestMatch.userId) return null;
-
-      // Re-verify that candidate is not already paired concurrently
-      const isBuddyStillAvailable = await tx.roadmapStudyBuddyPair.findFirst({
-        where: {
-          roadmapId,
-          active: true,
-          OR: [
-            { studentAId: bestMatch.userId },
-            { studentBId: bestMatch.userId },
-          ],
-        },
-      });
-      if (isBuddyStillAvailable) {
-        return null;
-      }
-
-      return tx.roadmapStudyBuddyPair.create({
-        data: {
-          roadmapId,
-          studentAId: userId,
-          studentBId: bestMatch.userId,
-          active: true,
-        },
-      });
-    }, { timeout: 30000 });
+      return null;
+    }, { timeout: 5000 });
   }
 }

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { StudyBuddyService } from "../study-buddy.service.js";
-import { prisma } from "../../../database/db.js";
+import { StudyBuddyService } from "../module/roadmap/study-buddy.service.js";
+import { prisma } from "../database/db.js";
 
 // Mock the prisma dependency
-vi.mock("../../../database/db.js", () => {
+vi.mock("../database/db.js", () => {
   const mockPrisma = {
     $transaction: vi.fn(async (cb) => cb(mockPrisma)),
     roadmapStudyBuddyPreference: {
@@ -19,6 +19,9 @@ vi.mock("../../../database/db.js", () => {
     roadmapEnrollment: {
       findUnique: vi.fn(),
       findMany: vi.fn(),
+    },
+    user: {
+      findUnique: vi.fn(),
     },
   };
   return { prisma: mockPrisma };
@@ -75,27 +78,28 @@ describe("StudyBuddyService", () => {
         studentBId: 2,
         matchedAt: new Date(),
         active: true,
-        studentB: {
-          id: 2,
-          name: "Buddy User",
-          profilePic: "pic.jpg",
-          college: "Stanford University",
-          roadmapEnrollments: [
-            {
-              experienceLevel: "BEGINNER",
-              currentStreak: 5,
-              roadmap: { topicCount: 10 },
-              topicProgress: [
-                { status: "COMPLETED" },
-                { status: "COMPLETED" },
-                { status: "IN_PROGRESS" },
-              ],
-            },
-          ],
-        },
+      };
+
+      const mockBuddyUser = {
+        id: 2,
+        name: "Buddy User",
+        profilePic: "pic.jpg",
+        college: "Stanford University",
+        roadmapEnrollments: [
+          {
+            experienceLevel: "BEGINNER",
+            currentStreak: 5,
+            roadmap: { topicCount: 10 },
+            topicProgress: [
+              { id: 1 },
+              { id: 2 },
+            ],
+          },
+        ],
       };
 
       vi.mocked(prisma.roadmapStudyBuddyPair.findFirst).mockResolvedValue(mockPair as any);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(mockBuddyUser as any);
 
       const res = await service.getActiveBuddyDetails(1, 10);
       expect(res).toEqual({
@@ -119,27 +123,29 @@ describe("StudyBuddyService", () => {
         studentBId: 1,
         matchedAt: new Date(),
         active: true,
-        studentA: {
-          id: 3,
-          name: "Other Buddy",
-          profilePic: null,
-          college: null,
-          roadmapEnrollments: [
-            {
-              experienceLevel: "ADVANCED",
-              currentStreak: 0,
-              roadmap: { topicCount: 5 },
-              topicProgress: [
-                { status: "COMPLETED" },
-                { status: "COMPLETED" },
-                { status: "COMPLETED" },
-              ],
-            },
-          ],
-        },
+      };
+
+      const mockBuddyUser = {
+        id: 3,
+        name: "Other Buddy",
+        profilePic: null,
+        college: null,
+        roadmapEnrollments: [
+          {
+            experienceLevel: "ADVANCED",
+            currentStreak: 0,
+            roadmap: { topicCount: 5 },
+            topicProgress: [
+              { id: 1 },
+              { id: 2 },
+              { id: 3 },
+            ],
+          },
+        ],
       };
 
       vi.mocked(prisma.roadmapStudyBuddyPair.findFirst).mockResolvedValue(mockPair as any);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(mockBuddyUser as any);
 
       const res = await service.getActiveBuddyDetails(1, 10);
       expect(res).toEqual({
@@ -270,10 +276,9 @@ describe("StudyBuddyService", () => {
         roadmapId: 10,
         experienceLevel: "BEGINNER",
         roadmap: { topicCount: 10 },
-        topicProgress: [
-          { status: "COMPLETED" }, { status: "COMPLETED" },
-          { status: "COMPLETED" }, { status: "COMPLETED" },
-        ],
+        _count: {
+          topicProgress: 4,
+        },
         user: { college: "Harvard" },
       };
       vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue(mockUserEnrollment as any);
@@ -291,10 +296,9 @@ describe("StudyBuddyService", () => {
           userId: 2,
           experienceLevel: "BEGINNER",
           roadmap: { topicCount: 10 },
-          topicProgress: [
-            { status: "COMPLETED" }, { status: "COMPLETED" },
-            { status: "COMPLETED" }, { status: "COMPLETED" },
-          ], // 4 completed (perfect progress match)
+          _count: {
+            topicProgress: 4,
+          }, // 4 completed (perfect progress match)
           user: {
             id: 2,
             name: "Perfect Match College",
@@ -306,9 +310,9 @@ describe("StudyBuddyService", () => {
           userId: 3,
           experienceLevel: "ADVANCED",
           roadmap: { topicCount: 10 },
-          topicProgress: [
-            { status: "COMPLETED" },
-          ], // 1 completed
+          _count: {
+            topicProgress: 1,
+          }, // 1 completed
           user: {
             id: 3,
             name: "Weak Match",
