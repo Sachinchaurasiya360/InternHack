@@ -141,6 +141,20 @@ export default function InterviewSectionPage() {
               {section.title}
             </h1>
             <p className="mt-3 text-sm text-stone-500 max-w-xl">{section.description}</p>
+            {sectionSlug === "behavioral-interview" && (
+              <div className="mt-4 p-4 border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-sm font-bold text-stone-950 dark:text-white">AI STAR Method Trainer</h4>
+                  <p className="text-xs text-stone-500">Practice your behavioral responses step-by-step and get instant AI-powered validation.</p>
+                </div>
+                <Link
+                  to="/learn/interview/behavioral-interview/trainer"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-lime-500 hover:bg-lime-600 text-stone-950 font-semibold text-xs transition-colors shrink-0"
+                >
+                  Launch AI Trainer →
+                </Link>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3 sm:gap-4 flex-wrap text-[10px] font-mono uppercase tracking-widest text-stone-500">
             <span>

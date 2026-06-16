@@ -14,7 +14,7 @@ interface CertificateMeta {
 }
 
 export default function RoadmapCertificatePage() {
-  const { slug, enrollmentId } = useParams();
+  const { slug, shareToken } = useParams();
 
   const [data, setData] = useState<CertificateMeta | null>(null);
   const [copied, setCopied] = useState(false);
@@ -24,7 +24,7 @@ export default function RoadmapCertificatePage() {
     async function fetchCertificate() {
       try {
         const res = await api.get(
-          `/roadmaps/certificates/${slug}/${enrollmentId}/meta`
+          `/roadmaps/certificates/${slug}/${shareToken}/meta`
         );
         setData(res.data);
       } catch {
@@ -33,12 +33,12 @@ export default function RoadmapCertificatePage() {
     }
 
     fetchCertificate();
-  }, [slug, enrollmentId]);
+  }, [slug, shareToken]);
   if (error) {
   return (
     <div className="min-h-screen bg-white dark:bg-stone-900 flex items-center justify-center px-4">
       <div className="text-center">
-        <p className="text-stone-600 dark:text-stone-400 mb-4">Failed to load certificate</p>
+        <p className="text-stone-600 dark:text-stone-400 mb-4">Certificate not found or link is invalid</p>
         <button onClick={() => window.location.reload()} className="text-lime-400 hover:underline">
           Retry
         </button>

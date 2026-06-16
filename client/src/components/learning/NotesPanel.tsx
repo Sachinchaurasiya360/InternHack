@@ -48,9 +48,9 @@ export const NotesPanel = React.memo(function NotesPanel({
             typeof err === "object" &&
             err !== null &&
             "response" in err &&
-            typeof (err as any).response === "object" &&
-            (err as any).response !== null
-              ? (err as any).response.status
+            typeof (err as { response?: unknown }).response === "object" &&
+            (err as { response?: unknown }).response !== null
+              ? (err as { response: { status?: number } }).response.status
               : undefined;
           if (status === 404) {
             setNote("");
@@ -100,7 +100,7 @@ export const NotesPanel = React.memo(function NotesPanel({
         typeof err === "object" &&
         err !== null &&
         "name" in err &&
-        ((err as any).name === "CanceledError" || (err as any).name === "AbortError")
+        ((err as { name?: string }).name === "CanceledError" || (err as { name?: string }).name === "AbortError")
       ) {
         return;
       }

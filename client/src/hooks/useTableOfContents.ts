@@ -80,6 +80,7 @@ export function useTableOfContents(
     const storageKey = `${STORAGE_PREFIX}:${lessonId}`;
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- reset active section when the section list changes
         setActiveId(items[0]?.id ?? null);
     }, [items]);
 
@@ -92,6 +93,7 @@ export function useTableOfContents(
             const stored = JSON.parse(window.localStorage.getItem(storageKey) ?? "[]");
             if (Array.isArray(stored)) {
                 const valid = stored.filter((item) => typeof item === "string" && items.some((toc) => toc.id === item));
+                // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate checked sections from localStorage
                 setCheckedIds(valid);
             }
         } catch {
@@ -101,6 +103,7 @@ export function useTableOfContents(
 
     useEffect(() => {
         if (items.length === 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- clear active section when there are none
             setActiveId(null);
             return;
         }

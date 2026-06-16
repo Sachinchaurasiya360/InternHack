@@ -70,7 +70,8 @@ const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/Gov
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
 const CertificateViewPage = lazyWithRetry(() => import("./module/student/opensource/CertificateViewPage"));
-const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage")); 
+const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage"));
+const BehavioralTrainerPage = lazyWithRetry(() => import("./module/student/behavioral/BehavioralTrainerPage"));
 
 // Legal pages
 const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
@@ -382,7 +383,7 @@ function App() {
             <Route path="/roadmaps/generate" element={<ProtectedRoute role="STUDENT"><AiRoadmapWizardPage /></ProtectedRoute>} />
             <Route path="/roadmaps/:slug/enroll" element={<ProtectedRoute role="STUDENT"><RoadmapEnrollPage /></ProtectedRoute>} />
             <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
-            <Route path="/learn/roadmaps/certificates/:slug/:enrollmentId" element={<RoadmapCertificatePage />}/>
+            <Route path="/learn/roadmaps/certificates/:slug/:shareToken" element={<RoadmapCertificatePage />}/>
             <Route path="/learn/roadmaps/certificates" element={<ProtectedRoute role="STUDENT"><RoadmapCertificatesGalleryPage /></ProtectedRoute>}/>
             <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
             <Route path="/blog" element={<BlogListPage />} />
@@ -480,6 +481,7 @@ function App() {
               <Route path="exam-prep/:examId/mock" element={<ExamMockPage />} />
               <Route path="exam-prep/:examId/section/:sectionId" element={<ExamSectionPage />} />
               <Route path="interview" element={<InterviewLessonsPage />} />
+              <Route path="interview/behavioral-interview/trainer" element={<BehavioralTrainerPage />} />
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
               <Route path="notes" element={<ProtectedRoute role="STUDENT"><NotesDashboardPage /></ProtectedRoute>} />

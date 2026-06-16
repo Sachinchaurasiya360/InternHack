@@ -65,7 +65,7 @@ function Particle({
 // ── Main modal component ────────────────────────────────────────────────────
 interface RoadmapCompletionModalProps {
   roadmapName: string;
-  enrollmentId: string;
+  shareToken: string;
   roadmapSlug: string;
   onClose: () => void;
 }
@@ -89,7 +89,7 @@ const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
 
 export default function RoadmapCompletionModal({
   roadmapName,
-  enrollmentId,
+  shareToken,
   roadmapSlug,
   onClose,
 }: RoadmapCompletionModalProps) {
@@ -121,10 +121,10 @@ export default function RoadmapCompletionModal({
   const linkedInUrl = encodeURIComponent("https://www.internhack.xyz");
 
   const certificateUrl =
-  `${window.location.origin}/api/roadmaps/me/enrollments/${enrollmentId}/certificate`;
+  `${window.location.origin}/api/roadmaps/certificates/${roadmapSlug}/${shareToken}`;
 
   const shareableCertificateUrl =
-    `${window.location.origin}/learn/roadmaps/certificates/${roadmapSlug}/${enrollmentId}`;
+    `${window.location.origin}/learn/roadmaps/certificates/${roadmapSlug}/${shareToken}`;
 
   const linkedInAddToProfileUrl =
     `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME` +
