@@ -15,6 +15,7 @@ import {
   topicSlugParam,
   updateProgressSchema,
   updateRoadmapSchema,
+  shareTokenSchema
 } from "./roadmap.validation.js";
 import {
   buildWeeklyPlan,
@@ -927,17 +928,19 @@ export async function getPublicCertificateMeta(
   try {
     const slug = req.params.slug;
 
-    const enrollmentId = Number(req.params.enrollmentId);
+    const shareToken = typeof req.params.shareToken === "string" ? req.params.shareToken : undefined;
 
     const parsed = roadmapSlugParam.safeParse({
       slug,
     });
 
-    if (!parsed.success || Number.isNaN(enrollmentId)) {
-      validationError(
+    const shareTokenParsed = shareTokenSchema.safeParse(shareToken);
+
+    if (!parsed.success || !shareTokenParsed.success) {     
+       validationError(
         res,
         parsed.success
-          ? { enrollmentId: ["Invalid enrollment id"] }
+          ? { shareToken: ["Invalid share token"] }
           : parsed.error.flatten().fieldErrors,
       );
       return;
@@ -945,7 +948,7 @@ export async function getPublicCertificateMeta(
 
     const enrollment = await prisma.roadmapEnrollment.findFirst({
       where: {
-        id: enrollmentId,
+        shareToken: shareTokenParsed.data,
         roadmap: {
           slug: parsed.data.slug,
         },
@@ -1003,8 +1006,8 @@ export async function getPublicCertificateMeta(
       roadmapTitle: enrollment.roadmap.title,
       roadmapSlug: enrollment.roadmap.slug,
       completedAt: latestCompletion,
-      certificateUrl: `/api/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.id}`,
-      shareUrl: `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.id}`,
+      certificateUrl: `/api/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.shareToken}`,
+      shareUrl: `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.shareToken}`,
     });
   } catch (err) {
     next(err);
@@ -1019,17 +1022,19 @@ export async function getPublicCertificate(
   try {
     const slug = req.params.slug;
 
-    const enrollmentId = Number(req.params.enrollmentId);
+    const shareToken = typeof req.params.shareToken === "string" ? req.params.shareToken : undefined;
 
     const parsed = roadmapSlugParam.safeParse({
       slug: slug,
     });
 
-    if (!parsed.success || Number.isNaN(enrollmentId)) {
-      validationError(
+    const shareTokenParsed = shareTokenSchema.safeParse(shareToken);
+
+    if (!parsed.success || !shareTokenParsed.success) {     
+       validationError(
         res,
         parsed.success
-          ? { enrollmentId: ["Invalid enrollment id"] }
+          ? { shareToken: ["Invalid share token"] }
           : parsed.error.flatten().fieldErrors,
       );
       return;
@@ -1037,7 +1042,7 @@ export async function getPublicCertificate(
 
     const enrollment = await prisma.roadmapEnrollment.findFirst({
       where: {
-        id: enrollmentId,
+        shareToken: shareTokenParsed.data,
         roadmap: {
           slug: parsed.data.slug,
         },
@@ -1151,14 +1156,14 @@ export async function getMyCertificates(
             ?.completedAt ?? new Date();
 
         return {
-          enrollmentId: enrollment.id,
+          shareToken: enrollment.shareToken,
           roadmapTitle: enrollment.roadmap.title,
           roadmapSlug: enrollment.roadmap.slug,
           completedAt: latestCompletion,
           certificateUrl:
             `/api/roadmaps/me/enrollments/${enrollment.id}/certificate`,
           shareUrl:
-            `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.id}`,
+            `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.shareToken}`,
         };
       })
       .filter(Boolean);

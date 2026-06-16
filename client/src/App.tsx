@@ -382,7 +382,7 @@ function App() {
             <Route path="/roadmaps/generate" element={<ProtectedRoute role="STUDENT"><AiRoadmapWizardPage /></ProtectedRoute>} />
             <Route path="/roadmaps/:slug/enroll" element={<ProtectedRoute role="STUDENT"><RoadmapEnrollPage /></ProtectedRoute>} />
             <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
-            <Route path="/learn/roadmaps/certificates/:slug/:enrollmentId" element={<RoadmapCertificatePage />}/>
+            <Route path="/learn/roadmaps/certificates/:slug/:shareToken" element={<RoadmapCertificatePage />}/>
             <Route path="/learn/roadmaps/certificates" element={<ProtectedRoute role="STUDENT"><RoadmapCertificatesGalleryPage /></ProtectedRoute>}/>
             <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
             <Route path="/blog" element={<BlogListPage />} />

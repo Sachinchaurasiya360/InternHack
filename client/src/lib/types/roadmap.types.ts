@@ -147,6 +147,7 @@ export interface RoadmapEnrollment {
   id: number;
   userId: number;
   roadmapId: number;
+  shareToken: string;
   hoursPerWeek: number;
   preferredDays: DayOfWeek[];
   startDate: string;
