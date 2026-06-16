@@ -1,14 +1,73 @@
+import { useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
-import { Clock, ArrowRight, Target, ChevronLeft, Play } from "lucide-react";
+import { Clock, ArrowRight, Target, ChevronLeft, Play, CheckCircle2, XCircle } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { getExam, getQuestionsForExam, getQuestionsForSection } from "./data/exams";
 
+interface ExamAttempt {
+  completedAt: string;
+  correct: number;
+  total: number;
+  scorePct: number;
+  passed: boolean;
+  mode: "mock" | "section";
+  sectionId?: string;
+}
+
 export default function ExamDetailPage() {
   const { examId } = useParams();
   const exam = getExam(examId ?? "");
+  
+  const [attempts, setAttempts] = useState<ExamAttempt[]>(() => {
+    try {
+      if (!exam) return [];
+      const raw = localStorage.getItem("exam-attempts-history");
+      if (raw) {
+        const history = JSON.parse(raw);
+        const examData = history[exam.id];
+        if (examData) {
+          let list = Array.isArray(examData.attempts) ? examData.attempts : [];
+          if (list.length === 0 && examData.completedAt) {
+            list = [
+              {
+                completedAt: examData.completedAt,
+                correct: examData.correct,
+                total: examData.total,
+                scorePct: examData.scorePct,
+                passed: examData.passed,
+                mode: examData.mode,
+                sectionId: examData.sectionId,
+              },
+            ];
+          }
+          return list;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to read exam history from localStorage", e);
+    }
+    return [];
+  });
+
   if (!exam) return <Navigate to="/learn/exam-prep" replace />;
+
+  const clearHistory = () => {
+    if (window.confirm("Are you sure you want to clear your attempt history for this exam?")) {
+      try {
+        const raw = localStorage.getItem("exam-attempts-history");
+        if (raw) {
+          const history = JSON.parse(raw);
+          delete history[exam.id];
+          localStorage.setItem("exam-attempts-history", JSON.stringify(history));
+          setAttempts([]);
+        }
+      } catch (e) {
+        console.error("Failed to clear exam history from localStorage", e);
+      }
+    }
+  };
 
   const totalQuestions = getQuestionsForExam(exam.id).length;
 
@@ -117,6 +176,65 @@ export default function ExamDetailPage() {
           );
         })}
       </div>
+
+      {attempts.length > 0 && (
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
+            <h2 className="text-sm font-bold text-gray-950 dark:text-white">Attempt History</h2>
+            <button
+              onClick={clearHistory}
+              className="text-[10px] text-red-500 hover:text-red-600 font-semibold uppercase tracking-wider"
+            >
+              Clear History
+            </button>
+          </div>
+          <div className="space-y-2.5">
+            {attempts.map((att, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-5 py-3.5 text-xs shadow-xs"
+              >
+                <div className="flex items-center gap-3">
+                  {att.passed ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-amber-500 shrink-0" />
+                  )}
+                  <div>
+                    <span className="font-bold text-gray-800 dark:text-gray-200">
+                      {att.mode === "mock"
+                        ? "Full Mock Test"
+                        : `Section: ${exam.sections.find((s) => s.id === att.sectionId)?.name || att.sectionId}`}
+                    </span>
+                    <span className="text-gray-400 ml-2 font-mono text-[10px]">
+                      {new Date(att.completedAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono font-bold text-gray-700 dark:text-gray-300">
+                    {att.correct}/{att.total} ({att.scorePct}%)
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold uppercase tracking-wider ${
+                      att.passed
+                        ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800/30"
+                        : "bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/30"
+                    }`}
+                  >
+                    {att.passed ? "Passed" : "Failed"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,10 +5,9 @@ async function validateFileContent(
   allowedMimes: string[],
 ): Promise<{ valid: boolean; detectedMime: string | undefined }> {
   const buffer = await readFile(filePath);
-  // Dynamic import for file-type package (CJS module)
-  const fileType = await import("file-type");
-  const fromBuffer = (fileType as unknown as { default?: { fromBuffer: typeof fileType.fromBuffer } }).default?.fromBuffer ?? fileType.fromBuffer;
-  const result = await fromBuffer(buffer);
+  // Dynamic import for file-type package (ESM module)
+  const { fileTypeFromBuffer } = await import("file-type");
+  const result = await fileTypeFromBuffer(buffer);
   const detectedMime = result?.mime;
 
   // PDF magic bytes: %PDF - file-type detects this as application/pdf

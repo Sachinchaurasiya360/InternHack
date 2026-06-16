@@ -912,7 +912,7 @@ export class DsaService {
 
   async getMyProgress(studentId: number) {
     const allProblems = await prisma.dsaProblem.findMany({
-      select: { id: true, difficulty: true },
+      select: { id: true, difficulty: true, slug: true },
     });
 
     const solved = await prisma.studentDsaProgress.findMany({
@@ -935,10 +935,13 @@ export class DsaService {
       }
     }
 
+    const solvedSlugs = allProblems.filter((p) => solvedIds.has(p.id)).map((p) => p.slug);
+
     return {
       totalProblems: allProblems.length,
       totalSolved: solvedIds.size,
       byDifficulty: stats,
+      solvedSlugs,
     };
   }
 

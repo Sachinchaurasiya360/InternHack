@@ -254,6 +254,25 @@ const grouped = useMemo(() => {
           </div>
           <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
         </Link>
+        <Link
+          to="/learn/placement-prep"
+          className="group flex items-center justify-between bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-5 py-4 hover:border-lime-400 dark:hover:border-lime-400 transition-colors no-underline"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-md bg-indigo-100 dark:bg-indigo-900/20 border border-indigo-300 dark:border-indigo-800 flex items-center justify-center shrink-0">
+              <span className="text-sm font-bold text-indigo-700 dark:text-indigo-400">P</span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
+                Placement Prep Plans
+              </p>
+              <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
+                Structured 30, 60, and 90-day learning schedules utilizing DSA, Aptitude, Core & Mock Exams
+              </p>
+            </div>
+          </div>
+          <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </Link>
       </motion.div>
 
       {/* Search & Filters */}
