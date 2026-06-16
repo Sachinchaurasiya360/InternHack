@@ -312,6 +312,5 @@ export default function ExternalJobDetailPage() {
       </div>
       <Footer />
     </>
-    
   );
 }
