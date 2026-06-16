@@ -429,12 +429,13 @@ export default function PlacementPrepPlansPage() {
                     const totalCount = d.tasks.length;
 
                     return (
-                      <button
+                      <Button
                         key={d.day}
+                        variant="foreground"
                         onClick={() => setSelectedDayNum(d.day)}
                         className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-all ${
                           selected
-                            ? "bg-stone-900 dark:bg-stone-850 text-white shadow-md border-l-4 border-lime-400"
+                            ? "bg-stone-900 dark:bg-stone-800 text-white shadow-md border-l-4 border-lime-400"
                             : "hover:bg-stone-50 dark:hover:bg-white/5 text-stone-750 dark:text-stone-300"
                         }`}
                       >
@@ -453,10 +454,10 @@ export default function PlacementPrepPlansPage() {
                             </span>
                           </div>
                         </div>
-                        <span className="text-[10px] font-mono shrink-0 tabular-nums ml-2 opacity-80">
+                        <span className="text-xs font-mono shrink-0 tabular-nums ml-2 opacity-80">
                           {solvedCount}/{totalCount}
                         </span>
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -490,9 +491,10 @@ export default function PlacementPrepPlansPage() {
                           className="flex items-start gap-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-xl p-5 shadow-sm hover:border-stone-300 dark:hover:border-white/15 transition-all group"
                         >
                           {/* Checkbox button */}
-                          <button
+                          <Button
+                            variant="ghost"
                             onClick={() => toggleTaskManual(task.id)}
-                            className="mt-0.5 shrink-0 focus:outline-none"
+                            className="mt-0.5 shrink-0 focus:outline-none p-0 h-auto bg-transparent border-0 hover:bg-transparent"
                             title="Toggle completed state"
                           >
                             {completed ? (
@@ -500,17 +502,17 @@ export default function PlacementPrepPlansPage() {
                             ) : (
                               <Circle className="w-5 h-5 text-stone-300 dark:text-stone-700 hover:text-lime-400 transition-colors" />
                             )}
-                          </button>
+                          </Button>
 
                           {/* Task Description */}
                           <div className="flex-grow min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className={`text-[10px] px-2 py-0.5 rounded-md font-mono uppercase tracking-wider font-semibold ${getTaskBadgeStyle(task.type)}`}>
+                              <span className={`text-xs px-2 py-0.5 rounded-md font-mono uppercase tracking-wider font-semibold ${getTaskBadgeStyle(task.type)}`}>
                                 <span className="inline-block mr-1">{getTaskIcon(task.type)}</span>
                                 {task.type}
                               </span>
                               {completed && (
-                                <span className="text-[10px] text-lime-600 dark:text-lime-400 font-medium font-mono uppercase tracking-wider bg-lime-50 dark:bg-lime-950/20 px-1.5 py-0.5 rounded">
+                                <span className="text-xs text-lime-600 dark:text-lime-400 font-medium font-mono uppercase tracking-wider bg-lime-50 dark:bg-lime-950/20 px-1.5 py-0.5 rounded">
                                   COMPLETED
                                 </span>
                               )}
@@ -524,19 +526,17 @@ export default function PlacementPrepPlansPage() {
                           </div>
 
                           {/* Action Button */}
-                          <Link
-                            to={task.link}
-                            className="shrink-0 self-center no-underline"
+                          <Button
+                            asChild
+                            variant={completed ? "secondary" : "primary"}
+                            size="sm"
+                            className="text-xs flex items-center gap-1 bg-lime-400 text-stone-900 hover:bg-lime-500 shrink-0 self-center no-underline"
                           >
-                            <Button
-                              variant={completed ? "secondary" : "primary"}
-                              size="sm"
-                              className="text-xs flex items-center gap-1 bg-lime-400 text-stone-900 hover:bg-lime-500"
-                            >
+                            <Link to={task.link}>
                               <span>{task.type === "exam" ? "Take Mock" : task.type === "core" ? "Learn" : "Practice"}</span>
                               <ChevronRight className="w-3.5 h-3.5" />
-                            </Button>
-                          </Link>
+                            </Link>
+                          </Button>
                         </div>
                       );
                     })}

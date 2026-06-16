@@ -65,14 +65,14 @@ export default function ExamPrepHubPage() {
                       {exam.logo}
                     </div>
                     {isCompleted && (
-                      <span className={`px-2 py-0.5 rounded-md font-mono text-[9px] font-bold uppercase tracking-wider ${isPassed ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800/30" : "bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/30"}`}>
+                      <span className={`px-2 py-0.5 rounded-md font-mono text-xs font-bold uppercase tracking-wider ${isPassed ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800/30" : "bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/30"}`}>
                         {isPassed ? "Passed" : "Attempted"}
                       </span>
                     )}
                   </div>
                   <h3 className="font-bold text-gray-950 dark:text-white text-lg">{exam.name}</h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{exam.tagline}</p>
-                  <div className="flex items-center gap-4 mt-4 text-[11px] text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-4 mt-4 text-xs text-gray-500 dark:text-gray-400">
                     <span className="inline-flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {exam.totalDuration}m

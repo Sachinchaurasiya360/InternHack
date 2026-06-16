@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import { Clock, ArrowRight, Target, ChevronLeft, Play, CheckCircle2, XCircle } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
+import { Button } from "../../../components/ui/button";
 import { getExam, getQuestionsForExam, getQuestionsForSection } from "./data/exams";
 
 interface ExamAttempt {
@@ -20,9 +21,14 @@ export default function ExamDetailPage() {
   const { examId } = useParams();
   const exam = getExam(examId ?? "");
   
-  const [attempts, setAttempts] = useState<ExamAttempt[]>(() => {
+  const [attempts, setAttempts] = useState<ExamAttempt[]>([]);
+
+  useEffect(() => {
     try {
-      if (!exam) return [];
+      if (!exam) {
+        setAttempts([]);
+        return;
+      }
       const raw = localStorage.getItem("exam-attempts-history");
       if (raw) {
         const history = JSON.parse(raw);
@@ -42,14 +48,15 @@ export default function ExamDetailPage() {
               },
             ];
           }
-          return list;
+          setAttempts(list);
+          return;
         }
       }
     } catch (e) {
       console.error("Failed to read exam history from localStorage", e);
     }
-    return [];
-  });
+    setAttempts([]);
+  }, [exam?.id]);
 
   if (!exam) return <Navigate to="/learn/exam-prep" replace />;
 
@@ -181,12 +188,14 @@ export default function ExamDetailPage() {
         <div className="mt-8">
           <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
             <h2 className="text-sm font-bold text-gray-950 dark:text-white">Attempt History</h2>
-            <button
+            <Button
+              variant="danger"
+              size="sm"
               onClick={clearHistory}
-              className="text-[10px] text-red-500 hover:text-red-600 font-semibold uppercase tracking-wider"
+              className="text-xs uppercase tracking-wider font-semibold"
             >
               Clear History
-            </button>
+            </Button>
           </div>
           <div className="space-y-2.5">
             {attempts.map((att, idx) => (
@@ -206,7 +215,7 @@ export default function ExamDetailPage() {
                         ? "Full Mock Test"
                         : `Section: ${exam.sections.find((s) => s.id === att.sectionId)?.name || att.sectionId}`}
                     </span>
-                    <span className="text-gray-400 ml-2 font-mono text-[10px]">
+                    <span className="text-gray-400 ml-2 font-mono text-xs">
                       {new Date(att.completedAt).toLocaleDateString(undefined, {
                         month: "short",
                         day: "numeric",
@@ -221,7 +230,7 @@ export default function ExamDetailPage() {
                     {att.correct}/{att.total} ({att.scorePct}%)
                   </span>
                   <span
-                    className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold uppercase tracking-wider ${
+                    className={`px-2 py-0.5 rounded-md font-mono text-xs font-bold uppercase tracking-wider ${
                       att.passed
                         ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800/30"
                         : "bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/30"

@@ -485,7 +485,7 @@ function App() {
               <Route path="interview/behavioral-interview/trainer" element={<BehavioralTrainerPage />} />
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
-              <Route path="placement-prep" element={<PlacementPrepPlansPage />} />
+              <Route path="placement-prep" element={<ProtectedRoute role="STUDENT"><PlacementPrepPlansPage /></ProtectedRoute>} />
               <Route path="notes" element={<ProtectedRoute role="STUDENT"><NotesDashboardPage /></ProtectedRoute>} />
             </Route>
 
