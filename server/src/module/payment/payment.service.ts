@@ -201,8 +201,24 @@ export class PaymentService {
       // Only link payments that have already been marked SUCCESS by the
       // payment.succeeded webhook. This prevents abandoned PENDING checkout
       // sessions from being incorrectly linked to the subscription.
-      await tx.payment.updateMany({
-        where: { userId, dodoSubscriptionId: null, status: "SUCCESS", },
+      const payment = await tx.payment.findFirst({
+        where: {
+          userId,
+          dodoSubscriptionId: null,
+          status: "SUCCESS",
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        select: { id: true },
+      });
+
+      if (!payment) {
+        return;
+      }
+
+      await tx.payment.update({
+        where: { id: payment.id },
         data: {
           dodoSubscriptionId: sub.subscription_id,
         },
