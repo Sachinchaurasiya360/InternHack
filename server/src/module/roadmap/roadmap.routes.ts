@@ -57,8 +57,8 @@ roadmapRouter.post(
 roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
 roadmapRouter.get("/community", getCommunityRoadmaps);
 roadmapRouter.get("/me/certificates", authMiddleware, getMyCertificates);
-roadmapRouter.get("/certificates/:slug/:enrollmentId/meta", optionalAuthMiddleware, getPublicCertificateMeta);
-roadmapRouter.get("/certificates/:slug/:enrollmentId", optionalAuthMiddleware, getPublicCertificate);
+roadmapRouter.get("/certificates/:slug/:shareToken/meta", optionalAuthMiddleware, getPublicCertificateMeta);
+roadmapRouter.get("/certificates/:slug/:shareToken", optionalAuthMiddleware, getPublicCertificate);
 roadmapRouter.get("/:slug/enrollment", authMiddleware, getMyEnrollmentByRoadmapSlug);
 roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);

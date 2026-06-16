@@ -75,6 +75,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
     if (savedRaw) {
       try {
         const saved = JSON.parse(savedRaw);
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate saved feedback from localStorage
         setRating(saved.rating);
       } catch {
         setRating(savedRaw);

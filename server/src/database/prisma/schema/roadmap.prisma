@@ -91,6 +91,7 @@ model roadmapEnrollment {
   user               user                   @relation("UserRoadmapEnrollments", fields: [userId], references: [id], onDelete: Cascade)
   roadmapId          Int
   roadmap            roadmap                @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  shareToken         String                 @unique @default(cuid())
   hoursPerWeek       Int                    @default(8)
   preferredDays      String[]               @default([])
   startDate          DateTime               @default(now())

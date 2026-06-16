@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Prisma } from "@prisma/client";
 
-const mocks = vi.hoisted(() => ({
-  prisma: {
+const mocks = vi.hoisted(() => {
+  const prisma = {
     job: {
       findUnique: vi.fn(),
     },
@@ -13,11 +13,19 @@ const mocks = vi.hoisted(() => ({
     roundSubmission: {
       create: vi.fn(),
     },
-  },
-  badgeService: {
-    checkAndAwardBadges: vi.fn().mockResolvedValue(undefined),
-  },
-}));
+    $transaction: vi.fn(),
+  };
+
+  // Run interactive transactions against the same mocked models.
+  prisma.$transaction.mockImplementation((arg) => (typeof arg === "function" ? arg(prisma) : Promise.all(arg)));
+
+  return {
+    prisma,
+    badgeService: {
+      checkAndAwardBadges: vi.fn().mockResolvedValue(undefined),
+    },
+  };
+});
 
 vi.mock("../database/db.js", () => ({
   prisma: mocks.prisma,

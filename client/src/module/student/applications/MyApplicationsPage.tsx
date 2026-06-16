@@ -241,6 +241,7 @@ export default function MyApplicationsPage() {
   ]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset to first page when filters change
     setPage(1);
   }, [debouncedSearch, statusFilter]);
 

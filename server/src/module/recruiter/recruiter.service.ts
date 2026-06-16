@@ -219,6 +219,12 @@ export class RecruiterService {
         data: { isArchived: true },
       });
 
+      // Fix for #1306: Nullify currentRoundId for applications currently in the deleted round
+      await tx.application.updateMany({
+        where: { currentRoundId: roundId },
+        data: { currentRoundId: null },
+      });
+
       const remainingRounds = await (txRound.findMany({
         where: { jobId, isArchived: false },
         orderBy: { orderIndex: "asc" },
@@ -286,7 +292,10 @@ export class RecruiterService {
     if (!job) throw new Error("Job not found");
     if (job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    const where: Prisma.applicationWhereInput = { jobId };
+    const where: Prisma.applicationWhereInput = { 
+      jobId,
+      student: { isActive: true }
+    };
 
     if (filter.status) {
       where.status = filter.status as ApplicationStatus;
@@ -296,6 +305,7 @@ export class RecruiterService {
 
     if (filter.search) {
       where.student = {
+        ...((where.student as Prisma.userWhereInput) || {}),
         OR: [
           { name: { contains: filter.search, mode: "insensitive" } },
           { email: { contains: filter.search, mode: "insensitive" } },
@@ -567,16 +577,16 @@ export class RecruiterService {
     const [totalJobs, activeJobs, totalApplications, applicationsByStatus] = await Promise.all([
       prisma.job.count({ where: { recruiterId } }),
       prisma.job.count({ where: { recruiterId, status: "PUBLISHED" } }),
-      prisma.application.count({ where: { job: { recruiterId } } }),
+      prisma.application.count({ where: { job: { recruiterId }, student: { isActive: true } } }),
       prisma.application.groupBy({
         by: ["status"],
-        where: { job: { recruiterId } },
+        where: { job: { recruiterId }, student: { isActive: true } },
         _count: { id: true },
       }),
     ]);
 
     const recentApplications = await prisma.application.findMany({
-      where: { job: { recruiterId } },
+      where: { job: { recruiterId }, student: { isActive: true } },
       take: 10,
       orderBy: { createdAt: "desc" },
       include: {
@@ -722,15 +732,25 @@ export class RecruiterService {
       if (filter.graduationYearMax) where.graduationYear.lte = filter.graduationYearMax;
     }
     if (filter.skills) {
-      const skillList = filter.skills.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-      if (skillList.length > 0) {
-        where.skills = { hasSome: skillList };
+      const baseSkills = filter.skills.split(",").map((s) => s.trim()).filter(Boolean);
+      if (baseSkills.length > 0) {
+        const expandedSkills = baseSkills.flatMap((s) => {
+          const lower = s.toLowerCase();
+          const upper = s.toUpperCase();
+          const title = lower.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          return [s, lower, upper, title];
+        });
+        where.skills = { hasSome: Array.from(new Set(expandedSkills)) };
       }
     }
     if (filter.verifiedSkills) {
-      const vsList = filter.verifiedSkills.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-      if (vsList.length > 0) {
-        where.verifiedSkills = { some: { skillName: { in: vsList } } };
+      const baseVs = filter.verifiedSkills.split(",").map((s) => s.trim()).filter(Boolean);
+      if (baseVs.length > 0) {
+        where.verifiedSkills = {
+          some: {
+            OR: baseVs.map((s) => ({ skillName: { equals: s, mode: "insensitive" } })),
+          },
+        };
       }
     }
     if (filter.minAtsScore) {
@@ -824,7 +844,7 @@ export class RecruiterService {
 
   async getSavedCandidates(recruiterId: number) {
     const saved = await prisma.savedCandidate.findMany({
-      where: { recruiterId },
+      where: { recruiterId, student: { isActive: true } },
       orderBy: { createdAt: "desc" },
       include: {
         student: {
