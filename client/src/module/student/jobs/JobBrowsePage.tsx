@@ -160,6 +160,7 @@ export default function JobBrowsePage() {
 
   // Sync location filter to URL and reset pages when it or search changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset pagination when filters/search change
     setPage(1);
     setExtPage(1);
     setScrPage(1);

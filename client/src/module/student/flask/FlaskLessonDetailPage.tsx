@@ -60,6 +60,7 @@ function ExerciseSection({
     return p[lessonId]?.exercisesSolved ?? {};
   });
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- re-sync state from localStorage when the lesson changes
   setActiveIdx(0);
   setSolved(getLocalProgress()[lessonId]?.exercisesSolved ?? {});
 }, [lessonId]);
@@ -251,6 +252,7 @@ export default function FlaskLessonDetailPage() {
   });
 useEffect(() => {
   const p = getLocalProgress();
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- re-sync completion from localStorage when the lesson changes
   setCompleted(!!p[lessonId ?? ""]?.completed);
 }, [lessonId]);
   const section = sections.find((s) => s.id === sectionSlug);
