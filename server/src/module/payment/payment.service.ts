@@ -196,11 +196,30 @@ export class PaymentService {
 
       // Link subscription ID and mark payment SUCCESS first, then activate the user.
       // Order matters: payment record must be linked before any code looks it up by subscription_id.
-      // Match on dodoSubscriptionId: null so this works whether payment.succeeded already
-      // flipped the status to SUCCESS or the record is still PENDING.
-      await tx.payment.updateMany({
-        where: { userId, dodoSubscriptionId: null },
-        data: { dodoSubscriptionId: sub.subscription_id, status: "SUCCESS" },
+      // Only link payments that have already been marked SUCCESS by the
+      // payment.succeeded webhook. This prevents abandoned PENDING checkout
+      // sessions from being incorrectly linked to the subscription.
+      const payment = await tx.payment.findFirst({
+        where: {
+          userId,
+          dodoSubscriptionId: null,
+          status: "SUCCESS",
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        select: { id: true },
+      });
+
+      if (!payment) {
+        return;
+      }
+
+      await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          dodoSubscriptionId: sub.subscription_id,
+        },
       });
 
       // Update user subscription status atomically
