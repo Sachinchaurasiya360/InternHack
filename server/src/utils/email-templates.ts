@@ -1160,6 +1160,14 @@ export function roadmapWeeklyDigestEmailHtml(args: {
     completedThisWeek: number;
     nextTopicTitle: string | null;
     nextTopicSlug: string | null;
+    buddy?: {
+      name: string;
+      completedThisWeek: number;
+      percentComplete: number;
+      completedTotal: number;
+      difference: number;
+      bothMadeProgress: boolean;
+    } | null;
   }[];
 }): string {
   const firstName = escapeHtml(args.name.split(" ")[0] || args.name || "there");
@@ -1177,6 +1185,44 @@ export function roadmapWeeklyDigestEmailHtml(args: {
         roadmap.completedThisWeek === 0
           ? "No topics completed this week. A 20-minute restart still counts."
           : `${roadmap.completedThisWeek} topic${roadmap.completedThisWeek === 1 ? "" : "s"} completed this week.`;
+      const buddyHtml = roadmap.buddy
+        ? `
+      <div style="margin-top:14px;padding:12px;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
+        <p style="margin:0 0 6px;font-size:10px;font-family:'Courier New',Courier,monospace;letter-spacing:1px;color:#0f172a;text-transform:uppercase;font-weight:700;">
+          / study buddy: ${escapeHtml(roadmap.buddy.name)}
+        </p>
+        <p style="margin:0 0 4px;font-size:13px;color:#334155;">
+          Your study buddy completed <strong>${roadmap.buddy.completedThisWeek}</strong> topic${roadmap.buddy.completedThisWeek === 1 ? "" : "s"} this week.
+        </p>
+        <p style="margin:0 0 6px;font-size:13px;color:#334155;">
+          ${
+            roadmap.buddy.difference > 0
+              ? `Your buddy is <strong>${roadmap.buddy.difference}</strong> topic${roadmap.buddy.difference === 1 ? "" : "s"} ahead.`
+              : roadmap.buddy.difference < 0
+                ? `Your buddy is <strong>${Math.abs(roadmap.buddy.difference)}</strong> topic${Math.abs(roadmap.buddy.difference) === 1 ? "" : "s"} behind.`
+                : "You and your buddy are currently neck-and-neck!"
+          }
+        </p>
+        ${
+          roadmap.buddy.bothMadeProgress
+            ? `
+          <p style="margin:0 0 6px;font-size:12px;color:#16a34a;font-weight:700;">
+            🔥 You and your buddy both made progress this week!
+          </p>
+        `
+            : ""
+        }
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:8px;margin-bottom:4px;">
+          <tr><td style="height:4px;background-color:#e2e8f0;border-radius:999px;overflow:hidden;">
+            <div style="height:4px;width:${Math.max(0, Math.min(100, roadmap.buddy.percentComplete))}%;background-color:#38bdf8;"></div>
+          </td></tr>
+        </table>
+        <p style="margin:0;font-size:11px;color:#64748b;">
+          Buddy progress: ${roadmap.buddy.percentComplete}% complete (${roadmap.buddy.completedTotal} topics)
+        </p>
+      </div>
+    `
+        : "";
 
       return `
       <tr><td style="padding:16px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:10px;">
@@ -1194,6 +1240,7 @@ export function roadmapWeeklyDigestEmailHtml(args: {
         <a href="${resumeUrl}" style="display:inline-block;padding:10px 14px;background-color:#18181b;color:#ffffff;text-decoration:none;border-radius:6px;font-size:12px;font-weight:700;">
           Resume roadmap
         </a>
+        ${buddyHtml}
       </td></tr>
       <tr><td style="height:10px;"></td></tr>`;
     })

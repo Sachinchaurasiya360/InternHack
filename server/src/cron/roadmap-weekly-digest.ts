@@ -6,6 +6,15 @@ import { withAdvisoryLock } from "../utils/cron-lock.js";
 
 let cronJob: cron.ScheduledTask | null = null;
 
+interface DigestBuddyData {
+  name: string;
+  completedThisWeek: number;
+  percentComplete: number;
+  completedTotal: number;
+  difference: number;
+  bothMadeProgress: boolean;
+}
+
 type DigestRoadmap = {
   title: string;
   slug: string;
@@ -13,10 +22,12 @@ type DigestRoadmap = {
   completedThisWeek: number;
   nextTopicTitle: string | null;
   nextTopicSlug: string | null;
+  buddy: DigestBuddyData | null;
 };
 
 type DigestEnrollment = {
   userId: number;
+  roadmapId: number;
   user: { id: number; name: string; email: string };
   topicProgress: { topicId: number; status: string; completedAt: Date | null }[];
   roadmap: {
@@ -34,7 +45,10 @@ type DigestEnrollment = {
   };
 };
 
-function buildDigestRoadmap(enrollment: DigestEnrollment): DigestRoadmap | null {
+function buildDigestRoadmap(
+  enrollment: DigestEnrollment,
+  buddyProgress?: { name: string; topicProgress: { status: string; completedAt: Date | null }[]; totalTopics: number } | null
+): DigestRoadmap | null {
   const topics = enrollment.roadmap.sections
     .flatMap((section) => section.topics)
     .sort((a, b) => a.section.orderIndex - b.section.orderIndex || a.orderIndex - b.orderIndex);
@@ -51,6 +65,24 @@ function buildDigestRoadmap(enrollment: DigestEnrollment): DigestRoadmap | null 
   ).length;
   const nextTopic = topics.find((topic) => progressByTopicId.get(topic.id)?.status !== "COMPLETED") ?? null;
 
+  let buddyData: DigestBuddyData | null = null;
+  if (buddyProgress) {
+    const buddyCompleted = buddyProgress.topicProgress.filter((p) => p.status === "COMPLETED").length;
+    const buddyPct = buddyProgress.totalTopics === 0 ? 0 : Math.round((buddyCompleted / buddyProgress.totalTopics) * 100);
+    const buddyCompletedThisWeek = buddyProgress.topicProgress.filter(
+      (p) => p.status === "COMPLETED" && p.completedAt && p.completedAt >= weekAgo
+    ).length;
+
+    buddyData = {
+      name: buddyProgress.name,
+      completedThisWeek: buddyCompletedThisWeek,
+      percentComplete: buddyPct,
+      completedTotal: buddyCompleted,
+      difference: buddyCompleted - completed.length,
+      bothMadeProgress: completedThisWeek > 0 && buddyCompletedThisWeek > 0,
+    };
+  }
+
   return {
     title: enrollment.roadmap.title,
     slug: enrollment.roadmap.slug,
@@ -58,6 +90,7 @@ function buildDigestRoadmap(enrollment: DigestEnrollment): DigestRoadmap | null 
     completedThisWeek,
     nextTopicTitle: nextTopic?.title ?? null,
     nextTopicSlug: nextTopic?.slug ?? null,
+    buddy: buddyData,
   };
 }
 
@@ -97,10 +130,64 @@ async function getActiveDigestEnrollments(): Promise<DigestEnrollment[]> {
 
 export async function sendWeeklyRoadmapDigests(): Promise<void> {
   const enrollments = await getActiveDigestEnrollments();
+
+  // 1. Fetch active buddy pairings
+  const activePairs = await prisma.roadmapStudyBuddyPair.findMany({
+    where: { active: true },
+  });
+
+  const pairMap = new Map<string, { buddyId: number }>();
+  const activePairRoadmapIds = new Set<number>();
+  for (const pair of activePairs) {
+    pairMap.set(`${pair.studentAId}_${pair.roadmapId}`, { buddyId: pair.studentBId });
+    pairMap.set(`${pair.studentBId}_${pair.roadmapId}`, { buddyId: pair.studentAId });
+    activePairRoadmapIds.add(pair.roadmapId);
+  }
+
+  // 2. Fetch progress info for paired buddies
+  const buddyIds = Array.from(new Set(activePairs.flatMap((p) => [p.studentAId, p.studentBId])));
+  
+  const buddyEnrollments = await prisma.roadmapEnrollment.findMany({
+    where: {
+      userId: { in: buddyIds },
+      roadmapId: { in: Array.from(activePairRoadmapIds) },
+      status: "ACTIVE",
+    },
+    include: {
+      user: { select: { id: true, name: true } },
+      topicProgress: true,
+      roadmap: {
+        include: {
+          sections: {
+            include: {
+              topics: {
+                select: { id: true },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const progressMap = new Map<string, { name: string; topicProgress: { status: string; completedAt: Date | null }[]; totalTopics: number }>();
+  for (const e of buddyEnrollments) {
+    const totalTopics = e.roadmap.sections.flatMap((s) => s.topics).length;
+    progressMap.set(`${e.userId}_${e.roadmapId}`, {
+      name: e.user.name,
+      topicProgress: e.topicProgress,
+      totalTopics,
+    });
+  }
+
   const byUser = new Map<number, { user: { id: number; name: string; email: string }; roadmaps: DigestRoadmap[] }>();
 
   for (const enrollment of enrollments) {
-    const digestRoadmap = buildDigestRoadmap(enrollment);
+    // Resolve study buddy details if they have an active pair on this roadmap
+    const pair = pairMap.get(`${enrollment.userId}_${enrollment.roadmapId}`);
+    const buddyProgress = pair ? progressMap.get(`${pair.buddyId}_${enrollment.roadmapId}`) : null;
+
+    const digestRoadmap = buildDigestRoadmap(enrollment, buddyProgress);
     if (!digestRoadmap) continue;
 
     const current = byUser.get(enrollment.userId) ?? { user: enrollment.user, roadmaps: [] };

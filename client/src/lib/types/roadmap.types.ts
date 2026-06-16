@@ -195,3 +195,22 @@ export interface EnrollInput {
   experienceLevel: ExperienceLevel;
   goal: EnrollmentGoal;
 }
+
+export interface StudyBuddyDetails {
+  id: number;
+  name: string;
+  profilePic: string | null;
+  college: string | null;
+  experienceLevel: ExperienceLevel;
+  percentComplete: number;
+  completedTopics: number;
+  currentStreak: number;
+  matchedAt: string;
+}
+
+export interface StudyBuddyResponse {
+  enabled: boolean;
+  preferSameCollege: boolean;
+  status: "NOT_OPTED_IN" | "SEARCHING" | "MATCHED";
+  buddy: StudyBuddyDetails | null;
+}
