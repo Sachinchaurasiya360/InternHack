@@ -5,7 +5,6 @@ import { GeminiProvider } from "./providers/gemini.provider.js";
 import { GroqProvider } from "./providers/groq.provider.js";
 import { OpenRouterProvider } from "./providers/openrouter.provider.js";
 import { CodestralProvider } from "./providers/codestral.provider.js";
-import { ClaudeProvider } from "./providers/claude.provider.js";
 
 // ── In-memory cache: one provider instance per service ──
 
@@ -27,8 +26,10 @@ function createProvider(type: AIProviderType, modelName: string): AIProvider {
       return new OpenRouterProvider(modelName);
     case "CODESTRAL":
       return new CodestralProvider(modelName);
-    case "CLAUDE":
-      return new ClaudeProvider(modelName);
+    default:
+     
+      console.warn(`[AI] Unsupported provider "${type}", falling back to Gemini`);
+      return new GeminiProvider("gemini-2.5-flash-lite");
   }
 }
 

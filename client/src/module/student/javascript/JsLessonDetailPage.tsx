@@ -271,7 +271,7 @@ export default function JsLessonDetailPage() {
 
   const [playgroundCode, setPlaygroundCode] = useState("");
   const [showPlayground, setShowPlayground] = useState(false);
-  const [playgroundResult, setPlaygroundResult] = useState<any>(null);
+  const [playgroundResult, setPlaygroundResult] = useState<JsRunResult | null>(null);
 
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);

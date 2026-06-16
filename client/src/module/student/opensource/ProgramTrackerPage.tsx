@@ -1648,11 +1648,10 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
             <button
               type="button"
               onClick={() => program.slug && onToggleTrack(program.slug, !tracked)}
-              className={`flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold rounded-md border transition-colors cursor-pointer ${
-                tracked
-                  ? "text-lime-700 dark:text-lime-400 bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800/30"
-                  : "text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700"
-              }`}
+              className={`flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-semibold rounded-md border transition-colors cursor-pointer ${tracked
+                ? "text-lime-700 dark:text-lime-400 bg-lime-50 dark:bg-lime-900/20 border-lime-200 dark:border-lime-800/30"
+                : "text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700"
+                }`}
               title={tracked ? "Stop tracking" : "Track this program"}
             >
               <Bookmark className={`w-3 h-3 ${tracked ? "fill-current" : ""}`} />
@@ -1814,7 +1813,7 @@ export default function ProgramTrackerPage() {
 
   const trackedSlugs = useMemo(() => {
     if (!trackedData) return new Set<string>();
-    return new Set(trackedData.map((p: any) => p.slug));
+    return new Set(trackedData.map((p: Program) => (p as Program).slug).filter(Boolean));
   }, [trackedData]);
 
   const [search, setSearch] = useState("");
@@ -1844,7 +1843,7 @@ export default function ProgramTrackerPage() {
 
   const programsSource = useMemo(() => {
     if (serverPrograms && serverPrograms.length > 0) {
-      return serverPrograms.map((p: any) => ({
+      return serverPrograms.map((p: Program) => ({
         ...p,
         status: p.window === "Ongoing" ? "Ongoing" : "Annual",
         eligibilityType: p.eligibilityType || "Open to All",

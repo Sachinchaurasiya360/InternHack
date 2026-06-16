@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -98,6 +99,9 @@ model user {
   roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
+  studyBuddyPreferences roadmapStudyBuddyPreference[] @relation("UserStudyBuddyPreferences")
+  studentAPairs        roadmapStudyBuddyPair[]        @relation("StudentAPairs")
+  studentBPairs        roadmapStudyBuddyPair[]        @relation("StudentBPairs")
   generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
   leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
@@ -1343,7 +1347,7 @@ enum AIProviderType {
   GROQ
   OPENROUTER
   CODESTRAL
-  CLAUDE
+  
 }
 
 enum AIServiceType {
@@ -1447,6 +1451,7 @@ enum UsageAction {
   GENERATE_RESUME
   JOB_APPLICATION
   MOCK_INTERVIEW
+  BEHAVIORAL_EVAL
   AI_JOB_CHAT
   CODE_RUN
   GITHUB_STATS

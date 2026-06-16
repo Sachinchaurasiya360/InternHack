@@ -98,6 +98,8 @@ export const updateProfileSchema = z.object({
     techStack: z.array(z.string()).max(10),
     liveUrl: z.string().url().or(z.literal("")).optional(),
     repoUrl: z.string().url().or(z.literal("")).optional(),
+    // Featured Projects (GSSoC '26): YYYY-MM or ISO-8601, normalized in the service
+    builtAt: z.string().optional(),
   })).max(10).optional(),
   achievements: z.array(z.object({
     id: z.string(),

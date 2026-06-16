@@ -1,4 +1,4 @@
-export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL" | "CLAUDE";
+export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL" ;
 export type AIServiceType =
   | "ATS_SCORE"
   | "COVER_LETTER"

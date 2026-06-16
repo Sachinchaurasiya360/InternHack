@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import toast from "@/components/ui/toast";
 interface Certificate {
-  enrollmentId: string;
+  shareToken: string;
   roadmapTitle: string;
   roadmapSlug: string;
   completedAt: string;
@@ -61,7 +61,7 @@ const CertificateCard = memo(function CertificateCard({
 
           <button
             onClick={() =>
-              window.open(downloadUrl, "_blank")
+              window.open(downloadUrl, "_blank", "noopener,noreferrer")
             }
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md bg-lime-400 hover:bg-lime-300 text-stone-950 font-semibold transition-all"
           >
@@ -71,7 +71,7 @@ const CertificateCard = memo(function CertificateCard({
 
           <button
             onClick={() =>
-              window.open(shareUrl, "_blank")
+              window.open(shareUrl, "_blank", "noopener,noreferrer")
             }
             className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-stone-200 dark:border-white/10 hover:bg-stone-100 dark:hover:bg-white/5 transition-all text-sm text-stone-700 dark:text-stone-300"
           >
@@ -231,8 +231,8 @@ export default function RoadmapCertificatesGalleryPage() {
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 place-items-center">
 
             {certificates.map((certificate) => (
-            <CertificateCard key={certificate.enrollmentId} certificate={certificate}/>
-            ))}
+            <CertificateCard key={certificate.shareToken} certificate={certificate}/>
+            ))}p
 
           </div>
         )}

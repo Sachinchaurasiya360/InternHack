@@ -92,7 +92,6 @@ jobs:
                   /readme/i,
                   /changelog/i,
                   /^wiki\//,
-                  /^\.claude\//,
                   /^\.Codex\//,
                 ]
               },

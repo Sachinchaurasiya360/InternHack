@@ -430,6 +430,7 @@ export async function getEnrollmentByRoadmapSlugForUser(args: {
     select: {
       id: true,
       status: true,
+      shareToken: true,
       roadmap: {
         select: {
           id: true,

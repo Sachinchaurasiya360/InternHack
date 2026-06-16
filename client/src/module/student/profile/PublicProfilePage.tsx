@@ -102,7 +102,7 @@ export default function PublicProfilePage() {
   if (isLoading) return <LoadingScreen />;
   
   if (error) {
-    const status = (error as any)?.response?.status;
+    const status = (error as { response?: { status?: number } })?.response?.status;
     if (status === 403) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
