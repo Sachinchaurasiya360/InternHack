@@ -96,12 +96,31 @@ export default function PlacementPrepPlansPage() {
 
     if (task.type === "interview") {
       const completedIds = interviewProgressQuery.data?.completedIds || [];
+      if (task.refId === "behavioral-interview") {
+        return completedIds.some((id) => id.startsWith("behavioral-"));
+      }
+      if (task.refId === "interview") {
+        return completedIds.length > 0;
+      }
       return completedIds.includes(task.refId);
     }
 
     if (task.type === "core") {
       try {
-        const raw = localStorage.getItem(`${task.refId}-progress`);
+        const keyMap: Record<string, string> = {
+          javascript: "js-progress",
+          typescript: "ts-progress",
+          nodejs: "node-progress",
+          html: "html-progress",
+          css: "css-progress",
+          sql: "sql-progress",
+          react: "react-progress",
+          python: "python-progress",
+          blockchain: "blockchain-progress",
+          "data-analytics": "data-analytics-progress",
+        };
+        const storageKey = keyMap[task.refId] || `${task.refId}-progress`;
+        const raw = localStorage.getItem(storageKey);
         if (raw) {
           const progress = JSON.parse(raw);
           const values = Object.values(progress) as { completed?: boolean }[];

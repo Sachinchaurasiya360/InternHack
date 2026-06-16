@@ -61,6 +61,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@emnapi/core": "1.11.1",
+    "@emnapi/runtime": "1.11.1",
     "@eslint/js": "^9.39.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/compression": "^1.8.1",
