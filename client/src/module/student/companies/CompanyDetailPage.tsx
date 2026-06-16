@@ -144,7 +144,7 @@ export default function CompanyDetailPage() {
   const handleExportPdf = useReactToPrint({
     contentRef: contentRef as React.RefObject<HTMLDivElement>,
     documentTitle: `${company?.name || "Company"}_Profile`,
-    onBeforeGetContent: () => { setIsExporting(true); return Promise.resolve(); },
+    onBeforePrint: () => { setIsExporting(true); return Promise.resolve(); },
     onAfterPrint: () => setIsExporting(false),
     onPrintError: (errorType: any, error: any) => {
       console.error("Failed to generate PDF:", error);
