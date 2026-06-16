@@ -91,7 +91,7 @@ jobs:
                   /\.mdx$/i,
                   /readme/i,
                   /changelog/i,
-                  /^wiki\//
+                  /^wiki\//,
                   /^\.Codex\//,
                 ]
               },
