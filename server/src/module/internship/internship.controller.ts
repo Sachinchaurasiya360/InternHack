@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import { InternshipService } from "./internship.service.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 import { createGovInternshipSchema, updateGovInternshipSchema } from "./internship.validation.js";
@@ -30,7 +31,8 @@ export class InternshipController {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = createGovInternshipSchema.parse(req.body);
+      const data = validateRequestData(res, createGovInternshipSchema, req.body);
+      if (!data) return;
       const result = await service.create(data);
       res.status(201).json(result);
     } catch (err) {
@@ -46,7 +48,8 @@ export class InternshipController {
         return;
       }
       const id = Number(idStr);
-      const data = updateGovInternshipSchema.parse(req.body);
+      const data = validateRequestData(res, updateGovInternshipSchema, req.body);
+      if (!data) return;
       const result = await service.update(id, data);
       res.json(result);
     } catch (err) {

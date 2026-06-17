@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { PayrollService } from "./payroll.service.js";
 import { runPayrollSchema, approvePayrollSchema, payrollQuerySchema, contractorPaymentSchema } from "./payroll.validation.js";
 
@@ -24,7 +25,8 @@ export class PayrollController {
 
   async getRecords(req: Request, res: Response) {
     try {
-      const query = payrollQuerySchema.parse(req.query);
+      const query = validateRequestData(res, payrollQuerySchema, req.query);
+      if (!query) return;
       const data = await this.payrollService.getRecords(query);
       return res.json(data);
     } catch (error) {
@@ -89,7 +91,8 @@ export class PayrollController {
 
   async getContractorPayments(req: Request, res: Response) {
     try {
-      const query = payrollQuerySchema.parse(req.query);
+      const query = validateRequestData(res, payrollQuerySchema, req.query);
+      if (!query) return;
       const data = await this.payrollService.getContractorPayments(query);
       return res.json(data);
     } catch (error) {
