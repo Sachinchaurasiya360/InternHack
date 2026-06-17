@@ -26,7 +26,7 @@ import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
 import { Button } from "@/components/ui/button";
-
+import { DIFFICULTY_STYLE } from "../../../lib/difficulty-styles";
 import { DsaApproachesPanel } from "./components/DsaApproachesPanel";
 import { NotesPanel } from "../../../components/learning/NotesPanel";
 
