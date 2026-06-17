@@ -14,6 +14,7 @@ import type { Application, CustomFieldDefinition, AssessmentQuestion } from "../
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import { googleCalendarUrl, downloadICS } from "../../../lib/calendar";
+import { ApplicationStatusTimeline } from "./ApplicationStatusTimeline";
 
 function getDeadlineBanner(deadline: string): { level: "warning" | "critical" | null; daysLeft: number } {
   const now = new Date();
@@ -113,6 +114,10 @@ export default function ApplicationProgressPage() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="mb-8">
+        <ApplicationStatusTimeline status={application.status} />
       </div>
 
       {/* Deadline urgency banner */}
