@@ -50,6 +50,7 @@ export const registerSchema = z.object({
   company: z.string().optional(),
   designation: z.string().optional(),
   contactNo: z.string().optional(),
+  ref: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.role === "RECRUITER") {
     const domain = data.email.split("@")[1]?.toLowerCase();

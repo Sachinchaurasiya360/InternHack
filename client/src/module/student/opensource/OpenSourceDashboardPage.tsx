@@ -15,6 +15,8 @@ import {
   GraduationCap,
   BarChart3,
   Plus,
+  Award,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -454,6 +456,28 @@ export default function OpenSourceDashboardPage() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Ambassador Status */}
+        <div className="p-6 border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 rounded-md shadow-xs flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-md bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+              <Award className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-stone-900 dark:text-stone-50">
+                OSS Ambassador Program
+              </p>
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                Unlock premium perks, referral links, and a featured profile badge
+              </p>
+            </div>
+          </div>
+          <Button asChild variant="primary" className="rounded-md shrink-0 ml-4">
+            <Link to="/student/opensource/ambassador">
+              View <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+            </Link>
+          </Button>
         </div>
 
         {/* My Submissions */}

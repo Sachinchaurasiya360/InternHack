@@ -11,6 +11,7 @@ const SEGMENT_NAMES: Record<string, string> = {
   "gsoc-proposal": "GSoC Proposal",
   gsoc: "GSoC Repos",
   "read-codebase": "Read Codebase",
+  ambassador: "Ambassador",
   "git-guide": "Git Guide",
   communication: "Communication",
   cicd: "CI/CD",
