@@ -7,7 +7,7 @@ import { queryKeys } from "../../../../lib/query-keys";
 import type { DsaTopicDetail } from "../../../../lib/types";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { Callout } from "../../../../components/dsa-theory/primitives";
-import { DIFF_COLOR } from "../../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../../lib/difficulty-styles";
 
 interface PracticeTabProps {
   topicSlug: string;

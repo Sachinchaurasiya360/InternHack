@@ -31,7 +31,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { toast } from "react-hot-toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 
 type SqlProgress = Record<string, { solved: boolean; code: string | null }>;
 
