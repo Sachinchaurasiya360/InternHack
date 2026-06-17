@@ -20,10 +20,10 @@ export const DAILY_LIMITS: Record<UsageAction, Record<PlanTier, number>> = {
   COVER_LETTER:    { FREE: 2,  PREMIUM: 20 },
   GENERATE_RESUME: { FREE: 1,  PREMIUM: 20 },
   JOB_APPLICATION: { FREE: 10, PREMIUM: 9999 },
-  MOCK_INTERVIEW:  { FREE: 0,  PREMIUM: 99 },
+  MOCK_INTERVIEW:  { FREE: 1,  PREMIUM: 99 },
   BEHAVIORAL_EVAL: { FREE: 5,  PREMIUM: 999999 },
   AI_JOB_CHAT:     { FREE: 2,  PREMIUM: 50 },
-  CODE_RUN:        { FREE: 0,  PREMIUM: 50 },
+  CODE_RUN:        { FREE: 3,  PREMIUM: 50 },
   GITHUB_STATS:    { FREE: 20, PREMIUM: 9999 },
   ROADMAP_GENERATION: { FREE: 0, PREMIUM: 10 }, // placeholder — actual limits in MONTHLY_LIMITS
   STREAK_TICK: { FREE: 1, PREMIUM: 10 },
