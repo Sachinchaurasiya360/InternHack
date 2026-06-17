@@ -25,6 +25,10 @@ export default function CertificateViewPage() {
     retry: 1,
   });
 
+  /**
+   * Copies the current certificate page URL to the clipboard
+   * and shows a temporary "copied" confirmation state.
+   */
   const copyLink = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
@@ -33,6 +37,9 @@ export default function CertificateViewPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  /**
+   * Opens LinkedIn's share dialog for the current certificate page.
+   */
   const shareLinkedIn = () => {
     const url = window.location.href;
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
