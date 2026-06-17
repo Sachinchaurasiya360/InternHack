@@ -33,7 +33,7 @@ export function ProtectedRoute({ children, role, redirectTo = "/login" }: Protec
   }
 
   if (role && user?.role !== role) {
-    return <Navigate to="/" replace />;
+    return <RedirectWithToast to="/" />;
   }
 
   return <>{children}</>;
