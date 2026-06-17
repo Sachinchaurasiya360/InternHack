@@ -25,10 +25,33 @@ export class AmbassadorService {
       inTop100: boolean;
     };
   }> {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, createdAt: true },
-    });
+    const [user, certCount, github, approvedRepos, rankRows] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, createdAt: true },
+      }),
+      prisma.guideCertificate.count({
+        where: { userId, guideName: { in: GUIDE_NAMES } },
+      }),
+      prisma.githubConnection.findUnique({
+        where: { userId },
+        select: { reposContributed: true },
+      }),
+      prisma.repoRequest.count({
+        where: { userId, status: "APPROVED" },
+      }),
+      prisma.$queryRaw<{ rank: bigint }[]>`
+        SELECT rank
+        FROM (
+          SELECT "userId",
+                 ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
+          FROM   "githubConnection"
+          WHERE  "reposContributed" > 0
+        ) ranked
+        WHERE "userId" = ${userId}
+      `,
+    ]);
+
     if (!user) {
       return { eligible: false, reason: "User not found", details: { guidesCompleted: 0, reposContributed: 0, accountAgeDays: 0, leaderboardRank: null, inTop100: false } };
     }
@@ -37,43 +60,17 @@ export class AmbassadorService {
       (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24),
     );
 
-    const certCount = await prisma.guideCertificate.count({
-      where: { userId, guideName: { in: GUIDE_NAMES } },
-    });
     const guidesCompleted = certCount;
-
-    const github = await prisma.githubConnection.findUnique({
-      where: { userId },
-      select: { reposContributed: true },
-    });
     const githubRepoCount = github?.reposContributed ?? 0;
-
-    const approvedRepos = await prisma.repoRequest.count({
-      where: { userId, status: "APPROVED" },
-    });
     const reposContributed = githubRepoCount + approvedRepos;
 
-    // Compute rank in a single SQL statement using ROW_NUMBER() rather than
-    // loading all rows into memory (avoids N connections in the cron loop).
-    const rankRows = await prisma.$queryRaw<{ rank: bigint }[]>`
-      SELECT rank
-      FROM (
-        SELECT "userId",
-               ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
-        FROM   "githubConnection"
-        WHERE  "reposContributed" > 0
-      ) ranked
-      WHERE "userId" = ${userId}
-    `;
     const leaderboardRank = rankRows.length > 0 ? Number(rankRows[0]!.rank) : null;
     const inTop100 = leaderboardRank !== null && leaderboardRank <= 100;
-
-    const accountAgeOk = accountAgeDays >= 30;
 
     const eligible =
       guidesCompleted >= 6 &&
       reposContributed >= 3 &&
-      accountAgeOk &&
+      accountAgeDays >= 30 &&
       inTop100;
 
     return {
