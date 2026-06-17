@@ -28,9 +28,6 @@ import {
   type googleAuthSchema,
 } from "./auth.validation.js";
 
-// Input shapes are derived from the Zod schemas so there is a single source of
-// truth. The route-level validateBody(...) middleware guarantees req.body
-// already matches these types before the service is called.
 type RegisterInput = z.infer<typeof registerSchema>;
 type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 type LoginInput = z.infer<typeof loginSchema>;
@@ -224,11 +221,45 @@ export class AuthService {
     });
 
     const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
-    user.profileSlug = slug;
+    (user as any).profileSlug = slug;
 
-    sendVerificationEmail(user.email, user.name, otp);
+    // Send OTP email (fire-and-forget, don't block registration)
+    sendEmail({
+      to: user.email,
+      subject: "Verify your InternHack account",
+      html: otpEmailHtml(user.name, otp),
+    }).catch((err) => console.error("Failed to send OTP email:", err));
+
+    // Record referral conversion if a ref code was provided
+    if (data.ref) {
+      this.recordReferral(data.ref, user.id).catch((err) =>
+        console.error("Failed to record referral during registration:", err)
+      );
+    }
 
     return { user };
+  }
+
+  private async recordReferral(code: string, userId: number) {
+    try {
+      const link = await prisma.referralLink.findUnique({
+        where: { code },
+        select: { id: true },
+      });
+      if (!link) return;
+
+      try {
+        await prisma.referralConversion.upsert({
+          where: { referredUserId: userId },
+          update: {},
+          create: { referralLinkId: link.id, referredUserId: userId },
+        });
+      } catch (err: any) {
+        console.error("Failed to write referral conversion (likely duplicate/unique violation):", err);
+      }
+    } catch (err: any) {
+      console.error("Failed to record referral:", err);
+    }
   }
 
   async googleAuth(data: GoogleAuthInput) {
