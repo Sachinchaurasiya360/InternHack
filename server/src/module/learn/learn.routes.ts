@@ -12,7 +12,7 @@ export const learnRouter = Router();
 
 // New Feature: AI Evaluation Job-Readiness Scorecard (#1088)
 learnRouter.post(
-  "/learn/readiness",
+  "/readiness",
   authMiddleware,
   requireRole("STUDENT"),
   (req, res) => learnController.getInterviewReadinessReport(req, res),
