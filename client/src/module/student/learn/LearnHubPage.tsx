@@ -259,8 +259,8 @@ const grouped = useMemo(() => {
           className="group flex items-center justify-between bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-5 py-4 hover:border-lime-400 dark:hover:border-lime-400 transition-colors no-underline"
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-md bg-indigo-100 dark:bg-indigo-900/20 border border-indigo-300 dark:border-indigo-800 flex items-center justify-center shrink-0">
-              <span className="text-sm font-bold text-indigo-700 dark:text-indigo-400">P</span>
+            <div className="w-10 h-10 rounded-md bg-lime-100 dark:bg-lime-900/20 border border-lime-300 dark:border-lime-800/50 flex items-center justify-center shrink-0">
+              <span className="text-sm font-bold text-lime-700 dark:text-lime-400">P</span>
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">

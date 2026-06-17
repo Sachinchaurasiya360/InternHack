@@ -73,8 +73,6 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
-    "@emnapi/core": "1.11.1",
-    "@emnapi/runtime": "1.11.1",
     "@eslint/js": "^9.39.1",
     "@prerenderer/renderer-puppeteer": "^1.2.4",
     "@prerenderer/rollup-plugin": "^0.3.12",
@@ -91,6 +89,6 @@
     "puppeteer": "^24.40.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.59.4",
-    "vite": "^8.0.16"
+    "vite": "^7.2.4"
   }
 }

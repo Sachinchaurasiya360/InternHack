@@ -57,7 +57,7 @@ export default function ExamPrepHubPage() {
             >
               <Link
                 to={`/learn/exam-prep/${exam.id}`}
-                className="group block relative overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 hover:border-violet-300 dark:hover:border-violet-700 transition-all"
+                className="group block relative overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 p-6 hover:border-violet-300 dark:hover:border-violet-700 transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
@@ -70,9 +70,9 @@ export default function ExamPrepHubPage() {
                       </span>
                     )}
                   </div>
-                  <h3 className="font-bold text-gray-950 dark:text-white text-lg">{exam.name}</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{exam.tagline}</p>
-                  <div className="flex items-center gap-4 mt-4 text-xs text-gray-500 dark:text-gray-400">
+                  <h3 className="font-bold text-stone-900 dark:text-stone-50 text-lg">{exam.name}</h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">{exam.tagline}</p>
+                  <div className="flex items-center gap-4 mt-4 text-xs text-stone-500 dark:text-stone-400">
                     <span className="inline-flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {exam.totalDuration}m

@@ -935,6 +935,7 @@ export class DsaService {
       }
     }
 
+    // solvedSlugs is used by the Placement Prep Plans dashboard to auto-complete daily DSA tasks matching solved slugs
     const solvedSlugs = allProblems.filter((p) => solvedIds.has(p.id)).map((p) => p.slug);
 
     return {

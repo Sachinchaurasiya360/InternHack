@@ -26,6 +26,7 @@ export default function ExamDetailPage() {
   useEffect(() => {
     try {
       if (!exam) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setAttempts([]);
         return;
       }
@@ -56,6 +57,7 @@ export default function ExamDetailPage() {
       console.error("Failed to read exam history from localStorage", e);
     }
     setAttempts([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exam?.id]);
 
   if (!exam) return <Navigate to="/learn/exam-prep" replace />;
@@ -186,8 +188,8 @@ export default function ExamDetailPage() {
 
       {attempts.length > 0 && (
         <div className="mt-8">
-          <div className="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-            <h2 className="text-sm font-bold text-gray-950 dark:text-white">Attempt History</h2>
+          <div className="flex items-center justify-between mb-3 border-b border-stone-100 dark:border-stone-800 pb-2">
+            <h2 className="text-sm font-bold text-stone-950 dark:text-white">Attempt History</h2>
             <Button
               variant="danger"
               size="sm"
@@ -201,7 +203,7 @@ export default function ExamDetailPage() {
             {attempts.map((att, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-5 py-3.5 text-xs shadow-xs"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-stone-100 dark:border-stone-800 bg-white dark:bg-stone-900 px-5 py-3.5 text-xs shadow-xs"
               >
                 <div className="flex items-center gap-3">
                   {att.passed ? (
@@ -210,12 +212,12 @@ export default function ExamDetailPage() {
                     <XCircle className="w-4 h-4 text-amber-500 shrink-0" />
                   )}
                   <div>
-                    <span className="font-bold text-gray-800 dark:text-gray-200">
+                    <span className="font-bold text-stone-800 dark:text-stone-200">
                       {att.mode === "mock"
                         ? "Full Mock Test"
                         : `Section: ${exam.sections.find((s) => s.id === att.sectionId)?.name || att.sectionId}`}
                     </span>
-                    <span className="text-gray-400 ml-2 font-mono text-xs">
+                    <span className="text-stone-400 ml-2 font-mono text-xs">
                       {new Date(att.completedAt).toLocaleDateString(undefined, {
                         month: "short",
                         day: "numeric",
@@ -226,7 +228,7 @@ export default function ExamDetailPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono font-bold text-gray-700 dark:text-gray-300">
+                  <span className="font-mono font-bold text-stone-700 dark:text-stone-300">
                     {att.correct}/{att.total} ({att.scorePct}%)
                   </span>
                   <span
