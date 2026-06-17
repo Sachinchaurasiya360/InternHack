@@ -12,6 +12,7 @@ import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import { QuizBlock, type QuizQuestion } from "../../../../components/quiz/QuizBlock";
 import api from "../../../../lib/axios";
+import { useAuthStore } from "../../../../lib/auth.store";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
 import toast from "../../../../components/ui/toast";
 
@@ -45,6 +46,7 @@ interface Props {
 export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffix }: Props) {
   const { sectionSlug } = useParams<{ sectionSlug: string }>();
   const navigate = useNavigate();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const stepIndex = steps.findIndex((s) => s.id === sectionSlug);
   const step = steps[stepIndex];
 
@@ -58,6 +60,22 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   const [submitted, setSubmitted] = useState(false);
   const [showReasons, setShowReasons] = useState(false);
 
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let cancelled = false;
+
+    api.get<{ completedStepIds: string[] }>(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`)
+      .then((res) => {
+        if (cancelled) return;
+        const ids = res.data.completedStepIds ?? [];
+        setCompleted(new Set(ids));
+        try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { /* */ }
+      })
+      .catch(() => { /* 404 means no progress yet — keep localStorage default */ });
+
+    return () => { cancelled = true; };
+  }, [isAuthenticated, storageKey]);
   const [showShortcutHint, setShowShortcutHint] = useState(() => {
   try {
     return localStorage.getItem("guide-hint-dismissed") !== "true";
@@ -72,18 +90,18 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       if (!step) return prev;
       const next = new Set(prev);
       if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
-      try { 
-        localStorage.setItem(storageKey, JSON.stringify([...next])); 
-        notifyLearningPathProgressChanged();
-        return next;
-      } 
-      catch { 
-        toast.error("Couldn't save progress");
-        return prev; 
+      const ids = [...next];
+      try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { /* */ }
+      notifyLearningPathProgressChanged();
+
+      if (isAuthenticated) {
+        api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, { completedStepIds: ids })
+          .catch(() => { /* non-blocking */ });
       }
-      
+
+      return next;
     });
-  }, [step, storageKey]);
+  }, [step, storageKey, isAuthenticated]);
 
   const dismissShortcutHint = () => {
   try {

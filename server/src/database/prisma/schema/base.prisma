@@ -118,6 +118,7 @@ model user {
   ambassadorReviews         ambassador[]                @relation("AmbassadorReviewer")
   shareReviews              ambassadorShare[]           @relation("ShareReviewer")
   referralConversions       referralConversion[]         @relation("ReferredConversions")
+  guideProgress             guideProgress[]             @relation("UserGuideProgress")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -148,6 +149,21 @@ model studentFirstPrProgress {
   user user @relation("StudentFirstPrProgress", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model guideProgress {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  guideSlug        String
+  completedStepIds String[] @default([])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user user @relation("UserGuideProgress", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideSlug])
+  @@index([userId])
+  @@index([guideSlug])
 }
 
 model adminProfile {
