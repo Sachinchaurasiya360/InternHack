@@ -374,7 +374,7 @@ export class GithubService {
     const params = new URLSearchParams({
       client_id: getRequiredEnv("GITHUB_CLIENT_ID"),
       redirect_uri: getOAuthRedirectUri(),
-      scope: "read:user public_repo",
+      scope: "read:user",
       state: createState(userId),
       allow_signup: "true",
     });

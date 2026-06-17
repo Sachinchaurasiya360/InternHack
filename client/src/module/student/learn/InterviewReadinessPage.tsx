@@ -34,9 +34,10 @@ export default function InterviewReadinessPage() {
       // Points exactly to the relative route using the common Axios wrapper configuration
       const response = await api.post('/learn/readiness', form);
       setReport(response.data.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error evaluating readiness scorecard:", err);
-      setError(err?.response?.data?.message || "Failed to generate evaluation. Please try again.");
+      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      setError(message || "Failed to generate evaluation. Please try again.");
     } finally {
       setLoading(false);
     }

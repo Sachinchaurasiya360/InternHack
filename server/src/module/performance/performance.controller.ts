@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { PerformanceService } from "./performance.service.js";
 import { createReviewSchema, updateReviewSchema, submitReviewSchema, reviewQuerySchema } from "./performance.validation.js";
 
@@ -23,7 +24,8 @@ export class PerformanceController {
       const employeeId = Number(req.query["employeeId"]);
       if (isNaN(employeeId)) return res.status(400).json({ message: "employeeId required" });
 
-      const query = reviewQuerySchema.parse(req.query);
+      const query = validateRequestData(res, reviewQuerySchema, req.query);
+      if (!query) return;
       const data = await this.performanceService.getMyReviews(employeeId, query);
       return res.json(data);
     } catch (error) {
@@ -37,7 +39,8 @@ export class PerformanceController {
       const reviewerId = Number(req.query["reviewerId"]);
       if (isNaN(reviewerId)) return res.status(400).json({ message: "reviewerId required" });
 
-      const query = reviewQuerySchema.parse(req.query);
+      const query = validateRequestData(res, reviewQuerySchema, req.query);
+      if (!query) return;
       const data = await this.performanceService.getTeamReviews(reviewerId, query);
       return res.json(data);
     } catch (error) {

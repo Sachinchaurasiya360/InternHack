@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useParams, Link, Navigate } from "react-router";
 import {
@@ -14,7 +14,6 @@ import {
   ExternalLink,
   Bookmark,
   BookmarkCheck,
-  StickyNote,
   ChevronDown,
   Lightbulb,
   BookOpen,
@@ -33,11 +32,12 @@ import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import { sanitizeHtml } from "../../../lib/sanitize";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 import { cleanHint } from "../../../lib/sanitize";
 import { useDsaLabels } from "./components/useDsaLabels";
 import { DsaLabelManager } from "./components/DsaLabelManager";
 import { DsaLabelFilter } from "./components/DsaLabelFilter";
+import { NotesPanel } from "../../../components/learning/NotesPanel";
 
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
 
@@ -49,9 +49,6 @@ export default function DsaTopicDetailPage() {
   const [search, setSearch] = useState("");
   const page = 1; // virtual scroll replaces server-side pagination
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
-  const [noteValues, setNoteValues] = useState<Record<number, string>>({});
-  const [savingNotes, setSavingNotes] = useState<Set<number>>(new Set());
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
   const { allLabels, getLabels, addLabel, removeLabel } = useDsaLabels(!!user);
@@ -170,56 +167,6 @@ export default function DsaTopicDetailPage() {
       queryClient.invalidateQueries({ queryKey: queryKeys.dsa.bookmarks() });
     },
   });
-
-  const saveNotes = useCallback(
-    async (problemId: number, notes: string) => {
-      setSavingNotes((prev) => new Set(prev).add(problemId));
-      try {
-        await api.put(`/dsa/problems/${problemId}/notes`, { notes });
-        const key = queryKeys.dsa.topic(slug!, page, {
-          difficulty: diffParam,
-          search: searchParam,
-        });
-        const prev = queryClient.getQueryData<DsaTopicDetail>(key);
-        if (prev) {
-          queryClient.setQueryData(key, {
-            ...prev,
-            problems: prev.problems.map((p) =>
-              p.id === problemId ? { ...p, notes: notes.trim() || null } : p,
-            ),
-          });
-        }
-      } catch {
-        toast.error("Failed to save notes");
-      } finally {
-        setSavingNotes((prev) => {
-          const next = new Set(prev);
-          next.delete(problemId);
-          return next;
-        });
-      }
-    },
-    [queryClient, slug, page, diffParam, searchParam],
-  );
-
-  const toggleNotes = (
-    problemId: number,
-    currentNotes: string | null | undefined,
-  ) => {
-    setExpandedNotes((prev) => {
-      const next = new Set(prev);
-      if (next.has(problemId)) {
-        next.delete(problemId);
-        const val = noteValues[problemId];
-        if (val !== undefined && val !== (currentNotes ?? ""))
-          saveNotes(problemId, val);
-      } else {
-        next.add(problemId);
-        setNoteValues((prev) => ({ ...prev, [problemId]: currentNotes ?? "" }));
-      }
-      return next;
-    });
-  };
 
   // Client-side label filter layered on top of the server's difficulty/search
   // filtering. A problem matches when it carries any selected label (union).
@@ -490,12 +437,6 @@ export default function DsaTopicDetailPage() {
                         isExpanded={expandedId === problem.id}
                         toggleMutation={toggleMutation}
                         bookmarkMutation={bookmarkMutation}
-                        expandedNotes={expandedNotes}
-                        savingNotes={savingNotes}
-                        noteValues={noteValues}
-                        setNoteValues={setNoteValues}
-                        saveNotes={saveNotes}
-                        toggleNotes={toggleNotes}
                         setExpandedId={setExpandedId}
                         labels={
                           getLabels(problem.id).length
@@ -524,12 +465,6 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   isExpanded,
   toggleMutation,
   bookmarkMutation,
-  expandedNotes,
-  savingNotes,
-  noteValues,
-  setNoteValues,
-  saveNotes,
-  toggleNotes,
   setExpandedId,
   labels,
   onAddLabel,
@@ -541,12 +476,6 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
   isExpanded: boolean;
   toggleMutation: UseMutationResult<unknown, Error, number>;
   bookmarkMutation: UseMutationResult<unknown, Error, number>;
-  expandedNotes: Set<number>;
-  savingNotes: Set<number>;
-  noteValues: Record<number, string>;
-  setNoteValues: React.Dispatch<React.SetStateAction<Record<number, string>>>;
-  saveNotes: (problemId: number, val: string) => void;
-  toggleNotes: (problemId: number, notes: string | null | undefined) => void;
   setExpandedId: (val: number | null) => void;
   labels: string[];
   onAddLabel: (problemId: number, label: string) => void;
@@ -744,57 +673,9 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                   />
                 </div>
               )}
-
               {user && (
-                <div>
-                  {expandedNotes.has(problem.id) ? (
-                    <div>
-                      <textarea
-                        value={noteValues[problem.id] ?? ""}
-                        onChange={(e) =>
-                          setNoteValues((prev) => ({
-                            ...prev,
-                            [problem.id]: e.target.value,
-                          }))
-                        }
-                        onBlur={() => {
-                          const val = noteValues[problem.id];
-                          if (
-                            val !== undefined &&
-                            val !== (problem.notes ?? "")
-                          ) {
-                            saveNotes(problem.id, val);
-                          }
-                        }}
-                        placeholder="Add your notes here..."
-                        rows={3}
-                        className="w-full px-4 py-3 text-sm border border-stone-300 dark:border-white/10 rounded-md bg-stone-50 dark:bg-white/5 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 focus:outline-none focus:border-lime-400 transition-colors resize-none"
-                      />
-                      <div className="flex items-center justify-between mt-1.5">
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                          {savingNotes.has(problem.id)
-                            ? "saving..."
-                            : "auto-saves on close"}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          mode="link"
-                          onClick={() => toggleNotes(problem.id, problem.notes)}
-                          className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300"
-                        >
-                          close notes
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => toggleNotes(problem.id, problem.notes)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 rounded-md text-[10px] font-mono uppercase tracking-widest hover:bg-stone-200 dark:hover:bg-white/10 hover:text-stone-900 dark:hover:text-stone-50 transition-colors cursor-pointer"
-                    >
-                      <StickyNote className="w-3 h-3" />
-                      {problem.notes ? "view notes" : "add notes"}
-                    </button>
-                  )}
+                <div className="mt-2 border-t border-stone-200 dark:border-white/10 pt-3">
+                  <NotesPanel contentType="DSA_PROBLEM" contentId={problem.id} />
                 </div>
               )}
             </div>

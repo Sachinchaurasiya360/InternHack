@@ -63,7 +63,9 @@ import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
 import { recommendationRouter } from "./module/recommendation/recommendation.routes.js";
 import { learnRouter } from "./module/learn/learn.routes.js";
-import { coachRouter } from "./module/coach/coach.routes.js";
+import { notesRouter } from "./module/notes/notes.routes.js";
+import { behavioralRouter } from "./module/behavioral/behavioral.routes.js";
+import { ambassadorRouter } from "./module/ambassador/ambassador.routes.js";
 import analyticsRouter from "./module/analytics/analytics.routes.js";
 import { healthRouter } from "./module/health/health.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
@@ -75,9 +77,9 @@ import { startAIPipelineCrons, stopAIPipelineCrons } from "./cron/internhack-ai.
 import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
-import { startAnalyticsReportCron, stopAnalyticsReportCron } from "./cron/analytics-report.cron.js";
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
+import { startAmbassadorEligibilityCron, stopAmbassadorEligibilityCron } from "./cron/ambassador-eligibility.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
@@ -295,8 +297,10 @@ app.use("/api/email-inbound", emailInboundRouter);
 app.use("/api/milestones", milestoneRouter);
 app.use("/api/roadmaps", roadmapRouter);
 app.use("/api/analytics", analyticsRouter);
+app.use("/api/behavioral", behavioralRouter);
 app.use("/api/learn", learnRouter);
-app.use("/api/coach", coachRouter);
+app.use("/api/notes", notesRouter);
+app.use("/api/ambassador", ambassadorRouter);
 
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
@@ -428,14 +432,6 @@ const server = app.listen(PORT, async () => {
     logger.info("Weekly digest cron disabled on this process");
   }
 
-  // Start the weekly analytics report cron (every Sunday at midnight)
-  startAnalyticsReportCron();
-  shutdownManager.register({
-    name: "Analytics Report Cron",
-    priority: 10,
-    fn: () => stopAnalyticsReportCron(),
-  });
-
   // Start signals cleanup cron (weekly Sunday at 2 AM)
   startSignalsCleanupCron();
   shutdownManager.register({
@@ -450,6 +446,14 @@ const server = app.listen(PORT, async () => {
     name: "Deadline Alert Cron",
     priority: 10,
     fn: () => stopDeadlineAlertCron(),
+  });
+
+  // Start the daily ambassador eligibility cron
+  startAmbassadorEligibilityCron();
+  shutdownManager.register({
+    name: "Ambassador Eligibility Cron",
+    priority: 10,
+    fn: () => stopAmbassadorEligibilityCron(),
   });
 
   const runGithubContributionsCron =

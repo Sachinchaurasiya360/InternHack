@@ -109,7 +109,9 @@ export class InterviewExperienceController {
       const experience = await service.create(req.user.id, parsed.data);
 
       // Fire-and-forget: award badges for submissions
-      badgeService.checkAndAwardBadges(req.user.id, "interview_share").catch((err) => console.error("Badge check failed (interview_share):", err));
+      badgeService.checkAndAwardBadges(req.user.id, "interview_share").catch((err) => {
+        console.error("[interview-experience] badge check failed for user %d (interview_share): %o", req.user!.id, err);
+      });
 
       res.status(201).json({ experience });
     } catch (err) {
@@ -150,7 +152,7 @@ export class InterviewExperienceController {
         experience.user
       ) {
         void notifyApproval(experience).catch((err) => {
-          console.error("[interview-experience] approval notify failed:", err);
+          console.error("[interview-experience] approval notify failed for experience %d: %o", experience.id, err);
         });
       }
 

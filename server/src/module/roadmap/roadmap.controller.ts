@@ -15,6 +15,7 @@ import {
   topicSlugParam,
   updateProgressSchema,
   updateRoadmapSchema,
+  shareTokenSchema
 } from "./roadmap.validation.js";
 import {
   buildWeeklyPlan,
@@ -45,6 +46,7 @@ import { sendEmail } from "../../utils/email.utils.js";
 import { roadmapWelcomeEmailHtml } from "../../utils/email-templates.js";
 // FIX: import clearCache so we can bust the cache for the new roadmap slug
 import { clearCache } from "../../middleware/cache.middleware.js";
+import { getPlanTier, MONTHLY_LIMITS } from "../../config/usage-limits.js";
 
 const validationError = (res: Response, errors: unknown) =>
   res.status(400).json({ message: "Validation failed", errors });
@@ -746,7 +748,7 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
       });
 
       return created;
-    });
+    }, { timeout: 30000 });
 
     // 4. Schedule day-10 follow-up
     const sendAt = new Date(enrollment.startDate.getTime() + 10 * 24 * 60 * 60 * 1000);
@@ -927,17 +929,19 @@ export async function getPublicCertificateMeta(
   try {
     const slug = req.params.slug;
 
-    const enrollmentId = Number(req.params.enrollmentId);
+    const shareToken = typeof req.params.shareToken === "string" ? req.params.shareToken : undefined;
 
     const parsed = roadmapSlugParam.safeParse({
       slug,
     });
 
-    if (!parsed.success || Number.isNaN(enrollmentId)) {
-      validationError(
+    const shareTokenParsed = shareTokenSchema.safeParse(shareToken);
+
+    if (!parsed.success || !shareTokenParsed.success) {     
+       validationError(
         res,
         parsed.success
-          ? { enrollmentId: ["Invalid enrollment id"] }
+          ? { shareToken: ["Invalid share token"] }
           : parsed.error.flatten().fieldErrors,
       );
       return;
@@ -945,7 +949,7 @@ export async function getPublicCertificateMeta(
 
     const enrollment = await prisma.roadmapEnrollment.findFirst({
       where: {
-        id: enrollmentId,
+        shareToken: shareTokenParsed.data,
         roadmap: {
           slug: parsed.data.slug,
         },
@@ -1003,8 +1007,8 @@ export async function getPublicCertificateMeta(
       roadmapTitle: enrollment.roadmap.title,
       roadmapSlug: enrollment.roadmap.slug,
       completedAt: latestCompletion,
-      certificateUrl: `/api/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.id}`,
-      shareUrl: `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.id}`,
+      certificateUrl: `/api/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.shareToken}`,
+      shareUrl: `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.shareToken}`,
     });
   } catch (err) {
     next(err);
@@ -1019,17 +1023,19 @@ export async function getPublicCertificate(
   try {
     const slug = req.params.slug;
 
-    const enrollmentId = Number(req.params.enrollmentId);
+    const shareToken = typeof req.params.shareToken === "string" ? req.params.shareToken : undefined;
 
     const parsed = roadmapSlugParam.safeParse({
       slug: slug,
     });
 
-    if (!parsed.success || Number.isNaN(enrollmentId)) {
-      validationError(
+    const shareTokenParsed = shareTokenSchema.safeParse(shareToken);
+
+    if (!parsed.success || !shareTokenParsed.success) {     
+       validationError(
         res,
         parsed.success
-          ? { enrollmentId: ["Invalid enrollment id"] }
+          ? { shareToken: ["Invalid share token"] }
           : parsed.error.flatten().fieldErrors,
       );
       return;
@@ -1037,7 +1043,7 @@ export async function getPublicCertificate(
 
     const enrollment = await prisma.roadmapEnrollment.findFirst({
       where: {
-        id: enrollmentId,
+        shareToken: shareTokenParsed.data,
         roadmap: {
           slug: parsed.data.slug,
         },
@@ -1151,14 +1157,14 @@ export async function getMyCertificates(
             ?.completedAt ?? new Date();
 
         return {
-          enrollmentId: enrollment.id,
+          shareToken: enrollment.shareToken,
           roadmapTitle: enrollment.roadmap.title,
           roadmapSlug: enrollment.roadmap.slug,
           completedAt: latestCompletion,
           certificateUrl:
             `/api/roadmaps/me/enrollments/${enrollment.id}/certificate`,
           shareUrl:
-            `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.id}`,
+            `/learn/roadmaps/certificates/${enrollment.roadmap.slug}/${enrollment.shareToken}`,
         };
       })
       .filter(Boolean);
@@ -1326,7 +1332,7 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
           },
         },
       });
-    });
+    }, { timeout: 30000 });
 
     // FIX: Bust the cache for this roadmap so section changes are visible immediately
     clearCache(`roadmap:/api/roadmaps/${slug}`);
@@ -1377,6 +1383,45 @@ export async function toggleShare(req: Request, res: Response, next: NextFunctio
       success: true,
       isPubliclyShared: updated.isPubliclyShared,
       shareUrl: `https://internhack.xyz/roadmaps/${slug}`,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── AI Usage Stats ────────────────────────────────────────────────────────
+export async function getAiUsage(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user!.id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
+    const limit = MONTHLY_LIMITS["ROADMAP_GENERATION"]?.[tier] ?? 5;
+
+    const startOfWindow = new Date();
+    startOfWindow.setUTCDate(1);
+    startOfWindow.setUTCHours(0, 0, 0, 0);
+
+    const used = await prisma.usageLog.count({
+      where: {
+        userId,
+        action: "ROADMAP_GENERATION",
+        createdAt: { gte: startOfWindow },
+      },
+    });
+
+    res.json({
+      used,
+      limit,
+      isPro: tier === "PREMIUM",
     });
   } catch (err) {
     next(err);

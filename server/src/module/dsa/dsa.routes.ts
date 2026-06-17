@@ -118,6 +118,12 @@ dsaRouter.get(
   requireRole("STUDENT"),
   (req, res, next) => dsaController.getUserDsaStreak(req, res, next),
 );
+dsaRouter.get(
+  "/analytics",
+  authMiddleware,
+  requireRole("STUDENT"),
+  (req, res, next) => dsaController.getAnalytics(req, res, next),
+);
 
 dsaRouter.post(
   "/problems/:problemId/hints",
