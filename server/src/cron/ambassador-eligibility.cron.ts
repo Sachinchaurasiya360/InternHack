@@ -31,6 +31,18 @@ async function checkAndEnrollAmbassadors(): Promise<void> {
   const now = Date.now();
   let enrolled = 0;
 
+  // Compute the leaderboard ranking once, not per user. ROW_NUMBER() over the
+  // whole githubConnection table is expensive; running it inside the loop would
+  // recompute the full window for every eligible user.
+  const rankRows = await prisma.$queryRaw<{ userId: number; rank: bigint }[]>`
+    SELECT "userId",
+           ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
+    FROM   "githubConnection"
+    WHERE  "reposContributed" > 0
+  `;
+  const rankByUserId = new Map<number, number>();
+  for (const row of rankRows) rankByUserId.set(row.userId, Number(row.rank));
+
   for (const user of users) {
     const accountAgeDays = Math.floor(
       (now - user.createdAt.getTime()) / (1000 * 60 * 60 * 24),
@@ -57,18 +69,7 @@ async function checkAndEnrollAmbassadors(): Promise<void> {
 
     if (reposContributed < 3) continue;
 
-    // Single SQL statement — avoids scanning all rows per user in the loop.
-    const rankRows = await prisma.$queryRaw<{ rank: bigint }[]>`
-      SELECT rank
-      FROM (
-        SELECT "userId",
-               ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
-        FROM   "githubConnection"
-        WHERE  "reposContributed" > 0
-      ) ranked
-      WHERE "userId" = ${user.id}
-    `;
-    const leaderboardRank = rankRows.length > 0 ? Number(rankRows[0]!.rank) : null;
+    const leaderboardRank = rankByUserId.get(user.id) ?? null;
     const inTop100 = leaderboardRank !== null && leaderboardRank <= 100;
 
     if (!inTop100) continue;
@@ -91,7 +92,7 @@ async function checkAndEnrollAmbassadors(): Promise<void> {
       await tx.user.update({
         where: { id: user.id },
         data: {
-          subscriptionPlan: "MONTHLY",
+          subscriptionPlan: "YEARLY",
           subscriptionStatus: "ACTIVE",
           subscriptionStartDate: new Date(),
           subscriptionEndDate: new Date(now + 365 * 24 * 60 * 60 * 1000),
@@ -116,7 +117,12 @@ async function checkAndEnrollAmbassadors(): Promise<void> {
         .create({
           data: { studentId: user.id, badgeId: badge.id },
         })
-        .catch(() => {});
+        .catch((err: { code?: string }) => {
+          // P2002 = badge already awarded; anything else is worth surfacing.
+          if (err?.code !== "P2002") {
+            console.error("[Ambassador Cron] Failed to award badge:", err);
+          }
+        });
 
       const raw = `ambassador-${user.id}-${Math.random().toString(36).slice(2, 8)}`;
       const code = raw.replace(/[^a-z0-9-]/g, "-").slice(0, 40);

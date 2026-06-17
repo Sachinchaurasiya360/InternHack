@@ -129,7 +129,7 @@ export class AmbassadorService {
     await prisma.user.update({
       where: { id: userId },
       data: {
-        subscriptionPlan: "MONTHLY",
+        subscriptionPlan: "YEARLY",
         subscriptionStatus: "ACTIVE",
         subscriptionStartDate: new Date(),
         subscriptionEndDate: new Date(
@@ -169,7 +169,12 @@ export class AmbassadorService {
       .create({
         data: { studentId: userId, badgeId: badge.id },
       })
-      .catch(() => {});
+      .catch((err: { code?: string }) => {
+        // P2002 = badge already awarded; anything else is worth surfacing.
+        if (err?.code !== "P2002") {
+          console.error("Failed to award ambassador badge:", err);
+        }
+      });
   }
 
   // ─── Referral Links ────────────────────────────────────────────
@@ -397,6 +402,12 @@ export class AmbassadorService {
     reviewedBy: number,
     adminNotes?: string,
   ) {
+    const share = await prisma.ambassadorShare.findUnique({
+      where: { id: shareId },
+      select: { id: true },
+    });
+    if (!share) throw new Error("Share not found");
+
     return prisma.ambassadorShare.update({
       where: { id: shareId },
       data: {
