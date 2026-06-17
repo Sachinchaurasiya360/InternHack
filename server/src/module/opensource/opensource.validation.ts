@@ -7,7 +7,7 @@ export const opensourceListQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().optional(),
   language: z
-    .union([z.string(), z.array(z.string())])
+    .union([z.string().min(1), z.array(z.string().min(1))])
     .optional()
     .transform((val) => {
       if (val === undefined) return undefined;

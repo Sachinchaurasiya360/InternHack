@@ -32,4 +32,16 @@ describe("buildLanguageParam", () => {
   it("returns undefined in auto mode with no inferred languages", () => {
     expect(buildLanguageParam("auto", ["Python"], [])).toBeUndefined();
   });
+
+  it("filters out empty strings, trims whitespace, and removes duplicates", () => {
+    expect(buildLanguageParam("manual", ["", "  ", "Python", "  JavaScript  ", "Python"], [])).toEqual([
+      "Python",
+      "JavaScript",
+    ]);
+  });
+
+  it("returns undefined if only empty/whitespace strings remain", () => {
+    expect(buildLanguageParam("manual", ["", "  "], [])).toBeUndefined();
+    expect(buildLanguageParam("auto", [], ["", "   "])).toBeUndefined();
+  });
 });

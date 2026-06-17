@@ -249,7 +249,7 @@ describe("OpensourceService.listRepos — multi-language filter", () => {
     await service.listRepos({ ...baseQuery, language: undefined });
 
     const callArgs = vi.mocked(prisma.opensourceRepo.findMany).mock.calls[0][0];
-    expect(callArgs.where).not.toHaveProperty("language");
+    expect(callArgs!.where).not.toHaveProperty("language");
   });
 
   it("does not filter by language for empty array", async () => {
@@ -259,6 +259,6 @@ describe("OpensourceService.listRepos — multi-language filter", () => {
     await service.listRepos({ ...baseQuery, language: [] });
 
     const callArgs = vi.mocked(prisma.opensourceRepo.findMany).mock.calls[0][0];
-    expect(callArgs.where).not.toHaveProperty("language");
+    expect(callArgs!.where).not.toHaveProperty("language");
   });
 });

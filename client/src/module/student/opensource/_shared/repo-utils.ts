@@ -68,8 +68,10 @@ export function buildLanguageParam(
   selectedLanguage: string[],
   inferredLanguages: string[],
 ): string[] | undefined {
-  if (languageMode === "auto") {
-    return inferredLanguages.length > 0 ? inferredLanguages : undefined;
-  }
-  return selectedLanguage.length > 0 ? selectedLanguage : undefined;
+  const normalize = (langs: string[]) =>
+    [...new Set(langs.map((l) => l.trim()).filter(Boolean))];
+
+  const raw = languageMode === "auto" ? inferredLanguages : selectedLanguage;
+  const normalized = normalize(raw);
+  return normalized.length > 0 ? normalized : undefined;
 }
