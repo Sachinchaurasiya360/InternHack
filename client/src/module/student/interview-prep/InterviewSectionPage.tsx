@@ -11,7 +11,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { DIFFICULTY_STYLE } from "../../../lib/difficulty-styles";
-
+import { useQuery } from "@tanstack/react-query";
 
 const TYPE_STYLE: Record<string, string> = {
   Theory:      "text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-900/60",

@@ -19,6 +19,8 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 import api from "../../../lib/axios";
 import { DIFFICULTY_STYLE } from "../../../lib/difficulty-styles";
+import { GridBackground } from "../../../components/GridBackground";
+import { NotesPanel } from "../../../components/learning/NotesPanel";
 async function getServerProgress() {
   const { data } = await api.get("/interview-progress");
   return data;
