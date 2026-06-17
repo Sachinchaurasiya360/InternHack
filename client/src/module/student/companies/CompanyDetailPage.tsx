@@ -1,10 +1,7 @@
-import { fadeUp, stagger } from "@/lib/motion-variants";feature/ui-tweaks
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query"
+import { fadeUp, stagger } from "@/lib/motion-variants";
 import { useState, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useReactToPrint } from "react-to-print";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-main
 import { useParams, Link, useLocation } from "react-router";
 import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
@@ -149,9 +146,9 @@ export default function CompanyDetailPage() {
     documentTitle: `${company?.name || "Company"}_Profile`,
     onBeforePrint: () => { setIsExporting(true); return Promise.resolve(); },
     onAfterPrint: () => setIsExporting(false),
-    onPrintError: (errorType: any, error: any) => {
+    onPrintError: (errorType: unknown, error: unknown) => {
       console.error("Failed to generate PDF:", error);
-      alert("Failed to generate PDF: " + (error?.message || String(errorType)));
+      alert("Failed to generate PDF: " + ((error as { message?: string })?.message || String(errorType)));
       setIsExporting(false);
     }
   });

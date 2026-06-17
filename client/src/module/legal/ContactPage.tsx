@@ -147,7 +147,7 @@ export default function ContactPage() {
         {/* Contact Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           {/* Email */}
-          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
+          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
             <div className="flex items-center gap-2 mb-4">
               <Mail className="w-5 h-5 text-lime-500 dark:text-lime-400" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Email</h2>
@@ -182,7 +182,7 @@ export default function ContactPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Report Issue */}
-          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
+          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
             <div className="flex items-center gap-2 mb-4">
               <Bug className="w-5 h-5 text-lime-500 dark:text-lime-400" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Report an Issue</h2>
@@ -198,7 +198,7 @@ export default function ContactPage() {
           </section>
 
           {/* Social Media */}
-          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
+          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
             <div className="flex items-center gap-2 mb-4">
               <Globe className="w-5 h-5 text-lime-500 dark:text-lime-400" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Social Media</h2>
@@ -227,7 +227,7 @@ export default function ContactPage() {
             LinkedIn
           </a>
           <a href="mailto:mrsachinchaurasiya@gmail.com"
-            className="px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950backdrop-blur-sm text-sm font-medium text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] hover:bg-lime-500/5 transition-all">
+            className="px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm text-sm font-medium text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] hover:bg-lime-500/5 transition-all">
             Email Support
           </a>
         </div>

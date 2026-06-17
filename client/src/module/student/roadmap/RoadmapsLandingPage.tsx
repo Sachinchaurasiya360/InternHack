@@ -73,6 +73,9 @@ const matchTagOrCategory = (tags: string[], filter: string) => {
     if (normFilter === "frontend" || normFilter === "backend") {
       return normTag === normFilter || normTag === "fullstack";
     }
+    if (normFilter === "ai" || normFilter === "machinelearning") {
+      return normTag === "ai" || normTag === "machinelearning";
+    }
     return normTag === normFilter;
   });
 };
