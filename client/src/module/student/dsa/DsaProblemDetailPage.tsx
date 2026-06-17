@@ -26,18 +26,10 @@ import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
 import { Button } from "@/components/ui/button";
-<<<<<<< HEAD
+
 import { DsaApproachesPanel } from "./components/DsaApproachesPanel";
 import { NotesPanel } from "../../../components/learning/NotesPanel";
 
-const DIFF_STYLE: Record<string, string> = {
-  Easy: "text-green-700 dark:text-green-400 border-green-300 dark:border-green-900/60",
-  Medium: "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60",
-  Hard: "text-red-700 dark:text-red-400 border-red-300 dark:border-red-900/60",
-};
-=======
-import { DIFFICULTY_STYLE } from "../../../lib/difficulty-styles";
->>>>>>> ab0c1eb6 (refactor: unify duplicate difficulty color style maps into shared DIFFICULTY_STYLE)
 
 const DEFAULT_CODE: Record<DsaLanguage, string> = {
   python: `import sys
