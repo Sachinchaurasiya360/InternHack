@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { useParams, Link } from "react-router";
-import { ArrowLeft, TrendingDown, BarChart3 } from "lucide-react";
+import { ArrowLeft, TrendingDown, BarChart3, AlertTriangle, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
@@ -39,26 +39,82 @@ function sortedStatusEntries(breakdown: Record<string, number>): [string, number
   return [...known, ...rest];
 }
 
+// Pull a human-readable message out of whatever axios/network error we get,
+// without leaking raw stack traces or internal error shapes to the user.
+function getErrorMessage(err: unknown): string {
+  if (err && typeof err === "object" && "code" in err && (err as { code?: string }).code === "ECONNABORTED") {
+    return "The request took too long to complete. Please try again.";
+  }
+  if (err && typeof err === "object" && "response" in err) {
+    const response = (err as { response?: { status?: number; data?: { message?: string } } }).response;
+    if (response?.status === 404) return "This job could not be found. It may have been deleted.";
+    if (response?.status === 403) return "You don't have permission to view analytics for this job.";
+    if (response?.data?.message) return response.data.message;
+    if (response?.status) return `The server returned an error (${response.status}).`;
+  }
+  if (err && typeof err === "object" && "request" in err) {
+    return "We couldn't reach the server. Please check your connection and try again.";
+  }
+  return "Something went wrong while loading analytics.";
+}
+
 export default function JobAnalyticsPage() {
   const { id: jobId } = useParams();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchAnalytics = useCallback(() => {
+    setLoading(true);
+    setError(null);
     api
       .get(`/recruiter/jobs/${jobId}/analytics`)
       .then((res) => {
         setData(res.data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        setError(getErrorMessage(err));
+        setLoading(false);
+      });
   }, [jobId]);
 
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
+
+  const backToJobsLink = (
+    <Link
+      to="/recruiters/jobs"
+      className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 no-underline"
+    >
+      <ArrowLeft className="w-4 h-4" /> Back to Jobs
+    </Link>
+  );
+
   if (loading) return <LoadingScreen />;
-  if (!data)
+
+  if (error || !data)
     return (
-      <div className="text-center text-gray-500 dark:text-gray-500">
-        Failed to load analytics
+      <div className="max-w-4xl mx-auto">
+        <SEO title="Job Analytics" noIndex />
+        {backToJobsLink}
+        <div className="flex flex-col items-center justify-center text-center gap-3 py-16 px-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <AlertTriangle className="w-10 h-10 text-red-400 dark:text-red-500" />
+          <p className="text-gray-900 dark:text-white font-semibold">
+            Failed to load analytics
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">
+            {error ?? "Something went wrong while loading analytics."}
+          </p>
+          <button
+            type="button"
+            onClick={fetchAnalytics}
+            className="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            <RefreshCw className="w-4 h-4" /> Retry
+          </button>
+        </div>
       </div>
     );
 
@@ -70,12 +126,7 @@ export default function JobAnalyticsPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <SEO title="Job Analytics" noIndex />
-      <Link
-        to="/recruiters/jobs"
-        className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 no-underline"
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Jobs
-      </Link>
+      {backToJobsLink}
 
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
         {data.jobTitle}
