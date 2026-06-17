@@ -13,6 +13,8 @@ const buttonVariants = cva(
         mono: 'bg-zinc-950 text-white dark:bg-zinc-300 dark:text-black hover:bg-zinc-950/90 dark:hover:bg-zinc-300/90 data-[state=open]:bg-zinc-950/90 dark:data-[state=open]:bg-zinc-300/90',
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90 data-[state=open]:bg-destructive/90',
+        danger:
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90 data-[state=open]:bg-destructive/90',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/90 data-[state=open]:bg-secondary/90',
         outline: 'bg-background text-accent-foreground border border-input hover:bg-accent data-[state=open]:bg-accent',
         dashed:
@@ -148,6 +150,12 @@ const buttonVariants = cva(
         className: 'shadow-xs shadow-black/5',
       },
       {
+        variant: 'danger',
+        mode: 'default',
+        appearance: 'default',
+        className: 'shadow-xs shadow-black/5',
+      },
+      {
         variant: 'primary',
         mode: 'icon',
         appearance: 'default',
@@ -179,6 +187,12 @@ const buttonVariants = cva(
       },
       {
         variant: 'destructive',
+        mode: 'icon',
+        appearance: 'default',
+        className: 'shadow-xs shadow-black/5',
+      },
+      {
+        variant: 'danger',
         mode: 'icon',
         appearance: 'default',
         className: 'shadow-xs shadow-black/5',
@@ -274,6 +288,11 @@ const buttonVariants = cva(
       },
       {
         variant: 'destructive',
+        appearance: 'ghost',
+        className: 'bg-transparent text-destructive/90 hover:bg-destructive/5 data-[state=open]:bg-destructive/5',
+      },
+      {
+        variant: 'danger',
         appearance: 'ghost',
         className: 'bg-transparent text-destructive/90 hover:bg-destructive/5 data-[state=open]:bg-destructive/5',
       },

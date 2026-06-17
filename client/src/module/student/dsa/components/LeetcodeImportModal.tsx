@@ -21,7 +21,7 @@ import type {
   LeetcodeImportPreviewItem,
 } from "../../../../lib/types";
 import { Button } from "../../../../components/ui/button";
-import { DIFF_COLOR } from "../../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../../lib/difficulty-styles";
 
 // Feature flag — mirrors server env
 const IMPORT_ENABLED =

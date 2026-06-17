@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { EmployeeService } from "./employee.service.js";
 import { createEmployeeSchema, updateEmployeeSchema, updateStatusSchema, employeeQuerySchema } from "./employee.validation.js";
 
@@ -26,7 +27,8 @@ export class EmployeeController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const query = employeeQuerySchema.parse(req.query);
+      const query = validateRequestData(res, employeeQuerySchema, req.query);
+      if (!query) return;
       const data = await this.employeeService.getAll(query);
       return res.json(data);
     } catch (error) {

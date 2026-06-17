@@ -46,6 +46,7 @@ import { sendEmail } from "../../utils/email.utils.js";
 import { roadmapWelcomeEmailHtml } from "../../utils/email-templates.js";
 // FIX: import clearCache so we can bust the cache for the new roadmap slug
 import { clearCache } from "../../middleware/cache.middleware.js";
+import { getPlanTier, MONTHLY_LIMITS } from "../../config/usage-limits.js";
 
 const validationError = (res: Response, errors: unknown) =>
   res.status(400).json({ message: "Validation failed", errors });
@@ -747,7 +748,7 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
       });
 
       return created;
-    });
+    }, { timeout: 30000 });
 
     // 4. Schedule day-10 follow-up
     const sendAt = new Date(enrollment.startDate.getTime() + 10 * 24 * 60 * 60 * 1000);
@@ -1331,7 +1332,7 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
           },
         },
       });
-    });
+    }, { timeout: 30000 });
 
     // FIX: Bust the cache for this roadmap so section changes are visible immediately
     clearCache(`roadmap:/api/roadmaps/${slug}`);
@@ -1382,6 +1383,45 @@ export async function toggleShare(req: Request, res: Response, next: NextFunctio
       success: true,
       isPubliclyShared: updated.isPubliclyShared,
       shareUrl: `https://internhack.xyz/roadmaps/${slug}`,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── AI Usage Stats ────────────────────────────────────────────────────────
+export async function getAiUsage(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user!.id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
+    const limit = MONTHLY_LIMITS["ROADMAP_GENERATION"]?.[tier] ?? 5;
+
+    const startOfWindow = new Date();
+    startOfWindow.setUTCDate(1);
+    startOfWindow.setUTCHours(0, 0, 0, 0);
+
+    const used = await prisma.usageLog.count({
+      where: {
+        userId,
+        action: "ROADMAP_GENERATION",
+        createdAt: { gte: startOfWindow },
+      },
+    });
+
+    res.json({
+      used,
+      limit,
+      isPro: tier === "PREMIUM",
     });
   } catch (err) {
     next(err);

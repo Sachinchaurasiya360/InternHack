@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -98,6 +99,9 @@ model user {
   roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
+  studyBuddyPreferences roadmapStudyBuddyPreference[] @relation("UserStudyBuddyPreferences")
+  studentAPairs        roadmapStudyBuddyPair[]        @relation("StudentAPairs")
+  studentBPairs        roadmapStudyBuddyPair[]        @relation("StudentBPairs")
   generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
   leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
@@ -110,6 +114,10 @@ model user {
   programInterests          programInterest[]
   guideCertificates         guideCertificate[]           @relation("UserCertificates")
   studentNotes              studentNote[]                @relation("StudentNotes")
+  ambassador                ambassador?
+  ambassadorReviews         ambassador[]                @relation("AmbassadorReviewer")
+  shareReviews              ambassadorShare[]           @relation("ShareReviewer")
+  referralConversions       referralConversion[]         @relation("ReferredConversions")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -1728,5 +1736,111 @@ model studentNote {
   @@index([userId])
   @@index([contentType, contentId])
   @@index([userId, updatedAt])
+}
+
+model ambassador {
+  id                 Int               @id @default(autoincrement())
+  userId             Int               @unique
+  status             AmbassadorStatus  @default(PENDING)
+  guidesCompleted    Int               @default(0)
+  reposContributed   Int               @default(0)
+  leaderboardRank    Int?
+  accountAgeDays     Int               @default(0)
+  premiumGranted     Boolean           @default(false)
+  premiumGrantedAt   DateTime?
+  appliedAt          DateTime?
+  reviewedAt         DateTime?
+  reviewedBy         Int?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  user          user                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewer      user?                 @relation("AmbassadorReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
+  referralLinks referralLink[]
+  shares        ambassadorShare[]
+  spotlights    ambassadorSpotlight[]
+
+  @@index([status])
+  @@index([userId])
+}
+
+model referralLink {
+  id            String   @id @default(cuid())
+  ambassadorId  Int
+  code          String   @unique
+  url           String
+  label         String?
+  isActive      Boolean  @default(true)
+  clicks        Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  ambassador    ambassador            @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+  conversions   referralConversion[]
+
+  @@index([ambassadorId])
+  @@index([code])
+}
+
+model referralConversion {
+  id              Int      @id @default(autoincrement())
+  referralLinkId  String
+  referredUserId  Int      @unique
+  referredAt      DateTime @default(now())
+
+  link          referralLink          @relation(fields: [referralLinkId], references: [id], onDelete: Cascade)
+  referredUser  user                  @relation("ReferredConversions", fields: [referredUserId], references: [id], onDelete: Cascade)
+
+  @@index([referralLinkId])
+  @@index([referredUserId])
+}
+
+model ambassadorSpotlight {
+  id            Int      @id @default(autoincrement())
+  ambassadorId  Int
+  month         String
+  year          Int
+  title         String?
+  description   String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  ambassador    ambassador @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+
+  @@unique([ambassadorId, month, year])
+  @@index([month, year, isActive])
+}
+
+model ambassadorShare {
+  id            Int         @id @default(autoincrement())
+  ambassadorId  Int
+  platform      String
+  url           String
+  description   String?
+  status        ShareStatus @default(PENDING)
+  adminNotes    String?
+  reviewedAt    DateTime?
+  reviewedBy    Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  ambassador    ambassador  @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+  reviewer      user?       @relation("ShareReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
+
+  @@index([ambassadorId])
+  @@index([status])
+}
+
+enum AmbassadorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ShareStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
