@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { ComplianceService } from "./compliance.service.js";
 import { createComplianceDocSchema, updateComplianceDocSchema, complianceQuerySchema } from "./compliance.validation.js";
 import { z } from "zod";
@@ -25,7 +26,8 @@ export class ComplianceController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const query = complianceQuerySchema.parse(req.query);
+      const query = validateRequestData(res, complianceQuerySchema, req.query);
+      if (!query) return;
       const data = await this.complianceService.getAll(query);
       return res.json(data);
     } catch (error) {

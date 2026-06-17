@@ -122,6 +122,7 @@ const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/openso
 const HackathonGuidePage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuidePage"));
 const HackathonGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
+const AmbassadorPage = lazyWithRetry(() => import("./module/student/opensource/AmbassadorPage"));
 const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
@@ -265,6 +266,7 @@ const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broad
 const AdminSignalsPage = lazyWithRetry(() => import("./module/admin/signals/AdminSignalsPage"));
 const AdminInterviewsPage = lazyWithRetry(() => import("./module/admin/interviews/AdminInterviewsPage"));
 const GuideFeedbackDashboard = lazyWithRetry(() => import("./module/admin/GuideFeedbackDashboard"));
+const AdminAmbassadorPage = lazyWithRetry(() => import("./module/admin/ambassador/AdminAmbassadorPage"));
 
 function JobBrowseOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -565,6 +567,7 @@ function App() {
                 <Route path="hackathon-prep" element={<HackathonGuidePage />} />
                 <Route path="hackathon-prep/:sectionSlug" element={<HackathonGuideSectionPage />} />
                 <Route path="my-submissions" element={<MySubmissionsPage />} />
+                <Route path="ambassador" element={<AmbassadorPage />} />
               </Route>
               <Route path="ai-agent" element={<JobAgentPage />} />
               <Route path="signals" element={<SignalsPage />} />
@@ -640,6 +643,7 @@ function App() {
               <Route path="blog" element={<AdminBlogPage />} />
               <Route path="blog/editor" element={<AdminBlogEditor />} />
               <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
+              <Route path="ambassadors" element={<AdminAmbassadorPage />} />
               <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
               <Route path="profile/:identifier" element={<PublicProfilePage />} />
             </Route>

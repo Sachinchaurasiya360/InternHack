@@ -13,7 +13,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Button } from "../../../components/ui/button";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 import DsaPatternVisualizer from "./components/DsaPatternVisualizer";
 import { PATTERN_VIZ } from "./data/dsa-pattern-viz.data";
 

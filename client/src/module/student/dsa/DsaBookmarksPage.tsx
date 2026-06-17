@@ -9,7 +9,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaBookmarkItem } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 import { useDsaLabels } from "./components/useDsaLabels";
 import { DsaLabelManager } from "./components/DsaLabelManager";
 import { DsaLabelFilter } from "./components/DsaLabelFilter";

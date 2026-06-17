@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import { AnalyticsService } from "./analytics.service.js";
 import { trackContentSchema } from "./analytics.validation.js";
 
@@ -6,7 +7,8 @@ const analyticsService = new AnalyticsService();
 
 export const trackContentView = async (req: Request, res: Response) => {
   try {
-    const data = trackContentSchema.parse(req.body);
+    const data = validateRequestData(res, trackContentSchema, req.body);
+      if (!data) return;
     const userId = req.user?.id; // Optional userId from auth middleware
 
     await analyticsService.trackContentView({
@@ -16,11 +18,7 @@ export const trackContentView = async (req: Request, res: Response) => {
 
     res.status(200).json({ success: true });
   } catch (error: any) {
-    if (error.name === "ZodError") {
-      res.status(400).json({ message: "Validation failed", errors: error.errors });
-    } else {
-      res.status(500).json({ message: "Internal server error" });
-    }
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

@@ -18,7 +18,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { sanitizeHtml, cleanHint } from "../../../lib/sanitize";
 import { Button } from "../../../components/ui/button";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 
 /* ── Company tier classification ─────────────────────────────────────── */
 
