@@ -66,7 +66,7 @@ authRouter.post("/verify-email", verifyEmailRateLimit, validateBody(verifyEmailS
 authRouter.post("/resend-otp", resendOtpRateLimit, validateBody(resendOtpSchema), (req, res) => authController.resendOtp(req, res));
 authRouter.post("/forgot-password", forgotPasswordRateLimit, validateBody(forgotPasswordSchema), (req, res) => authController.forgotPassword(req, res));
 authRouter.post("/reset-password", resetPasswordRateLimit, validateBody(resetPasswordSchema), (req, res) => authController.resetPassword(req, res));
-authRouter.post("/logout", (req, res) => authController.logout(req, res));
+authRouter.post("/logout", authMiddleware, (req, res) => authController.logout(req, res));
 authRouter.get("/me", authMiddleware, (req, res) => authController.getProfile(req, res));
 authRouter.put("/me", authMiddleware, validateBody(updateProfileSchema), (req, res) => authController.updateProfile(req, res));
 authRouter.post("/import-github", authMiddleware, validateBody(importGitHubSchema), (req, res) => authController.importGitHub(req, res));
