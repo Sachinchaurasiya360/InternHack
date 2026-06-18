@@ -194,12 +194,10 @@ export class PaymentService {
         return;
       }
 
-      // Link subscription ID and mark payment SUCCESS first, then activate the user.
-      // Order matters: payment record must be linked before any code looks it up by subscription_id.
-      // Only link payments that have already been marked SUCCESS by the
-      // payment.succeeded webhook. This prevents abandoned PENDING checkout
-      // sessions from being incorrectly linked to the subscription.
-      const payment = await tx.payment.findFirst({
+      // Link payment record to subscription. Try SUCCESS first (normal flow),
+      // then fall back to the most recent PENDING record to handle the race
+      // where subscription.active arrives before payment.succeeded.
+      let payment = await tx.payment.findFirst({
         where: {
           userId,
           dodoSubscriptionId: null,
@@ -212,15 +210,41 @@ export class PaymentService {
       });
 
       if (!payment) {
-        return;
+        payment = await tx.payment.findFirst({
+          where: {
+            userId,
+            dodoSubscriptionId: null,
+            status: "PENDING",
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          select: { id: true },
+        });
       }
 
-      await tx.payment.update({
-        where: { id: payment.id },
-        data: {
-          dodoSubscriptionId: sub.subscription_id,
-        },
-      });
+      if (!payment) {
+        // No payment record exists yet — create a placeholder that will be
+        // updated to SUCCESS when payment.succeeded arrives
+        await tx.payment.create({
+          data: {
+            userId,
+            amount: 0,
+            currency: "USD",
+            status: "PENDING",
+            dodoSubscriptionId: sub.subscription_id,
+            plan,
+            billing: sub.metadata["billing"] ?? "monthly",
+          },
+        });
+      } else {
+        await tx.payment.update({
+          where: { id: payment.id },
+          data: {
+            dodoSubscriptionId: sub.subscription_id,
+          },
+        });
+      }
 
       // Update user subscription status atomically
       await tx.user.update({
