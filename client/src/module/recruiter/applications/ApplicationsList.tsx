@@ -3,7 +3,7 @@ import toast from "../../../components/ui/toast";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, Search, Filter, Loader2, Upload } from "lucide-react";
+import { ArrowLeft, Search, Filter, Loader2, Upload, Download } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../../lib/axios";
 import type { Application, Pagination } from "../../../lib/types";
@@ -21,6 +21,7 @@ export default function ApplicationsList() {
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
   const [pendingAdvanceApp, setPendingAdvanceApp] = useState<Application | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Reset to page 1 when search or filter changes
   useEffect(() => {
@@ -78,6 +79,51 @@ export default function ApplicationsList() {
     }
   };
 
+  const handleExportCSV = async () => {
+    setIsExporting(true);
+    try {
+      const params = new URLSearchParams({ page: "1", limit: "1000" });
+      if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
+      if (statusFilter) params.set("status", statusFilter);
+      
+      const res = await api.get(`/recruiter/jobs/${jobId}/applications?${params}`);
+      const apps = res.data.applications as Application[];
+      
+      if (!apps || apps.length === 0) {
+        toast.error("No applications to export");
+        return;
+      }
+      
+      const headers = ["ID", "Name", "Email", "Status", "Applied Date"];
+      const rows = apps.map((app) => [
+        app.id,
+        app.student?.name || "N/A",
+        app.student?.email || "N/A",
+        app.status,
+        new Date(app.createdAt).toLocaleDateString()
+      ]);
+      
+      const csvContent = [
+        headers.join(","),
+        ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      ].join("\n");
+      
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `applications_job_${jobId}_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("Exported to CSV successfully");
+    } catch (error) {
+      toast.error("Failed to export applications");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div>
       <SEO title="Applications" noIndex />
@@ -112,12 +158,22 @@ export default function ApplicationsList() {
 
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-between gap-4">
         Applications
-        <Link
-          to={`/recruiters/jobs/${jobId}/import-candidates`}
-          className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
-        >
-          <Upload className="w-4 h-4" /> Import Candidates
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleExportCSV}
+            disabled={isExporting}
+            className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+          >
+            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            Export CSV
+          </button>
+          <Link
+            to={`/recruiters/jobs/${jobId}/import-candidates`}
+            className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
+          >
+            <Upload className="w-4 h-4" /> Import Candidates
+          </Link>
+        </div>
       </h1>
 
       {/* Filters */}
