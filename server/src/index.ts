@@ -201,6 +201,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── Bot SEO headers (Vary: User-Agent, X-Is-Bot for CDN routing) ──
+app.use(botSeoMiddleware);
+
 // ── HTTP request logging (dev only) ──
 if (process.env["NODE_ENV"] !== "production") {
   app.use(morgan("dev"));
@@ -308,8 +311,6 @@ app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExter
 // ── Sitemap (served at root, not /api) ──
 app.use(sitemapRouter);
 
-// ── Bot SEO headers (Vary: User-Agent, X-Is-Bot for CDN routing) ──
-app.use(botSeoMiddleware);
 
 // ── Static files (public folder) ──
 app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", index: false }));
