@@ -154,6 +154,7 @@ export default function RegisterPage() {
     company: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -288,6 +289,8 @@ export default function RegisterPage() {
     try {
       const payload: Record<string, string> = { name: form.name, email: form.email, password: form.password, role };
       if (role === "RECRUITER" && form.company) payload.company = form.company;
+      const ref = searchParams.get("ref");
+      if (ref) payload.ref = ref;
       const { data } = await api.post("/auth/register", payload);
       if (!data.user.isVerified) {
         navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
@@ -490,7 +493,8 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer"
+                    title={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer z-10"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -505,19 +509,30 @@ export default function RegisterPage() {
               </FormField>
 
               <FormField label="Confirm Password" error={fieldErrors.confirmPassword} fieldName="confirmPassword">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={form.confirmPassword}
-                  onChange={(e) => handleFieldChange("confirmPassword", e.target.value)}
-                  aria-invalid={!!fieldErrors.confirmPassword}
-                  aria-describedby={fieldErrors.confirmPassword ? "error-confirmPassword" : undefined}
-                  className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
-                    fieldErrors.confirmPassword
-                      ? "border-red-300 dark:border-red-800 focus:border-red-400"
-                      : "border-stone-300 dark:border-white/10 focus:border-lime-400"
-                  }`}
-                  placeholder="Confirm your password"
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={form.confirmPassword}
+                    onChange={(e) => handleFieldChange("confirmPassword", e.target.value)}
+                    aria-invalid={!!fieldErrors.confirmPassword}
+                    aria-describedby={fieldErrors.confirmPassword ? "error-confirmPassword" : undefined}
+                    className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors pr-10 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                      fieldErrors.confirmPassword
+                        ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                        : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                    }`}
+                    placeholder="Confirm your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    title={showConfirmPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 bg-transparent border-0 cursor-pointer z-10"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </FormField>
 
               <button

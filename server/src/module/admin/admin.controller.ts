@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { AdminService } from "./admin.service.js";
 import { setTokenCookie } from "../../utils/cookie.utils.js";
 import { createLogger } from "../../utils/logger.js";
@@ -110,7 +111,8 @@ export class AdminController {
 
   async getUsers(req: Request, res: Response) {
     try {
-      const query = userQuerySchema.parse(req.query);
+      const query = validateRequestData(res, userQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.getUsers(query);
       return res.status(200).json(data);
     } catch (error) {
@@ -179,7 +181,8 @@ export class AdminController {
 
   async getAdminJobs(req: Request, res: Response) {
     try {
-      const query = adminJobQuerySchema.parse(req.query);
+      const query = validateRequestData(res, adminJobQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.getAdminJobs(query);
       return res.status(200).json(data);
     } catch (error) {
@@ -227,7 +230,8 @@ export class AdminController {
 
   async getErrorLogs(req: Request, res: Response) {
     try {
-      const query = errorLogQuerySchema.parse(req.query);
+      const query = validateRequestData(res, errorLogQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.getErrorLogs(query);
       return res.status(200).json(data);
     } catch (error) {
@@ -482,7 +486,8 @@ export class AdminController {
 
   async listRepos(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = repoQuerySchema.parse(req.query);
+      const query = validateRequestData(res, repoQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listRepos(query);
       res.json(data);
     } catch (err) {
@@ -560,7 +565,8 @@ export class AdminController {
 
   async listDsaTopics(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = dsaTopicQuerySchema.parse(req.query);
+      const query = validateRequestData(res, dsaTopicQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listDsaTopics(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -652,7 +658,8 @@ export class AdminController {
 
   async listAptitudeCategories(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = aptitudeCategoryQuerySchema.parse(req.query);
+      const query = validateRequestData(res, aptitudeCategoryQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listAptitudeCategories(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -742,7 +749,8 @@ export class AdminController {
 
   async listAptitudeQuestions(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = aptitudeQuestionQuerySchema.parse(req.query);
+      const query = validateRequestData(res, aptitudeQuestionQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listAptitudeQuestions(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -787,7 +795,8 @@ export class AdminController {
 
   async listAdminSkillTests(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = adminSkillTestQuerySchema.parse(req.query);
+      const query = validateRequestData(res, adminSkillTestQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listAdminSkillTests(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -859,7 +868,8 @@ export class AdminController {
 
   async listHackathons(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = hackathonQuerySchema.parse(req.query);
+      const query = validateRequestData(res, hackathonQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listHackathons(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -973,7 +983,8 @@ export class AdminController {
 
   async listExternalJobs(req: Request, res: Response) {
     try {
-      const query = adminExternalJobQuerySchema.parse(req.query);
+      const query = validateRequestData(res, adminExternalJobQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listExternalJobs(query);
       return res.status(200).json(data);
     } catch (error) {
@@ -1012,7 +1023,8 @@ export class AdminController {
 
   async getPublicExternalJobs(req: Request, res: Response) {
     try {
-      const query = adminExternalJobQuerySchema.parse(req.query);
+      const query = validateRequestData(res, adminExternalJobQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.getPublicExternalJobs(query);
       return res.status(200).json(data);
     } catch (error) {

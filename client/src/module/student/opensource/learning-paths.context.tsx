@@ -134,6 +134,7 @@ export function LearningPathProvider({ children }: { children: ReactNode }) {
   return <LearningPathContext.Provider value={value}>{children}</LearningPathContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- hook colocated with its provider by design
 export function useLearningPath() {
   const context = useContext(LearningPathContext);
   if (!context) {

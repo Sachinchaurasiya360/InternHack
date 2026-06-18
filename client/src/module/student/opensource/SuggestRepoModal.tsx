@@ -147,9 +147,10 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
         setTimeout(() => setRemaining(5), 300);
       }, 2500);
     },
-    onError: (error: any) => {
-      if (error?.response?.status === 429) {
-        const resetHeader = error.response?.headers?.["x-ratelimit-reset"] as string | undefined;
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { status?: number; headers?: Record<string, string | undefined> } };
+      if (axiosError?.response?.status === 429) {
+        const resetHeader = axiosError.response?.headers?.["x-ratelimit-reset"];
         if (resetHeader) {
           const resetMs = new Date(resetHeader).getTime() - Date.now();
           const hoursLeft = Math.ceil(resetMs / (1000 * 60 * 60));

@@ -1,5 +1,6 @@
 import { fadeUp, stagger } from "@/lib/motion-variants";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
 import { queryKeys } from "../../../lib/query-keys";
@@ -19,6 +20,7 @@ import {
   Star,
   Briefcase,
   ArrowUpRight,
+  Download,
 } from "lucide-react"; 
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api, { SERVER_URL } from "../../../lib/axios";
@@ -35,6 +37,7 @@ import ReviewForm from "./ReviewForm";
 import SuggestEditModal from "./SuggestEditModal";
 import InterviewExperienceSection from "./InterviewExperienceSection";
 import { GridBackground } from "../../../components/ui/GridBackground";
+import { Button } from "../../../components/ui/button";
 
 
 const SIZE_LABELS: Record<string, string> = {
@@ -99,6 +102,10 @@ export default function CompanyDetailPage() {
   const [sortBy, setSortBy] = useState("latest");
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+
 
   const { 
     data: company, 
@@ -133,6 +140,18 @@ export default function CompanyDetailPage() {
     setShowReviewForm(false);
     refetchReviews();
   };
+
+  const handleExportPdf = useReactToPrint({
+    contentRef: contentRef as React.RefObject<HTMLDivElement>,
+    documentTitle: `${company?.name || "Company"}_Profile`,
+    onBeforePrint: () => { setIsExporting(true); return Promise.resolve(); },
+    onAfterPrint: () => setIsExporting(false),
+    onPrintError: (errorType: any, error: any) => {
+      console.error("Failed to generate PDF:", error);
+      alert("Failed to generate PDF: " + (error?.message || String(errorType)));
+      setIsExporting(false);
+    }
+  });
 
   const backPath = isInsideLayout ? "/student/companies" : "/companies";
 
@@ -220,7 +239,7 @@ export default function CompanyDetailPage() {
           </Link>
         </motion.div>
 
-        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-10">
+        <motion.div ref={contentRef} id="company-profile-content" variants={stagger} initial="hidden" animate="show" className="space-y-10">
           {/* Header */}
           <motion.div variants={fadeUp}>
             <Kicker>company / profile</Kicker>
@@ -280,17 +299,30 @@ export default function CompanyDetailPage() {
                     </span>
                   </div>
 
-                  {company.website && (
-                    <a
-                      href={company.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-900 text-sm font-semibold rounded-md hover:bg-lime-500 transition-colors no-underline sm:ml-auto"
+                  <div className="flex items-center gap-3 sm:ml-auto">
+                    <Button
+                      variant="secondary"
+                      onClick={handleExportPdf}
+                      disabled={isExporting}
+                      className="inline-flex items-center gap-2"
                     >
-                      <Globe className="w-4 h-4" /> Visit website
-                      <ArrowUpRight className="w-4 h-4" />
-                    </a>
-                  )}
+                      <Download className="w-4 h-4" />
+                      {isExporting ? "Exporting..." : "Export to PDF"}
+                    </Button>
+                    {company.website && (
+                      <Button variant="primary" asChild>
+                        <a
+                          href={company.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 no-underline"
+                        >
+                          <Globe className="w-4 h-4" /> Visit website
+                          <ArrowUpRight className="w-4 h-4" />
+                        </a>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

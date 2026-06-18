@@ -19,6 +19,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 import api from "../../../lib/axios";
 import { GridBackground } from "../../../components/ui/GridBackground";
+import { NotesPanel } from "../../../components/learning/NotesPanel";
 
 
 async function getServerProgress() {
@@ -451,6 +452,17 @@ export default function InterviewQuestionPage() {
                   </div>
                 ))}
               </div>
+            </motion.div>
+          )}
+
+          {/* Personal Notes */}
+          {isAuthenticated && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.32 }}
+            >
+              <NotesPanel contentType="INTERVIEW_QUESTION" contentId={question.id} />
             </motion.div>
           )}
 

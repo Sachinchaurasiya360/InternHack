@@ -15,6 +15,7 @@ import { useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../lib/axios";
 import { queryKeys } from "../lib/query-keys";
+import toast from "../components/ui/toast";
 import { useAuthStore } from "../lib/auth.store";
 
 const LOCAL_KEY = "oss_bookmarks";
@@ -107,6 +108,7 @@ export function useBookmarks() {
     },
     onError: (_err, _repoId, ctx) => {
       if (ctx?.prev !== undefined) qc.setQueryData<number[]>(queryKey, ctx.prev);
+      toast.error("Failed to add bookmark. Please try again.");
     },
     onSettled: () => qc.invalidateQueries({ queryKey }),
   });
@@ -122,6 +124,7 @@ export function useBookmarks() {
     },
     onError: (_err, _repoId, ctx) => {
       if (ctx?.prev !== undefined) qc.setQueryData<number[]>(queryKey, ctx.prev);
+      toast.error("Failed to remove bookmark. Please try again.");
     },
     onSettled: () => qc.invalidateQueries({ queryKey }),
   });

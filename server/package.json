@@ -8,14 +8,9 @@
     "build": "prisma generate --schema=src/database/prisma/schema && tsc",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "start": "node dist/index.js",
-    "pretest": "prisma generate --schema=src/database/prisma/schema",
     "test": "vitest run",
-    "prisma:generate": "npx prisma generate --config src/database/prisma.config.ts",
-    "seed": "tsx src/database/seeds/seed.ts",
-    "seed:badges": "tsx src/database/seeds/seed-badges.ts",
-    "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
-    "seed:admin": "tsx src/database/seeds/seed.ts"
+    "doctor": "tsx scripts/doctor.ts",
+    "seed": "tsx src/database/seeds/seed.ts"
   },
   "keywords": [],
   "author": "Sachin Chaurasiya",

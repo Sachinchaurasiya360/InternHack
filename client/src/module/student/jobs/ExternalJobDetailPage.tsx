@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, IndianRupee, CalendarDays, ExternalLink, Check, Loader2, ArrowUpRight } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
+import { Footer } from "../../../components/Footer";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { jobPostingSchema, breadcrumbSchema } from "../../../lib/structured-data";
@@ -309,6 +310,7 @@ export default function ExternalJobDetailPage() {
           )}
         </motion.div>
       </div>
+      <Footer />
     </>
   );
 }

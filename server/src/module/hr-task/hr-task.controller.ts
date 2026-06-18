@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { HRTaskService } from "./hr-task.service.js";
 import { createTaskSchema, updateTaskSchema, updateTaskStatusSchema, taskCommentSchema, taskQuerySchema } from "./hr-task.validation.js";
 import { prisma } from "../../database/db.js";
@@ -37,7 +38,8 @@ export class HRTaskController {
       const context = await this.getEmployeeIdOrAdmin(req);
       if (!context) return res.status(403).json({ message: "Employee record not found" });
 
-      const query = taskQuerySchema.parse(req.query);
+      const query = validateRequestData(res, taskQuerySchema, req.query);
+      if (!query) return;
       if (context.isAdmin) {
         const data = await this.taskService.getAllTasks(query);
         return res.json(data);
@@ -55,7 +57,8 @@ export class HRTaskController {
       const context = await this.getEmployeeIdOrAdmin(req);
       if (!context) return res.status(403).json({ message: "Employee record not found" });
 
-      const query = taskQuerySchema.parse(req.query);
+      const query = validateRequestData(res, taskQuerySchema, req.query);
+      if (!query) return;
       if (context.isAdmin) {
         const data = await this.taskService.getAllTasks(query);
         return res.json(data);

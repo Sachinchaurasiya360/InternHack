@@ -276,5 +276,12 @@ export const queryKeys = {
     topic: (slug: string, topicSlug: string) =>
       ["roadmaps", "topic", slug, topicSlug] as const,
     community: () => ["roadmaps", "community"] as const,
+    studyBuddy: (roadmapId: number) =>
+      ["roadmaps", "study-buddy", roadmapId] as const,
+  },
+  // Notes
+  notes: {
+    list: (filters?: Record<string, string | undefined>) => ["notes", "list", filters] as const,
+    detail: (contentType: string, contentId: string | number) => ["notes", "detail", contentType, contentId] as const,
   },
 };

@@ -14,21 +14,16 @@ const ContributorsPage = lazyWithRetry(() => import("./module/contributors/Contr
 function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>): LazyExoticComponent<T> {
   return lazy(
     () =>
-      factory()
-        .then((resolved) => {
-          sessionStorage.removeItem("chunk_reload");
-          return resolved;
-        })
-        .catch((err: unknown) => {
-          const key = "chunk_reload";
-          if (!sessionStorage.getItem(key)) {
-            sessionStorage.setItem(key, "1");
-            window.location.reload();
-            return new Promise<never>(() => { }); // never resolves, page is reloading
-          }
-          sessionStorage.removeItem(key);
-          throw err;
-        }) as Promise<{ default: T }>,
+      factory().catch((err: unknown) => {
+        const key = "chunk_reload";
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, "1");
+          window.location.reload();
+          return new Promise<never>(() => { }); // never resolves, page is reloading
+        }
+        sessionStorage.removeItem(key);
+        throw err;
+      }) as Promise<{ default: T }>,
   ) as LazyExoticComponent<T>;
 }
 
@@ -75,7 +70,8 @@ const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/Gov
 const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
 const CertificateViewPage = lazyWithRetry(() => import("./module/student/opensource/CertificateViewPage"));
-const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage")); 
+const VerbalAbilityPage = lazyWithRetry(() => import("./module/student/aptitude/VerbalAbilityPage"));
+const BehavioralTrainerPage = lazyWithRetry(() => import("./module/student/behavioral/BehavioralTrainerPage"));
 
 // Legal pages
 const TermsPage = lazyWithRetry(() => import("./module/legal/TermsPage"));
@@ -126,6 +122,7 @@ const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/openso
 const HackathonGuidePage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuidePage"));
 const HackathonGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
+const AmbassadorPage = lazyWithRetry(() => import("./module/student/opensource/AmbassadorPage"));
 const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
@@ -138,6 +135,7 @@ const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPl
 const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewPage"));
 const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
+const NotesDashboardPage = lazyWithRetry(() => import("./module/student/learn/NotesDashboardPage"));
 const BuildChallengesPage = lazyWithRetry(() => import("./module/student/learn/challenges/BuildChallengesPage"));
 const MentorMatchingPage = lazyWithRetry(() => import("./module/student/learn/mentors/MentorMatchingPage"));
 const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
@@ -268,6 +266,7 @@ const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broad
 const AdminSignalsPage = lazyWithRetry(() => import("./module/admin/signals/AdminSignalsPage"));
 const AdminInterviewsPage = lazyWithRetry(() => import("./module/admin/interviews/AdminInterviewsPage"));
 const GuideFeedbackDashboard = lazyWithRetry(() => import("./module/admin/GuideFeedbackDashboard"));
+const AdminAmbassadorPage = lazyWithRetry(() => import("./module/admin/ambassador/AdminAmbassadorPage"));
 
 function JobBrowseOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -386,7 +385,7 @@ function App() {
             <Route path="/roadmaps/generate" element={<ProtectedRoute role="STUDENT"><AiRoadmapWizardPage /></ProtectedRoute>} />
             <Route path="/roadmaps/:slug/enroll" element={<ProtectedRoute role="STUDENT"><RoadmapEnrollPage /></ProtectedRoute>} />
             <Route path="/learn/roadmaps/:slug" element={<ProtectedRoute role="STUDENT"><RoadmapCanvasPage /></ProtectedRoute>} />
-            <Route path="/learn/roadmaps/certificates/:slug/:enrollmentId" element={<RoadmapCertificatePage />}/>
+            <Route path="/learn/roadmaps/certificates/:slug/:shareToken" element={<RoadmapCertificatePage />}/>
             <Route path="/learn/roadmaps/certificates" element={<ProtectedRoute role="STUDENT"><RoadmapCertificatesGalleryPage /></ProtectedRoute>}/>
             <Route path="/learn/roadmaps/:slug/:topicSlug" element={<ProtectedRoute role="STUDENT"><RoadmapTopicPage /></ProtectedRoute>} />
             <Route path="/blog" element={<BlogListPage />} />
@@ -484,8 +483,10 @@ function App() {
               <Route path="exam-prep/:examId/mock" element={<ExamMockPage />} />
               <Route path="exam-prep/:examId/section/:sectionId" element={<ExamSectionPage />} />
               <Route path="interview" element={<InterviewLessonsPage />} />
+              <Route path="interview/behavioral-interview/trainer" element={<BehavioralTrainerPage />} />
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
+              <Route path="notes" element={<ProtectedRoute role="STUDENT"><NotesDashboardPage /></ProtectedRoute>} />
             </Route>
 
             {/* Legacy redirects */}
@@ -566,6 +567,7 @@ function App() {
                 <Route path="hackathon-prep" element={<HackathonGuidePage />} />
                 <Route path="hackathon-prep/:sectionSlug" element={<HackathonGuideSectionPage />} />
                 <Route path="my-submissions" element={<MySubmissionsPage />} />
+                <Route path="ambassador" element={<AmbassadorPage />} />
               </Route>
               <Route path="ai-agent" element={<JobAgentPage />} />
               <Route path="signals" element={<SignalsPage />} />
@@ -641,6 +643,7 @@ function App() {
               <Route path="blog" element={<AdminBlogPage />} />
               <Route path="blog/editor" element={<AdminBlogEditor />} />
               <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
+              <Route path="ambassadors" element={<AdminAmbassadorPage />} />
               <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
               <Route path="profile/:identifier" element={<PublicProfilePage />} />
             </Route>

@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
 import {
-  registerSchema,
-  loginSchema,
-  updateProfileSchema,
-  importGitHubSchema,
+  type registerSchema,
+  type loginSchema,
+  type updateProfileSchema,
+  type importGitHubSchema,
   type forgotPasswordSchema,
   type resetPasswordSchema,
   type verifyEmailSchema,
@@ -13,17 +13,28 @@ import {
 import type { z } from "zod";
 import { AuthService } from "./auth.service.js";
 import { setTokenCookie, clearTokenCookie } from "../../utils/cookie.utils.js";
+
+/**
+ * Returns the authenticated user, or sends a 401 and returns null. The routes
+ * already gate on authMiddleware; this narrows the type and guards defensively.
+ */
+function ensureAuthenticated(req: Request, res: Response): NonNullable<Request["user"]> | null {
+  if (!req.user) {
+    res.status(401).json({ message: "Authentication required" });
+    return null;
+  }
+  return req.user;
+}
+
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   async register(req: Request, res: Response) {
     try {
-      const result = registerSchema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-      }
+      // Body is already validated & typed by route-level validateBody(registerSchema)
+      const input = req.body as z.infer<typeof registerSchema>;
 
-      const data = await this.authService.register(result.data);
+      const data = await this.authService.register(input);
       return res.status(201).json({ message: "Registration successful. Please verify your email to continue.", user: data.user });
     } catch (error) {
       if (error instanceof Error && error.message === "Email already registered") {
@@ -36,12 +47,10 @@ export class AuthController {
 
   async login(req: Request, res: Response) {
     try {
-      const result = loginSchema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-      }
+      // Body is already validated & typed by route-level validateBody(loginSchema)
+      const input = req.body as z.infer<typeof loginSchema>;
 
-      const data = await this.authService.login(result.data);
+      const data = await this.authService.login(input);
       setTokenCookie(res, data.token);
       return res.status(200).json({ message: "Login successful", ...data });
     } catch (error) {
@@ -101,11 +110,10 @@ export class AuthController {
 
   async getProfile(req: Request, res: Response) {
     try {
-      if (!req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
+      const authUser = ensureAuthenticated(req, res);
+      if (!authUser) return;
 
-      const user = await this.authService.getProfile(req.user.id);
+      const user = await this.authService.getProfile(authUser.id);
       return res.status(200).json({ user });
     } catch (error) {
       console.error(error);
@@ -115,16 +123,13 @@ export class AuthController {
 
   async updateProfile(req: Request, res: Response) {
     try {
-      if (!req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
+      const authUser = ensureAuthenticated(req, res);
+      if (!authUser) return;
 
-      const result = updateProfileSchema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-      }
+      // Body is already validated & typed by route-level validateBody(updateProfileSchema)
+      const input = req.body as z.infer<typeof updateProfileSchema>;
 
-      const user = await this.authService.updateProfile(req.user.id, result.data);
+      const user = await this.authService.updateProfile(authUser.id, input);
 
       return res.status(200).json({ message: "Profile updated successfully", user });
     } catch (error) {
@@ -161,9 +166,7 @@ export class AuthController {
 
   async getGitHubStats(req: Request, res: Response) {
     try {
-      if (!req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
+      if (!ensureAuthenticated(req, res)) return;
 
       const username = typeof req.query["username"] === "string" ? req.query["username"] : "";
       if (!username.trim()) {
@@ -223,19 +226,16 @@ export class AuthController {
 
   async importGitHub(req: Request, res: Response) {
     try {
-      if (!req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
-      if (req.user.role !== "STUDENT") {
+      const authUser = ensureAuthenticated(req, res);
+      if (!authUser) return;
+      if (authUser.role !== "STUDENT") {
         return res.status(403).json({ message: "Only students can import GitHub profiles" });
       }
 
-      const result = importGitHubSchema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-      }
+      // Body is already validated & typed by route-level validateBody(importGitHubSchema)
+      const { username } = req.body as z.infer<typeof importGitHubSchema>;
 
-      const data = await this.authService.importGitHub(result.data.username);
+      const data = await this.authService.importGitHub(username);
       return res.status(200).json(data);
     } catch (error) {
       if (error instanceof Error && error.message === "GitHub user not found") {
@@ -264,10 +264,11 @@ export class AuthController {
 
   async deleteAccount(req: Request, res: Response) {
     try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const authUser = ensureAuthenticated(req, res);
+      if (!authUser) return;
 
       const { password } = req.body as { password: string };
-      await this.authService.deleteAccount(req.user.id, password);
+      await this.authService.deleteAccount(authUser.id, password);
       clearTokenCookie(res);
       return res.status(200).json({ message: "Account deleted successfully" });
     } catch (error) {

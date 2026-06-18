@@ -19,8 +19,16 @@ function resolveSsl():
   if (process.env["DATABASE_SSL"] === "false") {
     return false;
   }
-  // Local Postgres installs typically do not support TLS.
-  if (/localhost|127\.0\.0\.1/.test(rawConnectionString)) {
+  // Local Postgres (including the docker-compose "postgres" service) does not
+  // serve TLS. Match on the resolved hostname so a remote URL whose scheme or
+  // database name contains "postgres" does not accidentally disable TLS.
+  let sslHost = "";
+  try {
+    sslHost = new URL(rawConnectionString).hostname;
+  } catch {
+    // Malformed/empty URL: fall through to the secure default below.
+  }
+  if (["localhost", "127.0.0.1", "postgres"].includes(sslHost)) {
     return false;
   }
   return { rejectUnauthorized: false };

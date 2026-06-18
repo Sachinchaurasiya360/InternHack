@@ -26,7 +26,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 import { Button } from "../../../components/ui/button";
 
 const FREE_LIMIT = 5;
@@ -271,7 +271,7 @@ export default function JsLessonDetailPage() {
 
   const [playgroundCode, setPlaygroundCode] = useState("");
   const [showPlayground, setShowPlayground] = useState(false);
-  const [playgroundResult, setPlaygroundResult] = useState<any>(null);
+  const [playgroundResult, setPlaygroundResult] = useState<JsRunResult | null>(null);
 
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
