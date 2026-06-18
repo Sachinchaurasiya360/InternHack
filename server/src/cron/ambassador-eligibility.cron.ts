@@ -13,7 +13,7 @@ const GUIDE_NAMES = [
 
 let cronJob: cron.ScheduledTask | null = null;
 
-async function checkAndEnrollAmbassadors(): Promise<void> {
+export async function runAmbassadorEligibility(): Promise<void> {
   // Get all existing ambassador userIds to exclude them
   const existingAmbassadorIds = (
     await prisma.ambassador.findMany({ select: { userId: true } })
@@ -152,7 +152,7 @@ export function startAmbassadorEligibilityCron(): void {
   cronJob = cron.schedule("0 6 * * *", () => {
     void withAdvisoryLock("ambassador-eligibility", async () => {
       try {
-        await checkAndEnrollAmbassadors();
+        await runAmbassadorEligibility();
       } catch (err) {
         console.error("[Ambassador Cron] Error:", err);
       }
