@@ -565,6 +565,7 @@ model repoRequest {
 
   @@index([status])
   @@index([userId])
+  @@index([userId, status])
 }
 
 model githubConnection {
@@ -1618,6 +1619,7 @@ model guideFeedback {
   @@unique([userId, guideId, stepId])
   @@index([guideId])
   @@index([stepId])
+  @@index([userId, guideId])
   }
 
 enum ContentType {
