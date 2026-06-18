@@ -14,16 +14,21 @@ const ContributorsPage = lazyWithRetry(() => import("./module/contributors/Contr
 function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>): LazyExoticComponent<T> {
   return lazy(
     () =>
-      factory().catch((err: unknown) => {
-        const key = "chunk_reload";
-        if (!sessionStorage.getItem(key)) {
-          sessionStorage.setItem("1", "1");
-          window.location.reload();
-          return new Promise<never>(() => { }); // never resolves, page is reloading
-        }
-        sessionStorage.removeItem(key);
-        throw err;
-      }) as Promise<{ default: T }>,
+      factory()
+        .then((resolved) => {
+          sessionStorage.removeItem("chunk_reload");
+          return resolved;
+        })
+        .catch((err: unknown) => {
+          const key = "chunk_reload";
+          if (!sessionStorage.getItem(key)) {
+            sessionStorage.setItem(key, "1");
+            window.location.reload();
+            return new Promise<never>(() => { }); // never resolves, page is reloading
+          }
+          sessionStorage.removeItem(key);
+          throw err;
+        }) as Promise<{ default: T }>,
   ) as LazyExoticComponent<T>;
 }
 
