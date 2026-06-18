@@ -29,7 +29,7 @@ export function ProtectedRoute({ children, role, redirectTo = "/login" }: Protec
   }
 
   if (user && !user.isVerified && user.role !== "ADMIN") {
-    return <Navigate to={`/verify-email?email=${encodeURIComponent(user.email)}`} replace />;
+    return <Navigate to="/verify-email" state={{ email: user.email }} replace />;
   }
 
   if (role && user?.role !== role) {
