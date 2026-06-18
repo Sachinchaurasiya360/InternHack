@@ -4,7 +4,7 @@ import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
 import { FileUploadError } from "../lib/errors.js";
 
-const ADMIN_ALERT_EMAIL = "mrsachinchaurasiya@gmail.com";
+const ADMIN_ALERT_EMAIL = process.env["ADMIN_ALERT_EMAIL"] ?? "";
 
 const SENSITIVE_KEYS = new Set([
   "password", "newPassword", "confirmPassword", "currentPassword",
@@ -69,7 +69,7 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
     console.error("[ErrorLog] Failed to write:", dbErr);
   });
 
-  if (statusCode >= 500) {
+  if (statusCode >= 500 && ADMIN_ALERT_EMAIL) {
     const rawDetails = rawErr ? formatRawError(rawErr) : "No stack trace";
     sendEmail({
       to: ADMIN_ALERT_EMAIL,
