@@ -3,7 +3,7 @@ import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
   ArrowRight, ChevronLeft, ChevronRight,
-  CheckCircle2, ExternalLink, Lightbulb, Info,
+  CheckCircle2, ExternalLink, Lightbulb, Info, X
 } from "lucide-react";
 import { VideoEmbed } from "../../../../components/ui/VideoEmbed";
 import { SEO } from "../../../../components/SEO";
@@ -218,8 +218,7 @@ if (!step) return <Navigate to={basePath} replace />;
         </div>
       </motion.div>
 
-      {/*Dismissible keyboard shortcut hint.*/}
-      {/*Visibility is persisted in localStorage so it only needs to be shown once. */}
+      
       {showShortcutHint && (
         <div className="mb-4 flex items-center justify-between rounded-md border border-amber-100 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/20 px-4 py-3">
           <div className="flex items-center gap-2">
@@ -229,14 +228,15 @@ if (!step) return <Navigate to={basePath} replace />;
             </p>
           </div>
 
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            mode="icon"
             onClick={dismissShortcutHint}
-            className="text-xs text-stone-500 hover:text-stone-900 dark:hover:text-white"
             aria-label="Dismiss keyboard shortcuts hint"
+            title="Dismiss"
           >
-            ✕
-          </button>
+            <X className="h-4 w-4" />
+          </Button>
         </div>
       )}
 
