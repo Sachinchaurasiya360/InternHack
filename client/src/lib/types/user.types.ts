@@ -47,7 +47,7 @@ export interface User {
   achievements?: AchievementItem[];
   createdAt?: string;
   subscriptionPlan?: "FREE" | "MONTHLY" | "YEARLY";
-  subscriptionStatus?: "ACTIVE" | "EXPIRED";
+  subscriptionStatus?: "ACTIVE" | "EXPIRED" | "CANCELLED";
   subscriptionEndDate?: string;
   ossTier?: string;
 }
