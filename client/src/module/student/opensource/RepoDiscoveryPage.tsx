@@ -345,6 +345,19 @@ export default function RepoDiscoveryPage() {
     (selectedDifficulty !== "ALL" ? 1 : 0) +
     (selectedLanguage.length > 0 ? 1 : 0);
 
+  const isPristine = useMemo(() => {
+    return (
+      !search.trim() &&
+      selectedDomain === "ALL" &&
+      selectedDifficulty === "ALL" &&
+      selectedLanguage.length === 0 &&
+      !trendingOnly &&
+      !hacktoberfestOnly &&
+      !highlyActiveOnly &&
+      !showSaved
+    );
+  }, [search, selectedDomain, selectedDifficulty, selectedLanguage, trendingOnly, hacktoberfestOnly, highlyActiveOnly, showSaved]);
+
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       {selectedRepo ? (
@@ -706,13 +719,57 @@ export default function RepoDiscoveryPage() {
 
         {/* Empty */}
         {!isLoading && !isLoadingBookmarks && !isError && displayedRepos.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-            <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
-              <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+          isPristine ? (
+            <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
+              <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
+                <Wand2 className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+              </div>
+              <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">Discover open-source projects</h3>
+              <p className="text-sm text-stone-500 dark:text-stone-400 mb-6">Pick a filter below or type a search to find your first repo.</p>
+              <div className="flex flex-wrap items-center justify-center gap-2 max-w-lg mx-auto">
+                <button
+                  type="button"
+                  onClick={() => updateFilter("difficulty", "BEGINNER")}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-md text-sm font-semibold border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  Beginner-friendly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateFilter("trending", "true")}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-md text-sm font-semibold border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
+                >
+                  <Flame className="w-3.5 h-3.5" />
+                  Trending
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateFilter("hacktoberfest", "true")}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-md text-sm font-semibold border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
+                >
+                  <GitPullRequest className="w-3.5 h-3.5" />
+                  Hacktoberfest
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateFilter("highlyActive", "true")}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-md text-sm font-semibold border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
+                >
+                  <GitFork className="w-3.5 h-3.5" />
+                  Highly Active
+                </button>
+              </div>
             </div>
-            <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">No repositories found</h3>
-            <p className="text-sm text-stone-500 dark:text-stone-400">Try adjusting your search or filters.</p>
-          </div>
+          ) : (
+            <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
+              <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
+                <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+              </div>
+              <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">No repositories found</h3>
+              <p className="text-sm text-stone-500 dark:text-stone-400">Try adjusting your search or filters.</p>
+            </div>
+          )
         )}
 
         {/* Cards grid */}
