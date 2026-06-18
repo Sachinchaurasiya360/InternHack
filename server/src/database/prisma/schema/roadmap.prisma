@@ -30,6 +30,8 @@ model roadmap {
   updatedAt        DateTime            @updatedAt
   sections         roadmapSection[]
   enrollments      roadmapEnrollment[]
+  studyBuddyPreferences roadmapStudyBuddyPreference[] @relation("RoadmapStudyBuddyPreferences")
+  studyBuddyPairs       roadmapStudyBuddyPair[]       @relation("RoadmapStudyBuddyPairs")
 
   @@index([isPublished])
   @@index([slug])
@@ -91,6 +93,7 @@ model roadmapEnrollment {
   user               user                   @relation("UserRoadmapEnrollments", fields: [userId], references: [id], onDelete: Cascade)
   roadmapId          Int
   roadmap            roadmap                @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  shareToken         String                 @unique @default(cuid())
   hoursPerWeek       Int                    @default(8)
   preferredDays      String[]               @default([])
   startDate          DateTime               @default(now())
@@ -195,4 +198,40 @@ enum RoadmapTopicStatus {
 enum ScheduledEmailKind {
   ROADMAP_DAY_10
   ROADMAP_WEEKLY_DIGEST
+}
+
+model roadmapStudyBuddyPreference {
+  id                  Int      @id @default(autoincrement())
+  userId              Int
+  user                user     @relation("UserStudyBuddyPreferences", fields: [userId], references: [id], onDelete: Cascade)
+  roadmapId           Int
+  roadmap             roadmap  @relation("RoadmapStudyBuddyPreferences", fields: [roadmapId], references: [id], onDelete: Cascade)
+  enabled             Boolean  @default(true)
+  preferSameCollege   Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([userId, roadmapId])
+  @@index([userId])
+  @@index([roadmapId])
+}
+
+model roadmapStudyBuddyPair {
+  id              Int      @id @default(autoincrement())
+  roadmapId       Int
+  roadmap         roadmap  @relation("RoadmapStudyBuddyPairs", fields: [roadmapId], references: [id], onDelete: Cascade)
+  studentAId      Int
+  studentA        user     @relation("StudentAPairs", fields: [studentAId], references: [id], onDelete: Cascade)
+  studentBId      Int
+  studentB        user     @relation("StudentBPairs", fields: [studentBId], references: [id], onDelete: Cascade)
+  matchedAt       DateTime @default(now())
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([roadmapId])
+  @@index([studentAId])
+  @@index([studentBId])
+  @@unique([roadmapId, studentAId], map: "unique_active_pair_student_a", where: { active: true })
+  @@unique([roadmapId, studentBId], map: "unique_active_pair_student_b", where: { active: true })
 }

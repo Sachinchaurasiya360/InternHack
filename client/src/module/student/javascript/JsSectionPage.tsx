@@ -7,6 +7,7 @@ import type { JsProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 
 const FREE_LIMIT = 5;
 
@@ -19,11 +20,6 @@ function getLocalProgress(): JsProgress {
 }
 
 
-const DIFF_COLOR: Record<string, string> = {
-  Beginner: "text-green-600 dark:text-green-400 font-bold",
-  Intermediate: "text-amber-600 dark:text-amber-400 font-bold",
-  Advanced: "text-red-600 dark:text-red-400 font-bold",
-};
 
 
 

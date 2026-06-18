@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -16,11 +16,8 @@ import {
   Code2,
   Wand2,
   Flame,
-  ArrowRight,
   BookOpen,
   AlertCircle,
-  BarChart3,
-  Plus,
   Share2,
   Check,
   Copy,
@@ -35,16 +32,14 @@ import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import type { OpenSourceRepo, Pagination, RepoRequest } from "../../../lib/types";
+import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
-import { SuggestRepoModal } from "./SuggestRepoModal";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { Button } from "../../../components/ui/button";
-import { useCoachStore } from "./stores/coach.store";
 import { markLearningPathMilestone } from "./learning-paths.data";
 
 const BOOKMARK_KEY = "oss_bookmarks";
@@ -69,12 +64,6 @@ const saveBookmarks = (ids: number[]) => {
   } catch (error) {
     console.warn("Failed to save bookmarks to localStorage", error);
   }
-};
-
-const STATUS_STYLE: Record<string, string> = {
-  PENDING: "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
-  APPROVED: "bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-800",
-  REJECTED: "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
 };
 
 // skill language map
@@ -107,7 +96,6 @@ export default function RepoDiscoveryPage() {
   }, []);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
   // Initialize filter states directly from the URL
   const search = searchParams.get("q") || "";
@@ -175,8 +163,6 @@ export default function RepoDiscoveryPage() {
     };
   }, []);
 
-  const [showSuggestModal, setShowSuggestModal] = useState(false);
-  const [showAllSubmissions, setShowAllSubmissions] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const [bookmarks, setBookmarks] = useState<number[]>(() => getBookmarks());
   const [showSaved, setShowSaved] = useState(false);
@@ -267,25 +253,6 @@ export default function RepoDiscoveryPage() {
       saveBookmarks(next);
       return next;
     });
-
-    if (isBookmarking) {
-      const repo = data?.repos?.find((r) => r.id === id);
-      if (repo) {
-        triggerCoach({
-          trigger: "REPO_BOOKMARKED",
-          context: {
-            skills: user?.skills || [],
-            bookmarkedRepos: [
-              {
-                name: repo.name,
-                language: repo.language,
-                domain: repo.domain || undefined,
-              },
-            ],
-          },
-        });
-      }
-    }
   };
 
   const handleShare = () => {
@@ -335,20 +302,6 @@ export default function RepoDiscoveryPage() {
     staleTime: 10 * 60 * 1000,
   });
 
-  const {
-    data: myRequestsData,
-    isLoading: isMyRequestsLoading,
-    isError: isMyRequestsError,
-    refetch: refetchMyRequests,
-  } = useQuery({
-    queryKey: queryKeys.opensource.myRequests(),
-    queryFn: () => api.get("/opensource/requests/mine").then((r) => r.data.requests as RepoRequest[]),
-    enabled: !!user,
-    staleTime: 2 * 60 * 1000,
-  });
-
-  const myRequests = myRequestsData;
-
   const languages = useMemo(() => {
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
   }, [languagesData]);
@@ -365,32 +318,6 @@ export default function RepoDiscoveryPage() {
 
   const pagination = data?.pagination;
   const displayedRepos = showSaved ? (bookmarkedData ?? []) : (data?.repos ?? []);
-
-  // Global stats fetched independently so the header strip stays accurate
-  // regardless of active filters or page (replaces the old useMemo approach).
-  const { data: globalStats } = useQuery({
-    queryKey: queryKeys.opensource.stats(),
-    queryFn: () =>
-      api
-        .get<{
-          totalRepos: number;
-          totalStars: number;
-          trendingCount: number;
-          languageCount: number;
-          domainBreakdown: { domain: string; count: number }[];
-        }>("/opensource/stats")
-        .then((r) => r.data),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const stats = globalStats
-    ? {
-      totalRepos: globalStats.totalRepos,
-      totalStars: formatCount(globalStats.totalStars),
-      trendingCount: globalStats.trendingCount,
-      languages: globalStats.languageCount,
-    }
-    : null;
 
   const updateFilter = (key: string, value: string | number) => {
     setSearchParams(
@@ -467,21 +394,6 @@ export default function RepoDiscoveryPage() {
                 Beginner-friendly open-source projects, curated by engineers for students.
               </p>
             </div>
-            {stats && (
-              <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                <span>
-                  <span className="text-stone-900 dark:text-stone-50">{stats.totalRepos}</span> repos
-                </span>
-                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                <span>
-                  <span className="text-stone-900 dark:text-stone-50">{stats.totalStars}</span> stars
-                </span>
-                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                <span>
-                  <span className="text-lime-600 dark:text-lime-400">{stats.trendingCount}</span> trending
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
@@ -500,141 +412,6 @@ export default function RepoDiscoveryPage() {
             /
           </kbd>
         </div>
-
-        {/* Analytics + Suggest strip */}
-        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-0 border-t border-l border-stone-200 dark:border-white/10">
-          <Link
-            to="/student/opensource/analytics"
-            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-900 dark:hover:bg-stone-800 transition-colors"
-          >
-            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-lime-400/10 flex items-center justify-center shrink-0">
-              <BarChart3 className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <div className="h-1 w-1 bg-lime-400"></div>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
-                  analytics
-                </p>
-              </div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-white">
-                Track your contributions
-              </p>
-            </div>
-            <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => {
-              if (!user) { window.location.href = "/login"; return; }
-              setShowSuggestModal(true);
-            }}
-            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 cursor-pointer hover:bg-stone-900 dark:hover:bg-stone-800 transition-colors text-left"
-          >
-            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-lime-400/10 flex items-center justify-center shrink-0">
-              <Plus className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <div className="h-1 w-1 bg-lime-400"></div>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
-                  suggest
-                </p>
-              </div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-white">
-                Know a great repo? Submit it
-              </p>
-            </div>
-            <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </button>
-        </div>
-
-        {/* My Submissions */}
-        {!!user && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <div className="h-1 w-1 bg-lime-400" />
-                my submissions
-              </div>
-            </div>
-
-            {isMyRequestsLoading && (
-              <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-10 bg-stone-100 dark:bg-stone-800 rounded-md animate-pulse"
-                  />
-                ))}
-              </div>
-            )}
-
-            {!isMyRequestsLoading && isMyRequestsError && (
-              <div className="flex items-center justify-between py-2 px-1">
-                <p className="text-sm text-red-500">Failed to load submissions</p>
-                <button
-                  type="button"
-                  onClick={() => refetchMyRequests()}
-                  className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent"
-                >
-                  Retry ↻
-                </button>
-              </div>
-            )}
-
-            {!isMyRequestsLoading && !isMyRequestsError && myRequests?.length === 0 && (
-              <p className="text-sm text-stone-400 dark:text-stone-500 py-2">
-                You haven't suggested any repos yet.
-              </p>
-            )}
-
-            {!isMyRequestsLoading && !isMyRequestsError && myRequests && myRequests.length > 0 && (
-              <div className="space-y-2">
-                {(showAllSubmissions ? myRequests : myRequests.slice(0, 3)).map(
-                  (req) => (
-                    <div
-                      key={req.id}
-                      className="flex items-center justify-between px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-sm text-stone-700 dark:text-stone-300 truncate font-medium">
-                          {req.owner}/{req.name}
-                        </span>
-                        <span className="text-xs text-stone-400 shrink-0">
-                          {new Date(req.createdAt).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-md border shrink-0 ml-3 ${STATUS_STYLE[req.status] ?? STATUS_STYLE.PENDING
-                          }`}
-                      >
-                        {req.status}
-                      </span>
-                    </div>
-                  )
-                )}
-
-                {myRequests.length > 3 && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAllSubmissions((v) => !v)}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
-                  >
-                    {showAllSubmissions
-                      ? "Show less ↑"
-                      : `Show all ${myRequests.length} →`}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Guidance Cards */}
         <GuidanceCards />
@@ -965,11 +742,6 @@ export default function RepoDiscoveryPage() {
           />
         )}
       </div>
-
-      {/* Suggest Repo Modal */}
-      <AnimatePresence>
-        <SuggestRepoModal open={showSuggestModal} onClose={() => setShowSuggestModal(false)} />
-      </AnimatePresence>
 
       {/* Detail Modal */}
       <AnimatePresence>

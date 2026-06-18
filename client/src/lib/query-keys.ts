@@ -106,6 +106,7 @@ export const queryKeys = {
       ["opensource", "trend", startDate, endDate] as const,
     hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
     streak: () => ["opensource", "streak"] as const,
+    githubConnection: () => ["opensource", "github-connection"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
@@ -261,9 +262,6 @@ export const queryKeys = {
     similar: (id: number) => ["dsa", "similar", id] as const,
     approaches: (slug: string) => ["dsa", "approaches", slug] as const,
   },
-  interviewDashboard: {
-  mine: () => ["interview-dashboard", "mine"] as const,
-},
   // Roadmaps
   roadmaps: {
     all: ["roadmaps"] as const,
@@ -278,5 +276,12 @@ export const queryKeys = {
     topic: (slug: string, topicSlug: string) =>
       ["roadmaps", "topic", slug, topicSlug] as const,
     community: () => ["roadmaps", "community"] as const,
+    studyBuddy: (roadmapId: number) =>
+      ["roadmaps", "study-buddy", roadmapId] as const,
+  },
+  // Notes
+  notes: {
+    list: (filters?: Record<string, string | undefined>) => ["notes", "list", filters] as const,
+    detail: (contentType: string, contentId: string | number) => ["notes", "detail", contentType, contentId] as const,
   },
 };

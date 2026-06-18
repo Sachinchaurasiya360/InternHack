@@ -22,6 +22,7 @@ export default function ApplicationsList() {
   const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
   const [pendingAdvanceApp, setPendingAdvanceApp] = useState<Application | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [announcement, setAnnouncement] = useState("");
 
   // Reset to page 1 when search or filter changes
   useEffect(() => {
@@ -49,12 +50,15 @@ export default function ApplicationsList() {
   const handleStatusChange = async (appId: number, status: string) => {
     if (updatingId === appId) return;
     setUpdatingId(appId);
+    setAnnouncement("");
     try {
       await api.patch(`/recruiter/applications/${appId}/status`, { status });
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       toast.success("Status updated");
+      setAnnouncement(`Application status successfully updated to ${status.replace("_", " ").toLowerCase()}.`);
     } catch {
       toast.error("Failed to update status");
+      setAnnouncement("Failed to update application status.");
     } finally {
       setUpdatingId(null);
     }
@@ -63,13 +67,16 @@ export default function ApplicationsList() {
   const handleAdvance = async (appId: number) => {
     if (advancingIds.has(appId)) return;
     setAdvancingIds((current) => new Set(current).add(appId));
+    setAnnouncement("");
     try {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       toast.success("Application advanced");
+      setAnnouncement("Application successfully advanced.");
       setPendingAdvanceApp(null);
     } catch {
       toast.error("Failed to advance application");
+      setAnnouncement("Failed to advance application.");
     } finally {
       setAdvancingIds((current) => {
         const next = new Set(current);
@@ -127,6 +134,9 @@ export default function ApplicationsList() {
   return (
     <div>
       <SEO title="Applications" noIndex />
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {announcement}
+      </div>
       <ConfirmDialog
         open={pendingAdvanceApp !== null}
         title="Advance Candidate?"

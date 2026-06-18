@@ -84,6 +84,51 @@ export interface HacktoberfestProgressResponse {
   };
 }
 
+export type GithubSyncStatus = "PENDING" | "SYNCING" | "SUCCESS" | "FAILED";
+
+export interface GithubPullRequestSummary {
+  id: number;
+  title: string;
+  url: string;
+  number: number;
+  mergedAt: string;
+  repoName: string;
+  repoUrl: string;
+  repoStars: number;
+  language: string | null;
+}
+
+export interface GithubContributedRepoSummary {
+  id: number;
+  nameWithOwner: string;
+  url: string;
+  stars: number;
+  language: string | null;
+  mergedPrs: number;
+  lastMergedAt: string | null;
+}
+
+export interface GithubConnectionSummary {
+  id: number;
+  githubUsername: string;
+  profileUrl: string;
+  connectedAt: string;
+  lastSyncAt: string | null;
+  syncStatus: GithubSyncStatus;
+  syncError: string | null;
+  prsMerged: number;
+  reposContributed: number;
+  publicRepos: number;
+  contributedStars: number;
+  recentPullRequests: GithubPullRequestSummary[];
+  contributedRepos: GithubContributedRepoSummary[];
+}
+
+export interface GithubConnectionResponse {
+  connected: boolean;
+  connection: GithubConnectionSummary | null;
+}
+
 // GSoC Organizations
 export interface GSoCOrganization {
   id: number;

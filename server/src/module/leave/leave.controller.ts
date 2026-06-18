@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { LeaveService } from "./leave.service.js";
 import {
   createLeaveRequestSchema, approveLeaveSchema, rejectLeaveSchema,
@@ -34,7 +35,9 @@ export class LeaveController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
       const employeeId = req.user.id;
-      const { employeeId: _ignoredEmployeeId, ...query } = leaveQuerySchema.parse(req.query);
+      const parsed = leaveQuerySchema.safeParse(req.query);
+      if (!parsed.success) return res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+      const { employeeId: _ignoredEmployeeId, ...query } = parsed.data;
       const data = await this.leaveService.getMyRequests(employeeId, query);
       return res.json(data);
     } catch (error) {
@@ -48,7 +51,8 @@ export class LeaveController {
       const managerId = Number(req.query["managerId"]);
       if (isNaN(managerId)) return res.status(400).json({ message: "managerId query param required" });
 
-      const query = leaveQuerySchema.parse(req.query);
+      const query = validateRequestData(res, leaveQuerySchema, req.query);
+      if (!query) return;
       const data = await this.leaveService.getTeamRequests(managerId, query);
       return res.json(data);
     } catch (error) {
@@ -59,7 +63,8 @@ export class LeaveController {
 
   async getAllRequests(req: Request, res: Response) {
     try {
-      const query = leaveQuerySchema.parse(req.query);
+      const query = validateRequestData(res, leaveQuerySchema, req.query);
+      if (!query) return;
       const data = await this.leaveService.getAllRequests(query);
       return res.json(data);
     } catch (error) {

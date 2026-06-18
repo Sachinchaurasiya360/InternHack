@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { WorkflowService } from "./workflow.service.js";
 import { createWorkflowSchema, updateWorkflowSchema, triggerWorkflowSchema, advanceWorkflowSchema, workflowQuerySchema } from "./workflow.validation.js";
 
@@ -103,7 +104,8 @@ export class WorkflowController {
 
   async getInstances(req: Request, res: Response) {
     try {
-      const query = workflowQuerySchema.parse(req.query);
+      const query = validateRequestData(res, workflowQuerySchema, req.query);
+      if (!query) return;
       const data = await this.workflowService.getInstances(query);
       return res.json(data);
     } catch (error) {

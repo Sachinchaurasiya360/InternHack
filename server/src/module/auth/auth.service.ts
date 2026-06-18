@@ -18,49 +18,113 @@ import { signUrl, signUrls } from "../../utils/s3.utils.js";
 import { createUniqueProfileSlug } from "../../lib/slug.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
-import type { UserRole } from "@prisma/client";
-import { PERSONAL_EMAIL_DOMAINS } from "./auth.validation.js";
+import type { z } from "zod";
+import type { user as User } from "@prisma/client";
+import {
+  PERSONAL_EMAIL_DOMAINS,
+  type registerSchema,
+  type loginSchema,
+  type updateProfileSchema,
+  type googleAuthSchema,
+} from "./auth.validation.js";
 
-interface RegisterInput {
-  name: string;
-  email: string;
-  password: string;
-  role: UserRole;
-  company?: string | undefined;
-  designation?: string | undefined;
-  contactNo?: string | undefined;
+type RegisterInput = z.infer<typeof registerSchema>;
+type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+type LoginInput = z.infer<typeof loginSchema>;
+type GoogleAuthInput = z.infer<typeof googleAuthSchema>;
+
+// ---------------------------------------------------------------------------
+// Shared helpers (single source of truth for repeated auth flows)
+// ---------------------------------------------------------------------------
+
+const OTP_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const GITHUB_API_HEADERS = { "User-Agent": "InternHack-App" };
+
+// Fields returned to the client after authentication (login / register / verify / google).
+const AUTH_USER_SELECT = {
+  id: true,
+  profileSlug: true,
+  name: true,
+  email: true,
+  role: true,
+  company: true,
+  designation: true,
+  profilePic: true,
+  isVerified: true,
+  createdAt: true,
+  subscriptionPlan: true,
+  subscriptionStatus: true,
+  subscriptionEndDate: true,
+  ossTier: true,
+} as const;
+
+type AuthUser = Pick<User, keyof typeof AUTH_USER_SELECT>;
+
+const pluralize = (count: number, word: string) => `${word}${count !== 1 ? "s" : ""}`;
+
+/** Pick the standardized auth user payload from a full user record. */
+function buildAuthUser(user: AuthUser): AuthUser {
+  return {
+    id: user.id,
+    profileSlug: user.profileSlug,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    company: user.company,
+    designation: user.designation,
+    profilePic: user.profilePic,
+    isVerified: user.isVerified,
+    createdAt: user.createdAt,
+    subscriptionPlan: user.subscriptionPlan,
+    subscriptionStatus: user.subscriptionStatus,
+    subscriptionEndDate: user.subscriptionEndDate,
+    ossTier: user.ossTier,
+  };
 }
 
-interface UpdateProfileInput {
-  name?: string;
-  contactNo?: string;
-  company?: string;
-  designation?: string;
-  bio?: string;
-  college?: string;
-  graduationYear?: number | null;
-  skills?: string[];
-  location?: string;
-  linkedinUrl?: string;
-  githubUrl?: string;
-  portfolioUrl?: string;
-  leetcodeUrl?: string;
-  jobStatus?: string | null;
-  // Added builtAt for GSSoC '26 Featured Projects
-  projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string; builtAt?: string }[];
-  achievements?: { id: string; title: string; description: string; date?: string }[];
-  isProfilePublic?: boolean;
+/** Generate a 6-digit OTP with its hash and expiry timestamp. */
+async function generateOtp() {
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const hashedOtp = await hashPassword(otp);
+  const expiresAt = new Date(Date.now() + OTP_TTL_MS);
+  return { otp, hashedOtp, expiresAt };
 }
 
-interface LoginInput {
-  email: string;
-  password: string;
+/** Fire-and-forget account verification OTP email. */
+function sendVerificationEmail(to: string, name: string, otp: string) {
+  sendEmail({
+    to,
+    subject: "Verify your InternHack account",
+    html: otpEmailHtml(name, otp),
+  }).catch((err) => console.error("Failed to send OTP email:", err));
 }
 
-interface GoogleAuthInput {
-  credential?: string;
-  accessToken?: string;
-  role?: UserRole;
+/** Rotate tokenVersion (single-device enforcement), bust the version cache, return a fresh JWT. */
+async function rotateSession(user: { id: number; email: string; role: User["role"] }) {
+  const { tokenVersion } = await prisma.user.update({
+    where: { id: user.id },
+    data: { tokenVersion: { increment: 1 } },
+    select: { tokenVersion: true },
+  });
+  invalidateVersionCache(user.id);
+  return generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion });
+}
+
+/** Replace stored S3 keys with presigned URLs, in place. */
+async function signProfileMedia(record: Record<string, any>) {
+  if (Array.isArray(record.resumes) && record.resumes.length > 0) {
+    record.resumes = await signUrls(record.resumes);
+  }
+  if (record.profilePic) record.profilePic = await signUrl(record.profilePic);
+  if (record.coverImage) record.coverImage = await signUrl(record.coverImage);
+}
+
+/** Throw a uniform lockout error when an account is temporarily locked. */
+function assertNotLocked(lockedUntil: Date | null) {
+  if (lockedUntil && new Date() < lockedUntil) {
+    const remainingMinutes = Math.ceil((lockedUntil.getTime() - Date.now()) / 60000);
+    throw new Error(`Too many failed attempts. Please try again in ${remainingMinutes} ${pluralize(remainingMinutes, "minute")}`);
+  }
 }
 
 const GITHUB_STATS_CACHE_TTL = 60 * 60 * 1000;
@@ -147,31 +211,13 @@ export class AuthService {
         designation: data.designation ?? null,
         contactNo: data.contactNo ?? null,
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        company: true,
-        designation: true,
-        profilePic: true,
-        isVerified: true,
-        createdAt: true,
-        subscriptionPlan: true,
-        subscriptionStatus: true,
-        subscriptionEndDate: true,
-        ossTier: true,
-      },
+      select: AUTH_USER_SELECT,
     });
 
-    // Generate 6-digit OTP, hash it, and store it
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const hashedOtp = await hashPassword(otp);
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
+    const { otp, hashedOtp, expiresAt } = await generateOtp();
     await prisma.user.update({
       where: { id: user.id },
-      data: { verificationOtp: hashedOtp, otpExpiresAt },
+      data: { verificationOtp: hashedOtp, otpExpiresAt: expiresAt },
     });
 
     const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
@@ -184,7 +230,36 @@ export class AuthService {
       html: otpEmailHtml(user.name, otp),
     }).catch((err) => console.error("Failed to send OTP email:", err));
 
-    return { user: { ...user, profileSlug: slug } };
+    // Record referral conversion if a ref code was provided
+    if (data.ref) {
+      this.recordReferral(data.ref, user.id).catch((err) =>
+        console.error("Failed to record referral during registration:", err)
+      );
+    }
+
+    return { user };
+  }
+
+  private async recordReferral(code: string, userId: number) {
+    try {
+      const link = await prisma.referralLink.findUnique({
+        where: { code },
+        select: { id: true },
+      });
+      if (!link) return;
+
+      try {
+        await prisma.referralConversion.upsert({
+          where: { referredUserId: userId },
+          update: {},
+          create: { referralLinkId: link.id, referredUserId: userId },
+        });
+      } catch (err: any) {
+        console.error("Failed to write referral conversion (likely duplicate/unique violation):", err);
+      }
+    } catch (err: any) {
+      console.error("Failed to record referral:", err);
+    }
   }
 
   async googleAuth(data: GoogleAuthInput) {
@@ -286,42 +361,18 @@ export class AuthService {
       const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
       user.profileSlug = slug;
 
-      // Send welcome email (fire-and-forget) – temporarily disabled
-      // sendEmail({
-      //   to: user.email,
-      //   subject: "Welcome to InternHack!",
-      //   html: welcomeEmailHtml(user.name),
-      // }).catch((err) => console.error("Failed to send welcome email:", err));
+      sendEmail({
+        to: user.email,
+        subject: "Welcome to InternHack!",
+        html: welcomeEmailHtml(user.name),
+      }).catch((err) => console.error("Failed to send welcome email:", err));
     }
 
-    // Increment tokenVersion to invalidate all previous sessions (single-device enforcement)
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: { tokenVersion: { increment: 1 } },
-      select: { tokenVersion: true },
-    });
-    invalidateVersionCache(user.id);
-
-    const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
-    const ossTier = user.ossTier;
+    // Rotate session to invalidate all previous sessions (single-device enforcement)
+    const token = await rotateSession(user);
 
     return {
-      user: {
-        id: user.id,
-        profileSlug: user.profileSlug,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        company: user.company,
-        designation: user.designation,
-        profilePic: user.profilePic,
-        isVerified: user.isVerified,
-        createdAt: user.createdAt,
-        subscriptionPlan: user.subscriptionPlan,
-        subscriptionStatus: user.subscriptionStatus,
-        subscriptionEndDate: user.subscriptionEndDate,
-        ossTier,
-      },
+      user: buildAuthUser(user),
       token,
       isNewUser: !user.createdAt || (Date.now() - user.createdAt.getTime()) < 5000,
     };
@@ -344,52 +395,22 @@ export class AuthService {
 
     // Block unverified students/recruiters, admins skip verification
     if (!user.isVerified && user.role !== "ADMIN") {
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      const hashedOtp = await hashPassword(otp);
-      const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
-
+      const { otp, hashedOtp, expiresAt } = await generateOtp();
       await prisma.user.update({
         where: { id: user.id },
-        data: { verificationOtp: hashedOtp, otpExpiresAt, verificationAttempts: 0, verificationLockedUntil: null },
+        data: { verificationOtp: hashedOtp, otpExpiresAt: expiresAt, verificationAttempts: 0, verificationLockedUntil: null },
       });
 
-      sendEmail({
-        to: user.email,
-        subject: "Verify your InternHack account",
-        html: otpEmailHtml(user.name, otp),
-      }).catch((err) => console.error("Failed to send OTP email:", err));
+      sendVerificationEmail(user.email, user.name, otp);
 
       throw new Error("EMAIL_NOT_VERIFIED");
     }
 
-    // Increment tokenVersion to invalidate all previous sessions (single-device enforcement)
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: { tokenVersion: { increment: 1 } },
-      select: { tokenVersion: true },
-    });
-    invalidateVersionCache(user.id);
-
-    const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
-    const ossTier = user.ossTier;
+    // Rotate session to invalidate all previous sessions (single-device enforcement)
+    const token = await rotateSession(user);
 
     return {
-      user: {
-        id: user.id,
-        profileSlug: user.profileSlug,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        company: user.company,
-        designation: user.designation,
-        profilePic: user.profilePic,
-        isVerified: user.isVerified,
-        createdAt: user.createdAt,
-        subscriptionPlan: user.subscriptionPlan,
-        subscriptionStatus: user.subscriptionStatus,
-        subscriptionEndDate: user.subscriptionEndDate,
-        ossTier,
-      },
+      user: buildAuthUser(user),
       token,
     };
   }
@@ -455,16 +476,7 @@ export class AuthService {
       throw new Error("User not found");
     }
 
-    if (user.resumes.length > 0) {
-      (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
-    }
-    if (user.profilePic) {
-      (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
-    }
-    if (user.coverImage) {
-      (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
-    }
-
+    await signProfileMedia(user as Record<string, any>);
 
     await cacheSet(cacheKey, user, PROFILE_TTL);
     return user;
@@ -531,15 +543,7 @@ export class AuthService {
     // Check profile_complete badge (fire-and-forget)
     badgeService.checkAndAwardBadges(userId, "profile_complete").catch((err) => console.error("Badge check failed (profile_complete):", err));
 
-    if (user.resumes.length > 0) {
-      (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
-    }
-    if (user.profilePic) {
-      (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
-    }
-    if (user.coverImage) {
-      (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
-    }
+    await signProfileMedia(user as Record<string, any>);
 
     // Bust cached profile so next GET /auth/me returns fresh data
     await cacheDel(`profile:me:${userId}`);
@@ -603,15 +607,7 @@ export class AuthService {
       // We will keep resumes for now as per normal portfolio behavior, but sensitive identifiers are stripped.
     }
 
-    if (rest.resumes && rest.resumes.length > 0) {
-      (rest as Record<string, unknown>).resumes = await signUrls(rest.resumes);
-    }
-    if (rest.profilePic) {
-      (rest as Record<string, unknown>).profilePic = await signUrl(rest.profilePic);
-    }
-    if (rest.coverImage) {
-      (rest as Record<string, unknown>).coverImage = await signUrl(rest.coverImage);
-    }
+    await signProfileMedia(rest as Record<string, any>);
 
     const result = {
       ...rest,
@@ -634,14 +630,7 @@ export class AuthService {
       throw new Error("Email is already verified");
     }
 
-    if (user.verificationLockedUntil && new Date() < user.verificationLockedUntil) {
-      const remainingMinutes = Math.ceil(
-        (user.verificationLockedUntil.getTime() - Date.now()) / 60000
-      );
-      throw new Error(
-        `Too many failed attempts. Please try again in ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`
-      );
-    }
+    assertNotLocked(user.verificationLockedUntil);
 
     if (!user.verificationOtp || !user.otpExpiresAt) {
       throw new Error("No verification code found. Please request a new one");
@@ -672,7 +661,7 @@ export class AuthService {
       });
 
       const attemptsRemaining = MAX_VERIFICATION_ATTEMPTS - updatedAttempts;
-      throw new Error(`Invalid verification code. ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? "s" : ""} remaining`);
+      throw new Error(`Invalid verification code. ${attemptsRemaining} ${pluralize(attemptsRemaining, "attempt")} remaining`);
     }
 
     const updated = await prisma.user.update({
@@ -684,42 +673,20 @@ export class AuthService {
         verificationAttempts: 0,
         verificationLockedUntil: null,
       },
-      select: {
-        id: true,
-        profileSlug: true,
-        name: true,
-        email: true,
-        role: true,
-        isVerified: true,
-        company: true,
-        designation: true,
-        createdAt: true,
-        subscriptionPlan: true,
-        subscriptionStatus: true,
-        subscriptionEndDate: true,
-        ossTier: true,
-      },
+      select: AUTH_USER_SELECT,
     });
 
     // Send welcome email (fire-and-forget) â€” temporarily disabled
-    // sendEmail({
-    //   to: user.email,
-    //   subject: "Welcome to InternHack!",
-    //   html: welcomeEmailHtml(user.name),
-    // }).catch((err) => console.error("Failed to send welcome email:", err));
+    sendEmail({
+      to: user.email,
+      subject: "Welcome to InternHack!",
+      html: welcomeEmailHtml(user.name),
+    }).catch((err) => console.error("Failed to send welcome email:", err));
 
-    // Increment tokenVersion, first real login after email verification
-    const versionUpdate = await prisma.user.update({
-      where: { id: updated.id },
-      data: { tokenVersion: { increment: 1 } },
-      select: { tokenVersion: true },
-    });
-    invalidateVersionCache(updated.id);
+    // Rotate session, first real login after email verification
+    const token = await rotateSession(updated);
 
-	    const token = generateToken({ id: updated.id, email: updated.email, role: updated.role, tokenVersion: versionUpdate.tokenVersion });
-    const ossTier = updated.ossTier;
-
-    return { user: { ...updated, ossTier }, token };
+    return { user: buildAuthUser(updated), token };
   }
 
   async resendOtp(email: string) {
@@ -741,20 +708,13 @@ export class AuthService {
       }
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const hashedOtp = await hashPassword(otp);
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
-
+    const { otp, hashedOtp, expiresAt } = await generateOtp();
     await prisma.user.update({
       where: { id: user.id },
-      data: { verificationOtp: hashedOtp, otpExpiresAt, verificationAttempts: 0, verificationLockedUntil: null },
+      data: { verificationOtp: hashedOtp, otpExpiresAt: expiresAt, verificationAttempts: 0, verificationLockedUntil: null },
     });
 
-    sendEmail({
-      to: user.email,
-      subject: "Verify your InternHack account",
-      html: otpEmailHtml(user.name, otp),
-    }).catch((err) => console.error("Failed to send OTP email:", err));
+    sendVerificationEmail(user.email, user.name, otp);
 
     return { message: "OTP sent successfully" };
   }
@@ -766,16 +726,14 @@ export class AuthService {
       return;
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const hashedOtp = await hashPassword(otp);
-    const resetOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const { otp, hashedOtp, expiresAt } = await generateOtp();
 
     // Reset attempt counter and unlock on new OTP request
     await prisma.user.update({
       where: { id: user.id },
       data: {
         resetPasswordOtp: hashedOtp,
-        resetOtpExpiresAt,
+        resetOtpExpiresAt: expiresAt,
         passwordResetAttempts: 0,
         passwordResetLockedUntil: null,
       },
@@ -798,14 +756,7 @@ export class AuthService {
     }
 
     // Check if account is temporarily locked due to too many failed attempts
-    if (user.passwordResetLockedUntil && new Date() < user.passwordResetLockedUntil) {
-      const remainingMinutes = Math.ceil(
-        (user.passwordResetLockedUntil.getTime() - Date.now()) / 60000
-      );
-      throw new Error(
-        `Too many failed attempts. Please try again in ${remainingMinutes} minute${remainingMinutes !== 1 ? "s" : ""}`
-      );
-    }
+    assertNotLocked(user.passwordResetLockedUntil);
 
     if (!user.resetPasswordOtp || !user.resetOtpExpiresAt) {
       throw new Error("No reset code found. Please request a new one");
@@ -841,7 +792,7 @@ export class AuthService {
 
       const attemptsRemaining = MAX_RESET_ATTEMPTS - updatedAttempts;
       throw new Error(
-        `Invalid reset code. ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? "s" : ""} remaining`
+        `Invalid reset code. ${attemptsRemaining} ${pluralize(attemptsRemaining, "attempt")} remaining`
       );
     }
 
@@ -864,7 +815,7 @@ export class AuthService {
   }
 
   async importGitHub(username: string) {
-    const headers = { "User-Agent": "InternHack-App" };
+    const headers = GITHUB_API_HEADERS;
 
     const [userRes, reposRes] = await Promise.all([
       fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
@@ -932,7 +883,7 @@ export class AuthService {
       return cached.data;
     }
 
-    const headers = { "User-Agent": "InternHack-App" };
+    const headers = GITHUB_API_HEADERS;
     const [userRes, repos] = await Promise.all([
       fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
       fetchAllGitHubStatsRepos(username, headers),

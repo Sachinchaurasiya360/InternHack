@@ -41,6 +41,8 @@ import {
   Sparkles,
   TrendingUp,
   AlertTriangle,
+  Users,
+  GraduationCap,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import  RoadmapCompletionModal from "./RoadmapCompletionModal";
@@ -57,6 +59,7 @@ import type {
   RoadmapTopic,
   RoadmapTopicStatus,
   RoadmapResource,
+  StudyBuddyResponse,
 } from "../../../lib/types";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
@@ -496,6 +499,8 @@ export default function RoadmapCanvasPage() {
   }, []);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
    const [showEditModal, setShowEditModal] = useState(false);
+  const [showBuddyDrawer, setShowBuddyDrawer] = useState(false);
+  const [preferSameCollege, setPreferSameCollege] = useState(false);
   const [title, setTitle] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [level, setLevel] = useState<"BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS">(
@@ -560,6 +565,66 @@ export default function RoadmapCanvasPage() {
         .then((res) => res.data),
     enabled: !!enrollmentId,
   });
+
+  const { data: profileData } = useQuery({
+    queryKey: queryKeys.profile.me(),
+    queryFn: () => api.get<{ user: { college: string | null } }>("/auth/me").then((r) => r.data),
+  });
+  const hasCollege = Boolean(profileData?.user?.college);
+
+  const roadmapId = data?.enrollment?.roadmapId;
+
+  const { data: studyBuddyData } = useQuery({
+    queryKey: queryKeys.roadmaps.studyBuddy(roadmapId!),
+    queryFn: () =>
+      api
+        .get<StudyBuddyResponse>(`/roadmaps/${roadmapId}/study-buddy`)
+        .then((res) => res.data),
+    enabled: !!roadmapId,
+  });
+
+  const optInMutation = useMutation({
+    mutationFn: (body: { preferSameCollege: boolean }) =>
+      api.post(`/roadmaps/${roadmapId}/study-buddy/opt-in`, body).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.studyBuddy(roadmapId!) });
+      toast.success("Joined matching pool!");
+    },
+    onError: () => {
+      toast.error("Failed to opt in");
+    },
+  });
+
+  const optOutMutation = useMutation({
+    mutationFn: () =>
+      api.delete(`/roadmaps/${roadmapId}/study-buddy/opt-in`).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.studyBuddy(roadmapId!) });
+      toast.success("Left study buddy matching.");
+    },
+    onError: () => {
+      toast.error("Failed to opt out");
+    },
+  });
+
+  const rematchMutation = useMutation({
+    mutationFn: () =>
+      api.post(`/roadmaps/${roadmapId}/study-buddy/rematch`).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.roadmaps.studyBuddy(roadmapId!) });
+      toast.success("Rematch request processed!");
+    },
+    onError: () => {
+      toast.error("Failed to request rematch");
+    },
+  });
+
+  useEffect(() => {
+    if (studyBuddyData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPreferSameCollege(studyBuddyData.preferSameCollege);
+    }
+  }, [studyBuddyData]);
 
   const loading = enrollmentsLoading || detailLoading;
   const error = enrollmentsError || detailError;
@@ -1184,6 +1249,21 @@ export default function RoadmapCanvasPage() {
               Edit
             </button>
 
+            {studyBuddyData && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowBuddyDrawer(true)}
+              >
+                <Users className="w-3.5 h-3.5 text-lime-400" />
+                {studyBuddyData.status === "MATCHED"
+                  ? `Buddy: ${studyBuddyData.buddy?.name.split(" ")[0]}`
+                  : studyBuddyData.status === "SEARCHING"
+                    ? "Buddy: Searching..."
+                    : "Find Study Buddy"}
+              </Button>
+            )}
+
             <button
               type="button"
               onClick={() => downloadPdf("light")}
@@ -1521,7 +1601,265 @@ export default function RoadmapCanvasPage() {
             </>
           )}
         </AnimatePresence>
-                {showEditModal && (
+
+        {/* ─── Study Buddy Drawer ────────────────────────────────────────── */}
+        <AnimatePresence>
+          {showBuddyDrawer && studyBuddyData && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setShowBuddyDrawer(false)}
+                className="fixed inset-0 bg-stone-950/40 backdrop-blur-[2px] z-40"
+              />
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 28, stiffness: 280 }}
+                className={
+                  isMobile
+                    ? "fixed bottom-0 left-0 right-0 h-[78vh] bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto rounded-t-2xl"
+                    : "fixed inset-y-0 right-0 w-full sm:w-115 bg-white dark:bg-stone-950 border-l border-stone-200 dark:border-stone-800 shadow-2xl z-50 overflow-y-auto"
+                }
+              >
+                <div className="sticky top-0 z-10 bg-white/90 dark:bg-stone-950/90 backdrop-blur border-b border-stone-200 dark:border-stone-800 px-5 py-3 flex items-center justify-between">
+                  <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-stone-400">
+                    <span className="h-1 w-1 bg-lime-500" />
+                    Study Buddy Matcher
+                  </div>
+                  <Button
+                    variant="ghost"
+                    mode="icon"
+                    size="sm"
+                    onClick={() => setShowBuddyDrawer(false)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <div className="p-5 space-y-6">
+                  {studyBuddyData.status === "NOT_OPTED_IN" && (
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <h3 className="font-display text-xl font-bold text-stone-950 dark:text-stone-50 leading-tight">
+                          Find an Accountability Partner
+                        </h3>
+                        <p className="text-sm text-stone-500 dark:text-stone-400">
+                          Get matched with another student enrolled in this roadmap. Compare progress, see who completes more topics each week, and stay motivated together.
+                        </p>
+                      </div>
+
+                      <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg p-4 space-y-4">
+                        <div className="flex items-start gap-3">
+                          <CheckCircle2 className="w-5 h-5 text-lime-500 shrink-0 mt-0.5" />
+                          <div>
+                            <h4 className="text-xs font-bold text-stone-900 dark:text-stone-100">
+                              Smart Matching Algorithm
+                            </h4>
+                            <p className="text-xs text-stone-500 dark:text-stone-400">
+                              Pairs you based on current completion rates, completed topics count, and experience level.
+                            </p>
+                          </div>
+                        </div>
+
+                        {hasCollege ? (
+                          <label className="flex items-start gap-3 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={preferSameCollege}
+                              onChange={(e) => setPreferSameCollege(e.target.checked)}
+                              className="mt-1 accent-lime-400 h-4 w-4 rounded border-stone-300 text-lime-600 focus:ring-lime-500"
+                            />
+                            <div>
+                              <span className="text-xs font-bold text-stone-900 dark:text-stone-100">
+                                Match within your college
+                              </span>
+                              <p className="text-xs text-stone-500 dark:text-stone-400">
+                                Prioritize matching with peers from {profileData?.user?.college}.
+                              </p>
+                            </div>
+                          </label>
+                        ) : (
+                          <div className="flex items-start gap-2.5 text-xs text-stone-500 dark:text-stone-500">
+                            <GraduationCap className="w-4 h-4 shrink-0 mt-0.5" />
+                            <span>
+                              College match unavailable. Set your college in your profile to allow matching with campus peers.
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <Button
+                        variant="primary"
+                        className="w-full justify-center"
+                        disabled={optInMutation.isPending}
+                        onClick={() => optInMutation.mutate({ preferSameCollege })}
+                      >
+                        {optInMutation.isPending ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                            Joining pool...
+                          </>
+                        ) : (
+                          "Find a Study Buddy"
+                        )}
+                      </Button>
+                    </div>
+                  )}
+
+                  {studyBuddyData.status === "SEARCHING" && (
+                    <div className="flex flex-col items-center justify-center text-center space-y-6 py-8">
+                      <div className="relative flex items-center justify-center h-48 w-48">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-36 h-36 rounded-full border border-lime-400/20 animate-ping duration-1000" />
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-28 h-28 rounded-full border border-lime-400/30 animate-pulse duration-1000" />
+                        </div>
+                        <div className="relative z-10 p-5 bg-stone-100 dark:bg-stone-900 rounded-full border border-lime-400/50 shadow-lg shadow-lime-950/20">
+                          <Users className="w-10 h-10 text-lime-400" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <h3 className="font-display text-lg font-bold text-stone-950 dark:text-stone-50 leading-tight">
+                          Looking for your Buddy...
+                        </h3>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 max-w-xs">
+                          We are analyzing the roadmap pool to match you with someone at a similar pace and experience level.
+                        </p>
+                      </div>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-stone-400 hover:text-stone-200"
+                        disabled={optOutMutation.isPending}
+                        onClick={() => optOutMutation.mutate()}
+                      >
+                        {optOutMutation.isPending ? "Canceling..." : "Cancel Search"}
+                      </Button>
+                    </div>
+                  )}
+
+                  {studyBuddyData.status === "MATCHED" && studyBuddyData.buddy && (
+                    <div className="space-y-6">
+                      <div className="space-y-3">
+                        <h3 className="text-xs font-mono uppercase tracking-wider text-stone-400">
+                          Your Accountability Partner
+                        </h3>
+                        
+                        <div className="flex items-center gap-4 bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 rounded-xl p-4">
+                          <div className="flex items-center justify-center w-12 h-12 bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-lg font-bold rounded-lg shrink-0">
+                            {studyBuddyData.buddy.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="space-y-1">
+                            <h4 className="font-display font-bold text-stone-900 dark:text-stone-50 leading-tight">
+                              {studyBuddyData.buddy.name}
+                            </h4>
+                            <div className="flex flex-col gap-1">
+                              {studyBuddyData.buddy.college && (
+                                <div className="flex items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400">
+                                  <GraduationCap className="w-3.5 h-3.5 shrink-0" />
+                                  <span className="truncate max-w-48">
+                                    {studyBuddyData.buddy.college}
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex items-center gap-3 text-xs font-mono text-stone-500 dark:text-stone-400">
+                                <span>Exp: {studyBuddyData.buddy.experienceLevel}</span>
+                                {studyBuddyData.buddy.currentStreak > 0 && (
+                                  <span className="flex items-center gap-1 text-amber-500">
+                                    <Flame className="w-3.5 h-3.5" />
+                                    {studyBuddyData.buddy.currentStreak}d
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 border-t border-stone-200 dark:border-stone-800 pt-5">
+                        <h4 className="text-xs font-mono uppercase tracking-wider text-stone-400">
+                          Progress Comparison
+                        </h4>
+
+                        <div className="space-y-4">
+                          {/* User progress */}
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs font-bold text-stone-800 dark:text-stone-200">
+                              <span>You</span>
+                              <span className="font-mono">{summary.percentComplete}%</span>
+                            </div>
+                            <div className="h-2 bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-lime-400 rounded-full transition-all duration-500"
+                                style={{ width: `${summary.percentComplete}%` }}
+                              />
+                            </div>
+                            <div className="text-xs text-stone-500 dark:text-stone-400 font-mono text-right">
+                              {summary.completedTopics} of {summary.totalTopics} topics complete
+                            </div>
+                          </div>
+
+                          {/* Buddy progress */}
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs font-bold text-stone-800 dark:text-stone-200">
+                              <span>{studyBuddyData.buddy.name}</span>
+                              <span className="font-mono">{studyBuddyData.buddy.percentComplete}%</span>
+                            </div>
+                            <div className="h-2 bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-amber-400 rounded-full transition-all duration-500"
+                                style={{ width: `${studyBuddyData.buddy.percentComplete}%` }}
+                              />
+                            </div>
+                            <div className="text-xs text-stone-500 dark:text-stone-400 font-mono text-right">
+                              {studyBuddyData.buddy.completedTopics} of {summary.totalTopics} topics complete
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-stone-200 dark:border-stone-800 pt-5 flex flex-col gap-2">
+                        <Button
+                          variant="secondary"
+                          className="w-full justify-center"
+                          disabled={rematchMutation.isPending}
+                          onClick={() => {
+                            if (window.confirm("Are you sure you want to rematch? This will assign a new buddy and automatically place your current buddy back in the matchmaking pool.")) {
+                              rematchMutation.mutate();
+                            }
+                          }}
+                        >
+                          {rematchMutation.isPending ? "Rematching..." : "Request Rematch"}
+                        </Button>
+                        <Button
+                          variant="danger"
+                          className="w-full justify-center"
+                          disabled={optOutMutation.isPending}
+                          onClick={() => {
+                            if (window.confirm("Stop matching with this buddy? This will exit the program.")) {
+                              optOutMutation.mutate();
+                            }
+                          }}
+                        >
+                          {optOutMutation.isPending ? "Stopping..." : "Stop Matching"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {showEditModal && (
           <>
     {/* Backdrop */}
     <motion.div
@@ -1649,7 +1987,7 @@ export default function RoadmapCanvasPage() {
         {showCompletionModal && (
           <RoadmapCompletionModal
             roadmapName={data.enrollment.roadmap.title}
-            enrollmentId={String(data.enrollment.id)}
+            shareToken={String(data.enrollment.shareToken)}
             roadmapSlug={data.enrollment.roadmap.slug}
             onClose={() => setShowCompletionModal(false)}
           />

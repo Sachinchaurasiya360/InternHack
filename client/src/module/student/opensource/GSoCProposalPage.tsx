@@ -15,6 +15,7 @@ import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 import { NextInPathCard } from "./components/NextInPathCard";
 import { issueCertificate, type Certificate } from "./api/opensource.api";
 import { useAuthStore } from "../../../lib/auth.store";
+import GSoCProposalAIReview from "./GSoCProposalAIReview";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -248,6 +249,9 @@ export default function GSoCProposalPage() {
           );
         })}
       </div>
+
+      {/* AI Proposal Reviewer Panel */}
+      <GSoCProposalAIReview />
 
       <NextInPathCard currentSlug="gsoc-proposal" completed={allDone} />
     </div>
