@@ -120,10 +120,7 @@ export default function SqlExercisePage() {
   const [dbReady, setDbReady] = useState(false);
   const [solved, setSolved] = useState(false);
 
-  const [prevExerciseId, setPrevExerciseId] = useState(exercise?.id);
-
-  if (exercise?.id !== prevExerciseId) {
-    setPrevExerciseId(exercise?.id);
+  useEffect(() => {
     setDbReady(false);
     setResult(null);
     setValidation(null);
@@ -133,7 +130,8 @@ export default function SqlExercisePage() {
     const savedEntry = exercise ? progress[exercise.id] : undefined;
     setCode(savedEntry?.code || exercise?.starterCode || "");
     setSolved(!!savedEntry?.solved);
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exercise?.id]);
 
   // Load database and exercise
   useEffect(() => {
