@@ -554,6 +554,7 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
               variant="outline"
               disabled={currentPage === 1}
               onClick={() => handlePageChange(currentPage - 1)}
+              aria-label="Go to previous page"
               className="rounded-md h-8 px-2 border-stone-200 dark:border-white/10 hover:bg-stone-100 dark:hover:bg-white/5"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -568,6 +569,8 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
                   size="sm"
                   variant={active ? "primary" : "outline"}
                   onClick={() => handlePageChange(page)}
+                  aria-label={`Go to page ${page}`}
+                  aria-current={active ? "page" : undefined}
                   className={`rounded-md h-8 w-8 min-w-0 p-0 ${
                     active
                       ? "bg-lime-500 text-stone-950 font-bold border-none"
@@ -585,14 +588,10 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
               variant="outline"
               disabled={currentPage === totalPages}
               onClick={() => handlePageChange(currentPage + 1)}
+              aria-label="Go to next page"
               className="rounded-md h-8 px-2 border-stone-200 dark:border-white/10 hover:bg-stone-100 dark:hover:bg-white/5"
             >
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         )}
-
-      </div>
-    </div>
-  );
-}
