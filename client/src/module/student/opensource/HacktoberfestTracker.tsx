@@ -62,7 +62,7 @@ export const HacktoberfestTracker = React.memo(function HacktoberfestTracker() {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col items-center sm:flex-row sm:items-center sm:gap-8">
           <div className="relative w-52 h-52 shrink-0">
-            <svg viewBox="0 0 200 200" className="h-full w-full -rotate-90">
+            <svg viewBox="0 0 200 200" className="h-full w-full -rotate-90" aria-label="Hacktoberfest progress tracker">
               <circle
                 cx={CENTER}
                 cy={CENTER}
@@ -103,6 +103,8 @@ export const HacktoberfestTracker = React.memo(function HacktoberfestTracker() {
                         ? "border-orange-500 bg-orange-500 text-white"
                         : "border-stone-200 bg-white text-stone-500 dark:border-white/15 dark:bg-stone-800 dark:text-stone-400"
                     }`}
+                    role="img"
+                    aria-label={`Step ${node.id} of ${data.nodes.length}: ${node.completed ? "complete" : "pending"} — ${node.description}`}
                     title={node.description}
                   >
                     {node.completed ? <Check className="h-4 w-4" /> : node.id}
