@@ -56,6 +56,14 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   const [submitted, setSubmitted] = useState(false);
   const [showReasons, setShowReasons] = useState(false);
 
+  const [showShortcutHint, setShowShortcutHint] = useState(() => {
+  try {
+    return localStorage.getItem("guide-hint-dismissed") !== "true";
+  } catch {
+    return true;
+  }
+});
+
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
@@ -67,6 +75,15 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       return next;
     });
   }, [step, storageKey]);
+
+  const dismissShortcutHint = () => {
+  try {
+    localStorage.setItem("guide-hint-dismissed", "true");
+  } catch {
+    
+  }
+  setShowShortcutHint(false);
+};
 
   useEffect(() => {
     if (!step) return;
@@ -200,6 +217,28 @@ if (!step) return <Navigate to={basePath} replace />;
           </div>
         </div>
       </motion.div>
+
+      {/*Dismissible keyboard shortcut hint.*/}
+      {/*Visibility is persisted in localStorage so it only needs to be shown once. */}
+      {showShortcutHint && (
+        <div className="mb-4 flex items-center justify-between rounded-md border border-amber-100 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/20 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <Lightbulb className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+             Press your keyboard's ← and → arrow keys to navigate between sections.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={dismissShortcutHint}
+            className="text-xs text-stone-500 hover:text-stone-900 dark:hover:text-white"
+            aria-label="Dismiss keyboard shortcuts hint"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <div className="space-y-5">
         {step.mentor_guidance && (
