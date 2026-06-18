@@ -1,5 +1,4 @@
 // @vitest-environment jsdom
-// @ts-nocheck
 import { render, screen, act, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { LearningPathProvider, useLearningPath } from "./learning-paths.context";
@@ -23,7 +22,7 @@ vi.mock("./learning-paths.data", async (importOriginal) => {
   return {
     ...actual,
     readLearningPathMilestones: () => mockReadLearningPathMilestones(),
-    isLearningPathItemComplete: (item: any, prs: any, milestones: any) => 
+    isLearningPathItemComplete: (item: unknown, prs: unknown, milestones: unknown) => 
       mockIsLearningPathItemComplete(item, prs, milestones),
     getLearningPathById: (id: string) => ({
       id,
@@ -68,8 +67,10 @@ describe("LearningPathContext Unit Tests", () => {
   });
 
   it("should refresh milestones and external PR milestones upon mount", async () => {
-    mockIsLearningPathItemComplete.mockImplementation((item) => {
-      if (item && item.slug === "lesson-1") return true;
+    mockIsLearningPathItemComplete.mockImplementation((item: unknown) => {
+      if (item && typeof item === "object" && "slug" in item && item.slug === "lesson-1") {
+        return true;
+      }
       return false;
     });
 
