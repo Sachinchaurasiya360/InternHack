@@ -13,6 +13,8 @@ import { canonicalUrl } from "../../../../lib/seo.utils";
 import { QuizBlock, type QuizQuestion } from "../../../../components/quiz/QuizBlock";
 import api from "../../../../lib/axios";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
+import toast from "../../../../components/ui/toast";
+
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -59,12 +61,19 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
+      if (!step) return prev;
       const next = new Set(prev);
-      if (!step) return next;
       if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
-      try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
-      notifyLearningPathProgressChanged();
-      return next;
+      try { 
+        localStorage.setItem(storageKey, JSON.stringify([...next])); 
+        notifyLearningPathProgressChanged();
+        return next;
+      } 
+      catch { 
+        toast.error("Couldn't save progress");
+        return prev; 
+      }
+      
     });
   }, [step, storageKey]);
 
