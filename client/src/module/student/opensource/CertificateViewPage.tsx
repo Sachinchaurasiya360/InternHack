@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
 import { Trophy, Copy, Download, Check, Linkedin, ArrowLeft, ExternalLink } from "lucide-react";
@@ -7,35 +8,27 @@ import { Button } from "../../../components/ui/button";
 import toast from "../../../components/ui/toast";
 import { fetchCertificate } from "./api/opensource.api";
 
-
-interface Certificate {
-  token: string;
-  studentName: string;
-  guideName: string;
-  issuedAt: string;
-}
-
 export default function CertificateViewPage() {
-  const { token } = useParams();
-  const [cert, setCert] = useState<Certificate | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const { token } = useParams<{ token?: string }>();
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (!token) return;
-    fetchCertificate(token)
-      .then((certificate) => {
-        setCert(certificate);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError(true);
-        setLoading(false);
-      });
-  }, [token]);
+  const {
+    data: cert,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["certificate", token],
+    queryFn: () => fetchCertificate(token as string),
+    enabled: !!token,
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 60 * 2,
+    retry: 1,
+  });
 
+  /**
+   * Copies the current certificate page URL to the clipboard
+   * and shows a temporary "copied" confirmation state.
+   */
   const copyLink = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
@@ -44,13 +37,16 @@ export default function CertificateViewPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  /**
+   * Opens LinkedIn's share dialog for the current certificate page.
+   */
   const shareLinkedIn = () => {
     const url = window.location.href;
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
     window.open(linkedInUrl, "_blank", "noopener,noreferrer,width=600,height=600");
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950">
         <div className="h-12 w-12 rounded-md border-4 border-lime-500 border-t-transparent animate-spin" />
@@ -59,7 +55,7 @@ export default function CertificateViewPage() {
     );
   }
 
-  if (error || !cert) {
+  if (isError || !cert) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-stone-50 dark:bg-stone-950 p-6 text-center">
         <div className="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-md flex items-center justify-center mb-6">
