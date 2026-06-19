@@ -9,6 +9,7 @@ import {
   repoIdSchema,
   repoOwnerNameSchema,
   firstPrProgressUpdateSchema,
+  trendQuerySchema,
   bookmarkBodySchema,
   bulkMigrateBookmarksSchema,
   guideFeedbackSchema,
@@ -298,7 +299,12 @@ export class OpensourceController {
     next: NextFunction,
   ) {
     try {
-      const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
+      const parsed = trendQuerySchema.safeParse(req.query);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Invalid query parameters", errors: parsed.error.flatten().fieldErrors });
+        return;
+      }
+      const { startDate, endDate } = parsed.data;
       const result = await service.getStudentContributionTrend(req.user!.id, startDate, endDate);
       res.json(result);
     } catch (err) {

@@ -109,6 +109,11 @@ export const approveRequestOverrideSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 
+export const trendQuerySchema = z.object({
+  startDate: z.string().min(1).optional(),
+  endDate: z.string().min(1).optional(),
+});
+
 export const firstPrProgressUpdateSchema = z.object({
   stepId: z.string().min(1, "Step ID is required").max(200),
   completed: z.boolean(),
