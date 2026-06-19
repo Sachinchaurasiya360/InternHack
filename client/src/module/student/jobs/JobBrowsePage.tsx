@@ -3,7 +3,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   MapPin,

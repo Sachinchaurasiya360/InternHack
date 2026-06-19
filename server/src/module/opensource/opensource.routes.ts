@@ -36,37 +36,9 @@ opensourceRouter.post("/requests", authMiddleware, requireRole("STUDENT"), (req,
   controller.submitRepoRequest(req, res, next),
 );
 
-opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
-  try {
-    const requests = await prisma.repoRequest.findMany({
-      where: { userId: req.user!.id },
-      orderBy: { createdAt: "desc" },
-    });
-
-    const approvedUrls = requests
-      .filter((r) => r.status === "APPROVED")
-      .map((r) => r.url);
-
-    const approvedRepos =
-      approvedUrls.length > 0
-        ? await prisma.opensourceRepo.findMany({
-            where: { url: { in: approvedUrls } },
-            select: { id: true, url: true },
-          })
-        : [];
-
-    const repoIdByUrl = new Map(approvedRepos.map((r) => [r.url, r.id]));
-
-    const enriched = requests.map((r) => ({
-      ...r,
-      repoId: r.status === "APPROVED" ? (repoIdByUrl.get(r.url) ?? null) : null,
-    }));
-
-    res.json({ requests: enriched });
-  } catch (err) {
-    next(err);
-  }
-});
+opensourceRouter.get("/requests/mine", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.getMyRepoRequests(req, res, next),
+);
 
 opensourceRouter.get("/analytics/trend", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.getStudentContributionTrend(req, res, next),

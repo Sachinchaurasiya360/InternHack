@@ -7,6 +7,57 @@ import { withAdvisoryLock } from "../utils/cron-lock.js";
 const cronJobs: cron.ScheduledTask[] = [];
 
 /**
+ * Run the full AI pipeline once, in dependency order. This folds the three
+ * scheduled passes (sync/enrich/embed, match generation, daily maintenance)
+ * into a single sequential run so the Vercel daily cron can invoke it once.
+ *
+ * Throws on failure so the caller (the cron callback's try/catch on EC2, or the
+ * daily cron endpoint on Vercel) can record/report it.
+ */
+export async function runAiPipelineDaily(): Promise<void> {
+  // ── 1. Sync + Enrich + Embed ──
+  console.log("[AI Pipeline] Starting sync...");
+  const synced = await jobIndexService.syncAllNewJobs();
+  console.log(`[AI Pipeline] Synced ${synced} new jobs`);
+
+  const enriched = await jobIndexService.enrichUnenrichedJobs(50);
+  console.log(`[AI Pipeline] Enriched ${enriched} jobs`);
+
+  const embedded = await jobIndexService.generateJobEmbeddings(100);
+  console.log(`[AI Pipeline] Generated ${embedded} job embeddings`);
+
+  await jobIndexService.deactivateExpired();
+  console.log("[AI Pipeline] Deactivated expired jobs");
+
+  // ── 2. Generate user↔job matches ──
+  console.log("[AI Pipeline] Generating matches...");
+  const matchingService = new JobMatchingService();
+  const matches = await matchingService.generateMatches(6);
+  console.log(`[AI Pipeline] Generated ${matches} new matches`);
+
+  // ── 3. Maintenance (re-embed users, clean old data) ──
+  console.log("[AI Pipeline] Daily maintenance...");
+  const userEmbeddings = await jobIndexService.generateAllUserEmbeddings();
+  console.log(`[AI Pipeline] Updated ${userEmbeddings} user embeddings`);
+
+  await prisma.jobMatch.deleteMany({
+    where: {
+      dismissed: true,
+      createdAt: { lt: new Date(Date.now() - 30 * 24 * 3600000) },
+    },
+  });
+
+  await prisma.jobAgentConversation.deleteMany({
+    where: {
+      isActive: false,
+      updatedAt: { lt: new Date(Date.now() - 7 * 24 * 3600000) },
+    },
+  });
+
+  console.log("[AI Pipeline] Maintenance complete");
+}
+
+/**
  * AI Pipeline cron jobs:
  * 1. Every 6h (offset 30min after scraper): Sync → Enrich → Embed
  * 2. Every hour: Generate user↔job matches

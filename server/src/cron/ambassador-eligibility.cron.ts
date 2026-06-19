@@ -14,7 +14,8 @@ const GUIDE_NAMES = [
 
 let cronJob: cron.ScheduledTask | null = null;
 
-async function checkAndEnrollAmbassadors(): Promise<void> {
+export async function runAmbassadorEligibility(): Promise<void> {
+  // Get all existing ambassador userIds to exclude them
   const existingAmbassadorIds = (
     await prisma.ambassador.findMany({ select: { userId: true } })
   ).map((a) => a.userId);
@@ -122,7 +123,7 @@ async function checkAndEnrollAmbassadors(): Promise<void> {
       await tx.user.update({
         where: { id: user.id },
         data: {
-          subscriptionPlan: "MONTHLY",
+          subscriptionPlan: "YEARLY",
           subscriptionStatus: "ACTIVE",
           subscriptionStartDate: new Date(),
           subscriptionEndDate: new Date(now + 365 * 24 * 60 * 60 * 1000),
@@ -147,7 +148,12 @@ async function checkAndEnrollAmbassadors(): Promise<void> {
         .create({
           data: { studentId: user.id, badgeId: badge.id },
         })
-        .catch(() => {});
+        .catch((err: { code?: string }) => {
+          // P2002 = badge already awarded; anything else is worth surfacing.
+          if (err?.code !== "P2002") {
+            console.error("[Ambassador Cron] Failed to award badge:", err);
+          }
+        });
 
       const raw = `ambassador-${user.id}-${Math.random().toString(36).slice(2, 8)}`;
       const code = raw.replace(/[^a-z0-9-]/g, "-").slice(0, 40);
@@ -177,7 +183,7 @@ export function startAmbassadorEligibilityCron(): void {
   cronJob = cron.schedule("0 6 * * *", () => {
     void withAdvisoryLock("ambassador-eligibility", async () => {
       try {
-        await checkAndEnrollAmbassadors();
+        await runAmbassadorEligibility();
       } catch (err) {
         console.error("[Ambassador Cron] Error:", err);
       }

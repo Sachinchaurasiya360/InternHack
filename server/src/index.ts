@@ -4,9 +4,11 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
-import helmet from "helmet";
+import { createRequire } from "node:module";
+import type { HelmetOptions } from "helmet";
+import type { RequestHandler } from "express";
 import morgan from "morgan";
-import rateLimit from "express-rate-limit";
+import { rateLimit } from "express-rate-limit";
 import { createRateLimitStore } from "./utils/rate-limit-store.js";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
@@ -78,14 +80,24 @@ import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
+import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron.js";
 import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
 import { startAmbassadorEligibilityCron, stopAmbassadorEligibilityCron } from "./cron/ambassador-eligibility.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
+import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
 
 const logger = createLogger("Index");
+
+// helmet ships its callable as a default export, but a clean Vercel install
+// resolves its CJS types to a non-callable namespace (TS2349), unlike the local
+// nodenext resolution. Load the module value via createRequire (always the CJS
+// function at runtime) and type it from the named HelmetOptions export, so the
+// call site is fully typed regardless of how the default export resolves.
+const nodeRequire = createRequire(import.meta.url);
+const helmet = nodeRequire("helmet") as (options?: Readonly<HelmetOptions>) => RequestHandler;
 
 
 // ── Validate required environment variables ──
@@ -242,6 +254,9 @@ const latexLimiter = rateLimit({
 });
 app.use("/api/latex/compile", latexLimiter);
 
+// ── Bot SEO headers (Vary: User-Agent, X-Is-Bot for CDN routing) ──
+app.use(botSeoMiddleware);
+
 // ── Routes ──
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobRouter);
@@ -302,6 +317,9 @@ app.use("/api/learn", learnRouter);
 app.use("/api/notes", notesRouter);
 app.use("/api/ambassador", ambassadorRouter);
 
+// ── Consolidated daily cron (triggered by Vercel Cron; bearer-authed) ──
+app.use("/api/cron", cronRouter);
+
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
 // Public external jobs endpoints (no auth)
@@ -313,9 +331,6 @@ app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExter
 
 // ── Sitemap (served at root, not /api) ──
 app.use(sitemapRouter);
-
-// ── Bot SEO headers (Vary: User-Agent, X-Is-Bot for CDN routing) ──
-app.use(botSeoMiddleware);
 
 // ── Static files (public folder) ──
 app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", index: false }));
@@ -358,6 +373,11 @@ app.get("/api/stats", async (_req, res) => {
 
 app.use(errorMiddleware);
 
+// On Vercel the app is imported as a serverless function (see api/index.ts), so
+// the long-running listener and node-cron schedules must not start there. The
+// crons run instead via the consolidated /api/cron/daily endpoint. EC2/local
+// keep booting normally.
+if (!process.env["VERCEL"]) {
 const server = app.listen(PORT, async () => {
   logger.info(`Server running on http://localhost:${PORT}`);
 
@@ -440,6 +460,14 @@ const server = app.listen(PORT, async () => {
     fn: () => stopSignalsCleanupCron(),
   });
 
+  // Start job cleanup cron (daily 3:30 AM): prunes old scraped/indexed jobs
+  startJobCleanupCron();
+  shutdownManager.register({
+    name: "Job Cleanup Cron",
+    priority: 10,
+    fn: () => stopJobCleanupCron(),
+  });
+
   // Start OSS deadline alert cron (daily at 9 AM)
   startDeadlineAlertCron();
   shutdownManager.register({
@@ -495,9 +523,10 @@ const server = app.listen(PORT, async () => {
   // Install signal handlers after all hooks are registered
   shutdownManager.installSignalHandlers();
 });
-
-
+}
 
 app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
+
+export { app };

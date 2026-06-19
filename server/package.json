@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "prisma generate --schema=src/database/prisma/schema && tsc",
+    "build": "prisma generate --config src/database/prisma.config.ts && tsc",
     "lint": "eslint src",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.api.json",
     "test": "vitest run",
     "doctor": "tsx scripts/doctor.ts",
     "seed": "tsx src/database/seeds/seed.ts"

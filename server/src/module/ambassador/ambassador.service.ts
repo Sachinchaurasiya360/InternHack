@@ -2,6 +2,31 @@ import { prisma } from "../../database/db.js";
 import { slugify } from "../../utils/slug.utils.js";
 import crypto from "crypto";
 
+/**
+ * Minimum number of guides a user must complete to qualify as an ambassador.
+ * Corresponds to all 6 official InternHack guides in the program requirements.
+ */
+const MIN_GUIDES_COMPLETED = 6;
+
+/**
+ * Minimum number of repositories a user must have contributed to.
+ * Ensures ambassadors have demonstrated real open-source activity.
+ */
+const MIN_REPOS_CONTRIBUTED = 3;
+
+/**
+ * Minimum account age in days before a user can become an ambassador.
+ * A 30-day window filters out newly created or spam accounts.
+ */
+const MIN_ACCOUNT_AGE_DAYS = 30;
+
+/**
+ * Leaderboard rank threshold for ambassador eligibility.
+ * Only users in the top 100 contributors qualify.
+ */
+const MAX_LEADERBOARD_RANK = 100;
+
+
 const GUIDE_NAMES = [
   "Open Source Guide",
   "Hackathon Guide",
@@ -65,12 +90,14 @@ export class AmbassadorService {
     const reposContributed = githubRepoCount + approvedRepos;
 
     const leaderboardRank = rankRows.length > 0 ? Number(rankRows[0]!.rank) : null;
-    const inTop100 = leaderboardRank !== null && leaderboardRank <= 100;
+    const inTop100 = leaderboardRank !== null && leaderboardRank <= MAX_LEADERBOARD_RANK;
+
+    const accountAgeOk = accountAgeDays >= MIN_ACCOUNT_AGE_DAYS;
 
     const eligible =
-      guidesCompleted >= 6 &&
-      reposContributed >= 3 &&
-      accountAgeDays >= 30 &&
+      guidesCompleted >= MIN_GUIDES_COMPLETED &&
+      reposContributed >= MIN_REPOS_CONTRIBUTED &&
+      accountAgeOk &&
       inTop100;
 
     return {
@@ -126,7 +153,7 @@ export class AmbassadorService {
     await prisma.user.update({
       where: { id: userId },
       data: {
-        subscriptionPlan: "MONTHLY",
+        subscriptionPlan: "YEARLY",
         subscriptionStatus: "ACTIVE",
         subscriptionStartDate: new Date(),
         subscriptionEndDate: new Date(
@@ -166,7 +193,12 @@ export class AmbassadorService {
       .create({
         data: { studentId: userId, badgeId: badge.id },
       })
-      .catch(() => {});
+      .catch((err: { code?: string }) => {
+        // P2002 = badge already awarded; anything else is worth surfacing.
+        if (err?.code !== "P2002") {
+          console.error("Failed to award ambassador badge:", err);
+        }
+      });
   }
 
   // ─── Referral Links ────────────────────────────────────────────
@@ -394,6 +426,12 @@ export class AmbassadorService {
     reviewedBy: number,
     adminNotes?: string,
   ) {
+    const share = await prisma.ambassadorShare.findUnique({
+      where: { id: shareId },
+      select: { id: true },
+    });
+    if (!share) throw new Error("Share not found");
+
     return prisma.ambassadorShare.update({
       where: { id: shareId },
       data: {

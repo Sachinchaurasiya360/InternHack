@@ -123,8 +123,29 @@ export default function AmbassadorPage() {
     },
   });
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => toast.success("Copied!"));
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Referral link copied to clipboard!");
+      return;
+    } catch {
+      // navigator.clipboard unavailable or permission denied — fall through
+    }
+
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      toast.success("Referral link copied to clipboard!");
+    } catch {
+      toast.error("Failed to copy link automatically. Please select and copy the text manually.");
+    }
   };
 
   const isApproved = data?.ambassador?.status === "APPROVED";
