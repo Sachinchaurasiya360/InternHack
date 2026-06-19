@@ -29,8 +29,6 @@ export class CoverLetterService {
       tone: string;
       useProfile: boolean;
       keySkills?: string;
-      length?: "short" | "medium" | "long";
-      targetWords?: number;
     }
   ) {
     const excerpt = data.content.slice(0, 120).replace(/\n/g, " ").trim();
