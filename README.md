@@ -166,8 +166,8 @@ cd server
 # Generate Prisma client using prisma.config.ts
 npx prisma generate --config src/database/prisma.config.ts
 
-# Push schema to database
-npx prisma db push --config src/database/prisma.config.ts
+# Apply migrations to database
+npx prisma migrate deploy --config src/database/prisma.config.ts
 ```
 
 
