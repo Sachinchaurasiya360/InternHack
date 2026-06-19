@@ -6,6 +6,7 @@ import {
   gsocOrgsQuerySchema,
   submitRepoRequestSchema,
   approveRequestOverrideSchema,
+  rejectRequestSchema,
   repoIdSchema,
   repoOwnerNameSchema,
   firstPrProgressUpdateSchema,
@@ -273,7 +274,7 @@ export class OpensourceController {
         return;
       }
 
-      const body = approveRequestOverrideSchema.safeParse(req.body);
+      const body = rejectRequestSchema.safeParse(req.body);
       if (!body.success) {
         res.status(400).json({
           message: "Validation failed",

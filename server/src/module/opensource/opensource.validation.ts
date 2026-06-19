@@ -73,6 +73,10 @@ export const gsocOrgsQuerySchema = z.object({
   year: z.coerce.number().int().optional(),
 });
 
+export const rejectRequestSchema = z.object({
+  adminNote: z.string().max(2000).optional(),
+});
+
 export const approveRequestOverrideSchema = z.object({
   adminNote: z.string().max(2000).optional(),
   name: z.string().min(1, "Repository name is required").max(300).optional(),
