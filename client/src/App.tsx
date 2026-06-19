@@ -319,7 +319,8 @@ function ApplyRedirect() {
 function ProfileRedirect() {
   const { id } = useParams();
   const { user } = useAuthStore();
-  const base = user?.role === "ADMIN" ? "/admin" : "/recruiters";
+  if (!user) return <Navigate to="/login" replace />;
+  const base = user.role === "ADMIN" ? "/admin" : "/recruiters";
   return <Navigate to={`${base}/profile/${id}`} replace />;
 }
 
