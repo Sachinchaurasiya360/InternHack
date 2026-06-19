@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -25,7 +25,8 @@ import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
+import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
 type ParticipationStatus = "INTERESTED" | "PARTICIPATING";
 
 interface MyParticipation {
@@ -98,12 +99,33 @@ function formatDateRange(start: string, end: string): string {
 }
 
 export default function HackathonCalendarPage() {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<HackathonStatus | "ALL">("ALL");
-  const [locationFilter, setLocationFilter] = useState<LocationType | "ALL">("ALL");
-  const [ecosystemFilter, setEcosystemFilter] = useState<string>("ALL");
+  // URL search-params integration -------------------------------------------------
+  // We'll persist filters in the URL so they survive refresh, can be shared,
+  // and participate correctly in browser history (back/forward).
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Search input uses a reusable hook that debounces and syncs with a `q` param.
+  const {
+    inputValue: search,
+    setInputValue: setSearch,
+    debouncedValue: debouncedSearch,
+  } = useSearchWithDebounce({ paramName: "q", delay: 300 });
+
+  // Initialize filter state from URL params, with validation fallbacks.
+  const [statusFilter, setStatusFilter] = useState<HackathonStatus | "ALL">(() => {
+    const v = (searchParams.get("status") as HackathonStatus | "ALL" | null) ?? "ALL";
+    return v === "upcoming" || v === "ongoing" || v === "past" ? v : "ALL";
+  });
+  const [locationFilter, setLocationFilter] = useState<LocationType | "ALL">(() => {
+    const v = (searchParams.get("location") as LocationType | "ALL" | null) ?? "ALL";
+    return v === "virtual" || v === "in-person" || v === "hybrid" ? v : "ALL";
+  });
+  const [ecosystemFilter, setEcosystemFilter] = useState<string>(() => searchParams.get("eco") ?? "ALL");
   const [selectedHackathon, setSelectedHackathon] = useState<Hackathon | null>(null);
-  const [showMine, setShowMine] = useState(false);
+  const [showMine, setShowMine] = useState<boolean>(() => {
+    const v = searchParams.get("mine");
+    return v === "1" || v === "true";
+  });
 
   const queryClient = useQueryClient();
 const { user } = useAuthStore();
@@ -138,14 +160,15 @@ const removeMutation = useMutation({
     [hackathons]
   );
 
+  // Filter list derived from debounced search value and other filters.
   const filtered = useMemo(() => {
-  return hackathons.filter((h) => {
-    if (showMine && !participationMap.has(h.id)) return false;
+    const q = (debouncedSearch || "").trim().toLowerCase();
+    return hackathons.filter((h) => {
+      if (showMine && !participationMap.has(h.id)) return false;
       if (statusFilter !== "ALL" && h.status !== statusFilter) return false;
       if (locationFilter !== "ALL" && h.locationType !== locationFilter) return false;
       if (ecosystemFilter !== "ALL" && h.ecosystem !== ecosystemFilter) return false;
-      if (search) {
-        const q = search.toLowerCase();
+      if (q) {
         return (
           h.name.toLowerCase().includes(q) ||
           h.organizer.toLowerCase().includes(q) ||
@@ -155,7 +178,47 @@ const removeMutation = useMutation({
       }
       return true;
     });
-  }, [hackathons, search, statusFilter, locationFilter, ecosystemFilter, showMine, participationMap]);
+  }, [hackathons, debouncedSearch, statusFilter, locationFilter, ecosystemFilter, showMine, participationMap]);
+
+  // -----------------------------------------------------------------------------
+  // Sync non-search filters to the URL when they change. We intentionally
+  // push history entries for filter clicks so back/forward restores previous
+  // filter states. For search we rely on `useSearchWithDebounce` which already
+  // syncs the `q` param.
+  useEffect(() => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      // status
+      if (statusFilter && statusFilter !== "ALL") next.set("status", statusFilter);
+      else next.delete("status");
+      // location
+      if (locationFilter && locationFilter !== "ALL") next.set("location", locationFilter);
+      else next.delete("location");
+      // ecosystem
+      if (ecosystemFilter && ecosystemFilter !== "ALL") next.set("eco", ecosystemFilter);
+      else next.delete("eco");
+      // mine
+      if (showMine) next.set("mine", "1");
+      else next.delete("mine");
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter, locationFilter, ecosystemFilter, showMine]);
+
+  // Validate incoming `eco` param once we have ecosystem options available.
+  // If invalid, remove it from the URL and reset to ALL.
+  useEffect(() => {
+    if (HACKATHON_ECOSYSTEMS.length === 0) return;
+    if (ecosystemFilter && ecosystemFilter !== "ALL" && !HACKATHON_ECOSYSTEMS.includes(ecosystemFilter)) {
+      setEcosystemFilter("ALL");
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete("eco");
+        return next;
+      }, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [HACKATHON_ECOSYSTEMS]);
 
   const ongoingCount = hackathons.filter((h) => h.status === "ongoing").length;
   const upcomingCount = hackathons.filter((h) => h.status === "upcoming").length;
