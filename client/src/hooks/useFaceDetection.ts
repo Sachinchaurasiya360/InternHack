@@ -91,7 +91,12 @@ export function useFaceDetection(config: FaceDetectionConfig) {
     // Attach to video element
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
-      await videoRef.current.play().catch(() => {});
+      try {
+        await videoRef.current.play();
+      } catch (err) {
+        setError("Failed to start camera preview. Please check your camera.");
+        return;
+      }
     }
 
     // 2. Load MediaPipe Face Detector
