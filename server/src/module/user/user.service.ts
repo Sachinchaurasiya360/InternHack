@@ -33,7 +33,7 @@ export class UserService {
     const completedGuidesCount = new Set(userSummary.guideFeedbacks.map(g => g.guideId)).size;
     const badges = userSummary.studentBadges;
 
-    const isAmbassador = badges.some(b => b.badge.slug === "verified_ambassador");
+    const isAmbassador = badges.some(b => b.badge.slug.toLowerCase() === "verified_ambassador");
     const isProgramParticipant = badges.some(b =>
       ["gsoc_participant", "outreachy_participant", "lfx_participant", "gsoc"].includes(b.badge.slug.toLowerCase()),
     );
