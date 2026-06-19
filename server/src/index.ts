@@ -244,6 +244,9 @@ const latexLimiter = rateLimit({
 });
 app.use("/api/latex/compile", latexLimiter);
 
+// ── Bot SEO headers (Vary: User-Agent, X-Is-Bot for CDN routing) ──
+app.use(botSeoMiddleware);
+
 // ── Routes ──
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobRouter);
@@ -318,9 +321,6 @@ app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExter
 
 // ── Sitemap (served at root, not /api) ──
 app.use(sitemapRouter);
-
-// ── Bot SEO headers (Vary: User-Agent, X-Is-Bot for CDN routing) ──
-app.use(botSeoMiddleware);
 
 // ── Static files (public folder) ──
 app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", index: false }));
