@@ -200,7 +200,9 @@ export default function SkillTestPage() {
         }
 
         if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => { });
+          document.exitFullscreen().catch(() => {
+            toast.error("Failed to exit fullscreen mode");
+          });
         }
       } catch (err: unknown) {
         const e = err as { response?: { data?: { error?: string } } };
