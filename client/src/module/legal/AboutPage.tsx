@@ -60,10 +60,10 @@ const MISSIONS = [
     desc: "To democratize access to career opportunities for students globally — regardless of their background, college, or location — by giving them world-class tools to compete and succeed.",
   },
   {
-    id: "vission",
-    kicker: "02 / vission",
+    id: "vision",
+    kicker: "02 / vision",
     icon: Briefcase,
-    title: "Our Vission.",
+    title: "Our Vision.",
     desc: "To become the most trusted early-career ecosystem on the planet — connecting millions of students with companies that value their potential, not just their pedigree.",
   },
 ];
