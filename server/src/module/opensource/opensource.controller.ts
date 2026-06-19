@@ -12,6 +12,7 @@ import {
   bookmarkBodySchema,
   bulkMigrateBookmarksSchema,
   guideFeedbackSchema,
+  issueCertificateSchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
@@ -382,12 +383,15 @@ export class OpensourceController {
 
   async issueCertificate(req: Request, res: Response, next: NextFunction) {
     try {
-      const { guideName } = req.body;
-      if (!guideName) {
-        res.status(400).json({ message: "guideName is required" });
+      const parsed = issueCertificateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
         return;
       }
-      const certificate = await service.issueCertificate(req.user!.id, guideName);
+      const certificate = await service.issueCertificate(req.user!.id, parsed.data.guideName);
       res.status(201).json({ certificate });
     } catch (err) {
       next(err);
