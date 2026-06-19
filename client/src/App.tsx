@@ -8,7 +8,10 @@ import { LoadingScreen } from "./components/LoadingScreen";
 
 function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
   return lazy(() =>
-    factory().catch((err: unknown) => {
+    factory().then((mod) => {
+      sessionStorage.removeItem("chunk_reload");
+      return mod;
+    }).catch((err: unknown) => {
       const key = "chunk_reload";
       if (!sessionStorage.getItem(key)) {
         sessionStorage.setItem(key, "1");
