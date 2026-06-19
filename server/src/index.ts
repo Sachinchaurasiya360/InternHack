@@ -4,7 +4,9 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
-import helmet from "helmet";
+import { createRequire } from "node:module";
+import type { HelmetOptions } from "helmet";
+import type { RequestHandler } from "express";
 import morgan from "morgan";
 import { rateLimit } from "express-rate-limit";
 import { createRateLimitStore } from "./utils/rate-limit-store.js";
@@ -88,6 +90,14 @@ import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
 
 const logger = createLogger("Index");
+
+// helmet ships its callable as a default export, but a clean Vercel install
+// resolves its CJS types to a non-callable namespace (TS2349), unlike the local
+// nodenext resolution. Load the module value via createRequire (always the CJS
+// function at runtime) and type it from the named HelmetOptions export, so the
+// call site is fully typed regardless of how the default export resolves.
+const nodeRequire = createRequire(import.meta.url);
+const helmet = nodeRequire("helmet") as (options?: Readonly<HelmetOptions>) => RequestHandler;
 
 
 // ── Validate required environment variables ──
