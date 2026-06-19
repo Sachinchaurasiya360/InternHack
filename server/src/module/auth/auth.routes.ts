@@ -3,7 +3,7 @@ import { AuthController } from "./auth.controller.js";
 import { AuthService } from "./auth.service.js";
 import { authMiddleware, optionalAuthMiddleware } from "../../middleware/auth.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
-import rateLimit from "express-rate-limit";
+import { rateLimit } from "express-rate-limit";
 import { createRateLimitStore } from "../../utils/rate-limit-store.js";
 import {
   validateBody,
