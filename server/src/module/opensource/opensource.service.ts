@@ -7,7 +7,7 @@ import {
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
 import { UserService } from "../user/user.service.js";
-import { cacheGet, cacheSet } from "../../utils/cache.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
 
 interface ListReposQuery {
   page: number;
@@ -250,6 +250,12 @@ export class OpensourceService {
       },
     });
     console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
+
+    const parsed = this.getRepoOwnerAndNameFromUrl(url);
+    if (parsed) {
+      await cacheDel(`opensource:repo:id:${id}`);
+      await cacheDel(`opensource:repo:owner:${parsed.owner.toLowerCase()}:${parsed.name.toLowerCase()}`);
+    }
   }
 
   private async getRepoOwnerAndNameFromUrl(url: string) {
