@@ -58,7 +58,9 @@ function loadPyodide(): Promise<PyodideInstance> {
 class PythonEngine {
   /** Begin loading Pyodide in the background. */
   preload(): void {
-    loadPyodide().catch(() => {});
+    loadPyodide().catch((err) => {
+      console.warn("[PythonEngine] Pyodide preload failed, will retry on first execute():", err);
+    });
   }
 
   isReady(): boolean {
