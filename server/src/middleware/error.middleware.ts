@@ -29,6 +29,8 @@ function sanitizeBody(body: unknown): Prisma.InputJsonValue | null {
   return sanitized as Prisma.InputJsonValue;
 }
 
+const RAW_ERROR_MAX_LENGTH = 10_000;
+
 function formatRawError(err: Error): string {
   const parts: string[] = [];
   parts.push(`${err.name}: ${err.message}`);
@@ -43,7 +45,7 @@ function formatRawError(err: Error): string {
     parts.push(stackLines.join("\n"));
   }
 
-  return parts.join("\n");
+  return parts.join("\n").slice(0, RAW_ERROR_MAX_LENGTH);
 }
 
 function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?: Error): void {
