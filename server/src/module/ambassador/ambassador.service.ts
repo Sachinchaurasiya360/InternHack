@@ -2,6 +2,31 @@ import { prisma } from "../../database/db.js";
 import { slugify } from "../../utils/slug.utils.js";
 import crypto from "crypto";
 
+/**
+ * Minimum number of guides a user must complete to qualify as an ambassador.
+ * Corresponds to all 6 official InternHack guides in the program requirements.
+ */
+const MIN_GUIDES_COMPLETED = 6;
+
+/**
+ * Minimum number of repositories a user must have contributed to.
+ * Ensures ambassadors have demonstrated real open-source activity.
+ */
+const MIN_REPOS_CONTRIBUTED = 3;
+
+/**
+ * Minimum account age in days before a user can become an ambassador.
+ * A 30-day window filters out newly created or spam accounts.
+ */
+const MIN_ACCOUNT_AGE_DAYS = 30;
+
+/**
+ * Leaderboard rank threshold for ambassador eligibility.
+ * Only users in the top 100 contributors qualify.
+ */
+const MAX_LEADERBOARD_RANK = 100;
+
+
 const GUIDE_NAMES = [
   "Open Source Guide",
   "Hackathon Guide",
@@ -25,10 +50,33 @@ export class AmbassadorService {
       inTop100: boolean;
     };
   }> {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, createdAt: true },
-    });
+    const [user, certCount, github, approvedRepos, rankRows] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, createdAt: true },
+      }),
+      prisma.guideCertificate.count({
+        where: { userId, guideName: { in: GUIDE_NAMES } },
+      }),
+      prisma.githubConnection.findUnique({
+        where: { userId },
+        select: { reposContributed: true },
+      }),
+      prisma.repoRequest.count({
+        where: { userId, status: "APPROVED" },
+      }),
+      prisma.$queryRaw<{ rank: bigint }[]>`
+        SELECT rank
+        FROM (
+          SELECT "userId",
+                 ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
+          FROM   "githubConnection"
+          WHERE  "reposContributed" > 0
+        ) ranked
+        WHERE "userId" = ${userId}
+      `,
+    ]);
+
     if (!user) {
       return { eligible: false, reason: "User not found", details: { guidesCompleted: 0, reposContributed: 0, accountAgeDays: 0, leaderboardRank: null, inTop100: false } };
     }
@@ -37,42 +85,18 @@ export class AmbassadorService {
       (Date.now() - user.createdAt.getTime()) / (1000 * 60 * 60 * 24),
     );
 
-    const certCount = await prisma.guideCertificate.count({
-      where: { userId, guideName: { in: GUIDE_NAMES } },
-    });
     const guidesCompleted = certCount;
-
-    const github = await prisma.githubConnection.findUnique({
-      where: { userId },
-      select: { reposContributed: true },
-    });
     const githubRepoCount = github?.reposContributed ?? 0;
-
-    const approvedRepos = await prisma.repoRequest.count({
-      where: { userId, status: "APPROVED" },
-    });
     const reposContributed = githubRepoCount + approvedRepos;
 
-    // Compute rank in a single SQL statement using ROW_NUMBER() rather than
-    // loading all rows into memory (avoids N connections in the cron loop).
-    const rankRows = await prisma.$queryRaw<{ rank: bigint }[]>`
-      SELECT rank
-      FROM (
-        SELECT "userId",
-               ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
-        FROM   "githubConnection"
-        WHERE  "reposContributed" > 0
-      ) ranked
-      WHERE "userId" = ${userId}
-    `;
     const leaderboardRank = rankRows.length > 0 ? Number(rankRows[0]!.rank) : null;
-    const inTop100 = leaderboardRank !== null && leaderboardRank <= 100;
+    const inTop100 = leaderboardRank !== null && leaderboardRank <= MAX_LEADERBOARD_RANK;
 
-    const accountAgeOk = accountAgeDays >= 30;
+    const accountAgeOk = accountAgeDays >= MIN_ACCOUNT_AGE_DAYS;
 
     const eligible =
-      guidesCompleted >= 6 &&
-      reposContributed >= 3 &&
+      guidesCompleted >= MIN_GUIDES_COMPLETED &&
+      reposContributed >= MIN_REPOS_CONTRIBUTED &&
       accountAgeOk &&
       inTop100;
 
@@ -129,7 +153,7 @@ export class AmbassadorService {
     await prisma.user.update({
       where: { id: userId },
       data: {
-        subscriptionPlan: "MONTHLY",
+        subscriptionPlan: "YEARLY",
         subscriptionStatus: "ACTIVE",
         subscriptionStartDate: new Date(),
         subscriptionEndDate: new Date(
@@ -169,7 +193,12 @@ export class AmbassadorService {
       .create({
         data: { studentId: userId, badgeId: badge.id },
       })
-      .catch(() => {});
+      .catch((err: { code?: string }) => {
+        // P2002 = badge already awarded; anything else is worth surfacing.
+        if (err?.code !== "P2002") {
+          console.error("Failed to award ambassador badge:", err);
+        }
+      });
   }
 
   // ─── Referral Links ────────────────────────────────────────────
@@ -397,6 +426,12 @@ export class AmbassadorService {
     reviewedBy: number,
     adminNotes?: string,
   ) {
+    const share = await prisma.ambassadorShare.findUnique({
+      where: { id: shareId },
+      select: { id: true },
+    });
+    if (!share) throw new Error("Share not found");
+
     return prisma.ambassadorShare.update({
       where: { id: shareId },
       data: {

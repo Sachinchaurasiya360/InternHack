@@ -11,7 +11,7 @@ let cronJob: cron.ScheduledTask | null = null;
  * between 10 and 11 days ago. The 24-hour window ensures each user
  * is picked up exactly once when the cron runs daily.
  */
-async function sendFollowUpEmails(): Promise<void> {
+export async function runFollowUpEmails(): Promise<void> {
   const now = new Date();
   const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
   const elevenDaysAgo = new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000);
@@ -45,7 +45,7 @@ export function startFollowUpCron(schedule = "0 9 * * *"): void {
   if (cronJob) return;
   cronJob = cron.schedule(schedule, () => {
     void withAdvisoryLock("scheduled-emails-followup", async () => {
-      await sendFollowUpEmails();
+      await runFollowUpEmails();
     });
   });
   console.log(`[FollowUpCron] Scheduled daily at "${schedule}"`);

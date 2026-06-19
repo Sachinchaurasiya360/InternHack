@@ -514,7 +514,8 @@ model opensourceRepo {
   healthScore          Int            @default(0)
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
-  bookmarks   opensourceBookmark[]
+  bookmarks     opensourceBookmark[]
+  repoRequests  repoRequest[]
 
   @@index([domain])
   @@index([difficulty])
@@ -560,11 +561,14 @@ model repoRequest {
   adminNote   String?
   userId      Int
   user        user              @relation("UserRepoRequests", fields: [userId], references: [id], onDelete: Cascade)
+  repoId      Int?
+  repo        opensourceRepo?   @relation(fields: [repoId], references: [id], onDelete: SetNull)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
   @@index([status])
   @@index([userId])
+  @@index([repoId])
 }
 
 model githubConnection {
