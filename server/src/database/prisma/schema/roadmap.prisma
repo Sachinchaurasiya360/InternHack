@@ -130,7 +130,7 @@ model roadmapTopicProgress {
   updatedAt    DateTime           @updatedAt
 
   @@unique([enrollmentId, topicId])
-  @@index([enrollmentId])
+  @@index([enrollmentId, status, completedAt])
   @@index([topicId])
 }
 

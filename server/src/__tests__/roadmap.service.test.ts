@@ -1,10 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   buildWeeklyPlan,
   summarizeProgress,
   enrollUser,
   updateTopicProgress,
   recomputePace,
+  updateEnrollmentStreak,
 } from "../module/roadmap/roadmap.service.js";
 import { prisma } from "../database/db.js";
 import { invalidateRecommendations } from "../module/recommendation/recommendation.service.js";
@@ -567,9 +568,12 @@ describe("updateTopicProgress", () => {
       id: 1,
       status: "COMPLETED",
     } as any);
-    vi.mocked(prisma.roadmapTopicProgress.findMany).mockResolvedValue([
-      { completedAt: new Date() },
-    ] as any);
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 1,
+      bestStreak: 1,
+      lastStreakDate: null,
+    } as any);
     vi.mocked(prisma.roadmapEnrollment.update).mockResolvedValue({} as any);
 
     const result = await updateTopicProgress({
@@ -585,7 +589,7 @@ describe("updateTopicProgress", () => {
     expect((upsertArg.update as any).completedAt).toBeInstanceOf(Date);
 
     // Streak recompute ran for the completion.
-    expect(prisma.roadmapTopicProgress.findMany).toHaveBeenCalled();
+    expect(prisma.roadmapEnrollment.findUnique).toHaveBeenCalled();
     expect(prisma.roadmapEnrollment.update).toHaveBeenCalled();
 
     // All topics done → roadmap flagged complete.
@@ -627,6 +631,118 @@ describe("updateTopicProgress", () => {
     });
 
     expect(result.roadmapCompleted).toBe(false);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// updateEnrollmentStreak — Prisma mock
+// ══════════════════════════════════════════════════════════════════════════════
+
+describe("updateEnrollmentStreak", () => {
+  const mockNow = new Date("2026-06-19T10:00:00.000Z");
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(mockNow);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("handles same-day completion: does not increment currentStreak", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 5,
+      bestStreak: 10,
+      lastStreakDate: new Date("2026-06-19T08:00:00.000Z"), // Same day UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(5);
+    expect(updateArg.data.bestStreak).toBe(10);
+    expect(updateArg.data.lastStreakDate).toEqual(mockNow);
+  });
+
+  it("handles consecutive days: increments currentStreak", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 5,
+      bestStreak: 10,
+      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // Yesterday UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(6);
+    expect(updateArg.data.bestStreak).toBe(10);
+    expect(updateArg.data.lastStreakDate).toEqual(mockNow);
+  });
+
+  it("updates bestStreak when currentStreak exceeds it", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 5,
+      bestStreak: 5,
+      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // Yesterday UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(6);
+    expect(updateArg.data.bestStreak).toBe(6);
+  });
+
+  it("handles missed days: resets currentStreak to 1", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 5,
+      bestStreak: 10,
+      lastStreakDate: new Date("2026-06-17T20:00:00.000Z"), // Before yesterday UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(1);
+    expect(updateArg.data.bestStreak).toBe(10); // bestStreak remains
+    expect(updateArg.data.lastStreakDate).toEqual(mockNow);
+  });
+
+  it("handles first completion (null lastStreakDate): sets streak to 1", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 0,
+      bestStreak: 0,
+      lastStreakDate: null,
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(1);
+    expect(updateArg.data.bestStreak).toBe(1);
+    expect(updateArg.data.lastStreakDate).toEqual(mockNow);
+  });
+
+  it("updates weeklyStreak properly when reaching 7 days", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 6,
+      bestStreak: 6,
+      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // Yesterday UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(7);
+    expect(updateArg.data.weeklyStreak).toBe(1);
+    expect(updateArg.data.lastWeeklyStreakAt).toEqual(mockNow);
   });
 });
 
