@@ -6,7 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import helmet from "helmet";
 import morgan from "morgan";
-import rateLimit from "express-rate-limit";
+import { rateLimit } from "express-rate-limit";
 import { createRateLimitStore } from "./utils/rate-limit-store.js";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
