@@ -64,16 +64,6 @@ export const submitRepoRequestSchema = z.object({
     .max(1000),
 });
 
-export const bulkRepoRequestSchema = z.object({
-  ids: z
-    .array(z.number().int().positive("Invalid ID in request list"))
-    .min(1, "At least one ID must be specified"),
-  action: z.enum(["approve", "reject"], {
-    message: "Action must be either 'approve' or 'reject'",
-  }),
-  adminNote: z.string().max(1000).optional(),
-});
-
 export const gsocOrgsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(100).optional().default(20),
