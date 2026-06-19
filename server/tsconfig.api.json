@@ -1,0 +1,11 @@
+{
+  // Typecheck-only config for the Vercel function entry under api/, which lives
+  // outside the build's rootDir (./src) and so is not covered by the base
+  // tsconfig. Wired into `npm run typecheck`. Vercel builds api/ itself.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true
+  },
+  "include": ["api/**/*", "src/**/*"]
+}

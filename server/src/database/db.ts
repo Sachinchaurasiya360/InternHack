@@ -34,9 +34,16 @@ function resolveSsl():
   return { rejectUnauthorized: false };
 }
 
+// Pool sizing: each serverless invocation gets its own pool, so the per-process
+// max must stay small (default 3 on Vercel) to avoid exhausting the Supabase
+// transaction pooler. A long-running EC2/local process can hold more (default
+// 20). Override either way with PG_POOL_MAX.
+const DEFAULT_POOL_MAX = process.env["VERCEL"] ? 3 : 20;
+const poolMax = Number(process.env["PG_POOL_MAX"] ?? DEFAULT_POOL_MAX);
+
 const pool = new Pool({
   connectionString,
-  max: 20,
+  max: Number.isFinite(poolMax) && poolMax > 0 ? poolMax : DEFAULT_POOL_MAX,
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 5_000,
   keepAlive: true,

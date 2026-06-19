@@ -446,7 +446,7 @@ export class OpensourceService {
 
     await prisma.repoRequest.update({
       where: { id },
-      data: { status: "APPROVED", adminNote: overrides.adminNote ?? null },
+      data: { status: "APPROVED", adminNote: overrides.adminNote ?? null, repoId: repo.id },
     });
 
     try {

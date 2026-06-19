@@ -1,4 +1,4 @@
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import { rateLimit, ipKeyGenerator } from "express-rate-limit";
 import { createRateLimitStore } from "../utils/rate-limit-store.js";
 
 // Rate limiting for AI roadmap generation to prevent abuse and API quota drains

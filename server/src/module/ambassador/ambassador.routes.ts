@@ -56,27 +56,11 @@ ambassadorRouter.get("/shares", authMiddleware, requireRole("STUDENT"), (req, re
 );
 
 // ─── Admin: Ambassador Management ───────────────────────────────
+// NOTE: static segments (/admin/spotlights, /admin/top-referrers) must be
+// registered before the dynamic /admin/:id route, otherwise :id swallows them.
 
 ambassadorRouter.get("/admin", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
   controller.listAmbassadors(req, res, next),
-);
-
-ambassadorRouter.get("/admin/:id", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
-  controller.getAmbassadorDetail(req, res, next),
-);
-
-ambassadorRouter.put("/admin/:id/review", authMiddleware, requireRole("ADMIN"),
-  validateBody(reviewAmbassadorSchema), (req, res, next) =>
-    controller.reviewAmbassador(req, res, next),
-);
-
-ambassadorRouter.get("/admin/:ambassadorId/shares", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
-  controller.listSharesAdmin(req, res, next),
-);
-
-ambassadorRouter.put("/admin/shares/:shareId/review", authMiddleware, requireRole("ADMIN"),
-  validateBody(reviewShareSchema), (req, res, next) =>
-    controller.reviewShare(req, res, next),
 );
 
 // ─── Admin: Spotlight ───────────────────────────────────────────
@@ -103,6 +87,28 @@ ambassadorRouter.delete("/admin/spotlights/:id", authMiddleware, requireRole("AD
 
 ambassadorRouter.get("/admin/top-referrers", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
   controller.getTopReferrers(req, res, next),
+);
+
+// ─── Admin: Social Shares ───────────────────────────────────────
+
+ambassadorRouter.put("/admin/shares/:shareId/review", authMiddleware, requireRole("ADMIN"),
+  validateBody(reviewShareSchema), (req, res, next) =>
+    controller.reviewShare(req, res, next),
+);
+
+// ─── Admin: Ambassador detail / review (dynamic :id, registered last) ───
+
+ambassadorRouter.get("/admin/:id/shares", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
+  controller.listSharesAdmin(req, res, next),
+);
+
+ambassadorRouter.put("/admin/:id/review", authMiddleware, requireRole("ADMIN"),
+  validateBody(reviewAmbassadorSchema), (req, res, next) =>
+    controller.reviewAmbassador(req, res, next),
+);
+
+ambassadorRouter.get("/admin/:id", authMiddleware, requireRole("ADMIN"), (req, res, next) =>
+  controller.getAmbassadorDetail(req, res, next),
 );
 
 // ─── Public ─────────────────────────────────────────────────────

@@ -30,9 +30,10 @@ export default function MySubmissionsPage() {
   const { data, isLoading } = useQuery<RepoRequest[]>({
     queryKey: ["my-repo-requests"],
     queryFn: () => api.get("/opensource/requests/mine").then((r) => r.data),
-    staleTime: 30_000,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
-
+  
   const filtered = useMemo(() => {
     return (data ?? []).filter((r) => r.status === activeTab);
   }, [data, activeTab]);

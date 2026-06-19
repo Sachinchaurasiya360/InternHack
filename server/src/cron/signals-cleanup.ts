@@ -7,7 +7,7 @@ let cronJob: cron.ScheduledTask | null = null;
 const STALE_DELETE_DAYS = 45;
 const LOG_RETAIN_DAYS = 30;
 
-async function cleanupSignals(): Promise<void> {
+export async function runSignalsCleanup(): Promise<void> {
   const now = Date.now();
   const staleDeleteCutoff = new Date(now - STALE_DELETE_DAYS * 24 * 60 * 60 * 1000);
   const logDeleteCutoff = new Date(now - LOG_RETAIN_DAYS * 24 * 60 * 60 * 1000);
@@ -33,7 +33,7 @@ export function startSignalsCleanupCron(): void {
   cronJob = cron.schedule("0 2 * * 0", () => {
     void withAdvisoryLock("signals-cleanup", async () => {
       try {
-        await cleanupSignals();
+        await runSignalsCleanup();
       } catch (err) {
         console.error("[Cron] Signals cleanup error:", err);
       }
