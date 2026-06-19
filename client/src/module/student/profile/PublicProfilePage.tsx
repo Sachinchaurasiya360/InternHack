@@ -14,7 +14,7 @@ import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import GitHubStatsCard from "./GitHubStatsCard";
 import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
-import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/types";
+import type { ProjectItem, AchievementItem, VerifiedSkill, BadgeDisplay } from "../../../lib/types";
 
 interface PublicProfile {
   id: number;
@@ -42,6 +42,7 @@ interface PublicProfile {
   verifiedSkills: VerifiedSkill[];
   createdAt: string;
   ossTier?: string;
+  badges: BadgeDisplay[];
 }
 
 // ─── TIER COLORS ────────────────────────────────────────────────
@@ -316,10 +317,10 @@ export default function PublicProfilePage() {
             </motion.div>
           )}
 
-          {/* Badges */}
+          {/* Badges — uses compact list from profile payload, no separate API call */}
           <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
-            <BadgesSection studentId={profile.id} />
+            <BadgesSection badges={profile.badges} />
           </motion.div>
 
           <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible">
