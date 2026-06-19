@@ -1,4 +1,4 @@
-import DodoPayments from "dodopayments";
+import { DodoPayments } from "dodopayments";
 import { prisma } from "../../database/db.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { premiumConfirmationEmailHtml } from "../../utils/email-templates.js";
