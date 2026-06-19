@@ -200,7 +200,11 @@ export default function SkillTestPage() {
         }
 
         if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => { });
+          try {
+            await document.exitFullscreen();
+          } catch (fsErr) {
+            console.warn("[SkillTest] Failed to exit fullscreen:", fsErr);
+          }
         }
       } catch (err: unknown) {
         const e = err as { response?: { data?: { error?: string } } };
