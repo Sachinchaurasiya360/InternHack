@@ -101,9 +101,5 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.61.1"
-  },
-  "overrides": {
-    "ajv": "^8.20.0",
-    "picomatch": "^4.0.4"
   }
 }
