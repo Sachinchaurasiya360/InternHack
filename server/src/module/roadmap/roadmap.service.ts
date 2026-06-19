@@ -476,34 +476,45 @@ export async function listEnrollmentsForUser(userId: number) {
 
 type TopicStatusValue = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
 
-async function updateEnrollmentStreak(enrollmentId: number) {
-  const completedTopics = await prisma.roadmapTopicProgress.findMany({
-    where: {
-      enrollmentId,
-      status: "COMPLETED",
-      completedAt: { not: null },
-    },
-    select: { completedAt: true },
-    orderBy: { completedAt: "asc" },
+export async function updateEnrollmentStreak(enrollmentId: number) {
+  const enrollment = await prisma.roadmapEnrollment.findUnique({
+    where: { id: enrollmentId },
+    select: { currentStreak: true, bestStreak: true, lastStreakDate: true },
   });
 
-  const completedDayKeys = getCompletedUtcDays(
-    completedTopics.map((topic) => ({
-      completedAt: topic.completedAt!,
-    })),
-  );
+  if (!enrollment) return;
 
-  const { currentStreak, longestStreak } = calculateStreaks(completedDayKeys);
-  const lastCompletedAt = completedTopics.at(-1)?.completedAt ?? null;
+  const now = new Date();
+  const todayKey = toUtcDayKey(now);
+  let { currentStreak, bestStreak, lastStreakDate } = enrollment;
+
+  if (!lastStreakDate) {
+    currentStreak = 1;
+    bestStreak = Math.max(bestStreak, 1);
+  } else {
+    const lastKey = toUtcDayKey(lastStreakDate);
+    const yesterdayKey = toUtcDayKey(addUtcDays(now, -1));
+
+    if (todayKey === lastKey) {
+      // Already completed a topic today, streak doesn't increase
+    } else if (lastKey === yesterdayKey) {
+      // Completed yesterday, streak continues
+      currentStreak += 1;
+      bestStreak = Math.max(bestStreak, currentStreak);
+    } else {
+      // Streak broken (missed days)
+      currentStreak = 1;
+    }
+  }
 
   await prisma.roadmapEnrollment.update({
     where: { id: enrollmentId },
     data: {
       currentStreak,
-      bestStreak: longestStreak,
-      lastStreakDate: lastCompletedAt,
+      bestStreak,
+      lastStreakDate: now,
       weeklyStreak: currentStreak >= 7 ? Math.floor(currentStreak / 7) : 0,
-      lastWeeklyStreakAt: currentStreak >= 7 ? lastCompletedAt : null,
+      lastWeeklyStreakAt: currentStreak >= 7 ? now : null,
     },
   });
 }
