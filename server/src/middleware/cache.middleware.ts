@@ -44,7 +44,7 @@ export const cacheMiddleware = (ttl?: number, keyPrefix?: string) => {
     }
 
     const originalJson = res.json;
-    res.json = function (data) {
+    res.json = function <TBody>(data: TBody) {
       if (res.statusCode >= 200 && res.statusCode < 300 && !res.locals["skipCache"]) {
         appCache.set(key, data, cacheConfig.ttl);
       }
