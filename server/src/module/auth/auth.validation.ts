@@ -61,6 +61,13 @@ export const registerSchema = z.object({
         path: ["email"],
       });
     }
+    if (!data.company || !data.company.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Company name is required for recruiter accounts",
+        path: ["company"],
+      });
+    }
   }
 });
 

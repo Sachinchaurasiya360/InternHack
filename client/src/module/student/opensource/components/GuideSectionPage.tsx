@@ -3,7 +3,7 @@ import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
   ArrowRight, ChevronLeft, ChevronRight,
-  CheckCircle2, ExternalLink, Lightbulb, Info,
+  CheckCircle2, ExternalLink, Lightbulb, Info, X
 } from "lucide-react";
 import { VideoEmbed } from "../../../../components/ui/VideoEmbed";
 import { SEO } from "../../../../components/SEO";
@@ -13,6 +13,8 @@ import { canonicalUrl } from "../../../../lib/seo.utils";
 import { QuizBlock, type QuizQuestion } from "../../../../components/quiz/QuizBlock";
 import api from "../../../../lib/axios";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
+import toast from "../../../../components/ui/toast";
+
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -56,17 +58,41 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   const [submitted, setSubmitted] = useState(false);
   const [showReasons, setShowReasons] = useState(false);
 
+  const [showShortcutHint, setShowShortcutHint] = useState(() => {
+  try {
+    return localStorage.getItem("guide-hint-dismissed") !== "true";
+  } catch {
+    return true;
+  }
+});
+
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
+      if (!step) return prev;
       const next = new Set(prev);
-      if (!step) return next;
       if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
-      try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
-      notifyLearningPathProgressChanged();
-      return next;
+      try { 
+        localStorage.setItem(storageKey, JSON.stringify([...next])); 
+        notifyLearningPathProgressChanged();
+        return next;
+      } 
+      catch { 
+        toast.error("Couldn't save progress");
+        return prev; 
+      }
+      
     });
   }, [step, storageKey]);
+
+  const dismissShortcutHint = () => {
+  try {
+    localStorage.setItem("guide-hint-dismissed", "true");
+  } catch {
+    
+  }
+  setShowShortcutHint(false);
+};
 
   useEffect(() => {
     if (!step) return;
@@ -200,6 +226,28 @@ if (!step) return <Navigate to={basePath} replace />;
           </div>
         </div>
       </motion.div>
+
+      
+      {showShortcutHint && (
+        <div className="mb-4 flex items-center justify-between rounded-md border border-amber-100 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/20 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <Lightbulb className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+             Press your keyboard's ← and → arrow keys to navigate between sections.
+            </p>
+          </div>
+
+          <Button
+            variant="ghost"
+            mode="icon"
+            onClick={dismissShortcutHint}
+            aria-label="Dismiss keyboard shortcuts hint"
+            title="Dismiss"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       <div className="space-y-5">
         {step.mentor_guidance && (

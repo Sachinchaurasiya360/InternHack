@@ -53,6 +53,11 @@ export class ScraperService {
     }
   }
 
+  /** Run the scrape pass once (used by the Vercel daily cron endpoint). */
+  async runOnce() {
+    return this.runAllScrapers();
+  }
+
   /** Run all scrapers and upsert results */
   async runAllScrapers(): Promise<{
     results: Array<{

@@ -11,17 +11,17 @@ import ScrollProgressBar from "./components/common/ScrollProgressBar";
 import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
+let hasReloaded = false;
+
 function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>): LazyExoticComponent<T> {
   return lazy(
     () =>
       factory().catch((err: unknown) => {
-        const key = "chunk_reload";
-        if (!sessionStorage.getItem(key)) {
-          sessionStorage.setItem(key, "1");
+        if (!hasReloaded) {
+          hasReloaded = true;
           window.location.reload();
-          return new Promise<never>(() => { }); // never resolves, page is reloading
+          return new Promise<never>(() => { });
         }
-        sessionStorage.removeItem(key);
         throw err;
       }) as Promise<{ default: T }>,
   ) as LazyExoticComponent<T>;
@@ -319,7 +319,8 @@ function ApplyRedirect() {
 function ProfileRedirect() {
   const { id } = useParams();
   const { user } = useAuthStore();
-  const base = user?.role === "ADMIN" ? "/admin" : "/recruiters";
+  if (!user) return <Navigate to="/login" replace />;
+  const base = user.role === "ADMIN" ? "/admin" : "/recruiters";
   return <Navigate to={`${base}/profile/${id}`} replace />;
 }
 

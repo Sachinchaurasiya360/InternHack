@@ -1,7 +1,10 @@
 import { prisma } from "../../database/db.js";
 import { invalidateRecommendations } from "../recommendation/recommendation.service.js";
+import { appCache } from "../../middleware/cache.middleware.js";
 import type { Prisma } from "@prisma/client";
 import type { EnrollInput } from "./roadmap.validation.js";
+
+const ROADMAP_STRUCTURE_TTL = 300; // 5 minutes
 
 interface WeeklyPlanWeek {
   week: number;
@@ -270,8 +273,26 @@ export async function listCommunityRoadmaps(limit = 24) {
   }));
 }
 
-export async function getRoadmapBySlug(slug: string) {
-  return prisma.roadmap.findUnique({
+type RoadmapStructure = Prisma.roadmapGetPayload<{
+  include: {
+    sections: {
+      orderBy: { orderIndex: "asc" }
+      include: {
+        topics: {
+          orderBy: { orderIndex: "asc" }
+          include: { resources: { orderBy: { orderIndex: "asc" } } }
+        }
+      }
+    }
+  }
+}> | null;
+
+export async function getRoadmapBySlug(slug: string): Promise<RoadmapStructure> {
+  const cacheKey = `roadmap:structure:${slug}`;
+  const cached = appCache.get<RoadmapStructure>(cacheKey);
+  if (cached) return cached;
+
+  const roadmap = await prisma.roadmap.findUnique({
     where: { slug },
     include: {
       sections: {
@@ -285,6 +306,11 @@ export async function getRoadmapBySlug(slug: string) {
       },
     },
   });
+
+  if (roadmap?.isPublished) {
+    appCache.set(cacheKey, roadmap, ROADMAP_STRUCTURE_TTL);
+  }
+  return roadmap;
 }
 
 export async function getTopicBySlug(roadmapSlug: string, topicSlug: string) {

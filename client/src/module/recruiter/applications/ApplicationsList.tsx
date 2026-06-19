@@ -22,6 +22,7 @@ export default function ApplicationsList() {
   const [advancingIds, setAdvancingIds] = useState<Set<number>>(() => new Set());
   const [pendingAdvanceApp, setPendingAdvanceApp] = useState<Application | null>(null);
   const [announcement, setAnnouncement] = useState("");
+  const [isError, setIsError] = useState(false);
 
   // Reset to page 1 when search or filter changes
   useEffect(() => {
@@ -54,9 +55,11 @@ export default function ApplicationsList() {
       await api.patch(`/recruiter/applications/${appId}/status`, { status });
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       toast.success("Status updated");
+      setIsError(false);
       setAnnouncement(`Application status successfully updated to ${status.replace("_", " ").toLowerCase()}.`);
     } catch {
       toast.error("Failed to update status");
+      setIsError(true);
       setAnnouncement("Failed to update application status.");
     } finally {
       setUpdatingId(null);
@@ -71,10 +74,12 @@ export default function ApplicationsList() {
       await api.patch(`/recruiter/applications/${appId}/advance`);
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       toast.success("Application advanced");
+      setIsError(false);
       setAnnouncement("Application successfully advanced.");
       setPendingAdvanceApp(null);
     } catch {
       toast.error("Failed to advance application");
+      setIsError(true);
       setAnnouncement("Failed to advance application.");
     } finally {
       setAdvancingIds((current) => {
@@ -88,7 +93,7 @@ export default function ApplicationsList() {
   return (
     <div>
       <SEO title="Applications" noIndex />
-      <div className="sr-only" aria-live="polite" aria-atomic="true">
+      <div className="sr-only" aria-live={isError ? "assertive" : "polite"} aria-atomic="true">
         {announcement}
       </div>
       <ConfirmDialog
