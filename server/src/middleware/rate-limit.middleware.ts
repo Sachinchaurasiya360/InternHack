@@ -1,4 +1,4 @@
-import { rateLimit, ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import { createRateLimitStore } from "../utils/rate-limit-store.js";
 
 // Rate limiting for AI roadmap generation to prevent abuse and API quota drains
@@ -9,11 +9,10 @@ export const aiRoadmapLimiter = rateLimit({
   legacyHeaders: false,
   store: createRateLimitStore("ai-roadmap"),
   keyGenerator: (req) => {
-    // Prefer user ID if authenticated, fallback to IP
     if (req.user?.id) {
       return `user_${req.user.id}`;
     }
-    return ipKeyGenerator(req.ip || "unknown_ip");
+    return req.ip || "unknown_ip";
   },
   message: { 
     message: "Too many AI roadmap generation requests. Please try again later."
@@ -27,15 +26,13 @@ export const contactLimiter = rateLimit({
   legacyHeaders: false,
   store: createRateLimitStore("contact"),
   keyGenerator: (req) => {
-    return ipKeyGenerator(req.ip || "unknown_ip");
+    return req.ip || "unknown_ip";
   },
   message: {
     message: "Too many contact submissions. Please try again later."
   },
 });
 
-// GitHub connect/sync each fan out to many GitHub API calls; cap per user to
-// avoid abuse and GitHub quota exhaustion.
 export const githubSyncLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -46,7 +43,7 @@ export const githubSyncLimiter = rateLimit({
     if (req.user?.id) {
       return `user_${req.user.id}`;
     }
-    return ipKeyGenerator(req.ip || "unknown_ip");
+    return req.ip || "unknown_ip";
   },
   message: {
     message: "Too many GitHub sync requests. Please try again later."
