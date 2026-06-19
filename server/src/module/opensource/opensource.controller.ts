@@ -12,6 +12,8 @@ import {
   bookmarkBodySchema,
   bulkMigrateBookmarksSchema,
   guideFeedbackSchema,
+  issueCertificateSchema,
+  contributionTrendQuerySchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
@@ -298,7 +300,15 @@ export class OpensourceController {
     next: NextFunction,
   ) {
     try {
-      const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
+      const parsed = contributionTrendQuerySchema.safeParse(req.query);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Invalid query parameters",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+      const { startDate, endDate } = parsed.data;
       const result = await service.getStudentContributionTrend(req.user!.id, startDate, endDate);
       res.json(result);
     } catch (err) {

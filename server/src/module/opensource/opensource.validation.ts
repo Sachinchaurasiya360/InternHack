@@ -125,6 +125,12 @@ export const bookmarkBodySchema = z.object({
   repoId: z.number().int().positive("repoId must be a positive integer"),
 });
 
+const dateStringRegex = /^\d{4}-\d{2}-\d{2}$/;
+export const contributionTrendQuerySchema = z.object({
+  startDate: z.string().regex(dateStringRegex, "startDate must be YYYY-MM-DD").optional(),
+  endDate: z.string().regex(dateStringRegex, "endDate must be YYYY-MM-DD").optional(),
+});
+
 export const bulkMigrateBookmarksSchema = z.object({
   repoIds: z
     .array(z.number().int().positive())
