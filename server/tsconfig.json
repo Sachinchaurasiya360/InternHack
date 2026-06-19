@@ -9,6 +9,12 @@
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
     "target": "esnext",
+    // Allow default-importing CJS packages whose types expose the value only as
+    // a named `default` (e.g. helmet). nodenext resolves the ESM types locally,
+    // but a clean Vercel install can resolve the CJS variant, where the default
+    // import is not callable without interop. Type-level only: verbatimModuleSyntax
+    // still controls emit, so no interop helpers are injected at runtime.
+    "esModuleInterop": true,
     "types": [],
     // For nodejs:
     // "lib": ["esnext"],
