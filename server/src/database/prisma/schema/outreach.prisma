@@ -1,0 +1,27 @@
+model outreachTemplate {
+  id           Int      @id @default(autoincrement())
+  type         String
+  title        String
+  body         String
+  placeholders String[]
+  createdAt    DateTime @default(now())
+}
+
+model outreachLog {
+  id           Int      @id @default(autoincrement())
+  studentId    Int
+  student      user     @relation("StudentOutreachLogs", fields: [studentId], references: [id], onDelete: Cascade)
+  contactName  String
+  company      String
+  role         String
+  channel      String
+  templateId   Int?
+  sentAt       DateTime @default(now())
+  followUpDate DateTime
+  status       String   @default("sent")
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([studentId])
+}

@@ -235,6 +235,7 @@ const AiRoadmapWizardPage = lazyWithRetry(() => import("./module/student/roadmap
 
 // Student new feature pages
 const SignalsPage = lazyWithRetry(() => import("./module/student/signals/SignalsPage"));
+const OutreachPage = lazyWithRetry(() => import("./module/student/outreach/OutreachPage"));
 const SignalDetailPage = lazyWithRetry(() => import("./module/student/signals/SignalDetailPage"));
 const InterviewsDirectoryPage = lazyWithRetry(() => import("./module/student/interviews/InterviewsDirectoryPage"));
 const InterviewExperienceDetailPage = lazyWithRetry(() => import("./module/student/interviews/InterviewExperienceDetailPage"));
@@ -575,6 +576,7 @@ function App() {
               <Route path="checkout" element={<CheckoutPage />} />
               <Route path="profile" element={<StudentProfilePage />} />
               <Route path="roadmaps" element={<RoadmapDashboardPage />} />
+              <Route path="outreach" element={<OutreachPage />} />
               <Route path="learn/readiness" element={<InterviewReadinessPage />} />
             </Route>
 

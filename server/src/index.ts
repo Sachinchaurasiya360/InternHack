@@ -82,6 +82,7 @@ import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-a
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
+import { outreachRouter } from "./module/outreach/outreach.routes.js";
 
 const logger = createLogger("Index");
 
@@ -298,6 +299,7 @@ app.use("/api/analytics", analyticsRouter);
 app.use("/api/behavioral", behavioralRouter);
 app.use("/api/learn", learnRouter);
 app.use("/api/notes", notesRouter);
+app.use("/api/outreach", outreachRouter);
 
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);

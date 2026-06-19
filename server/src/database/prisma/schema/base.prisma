@@ -114,6 +114,7 @@ model user {
   programInterests          programInterest[]
   guideCertificates         guideCertificate[]           @relation("UserCertificates")
   studentNotes              studentNote[]                @relation("StudentNotes")
+  outreachLogs  outreachLog[]  @relation("StudentOutreachLogs")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
