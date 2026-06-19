@@ -127,7 +127,8 @@ function assertNotLocked(lockedUntil: Date | null) {
   }
 }
 
-const GITHUB_STATS_CACHE_TTL = 60 * 60 * 1000;
+/** TTL for GitHub stats cache – 1 hour in seconds (used by cacheSet) */
+const GITHUB_STATS_CACHE_TTL_S = 60 * 60;
 const GITHUB_STATS_MAX_REPO_PAGES = 100;
 
 type GitHubStats = {
@@ -143,8 +144,6 @@ type GitHubStatsRepo = {
   language: string | null;
   fork: boolean;
 };
-
-const githubStatsCache = new Map<string, { data: GitHubStats; expiresAt: number }>();
 
 function parseGitHubUsername(input: string) {
   const value = input.trim();
@@ -871,18 +870,74 @@ export class AuthService {
     };
   }
 
-  async getGitHubStats(input: string): Promise<GitHubStats> {
+  async getGitHubStats(input: string, userId?: number): Promise<GitHubStats> {
     const username = parseGitHubUsername(input);
     if (!username) {
       throw new Error("GitHub username is required");
     }
 
-    const cacheKey = username.toLowerCase();
-    const cached = githubStatsCache.get(cacheKey);
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.data;
+    const cacheKey = `github-stats:${username.toLowerCase()}`;
+
+    // 1. Check Redis/in-process cache first – avoids any DB or GitHub API work.
+    const cached = await cacheGet<GitHubStats>(cacheKey);
+    if (cached) return cached;
+
+    // 2. If the authenticated user has already connected GitHub via OAuth, reuse
+    //    the synced DB snapshot instead of making a live GitHub API call.
+    //    Note: (prisma as any) is needed because the local Prisma client may not yet be
+    //    regenerated after the githubConnection migration was added.
+    if (userId) {
+      type GithubConnectionRow = {
+        githubUsername: string;
+        publicRepos: number;
+        contributedStars: number;
+        contributedRepos: Array<{ language: string | null; mergedPrs: number }>;
+      };
+      const connection = await (prisma as any).githubConnection.findUnique({
+        where: { userId },
+        select: {
+          githubUsername: true,
+          publicRepos: true,
+          contributedStars: true,
+          contributedRepos: {
+            select: { language: true, mergedPrs: true },
+            orderBy: [{ mergedPrs: "desc" }, { stars: "desc" }],
+            take: 100,
+          },
+        },
+      }) as GithubConnectionRow | null;
+
+      if (
+        connection &&
+        connection.githubUsername.toLowerCase() === username.toLowerCase()
+      ) {
+        const languageCounts = new Map<string, number>();
+        for (const repo of connection.contributedRepos) {
+          if (repo.language) {
+            languageCounts.set(
+              repo.language,
+              (languageCounts.get(repo.language) ?? 0) + repo.mergedPrs,
+            );
+          }
+        }
+
+        const snapshot: GitHubStats = {
+          username: connection.githubUsername,
+          profileUrl: `https://github.com/${connection.githubUsername}`,
+          publicRepos: connection.publicRepos,
+          totalStars: connection.contributedStars,
+          topLanguages: [...languageCounts.entries()]
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .slice(0, 3)
+            .map(([name, count]) => ({ name, count })),
+        };
+
+        await cacheSet(cacheKey, snapshot, GITHUB_STATS_CACHE_TTL_S);
+        return snapshot;
+      }
     }
 
+    // 3. Fall back to live GitHub API (burns usageLimit quota).
     const headers = GITHUB_API_HEADERS;
     const [userRes, repos] = await Promise.all([
       fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
@@ -921,22 +976,7 @@ export class AuthService {
         .map(([name, count]) => ({ name, count })),
     };
 
-    githubStatsCache.set(cacheKey, { data, expiresAt: Date.now() + GITHUB_STATS_CACHE_TTL });
-    if (githubStatsCache.size > 200) {
-      const now = Date.now();
-      for (const [key, entry] of githubStatsCache) {
-        if (entry.expiresAt <= now) githubStatsCache.delete(key);
-      }
-      while (githubStatsCache.size > 200) {
-        const oldestKey = githubStatsCache.keys().next().value;
-        if (oldestKey !== undefined) {
-          githubStatsCache.delete(oldestKey);
-        } else {
-          break;
-        }
-      }
-    }
-
+    await cacheSet(cacheKey, data, GITHUB_STATS_CACHE_TTL_S);
     return data;
   }
 }

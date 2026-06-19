@@ -43,7 +43,8 @@ export default function GitHubStatsCard({
         .get<{ stats: GitHubStats }>("/auth/github-stats", { params: { username } })
         .then((res) => res.data.stats),
     enabled: !!username,
-    staleTime: 60 * 60 * 1000,
+    staleTime: 60 * 60 * 1000,       // 1 hour – treat cached data as fresh
+    gcTime: 2 * 60 * 60 * 1000,      // 2 hours – keep in memory across navigations
   });
 
   if (!username) {

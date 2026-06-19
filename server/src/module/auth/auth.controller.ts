@@ -173,7 +173,7 @@ export class AuthController {
         return res.status(400).json({ message: "GitHub username is required" });
       }
 
-      const stats = await this.authService.getGitHubStats(username);
+      const stats = await this.authService.getGitHubStats(username, req.user!.id);
       return res.status(200).json({ stats });
     } catch (error) {
       if (error instanceof Error) {
