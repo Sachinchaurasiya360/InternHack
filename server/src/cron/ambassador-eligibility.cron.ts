@@ -1,4 +1,5 @@
 import cron from "node-cron";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../database/db.js";
 import { withAdvisoryLock } from "../utils/cron-lock.js";
 
@@ -28,51 +29,81 @@ export async function runAmbassadorEligibility(): Promise<void> {
     select: { id: true, createdAt: true },
   });
 
+  if (users.length === 0) return;
+
   const now = Date.now();
+
+  // ── Step 1 — Account-age filter (in-memory) ────────────────────
+  const ageFiltered = users.filter((u) => {
+    const age = Math.floor((now - u.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    return age >= 30;
+  });
+  if (ageFiltered.length === 0) return;
+  const ageFilteredIds = ageFiltered.map((u) => u.id);
+
+  // ── Step 2 — Guide-certificate counts via single groupBy ───────
+  const certAgg = await prisma.guideCertificate.groupBy({
+    by: ["userId"],
+    where: { userId: { in: ageFilteredIds }, guideName: { in: GUIDE_NAMES } },
+    _count: { _all: true },
+  });
+  const certMap = new Map(certAgg.map((r) => [r.userId, r._count._all]));
+
+  const certFiltered = ageFiltered.filter((u) => (certMap.get(u.id) ?? 0) >= 6);
+  if (certFiltered.length === 0) return;
+  const certFilteredIds = certFiltered.map((u) => u.id);
+
+  // ── Step 3 — Batch github repos + approved repo-requests ──────
+  const [githubRows, approvedAgg] = await Promise.all([
+    prisma.githubConnection.findMany({
+      where: { userId: { in: certFilteredIds } },
+      select: { userId: true, reposContributed: true },
+    }),
+    prisma.repoRequest.groupBy({
+      by: ["userId"],
+      where: { userId: { in: certFilteredIds }, status: "APPROVED" },
+      _count: { _all: true },
+    }),
+  ]);
+
+  const githubMap = new Map(githubRows.map((r) => [r.userId, r.reposContributed]));
+  const approvedMap = new Map(approvedAgg.map((r) => [r.userId, r._count._all]));
+
+  const reposTotalMap = new Map<number, number>();
+  for (const id of certFilteredIds) {
+    reposTotalMap.set(id, (githubMap.get(id) ?? 0) + (approvedMap.get(id) ?? 0));
+  }
+
+  const repoFiltered = certFiltered.filter((u) => (reposTotalMap.get(u.id) ?? 0) >= 3);
+  if (repoFiltered.length === 0) return;
+  const repoFilteredIds = repoFiltered.map((u) => u.id);
+
+  // ── Step 4 — Single-pass window function for all leaderboard ranks ──
+  const rankRows = await prisma.$queryRaw<{ userId: number; rank: bigint }[]>`
+    SELECT "userId", rank
+    FROM (
+      SELECT "userId",
+             ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
+      FROM   "githubConnection"
+      WHERE  "reposContributed" > 0
+    ) ranked
+    WHERE "userId" IN (${Prisma.join(repoFilteredIds)})
+  `;
+  const rankMap = new Map(rankRows.map((r) => [r.userId, Number(r.rank)]));
+
+  // ── Step 5 — Enroll qualifying users (no DB reads inside loop) ─
   let enrolled = 0;
 
-  // Compute the leaderboard ranking once, not per user. ROW_NUMBER() over the
-  // whole githubConnection table is expensive; running it inside the loop would
-  // recompute the full window for every eligible user.
-  const rankRows = await prisma.$queryRaw<{ userId: number; rank: bigint }[]>`
-    SELECT "userId",
-           ROW_NUMBER() OVER (ORDER BY "reposContributed" DESC) AS rank
-    FROM   "githubConnection"
-    WHERE  "reposContributed" > 0
-  `;
-  const rankByUserId = new Map<number, number>();
-  for (const row of rankRows) rankByUserId.set(row.userId, Number(row.rank));
+  for (const user of repoFiltered) {
+    const leaderboardRank = rankMap.get(user.id) ?? null;
+    const inTop100 = leaderboardRank !== null && leaderboardRank <= 100;
+    if (!inTop100) continue;
 
-  for (const user of users) {
     const accountAgeDays = Math.floor(
       (now - user.createdAt.getTime()) / (1000 * 60 * 60 * 24),
     );
-
-    if (accountAgeDays < 30) continue;
-
-    const certCount = await prisma.guideCertificate.count({
-      where: { userId: user.id, guideName: { in: GUIDE_NAMES } },
-    });
-
-    if (certCount < 6) continue;
-
-    const github = await prisma.githubConnection.findUnique({
-      where: { userId: user.id },
-      select: { reposContributed: true },
-    });
-    const githubRepoCount = github?.reposContributed ?? 0;
-
-    const approvedRepos = await prisma.repoRequest.count({
-      where: { userId: user.id, status: "APPROVED" },
-    });
-    const reposContributed = githubRepoCount + approvedRepos;
-
-    if (reposContributed < 3) continue;
-
-    const leaderboardRank = rankByUserId.get(user.id) ?? null;
-    const inTop100 = leaderboardRank !== null && leaderboardRank <= 100;
-
-    if (!inTop100) continue;
+    const certCount = certMap.get(user.id) ?? 0;
+    const reposContributed = reposTotalMap.get(user.id) ?? 0;
 
     await prisma.$transaction(async (tx) => {
       const ambassador = await tx.ambassador.create({
