@@ -19,9 +19,7 @@ import { interviewExperienceRouter } from "./module/interview-experience/intervi
 import { atsRouter } from "./module/ats/ats.routes.js";
 import { resumeRouter } from "./module/resume/resume.routes.js";
 import { companyRouter } from "./module/company/company.routes.js";
-import { adminRouter } from "./module/admin/admin.routes.js";
-import { AdminService } from "./module/admin/admin.service.js";
-import { AdminController } from "./module/admin/admin.controller.js";
+import { adminRouter, adminController } from "./module/admin/admin.routes.js";
 import { newsletterRouter } from "./module/newsletter/newsletter.routes.js";
 import { opensourceRouter } from "./module/opensource/opensource.routes.js";
 import { githubRouter } from "./module/github/github.routes.js";
@@ -305,11 +303,10 @@ app.use("/api/ambassador", ambassadorRouter);
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
 // Public external jobs endpoints (no auth)
-const publicAdminController = new AdminController(new AdminService());
 // Public ingest endpoint, external websites POST jobs here with API key
-app.post("/api/external-jobs/ingest", (req, res) => publicAdminController.ingestExternalJob(req, res));
-app.get("/api/external-jobs/:slug", (req, res) => publicAdminController.getPublicExternalJobBySlug(req, res));
-app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExternalJobs(req, res));
+app.post("/api/external-jobs/ingest", (req, res) => adminController.ingestExternalJob(req, res));
+app.get("/api/external-jobs/:slug", (req, res) => adminController.getPublicExternalJobBySlug(req, res));
+app.get("/api/external-jobs", (req, res) => adminController.getPublicExternalJobs(req, res));
 
 // ── Sitemap (served at root, not /api) ──
 app.use(sitemapRouter);

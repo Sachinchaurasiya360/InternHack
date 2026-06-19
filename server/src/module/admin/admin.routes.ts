@@ -4,8 +4,8 @@ import { AdminService } from "./admin.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 
-const adminService = new AdminService();
-const adminController = new AdminController(adminService);
+export const adminService = new AdminService();
+export const adminController = new AdminController(adminService);
 
 export const adminRouter = Router();
 
