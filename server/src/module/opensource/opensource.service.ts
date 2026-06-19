@@ -2,6 +2,7 @@ import { prisma } from "../../database/db.js";
 import type { RepoDomain, RepoDifficulty } from "@prisma/client";
 import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
 import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
@@ -65,6 +66,9 @@ let statsCache: {
   expiresAt: number;
 } = { data: null, expiresAt: 0 };
 
+export const LANGUAGES_CACHE_KEY = "opensource:languages";
+export const LANGUAGES_CACHE_TTL = 3600; // 1 hour — languages rarely change
+
 export class OpensourceService {
   async getGlobalStats() {
     if (statsCache.data && Date.now() < statsCache.expiresAt) {
@@ -99,14 +103,20 @@ export class OpensourceService {
   }
 
   async getLanguages() {
+    const cached = await cacheGet<string[]>(LANGUAGES_CACHE_KEY);
+    if (cached) return cached;
+
     const rows = await prisma.opensourceRepo.findMany({
       select: { language: true },
       distinct: ["language"],
     });
-    return rows
+    const languages = rows
       .map((r) => r.language)
       .filter((l: string | null): l is string => Boolean(l && l.trim() !== ""))
       .sort((a: string, b: string) => a.localeCompare(b));
+
+    await cacheSet(LANGUAGES_CACHE_KEY, languages, LANGUAGES_CACHE_TTL);
+    return languages;
   }
 
   async listRepos(query: ListReposQuery) {
@@ -462,6 +472,9 @@ export class OpensourceService {
     } catch {
       /* email failure is non-blocking */
     }
+
+    // Invalidate language list — new repo may introduce a new language
+    cacheDel(LANGUAGES_CACHE_KEY).catch(() => {});
 
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
