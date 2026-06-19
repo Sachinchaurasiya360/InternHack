@@ -78,6 +78,7 @@
     "@eslint/js": "^9.39.1",
     "@prerenderer/renderer-puppeteer": "^1.2.4",
     "@prerenderer/rollup-plugin": "^0.3.12",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
     "@types/file-saver": "^2.0.7",
     "@types/node": "^24.10.1",
@@ -95,10 +96,9 @@
     "rollup": "^4.61.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.59.4",
-"vite": "^7.2.4",
-"vitest": "^4.1.9"
+    "vite": "^7.2.4",
+    "vitest": "^4.1.9"
   },
-    
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.61.1"
   },
