@@ -51,7 +51,15 @@ opensourceRouter.get("/analytics/hacktoberfest", authMiddleware, requireRole("ST
 opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
   try {
     const queryStudentId = req.query.studentId as string | undefined;
-    const userId = queryStudentId ? parseInt(queryStudentId, 10) : req.user!.id;
+    let userId = req.user!.id;
+
+    if (queryStudentId) {
+      const parsed = parseInt(queryStudentId, 10);
+      if (isNaN(parsed) || parsed <= 0) {
+        return res.status(400).json({ success: false, error: "Invalid studentId parameter" });
+      }
+      userId = parsed;
+    }
 
     if (queryStudentId && req.user!.role === "STUDENT" && userId !== req.user!.id) {
       return res.status(403).json({ success: false, error: "Cannot view other student's activity" });
