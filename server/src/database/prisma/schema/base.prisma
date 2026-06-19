@@ -514,7 +514,8 @@ model opensourceRepo {
   healthScore          Int            @default(0)
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
-  bookmarks   opensourceBookmark[]
+  bookmarks     opensourceBookmark[]
+  repoRequests  repoRequest[]
 
   @@index([domain])
   @@index([difficulty])
@@ -560,6 +561,8 @@ model repoRequest {
   adminNote   String?
   userId      Int
   user        user              @relation("UserRepoRequests", fields: [userId], references: [id], onDelete: Cascade)
+  repoId      Int?
+  repo        opensourceRepo?   @relation(fields: [repoId], references: [id], onDelete: SetNull)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
@@ -1619,7 +1622,6 @@ model guideFeedback {
   @@unique([userId, guideId, stepId])
   @@index([guideId])
   @@index([stepId])
-  @@index([userId, guideId])
   }
 
 enum ContentType {

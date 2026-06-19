@@ -16,6 +16,7 @@ import { Button } from "../../../components/ui/button";
 import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import api from "../../../lib/axios";
+import type { AxiosError } from "axios";
 
 interface AmbassadorStatus {
   ambassador: {
@@ -88,7 +89,7 @@ export default function AmbassadorPage() {
       queryClient.invalidateQueries({ queryKey: ["ambassador", "me"] });
       toast.success("Application submitted for review!");
     },
-    onError: (err: any) => toast.error(err?.response?.data?.message || "Failed to apply"),
+    onError: (err: AxiosError<{ message?: string }>) => toast.error(err.response?.data?.message || "Failed to apply"),
   });
 
   const autoEnrollMutation = useMutation({
@@ -97,7 +98,7 @@ export default function AmbassadorPage() {
       queryClient.invalidateQueries({ queryKey: ["ambassador", "me"] });
       toast.success("You are now an OSS Ambassador!");
     },
-    onError: (err: any) => toast.error(err?.response?.data?.message || "Auto-enroll failed"),
+    onError: (err: AxiosError<{ message?: string }>) => toast.error(err.response?.data?.message || "Auto-enroll failed"),
   });
 
   const shareMutation = useMutation({
@@ -111,7 +112,7 @@ export default function AmbassadorPage() {
       setShareUrl("");
       setShareDesc("");
     },
-    onError: (err: any) => toast.error(err?.response?.data?.message || "Failed to submit share"),
+    onError: (err: AxiosError<{ message?: string }>) => toast.error(err.response?.data?.message || "Failed to submit share"),
   });
 
   const generateLinkMutation = useMutation({
@@ -122,8 +123,29 @@ export default function AmbassadorPage() {
     },
   });
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => toast.success("Copied!"));
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Referral link copied to clipboard!");
+      return;
+    } catch {
+      // navigator.clipboard unavailable or permission denied — fall through
+    }
+
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      toast.success("Referral link copied to clipboard!");
+    } catch {
+      toast.error("Failed to copy link automatically. Please select and copy the text manually.");
+    }
   };
 
   const isApproved = data?.ambassador?.status === "APPROVED";

@@ -7,11 +7,12 @@ import { useLocation } from "react-router";
  * It renders nothing — it only runs the side-effect.
  */
 export default function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, state } = useLocation();
 
   useEffect(() => {
+    if ((state as { scrollToTop?: boolean } | null)?.scrollToTop === false) return;
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [pathname, state]);
 
   return null;
 }
