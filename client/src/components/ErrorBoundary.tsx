@@ -31,9 +31,14 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="text-center p-8">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Something went wrong</h1>
             <p className="text-gray-600 dark:text-gray-400 mb-6">{this.state.error?.message || "An unexpected error occurred"}</p>
-            <Button variant="primary" onClick={() => { this.setState({ hasError: false, error: null }); window.location.href = "/"; }}>
-              Go Home
-            </Button>
+            <div className="flex gap-3 justify-center">
+              <Button variant="primary" onClick={() => { this.setState({ hasError: false, error: null }); window.location.href = "/"; }}>
+                Go Home
+              </Button>
+              <Button variant="secondary" onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}>
+                Try Again
+              </Button>
+            </div>
           </div>
         </div>
       );
