@@ -122,6 +122,7 @@ export const talentSearchSchema = z.object({
   minAtsScore: z.coerce.number().int().min(0).max(100).optional(),
   location: z.string().optional(),
   search: z.string().optional(),
+  q: z.string().optional(),
   jobStatus: z.string().optional(),
   ossTier: z.string().optional(),
 });
