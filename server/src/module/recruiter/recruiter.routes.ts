@@ -13,31 +13,31 @@ export const recruiterRouter = Router();
 recruiterRouter.use(authMiddleware, requireRole("RECRUITER"));
 
 // Round management
-recruiterRouter.post("/jobs/:jobId/rounds", (req, res) => recruiterController.createRound(req, res));
-recruiterRouter.get("/jobs/:jobId/rounds", (req, res) => recruiterController.getRounds(req, res));
-recruiterRouter.put("/jobs/:jobId/rounds/:roundId", (req, res) => recruiterController.updateRound(req, res));
-recruiterRouter.delete("/jobs/:jobId/rounds/:roundId", (req, res) => recruiterController.deleteRound(req, res));
-recruiterRouter.patch("/jobs/:jobId/rounds/reorder", (req, res) => recruiterController.reorderRounds(req, res));
+recruiterRouter.post("/jobs/:jobId/rounds", (req, res, next) => recruiterController.createRound(req, res, next));
+recruiterRouter.get("/jobs/:jobId/rounds", (req, res, next) => recruiterController.getRounds(req, res, next));
+recruiterRouter.put("/jobs/:jobId/rounds/:roundId", (req, res, next) => recruiterController.updateRound(req, res, next));
+recruiterRouter.delete("/jobs/:jobId/rounds/:roundId", (req, res, next) => recruiterController.deleteRound(req, res, next));
+recruiterRouter.patch("/jobs/:jobId/rounds/reorder", (req, res, next) => recruiterController.reorderRounds(req, res, next));
 
 // Application management
-recruiterRouter.get("/jobs/:jobId/applications", (req, res) => recruiterController.getApplications(req, res));
-recruiterRouter.get("/applications/:applicationId", (req, res) => recruiterController.getApplicationDetail(req, res));
-recruiterRouter.patch("/applications/:applicationId/status", (req, res) => recruiterController.updateApplicationStatus(req, res));
-recruiterRouter.patch("/applications/:applicationId/advance", (req, res) => recruiterController.advanceApplication(req, res));
+recruiterRouter.get("/jobs/:jobId/applications", (req, res, next) => recruiterController.getApplications(req, res, next));
+recruiterRouter.get("/applications/:applicationId", (req, res, next) => recruiterController.getApplicationDetail(req, res, next));
+recruiterRouter.patch("/applications/:applicationId/status", (req, res, next) => recruiterController.updateApplicationStatus(req, res, next));
+recruiterRouter.patch("/applications/:applicationId/advance", (req, res, next) => recruiterController.advanceApplication(req, res, next));
 
 // Evaluation
-recruiterRouter.get("/applications/:applicationId/rounds/:roundId", (req, res) => recruiterController.getSubmission(req, res));
-recruiterRouter.put("/applications/:applicationId/rounds/:roundId/evaluate", (req, res) => recruiterController.evaluateSubmission(req, res));
+recruiterRouter.get("/applications/:applicationId/rounds/:roundId", (req, res, next) => recruiterController.getSubmission(req, res, next));
+recruiterRouter.put("/applications/:applicationId/rounds/:roundId/evaluate", (req, res, next) => recruiterController.evaluateSubmission(req, res, next));
 
 // Talent Search
-recruiterRouter.get("/talent-search", (req, res) => recruiterController.searchTalent(req, res));
+recruiterRouter.get("/talent-search", (req, res, next) => recruiterController.searchTalent(req, res, next));
 
 // Dashboard & Analytics
-recruiterRouter.get("/dashboard", (req, res) => recruiterController.getDashboard(req, res));
-recruiterRouter.get("/jobs/:jobId/analytics", (req, res) => recruiterController.getJobAnalytics(req, res));
+recruiterRouter.get("/dashboard", (req, res, next) => recruiterController.getDashboard(req, res, next));
+recruiterRouter.get("/jobs/:jobId/analytics", (req, res, next) => recruiterController.getJobAnalytics(req, res, next));
 
 // Saved Candidates
-recruiterRouter.get("/saved-candidates", (req, res) => recruiterController.getSavedCandidates(req, res));
-recruiterRouter.get("/saved-candidates/ids", (req, res) => recruiterController.getSavedIds(req, res));
-recruiterRouter.post("/saved-candidates/:studentId", (req, res) => recruiterController.saveCandidate(req, res));
-recruiterRouter.delete("/saved-candidates/:studentId", (req, res) => recruiterController.unsaveCandidate(req, res));
+recruiterRouter.get("/saved-candidates", (req, res, next) => recruiterController.getSavedCandidates(req, res, next));
+recruiterRouter.get("/saved-candidates/ids", (req, res, next) => recruiterController.getSavedIds(req, res, next));
+recruiterRouter.post("/saved-candidates/:studentId", (req, res, next) => recruiterController.saveCandidate(req, res, next));
+recruiterRouter.delete("/saved-candidates/:studentId", (req, res, next) => recruiterController.unsaveCandidate(req, res, next));
