@@ -14,7 +14,6 @@ import { QuizBlock, type QuizQuestion } from "../../../../components/quiz/QuizBl
 import api from "../../../../lib/axios";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
-import toast from "../../../../components/ui/toast";
 
 
 interface Resource { title: string; url: string; type: string }
