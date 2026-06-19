@@ -5,12 +5,20 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "prisma generate --config src/database/prisma.config.ts && tsc",
+    "build": "prisma generate --schema=src/database/prisma/schema && tsc",
     "lint": "eslint src",
-    "typecheck": "tsc --noEmit && tsc -p tsconfig.api.json",
-    "test": "vitest run",
-    "doctor": "tsx scripts/doctor.ts",
-    "seed": "tsx src/database/seeds/seed.ts"
+"typecheck": "tsc --noEmit && tsc -p tsconfig.api.json",
+"test": "vitest run",
+"prisma:generate": "npx prisma generate --config src/database/prisma.config.ts",
+"seed": "tsx src/database/seeds/seed.ts",
+"seed:badges": "tsx src/database/seeds/seed-badges.ts",
+"seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
+"seed:admin": "tsx src/database/seeds/seed.ts"
+    "prisma:generate": "npx prisma generate --config src/database/prisma.config.ts",
+    "seed": "tsx src/database/seeds/seed.ts",
+    "seed:badges": "tsx src/database/seeds/seed-badges.ts",
+    "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
+    "seed:admin": "tsx src/database/seeds/seed.ts"
   },
   "keywords": [],
   "author": "Sachin Chaurasiya",
