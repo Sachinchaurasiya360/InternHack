@@ -251,7 +251,7 @@ export class OpensourceService {
     });
     console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
 
-    const parsed = this.getRepoOwnerAndNameFromUrl(url);
+    const parsed = await this.getRepoOwnerAndNameFromUrl(url);
     if (parsed) {
       await cacheDel(`opensource:repo:id:${id}`);
       await cacheDel(`opensource:repo:owner:${parsed.owner.toLowerCase()}:${parsed.name.toLowerCase()}`);
