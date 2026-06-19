@@ -4,11 +4,9 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
- feature/ui-tweaks
+
 import { LoadingSpinner } from "../../../components/shared/LoadingSpinner";
 
-import { keepPreviousData } from "@tanstack/react-query";
- main
 import {
   Search,
   MapPin,

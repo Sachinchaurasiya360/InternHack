@@ -141,21 +141,23 @@ export default function CompanyDetailPage() {
     refetchReviews();
   };
 
-  const handleExportPdf = useReactToPrint({
-    contentRef: contentRef as React.RefObject<HTMLDivElement>,
-    documentTitle: `${company?.name || "Company"}_Profile`,
-    onBeforePrint: () => { setIsExporting(true); return Promise.resolve(); },
-    onAfterPrint: () => setIsExporting(false),
-feature/ui-tweaks
-    onPrintError: (errorType: unknown, error: unknown) => {
-
-    onPrintError: (errorType: "onBeforePrint" | "print", error: Error) => {
- main
-      console.error("Failed to generate PDF:", error);
-      alert("Failed to generate PDF: " + ((error as { message?: string })?.message || String(errorType)));
-      setIsExporting(false);
-    }
-  });
+ const handleExportPdf = useReactToPrint({
+  contentRef: contentRef as React.RefObject<HTMLDivElement>,
+  documentTitle: `${company?.name || "Company"}_Profile`,
+  onBeforePrint: () => {
+    setIsExporting(true);
+    return Promise.resolve();
+  },
+  onAfterPrint: () => setIsExporting(false),
+  onPrintError: (errorType: "onBeforePrint" | "print", error: Error) => {
+    console.error("Failed to generate PDF:", error);
+    alert(
+      "Failed to generate PDF: " +
+      (error?.message || String(errorType))
+    );
+    setIsExporting(false);
+  },
+});
 
   const backPath = isInsideLayout ? "/student/companies" : "/companies";
 
