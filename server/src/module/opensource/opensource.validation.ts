@@ -125,6 +125,10 @@ export const bookmarkBodySchema = z.object({
   repoId: z.number().int().positive("repoId must be a positive integer"),
 });
 
+export const issueCertificateSchema = z.object({
+  guideName: z.string().min(1, "Guide name is required").max(200),
+});
+
 export const bulkMigrateBookmarksSchema = z.object({
   repoIds: z
     .array(z.number().int().positive())
