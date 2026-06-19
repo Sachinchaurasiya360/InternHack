@@ -264,8 +264,8 @@ function SearchableFilterDropdown({
                     setQuery("");
                   }}
                   className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${active
-                      ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
-                      : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
+                    ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
+                    : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
                     }`}
                 >
                   <span className="truncate">{opt}</span>
@@ -300,8 +300,8 @@ const ParticipationBar = ({ participatedYears }: { participatedYears: number[] }
                 : `${year}: Did not participate`
             }
             className={`h-1.5 w-1.5 cursor-help rounded-sm transition-transform duration-200 hover:scale-125 ${participated
-                ? "bg-lime-500"
-                : "bg-stone-200 dark:bg-stone-700"
+              ? "bg-lime-500"
+              : "bg-stone-200 dark:bg-stone-700"
               }`}
           />
         );
@@ -315,99 +315,117 @@ const GSoCOrgCard = memo(function GSoCOrgCard({
   onSelect,
   wishlisted,
   onWishlistToggle,
+  isCompared,
+  onCompareToggle,
+  compareCount,
 }: {
   org: GSoCOrganization;
   onSelect: (org: GSoCOrganization) => void;
   wishlisted: boolean;
   onWishlistToggle: (orgId: number, event: React.MouseEvent) => void;
+  isCompared: boolean;
+  onCompareToggle: (org: GSoCOrganization) => void;
+  compareCount: number;
 }) {
+
   const years = [...org.yearsParticipated].sort((a, b) => b - a);
-  const handleSelect = () => onSelect(org);
-  const handleWishlistClick = (event: React.MouseEvent) => onWishlistToggle(org.id, event);
+const handleSelect = () => onSelect(org);
+const handleWishlistClick = (event: React.MouseEvent) => onWishlistToggle(org.id, event);
 
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={handleSelect}
-      onKeyDown={(e) => {
-        const isSpace = e.key === " " || e.key === "Spacebar" || e.code === "Space";
-        if (isSpace) {
-          e.preventDefault();
-        }
-        if (e.key === "Enter" || isSpace) {
-          handleSelect();
-        }
-      }}
-      className={cardBase}
-    >
-      <div className="mb-3 flex items-start gap-3">
-        <OrgMark org={org} />
-        <div className="min-w-0 flex-1">
-          <h3 className="line-clamp-1 text-base font-bold leading-tight tracking-tight text-stone-900 dark:text-stone-50">
-            {org.name}
-          </h3>
-          <span className="mt-0.5 block truncate text-xs font-mono uppercase tracking-widest text-stone-500">
-            {org.category || "organization"}
-          </span>
-        </div>
-        <PlainChip accent>{org.totalProjects} GSoC projects</PlainChip>
-      </div>
-
-      <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">
-        {org.description}
-      </p>
-
-      <div className="mb-3 flex flex-wrap gap-1.5">
-        <MetaChip icon={<Calendar className="h-3 w-3" />}>
-          {years[0] ?? "new"}
-          {years.length > 1 && (
-            <span className="ml-1 text-stone-400">+{years.length - 1}</span>
-          )}
-        </MetaChip>
-        <MetaChip icon={<Layers className="h-3 w-3" />}>
-          {org.technologies.length || 0} tech
-        </MetaChip>
-      </div>
-
-      {org.technologies.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-1">
-          {org.technologies.slice(0, 4).map((tech) => (
-            <PlainChip key={tech}>{tech}</PlainChip>
-          ))}
-          {org.technologies.length > 4 && (
-            <PlainChip>+{org.technologies.length - 4}</PlainChip>
-          )}
-        </div>
-      )}
-
-      <button
-        type="button"
-        onClick={handleWishlistClick}
-        className="mb-3 flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest transition-colors"
-        aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-      >
-        <Heart
-          className={`h-4 w-4 transition-colors ${wishlisted ? "fill-lime-400 text-lime-400" : "text-stone-400 hover:text-lime-400"}`}
+return (
+  <div
+    role="button"
+    tabIndex={0}
+    onClick={handleSelect}
+    onKeyDown={(e) => {
+      const isSpace = e.key === " " || e.key === "Spacebar" || e.code === "Space";
+      if (isSpace) {
+        e.preventDefault();
+      }
+      if (e.key === "Enter" || isSpace) {
+        handleSelect();
+      }
+    }}
+    className={cardBase}
+  >
+    <div className="mb-3 flex items-start gap-3">
+      <div onClick={(e) => e.stopPropagation()}>
+        <input
+          type="checkbox"
+          checked={isCompared}
+          disabled={!isCompared && compareCount >= 2}
+          onChange={() => onCompareToggle(org)}
+          className="h-4 w-4 cursor-pointer"
+          aria-label={`Compare ${org.name}`}
         />
-        <span
-          className={
-            wishlisted ? "text-lime-600 dark:text-lime-400" : "text-stone-400"
-          }
-        >
-          {wishlisted ? "wishlisted" : "wishlist"}
-        </span>
-      </button>
-      <ParticipationBar participatedYears={org.yearsParticipated} />
-
-      <div className="mt-auto flex items-center justify-between border-t border-stone-100 pt-3 dark:border-white/5">
-        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
-          inspect org
-        </span>
-        <ArrowUpRight className="h-4 w-4 text-stone-400 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-lime-500" />
       </div>
+
+      <OrgMark org={org} />
+      <div className="min-w-0 flex-1">
+        <h3 className="line-clamp-1 text-base font-bold leading-tight tracking-tight text-stone-900 dark:text-stone-50">
+          {org.name}
+        </h3>
+        <span className="mt-0.5 block truncate text-xs font-mono uppercase tracking-widest text-stone-500">
+          {org.category || "organization"}
+        </span>
+      </div>
+      <PlainChip accent>{org.totalProjects} GSoC projects</PlainChip>
     </div>
-  );
+
+    <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">
+      {org.description}
+    </p>
+
+    <div className="mb-3 flex flex-wrap gap-1.5">
+      <MetaChip icon={<Calendar className="h-3 w-3" />}>
+        {years[0] ?? "new"}
+        {years.length > 1 && (
+          <span className="ml-1 text-stone-400">+{years.length - 1}</span>
+        )}
+      </MetaChip>
+      <MetaChip icon={<Layers className="h-3 w-3" />}>
+        {org.technologies.length || 0} tech
+      </MetaChip>
+    </div>
+
+    {org.technologies.length > 0 && (
+      <div className="mb-4 flex flex-wrap gap-1">
+        {org.technologies.slice(0, 4).map((tech) => (
+          <PlainChip key={tech}>{tech}</PlainChip>
+        ))}
+        {org.technologies.length > 4 && (
+          <PlainChip>+{org.technologies.length - 4}</PlainChip>
+        )}
+      </div>
+    )}
+
+    <button
+      type="button"
+      onClick={handleWishlistClick}
+      className="mb-3 flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest transition-colors"
+      aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+    >
+      <Heart
+        className={`h-4 w-4 transition-colors ${wishlisted ? "fill-lime-400 text-lime-400" : "text-stone-400 hover:text-lime-400"}`}
+      />
+      <span
+        className={
+          wishlisted ? "text-lime-600 dark:text-lime-400" : "text-stone-400"
+        }
+      >
+        {wishlisted ? "wishlisted" : "wishlist"}
+      </span>
+    </button>
+    <ParticipationBar participatedYears={org.yearsParticipated} />
+
+    <div className="mt-auto flex items-center justify-between border-t border-stone-100 pt-3 dark:border-white/5">
+      <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
+        inspect org
+      </span>
+      <ArrowUpRight className="h-4 w-4 text-stone-400 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-lime-500" />
+    </div>
+  </div>
+);
 });
 
 interface GSoCOrgModalProps {
@@ -710,7 +728,169 @@ function GSoCOrgModal({
     </motion.div>
   );
 }
+function GSoCComparisonModal({
+  organizations,
+  onClose,
+}: {
+  organizations: GSoCOrganization[];
+  onClose: () => void;
+}) {
+  const [orgA, orgB] = organizations;
 
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <motion.div
+          className="max-h-[90vh] w-full max-w-5xl overflow-auto rounded-xl border border-stone-200 bg-white p-6 shadow-xl dark:border-stone-800 dark:bg-stone-900"
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0.95 }}
+        >
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
+              Compare Organizations
+            </h2>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-md border border-stone-300 px-3 py-2 text-sm hover:bg-stone-100 dark:border-stone-700 dark:hover:bg-stone-800"
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-stone-200 dark:border-stone-800">
+                  <th className="p-3 text-left font-semibold">Feature</th>
+                  <th className="p-3 text-left font-semibold">
+                    {orgA.name}
+                  </th>
+                  <th className="p-3 text-left font-semibold">
+                    {orgB.name}
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr className="border-b border-stone-200 dark:border-stone-800">
+                  <td className="p-3 font-medium">Category</td>
+                  <td className="p-3">{orgA.category}</td>
+                  <td className="p-3">{orgB.category}</td>
+                </tr>
+
+                <tr className="border-b border-stone-200 dark:border-stone-800">
+                  <td className="p-3 font-medium">Technologies</td>
+                  <td className="p-3">
+                    {orgA.technologies.join(", ")}
+                  </td>
+                  <td className="p-3">
+                    {orgB.technologies.join(", ")}
+                  </td>
+                </tr>
+
+                <tr className="border-b border-stone-200 dark:border-stone-800">
+                  <td className="p-3 font-medium">Years Participating</td>
+                  <td className="p-3">
+                    {Math.min(...orgA.yearsParticipated)} -{" "}
+                    {Math.max(...orgA.yearsParticipated)}
+                  </td>
+                  <td className="p-3">
+                    {Math.min(...orgB.yearsParticipated)} -{" "}
+                    {Math.max(...orgB.yearsParticipated)}
+                  </td>
+                </tr>
+
+                <tr className="border-b border-stone-200 dark:border-stone-800">
+                  <td className="p-3 font-medium">Total Projects</td>
+                  <td className="p-3">{orgA.totalProjects}</td>
+                  <td className="p-3">{orgB.totalProjects}</td>
+                </tr>
+
+                <tr className="border-b border-stone-200 dark:border-stone-800">
+                  <td className="p-3 font-medium">Contact</td>
+                  <td className="p-3">
+                    {orgA.contactEmail || orgA.mailingList || "N/A"}
+                  </td>
+                  <td className="p-3">
+                    {orgB.contactEmail || orgB.mailingList || "N/A"}
+                  </td>
+                </tr>
+
+                <tr className="border-b border-stone-200 dark:border-stone-800">
+                  <td className="p-3 font-medium">Ideas Page</td>
+
+                  <td className="p-3">
+                    {orgA.ideasUrl ? (
+                      <a
+                        href={orgA.ideasUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-lime-600 underline"
+                      >
+                        Open
+                      </a>
+                    ) : (
+                      "N/A"
+                    )}
+                  </td>
+
+                  <td className="p-3">
+                    {orgB.ideasUrl ? (
+                      <a
+                        href={orgB.ideasUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-lime-600 underline"
+                      >
+                        Open
+                      </a>
+                    ) : (
+                      "N/A"
+                    )}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="p-3 font-medium">Website</td>
+
+                  <td className="p-3">
+                    <a
+                      href={orgA.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-lime-600 underline"
+                    >
+                      Visit
+                    </a>
+                  </td>
+
+                  <td className="p-3">
+                    <a
+                      href={orgB.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-lime-600 underline"
+                    >
+                      Visit
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
 export default function GSoCReposPage() {
   useEffect(() => {
     markLearningPathMilestone("gsoc-orgs");
@@ -735,6 +915,8 @@ export default function GSoCReposPage() {
 
   const [page, setPage] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<GSoCOrganization | null>(null);
+  const [compareOrgs, setCompareOrgs] = useState<GSoCOrganization[]>([]);
+  const [showComparison, setShowComparison] = useState(false);
   const { wishlist, toggle, has } = useWishlist();
   const [showWishlist, setShowWishlist] = useState(false);
 
@@ -802,6 +984,22 @@ export default function GSoCReposPage() {
     setSelectedOrg(org);
   }, [setSelectedOrg]);
 
+  const handleCompareToggle = useCallback((org: GSoCOrganization) => {
+    setCompareOrgs((prev) => {
+      const exists = prev.some((item) => item.id === org.id);
+
+      if (exists) {
+        return prev.filter((item) => item.id !== org.id);
+      }
+
+      if (prev.length >= 2) {
+        return prev;
+      }
+
+      return [...prev, org];
+    });
+  }, []);
+
   const handleWishlistToggle = useCallback(
     (orgId: number, event: React.MouseEvent) => {
       event.stopPropagation();
@@ -829,7 +1027,8 @@ export default function GSoCReposPage() {
       api.get("/gsoc/organizations", { params }).then((res) => res.data),
   });
 
-  const organizations: GSoCOrganization[] = data?.organizations ?? [];
+const organizations: GSoCOrganization[] = data?.organizations ?? [];
+
   const filteredOrganizations = showWishlist
     ? organizations.filter((org) => has(org.id))
     : organizations;
@@ -976,8 +1175,8 @@ export default function GSoCReposPage() {
             type="button"
             onClick={() => setShowWishlist((prev) => !prev)}
             className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-mono uppercase tracking-widest transition-colors ${showWishlist
-                ? "border-lime-400 bg-lime-400 text-stone-950"
-                : "border-stone-300 bg-white text-stone-600 hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400"
+              ? "border-lime-400 bg-lime-400 text-stone-950"
+              : "border-stone-300 bg-white text-stone-600 hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400"
               }`}
           >
             <Heart
@@ -1009,6 +1208,15 @@ export default function GSoCReposPage() {
               </>
             )}
           </p>
+          {compareOrgs.length === 2 && (
+            <button
+              type="button"
+              onClick={() => setShowComparison(true)}
+              className="rounded-md bg-lime-400 px-4 py-2 text-xs font-mono uppercase tracking-widest text-stone-950 transition-colors hover:bg-lime-300"
+            >
+              Compare Selected
+            </button>
+          )}
         </div>
 
         {isLoading ? (
@@ -1035,7 +1243,10 @@ export default function GSoCReposPage() {
                     onSelect={handleOrgClick}
                     wishlisted={has(org.id)}
                     onWishlistToggle={handleWishlistToggle}
-                  />
+                    isCompared={compareOrgs.some((item) => item.id === org.id)}
+                    onCompareToggle={handleCompareToggle}
+                    compareCount={compareOrgs.length}
+                  />                  
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -1049,8 +1260,14 @@ export default function GSoCReposPage() {
           showingInfo={{ total: pagination.total, limit }}
         />
       </div>
-
+      {showComparison && compareOrgs.length === 2 && (
+  <GSoCComparisonModal
+    organizations={compareOrgs}
+    onClose={() => setShowComparison(false)}
+  />
+)}
       <AnimatePresence>
+      
         {detailOrg && selectedOrg && (
           <GSoCOrgModal
             org={detailOrg}
