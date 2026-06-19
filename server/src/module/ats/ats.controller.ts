@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import type { AtsService } from "./ats.service.js";
 import { applySuggestionsSchema, scoreResumeSchema } from "./ats.validation.js";
 import { prisma } from "../../database/db.js";
-import { DAILY_LIMITS, getPlanTier } from "../../config/usage-limits.js";
+import { DAILY_LIMITS, MONTHLY_LIMITS, getPlanTier } from "../../config/usage-limits.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { atsScoreReportHtml } from "../../utils/email-templates.js";
 import { isPremiumUser } from "../../utils/premium.utils.js";
@@ -126,22 +126,41 @@ export class AtsController {
 
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
 
-      const counts = await prisma.usageLog.groupBy({
+      const dailyCounts = await prisma.usageLog.groupBy({
         by: ["action"],
         where: { userId: req.user.id, createdAt: { gte: startOfDay } },
         _count: { id: true },
       });
+      const monthlyCounts = await prisma.usageLog.groupBy({
+        by: ["action"],
+        where: { userId: req.user.id, createdAt: { gte: startOfMonth } },
+        _count: { id: true },
+      });
 
-      const countMap = Object.fromEntries(
-        counts.map((c) => [c.action, c._count.id]),
-      );
+      const dailyMap = Object.fromEntries(dailyCounts.map((c) => [c.action, c._count.id]));
+      const monthlyMap = Object.fromEntries(monthlyCounts.map((c) => [c.action, c._count.id]));
 
-      const usage = Object.entries(DAILY_LIMITS).map(([action, limits]) => ({
-        action,
-        used: (countMap[action] as number) ?? 0,
-        limit: limits[tier],
-      }));
+      const usage = Object.entries(DAILY_LIMITS).map(([action, limits]) => {
+        const monthlyOverride = MONTHLY_LIMITS[action as keyof typeof MONTHLY_LIMITS];
+        if (monthlyOverride) {
+          return {
+            action,
+            used: (monthlyMap[action] as number) ?? 0,
+            limit: monthlyOverride[tier],
+            period: "monthly" as const,
+          };
+        }
+        return {
+          action,
+          used: (dailyMap[action] as number) ?? 0,
+          limit: limits[tier],
+          period: "daily" as const,
+        };
+      });
 
       res.json({ tier, usage });
     } catch (err) {
