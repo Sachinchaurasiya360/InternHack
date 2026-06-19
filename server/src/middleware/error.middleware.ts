@@ -43,7 +43,8 @@ function formatRawError(err: Error): string {
     parts.push(stackLines.join("\n"));
   }
 
-  return parts.join("\n");
+  const MAX_RAW_ERROR_LENGTH = 10000;
+  return parts.join("\n").slice(0, MAX_RAW_ERROR_LENGTH);
 }
 
 function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?: Error): void {
