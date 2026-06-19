@@ -63,7 +63,7 @@ export default function LoginPage() {
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string; requiresVerification?: boolean; email?: string } } };
       if (error.response?.data?.requiresVerification && error.response?.data?.email) {
-        navigate(`/verify-email?email=${encodeURIComponent(error.response.data.email)}`);
+        navigate("/verify-email", { state: { email: error.response.data.email } });
         return;
       }
       setError(error.response?.data?.message || "Login failed");

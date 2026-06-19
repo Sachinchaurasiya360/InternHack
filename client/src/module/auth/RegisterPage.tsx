@@ -293,7 +293,7 @@ export default function RegisterPage() {
       if (ref) payload.ref = ref;
       const { data } = await api.post("/auth/register", payload);
       if (!data.user.isVerified) {
-        navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
+        navigate("/verify-email", { state: { email: form.email } });
       } else {
         login(data.user);
         redirectAfterAuth(data.user.role);

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import toast from "@/components/ui/toast";
 import api from "../../lib/axios";
@@ -9,8 +9,9 @@ import { SEO } from "../../components/SEO";
 
 export default function VerifyEmailPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const email = searchParams.get("email") || "";
+  const email = (location.state as { email?: string } | null)?.email || searchParams.get("email") || "";
   const login = useAuthStore((s) => s.login);
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
