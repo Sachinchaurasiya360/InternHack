@@ -201,7 +201,7 @@ export function Footer() {
 
         <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-stone-600">
           <p>
-            &copy; {new Date().getFullYear()} InternHack. built in india.
+            &copy; {new Date().getFullYear()} InternHack. Built in India.
           </p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
             <Link to="/terms" className="hover:text-stone-400 transition-colors no-underline" onClick={handleNavigation}>Terms</Link>
