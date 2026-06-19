@@ -109,6 +109,10 @@ export const approveRequestOverrideSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 
+export const rejectRequestSchema = z.object({
+  adminNote: z.string().max(2000).optional(),
+});
+
 export const firstPrProgressUpdateSchema = z.object({
   stepId: z.string().min(1, "Step ID is required").max(200),
   completed: z.boolean(),
