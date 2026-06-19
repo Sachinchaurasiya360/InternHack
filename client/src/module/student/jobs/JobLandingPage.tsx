@@ -90,7 +90,7 @@ export default function JobLandingPage() {
         </p>
         {isLoading && (
           <div className="flex justify-center py-20">
-            <LoadingSpinner size="lg" variant="indigo" />
+            <LoadingSpinner size="lg" variant="lime" />
           </div>
         )}
 

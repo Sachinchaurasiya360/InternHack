@@ -64,7 +64,7 @@ export default function ContactPage() {
         </div>
 
         {/* Contact Form */}
-        <form onSubmit={handleSubmit} className="mb-10 space-y-4 rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
+        <form onSubmit={handleSubmit} className="mb-10 space-y-4 rounded-2xl border border-stone-200 dark:border-stone-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Send us a message</h2>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -76,7 +76,7 @@ export default function ContactPage() {
                 <input
                   id="name" name="name" value={formData.name} onChange={handleChange} required
                   placeholder="Your name"
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                  className="w-full rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
                 />
               </div>
             </div>
@@ -89,7 +89,7 @@ export default function ContactPage() {
                 <input
                   id="email" name="email" type="email" value={formData.email} onChange={handleChange} required
                   placeholder="you@example.com"
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                  className="w-full rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
                 />
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function ContactPage() {
               <input
                 id="subject" name="subject" value={formData.subject} onChange={handleChange} required
                   placeholder="What's this about?"
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
+                  className="w-full rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500"
               />
             </div>
           </div>
@@ -116,7 +116,7 @@ export default function ContactPage() {
               <textarea
                 id="message" name="message" rows={5} value={formData.message} onChange={handleChange} required
                   placeholder="Tell us what's on your mind..."
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500 resize-y"
+                  className="w-full rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 focus:border-lime-500 focus:outline-none focus:ring-1 focus:ring-lime-500 resize-y"
               />
             </div>
           </div>
@@ -147,14 +147,14 @@ export default function ContactPage() {
         {/* Contact Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           {/* Email */}
-          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
+          <section className="rounded-2xl border border-stone-200 dark:border-stone-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
             <div className="flex items-center gap-2 mb-4">
               <Mail className="w-5 h-5 text-lime-500 dark:text-lime-400" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Email</h2>
             </div>
             <a
               href="mailto:mrsachinchaurasiya@gmail.com"
-              className="inline-flex items-center gap-2 px-5 py-3 bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-900 rounded-xl text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3 bg-gray-50 dark:bg-black border border-stone-200 dark:border-stone-900 rounded-xl text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 transition-colors"
             >
               <Mail className="w-4 h-4" />
               mrsachinchaurasiya@gmail.com
@@ -167,7 +167,7 @@ export default function ContactPage() {
           </section>
 
           {/* Support Hours */}
-          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
+          <section className="rounded-2xl border border-stone-200 dark:border-stone-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
             <div className="flex items-center gap-2 mb-4">
               <Clock3 className="w-5 h-5 text-lime-500 dark:text-lime-400" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Support Hours</h2>
@@ -182,7 +182,7 @@ export default function ContactPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Report Issue */}
-          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
+          <section className="rounded-2xl border border-stone-200 dark:border-stone-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
             <div className="flex items-center gap-2 mb-4">
               <Bug className="w-5 h-5 text-lime-500 dark:text-lime-400" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Report an Issue</h2>
@@ -198,7 +198,7 @@ export default function ContactPage() {
           </section>
 
           {/* Social Media */}
-          <section className="rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
+          <section className="rounded-2xl border border-stone-200 dark:border-stone-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm p-6 shadow-sm hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] transition-all">
             <div className="flex items-center gap-2 mb-4">
               <Globe className="w-5 h-5 text-lime-500 dark:text-lime-400" />
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Social Media</h2>
@@ -219,15 +219,15 @@ export default function ContactPage() {
         {/* Social Action Buttons */}
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <a href="https://x.com/internhack_xyz" target="_blank" rel="noopener noreferrer"
-            className="px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm text-sm font-medium text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] hover:bg-lime-500/5 transition-all">
+            className="px-5 py-3 rounded-2xl border border-stone-200 dark:border-stone-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm text-sm font-medium text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] hover:bg-lime-500/5 transition-all">
             Twitter / X
           </a>
           <a href="https://www.linkedin.com/company/internhack" target="_blank" rel="noopener noreferrer"
-            className="px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm text-sm font-medium text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] hover:bg-lime-500/5 transition-all">
+            className="px-5 py-3 rounded-2xl border border-stone-200 dark:border-stone-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm text-sm font-medium text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] hover:bg-lime-500/5 transition-all">
             LinkedIn
           </a>
           <a href="mailto:mrsachinchaurasiya@gmail.com"
-            className="px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm text-sm font-medium text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] hover:bg-lime-500/5 transition-all">
+            className="px-5 py-3 rounded-2xl border border-stone-200 dark:border-stone-900 bg-white/70 dark:bg-stone-950 backdrop-blur-sm text-sm font-medium text-lime-500 dark:text-lime-400 hover:border-lime-400/40 dark:hover:border-lime-500/40 hover:shadow-[0_0_16px_rgba(163,230,53,0.05)] hover:bg-lime-500/5 transition-all">
             Email Support
           </a>
         </div>

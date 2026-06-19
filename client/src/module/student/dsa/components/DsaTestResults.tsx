@@ -23,7 +23,7 @@ export function DsaTestResults({ result, isRunning }: Props) {
   if (isRunning) {
     return (
       <div className="p-6 flex flex-col items-center justify-center gap-3 text-gray-400">
-        <LoadingSpinner size="lg" variant="emerald" />
+        <LoadingSpinner size="lg" variant="lime" />
         <p className="text-sm font-medium">
           Running code against test cases...
         </p>

@@ -3,7 +3,7 @@ import React from "react";
 
 interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "md" | "lg";
-  variant?: "lime" | "indigo" | "emerald" | "white" | "primary";
+  variant?: "lime" | "white" | "primary";
 }
 
 export const LoadingSpinner = React.memo(function LoadingSpinner({
@@ -20,9 +20,7 @@ export const LoadingSpinner = React.memo(function LoadingSpinner({
 
   const variantClasses = {
     lime: "border-stone-300 dark:border-stone-700 border-t-lime-400",
-    indigo: "border-stone-300 dark:border-stone-700 border-t-indigo-500",
-    emerald: "border-stone-300 dark:border-stone-700 border-t-emerald-500",
-    white: "border-white/30 dark:border-gray-950/30 border-t-white dark:border-t-gray-950",
+    white: "border-white/30 dark:border-stone-950/30 border-t-white dark:border-t-stone-950",
     primary: "border-stone-300 dark:border-stone-700 border-t-primary",
   };
 

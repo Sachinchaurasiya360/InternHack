@@ -126,7 +126,7 @@ export default function ContributionGraphs({ githubUsername, leetcodeUsername, s
           <div>
             {leetcodeLoading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 border-t-indigo-500 rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-stone-300 dark:border-stone-700 border-t-lime-400 rounded-full animate-spin" />
               </div>
             ) : leetcodeData ? (
               <>
