@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import {
   Search,
@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Filter,
 } from "lucide-react";
+import api from "../../../lib/axios";
 import { Button } from "../../../components/ui/button";
 
 // Program Type Enum
@@ -31,12 +32,13 @@ interface OrgBrowserPageProps {
   programType: ProgramType;
 }
 
-const MOCK_ORGS: Record<ProgramType, Org[]> = {
+// FIXME: Replace with real API data when the org endpoint is ready
+const MOCK_ORGS_FALLBACK: Record<ProgramType, Org[]> = {
   OUTREACHY: [
     {
       id: 1,
       name: "Debian",
-      description: "Debian is a Unix-like operating system and a distribution of free software. Outreachy interns will work on updating packaging systems and enhancing automated package builds.",
+      description: "Debian is a Unix-like operating system and a distribution of free software.",
       techStack: ["Rust", "Python", "Bash"],
       timeline: "Internship: Dec 2026 - Mar 2027",
       cohort: "December-March",
@@ -46,7 +48,7 @@ const MOCK_ORGS: Record<ProgramType, Org[]> = {
     {
       id: 2,
       name: "Fedora Project",
-      description: "Fedora creates an innovative, free, and open-source platform. Fedora contributors are working on Python module upgrades and Cloud deployment scripts.",
+      description: "Fedora creates an innovative, free, and open-source platform.",
       techStack: ["Python", "Go", "Ansible"],
       timeline: "Internship: May - Aug 2026",
       cohort: "May-August",
@@ -56,39 +58,19 @@ const MOCK_ORGS: Record<ProgramType, Org[]> = {
     {
       id: 3,
       name: "GNOME Foundation",
-      description: "GNOME is a desktop environment for Linux. Work on rewriting core utilities in Rust and updating the system documentation.",
+      description: "GNOME is a desktop environment for Linux.",
       techStack: ["JavaScript", "Rust", "Gtk"],
       timeline: "Internship: Dec 2026 - Mar 2027",
       cohort: "December-March",
       mandatoryContributionPeriod: "Oct 2 - Oct 30, 2026",
       url: "https://www.gnome.org",
     },
-    {
-      id: 4,
-      name: "Mozilla",
-      description: "Mozilla is an advocate for the open Web. Interns will work on developer tools and optimize web browser compiler backend performance.",
-      techStack: ["JavaScript", "Rust", "C++"],
-      timeline: "Internship: May - Aug 2026",
-      cohort: "May-August",
-      mandatoryContributionPeriod: "Feb 5 - Mar 5, 2026",
-      url: "https://www.mozilla.org",
-    },
-    {
-      id: 5,
-      name: "Wikimedia Foundation",
-      description: "Wikimedia supports free knowledge projects. Interns work on media processing modules and Wikipedia backend APIs.",
-      techStack: ["PHP", "JavaScript", "Python"],
-      timeline: "Internship: Dec 2026 - Mar 2027",
-      cohort: "December-March",
-      mandatoryContributionPeriod: "Oct 2 - Oct 30, 2026",
-      url: "https://www.wikimedia.org",
-    },
   ],
   LFX: [
     {
       id: 11,
       name: "Kubernetes (CNCF)",
-      description: "Enable node resource metrics APIs inside kubelet. Mentees will develop metrics collectors and clean up client interfaces.",
+      description: "Enable node resource metrics APIs inside kubelet.",
       techStack: ["Go", "Kubernetes", "Cloud"],
       timeline: "Cohort: Mar 1 - May 31, 2026",
       foundation: "CNCF",
@@ -98,7 +80,7 @@ const MOCK_ORGS: Record<ProgramType, Org[]> = {
     {
       id: 12,
       name: "Hyperledger Fabric (Hyperledger)",
-      description: "Optimize peer database committing speed. Enhance LevelDB indices and bloque state synchronizers.",
+      description: "Optimize peer database committing speed.",
       techStack: ["Go", "LevelDB", "Docker"],
       timeline: "Cohort: Jun 1 - Aug 31, 2026",
       foundation: "Hyperledger",
@@ -108,39 +90,19 @@ const MOCK_ORGS: Record<ProgramType, Org[]> = {
     {
       id: 13,
       name: "Linux Kernel (Linux Foundation)",
-      description: "eBPF subsystem test suites extensions. Write integration socket diagnostics using core assembly utilities.",
+      description: "eBPF subsystem test suites extensions.",
       techStack: ["C", "Assembly", "eBPF"],
       timeline: "Cohort: Oct 1 - Dec 31, 2026",
       foundation: "Linux Foundation",
       term: "Fall",
       url: "https://www.kernel.org",
     },
-    {
-      id: 14,
-      name: "Prometheus (CNCF)",
-      description: "Expand remote write storage interface to handle cache replication when remote endpoints are unavailable.",
-      techStack: ["Go", "Prometheus", "Cloud"],
-      timeline: "Cohort: Jun 1 - Aug 31, 2026",
-      foundation: "CNCF",
-      term: "Summer",
-      url: "https://prometheus.io",
-    },
-    {
-      id: 15,
-      name: "Zowe (Open Mainframe)",
-      description: "Mainframe telemetry plugins implementation. Construct responsive stats reporting dashboards.",
-      techStack: ["TypeScript", "Java", "Node.js"],
-      timeline: "Cohort: Oct 1 - Dec 31, 2026",
-      foundation: "Linux Foundation",
-      term: "Fall",
-      url: "https://www.zowe.org",
-    },
   ],
   MLH: [
     {
       id: 21,
       name: "Meta React Pod",
-      description: "Develop new diagnostic dashboards inside React DevTools and optimize test environments for Server Components.",
+      description: "Develop new diagnostic dashboards inside React DevTools.",
       techStack: ["JavaScript", "TypeScript", "React"],
       timeline: "Batch: Jun 1 - Aug 24, 2026",
       term: "Summer",
@@ -149,7 +111,7 @@ const MOCK_ORGS: Record<ProgramType, Org[]> = {
     {
       id: 22,
       name: "AWS Cloud Pod",
-      description: "Create AWS CDK construct libraries for serverless deployment patterns and event-driven architectures.",
+      description: "Create AWS CDK construct libraries for serverless deployment.",
       techStack: ["TypeScript", "AWS CDK", "Python"],
       timeline: "Batch: Jan 15 - Apr 10, 2026",
       term: "Spring",
@@ -158,27 +120,18 @@ const MOCK_ORGS: Record<ProgramType, Org[]> = {
     {
       id: 23,
       name: "Solana Web3 Pod",
-      description: "Refactor Rust anchor contract architectures to minimize program footprint and serialization gas costs.",
+      description: "Refactor Rust anchor contract architectures to minimize program footprint.",
       techStack: ["Rust", "Web3", "Anchor"],
       timeline: "Batch: Sep 15 - Dec 10, 2026",
       term: "Fall",
       url: "https://solana.com",
-    },
-    {
-      id: 24,
-      name: "Vercel Next.js Pod",
-      description: "Construct Next.js router compilation profiles and diagnostic tools inside the Turbopack build engine.",
-      techStack: ["Rust", "TypeScript", "Next.js"],
-      timeline: "Batch: Jun 1 - Aug 24, 2026",
-      term: "Summer",
-      url: "https://nextjs.org",
     },
   ],
   SEASON_OF_DOCS: [
     {
       id: 31,
       name: "Apache Kafka",
-      description: "Rewrite the developer quickstart guide and construct statistical benchmarks documentation for event streaming setup.",
+      description: "Rewrite the developer quickstart guide for event streaming setup.",
       techStack: ["Markdown", "Java", "Shell"],
       timeline: "Program: May - Nov 2026",
       difficulty: "Intermediate",
@@ -188,7 +141,7 @@ const MOCK_ORGS: Record<ProgramType, Org[]> = {
     {
       id: 32,
       name: "TensorFlow",
-      description: "Revamp deep learning library reference sheets. Author Jupyter tutorial notebooks illustrating new execution layers.",
+      description: "Revamp deep learning library reference sheets.",
       techStack: ["Python", "Jupyter", "Sphinx"],
       timeline: "Program: May - Nov 2026",
       difficulty: "Advanced",
@@ -198,22 +151,12 @@ const MOCK_ORGS: Record<ProgramType, Org[]> = {
     {
       id: 33,
       name: "Prometheus",
-      description: "Create user guides for configuring alertmanager templates and building custom queries in PromQL.",
+      description: "Create user guides for configuring alertmanager templates.",
       techStack: ["Prometheus", "PromQL", "Hugo"],
       timeline: "Program: May - Nov 2026",
       difficulty: "Beginner",
       docType: "User Guides",
       url: "https://prometheus.io",
-    },
-    {
-      id: 34,
-      name: "JupyterLab",
-      description: "Design extensions documentation guides. Document the API lifecycle for extension creators.",
-      techStack: ["Markdown", "TypeScript", "Sphinx"],
-      timeline: "Program: May - Nov 2026",
-      difficulty: "Intermediate",
-      docType: "User Guides",
-      url: "https://jupyter.org",
     },
   ],
 };
@@ -359,7 +302,32 @@ export const OrgCard = React.memo(function OrgCard({
 
 export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
   const meta = PROGRAM_META[programType];
-  const orgs = MOCK_ORGS[programType];
+  const [orgs, setOrgs] = useState<Org[]>(MOCK_ORGS_FALLBACK[programType]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    // FIXME: Replace with real API endpoint when the org endpoint is ready
+    api
+      .get<Record<ProgramType, Org[]>>("/opensource/orgs")
+      .then((res) => {
+        if (!cancelled && res.data[programType]) {
+          setOrgs(res.data[programType]);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setOrgs(MOCK_ORGS_FALLBACK[programType]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [programType]);
 
   // States
   const [search, setSearch] = useState("");
