@@ -8,16 +8,27 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 
+const AWS_REGION = process.env["AWS_REGION"] || "ap-south-1";
+const AWS_ACCESS_KEY_ID = process.env["AWS_ACCESS_KEY_ID"];
+const AWS_SECRET_ACCESS_KEY = process.env["AWS_SECRET_ACCESS_KEY"];
+const AWS_S3_BUCKET = process.env["AWS_S3_BUCKET"];
+
+if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !AWS_S3_BUCKET) {
+  throw new Error(
+    "S3 configuration incomplete: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_S3_BUCKET must all be set in environment variables.",
+  );
+}
+
 const s3Client = new S3Client({
-  region: process.env["AWS_REGION"] || "ap-south-1",
+  region: AWS_REGION,
   credentials: {
-    accessKeyId: process.env["AWS_ACCESS_KEY_ID"] || "",
-    secretAccessKey: process.env["AWS_SECRET_ACCESS_KEY"] || "",
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
   },
 });
 
-const BUCKET = process.env["AWS_S3_BUCKET"] || "";
-const REGION = process.env["AWS_REGION"] || "ap-south-1";
+const BUCKET = AWS_S3_BUCKET;
+const REGION = AWS_REGION;
 
 function getBucketUrl(): string {
   return `https://${BUCKET}.s3.${REGION}.amazonaws.com`;
