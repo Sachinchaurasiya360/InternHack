@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import prerender from '@prerenderer/rollup-plugin'
 import path from 'path'
+/// <reference types="vitest/config" />
 
 // Routes to prerender to static HTML at build time. Only include pages that
 // render the same content for every visitor (no auth, no per-user data).
@@ -98,6 +99,10 @@ server: {
     },
   },
 },
+  test: {
+    globals: true,
+    environment: "node",
+  },
   build: {
     chunkSizeWarningLimit: 2000,
     rollupOptions: {
