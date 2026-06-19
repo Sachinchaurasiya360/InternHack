@@ -1348,6 +1348,7 @@ enum SubscriptionStatus {
   ACTIVE
   EXPIRED
   CANCELLED
+  ON_HOLD
 }
 
 enum AIProviderType {

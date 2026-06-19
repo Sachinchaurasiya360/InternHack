@@ -315,7 +315,7 @@ export class PaymentService {
 
     await prisma.user.update({
       where: { id: payment.userId },
-      data: { subscriptionStatus: "EXPIRED" },
+      data: { subscriptionStatus: "ON_HOLD" },
     });
     await invalidateUserTierCache(payment.userId);
   }
