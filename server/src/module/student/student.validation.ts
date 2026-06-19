@@ -9,7 +9,7 @@ const fieldAnswerValueSchema = z.union([
 ]);
 
 export const applyToJobSchema = z.object({
-  customFieldAnswers: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])).default({}),
+  customFieldAnswers: z.record(z.string(), fieldAnswerValueSchema).default({}),
   resumeUrl: z.string().optional(),
   coverLetter: z.string().optional(),
 });
