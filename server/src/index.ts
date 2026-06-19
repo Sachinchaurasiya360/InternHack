@@ -137,6 +137,7 @@ const app = express();
 app.set("trust proxy", 1);
 const PORT = process.env["PORT"] || 3000;
 const PAYMENT_WEBHOOK_PATH = "/api/payments/webhook";
+const UPLOAD_BUCKET_URL = process.env["UPLOAD_BUCKET_URL"] || "https://intern-hack-prod-bucket.s3.ap-south-1.amazonaws.com";
 
 // ── Security headers ──
 app.use(
@@ -147,7 +148,7 @@ app.use(
         scriptSrc: ["'self'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
-        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com", "https://intern-hack-prod-bucket.s3.ap-south-1.amazonaws.com"],
+        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com", UPLOAD_BUCKET_URL],
         frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com", "blob:"],
         fontSrc: ["'self'", "https:", "data:"],
       },
