@@ -26,7 +26,7 @@ interface AnalyticsData {
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   HIRED:       { label: "Hired",       color: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300" },
   IN_PROGRESS: { label: "In Progress", color: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300" },
-  APPLIED:     { label: "Applied",     color: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300" },
+  APPLIED: { label: "Applied", color: "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300" },
   REJECTED:    { label: "Rejected",    color: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" },
   WITHDRAWN:   { label: "Withdrawn",   color: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300" },
 };
@@ -144,7 +144,7 @@ export default function JobAnalyticsPage() {
           {sortedStatusEntries(data.statusBreakdown).map(([status, count]) => {
             const cfg = STATUS_CONFIG[status] ?? {
               label: status,
-              color: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300",
+              color: "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300",
             };
             return (
               <div
@@ -170,11 +170,11 @@ export default function JobAnalyticsPage() {
         {/* FIX 5 — empty state when no rounds configured */}
         {data.roundAnalytics.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center gap-2">
-            <BarChart3 className="w-10 h-10 text-gray-300 dark:text-gray-700" />
-            <p className="text-gray-500 dark:text-gray-400 font-medium">
+            <BarChart3 className="w-10 h-10 text-stone-300 dark:text-stone-700" />
+            <p className="text-stone-500 dark:text-stone-400 font-medium">
               No interview rounds set up yet
             </p>
-            <p className="text-sm text-gray-400 dark:text-gray-600">
+            <p className="text-sm text-stone-400 dark:text-stone-600">
               Add rounds to this job to see the funnel breakdown.
             </p>
           </div>
@@ -185,7 +185,7 @@ export default function JobAnalyticsPage() {
               <span className="text-sm text-gray-500 dark:text-gray-500 w-40 shrink-0">
                 Applied
               </span>
-              <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-8 overflow-hidden">
+              <div className="flex-1 bg-stone-100 dark:bg-stone-800 rounded-full h-8 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
@@ -230,7 +230,7 @@ export default function JobAnalyticsPage() {
                     <span className="text-sm text-gray-500 dark:text-gray-500 w-40 shrink-0 truncate">
                       {round.name}
                     </span>
-                    <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-8 overflow-hidden">
+                    <div className="flex-1 bg-stone-100 dark:bg-stone-800 rounded-full h-8 overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${pct}%` }}
@@ -278,7 +278,7 @@ export default function JobAnalyticsPage() {
                     <span className="text-sm font-semibold text-green-700 dark:text-green-400 w-40 shrink-0">
                       Offered / Hired
                     </span>
-                    <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-8 overflow-hidden">
+                    <div className="flex-1 bg-stone-100 dark:bg-stone-800 rounded-full h-8 overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${hiredPct}%` }}
