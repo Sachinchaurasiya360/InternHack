@@ -595,3 +595,8 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
             </Button>
           </div>
         )}
+
+        </div>
+    </div>
+  );
+}
