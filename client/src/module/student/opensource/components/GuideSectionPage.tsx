@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -56,6 +56,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  const hydratingRef = useRef(false);
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [showReasons, setShowReasons] = useState(false);
@@ -63,16 +64,33 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   useEffect(() => {
     if (!isAuthenticated) return;
 
+    hydratingRef.current = true;
     let cancelled = false;
 
     api.get<{ completedStepIds: string[] }>(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`)
       .then((res) => {
         if (cancelled) return;
-        const ids = res.data.completedStepIds ?? [];
-        setCompleted(new Set(ids));
-        try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { /* */ }
+        const serverIds = new Set(res.data.completedStepIds ?? []);
+
+        setCompleted((prev) => {
+          const localIds = new Set(prev);
+          const union = new Set([...localIds, ...serverIds]);
+
+          const hasLocalIds = [...localIds].some((id) => !serverIds.has(id));
+          if (hasLocalIds) {
+            api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, {
+              completedStepIds: [...union],
+            }).catch(() => { /* non-blocking */ });
+          }
+
+          try { localStorage.setItem(storageKey, JSON.stringify([...union])); } catch { /* */ }
+          return union;
+        });
       })
-      .catch(() => { /* 404 means no progress yet — keep localStorage default */ });
+      .catch(() => { /* 404 means no progress yet — keep localStorage default */ })
+      .finally(() => {
+        if (!cancelled) hydratingRef.current = false;
+      });
 
     return () => { cancelled = true; };
   }, [isAuthenticated, storageKey]);
@@ -94,7 +112,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { /* */ }
       notifyLearningPathProgressChanged();
 
-      if (isAuthenticated) {
+      if (isAuthenticated && !hydratingRef.current) {
         api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, { completedStepIds: ids })
           .catch(() => { /* non-blocking */ });
       }

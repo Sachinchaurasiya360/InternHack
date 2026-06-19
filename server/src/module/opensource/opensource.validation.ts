@@ -115,7 +115,9 @@ export const firstPrProgressUpdateSchema = z.object({
 });
 
 export const guideProgressUpdateSchema = z.object({
-  completedStepIds: z.array(z.string()),
+  completedStepIds: z.array(
+    z.string().min(1).max(200),
+  ).max(500).transform((arr) => [...new Set(arr)]),
 });
 
 export const guideFeedbackSchema = z.object({
