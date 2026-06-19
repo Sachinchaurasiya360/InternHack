@@ -147,8 +147,17 @@ export class AuthController {
 
       // Pass visitor context (req.user) to the service so it can decide what to return
       const visitor = req.user ? { id: req.user.id, role: req.user.role } : undefined;
-      const profile = await this.authService.getPublicProfile(identifier, visitor);
-      
+      const { profile, cacheHit } = await this.authService.getPublicProfile(identifier, visitor);
+
+      // Stale-while-revalidate: serve cached data instantly; background refresh after 60 s.
+      // Public profiles are safe to cache for guests; authorized views are omitted from CDN.
+      res.set("X-Cache", cacheHit ? "HIT" : "MISS");
+      if (!visitor) {
+        res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+      } else {
+        res.set("Cache-Control", "private, no-store");
+      }
+
       return res.status(200).json({ profile });
     } catch (error) {
       if (error instanceof Error) {

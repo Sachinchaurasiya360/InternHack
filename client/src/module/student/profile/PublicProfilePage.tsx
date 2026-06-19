@@ -97,6 +97,8 @@ export default function PublicProfilePage() {
     queryKey: ["public-profile", finalId],
     queryFn: () => api.get(`/auth/profile/${finalId}`).then((res) => res.data.profile as PublicProfile),
     enabled: !!finalId,
+    staleTime: 5 * 60 * 1000,   // 5 min – matches server PROFILE_TTL; no refetch on revisit
+    gcTime: 30 * 60 * 1000,     // 30 min – keep data alive across navigations within the session
   });
 
   if (isLoading) return <LoadingScreen />;

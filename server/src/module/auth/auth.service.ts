@@ -6,7 +6,7 @@ import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
 import { UserService } from "../user/user.service.js";
-import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from "../../utils/cache.js";
 
 const userService = new UserService();
 
@@ -545,23 +545,34 @@ export class AuthService {
 
     await signProfileMedia(user as Record<string, any>);
 
-    // Bust cached profile so next GET /auth/me returns fresh data
+    // Bust cached profile so next GET /auth/me and public profile returns fresh data.
+    // Use cacheDelPattern so both visitor variants (:auth and :guest) are flushed.
     await cacheDel(`profile:me:${userId}`);
-    await cacheDel(`profile:public:${userId}`);
+    await cacheDelPattern(`profile:public:${userId}:`);
     if (user.profileSlug) {
-      await cacheDel(`profile:public:${user.profileSlug}`);
+      await cacheDelPattern(`profile:public:${user.profileSlug}:`);
     }
-
 
     return user;
   }
 
-  async getPublicProfile(identifier: string, visitor?: { id: number; role: string }) {
-    // Because public profiles vary by visitor authorization, include role in cache key if authorized
+  /**
+   * Fetch the public profile for a given identifier (slug or numeric id).
+   *
+   * DB query count per request:
+   *   CACHED  – 0 Prisma queries (served from Redis / in-process fallback)
+   *   UNCACHED – 1-2 Prisma queries:
+   *     • 1 × user.findUnique (by profileSlug)
+   *     • +1 × user.findUnique (by id, only when slug lookup returns null and identifier is numeric)
+   *
+   * Returns the profile object and whether the response was served from cache.
+   */
+  async getPublicProfile(identifier: string, visitor?: { id: number; role: string }): Promise<{ profile: unknown; cacheHit: boolean }> {
+    // Because public profiles vary by visitor authorization, include role in cache key.
     const isVisitorAuthorized = visitor?.role === "ADMIN" || visitor?.role === "RECRUITER";
     const cacheKey = `profile:public:${identifier}:${isVisitorAuthorized ? "auth" : "guest"}`;
     const cached = await cacheGet(cacheKey);
-    if (cached) return cached as never;
+    if (cached) return { profile: cached, cacheHit: true };
 
     const selectOptions = {
       ...this.profileSelect,
@@ -599,12 +610,11 @@ export class AuthService {
     }
 
     const { atsScores, ...rest } = user;
-    
+
     // Sanitize for unauthorized guest viewers
     if (!isOwner && !isVisitorAuthorized) {
       delete (rest as any).email;
       delete (rest as any).contactNo;
-      // We will keep resumes for now as per normal portfolio behavior, but sensitive identifiers are stripped.
     }
 
     await signProfileMedia(rest as Record<string, any>);
@@ -614,7 +624,7 @@ export class AuthService {
       bestAtsScore: atsScores[0]?.overallScore ?? null,
     };
     await cacheSet(cacheKey, result, PROFILE_TTL);
-    return result;
+    return { profile: result, cacheHit: false };
   }
 
   async verifyEmail(email: string, otp: string) {
