@@ -78,9 +78,11 @@ import { startSubscriptionExpiryCron, stopSubscriptionExpiryCron } from "./cron/
 import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/scheduled-email-worker.js";
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
+import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron.js";
 import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
 import { startAmbassadorEligibilityCron, stopAmbassadorEligibilityCron } from "./cron/ambassador-eligibility.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
+import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
@@ -302,6 +304,9 @@ app.use("/api/learn", learnRouter);
 app.use("/api/notes", notesRouter);
 app.use("/api/ambassador", ambassadorRouter);
 
+// ── Consolidated daily cron (triggered by Vercel Cron; bearer-authed) ──
+app.use("/api/cron", cronRouter);
+
 // Contact form (public, no auth)
 app.use("/api/contact", contactRouter);
 // Public external jobs endpoints (no auth)
@@ -358,6 +363,11 @@ app.get("/api/stats", async (_req, res) => {
 
 app.use(errorMiddleware);
 
+// On Vercel the app is imported as a serverless function (see api/index.ts), so
+// the long-running listener and node-cron schedules must not start there. The
+// crons run instead via the consolidated /api/cron/daily endpoint. EC2/local
+// keep booting normally.
+if (!process.env["VERCEL"]) {
 const server = app.listen(PORT, async () => {
   logger.info(`Server running on http://localhost:${PORT}`);
 
@@ -440,6 +450,14 @@ const server = app.listen(PORT, async () => {
     fn: () => stopSignalsCleanupCron(),
   });
 
+  // Start job cleanup cron (daily 3:30 AM): prunes old scraped/indexed jobs
+  startJobCleanupCron();
+  shutdownManager.register({
+    name: "Job Cleanup Cron",
+    priority: 10,
+    fn: () => stopJobCleanupCron(),
+  });
+
   // Start OSS deadline alert cron (daily at 9 AM)
   startDeadlineAlertCron();
   shutdownManager.register({
@@ -495,9 +513,10 @@ const server = app.listen(PORT, async () => {
   // Install signal handlers after all hooks are registered
   shutdownManager.installSignalHandlers();
 });
-
-
+}
 
 app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
+
+export { app };

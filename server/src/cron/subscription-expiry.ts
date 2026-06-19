@@ -9,7 +9,7 @@ let cronJob: cron.ScheduledTask | null = null;
  * Runs daily at midnight. Sets subscriptionStatus to EXPIRED
  * and subscriptionPlan to FREE for any ACTIVE user past their end date.
  */
-async function expireSubscriptions(): Promise<void> {
+export async function runSubscriptionExpiry(): Promise<void> {
   const now = new Date();
 
   // Find users whose subscriptions are expiring
@@ -52,7 +52,7 @@ export function startSubscriptionExpiryCron(): void {
   cronJob = cron.schedule("0 0 * * *", () => {
     void withAdvisoryLock("subscription-expiry", async () => {
       try {
-        await expireSubscriptions();
+        await runSubscriptionExpiry();
       } catch (err) {
         console.error("[Cron] Subscription expiry error:", err);
       }
