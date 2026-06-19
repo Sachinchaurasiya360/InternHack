@@ -121,7 +121,7 @@ Compose falls back to the same Postgres defaults as `.env.example` when variable
 
 - Frontend **http://localhost:5173** — API **http://localhost:3000**
 - Source trees are bind-mounted into the containers; `CHOKIDAR_USEPOLLING` helps file watching on Docker Desktop for macOS.
-- On startup, the API container runs `prisma migrate deploy`, then `npm run dev`.
+- On startup, the API container runs `npx prisma db push --config src/database/prisma.config.ts`, then `npm run dev`.
 - The frontend service runs **Vite in dev mode** (`npm run dev`) for hot reload; production client builds (`cd client && npm run build`) are still separate from this Compose file.
 
 Optional sample data:
