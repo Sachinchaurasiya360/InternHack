@@ -41,7 +41,7 @@ const STATIC_ROUTES = [
   "/contact",
 ];
 
-const API_URL = process.env.PRERENDER_API_URL || "https://www.internhack.xyz/api";
+const API_URL = process.env.PRERENDER_API_URL || "https://intern-hack-jpq8.vercel.app/api";
 
 async function fetchRepoRoutes() {
   const routes = [];
