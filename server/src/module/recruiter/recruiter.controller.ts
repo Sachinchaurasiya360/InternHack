@@ -295,8 +295,7 @@ export class RecruiterController {
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
 
       const filters = { ...result.data };
-      const q = (req.query as Record<string, unknown>).q as string | undefined;
-      if (q && !filters.search) filters.search = q;
+      if (filters.q && !filters.search) filters.search = filters.q;
 
       const data = await this.recruiterService.searchTalent(filters);
       return res.status(200).json(data);
