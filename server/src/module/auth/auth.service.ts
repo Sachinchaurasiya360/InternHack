@@ -347,6 +347,20 @@ export class AuthService {
       const randomPassword = crypto.randomBytes(32).toString("hex");
       const hashedPassword = await hashPassword(randomPassword);
 
+      let companyName: string | null = null;
+      if (data.role === "RECRUITER") {
+        const domain = email.split("@")[1];
+        if (domain) {
+          const domainName = domain.split(".")[0];
+          if (domainName) {
+            companyName = domainName.charAt(0).toUpperCase() + domainName.slice(1);
+          }
+        }
+        if (!companyName) {
+          companyName = "Company";
+        }
+      }
+
       user = await prisma.user.create({
         data: {
           name: name ?? email.split("@")[0] ?? "User",
@@ -355,6 +369,7 @@ export class AuthService {
           role: data.role ?? "STUDENT",
           profilePic: picture ?? null,
           isVerified: true,
+          company: companyName,
         },
       });
 
