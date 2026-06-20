@@ -589,7 +589,7 @@ model repoRequest {
 
   @@index([status])
   @@index([userId])
-  @@index([repoId])
+  @@index([userId, status])
 }
 
 model githubConnection {
