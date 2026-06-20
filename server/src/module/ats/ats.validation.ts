@@ -4,7 +4,7 @@ const S3_BUCKET = process.env["AWS_S3_BUCKET"] || "";
 
 function isAllowedUrl(url: string): boolean {
   if (url.startsWith("/uploads/")) return true;
-  if (!S3_BUCKET) return url.startsWith("https://");
+  if (!S3_BUCKET) return false;
   try {
     const parsed = new URL(url);
     if (parsed.protocol !== "https:") return false;
