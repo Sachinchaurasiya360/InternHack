@@ -601,6 +601,28 @@ export class OpensourceService {
     }).format(date);
   }
 
+  async getGuideProgress(userId: number, guideSlug: string): Promise<string[]> {
+    const progress = await prisma.guideProgress.findUnique({
+      where: { userId_guideSlug: { userId, guideSlug } },
+      select: { completedStepIds: true },
+    });
+    return progress?.completedStepIds ?? [];
+  }
+
+  async patchGuideProgress(
+    userId: number,
+    guideSlug: string,
+    completedStepIds: string[],
+  ): Promise<string[]> {
+    const progress = await prisma.guideProgress.upsert({
+      where: { userId_guideSlug: { userId, guideSlug } },
+      create: { userId, guideSlug, completedStepIds },
+      update: { completedStepIds },
+      select: { completedStepIds: true },
+    });
+    return progress.completedStepIds;
+  }
+
   async getFirstPrProgress(userId: number): Promise<string[]> {
     const progress = await prisma.studentFirstPrProgress.findUnique({
       where: { userId },

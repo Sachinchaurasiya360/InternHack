@@ -21,6 +21,7 @@ import {
   buildWeeklyPlan,
   getEnrollmentAnalyticsForUser,
     enrollUser,
+  getEnrollmentAnalyticsBatchForUser,
   findDuplicateRoadmap,
   getEnrollmentByRoadmapSlugForUser,
   getEnrollmentForUser,
@@ -351,16 +352,11 @@ export async function getMyEnrollmentAnalytics(req: Request, res: Response, next
 
 export async function getMyEnrollmentsAnalyticsBatch(req: Request, res: Response, next: NextFunction) {
   try {
-    const enrollments = await listEnrollmentsForUser(req.user!.id);
-    const analytics = await Promise.all(
-      enrollments.map((e) =>
-        getEnrollmentAnalyticsForUser({
-          userId: req.user!.id,
-          enrollmentId: e.id,
-        }),
-      ),
-    );
-    res.json({ analytics: analytics.filter(Boolean) });
+    const analytics =
+  await getEnrollmentAnalyticsBatchForUser({
+    userId: req.user!.id,
+  });
+    res.json({ analytics });
   } catch (err) {
     next(err);
   }
