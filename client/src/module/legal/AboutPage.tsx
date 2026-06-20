@@ -15,7 +15,6 @@ import {
   Users,
   Mail,
   Target,
-  Globe,
 } from "lucide-react";
 
 interface FeatureItem {
@@ -28,12 +27,12 @@ const features: FeatureItem[] = [
   { icon: Cpu, title: "AI-Powered Platform", description: "Career and hiring decisions backed by smart AI, not guesswork." },
   { icon: FileText, title: "Resume Scoring", description: "ATS-friendly resume scoring and job matching so your profile actually gets seen." },
   { icon: Mic, title: "Mock Interviews", description: "Practice with AI-driven interview simulations and get real feedback before the real thing." },
-  { icon: Search, title: "Job Discovery", description: "Find opportunities and track every application in one place — no more lost tabs." },
+  { icon: Search, title: "Job Discovery", description: "Find opportunities and track every application in one place, no more lost tabs." },
   { icon: Briefcase, title: "Recruiter Tools", description: "Post jobs, manage candidates, and streamline entire hiring workflows with ease." },
-  { icon: LayoutDashboard, title: "Smart Dashboards", description: "Dedicated dashboards for students, recruiters, and admins — each built for their needs." },
+  { icon: LayoutDashboard, title: "Smart Dashboards", description: "Dedicated dashboards for students, recruiters, and admins, each built for their needs." },
   { icon: GitMerge, title: "Hiring Workflows", description: "Streamlined multi-round interview processes that save time for both sides of the table." },
   { icon: BarChart2, title: "Data-Driven Hiring", description: "Built to make hiring more accessible, efficient, and informed by real data." },
-  { icon: Users, title: "For Everyone", description: "Whether you are a student, recruiter, or admin — InternHack has a space built just for you." },
+  { icon: Users, title: "For Everyone", description: "Whether you are a student, recruiter, or admin, InternHack has a space built just for you." },
 ];
 
 const containerVariants: Variants = {
@@ -57,14 +56,14 @@ const MISSIONS = [
     kicker: "01 / Mission",
     icon: Target,
     title: "Our Mission",
-    desc: "To democratize access to career opportunities for students globally — regardless of their background, college, or location — by giving them world-class tools to compete and succeed.",
+    desc: "To democratize access to career opportunities for students globally, regardless of their background, college, or location, by giving them world-class tools to compete and succeed.",
   },
   {
     id: "vision",
-    kicker: "02 / vision",
+    kicker: "02 / Vision",
     icon: Briefcase,
-    title: "Our Vision.",
-    desc: "To become the most trusted early-career ecosystem on the planet — connecting millions of students with companies that value their potential, not just their pedigree.",
+    title: "Our Vision",
+    desc: "To become the most trusted early-career ecosystem on the planet, connecting millions of students with companies that value their potential, not just their pedigree.",
   },
 ];
 
@@ -74,7 +73,7 @@ export default function AboutPage() {
     <div className="min-h-screen flex flex-col bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
         title="About Us"
-        description="Learn more about InternHack — the AI-powered career and hiring platform built for students and recruiters."
+        description="Learn more about InternHack, the AI-powered career and hiring platform built for students and recruiters."
       />
       <Navbar />
 
@@ -108,7 +107,7 @@ export default function AboutPage() {
               </h1>
               <p className="mt-3 text-sm text-stone-500 max-w-xl">
                 InternHack is an AI-powered career and hiring platform that helps students
-                prepare for placements, practice interviews, and get placed — while giving
+                prepare for placements, practice interviews, and get placed, while giving
                 recruiters the tools to hire smarter.
               </p>
             </div>
@@ -195,8 +194,8 @@ export default function AboutPage() {
                     <div className="p-3 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 w-fit mb-4">
                       <Icon size={22} />
                     </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{feature.description}</p>
+                    <h3 className="text-base font-semibold text-stone-900 dark:text-stone-50 mb-2">{feature.title}</h3>
+                    <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">{feature.description}</p>
                   </motion.div>
                 );
               })}
