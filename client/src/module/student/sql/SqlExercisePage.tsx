@@ -31,7 +31,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { toast } from "react-hot-toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 
 type SqlProgress = Record<string, { solved: boolean; code: string | null }>;
 
@@ -120,24 +120,19 @@ export default function SqlExercisePage() {
   const [dbReady, setDbReady] = useState(false);
   const [solved, setSolved] = useState(false);
 
-  const [prevExerciseId, setPrevExerciseId] = useState(exercise?.id);
+  // Reset and load exercise
+  useEffect(() => {
+    if (!exercise || !section) return;
 
-  if (exercise?.id !== prevExerciseId) {
-    setPrevExerciseId(exercise?.id);
     setDbReady(false);
     setResult(null);
     setValidation(null);
     setShowHints(0);
     setShowExpected(false);
 
-    const savedEntry = exercise ? progress[exercise.id] : undefined;
-    setCode(savedEntry?.code || exercise?.starterCode || "");
+    const savedEntry = progress[exercise.id];
+    setCode(savedEntry?.code || exercise.starterCode || "");
     setSolved(!!savedEntry?.solved);
-  }
-
-  // Load database and exercise
-  useEffect(() => {
-    if (!exercise || !section) return;
 
     const load = async () => {
       const datasetSql = datasets[exercise.dataset];

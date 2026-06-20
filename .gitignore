@@ -2,8 +2,20 @@
 server/.env
 client/.env
 node_modules/
+.local-postgres/
+
+# Backup files
+*.bak
+
+# Database dumps (never commit; may contain PII/secrets and bloat history)
+*.dump
+*.sql.gz
 
 # Claude Code
 CLAUDE.md
 agents.md
 REPO_MAP.md
+
+# Windows reserved filenames
+nul
+.vercel

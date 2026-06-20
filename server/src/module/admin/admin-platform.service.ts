@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { Prisma } from "@prisma/client";
 import type { UserRole, JobStatus } from "@prisma/client";
 
@@ -233,7 +234,11 @@ export class AdminPlatformService {
         throw new Error("Cannot delete the last SUPER_ADMIN");
     }
 
+    // Invalidate all active sessions before deleting the user
+    await prisma.user.update({ where: { id: userId }, data: { tokenVersion: { increment: 1 } } });
+    invalidateVersionCache(userId);
     await prisma.user.delete({ where: { id: userId } });
+    invalidateVersionCache(userId);
   }
 
   async getAdminJobs(query: {
@@ -357,5 +362,14 @@ export class AdminPlatformService {
         totalPages: Math.ceil(total / query.limit),
       },
     };
+  }
+
+  async getSidebarStats() {
+    const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const [pendingContributions, recentErrors] = await Promise.all([
+      prisma.companyContribution.count({ where: { status: "PENDING" } }),
+      prisma.errorLog.count({ where: { statusCode: { gte: 500 }, createdAt: { gte: since24h } } }),
+    ]);
+    return { pendingContributions, recentErrors };
   }
 }

@@ -32,6 +32,9 @@ adminRouter.delete("/jobs/:id", (req, res) => adminController.deleteAdminJob(req
 // Error logs
 adminRouter.get("/error-logs", (req, res) => adminController.getErrorLogs(req, res));
 
+// Sidebar stats (counts for nav badges)
+adminRouter.get("/sidebar-stats", (req, res) => adminController.getSidebarStats(req, res));
+
 // Admin creation (SUPER_ADMIN only - enforced in service)
 adminRouter.post("/admins", (req, res) => adminController.createNewAdmin(req, res));
 

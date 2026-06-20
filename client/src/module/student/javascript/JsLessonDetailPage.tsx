@@ -26,7 +26,8 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
+import { Button } from "../../../components/ui/button";
 
 const FREE_LIMIT = 5;
 
@@ -268,6 +269,10 @@ export default function JsLessonDetailPage() {
     return !!p[lessonId ?? ""]?.completed;
   });
 
+  const [playgroundCode, setPlaygroundCode] = useState("");
+  const [showPlayground, setShowPlayground] = useState(false);
+  const [playgroundResult, setPlaygroundResult] = useState<JsRunResult | null>(null);
+
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
   const sectionLessons = useMemo(
@@ -449,10 +454,34 @@ export default function JsLessonDetailPage() {
             </div>
             <div className="space-y-3">
               {content.codeExamples.map((example, i) => (
-                <div key={`${lesson.id}-${example.title || i}`} className="space-y-3">
-                  <CodeBlock example={example} language="javascript" />
-                  <LessonCodeRunner initialCode={example.code} language="javascript" />
-                </div>
+                <div 
+                  key={`${lesson.id}-${example.title || i}`}
+                  className="space-y-3"
+                >
+                <CodeBlock
+                  example={example}
+                  language="javascript"
+                  onTryIt={(code) => {
+                   setPlaygroundCode(code);
+                   setPlaygroundResult(null);
+                   setShowPlayground(true);
+
+                   setTimeout(() => {
+                    document
+                      .getElementById("lesson-playground")
+                      ?.scrollIntoView({
+                       behavior: "smooth",
+                       block: "start",
+                      });
+                   }, 100);
+                  }}
+                />
+
+                <LessonCodeRunner
+                  initialCode={example.code}
+                  language="javascript"
+                />
+            </div>
               ))}
             </div>
           </motion.div>
@@ -541,6 +570,43 @@ export default function JsLessonDetailPage() {
             </motion.div>
           )}
 
+          {showPlayground && (
+            <div
+              id="lesson-playground"
+              className="mb-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold">JavaScript Playground</h3>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowPlayground(false)}
+                >
+                  Close
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                <JsEditor
+                  value={playgroundCode}
+                  onChange={setPlaygroundCode}
+                  onRun={async () => {
+                    const result = await jsEngine.execute(playgroundCode);
+                    setPlaygroundResult(result);
+                  }}
+                />
+
+                {playgroundResult && (
+                  <JsConsoleOutput
+                    result={playgroundResult}
+                    expectedOutput=""
+                    isCorrect={null}
+                  />
+                )}
+              </div>
+            </div>
+          )}
           {/* Practice exercises */}
           {exercises.length > 0 && (
             <>

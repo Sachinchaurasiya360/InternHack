@@ -3,7 +3,7 @@ import type { LearnService } from "./learn.service.js";
 import { bulkInterviewProgressSchema, interviewProgressActionSchema } from "./learn.validation.js";
 
 export class LearnController {
-  constructor(private readonly learnService: LearnService) {}
+  constructor(private readonly learnService: LearnService) { }
 
   async getInterviewProgress(req: Request, res: Response) {
     try {
@@ -68,6 +68,31 @@ export class LearnController {
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+  async getInterviewReadinessReport(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const userId = req.user.id;
+      const { targetRole, companyTier, availableTime } = req.body;
+
+      const report = await this.learnService.calculateReadinessReport({
+        userId,
+        targetRole,
+        companyTier,
+        availableTime,
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: report,
+      });
+    } catch (error: any) {
+      console.error("Readiness report compilation error:", error);
+      return res.status(500).json({
+        success: false,
+        error: "Internal processing fault encountered during report metrics mapping.",
+      });
     }
   }
 }

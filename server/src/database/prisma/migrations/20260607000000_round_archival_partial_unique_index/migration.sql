@@ -1,3 +1,6 @@
+-- Add isArchived column if it doesn't exist yet.
+ALTER TABLE "round" ADD COLUMN IF NOT EXISTS "isArchived" BOOLEAN NOT NULL DEFAULT false;
+
 -- Drop the broad unique constraint that conflicts with archived rounds.
 ALTER TABLE "round" DROP CONSTRAINT IF EXISTS "round_jobId_orderIndex_key";
 

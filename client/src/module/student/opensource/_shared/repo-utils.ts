@@ -58,3 +58,20 @@ export function parseGithubRepoUrl(raw: string): { owner: string; name: string }
   if (!nameRe.test(owner) || !nameRe.test(name)) return null;
   return { owner, name };
 }
+
+/**
+ * Builds the language query parameter for the repo list API call.
+ * Returns undefined when no languages should be filtered (i.e. show all).
+ */
+export function buildLanguageParam(
+  languageMode: string,
+  selectedLanguage: string[],
+  inferredLanguages: string[],
+): string[] | undefined {
+  const normalize = (langs: string[]) =>
+    [...new Set(langs.map((l) => l.trim()).filter(Boolean))];
+
+  const raw = languageMode === "auto" ? inferredLanguages : selectedLanguage;
+  const normalized = normalize(raw);
+  return normalized.length > 0 ? normalized : undefined;
+}

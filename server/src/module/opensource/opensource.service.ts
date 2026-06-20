@@ -1,11 +1,56 @@
 import { prisma } from "../../database/db.js";
+import type { RepoDomain, RepoDifficulty } from "@prisma/client";
 import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
 import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
 import { UserService } from "../user/user.service.js";
+
+interface ListReposQuery {
+  page: number;
+  limit: number;
+  search?: string;
+  language?: string[];
+  difficulty?: string;
+  domain?: string;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
+  trending?: string;
+  hacktoberfest?: string;
+  highlyActive?: string;
+  ids?: string;
+}
+interface SubmitRepoRequestData {
+  name: string;
+  owner: string;
+  description: string;
+  language: string;
+  url: string;
+  domain: string;
+  difficulty: string;
+  techStack: string[];
+  tags: string[];
+  reason: string;
+}
+interface ApproveOverrideData {
+  adminNote?: string;
+  name?: string;
+  description?: string;
+  domain?: string;
+  difficulty?: string;
+  tags?: string[];
+}
+interface GsocOrgsQuery {
+  page: number;
+  limit: number;
+  search?: string;
+  category?: string;
+  technology?: string;
+  year?: number;
+}
 
 const userService = new UserService();
 
@@ -20,6 +65,9 @@ let statsCache: {
   } | null;
   expiresAt: number;
 } = { data: null, expiresAt: 0 };
+
+export const LANGUAGES_CACHE_KEY = "opensource:languages";
+export const LANGUAGES_CACHE_TTL = 3600; // 1 hour — languages rarely change
 
 export class OpensourceService {
   async getGlobalStats() {
@@ -55,17 +103,23 @@ export class OpensourceService {
   }
 
   async getLanguages() {
+    const cached = await cacheGet<string[]>(LANGUAGES_CACHE_KEY);
+    if (cached) return cached;
+
     const rows = await prisma.opensourceRepo.findMany({
       select: { language: true },
       distinct: ["language"],
     });
-    return rows
+    const languages = rows
       .map((r) => r.language)
-      .filter((l): l is string => Boolean(l && l.trim() !== ""))
-      .sort((a, b) => a.localeCompare(b));
+      .filter((l: string | null): l is string => Boolean(l && l.trim() !== ""))
+      .sort((a: string, b: string) => a.localeCompare(b));
+
+    await cacheSet(LANGUAGES_CACHE_KEY, languages, LANGUAGES_CACHE_TTL);
+    return languages;
   }
 
-  async listRepos(query: any) {
+  async listRepos(query: ListReposQuery) {
     const {
       page,
       limit,
@@ -80,8 +134,8 @@ export class OpensourceService {
       ids,
     } = query;
     const skip = (page - 1) * limit;
-    const where: Record<string, any> = {};
-    if (language) where["language"] = { equals: language, mode: "insensitive" };
+    const where: Record<string, unknown> = {};
+    if (language && language.length > 0) where.language = { in: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
     if (trending === "true") where["trending"] = true;
@@ -96,25 +150,25 @@ export class OpensourceService {
         .filter((id: number) => !Number.isNaN(id));
       if (idList.length > 0) where["id"] = { in: idList };
     }
-const trimmedSearch = search?.trim();
+    const trimmedSearch = search?.trim();
 
-if (trimmedSearch) {
-  // Prisma's scalar-list filters can't do case-insensitive substring match
-  // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-  // subquery and merge the matching ids into the OR clause.
+    if (trimmedSearch) {
+      // Prisma's scalar-list filters can't do case-insensitive substring match
+      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
+      // subquery and merge the matching ids into the OR clause.
       const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
         SELECT id FROM "opensourceRepo"
         WHERE EXISTS (
           SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${trimmedSearch}%`}
         )
       `;
-    
+
       const tagMatchIds = tagMatches.map((r) => r.id);
-where["OR"] = [
-  { name: { contains: trimmedSearch, mode: "insensitive" } },
-  { owner: { contains: trimmedSearch, mode: "insensitive" } },
-  { description: { contains: trimmedSearch, mode: "insensitive" } },
-  { language: { contains: trimmedSearch, mode: "insensitive" } },
+      where["OR"] = [
+        { name: { contains: trimmedSearch, mode: "insensitive" } },
+        { owner: { contains: trimmedSearch, mode: "insensitive" } },
+        { description: { contains: trimmedSearch, mode: "insensitive" } },
+        { language: { contains: trimmedSearch, mode: "insensitive" } },
         ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
       ];
     }
@@ -136,17 +190,26 @@ where["OR"] = [
   }
 
   async getRepoById(id: number) {
-    const repo = (await prisma.opensourceRepo.findUnique({
+    const repo = await prisma.opensourceRepo.findUnique({
       where: { id },
-    })) as any;
+    });
     if (!repo) return null;
 
     const SIX_HOURS = 6 * 60 * 60 * 1000;
+    const neverFetched = !repo.githubStatsUpdatedAt;
     const isStale =
-      !repo.githubStatsUpdatedAt ||
-      Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
+      neverFetched ||
+      Date.now() - new Date(repo.githubStatsUpdatedAt!).getTime() > SIX_HOURS;
 
     if (isStale && repo.url?.includes("github.com")) {
+      if (neverFetched) {
+        // First-ever fetch: await so the caller gets live stats, not 0s
+        await this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
+          console.error(`[github] initial stats fetch failed for ${id}:`, err),
+        );
+        return await prisma.opensourceRepo.findUnique({ where: { id } });
+      }
+      // Stale but previously fetched: update in background, return cached
       this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
         console.error(`[github] background update failed for ${id}:`, err),
       );
@@ -155,12 +218,12 @@ where["OR"] = [
   }
 
   async getRepoByOwnerAndName(owner: string, name: string) {
-    const repo = (await prisma.opensourceRepo.findFirst({
+    const repo = await prisma.opensourceRepo.findFirst({
       where: {
         owner: { equals: owner, mode: "insensitive" },
         name: { equals: name, mode: "insensitive" },
       },
-    })) as any;
+    });
     if (!repo) return null;
 
     const SIX_HOURS = 6 * 60 * 60 * 1000;
@@ -186,7 +249,7 @@ where["OR"] = [
   private async updateGithubStats(id: number, url: string, name: string) {
     const [stats, health] = await Promise.all([
       fetchGithubStats(url),
-      this.getRepoOwnerAndNameFromUrl(url).then(parsed => 
+      this.getRepoOwnerAndNameFromUrl(url).then(parsed =>
         parsed ? fetchRepoHealthData(parsed.owner, parsed.name) : null
       )
     ]);
@@ -213,7 +276,7 @@ where["OR"] = [
         githubStatsUpdatedAt: new Date(),
         healthScore,
         ...(stats.language && { language: stats.language }),
-      } as any,
+      },
     });
     console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
   }
@@ -224,21 +287,14 @@ where["OR"] = [
     return { owner: match[1], name: match[2].replace(".git", "") };
   }
 
-  async getGsocOrgs(query: {
-    page: number;
-    limit: number;
-    search?: string;
-    category?: string;
-    tech?: string;
-    year?: number;
-  }) {
+  async getGsocOrgs(query: GsocOrgsQuery & { tech?: string }) {
     const { page, limit, search, category, tech, year } = query;
     const skip = (page - 1) * limit;
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     const trimmedSearch = search?.trim();
 
-      if (trimmedSearch) {
+    if (trimmedSearch) {
       where.OR = [
         { name: { contains: trimmedSearch, mode: "insensitive" } },
         { description: { contains: trimmedSearch, mode: "insensitive" } },
@@ -274,7 +330,7 @@ where["OR"] = [
 
   private FREE_MONTHLY_REPO_SUGGESTIONS = 3;
 
-  async submitRepoRequest(userId: number, data: any) {
+  async submitRepoRequest(userId: number, data: SubmitRepoRequestData) {
     const existing = await prisma.repoRequest.findFirst({
       where: { url: data.url, status: { in: ["PENDING", "APPROVED"] } },
     });
@@ -313,7 +369,12 @@ where["OR"] = [
       }
     }
     const request = await prisma.repoRequest.create({
-      data: { ...data, userId },
+      data: {
+        ...data,
+        userId,
+        domain: data.domain as RepoDomain,
+        difficulty: data.difficulty as RepoDifficulty,
+      },
       include: { user: { select: { name: true, email: true } } },
     });
 
@@ -347,7 +408,7 @@ where["OR"] = [
     skip: number;
   }) {
     const { status, page, limit, skip } = query;
-    const where: Record<string, any> = {};
+    const where: Record<string, unknown> = {};
     if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
       where.status = status;
     }
@@ -371,7 +432,7 @@ where["OR"] = [
     };
   }
 
-  async approveRepoRequest(id: number, overrides: any) {
+  async approveRepoRequest(id: number, overrides: ApproveOverrideData) {
     const request = await prisma.repoRequest.findUnique({
       where: { id },
       include: { user: { select: { name: true, email: true } } },
@@ -386,8 +447,8 @@ where["OR"] = [
         description: overrides.description ?? request.description,
         language: request.language,
         url: request.url,
-        domain: overrides.domain ?? request.domain,
-        difficulty: overrides.difficulty ?? request.difficulty,
+        domain: (overrides.domain ?? request.domain) as RepoDomain,
+        difficulty: (overrides.difficulty ?? request.difficulty) as RepoDifficulty,
         techStack: request.techStack,
         tags: overrides.tags ?? request.tags,
       },
@@ -395,7 +456,7 @@ where["OR"] = [
 
     await prisma.repoRequest.update({
       where: { id },
-      data: { status: "APPROVED", adminNote: overrides.adminNote ?? null },
+      data: { status: "APPROVED", adminNote: overrides.adminNote ?? null, repoId: repo.id },
     });
 
     try {
@@ -412,11 +473,14 @@ where["OR"] = [
       /* email failure is non-blocking */
     }
 
+    // Invalidate language list — new repo may introduce a new language
+    cacheDel(LANGUAGES_CACHE_KEY).catch(() => {});
+
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
     // Re-sync stored ossTier for the contributor (fire-and-forget)
-    userService.calculateOssTier(request.userId).catch(() => {});
+    userService.calculateOssTier(request.userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return repo;
   }
 
@@ -550,6 +614,28 @@ where["OR"] = [
     }).format(date);
   }
 
+  async getGuideProgress(userId: number, guideSlug: string): Promise<string[]> {
+    const progress = await prisma.guideProgress.findUnique({
+      where: { userId_guideSlug: { userId, guideSlug } },
+      select: { completedStepIds: true },
+    });
+    return progress?.completedStepIds ?? [];
+  }
+
+  async patchGuideProgress(
+    userId: number,
+    guideSlug: string,
+    completedStepIds: string[],
+  ): Promise<string[]> {
+    const progress = await prisma.guideProgress.upsert({
+      where: { userId_guideSlug: { userId, guideSlug } },
+      create: { userId, guideSlug, completedStepIds },
+      update: { completedStepIds },
+      select: { completedStepIds: true },
+    });
+    return progress.completedStepIds;
+  }
+
   async getFirstPrProgress(userId: number): Promise<string[]> {
     const progress = await prisma.studentFirstPrProgress.findUnique({
       where: { userId },
@@ -585,7 +671,7 @@ where["OR"] = [
       select: { completedStepIds: true },
     });
     // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
-    userService.calculateOssTier(userId).catch(() => {});
+    userService.calculateOssTier(userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return progress.completedStepIds;
   }
 
@@ -622,7 +708,35 @@ where["OR"] = [
     return repos;
   }
 
-  async submitGuideFeedback(userId: number, data: { guideId: string; stepId: string; rating: string; reason?: string }) {
+  async getCertificate(token: string) {
+    return prisma.guideCertificate.findUnique({
+      where: { token },
+    });
+  }
+
+  async issueCertificate(userId: number, guideName: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true },
+    });
+    if (!user) throw new Error("User not found");
+
+    return prisma.guideCertificate.upsert({
+      where: { userId_guideName: { userId, guideName } },
+      update: {},
+      create: { userId, guideName, studentName: user.name },
+    });
+  }
+
+  async submitGuideFeedback(
+    userId: number,
+    data: {
+      guideId: string;
+      stepId: string;
+      rating: string;
+      reason?: string;
+    },
+  ) {
     return prisma.guideFeedback.upsert({
       where: {
         userId_guideId_stepId: {
@@ -644,7 +758,6 @@ where["OR"] = [
       },
     });
   }
-
   // ─── Bookmarks ────────────────────────────────────────────────
 
   async getBookmarkedRepoIds(userId: number): Promise<number[]> {
@@ -656,7 +769,10 @@ where["OR"] = [
     return bookmarks.map((b) => b.repoId);
   }
 
-  async addBookmark(userId: number, repoId: number): Promise<{ repoId: number }> {
+  async addBookmark(
+    userId: number,
+    repoId: number,
+  ): Promise<{ repoId: number }> {
     const repo = await prisma.opensourceRepo.findUnique({
       where: { id: repoId },
       select: { id: true },
@@ -677,7 +793,10 @@ where["OR"] = [
     });
   }
 
-  async bulkMigrateBookmarks(userId: number, repoIds: number[]): Promise<number[]> {
+  async bulkMigrateBookmarks(
+    userId: number,
+    repoIds: number[],
+  ): Promise<number[]> {
     // Resolve only IDs that actually exist in the DB
     const validRepos = await prisma.opensourceRepo.findMany({
       where: { id: { in: repoIds } },
@@ -687,7 +806,7 @@ where["OR"] = [
     if (validIds.length === 0) return this.getBookmarkedRepoIds(userId);
 
     await prisma.$transaction(
-      validIds.map((repoId) =>
+      validIds.map((repoId: number) =>
         prisma.opensourceBookmark.upsert({
           where: { userId_repoId: { userId, repoId } },
           create: { userId, repoId },
@@ -698,4 +817,7 @@ where["OR"] = [
 
     return this.getBookmarkedRepoIds(userId);
   }
+
 }
+
+

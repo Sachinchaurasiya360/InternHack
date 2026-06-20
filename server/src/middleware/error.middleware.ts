@@ -1,6 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../database/db.js";
+import { sendEmail } from "../utils/email.utils.js";
+import { FileUploadError } from "../lib/errors.js";
+
+const ADMIN_ALERT_EMAIL = process.env["ADMIN_ALERT_EMAIL"] ?? "mrsachinchaurasiya@gmail.com";
 
 const SENSITIVE_KEYS = new Set([
   "password", "newPassword", "confirmPassword", "currentPassword",
@@ -43,10 +47,16 @@ function formatRawError(err: Error): string {
 }
 
 function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?: Error): void {
+  // Only persist error logs (and alert) in production. In development we rely
+  // on the console output from errorMiddleware and skip the DB write entirely.
+  if (process.env["NODE_ENV"] !== "production") return;
+
+  const path = req.originalUrl || req.url;
+
   prisma.errorLog.create({
     data: {
       method: req.method,
-      path: req.originalUrl || req.url,
+      path,
       statusCode,
       message,
       rawError: rawErr ? formatRawError(rawErr) : null,
@@ -55,9 +65,29 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
       userAgent: req.headers["user-agent"] || null,
       requestBody: sanitizeBody(req.body) ?? Prisma.DbNull,
     },
-  }).catch((dbErr) => {
+    }).catch((dbErr) => {
     console.error("[ErrorLog] Failed to write:", dbErr);
   });
+
+  if (statusCode >= 500) {
+    const rawDetails = rawErr ? formatRawError(rawErr) : "No stack trace";
+    sendEmail({
+      to: ADMIN_ALERT_EMAIL,
+      subject: `[InternHack] Server Error ${statusCode} - ${req.method} ${path}`,
+      html: `
+        <h2 style="color:#dc2626">Server Error Alert</h2>
+        <table style="border-collapse:collapse;width:100%;font-family:monospace;font-size:14px">
+          <tr><td style="padding:6px 12px;font-weight:bold;background:#f3f4f6">Status</td><td style="padding:6px 12px">${statusCode}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;background:#f3f4f6">Method</td><td style="padding:6px 12px">${req.method}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;background:#f3f4f6">Path</td><td style="padding:6px 12px">${path}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;background:#f3f4f6">Message</td><td style="padding:6px 12px">${message}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;background:#f3f4f6">Time</td><td style="padding:6px 12px">${new Date().toISOString()}</td></tr>
+        </table>
+        <pre style="margin-top:16px;padding:12px;background:#1f2937;color:#f9fafb;border-radius:6px;overflow:auto;font-size:12px">${rawDetails}</pre>
+      `,
+      text: `Server Error ${statusCode}\n${req.method} ${path}\n${message}\n\n${rawDetails}`,
+    }).catch((e) => console.error("[ErrorLog] Admin alert email failed:", e));
+  }
 }
 
 function respond(req: Request, res: Response, statusCode: number, message: string, rawErr?: Error): void {
@@ -86,10 +116,8 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
     return;
   }
 
-  // Multer / file upload errors
-  if (err.message === "File type not allowed" ||
-      err.message === "Only PDF and Word documents are allowed" ||
-      err.message === "Only JPEG, PNG, and WebP images are allowed") {
+  // File upload errors
+  if (err instanceof FileUploadError) {
     respond(req, res, 400, err.message, err);
     return;
   }
@@ -116,11 +144,28 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
     "Problem not found": 404,
     "Question not found": 404,
     "Pattern not found": 404,
+    "Ambassador not found": 404,
+    "Share not found": 404,
   };
 
   const status = clientErrors[err.message];
   if (status) {
     respond(req, res, status, err.message, err);
+    return;
+  }
+
+  // Fallback: try partial matches for dynamic error messages
+  const msg = err.message.toLowerCase();
+  if (msg.includes("not found")) {
+    respond(req, res, 404, err.message, err);
+    return;
+  }
+  if (msg.includes("already") && (msg.includes("exists") || msg.includes("registered") || msg.includes("applied"))) {
+    respond(req, res, 409, err.message, err);
+    return;
+  }
+  if (msg.includes("unauthorized") || msg.includes("not authorized")) {
+    respond(req, res, 403, err.message, err);
     return;
   }
 

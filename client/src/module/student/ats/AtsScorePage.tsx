@@ -115,7 +115,7 @@ export default function AtsScorePage() {
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
   const [historySearch, setHistorySearch] = useState("");
   const debouncedHistorySearch = useDebounce(historySearch, 300);
-  const [chartOpen, setChartOpen] = useState(true);
+  const [chartOpen, setChartOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleDownloadPdf = async () => {

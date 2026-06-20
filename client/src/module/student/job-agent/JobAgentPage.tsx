@@ -19,7 +19,6 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type {
   JobAgentMessage,
-  JobAgentResponse,
   JobFeedMatch,
 } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
@@ -99,6 +98,10 @@ export default function JobAgentPage() {
   const [manualHitFreeLimit, setManualHitFreeLimit] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [hasChatted, setHasChatted] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamingContent, setStreamingContent] = useState("");
+  const [streamingJobs, setStreamingJobs] = useState<JobFeedMatch["job"][]>([]);
+  const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 24,
@@ -174,65 +177,140 @@ export default function JobAgentPage() {
     requestAnimationFrame(scroll);
     const t = setTimeout(scroll, 300);
     return () => clearTimeout(t);
-  }, [messages]);
+  }, [messages, streamingContent]);
 
-  const chatMut = useMutation({
-    mutationFn: async (message: string) => {
-      const res = await api.post("/job-agent/chat", { message });
-      return res.data as JobAgentResponse;
-    },
-    onSuccess: (data) => {
-      setHasChatted(true);
+  const sendStreamMessage = async (message: string) => {
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+
+    setIsStreaming(true);
+    setStreamingContent("");
+    setStreamingJobs([]);
+
+    // Reuse the axios instance's resolved baseURL so the streaming fetch can
+    // never drift from every other request (same env var, same fallback).
+    const apiBase = (api.defaults.baseURL ?? "").replace(/\/$/, "");
+
+    try {
+      const response = await fetch(`${apiBase}/job-agent/chat/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+        signal: abortRef.current.signal,
+        credentials: "include", // JWT lives in httpOnly cookie; mirrors axios withCredentials
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({})) as {
+          usage?: { action?: string; tier?: string };
+        };
+        const isFreeLimitError =
+          response.status === 429 &&
+          errData?.usage?.action === "AI_JOB_CHAT" &&
+          errData?.usage?.tier === "FREE";
+        if (isFreeLimitError) {
+          setManualHitFreeLimit(true);
+          setLocalMessages((prev) => [
+            ...prev,
+            {
+              id: crypto.randomUUID(),
+              role: "assistant" as const,
+              content:
+                "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
+            },
+          ]);
+        } else {
+          setLocalMessages((prev) => [
+            ...prev,
+            {
+              id: crypto.randomUUID(),
+              role: "assistant" as const,
+              content:
+                "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
+            },
+          ]);
+        }
+        return;
+      }
+
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let eventName = "";
+      let accumulatedContent = "";
+      let finalJobs: JobFeedMatch["job"][] = [];
+
+      outer: while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split("\n");
+        buffer = parts.pop() ?? "";
+
+        for (const line of parts) {
+          if (line.startsWith("event: ")) {
+            eventName = line.slice(7).trim();
+          } else if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6)) as Record<string, unknown>;
+              if (eventName === "token") {
+                accumulatedContent += (data["text"] as string) || "";
+                setStreamingContent(accumulatedContent);
+              } else if (eventName === "jobs") {
+                finalJobs = (data["jobs"] as JobFeedMatch["job"][]) || [];
+                setStreamingJobs(finalJobs);
+              } else if (eventName === "done") {
+                break outer;
+              } else if (eventName === "error") {
+                setLocalMessages((prev) => [
+                  ...prev,
+                  {
+                    id: crypto.randomUUID(),
+                    role: "assistant" as const,
+                    content:
+                      (data["message"] as string) ||
+                      "Something went wrong. Please try again.",
+                  },
+                ]);
+                break outer;
+              }
+            } catch {
+              // ignore malformed SSE data lines
+            }
+            eventName = "";
+          }
+        }
+      }
+
+      if (accumulatedContent) {
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant" as const,
+            content: accumulatedContent,
+            jobs: finalJobs.length > 0 ? finalJobs : undefined,
+          },
+        ]);
+      }
+    } catch (err) {
+      if ((err as Error).name === "AbortError") return;
       setLocalMessages((prev) => [
         ...prev,
         {
           id: crypto.randomUUID(),
-          role: "assistant",
-          content: data.reply,
-          jobs: data.jobs.length > 0 ? data.jobs : undefined,
+          role: "assistant" as const,
+          content:
+            "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
         },
       ]);
-    },
-    onError: (err: unknown) => {
-      const resp = (
-        err as {
-          response?: {
-            status?: number;
-            data?: {
-              usage?: { action?: string; tier?: string };
-            };
-          };
-        }
-      )?.response;
-      const isFreeLimitError =
-        resp?.status === 429 &&
-        resp.data?.usage?.action === "AI_JOB_CHAT" &&
-        resp.data?.usage?.tier === "FREE";
-
-      if (isFreeLimitError) {
-        setManualHitFreeLimit(true);
-        setLocalMessages((prev) => [
-          ...prev,
-          {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content:
-              "You've used your 2 free messages. Upgrade to Premium for unlimited AI-powered job search.",
-          },
-        ]);
-      } else {
-        setLocalMessages((prev) => [
-          ...prev,
-          {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content:
-              "We're experiencing high demand right now and couldn't process your request. Please try again in a moment.",
-          },
-        ]);
-      }
-    },
-  });
+    } finally {
+      setIsStreaming(false);
+      setStreamingContent("");
+      setStreamingJobs([]);
+      setHasChatted(true);
+    }
+  };
 
   const resetMut = useMutation({
     mutationFn: () => api.delete("/job-agent/conversation"),
@@ -251,16 +329,15 @@ export default function JobAgentPage() {
         : interimText
       : input;
     const msg = (text ?? committedInput).trim();
-    if (!msg || chatMut.isPending) return;
+    if (!msg || isStreaming) return;
     setInput("");
     setInterimText("");
     adjustHeight(true);
-    setHasChatted(true);
     setLocalMessages([
       ...messages,
       { id: crypto.randomUUID(), role: "user", content: msg },
     ]);
-    chatMut.mutate(msg);
+    void sendStreamMessage(msg);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -269,6 +346,10 @@ export default function JobAgentPage() {
       handleSend();
     }
   };
+
+  useEffect(() => {
+    return () => { abortRef.current?.abort(); };
+  }, []);
 
   useEffect(() => {
     if (!isListening) return;
@@ -296,10 +377,10 @@ export default function JobAgentPage() {
   }, [isListening]);
 
   const isEmpty = messages.length === 0;
-  const inputDisabled = chatMut.isPending || hitFreeLimit;
+  const inputDisabled = isStreaming || hitFreeLimit;
 
   return (
-    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden overscroll-none bg-stone-50 dark:bg-stone-950">
+    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden bg-stone-50 dark:bg-stone-950">
       <SEO title="InternHack AI" noIndex />
 
       {/* Editorial header */}
@@ -479,7 +560,14 @@ export default function JobAgentPage() {
                     />
                   ))}
 
-                  {chatMut.isPending && <ThinkingIndicator />}
+                  {isStreaming && !streamingContent && <ThinkingIndicator />}
+                  {isStreaming && streamingContent && (
+                    <AgentMessage
+                      role="assistant"
+                      content={streamingContent}
+                      jobs={streamingJobs.length > 0 ? streamingJobs : undefined}
+                    />
+                  )}
                 </div>
               </motion.div>
             )}
@@ -504,7 +592,7 @@ export default function JobAgentPage() {
                 placeholder={
                   hitFreeLimit
                     ? "Upgrade to continue chatting..."
-                    : chatMut.isPending
+                    : isStreaming
                       ? "Thinking..."
                       : "Ask me about jobs..."
                 }

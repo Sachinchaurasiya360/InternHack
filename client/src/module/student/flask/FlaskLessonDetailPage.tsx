@@ -22,7 +22,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 import { getReadingTime, countCodeBlocks, hasExercises } from "../../../utils/lessonMetadata";
 
 const FREE_LIMIT = 5;
@@ -60,6 +60,7 @@ function ExerciseSection({
     return p[lessonId]?.exercisesSolved ?? {};
   });
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- re-sync state from localStorage when the lesson changes
   setActiveIdx(0);
   setSolved(getLocalProgress()[lessonId]?.exercisesSolved ?? {});
 }, [lessonId]);
@@ -251,6 +252,7 @@ export default function FlaskLessonDetailPage() {
   });
 useEffect(() => {
   const p = getLocalProgress();
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- re-sync completion from localStorage when the lesson changes
   setCompleted(!!p[lessonId ?? ""]?.completed);
 }, [lessonId]);
   const section = sections.find((s) => s.id === sectionSlug);

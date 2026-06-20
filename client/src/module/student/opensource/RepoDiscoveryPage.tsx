@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -16,11 +16,8 @@ import {
   Code2,
   Wand2,
   Flame,
-  ArrowRight,
   BookOpen,
   AlertCircle,
-  BarChart3,
-  Plus,
   Share2,
   Check,
   Copy,
@@ -35,17 +32,15 @@ import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
-import type { OpenSourceRepo, Pagination, RepoRequest } from "../../../lib/types";
+import { EmptyState } from "../../../components/ui/EmptyState";
+import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
-import { formatCount, difficultyBadge } from "./_shared/repo-utils";
+import { formatCount, difficultyBadge, buildLanguageParam } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
-import { SuggestRepoModal } from "./SuggestRepoModal";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
-import { RecentlyViewedSection } from "./_shared/RecentlyViewedSection";
 import { Button } from "../../../components/ui/button";
-import { useCoachStore } from "./stores/coach.store";
 import { markLearningPathMilestone } from "./learning-paths.data";
 
 const BOOKMARK_KEY = "oss_bookmarks";
@@ -70,12 +65,6 @@ const saveBookmarks = (ids: number[]) => {
   } catch (error) {
     console.warn("Failed to save bookmarks to localStorage", error);
   }
-};
-
-const STATUS_STYLE: Record<string, string> = {
-  PENDING: "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
-  APPROVED: "bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-800",
-  REJECTED: "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
 };
 
 // skill language map
@@ -108,7 +97,6 @@ export default function RepoDiscoveryPage() {
   }, []);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const triggerCoach = useCoachStore((s) => s.triggerCoach);
 
   // Initialize filter states directly from the URL
   const search = searchParams.get("q") || "";
@@ -176,8 +164,6 @@ export default function RepoDiscoveryPage() {
     };
   }, []);
 
-  const [showSuggestModal, setShowSuggestModal] = useState(false);
-  const [showAllSubmissions, setShowAllSubmissions] = useState(false);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const [bookmarks, setBookmarks] = useState<number[]>(() => getBookmarks());
   const [showSaved, setShowSaved] = useState(false);
@@ -205,7 +191,7 @@ export default function RepoDiscoveryPage() {
     return Array.from(langs);
   }, [user]);
 
-  const { recentlyViewed, addRepo } = useRecentlyViewedRepos();
+  const { addRepo } = useRecentlyViewedRepos();
 
   const handleOpenRepo = (repo: OpenSourceRepo) => {
     addRepo(repo);
@@ -233,7 +219,7 @@ export default function RepoDiscoveryPage() {
     queryKey: ["repo-deep-link", initialRepoId],
     queryFn: () => api.get(`/opensource/${initialRepoId}`).then((res) => res.data.repo),
     enabled: !!initialRepoId && !selectedRepo,
-    staleTime: 10 * 60 * 1000,
+    staleTime: 0,
     retry: false,
   });
 
@@ -268,25 +254,6 @@ export default function RepoDiscoveryPage() {
       saveBookmarks(next);
       return next;
     });
-
-    if (isBookmarking) {
-      const repo = data?.repos?.find((r) => r.id === id);
-      if (repo) {
-        triggerCoach({
-          trigger: "REPO_BOOKMARKED",
-          context: {
-            skills: user?.skills || [],
-            bookmarkedRepos: [
-              {
-                name: repo.name,
-                language: repo.language,
-                domain: repo.domain || undefined,
-              },
-            ],
-          },
-        });
-      }
-    }
   };
 
   const handleShare = () => {
@@ -296,19 +263,14 @@ export default function RepoDiscoveryPage() {
   };
 
   const queryParams = useMemo(() => {
-    const params: Record<string, string | number> = { page, limit: 12, sort: sortKey, sortOrder: "desc" };
+    const params: Record<string, string | number | string[]> = { page, limit: 12, sort: sortKey, sortOrder: "desc" };
 
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
 
-    if (languageMode === "auto") {
-      if (inferredLanguages.length > 0) {
-        params.language = inferredLanguages[0];
-      }
-    } else if (selectedLanguage.length > 0) {
-      params.language = selectedLanguage[0];
-    }
+    const languageParam = buildLanguageParam(languageMode, selectedLanguage, inferredLanguages);
+    if (languageParam) params.language = languageParam;
 
     if (trendingOnly) params.trending = "true";
     if (hacktoberfestOnly) params.hacktoberfest = "true";
@@ -336,20 +298,6 @@ export default function RepoDiscoveryPage() {
     staleTime: 10 * 60 * 1000,
   });
 
-  const {
-    data: myRequestsData,
-    isLoading: isMyRequestsLoading,
-    isError: isMyRequestsError,
-    refetch: refetchMyRequests,
-  } = useQuery({
-    queryKey: queryKeys.opensource.myRequests(),
-    queryFn: () => api.get("/opensource/requests/mine").then((r) => r.data.requests as RepoRequest[]),
-    enabled: !!user,
-    staleTime: 2 * 60 * 1000,
-  });
-
-  const myRequests = myRequestsData;
-
   const languages = useMemo(() => {
     return languagesData || (Object.keys(LANGUAGE_COLORS) as string[]);
   }, [languagesData]);
@@ -366,32 +314,6 @@ export default function RepoDiscoveryPage() {
 
   const pagination = data?.pagination;
   const displayedRepos = showSaved ? (bookmarkedData ?? []) : (data?.repos ?? []);
-
-  // Global stats fetched independently so the header strip stays accurate
-  // regardless of active filters or page (replaces the old useMemo approach).
-  const { data: globalStats } = useQuery({
-    queryKey: queryKeys.opensource.stats(),
-    queryFn: () =>
-      api
-        .get<{
-          totalRepos: number;
-          totalStars: number;
-          trendingCount: number;
-          languageCount: number;
-          domainBreakdown: { domain: string; count: number }[];
-        }>("/opensource/stats")
-        .then((r) => r.data),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const stats = globalStats
-    ? {
-      totalRepos: globalStats.totalRepos,
-      totalStars: formatCount(globalStats.totalStars),
-      trendingCount: globalStats.trendingCount,
-      languages: globalStats.languageCount,
-    }
-    : null;
 
   const updateFilter = (key: string, value: string | number) => {
     setSearchParams(
@@ -451,7 +373,7 @@ export default function RepoDiscoveryPage() {
           </div>
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-1.5 leading-tight">
+              <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
                 Find a repo, ship your{" "}
                 <span className="relative inline-block">
                   <span className="relative z-10">first PR.</span>
@@ -468,21 +390,6 @@ export default function RepoDiscoveryPage() {
                 Beginner-friendly open-source projects, curated by engineers for students.
               </p>
             </div>
-            {stats && (
-              <div className="flex items-center gap-4 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                <span>
-                  <span className="text-stone-900 dark:text-stone-50">{stats.totalRepos}</span> repos
-                </span>
-                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                <span>
-                  <span className="text-stone-900 dark:text-stone-50">{stats.totalStars}</span> stars
-                </span>
-                <span className="h-1 w-1 bg-stone-300 dark:bg-stone-700" />
-                <span>
-                  <span className="text-lime-600 dark:text-lime-400">{stats.trendingCount}</span> trending
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
@@ -502,158 +409,12 @@ export default function RepoDiscoveryPage() {
           </kbd>
         </div>
 
-        {/* Analytics + Suggest strip */}
-        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-0 border-t border-l border-stone-200 dark:border-white/10">
-          <Link
-            to="/student/opensource/analytics"
-            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 no-underline hover:bg-stone-900 dark:hover:bg-stone-50 transition-colors"
-          >
-            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-stone-900/10 flex items-center justify-center shrink-0">
-              <BarChart3 className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <div className="h-1 w-1 bg-lime-400"></div>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
-                  analytics
-                </p>
-              </div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-stone-900">
-                Track your contributions
-              </p>
-            </div>
-            <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => {
-              if (!user) { window.location.href = "/login"; return; }
-              setShowSuggestModal(true);
-            }}
-            className="group flex items-center gap-3 p-4 bg-white dark:bg-stone-900 border-r border-b border-stone-200 dark:border-white/10 cursor-pointer hover:bg-stone-900 dark:hover:bg-stone-50 transition-colors text-left"
-          >
-            <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-white/5 group-hover:bg-white/10 dark:group-hover:bg-stone-900/10 flex items-center justify-center shrink-0">
-              <Plus className="w-4 h-4 text-stone-700 dark:text-stone-300 group-hover:text-lime-400" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <div className="h-1 w-1 bg-lime-400"></div>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 group-hover:text-lime-400">
-                  suggest
-                </p>
-              </div>
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-stone-50 dark:group-hover:text-stone-900">
-                Know a great repo? Submit it
-              </p>
-            </div>
-            <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </button>
-        </div>
-
-        {/* My Submissions */}
-        {!!user && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                <div className="h-1 w-1 bg-lime-400" />
-                my submissions
-              </div>
-            </div>
-
-            {isMyRequestsLoading && (
-              <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-10 bg-stone-100 dark:bg-stone-800 rounded-md animate-pulse"
-                  />
-                ))}
-              </div>
-            )}
-
-            {!isMyRequestsLoading && isMyRequestsError && (
-              <div className="flex items-center justify-between py-2 px-1">
-                <p className="text-sm text-red-500">Failed to load submissions</p>
-                <button
-                  type="button"
-                  onClick={() => refetchMyRequests()}
-                  className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent"
-                >
-                  Retry ↻
-                </button>
-              </div>
-            )}
-
-            {!isMyRequestsLoading && !isMyRequestsError && myRequests?.length === 0 && (
-              <p className="text-sm text-stone-400 dark:text-stone-500 py-2">
-                You haven't suggested any repos yet.
-              </p>
-            )}
-
-            {!isMyRequestsLoading && !isMyRequestsError && myRequests && myRequests.length > 0 && (
-              <div className="space-y-2">
-                {(showAllSubmissions ? myRequests : myRequests.slice(0, 3)).map(
-                  (req) => (
-                    <div
-                      key={req.id}
-                      className="flex items-center justify-between px-3 py-2 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-sm text-stone-700 dark:text-stone-300 truncate font-medium">
-                          {req.owner}/{req.name}
-                        </span>
-                        <span className="text-xs text-stone-400 shrink-0">
-                          {new Date(req.createdAt).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-md border shrink-0 ml-3 ${STATUS_STYLE[req.status] ?? STATUS_STYLE.PENDING
-                          }`}
-                      >
-                        {req.status}
-                      </span>
-                    </div>
-                  )
-                )}
-
-                {myRequests.length > 3 && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAllSubmissions((v) => !v)}
-                    className="text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-lime-500 transition-colors cursor-pointer border-0 bg-transparent mt-1"
-                  >
-                    {showAllSubmissions
-                      ? "Show less ↑"
-                      : `Show all ${myRequests.length} →`}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Guidance Cards */}
         <GuidanceCards />
 
-        {/* Recently viewed & recommended */}
-        <RecentlyViewedSection repos={recentlyViewed} onSelect={handleOpenRepo} onClear={() => { }} />
-
-        {user?.role === "STUDENT" && (
-          <RecommendedSection
-            onSelect={handleOpenRepo}
-            bookmarks={bookmarks}
-            onToggleBookmark={toggleBookmark}
-
-          />
-        )}
 
         {/* Filter bar */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-4 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           {/* Domain chips */}
           {REPO_DOMAINS.map((d) => {
             const active = selectedDomain === d.key;
@@ -662,10 +423,11 @@ export default function RepoDiscoveryPage() {
                 key={d.key}
                 type="button"
                 onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
-                className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${active
-                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                  : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-                  }`}
+                className={`inline-flex items-center px-3 py-2.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
+                  active
+                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
+                    : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
+                }`}
               >
                 {d.label}
               </button>
@@ -676,10 +438,11 @@ export default function RepoDiscoveryPage() {
           <button
             type="button"
             onClick={() => setShowSaved((v) => !v)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${showSaved
-              ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-              : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
-              }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-2.5 text-[10px] font-mono uppercase tracking-widest rounded-md border transition-colors cursor-pointer ${
+              showSaved
+                ? "bg-lime-50 dark:bg-lime-400/10 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+                : "text-stone-500 border-stone-200 dark:border-white/10 hover:border-stone-400"
+            }`}
           >
             <Bookmark className="w-3 h-3" />
             Saved {bookmarks.length > 0 && `(${bookmarks.length})`}
@@ -830,80 +593,75 @@ export default function RepoDiscoveryPage() {
         </div>
 
         {/* Expanded filters */}
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden mb-6"
+        {/* Mobile filter bottom sheet */}
+<AnimatePresence>
+  {showFilters && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-40 bg-stone-950/50 sm:hidden"
+      onClick={() => setShowFilters(false)}
+    >
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="absolute bottom-0 left-0 right-0 bg-white dark:bg-stone-900 rounded-t-xl p-5 pb-8 border-t border-stone-200 dark:border-white/10"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-10 h-1 bg-stone-200 dark:bg-stone-700 rounded-full mx-auto mb-5" />
+        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">Filters</p>
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">difficulty</label>
+            <select
+              value={selectedDifficulty}
+              onChange={(e) => updateFilter("difficulty", e.target.value)}
+              className="w-full px-3 py-3 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none"
             >
-              <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-                <div>
-                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
-                    difficulty
-                  </label>
-                  <select
-                    value={selectedDifficulty}
-                    onChange={(e) => updateFilter("difficulty", e.target.value)}
-                    className="px-3 py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25"
-                  >
-                    {DIFFICULTY_OPTIONS.map((d) => (
-                      <option key={d.key} value={d.key}>{d.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">
-                    language
-                  </label>
-
-                  <select
-                    value={selectedLanguage}
-                    disabled={languageMode === "auto"}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setSearchParams((prev) => {
-                        const params = new URLSearchParams(prev);
-                        params.delete("language");
-
-                        if (value !== "ALL") {
-                          params.append("language", value);
-                        }
-
-                        params.set("page", "1");
-                        return params;
-                      }, { replace: true });
-                    }}
-                    className={`px-3 ${languageMode === "auto" ? "opacity-50 cursor-not-allowed" : ""} py-2 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-white/25`}
-                  >
-                    <option value="ALL">All Languages</option>
-                    {languages.map((lang) => (
-                      <option key={lang} value={lang}>
-                        {lang}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {activeFilters > 0 && (
-                  <div className="flex items-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearchParams(new URLSearchParams(), { replace: true });
-                        setInputValue("");
-                      }}
-                      className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent border-0 cursor-pointer py-2"
-                    >
-                      / clear all
-                    </button>
-                  </div>
-                )}
-              </div>
-            </motion.div>
+              {DIFFICULTY_OPTIONS.map((d) => (
+                <option key={d.key} value={d.key}>{d.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">language</label>
+            <select
+              value={selectedLanguage}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearchParams((prev) => {
+                  const params = new URLSearchParams(prev);
+                  params.delete("language");
+                  if (value !== "ALL") params.append("language", value);
+                  params.set("page", "1");
+                  return params;
+                }, { replace: true });
+              }}
+              className="w-full px-3 py-3 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none"
+            >
+              <option value="ALL">All Languages</option>
+              {languages.map((lang) => (
+                <option key={lang} value={lang}>{lang}</option>
+              ))}
+            </select>
+          </div>
+          {activeFilters > 0 && (
+            <button
+              type="button"
+              onClick={() => { setSearchParams(new URLSearchParams(), { replace: true }); setInputValue(""); setShowFilters(false); }}
+              className="text-sm text-red-500 font-medium py-2 text-left"
+            >
+              Clear all filters
+            </button>
           )}
-        </AnimatePresence>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
         {/* Results count */}
         <div className="flex items-center justify-between mb-4">
@@ -944,13 +702,11 @@ export default function RepoDiscoveryPage() {
 
         {/* Empty */}
         {!isLoading && !isLoadingBookmarks && !isError && displayedRepos.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-            <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
-              <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
-            </div>
-            <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">No repositories found</h3>
-            <p className="text-sm text-stone-500 dark:text-stone-400">Try adjusting your search or filters.</p>
-          </div>
+          <EmptyState
+            icon={<Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />}
+            title="No repositories found"
+            description="Try adjusting your search or filters."
+          />
         )}
 
         {/* Cards grid */}
@@ -980,11 +736,6 @@ export default function RepoDiscoveryPage() {
           />
         )}
       </div>
-
-      {/* Suggest Repo Modal */}
-      <AnimatePresence>
-        <SuggestRepoModal open={showSuggestModal} onClose={() => setShowSuggestModal(false)} />
-      </AnimatePresence>
 
       {/* Detail Modal */}
       <AnimatePresence>
@@ -1226,74 +977,3 @@ export default function RepoDiscoveryPage() {
   );
 }
 
-function RecommendedSection({
-  onSelect,
-  bookmarks,
-  onToggleBookmark
-}: {
-  onSelect: (repo: OpenSourceRepo) => void;
-  bookmarks: number[];
-  onToggleBookmark: (id: number) => void;
-}) {
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.opensource.list({ recommended: "true" }),
-    queryFn: async () => {
-      const res = await api.get<{ repos: OpenSourceRepo[] }>("/opensource/recommended");
-      return res.data;
-    },
-    staleTime: 10 * 60 * 1000,
-  });
-
-  if (isLoading) {
-    return (
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="h-4 w-32 bg-stone-200 dark:bg-white/10 rounded animate-pulse" />
-        </div>
-        <div className="flex gap-4 overflow-x-hidden">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="min-w-[280px] sm:min-w-[320px]">
-              <RepoCardSkeleton />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  const repos = data?.repos || [];
-  if (repos.length === 0) return null;
-
-  return (
-    <div className="mb-10 group/rec">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Wand2 className="w-4 h-4 text-lime-600 dark:text-lime-400" />
-          <h2 className="text-sm font-bold text-stone-900 dark:text-stone-50 uppercase tracking-tight">
-            Recommended for you
-          </h2>
-          <div className="h-px w-8 bg-stone-200 dark:bg-white/10 group-hover/rec:w-16 transition-all" />
-        </div>
-        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-widest">
-          Based on your stack
-        </span>
-      </div>
-
-      <div className="relative -mx-4 px-4 overflow-x-auto no-scrollbar pb-4">
-        <div className="flex gap-4 min-w-full">
-          {repos.map((repo, i) => (
-            <div key={repo.id} className="min-w-[280px] sm:min-w-[320px] max-w-[320px]">
-              <RepoCard
-                repo={repo}
-                index={i}
-                onSelect={onSelect}
-                bookmarked={bookmarks.includes(repo.id)}
-                onToggleBookmark={() => onToggleBookmark(repo.id)}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}

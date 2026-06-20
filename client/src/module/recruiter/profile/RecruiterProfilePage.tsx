@@ -64,6 +64,7 @@ export default function RecruiterProfilePage() {
   const [uploadingPic, setUploadingPic] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const [imgError, setImgError] = useState(false);
   const picInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -83,6 +84,7 @@ export default function RecruiterProfilePage() {
           portfolioUrl: u.portfolioUrl ?? "",
           profilePic: u.profilePic ?? "",
         });
+        setImgError(false);
       })
       .catch(() => toast.error("Failed to load profile"))
       .finally(() => setLoading(false));
@@ -142,6 +144,7 @@ export default function RecruiterProfilePage() {
 
       setForm((prev) => ({ ...prev, profilePic: imagePath }));
       setUser({ ...user!, profilePic: imagePath });
+      setImgError(false);
       toast.success("Profile picture updated!");
     } catch (error) {
       console.error("Upload rendering error:", error);
@@ -282,14 +285,12 @@ export default function RecruiterProfilePage() {
         <div className="p-5 sm:p-6 flex flex-wrap items-center gap-5">
           <div className="relative group shrink-0">
             <div className="w-20 h-20 rounded-md bg-lime-400/15 border border-lime-400/30 text-lime-700 dark:text-lime-400 flex items-center justify-center text-xl font-bold tracking-tight overflow-hidden">
-              {form.profilePic ? (
+              {form.profilePic && !imgError ? (
                 <img
                   src={form.profilePic}
                   alt={form.name}
                   className="w-20 h-20 rounded-md object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
+                  onError={() => setImgError(true)}
                 />
               ) : (
                 initials(form.name || form.email)

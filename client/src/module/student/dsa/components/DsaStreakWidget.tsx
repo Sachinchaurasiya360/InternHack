@@ -19,7 +19,10 @@ function StreakCalendar({ activeDays }: { activeDays: string[] }) {
     <div className="flex items-center gap-1">
       {dayStrings.map((dayStr) => {
         const isActive = activeSet.has(dayStr);
-        const dayNum = new Date(dayStr + "T00:00:00Z").toLocaleDateString("en", { weekday: "short" });
+        const dayNum = new Date(dayStr + "T00:00:00Z").toLocaleDateString(
+          "en",
+          { weekday: "short" },
+        );
         return (
           <div
             key={dayStr}
@@ -35,7 +38,9 @@ function StreakCalendar({ activeDays }: { activeDays: string[] }) {
             >
               {isActive ? <CheckCircle2 className="w-3 h-3" /> : null}
             </div>
-            <span className="text-xs font-mono text-stone-400">{dayNum.charAt(0)}</span>
+            <span className="text-xs font-mono text-stone-400">
+              {dayNum.charAt(0)}
+            </span>
           </div>
         );
       })}
@@ -53,20 +58,27 @@ export function DsaStreakWidget() {
   if (isLoading || !streak) return null;
 
   const milestone =
-    streak.currentStreak >= 100 ? "100-day streak!" :
-    streak.currentStreak >= 30 ? "30-day streak!" :
-    streak.currentStreak >= 7 ? "7-day streak!" :
-    null;
+    streak.currentStreak >= 100
+      ? "100-day streak!"
+      : streak.currentStreak >= 30
+        ? "30-day streak!"
+        : streak.currentStreak >= 7
+          ? "7-day streak!"
+          : null;
 
   return (
     <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
       <div className="flex items-center justify-between gap-4 mb-3">
         <div className="flex items-center gap-2">
-          <Flame className={`w-5 h-5 ${streak.currentStreak > 0 ? "text-orange-500" : "text-stone-300"}`} />
+          <Flame
+            className={`w-5 h-5 ${streak.currentStreak > 0 ? "text-orange-500" : "text-stone-300"}`}
+          />
           <span className="text-lg font-bold tabular-nums text-stone-900 dark:text-white">
             {streak.currentStreak}
           </span>
-          <span className="text-xs text-stone-500 dark:text-stone-400">day streak</span>
+          <span className="text-xs text-stone-500 dark:text-stone-400">
+            day streak
+          </span>
           {milestone && (
             <span className="text-xs font-mono text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-sm">
               {milestone}
@@ -83,7 +95,9 @@ export function DsaStreakWidget() {
       <div className="flex items-center gap-2 mt-3 text-xs text-stone-500 dark:text-stone-400">
         <Target className="w-3.5 h-3.5" />
         <span>
-          {streak.solvedToday ? "Solved today" : "Solve a problem to start your streak"}
+          {streak.solvedToday
+            ? "Solved today"
+            : "Solve a problem to start your streak"}
         </span>
       </div>
     </div>

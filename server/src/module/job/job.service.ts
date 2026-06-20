@@ -1,5 +1,5 @@
 import { prisma } from "../../database/db.js";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 interface CreateJobData {
   title: string;
@@ -99,32 +99,74 @@ export class JobService {
 
     const skip = (query.page - 1) * query.limit;
 
-    // Salary range filter: since `salary` is a free-text String (e.g. "₹10 LPA – ₹15 LPA")
-    // we use a two-pass approach:
-    //   1. Fetch all candidate ids+salary strings that pass the other Prisma filters.
-    //   2. Extract the first integer from each salary string via regex and compare
-    //      against salaryMin / salaryMax, then paginate in-app.
-    // This avoids a schema migration and keeps all Prisma queries type-safe.
+    // Salary range filter: `salary` is a free-text String (e.g. "₹10 LPA – ₹15 LPA").
+    // Filtering is pushed entirely to PostgreSQL so the database extracts the first
+    // integer from the salary string, applies the range comparison, counts, and
+    // paginates. Only one page of ids is ever returned to the application, which
+    // avoids loading large result sets into memory (the previous in-app approach
+    // was a resource exhaustion / DoS risk on large datasets).
     if (query.salaryMin !== undefined || query.salaryMax !== undefined) {
-      const digitRe = /(\d+)/;
+      // Rebuild the active filters as SQL fragments so the salary comparison can be
+      // evaluated against the same candidate set inside the database.
+      const conditions: Prisma.Sql[] = [];
 
-      const candidates = await prisma.job.findMany({
-        where,
-        select: { id: true, salary: true },
-        orderBy: { createdAt: "desc" },
-        take: 1000,
-      });
+      const statusValue = (query.status as string | undefined) ?? "PUBLISHED";
+      conditions.push(Prisma.sql`"status" = ${statusValue}::"JobStatus"`);
 
-      const filtered = candidates.filter((job) => {
-        const match = digitRe.exec(job.salary ?? "");
-        const val = match ? parseInt(match[1]!, 10) : 0;
-        if (query.salaryMin !== undefined && val < query.salaryMin) return false;
-        if (query.salaryMax !== undefined && val > query.salaryMax) return false;
-        return true;
-      });
+      if (query.search) {
+        const like = `%${query.search}%`;
+        conditions.push(
+          Prisma.sql`("title" ILIKE ${like} OR "description" ILIKE ${like} OR "company" ILIKE ${like})`
+        );
+      }
 
-      const total = filtered.length;
-      const pageIds = filtered.slice(skip, skip + query.limit).map((j) => j.id);
+      if (!query.includeExpired) {
+        conditions.push(Prisma.sql`("deadline" IS NULL OR "deadline" >= NOW())`);
+      }
+
+      if (query.location) {
+        conditions.push(Prisma.sql`"location" ILIKE ${`%${query.location}%`}`);
+      }
+
+      if (query.company) {
+        conditions.push(Prisma.sql`"company" ILIKE ${`%${query.company}%`}`);
+      }
+
+      if (query.tags) {
+        const tagList = query.tags.split(",").map((t) => t.trim()).filter(Boolean);
+        if (tagList.length > 0) {
+          conditions.push(Prisma.sql`"tags" && ${tagList}::text[]`);
+        }
+      }
+
+      // Extract the first integer from the free-text salary, defaulting to 0 when the
+      // string has no digits (matches the previous parsing behaviour).
+      const salaryValue = Prisma.sql`COALESCE(NULLIF(substring("salary" from '\\d+'), '')::int, 0)`;
+      if (query.salaryMin !== undefined) {
+        conditions.push(Prisma.sql`${salaryValue} >= ${query.salaryMin}`);
+      }
+      if (query.salaryMax !== undefined) {
+        conditions.push(Prisma.sql`${salaryValue} <= ${query.salaryMax}`);
+      }
+
+      const whereSql = Prisma.sql`WHERE ${Prisma.join(conditions, " AND ")}`;
+
+      const [pageRows, countRows] = await Promise.all([
+        prisma.$queryRaw<Array<{ id: number }>>(
+          Prisma.sql`
+            SELECT "id" FROM "job"
+            ${whereSql}
+            ORDER BY "createdAt" DESC
+            LIMIT ${query.limit} OFFSET ${skip}
+          `
+        ),
+        prisma.$queryRaw<Array<{ count: bigint }>>(
+          Prisma.sql`SELECT COUNT(*)::bigint AS count FROM "job" ${whereSql}`
+        ),
+      ]);
+
+      const total = Number(countRows[0]?.count ?? 0);
+      const pageIds = pageRows.map((row) => row.id);
 
       const jobs = await prisma.job.findMany({
         where: { id: { in: pageIds } },
@@ -136,7 +178,6 @@ export class JobService {
 
       // Restore salary-filtered order — IN(...) does not preserve order in PostgreSQL
       const jobMap = new Map(jobs.map((j) => [j.id, j]));
-      // Properly typed — removes undefined with type predicate
       const orderedJobs = pageIds
         .map((id) => jobMap.get(id))
         .filter((job): job is NonNullable<typeof job> => job !== undefined);

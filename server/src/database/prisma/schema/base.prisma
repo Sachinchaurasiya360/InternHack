@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -49,6 +50,7 @@ model user {
   achievements          Json                        @default("[]")
   leetcodeUrl           String?
   unsubscribeDigest     Boolean                     @default(false)
+  trackedPrograms       String[]                    @default([])
   tokenVersion          Int                         @default(0)
   ossTier               String?
   adminProfile          adminProfile?               @relation("AdminProfile")
@@ -61,7 +63,8 @@ model user {
   contributions         companyContribution[]       @relation("UserContributions")
   companyReviews        companyReview[]             @relation("UserReviews")
   dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
-  dsaProblemReports     dsaProblemReport[]          
+  dsaProblemLabels      dsaProblemLabel[]           @relation("StudentDsaProblemLabels")
+  dsaProblemReports     dsaProblemReport[]
   emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
   employeeProfile       employee?                   @relation("EmployeeUser")
   postedJobs            job[]                       @relation("RecruiterJobs")
@@ -85,7 +88,9 @@ model user {
   jobAgentEmailLogs     jobAgentEmailLog[]          @relation("UserJobAgentEmailLogs")
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
+  opensourceStreak      opensourceStreak?
   repoRequests          repoRequest[]               @relation("UserRepoRequests")
+  githubConnection      githubConnection?           @relation("UserGithubConnection")
   guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
   firstPrProgress       studentFirstPrProgress[]    @relation("StudentFirstPrProgress")
@@ -94,6 +99,9 @@ model user {
   roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
   scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
   privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
+  studyBuddyPreferences roadmapStudyBuddyPreference[] @relation("UserStudyBuddyPreferences")
+  studentAPairs        roadmapStudyBuddyPair[]        @relation("StudentAPairs")
+  studentBPairs        roadmapStudyBuddyPair[]        @relation("StudentBPairs")
   generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
   leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
@@ -103,6 +111,14 @@ model user {
   statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
   coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
   ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
+  programInterests          programInterest[]
+  guideCertificates         guideCertificate[]           @relation("UserCertificates")
+  studentNotes              studentNote[]                @relation("StudentNotes")
+  ambassador                ambassador?
+  ambassadorReviews         ambassador[]                @relation("AmbassadorReviewer")
+  shareReviews              ambassadorShare[]           @relation("ShareReviewer")
+  referralConversions       referralConversion[]         @relation("ReferredConversions")
+  guideProgress             guideProgress[]             @relation("UserGuideProgress")
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -133,6 +149,21 @@ model studentFirstPrProgress {
   user user @relation("StudentFirstPrProgress", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model guideProgress {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  guideSlug        String
+  completedStepIds String[] @default([])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user user @relation("UserGuideProgress", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideSlug])
+  @@index([userId])
+  @@index([guideSlug])
 }
 
 model adminProfile {
@@ -499,11 +530,17 @@ model opensourceRepo {
   healthScore          Int            @default(0)
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
-  bookmarks   opensourceBookmark[]
+  bookmarks     opensourceBookmark[]
+  repoRequests  repoRequest[]
 
   @@index([domain])
   @@index([difficulty])
   @@index([language])
+
+  @@index([trending, stars(sort: Desc)])
+  @@index([hacktoberfest, stars(sort: Desc)])
+  @@index([domain, difficulty, stars(sort: Desc)])
+  @@index([healthScore, stars(sort: Desc)])
 }
 
 model opensourceBookmark {
@@ -515,6 +552,17 @@ model opensourceBookmark {
   repo      opensourceRepo  @relation(fields: [repoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, repoId])
+  @@index([userId])
+}
+
+model programInterest {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  programId Int
+  createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, programId])
   @@index([userId])
 }
 
@@ -534,11 +582,68 @@ model repoRequest {
   adminNote   String?
   userId      Int
   user        user              @relation("UserRepoRequests", fields: [userId], references: [id], onDelete: Cascade)
+  repoId      Int?
+  repo        opensourceRepo?   @relation(fields: [repoId], references: [id], onDelete: SetNull)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
   @@index([status])
   @@index([userId])
+  @@index([userId, status])
+}
+
+model githubConnection {
+  id                 Int                     @id @default(autoincrement())
+  userId             Int                     @unique
+  githubUsername     String
+  accessToken        String                  @db.Text
+  connectedAt        DateTime                @default(now())
+  lastSyncAt         DateTime?
+  syncStatus         GithubSyncStatus        @default(PENDING)
+  syncError          String?
+  prsMerged          Int                     @default(0)
+  reposContributed   Int                     @default(0)
+  publicRepos        Int                     @default(0)
+  contributedStars   Int                     @default(0)
+  recentPullRequests githubPullRequest[]     @relation("GithubConnectionPullRequests")
+  contributedRepos   githubContributedRepo[] @relation("GithubConnectionRepos")
+  user               user                    @relation("UserGithubConnection", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([githubUsername])
+  @@index([lastSyncAt])
+}
+
+model githubPullRequest {
+  id           Int              @id @default(autoincrement())
+  connectionId Int
+  githubId     String
+  title        String
+  url          String
+  number       Int
+  mergedAt     DateTime
+  repoName     String
+  repoUrl      String
+  repoStars    Int              @default(0)
+  language     String?
+  connection   githubConnection @relation("GithubConnectionPullRequests", fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, githubId])
+  @@index([connectionId, mergedAt])
+}
+
+model githubContributedRepo {
+  id            Int              @id @default(autoincrement())
+  connectionId  Int
+  nameWithOwner String
+  url           String
+  stars         Int              @default(0)
+  language      String?
+  mergedPrs     Int              @default(0)
+  lastMergedAt  DateTime?
+  connection    githubConnection @relation("GithubConnectionRepos", fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, nameWithOwner])
+  @@index([connectionId, stars])
 }
 
 model blogPost {
@@ -683,6 +788,7 @@ model dsaProblem {
   testCases        dsaTestCase[]
   submissions      dsaSubmission[]
   reports          dsaProblemReport[]
+  labels           dsaProblemLabel[]
 
   @@index([difficulty])
   @@index([leetcodeId])
@@ -724,6 +830,20 @@ model dsaBookmark {
 
   @@unique([studentId, problemId])
   @@index([studentId])
+}
+
+model dsaProblemLabel {
+  id        Int        @id @default(autoincrement())
+  userId    Int
+  problemId Int
+  label     String
+  createdAt DateTime   @default(now())
+  user      user       @relation("StudentDsaProblemLabels", fields: [userId], references: [id], onDelete: Cascade)
+  problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId, label])
+  @@index([userId])
+  @@index([problemId])
 }
 
 model dsaTestCase {
@@ -1256,7 +1376,7 @@ enum AIProviderType {
   GROQ
   OPENROUTER
   CODESTRAL
-  CLAUDE
+  
 }
 
 enum AIServiceType {
@@ -1308,6 +1428,13 @@ enum RepoRequestStatus {
   REJECTED
 }
 
+enum GithubSyncStatus {
+  PENDING
+  SYNCING
+  SUCCESS
+  FAILED
+}
+
 enum RepoDomain {
   AI
   WEB
@@ -1353,10 +1480,12 @@ enum UsageAction {
   GENERATE_RESUME
   JOB_APPLICATION
   MOCK_INTERVIEW
+  BEHAVIORAL_EVAL
   AI_JOB_CHAT
   CODE_RUN
   GITHUB_STATS
   ROADMAP_GENERATION
+  STREAK_TICK
 }
 
 enum EmailCampaignStatus {
@@ -1537,6 +1666,54 @@ model contentView {
   @@index([createdAt])
 }
 
+model opensourceStreak {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @unique
+  currentStreak   Int       @default(0)
+  longestStreak   Int       @default(0)
+  lastActivityAt  DateTime?
+  totalDays       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ossProgram {
+  id                  Int       @id @default(autoincrement())
+  slug                String    @unique
+  name                String
+  short               String
+  description         String
+  fullDescription     String?
+  eligibility         String?
+  eligibilityType     String?
+  stipend             String?
+  stipendPaid         String?
+  stipendRange        String?
+  window              String?
+  region              String?
+  website             String?
+  applyUrl            String?
+  color               String?
+  bgColor             String?
+  tags                String[]  @default([])
+  requirements        String[]  @default([])
+  timeline            Json?
+  howToApply          String?
+  applicationStart    DateTime?
+  applicationDeadline DateTime?
+  resultsDate         DateTime?
+  programStart        DateTime?
+  programEnd          DateTime?
+  active              Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([active])
+  @@index([slug])
+}
+
 model coachAdvice {
   id        Int      @id @default(autoincrement())
   userId    Int
@@ -1548,5 +1725,147 @@ model coachAdvice {
 
   @@index([userId])
   @@index([createdAt])
+}
+model guideCertificate {
+  id          Int      @id @default(autoincrement())
+  token       String   @unique @default(cuid())
+  userId      Int
+  guideName   String
+  issuedAt    DateTime @default(now())
+  studentName String
+  user        user     @relation("UserCertificates", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideName])
+  @@index([userId])
+  @@index([token])
+}
+
+enum NoteContentType {
+  DSA_PROBLEM
+  ROADMAP_TOPIC
+  INTERVIEW_QUESTION
+  APTITUDE_QUESTION
+}
+
+model studentNote {
+  id          Int             @id @default(autoincrement())
+  userId      Int
+  contentType NoteContentType
+  contentId   String
+  note        String          @db.Text
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  user        user            @relation("StudentNotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentType, contentId])
+  @@index([userId])
+  @@index([contentType, contentId])
+  @@index([userId, updatedAt])
+}
+
+model ambassador {
+  id                 Int               @id @default(autoincrement())
+  userId             Int               @unique
+  status             AmbassadorStatus  @default(PENDING)
+  guidesCompleted    Int               @default(0)
+  reposContributed   Int               @default(0)
+  leaderboardRank    Int?
+  accountAgeDays     Int               @default(0)
+  premiumGranted     Boolean           @default(false)
+  premiumGrantedAt   DateTime?
+  appliedAt          DateTime?
+  reviewedAt         DateTime?
+  reviewedBy         Int?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  user          user                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewer      user?                 @relation("AmbassadorReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
+  referralLinks referralLink[]
+  shares        ambassadorShare[]
+  spotlights    ambassadorSpotlight[]
+
+  @@index([status])
+  @@index([userId])
+}
+
+model referralLink {
+  id            String   @id @default(cuid())
+  ambassadorId  Int
+  code          String   @unique
+  url           String
+  label         String?
+  isActive      Boolean  @default(true)
+  clicks        Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  ambassador    ambassador            @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+  conversions   referralConversion[]
+
+  @@index([ambassadorId])
+  @@index([code])
+}
+
+model referralConversion {
+  id              Int      @id @default(autoincrement())
+  referralLinkId  String
+  referredUserId  Int      @unique
+  referredAt      DateTime @default(now())
+
+  link          referralLink          @relation(fields: [referralLinkId], references: [id], onDelete: Cascade)
+  referredUser  user                  @relation("ReferredConversions", fields: [referredUserId], references: [id], onDelete: Cascade)
+
+  @@index([referralLinkId])
+  @@index([referredUserId])
+}
+
+model ambassadorSpotlight {
+  id            Int      @id @default(autoincrement())
+  ambassadorId  Int
+  month         String
+  year          Int
+  title         String?
+  description   String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  ambassador    ambassador @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+
+  @@unique([ambassadorId, month, year])
+  @@index([month, year, isActive])
+}
+
+model ambassadorShare {
+  id            Int         @id @default(autoincrement())
+  ambassadorId  Int
+  platform      String
+  url           String
+  description   String?
+  status        ShareStatus @default(PENDING)
+  adminNotes    String?
+  reviewedAt    DateTime?
+  reviewedBy    Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  ambassador    ambassador  @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+  reviewer      user?       @relation("ShareReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
+
+  @@index([ambassadorId])
+  @@index([status])
+}
+
+enum AmbassadorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ShareStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 

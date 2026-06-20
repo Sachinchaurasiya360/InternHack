@@ -15,12 +15,13 @@ interface RepoCardProps {
 
 const MAX_STAGGER_INDEX = 8;
 
-export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bookmarked, onToggleBookmark }: RepoCardProps) {
+export const RepoCard = React.memo(React.forwardRef<HTMLDivElement, RepoCardProps>(function RepoCard({ repo, index, onSelect, bookmarked, onToggleBookmark }, ref) {
   const badge = difficultyBadge(repo.difficulty);
   const delay = Math.min(index, MAX_STAGGER_INDEX) * 0.04;
 
   return (
     <motion.div
+      ref={ref}
       role="listitem"
       layout
       initial={{ opacity: 0, y: 20 }}
@@ -32,7 +33,7 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bo
       <button
         aria-label={`${repo.name} by ${repo.owner}, ${repo.difficulty} difficulty, ${repo.stars} stars, ${repo.openIssues} open issues${bookmarked ? ", Bookmarked" : ""}`}
         onClick={() => onSelect(repo)}
-        className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer"
+        className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-stone-950"
       >
         {repo.trending && (
           <div className="absolute -top-2 right-12 inline-flex items-center gap-1 rounded-md bg-stone-900 dark:bg-stone-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest text-lime-400">
@@ -86,12 +87,13 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bo
             <div className="flex items-center gap-2 shrink-0 relative z-10">
               <button
                 type="button"
+                aria-label={bookmarked ? `Remove bookmark for ${repo.name}` : `Bookmark ${repo.name}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
                   onToggleBookmark(repo.id);
                 }}
-                className="p-1 text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors"
+                className="p-1 text-stone-400 hover:text-lime-600 dark:hover:text-lime-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-stone-900 rounded-sm"
               >
                 {bookmarked ? <BookmarkCheck size={16} className="text-lime-600 dark:text-lime-400" /> : <Bookmark size={16} />}
               </button>
@@ -184,7 +186,7 @@ export const RepoCard = React.memo(function RepoCard({ repo, index, onSelect, bo
       </button>
     </motion.div>
   );
-});
+}));
 
 export const RepoCardSkeleton = React.memo(function RepoCardSkeleton() {
   return (

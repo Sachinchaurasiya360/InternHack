@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { ReimbursementService } from "./reimbursement.service.js";
 import { createReimbursementSchema, updateReimbursementSchema, approveReimbursementSchema, reimbursementQuerySchema } from "./reimbursement.validation.js";
 
@@ -20,7 +21,8 @@ export class ReimbursementController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const query = reimbursementQuerySchema.parse(req.query);
+      const query = validateRequestData(res, reimbursementQuerySchema, req.query);
+      if (!query) return;
       const data = await this.reimbursementService.getAll(query);
       return res.json(data);
     } catch (error) {

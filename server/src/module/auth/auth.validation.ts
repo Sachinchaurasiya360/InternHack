@@ -50,6 +50,7 @@ export const registerSchema = z.object({
   company: z.string().optional(),
   designation: z.string().optional(),
   contactNo: z.string().optional(),
+  ref: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.role === "RECRUITER") {
     const domain = data.email.split("@")[1]?.toLowerCase();
@@ -60,12 +61,23 @@ export const registerSchema = z.object({
         path: ["email"],
       });
     }
+    if (!data.company || !data.company.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Company name is required for recruiter accounts",
+        path: ["company"],
+      });
+    }
   }
 });
 
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
+});
+
+export const deleteAccountSchema = z.object({
+  password: z.string().min(1, "Password is required to confirm account deletion"),
 });
 
 export const importGitHubSchema = z.object({
@@ -94,6 +106,8 @@ export const updateProfileSchema = z.object({
     techStack: z.array(z.string()).max(10),
     liveUrl: z.string().url().or(z.literal("")).optional(),
     repoUrl: z.string().url().or(z.literal("")).optional(),
+    // Featured Projects (GSSoC '26): YYYY-MM or ISO-8601, normalized in the service
+    builtAt: z.string().optional(),
   })).max(10).optional(),
   achievements: z.array(z.object({
     id: z.string(),

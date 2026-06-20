@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { OnboardingService } from "./onboarding.service.js";
 import { createOnboardingSchema, updateOnboardingItemSchema, onboardingQuerySchema } from "./onboarding.validation.js";
 
@@ -22,7 +23,8 @@ export class OnboardingController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const query = onboardingQuerySchema.parse(req.query);
+      const query = validateRequestData(res, onboardingQuerySchema, req.query);
+      if (!query) return;
       const data = await this.onboardingService.getAll(query);
       return res.json(data);
     } catch (error) {

@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { fadeUp, stagger } from "@/lib/motion-variants";
+import { useState, useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "react-router";
 import { queryKeys } from "../../../lib/query-keys";
@@ -18,6 +20,7 @@ import {
   Star,
   Briefcase,
   ArrowUpRight,
+  Download,
 } from "lucide-react"; 
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api, { SERVER_URL } from "../../../lib/axios";
@@ -33,6 +36,9 @@ import ReviewCard from "./ReviewCard";
 import ReviewForm from "./ReviewForm";
 import SuggestEditModal from "./SuggestEditModal";
 import InterviewExperienceSection from "./InterviewExperienceSection";
+import { GridBackground } from "../../../components/ui/GridBackground";
+import { Button } from "../../../components/ui/button";
+
 
 const SIZE_LABELS: Record<string, string> = {
   STARTUP: "Startup (1-10)",
@@ -42,8 +48,6 @@ const SIZE_LABELS: Record<string, string> = {
   ENTERPRISE: "Enterprise (1000+)",
 };
 
-const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
-const stagger = { show: { transition: { staggerChildren: 0.07 } } };
 
 
 
@@ -88,30 +92,7 @@ function Kicker({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CompanyLogo({ src, label }: { src?: string | null; label: string }) {
-  if (src) {
-    return (
-      <img
-        src={src.startsWith("http") ? src : `${SERVER_URL}${src}`}
-        alt={label}
-        className="w-16 h-16 sm:w-20 sm:h-20 rounded-md object-cover border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 shrink-0"
-      />
-    );
-  }
-  return (
-    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-2xl sm:text-3xl font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
-
-function ContactMark({ label }: { label: string }) {
-  return (
-    <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
 export default function CompanyDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -121,6 +102,10 @@ export default function CompanyDetailPage() {
   const [sortBy, setSortBy] = useState("latest");
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+
 
   const { 
     data: company, 
@@ -155,6 +140,19 @@ export default function CompanyDetailPage() {
     setShowReviewForm(false);
     refetchReviews();
   };
+
+  const handleExportPdf = useReactToPrint({
+    contentRef: contentRef as React.RefObject<HTMLDivElement>,
+    documentTitle: `${company?.name || "Company"}_Profile`,
+    onBeforePrint: () => { setIsExporting(true); return Promise.resolve(); },
+    onAfterPrint: () => setIsExporting(false),
+    onPrintError: (errorType: "onBeforePrint" | "print", error: Error) => {
+      console.error("Failed to generate PDF:", error);
+      const err = error as { message?: string } | null;
+      alert("Failed to generate PDF: " + (err?.message || String(errorType)));
+      setIsExporting(false);
+    }
+  });
 
   const backPath = isInsideLayout ? "/student/companies" : "/companies";
 
@@ -228,16 +226,8 @@ export default function CompanyDetailPage() {
 
   const page = (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 relative">
-      {/* Grid line backdrop */}
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
+
 
       <div className={`relative max-w-6xl mx-auto px-6 pb-16 ${isInsideLayout ? "" : "pt-24"}`}>
         {/* Back link */}
@@ -250,12 +240,12 @@ export default function CompanyDetailPage() {
           </Link>
         </motion.div>
 
-        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-10">
+        <motion.div ref={contentRef} id="company-profile-content" variants={stagger} initial="hidden" animate="show" className="space-y-10">
           {/* Header */}
           <motion.div variants={fadeUp}>
             <Kicker>company / profile</Kicker>
             <div className="mt-4 flex flex-col sm:flex-row sm:items-start gap-5">
-              <CompanyLogo src={company.logo} label={company.name} />
+              <CompanyMark name={company.name} logo={company.logo} size="xl" />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
                   <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
@@ -310,17 +300,30 @@ export default function CompanyDetailPage() {
                     </span>
                   </div>
 
-                  {company.website && (
-                    <a
-                      href={company.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-900 text-sm font-semibold rounded-md hover:bg-lime-500 transition-colors no-underline sm:ml-auto"
+                  <div className="flex items-center gap-3 sm:ml-auto">
+                    <Button
+                      variant="secondary"
+                      onClick={handleExportPdf}
+                      disabled={isExporting}
+                      className="inline-flex items-center gap-2"
                     >
-                      <Globe className="w-4 h-4" /> Visit website
-                      <ArrowUpRight className="w-4 h-4" />
-                    </a>
-                  )}
+                      <Download className="w-4 h-4" />
+                      {isExporting ? "Exporting..." : "Export to PDF"}
+                    </Button>
+                    {company.website && (
+                      <Button variant="primary" asChild>
+                        <a
+                          href={company.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 no-underline"
+                        >
+                          <Globe className="w-4 h-4" /> Visit website
+                          <ArrowUpRight className="w-4 h-4" />
+                        </a>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -429,6 +432,7 @@ export default function CompanyDetailPage() {
                     </select>
                     {isAuthenticated && user?.role === "STUDENT" && (
                       <button
+                        type="button"
                         onClick={() => setShowReviewForm(true)}
                         className="inline-flex items-center gap-2 px-3 py-2 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 text-xs font-bold uppercase tracking-widest rounded-md hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors cursor-pointer whitespace-nowrap"
                       >
@@ -584,7 +588,7 @@ export default function CompanyDetailPage() {
                         className="pb-4 border-b border-stone-100 dark:border-white/5 last:pb-0 last:border-b-0"
                       >
                         <div className="flex items-start gap-3">
-                          <ContactMark label={contact.name} />
+                          <CompanyMark name={contact.name} size="sm" />
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">
                               {contact.name}
@@ -643,6 +647,7 @@ export default function CompanyDetailPage() {
                   </p>
                   <div className="mt-4 space-y-2">
                     <button
+                      type="button"
                       onClick={() => setShowEditModal(true)}
                       className="group w-full inline-flex items-center justify-between gap-2 px-4 py-2.5 rounded-md border border-stone-200 dark:border-white/10 text-sm font-medium text-stone-700 dark:text-stone-300 hover:border-stone-400 dark:hover:border-white/30 transition-colors cursor-pointer bg-transparent"
                     >

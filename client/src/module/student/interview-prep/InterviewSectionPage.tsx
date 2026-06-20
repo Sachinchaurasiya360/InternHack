@@ -1,3 +1,5 @@
+import { SELECT_CLASS } from "@/lib/form-styles";
+import { ProgressBar } from "../../../components/ui/ProgressBar";
 import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
@@ -10,6 +12,8 @@ import { Button } from "../../../components/ui/button";
 import api from "../../../lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { MetaChip } from "../../../components/ui/MetaChip";
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 
 const DIFF_STYLE: Record<string, string> = {
@@ -118,14 +122,7 @@ export default function InterviewSectionPage() {
         canonicalUrl={canonicalUrl(`/learn/interview/${sectionSlug}`)}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}
@@ -144,6 +141,20 @@ export default function InterviewSectionPage() {
               {section.title}
             </h1>
             <p className="mt-3 text-sm text-stone-500 max-w-xl">{section.description}</p>
+            {sectionSlug === "behavioral-interview" && (
+              <div className="mt-4 p-4 border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-sm font-bold text-stone-950 dark:text-white">AI STAR Method Trainer</h4>
+                  <p className="text-xs text-stone-500">Practice your behavioral responses step-by-step and get instant AI-powered validation.</p>
+                </div>
+                <Link
+                  to="/learn/interview/behavioral-interview/trainer"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-lime-500 hover:bg-lime-600 text-stone-950 font-semibold text-xs transition-colors shrink-0"
+                >
+                  Launch AI Trainer →
+                </Link>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3 sm:gap-4 flex-wrap text-[10px] font-mono uppercase tracking-widest text-stone-500">
             <span>
@@ -172,24 +183,13 @@ export default function InterviewSectionPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="mb-8 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md"
+          className="mb-8"
         >
-          <div className="flex items-center justify-between gap-4 mb-2">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              {isLoading ? "syncing progress" : "section progress"}
-            </span>
-            <span className="text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 tabular-nums">
-              {completedCount} / {sectionQuestions.length}
-            </span>
-          </div>
-          <div className="w-full h-1 bg-stone-100 dark:bg-stone-800 overflow-hidden rounded-sm">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="h-full bg-lime-400"
-            />
-          </div>
+          <ProgressBar
+            value={completedCount}
+            max={sectionQuestions.length}
+            label={isLoading ? "syncing progress" : "section progress"}
+          />
         </motion.div>
 
         {/* Section header */}
@@ -210,7 +210,6 @@ export default function InterviewSectionPage() {
 
         {/* Controls Panel */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8 bg-stone-50 dark:bg-stone-900/50 p-4 rounded-md border border-stone-200 dark:border-white/10">
-          
           <div className="flex items-center gap-4 flex-wrap">
             {/* Difficulty Chips */}
             <div className="flex items-center gap-2">
@@ -219,7 +218,7 @@ export default function InterviewSectionPage() {
                 {["All", "Beginner", "Intermediate", "Advanced"].map((level) => (
                   <Button
                     key={level}
-                    variant="ghost" 
+                    variant="ghost"
                     onClick={() => setActiveDifficulty(level)}
                     className={`px-3 py-1.5 text-xs font-mono uppercase tracking-widest rounded-md transition-all cursor-pointer ${
                       activeDifficulty === level
@@ -241,7 +240,7 @@ export default function InterviewSectionPage() {
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className="text-sm bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-lime-400 cursor-pointer"
+                className={SELECT_CLASS}
               >
                 <option value="All">All Companies</option>
                 {availableCompanies.map((company) => (
@@ -259,7 +258,7 @@ export default function InterviewSectionPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="text-sm bg-white dark:bg-stone-950 border border-stone-200 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-lime-400 cursor-pointer"
+              className={SELECT_CLASS}
             >
               <option value="frequency">Most Frequent</option>
               <option value="order">Curated Order</option>

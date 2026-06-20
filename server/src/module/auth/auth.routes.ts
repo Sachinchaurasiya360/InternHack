@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { AuthController } from "./auth.controller.js";
 import { AuthService } from "./auth.service.js";
-import { authMiddleware } from "../../middleware/auth.middleware.js";
+import { authMiddleware, optionalAuthMiddleware } from "../../middleware/auth.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
-import rateLimit from "express-rate-limit";
+import { rateLimit } from "express-rate-limit";
 import { createRateLimitStore } from "../../utils/rate-limit-store.js";
 import {
   validateBody,
@@ -16,6 +16,7 @@ import {
   resetPasswordSchema,
   updateProfileSchema,
   importGitHubSchema,
+  deleteAccountSchema,
 } from "./auth.validation.js";
 
 // ---------------------------------------------------------------------------
@@ -65,9 +66,10 @@ authRouter.post("/verify-email", verifyEmailRateLimit, validateBody(verifyEmailS
 authRouter.post("/resend-otp", resendOtpRateLimit, validateBody(resendOtpSchema), (req, res) => authController.resendOtp(req, res));
 authRouter.post("/forgot-password", forgotPasswordRateLimit, validateBody(forgotPasswordSchema), (req, res) => authController.forgotPassword(req, res));
 authRouter.post("/reset-password", resetPasswordRateLimit, validateBody(resetPasswordSchema), (req, res) => authController.resetPassword(req, res));
-authRouter.post("/logout", (req, res) => authController.logout(req, res));
+authRouter.post("/logout", authMiddleware, (req, res) => authController.logout(req, res));
 authRouter.get("/me", authMiddleware, (req, res) => authController.getProfile(req, res));
 authRouter.put("/me", authMiddleware, validateBody(updateProfileSchema), (req, res) => authController.updateProfile(req, res));
 authRouter.post("/import-github", authMiddleware, validateBody(importGitHubSchema), (req, res) => authController.importGitHub(req, res));
 authRouter.get("/github-stats", authMiddleware, usageLimit("GITHUB_STATS"), (req, res) => authController.getGitHubStats(req, res));
-authRouter.get("/profile/:identifier", authMiddleware, publicProfileRateLimit, (req, res) => authController.getPublicProfile(req, res));
+authRouter.get("/profile/:identifier", optionalAuthMiddleware, publicProfileRateLimit, (req, res) => authController.getPublicProfile(req, res));
+authRouter.delete("/account", authMiddleware, validateBody(deleteAccountSchema), (req, res) => authController.deleteAccount(req, res));

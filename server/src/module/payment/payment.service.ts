@@ -1,4 +1,4 @@
-import DodoPayments from "dodopayments";
+import { DodoPayments } from "dodopayments";
 import { prisma } from "../../database/db.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { premiumConfirmationEmailHtml } from "../../utils/email-templates.js";
@@ -105,7 +105,6 @@ export class PaymentService {
           await prisma.payment.updateMany({
             where: { dodoPaymentId: payment.checkout_session_id },
             data: {
-              dodoPaymentId: payment.payment_id,
               amount: payment.total_amount,
               currency: payment.currency,
               status: "SUCCESS",
@@ -121,7 +120,6 @@ export class PaymentService {
           await prisma.payment.updateMany({
             where: { dodoPaymentId: payment.checkout_session_id },
             data: {
-              dodoPaymentId: payment.payment_id,
               status: "FAILED",
             },
           });
@@ -196,12 +194,57 @@ export class PaymentService {
         return;
       }
 
-      // Link subscription ID and mark payment SUCCESS first, then activate the user.
-      // Order matters: payment record must be linked before any code looks it up by subscription_id.
-      await tx.payment.updateMany({
-        where: { userId, status: "PENDING" },
-        data: { dodoSubscriptionId: sub.subscription_id, status: "SUCCESS" },
+      // Link payment record to subscription. Try SUCCESS first (normal flow),
+      // then fall back to the most recent PENDING record to handle the race
+      // where subscription.active arrives before payment.succeeded.
+      let payment = await tx.payment.findFirst({
+        where: {
+          userId,
+          dodoSubscriptionId: null,
+          status: "SUCCESS",
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        select: { id: true },
       });
+
+      if (!payment) {
+        payment = await tx.payment.findFirst({
+          where: {
+            userId,
+            dodoSubscriptionId: null,
+            status: "PENDING",
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          select: { id: true },
+        });
+      }
+
+      if (!payment) {
+        // No payment record exists yet — create a placeholder that will be
+        // updated to SUCCESS when payment.succeeded arrives
+        await tx.payment.create({
+          data: {
+            userId,
+            amount: 0,
+            currency: "USD",
+            status: "PENDING",
+            dodoSubscriptionId: sub.subscription_id,
+            plan,
+            billing: sub.metadata["billing"] ?? "monthly",
+          },
+        });
+      } else {
+        await tx.payment.update({
+          where: { id: payment.id },
+          data: {
+            dodoSubscriptionId: sub.subscription_id,
+          },
+        });
+      }
 
       // Update user subscription status atomically
       await tx.user.update({

@@ -48,7 +48,7 @@ export function RecentlyViewedSection({ repos, onSelect, onClear }: RecentlyView
               </button>
             ))}
           </div>
-          <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-stone-50 dark:from-stone-950 to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-2 w-8 bg-linear-to-l from-stone-50 dark:from-stone-950 to-transparent pointer-events-none" />
         </div>
       ) : (
         <div className="rounded-md border border-dashed border-stone-200 dark:border-white/10 bg-white/60 dark:bg-stone-900/50 px-4 py-3">

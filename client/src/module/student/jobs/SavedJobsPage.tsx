@@ -1,16 +1,16 @@
+import { formatDate } from "../../../lib/date-utils";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Bookmark, MapPin, IndianRupee, Clock, Trash2, ArrowUpRight, Briefcase } from "lucide-react";
 import { Link } from "react-router";
 import api from "../../../lib/axios";
+import { TagList } from "../../../components/ui/TagList";
 import { MetaChip } from "../../../components/ui/MetaChip";
-
+import { EmptyState } from "../../../components/ui/EmptyState";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job } from "../../../lib/types";
 import { useSaveJob } from "../../../hooks/useSaveJob";
 import { CARD_BASE } from "../../../lib/card-styles";
-
-
 export default function SavedJobsPage() {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.savedJobs.list(),
@@ -72,26 +72,20 @@ export default function SavedJobsPage() {
           </div>
         </div>
       ) : savedJobs.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="py-24 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md flex flex-col items-center gap-4"
-        >
-          <div className="w-14 h-14 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md flex items-center justify-center">
-            <Bookmark className="w-6 h-6 text-stone-400 dark:text-stone-600" />
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-            No saved jobs yet
-          </h2>
-          <p className="text-sm text-stone-500 max-w-xs">
-            Browse jobs and tap the bookmark icon to save them for later.
-          </p>
-          <Link
-            to="/student/jobs"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors no-underline mt-2"
-          >
-            <Briefcase className="w-3.5 h-3.5" /> Browse jobs
-          </Link>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <EmptyState
+            icon={<Bookmark className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+            title="No saved jobs yet"
+            description="Browse jobs and tap the bookmark icon to save them for later."
+            action={
+              <Link
+                to="/student/jobs"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors no-underline mt-2"
+              >
+                <Briefcase className="w-3.5 h-3.5" /> Browse jobs
+              </Link>
+            }
+          />
         </motion.div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -132,18 +126,12 @@ export default function SavedJobsPage() {
                       </MetaChip>
                     ) : (
                       <MetaChip icon={<Clock className="w-3 h-3 text-stone-400" />}>
-                        {new Date(job.deadline).toLocaleDateString()}
+                        {formatDate(job.deadline)}
                       </MetaChip>
                     )
                   )}
                 </div>
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {job.tags?.slice(0, 3).map((tag) => (
-                    <span key={tag} className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <TagList tags={job.tags} />
                 <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
                   <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">view role</span>
                   <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />

@@ -36,15 +36,10 @@ const PROVIDER_INFO: Record<AIProviderType, { label: string; color: string; mode
     label: "Codestral (Mistral)",
     color: "text-emerald-400",
     models: ["codestral-latest", "mistral-large-latest"],
-  },
-  CLAUDE: {
-    label: "Anthropic Claude",
-    color: "text-amber-400",
-    models: ["claude-sonnet-4-20250514", "claude-haiku-4-20250414", "claude-opus-4-20250514"],
-  },
+  }
 };
 
-const PROVIDERS: AIProviderType[] = ["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL", "CLAUDE"];
+const PROVIDERS: AIProviderType[] = ["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL"];
 
 interface ConfigResponse {
   configs: AIServiceConfig[];
@@ -92,7 +87,6 @@ export default function AdminAIProvidersPage() {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-gray-500">{p === "CLAUDE" ? "CLAUDE_API" : `${p}_API_KEY`}</p>
             </div>
           );
         })}

@@ -1,10 +1,10 @@
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate,Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, MapPin, GraduationCap, Linkedin, Github, Globe,
   ExternalLink, FileText, ShieldCheck, Trophy, FolderGit2, Briefcase, Calendar,
-  Phone, Mail, Clock, User,
+  Phone, Mail, Clock, User, Lock
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { LoadingScreen } from "../../../components/LoadingScreen";
@@ -14,7 +14,7 @@ import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import GitHubStatsCard from "./GitHubStatsCard";
 import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
-import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/types";
+import type { ProjectItem, AchievementItem, VerifiedSkill, BadgeDisplay } from "../../../lib/types";
 
 interface PublicProfile {
   id: number;
@@ -42,6 +42,7 @@ interface PublicProfile {
   verifiedSkills: VerifiedSkill[];
   createdAt: string;
   ossTier?: string;
+  badges: BadgeDisplay[];
 }
 
 // ─── TIER COLORS ────────────────────────────────────────────────
@@ -100,12 +101,33 @@ export default function PublicProfilePage() {
   });
 
   if (isLoading) return <LoadingScreen />;
+  
+  if (error) {
+    const status = (error as { response?: { status?: number } })?.response?.status;
+    if (status === 403) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+          <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-md p-8 max-w-md w-full shadow-sm space-y-6">
+            <Lock className="w-12 h-12 text-stone-400 mx-auto" />
+            <div>
+              <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mb-2">This profile is private.</h2>
+              <p className="text-stone-500 dark:text-stone-400">The owner has chosen not to share their profile publicly.</p>
+            </div>
+            <Link to="/" className="inline-block bg-lime-500 hover:bg-lime-600 text-stone-900 font-semibold px-6 py-2.5 rounded-md transition-colors">
+              Return Home
+            </Link>
+          </div>
+        </div>
+      );
+    }
+  }
+
   if (error || !profile) {
     return (
-      <div className="text-center py-20">
-        <h2 className="text-xl font-bold text-gray-950 dark:text-white mb-2">Profile not found</h2>
-        <p className="text-gray-500 mb-4">This student profile doesn't exist or you don't have permission to view it.</p>
-        <Button variant="primary" mode="link" onClick={() => navigate(-1)} className="text-indigo-600 dark:text-indigo-400 hover:underline">Go back</Button>
+      <div className="text-center py-20 space-y-6 p-6">
+        <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-2">Profile not found</h2>
+        <p className="text-stone-500 mb-4">This student profile doesn't exist.</p>
+        <Button variant="primary" mode="link" onClick={() => navigate(-1)} className="text-lime-600 dark:text-lime-500 hover:underline">Go back</Button>
       </div>
     );
   }
@@ -254,12 +276,19 @@ export default function PublicProfilePage() {
               <div className="flex flex-wrap gap-1.5">
                 {profile.skills.map((skill) => {
                   const v = verifiedMap.get(skill.toLowerCase());
-                  return (
-                    <span key={skill} className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"}`}>
+                  const badge = (
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"}`}>
                       {v && <ShieldCheck className="w-3 h-3" />}
                       {skill}
                       {v && <span className="text-[10px] opacity-70">{v.score}%</span>}
                     </span>
+                  );
+                  return v?.token ? (
+                    <Link key={skill} to={`/verify/${v.token}`} className="no-underline" title="View verified skill details">
+                      {badge}
+                    </Link>
+                  ) : (
+                    <span key={skill}>{badge}</span>
                   );
                 })}
               </div>
@@ -288,10 +317,10 @@ export default function PublicProfilePage() {
             </motion.div>
           )}
 
-          {/* Badges */}
+          {/* Badges — uses compact list from profile payload, no separate API call */}
           <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
-            <BadgesSection studentId={profile.id} />
+            <BadgesSection badges={profile.badges} />
           </motion.div>
 
           <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible">

@@ -357,6 +357,6 @@ export const switchAIProviderSchema = z.object({
     "AI_ROADMAP_GENERATION",
     "DSA_CODE_REVIEW",
   ]),
-  provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL", "CLAUDE"]),
+  provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL"]),
   modelName: z.string().min(1, "Model name is required"),
 });

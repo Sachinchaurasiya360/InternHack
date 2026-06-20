@@ -38,13 +38,13 @@ export class AnalyticsService {
     const [totalStats, completedStats] = await Promise.all([
       prisma.contentView.groupBy({
         by: ["contentId"],
-        where: { contentType: "LESSON" },
+        where: { contentType: ContentType.LESSON },
         _avg: { timeSpentMs: true },
         _count: { _all: true },
       }),
       prisma.contentView.groupBy({
         by: ["contentId"],
-        where: { contentType: "LESSON", completed: true },
+        where: { contentType: ContentType.LESSON, completed: true },
         _count: { _all: true },
       }),
     ]);
@@ -55,7 +55,7 @@ export class AnalyticsService {
       const completedCount = completedMap.get(s.contentId) || 0;
       return {
         lessonId: s.contentId,
-        avgTimeSpent: s._avg.timeSpentMs,
+        avgTimeSpent: s._avg.timeSpentMs ?? 0,
         totalViews: s._count._all,
         completionRate: s._count._all > 0 ? (completedCount / s._count._all) * 100 : 0,
       };
@@ -66,13 +66,13 @@ export class AnalyticsService {
     const [totalStats, completedStats] = await Promise.all([
       prisma.contentView.groupBy({
         by: ["contentId"],
-        where: { contentType: "DSA" },
+        where: { contentType: ContentType.DSA },
         _avg: { timeSpentMs: true },
         _count: { _all: true },
       }),
       prisma.contentView.groupBy({
         by: ["contentId"],
-        where: { contentType: "DSA", completed: true },
+        where: { contentType: ContentType.DSA, completed: true },
         _count: { _all: true },
       }),
     ]);
@@ -85,7 +85,7 @@ export class AnalyticsService {
         problemId: s.contentId,
         attemptCount: s._count._all,
         solveRate: s._count._all > 0 ? (completedCount / s._count._all) * 100 : 0,
-        avgTimeToSolve: s._avg.timeSpentMs,
+        avgTimeToSolve: s._avg.timeSpentMs ?? 0,
       };
     });
   }
@@ -94,12 +94,12 @@ export class AnalyticsService {
     const [totalStats, completedStats] = await Promise.all([
       prisma.contentView.groupBy({
         by: ["contentId"],
-        where: { contentType: "INTERVIEW_QUESTION" },
+        where: { contentType: ContentType.INTERVIEW_QUESTION },
         _count: { _all: true },
       }),
       prisma.contentView.groupBy({
         by: ["contentId"],
-        where: { contentType: "INTERVIEW_QUESTION", completed: true },
+        where: { contentType: ContentType.INTERVIEW_QUESTION, completed: true },
         _count: { _all: true },
       }),
     ]);

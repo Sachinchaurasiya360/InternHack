@@ -5,21 +5,23 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "prisma generate --schema=src/database/prisma/schema && tsc",
+    "build": "prisma generate --config src/database/prisma.config.ts && tsc",
     "lint": "eslint src",
-    "typecheck": "tsc --noEmit",
-    "start": "node dist/index.js",
-    "pretest": "prisma generate --schema=src/database/prisma/schema",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.api.json",
     "test": "vitest run",
-    "prisma:generate": "npx prisma generate --config src/database/prisma.config.ts",
-    "seed": "tsx src/database/seeds/seed.ts",
-    "seed:gsoc-repos": "tsx src/database/seeds/seed-gsoc-repos.ts",
-    "seed:admin": "tsx src/database/seeds/seed.ts"
+    "doctor": "tsx scripts/doctor.ts",
+    "seed": "tsx src/database/seeds/seed.ts"
   },
   "keywords": [],
   "author": "Sachin Chaurasiya",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "overrides": {
+    "jsdom": "27.3.0"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",
     "@aws-sdk/client-s3": "^3.1053.0",
@@ -30,8 +32,9 @@
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@prisma/extension-accelerate": "^3.0.1",
-"@types/nodemailer": "^8.0.0",
+    "@types/nodemailer": "^8.0.0",
     "@types/pdfkit": "^0.17.6",
+    "@types/sanitize-html": "^2.16.1",
     "bcryptjs": "^3.0.3",
     "cheerio": "^1.2.0",
     "compression": "^1.8.1",
@@ -46,7 +49,6 @@
     "groq-sdk": "^1.2.0",
     "helmet": "^8.2.0",
     "ioredis": "^5.11.0",
-    "isomorphic-dompurify": "^3.14.0",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
@@ -61,6 +63,7 @@
     "prisma": "^7.8.0",
     "rate-limit-redis": "^5.0.0",
     "resend": "^6.12.3",
+    "sanitize-html": "^2.17.5",
     "xlsx": "^0.18.5",
     "zod": "^4.4.3"
   },

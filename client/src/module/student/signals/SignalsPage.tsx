@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useClearFilters } from "../../../hooks/useClearFilters";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -128,12 +129,12 @@ export default function SignalsPage() {
     setPage(1);
   };
 
-  const clearFilters = () => {
-    setSearch("");
-    setSearchInput("");
-    setSource("");
-    setPage(1);
-  };
+  const clearFilters = useClearFilters([
+    () => setSearch(""),
+    () => setSearchInput(""),
+    () => setSource(""),
+    () => setPage(1),
+  ]);
 
   const changeKind = (next: SignalKind) => {
     setKind(next);
@@ -449,7 +450,7 @@ const SignalCard = ({ signal }: SignalCardProps) => {
         <a
           href={signal.sourceUrl}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
           className="relative pointer-events-auto p-1 -m-1 text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
           title="Open original source"

@@ -12,10 +12,25 @@ import {
   bookmarkBodySchema,
   bulkMigrateBookmarksSchema,
   guideFeedbackSchema,
+  guideProgressUpdateSchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
 const service = new OpensourceService();
+
+const escapeXml = (str: string): string => 
+  str.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  });
+
+const FIRST_PR_ROADMAP_TOTAL_STEPS = 9;
 
 export class OpensourceController {
   async getGlobalStats(req: Request, res: Response, next: NextFunction) {
@@ -314,6 +329,40 @@ export class OpensourceController {
     }
   };
 
+  async getGuideProgress(req: Request, res: Response, next: NextFunction) {
+    try {
+      const guideSlug = req.params.guideSlug as string;
+      const completedStepIds = await service.getGuideProgress(req.user!.id, guideSlug);
+      res.json({ completedStepIds });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async patchGuideProgress(req: Request, res: Response, next: NextFunction) {
+    try {
+      const guideSlug = req.params.guideSlug as string;
+      const parsed = guideProgressUpdateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+
+      const completedStepIds = await service.patchGuideProgress(
+        req.user!.id,
+        guideSlug,
+        parsed.data.completedStepIds,
+      );
+
+      res.json({ completedStepIds });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getFirstPrProgress(req: Request, res: Response, next: NextFunction) {
     try {
       const completedStepIds = await service.getFirstPrProgress(req.user!.id);
@@ -340,6 +389,17 @@ export class OpensourceController {
         stepId,
         completed,
       );
+
+      // Check for completion to auto-issue certificate
+      // Total steps in first-pr roadmap is 9
+      if (completedStepIds.length >= FIRST_PR_ROADMAP_TOTAL_STEPS) {
+        try {
+          await service.issueCertificate(req.user!.id, "First Pull Request Roadmap");
+        } catch (err) {
+          console.error("Failed to auto-issue certificate:", err);
+        }
+      }
+
       res.json({ completedStepIds });
     } catch (err) {
       next(err);
@@ -350,6 +410,20 @@ export class OpensourceController {
     try {
       const repos = await service.getRecommendedRepos(req.user!.id);
       res.json({ repos });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async issueCertificate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { guideName } = req.body;
+      if (!guideName) {
+        res.status(400).json({ message: "guideName is required" });
+        return;
+      }
+      const certificate = await service.issueCertificate(req.user!.id, guideName);
+      res.status(201).json({ certificate });
     } catch (err) {
       next(err);
     }
@@ -383,6 +457,20 @@ export class OpensourceController {
         res.status(404).json({ message: err.message });
         return;
       }
+      next(err);
+    }
+  }
+
+  async getCertificate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.params.token as string;
+      const certificate = await service.getCertificate(token);
+      if (!certificate) {
+        res.status(404).json({ message: "Certificate not found" });
+        return;
+      }
+      res.json({ certificate });
+    } catch (err) {
       next(err);
     }
   }
@@ -438,4 +526,59 @@ export class OpensourceController {
       next(err);
     }
   }
+
+  async getCertificateOgImage(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.params.token as string;
+      const certificate = await service.getCertificate(token);
+      if (!certificate) {
+        res.status(404).json({ message: "Certificate not found" });
+        return;
+      }
+
+      const date = new Date(certificate.issuedAt).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      const escapedStudentName = escapeXml(certificate.studentName);
+      const escapedGuideName = escapeXml(certificate.guideName);
+      const escapedToken = escapeXml(token);
+
+      // SVG Template for the certificate
+      const svg = `
+        <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect width="1200" height="630" fill="#0f172a" />
+          <rect x="20" y="20" width="1160" height="590" rx="20" fill="none" stroke="url(#grad)" stroke-width="4" />
+          
+          <text x="600" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#94a3b8" text-anchor="middle" letter-spacing="4">CERTIFICATE OF COMPLETION</text>
+          
+          <text x="600" y="250" font-family="Arial, sans-serif" font-size="32" fill="#e2e8f0" text-anchor="middle">This is to certify that</text>
+          
+          <text x="600" y="340" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">${escapedStudentName}</text>
+          
+          <text x="600" y="420" font-family="Arial, sans-serif" font-size="32" fill="#e2e8f0" text-anchor="middle">has successfully completed the</text>
+          
+          <text x="600" y="500" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#4f46e5" text-anchor="middle">${escapedGuideName}</text>
+          
+          <text x="600" y="570" font-family="Arial, sans-serif" font-size="20" fill="#94a3b8" text-anchor="middle">Issued on ${date} • Verify at internhack.xyz/certificate/${escapedToken}</text>
+        </svg>
+      `;
+
+      res.setHeader("Content-Type", "image/svg+xml");
+      res.setHeader("Cache-Control", "public, max-age=604800, immutable");
+      res.send(svg);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
+
+

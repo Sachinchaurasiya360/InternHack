@@ -268,7 +268,7 @@ export class AptitudeService {
     const totalQuestions = await prisma.aptitudeQuestion.count();
     milestoneService
       .checkAptitudeMilestone(studentId, totalAnswered, totalQuestions)
-      .catch(() => {});
+      .catch((err) => console.error("Failed to check aptitude milestone:", err));
 
     return {
       correct: isCorrect,
