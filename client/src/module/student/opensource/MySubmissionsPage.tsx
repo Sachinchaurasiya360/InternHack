@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ExternalLink, CheckCircle2, Clock, XCircle, AlertCircle, ArrowLeft } from "lucide-react";
 import api from "../../../lib/axios";
-import { Button } from "../../../components/ui/button";
+import { EmptyState } from "../../../components/ui/EmptyState";
 
 interface RepoRequest {
   id: number;
@@ -86,13 +86,11 @@ export default function MySubmissionsPage() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16">
-          <AlertCircle className="w-10 h-10 text-stone-300 mx-auto mb-3" />
-          <p className="text-sm text-stone-500 font-medium">No {activeTab.toLowerCase()} submissions</p>
-          <Button asChild variant="outline" size="sm" className="mt-4">
-            <Link to="/student/opensource">Suggest a repo</Link>
-          </Button>
-        </div>
+        <EmptyState
+          icon={<AlertCircle className="w-5 h-5 text-stone-400 dark:text-stone-500" />}
+          title={`No ${activeTab.toLowerCase()} submissions`}
+          action={{ label: "Suggest a repo", to: "/student/opensource" }}
+        />
       ) : (
         <div className="space-y-3">
           {filtered.map((req) => (

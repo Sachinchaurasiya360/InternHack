@@ -32,6 +32,7 @@ import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { EmptyState } from "../../../components/ui/EmptyState";
 import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
@@ -701,13 +702,11 @@ export default function RepoDiscoveryPage() {
 
         {/* Empty */}
         {!isLoading && !isLoadingBookmarks && !isError && displayedRepos.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-            <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
-              <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
-            </div>
-            <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">No repositories found</h3>
-            <p className="text-sm text-stone-500 dark:text-stone-400">Try adjusting your search or filters.</p>
-          </div>
+          <EmptyState
+            icon={<Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />}
+            title="No repositories found"
+            description="Try adjusting your search or filters."
+          />
         )}
 
         {/* Cards grid */}
