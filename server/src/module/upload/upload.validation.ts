@@ -16,10 +16,6 @@ const validateS3Url = (url: string): boolean => {
   return validPatterns.some((pattern) => url.startsWith(pattern));
 };
 
-export const deleteResumeSchema = z.object({
-  url: z.string().url("Valid resume URL is required"),
-});
-
 export const presignRequestSchema = z.object({
   fileName: z.string().min(1, "fileName is required"),
   fileType: z.string().min(1, "fileType is required"),
