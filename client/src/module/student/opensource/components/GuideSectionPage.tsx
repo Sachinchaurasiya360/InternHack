@@ -79,14 +79,14 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
           if (hasLocalIds) {
             api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, {
               completedStepIds: [...union],
-            }).catch(() => { /* non-blocking */ });
+            }).catch(() => { console.warn("Failed to sync guide progress to server"); });
           }
 
-          try { localStorage.setItem(storageKey, JSON.stringify([...union])); } catch { /* */ }
+          try { localStorage.setItem(storageKey, JSON.stringify([...union])); } catch { console.warn("Failed to persist guide progress to localStorage"); }
           return union;
         });
       })
-      .catch(() => { /* 404 means no progress yet — keep localStorage default */ })
+      .catch(() => { console.warn("No server progress found — using localStorage default"); })
       .finally(() => {
         if (!cancelled) hydratingRef.current = false;
       });
@@ -97,6 +97,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   try {
     return localStorage.getItem("guide-hint-dismissed") !== "true";
   } catch {
+    console.warn("Failed to read shortcut hint dismissal from localStorage");
     return true;
   }
 });
@@ -108,12 +109,12 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       const next = new Set(prev);
       if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
       const ids = [...next];
-      try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { /* */ }
+      try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { console.warn("Failed to persist guide progress to localStorage"); }
       notifyLearningPathProgressChanged();
 
       if (isAuthenticated && !hydratingRef.current) {
         api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, { completedStepIds: ids })
-          .catch(() => { /* non-blocking */ });
+          .catch(() => { console.warn("Failed to sync guide progress to server"); });
       }
 
       return next;
