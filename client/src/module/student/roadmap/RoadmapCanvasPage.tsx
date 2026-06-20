@@ -64,6 +64,8 @@ import type {
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import { useSocketStore } from "../../../lib/socket.store";
+import { StudyBuddyChat } from "./components/StudyBuddyChat";
 
 interface EnrollmentResponse {
   enrollment: RoadmapEnrollment;
@@ -626,6 +628,21 @@ export default function RoadmapCanvasPage() {
     }
   }, [studyBuddyData]);
 
+  const { connect, disconnect, joinRoom, leaveRoom } = useSocketStore();
+
+  useEffect(() => {
+    connect();
+    return () => disconnect();
+  }, [connect, disconnect]);
+
+  useEffect(() => {
+    if (studyBuddyData?.buddy) {
+      joinRoom(roadmapId!);
+    } else {
+      leaveRoom();
+    }
+  }, [studyBuddyData, roadmapId, joinRoom, leaveRoom]);
+
   const loading = enrollmentsLoading || detailLoading;
   const error = enrollmentsError || detailError;
 
@@ -960,6 +977,13 @@ export default function RoadmapCanvasPage() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.roadmaps.enrollmentAnalytics(enrollmentId),
       });
+
+      if (patch.status === "COMPLETED") {
+        const topic = allTopics.find(t => t.id === topicId);
+        if (topic) {
+          useSocketStore.getState().sendModuleFinished(topicId.toString(), topic.title);
+        }
+      }
     } catch {
       toast.error("Could not save progress");
     }

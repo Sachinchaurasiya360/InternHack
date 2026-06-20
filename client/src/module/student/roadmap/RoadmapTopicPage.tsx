@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link, useParams } from "react-router";
 import { motion } from "framer-motion";
+import { useSocketStore } from "../../../lib/socket.store";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -137,6 +138,11 @@ export default function RoadmapTopicPage() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.roadmaps.enrollmentDetail(enrollmentId),
       });
+
+      // Emit socket event if it's marked as COMPLETED
+      if (patch.status === "COMPLETED") {
+        useSocketStore.getState().sendModuleFinished(topic.id.toString(), topic.title);
+      }
     } catch {
       toast.error("Could not save");
     }

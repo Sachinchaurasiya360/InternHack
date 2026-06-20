@@ -21,7 +21,9 @@ import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { AiHintPanel } from "./components/AiHintPanel";
 import { sanitizeHtml, cleanHint } from "../../../lib/sanitize";
+import { Code2, XCircle, Clock, FileWarning, HelpCircle, Activity, UserCircle2 } from "lucide-react";
 import { DsaCodeEditor } from "./components/DsaCodeEditor";
+import { useSocketStore } from "../../../lib/socket.store";
 import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
 import { DsaConsoleOutput } from "./components/DsaConsoleOutput";
@@ -135,12 +137,16 @@ export default function DsaProblemDetailPage() {
     }
   }, [slug]);
 
+  const { sendCodeUpdate, buddyCode, activeRoom } = useSocketStore();
+  const [viewMode, setViewMode] = useState<"me" | "buddy">("me");
+
   const handleCodeChange = useCallback((val: string) => {
     setCodeMap((prev) => ({ ...prev, [language]: val }));
+    if (activeRoom) sendCodeUpdate(val);
     if (slug) {
       try { localStorage.setItem(`dsa-code-${slug}-${language}`, val); } catch { /* quota */ }
     }
-  }, [language, slug]);
+  }, [language, slug, activeRoom, sendCodeUpdate]);
 
   const handleLoadSubmission = useCallback((code: string, lang: DsaLanguage) => {
     setLanguage(lang);
@@ -611,14 +617,44 @@ export default function DsaProblemDetailPage() {
                 {/* Editor */}
                 <div className="h-[55%] max-lg:h-screen-minus-180 min-h-0 border-b border-stone-200 dark:border-white/10 relative overflow-hidden">
                   {isPremium ? (
-                    <DsaCodeEditor
-                      value={codeMap[language]}
-                      onChange={handleCodeChange}
-                      onRun={handleRun}
-                      language={language}
-                      onLanguageChange={setLanguage}
-                      isRunning={executeMutation.isPending}
-                    />
+                    <div className="h-full flex flex-col relative">
+                      {activeRoom && (
+                        <div className="absolute top-2 right-4 z-20 flex gap-2">
+                          <button
+                            onClick={() => setViewMode("me")}
+                            className={`px-3 py-1 rounded text-xs font-mono font-bold transition-colors ${viewMode === "me" ? "bg-lime-400 text-stone-900" : "bg-stone-800 text-stone-400 hover:text-stone-200"}`}
+                          >
+                            My Code
+                          </button>
+                          <button
+                            onClick={() => setViewMode("buddy")}
+                            className={`px-3 py-1 rounded text-xs font-mono font-bold transition-colors flex items-center gap-1 ${viewMode === "buddy" ? "bg-stone-700 text-stone-50" : "bg-stone-800 text-stone-400 hover:text-stone-200"}`}
+                          >
+                            <UserCircle2 className="w-3 h-3" />
+                            Buddy
+                          </button>
+                        </div>
+                      )}
+                      {viewMode === "me" ? (
+                        <DsaCodeEditor
+                          value={codeMap[language]}
+                          onChange={handleCodeChange}
+                          onRun={handleRun}
+                          language={language}
+                          onLanguageChange={setLanguage}
+                          isRunning={executeMutation.isPending}
+                        />
+                      ) : (
+                        <DsaCodeEditor
+                          value={buddyCode || "// Buddy has not typed anything yet..."}
+                          onChange={() => {}}
+                          onRun={() => {}}
+                          language={language}
+                          onLanguageChange={() => {}}
+                          isRunning={false}
+                        />
+                      )}
+                    </div>
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center bg-stone-950/40 backdrop-blur-[2px] z-10 transition-all">
                       <div className="text-center max-w-xs px-6">

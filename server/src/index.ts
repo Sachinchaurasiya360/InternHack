@@ -88,6 +88,7 @@ import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
+import { initSocket } from "./socket.js";
 
 const logger = createLogger("Index");
 
@@ -381,6 +382,9 @@ app.use(errorMiddleware);
 if (!process.env["VERCEL"]) {
 const server = app.listen(PORT, async () => {
   logger.info(`Server running on http://localhost:${PORT}`);
+
+  // Initialize Socket.io
+  initSocket(server);
 
   // Attach server to shutdown manager
   shutdownManager.attachServer(server);
