@@ -1154,6 +1154,7 @@ export default function RoadmapCanvasPage() {
                 <Button
                   variant="ghost"
                   mode="icon"
+                  aria-label="Linear View"
                   size="sm"
                   onClick={() => setViewMode("LINEAR")}
                   title="Linear View"
@@ -1168,6 +1169,7 @@ export default function RoadmapCanvasPage() {
                 <Button
                   variant="ghost"
                   mode="icon"
+                  aria-label="Grid View"
                   size="sm"
                   onClick={() => setViewMode("GRID")}
                   title="Grid View"
@@ -1182,6 +1184,7 @@ export default function RoadmapCanvasPage() {
                 <Button
                   variant="ghost"
                   mode="icon"
+                  aria-label="Graph View"
                   size="sm"
                   onClick={() => setViewMode("GRAPH")}
                   title="Graph View"
@@ -1394,6 +1397,7 @@ export default function RoadmapCanvasPage() {
                   <Button
                     variant="ghost"
                     mode="icon"
+                    aria-label="Close drawer"
                     size="sm"
                     onClick={() => setDrawerTopicId(null)}
                   >
@@ -1633,6 +1637,7 @@ export default function RoadmapCanvasPage() {
                   <Button
                     variant="ghost"
                     mode="icon"
+                    aria-label="Close drawer"
                     size="sm"
                     onClick={() => setShowBuddyDrawer(false)}
                   >

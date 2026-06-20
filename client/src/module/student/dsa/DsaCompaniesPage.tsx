@@ -714,6 +714,7 @@ export default function DsaCompaniesPage() {
                           <Button
                             variant="ghost"
                             mode="icon"
+                            aria-label="Toggle completion"
                             size="sm"
                             onClick={(e) => { e.stopPropagation(); toggleMutation.mutate(problem.id); }}
                             className="shrink-0"
@@ -768,6 +769,7 @@ export default function DsaCompaniesPage() {
                           <Button
                             variant="ghost"
                             mode="icon"
+                            aria-label="Toggle bookmark"
                             size="sm"
                             onClick={(e) => { e.stopPropagation(); bookmarkMutation.mutate(problem.id); }}
                             className="shrink-0"

@@ -344,6 +344,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               <Button
                 variant="ghost"
                 mode="icon"
+                aria-label="Go back"
                 size="sm"
                 onClick={onBack}
                 className="bg-stone-100 hover:bg-stone-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-md shrink-0"
@@ -543,6 +544,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               <Button
                 variant="ghost"
                 mode="icon"
+                aria-label="Go back"
                 size="sm"
                 onClick={onBack}
                 className="bg-stone-100 hover:bg-stone-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-md shrink-0"
@@ -709,6 +711,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               <Button
                 variant="ghost"
                 mode="icon"
+                aria-label="Go back"
                 size="sm"
                 onClick={onBack}
                 className="bg-stone-100 hover:bg-stone-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-md shrink-0"

@@ -149,6 +149,7 @@ const TrackedGrantCard = memo(function TrackedGrantCard({
           <Button
             variant="ghost"
             mode="icon"
+            aria-label="Delete grant"
             size="sm"
             onClick={() => setConfirmDelete(true)}
             className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 shrink-0"
@@ -269,7 +270,7 @@ function AddGrantModal({
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Add Grant to Tracker
           </h2>
-          <Button variant="ghost" mode="icon" size="sm" onClick={onClose}>
+          <Button variant="ghost" mode="icon" aria-label="Close modal" size="sm" onClick={onClose}>
             <X className="w-4 h-4 text-gray-500 dark:text-gray-500" />
           </Button>
         </div>

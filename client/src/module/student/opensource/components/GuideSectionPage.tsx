@@ -239,6 +239,7 @@ if (!step) return <Navigate to={basePath} replace />;
             <Button
               variant="ghost"
               mode="icon"
+              aria-label="Previous"
               onClick={() => prev && navigate(`${basePath}/${prev.id}`)}
               disabled={!prev}
               className="bg-stone-50 dark:bg-stone-800 rounded-md"
@@ -252,6 +253,7 @@ if (!step) return <Navigate to={basePath} replace />;
             <Button
               variant="ghost"
               mode="icon"
+              aria-label="Next"
               onClick={() => next && navigate(`${basePath}/${next.id}`)}
               disabled={!next}
               className="bg-stone-50 dark:bg-stone-800 rounded-md"
