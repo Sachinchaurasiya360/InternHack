@@ -102,6 +102,7 @@ export interface DsaProgress {
     medium: { total: number; solved: number };
     hard: { total: number; solved: number };
   };
+  solvedSlugs?: string[];
 }
 
 export interface DsaApproachEntry {

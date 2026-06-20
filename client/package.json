@@ -91,6 +91,7 @@
     "globals": "^16.5.0",
     "jsdom": "^29.1.1",
     "puppeteer": "^24.40.0",
+    "react-is": "^19.2.7",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.59.4",
     "vite": "^7.2.4",
