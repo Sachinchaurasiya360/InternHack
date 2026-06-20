@@ -278,6 +278,7 @@ export default function RegisterPage() {
     if (emailError) newErrors.email = emailError;
     if (passwordError) newErrors.password = passwordError;
     if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
+    if (role === "RECRUITER" && !form.company.trim()) newErrors.company = "Company name is required";
     
     if (Object.keys(newErrors).length > 0) {
       setFieldErrors(newErrors);
@@ -288,7 +289,7 @@ export default function RegisterPage() {
 
     try {
       const payload: Record<string, string> = { name: form.name, email: form.email, password: form.password, role };
-      if (role === "RECRUITER" && form.company) payload.company = form.company;
+      if (role === "RECRUITER") payload.company = form.company;
       const ref = searchParams.get("ref");
       if (ref) payload.ref = ref;
       const { data } = await api.post("/auth/register", payload);
@@ -462,12 +463,16 @@ export default function RegisterPage() {
               </FormField>
 
               {isRecruiter && (
-                <FormField label="Company" fieldName="company">
+                <FormField label="Company" error={fieldErrors.company} fieldName="company">
                   <input
                     type="text"
                     value={form.company}
                     onChange={(e) => setForm({ ...form, company: e.target.value })}
-                    className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                    className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                      fieldErrors.company
+                        ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                        : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                    }`}
                     placeholder="Your company name"
                   />
                 </FormField>
