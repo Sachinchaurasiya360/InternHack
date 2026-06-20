@@ -520,6 +520,11 @@ model opensourceRepo {
   @@index([domain])
   @@index([difficulty])
   @@index([language])
+
+  @@index([trending, stars(sort: Desc)])
+  @@index([hacktoberfest, stars(sort: Desc)])
+  @@index([domain, difficulty, stars(sort: Desc)])
+  @@index([healthScore, stars(sort: Desc)])
 }
 
 model opensourceBookmark {
