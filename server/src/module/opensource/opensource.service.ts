@@ -12,7 +12,7 @@ interface ListReposQuery {
   page: number;
   limit: number;
   search?: string;
-  language?: string;
+  language?: string[];
   difficulty?: string;
   domain?: string;
   sortBy: string;
@@ -125,7 +125,7 @@ export class OpensourceService {
     } = query;
     const skip = (page - 1) * limit;
     const where: Record<string, unknown> = {};
-    if (language) where.language = { equals: language, mode: "insensitive" };
+    if (language && language.length > 0) where.language = { in: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
     if (trending === "true") where["trending"] = true;

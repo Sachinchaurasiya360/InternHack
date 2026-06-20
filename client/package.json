@@ -8,8 +8,8 @@
     "build": "npx puppeteer browsers install chrome && vite build",
     "lint": "eslint .",
     "typecheck": "tsc -b",
-    "test": "vitest run",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.3",

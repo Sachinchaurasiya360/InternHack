@@ -15,6 +15,7 @@ vi.mock("../database/db.js", () => ({
       create: vi.fn(),
       findMany: vi.fn(),
       findUnique: vi.fn(),
+      count: vi.fn(),
     },
     opensourceBookmark: {
       findMany: vi.fn(),
@@ -184,5 +185,80 @@ describe("OpensourceService.approveRepoRequest", () => {
     });
     expect(result).toBeDefined();
     expect(result.id).toBe(REPO_ID);
+  });
+});
+
+describe("OpensourceService.listRepos — multi-language filter", () => {
+  const baseQuery = {
+    page: 1,
+    limit: 20,
+    sortBy: "stars",
+    sortOrder: "desc" as const,
+  };
+
+  it("queries with { in: [...] } for multiple languages", async () => {
+    vi.mocked(prisma.opensourceRepo.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.opensourceRepo.count).mockResolvedValue(0);
+
+    await service.listRepos({
+      ...baseQuery,
+      language: ["Python", "TypeScript"],
+    });
+
+    expect(prisma.opensourceRepo.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          language: { in: ["Python", "TypeScript"], mode: "insensitive" },
+        }),
+      }),
+    );
+  });
+
+  it("still works correctly with a single language", async () => {
+    vi.mocked(prisma.opensourceRepo.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.opensourceRepo.count).mockResolvedValue(0);
+
+    await service.listRepos({ ...baseQuery, language: ["Go"] });
+
+    expect(prisma.opensourceRepo.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          language: { in: ["Go"], mode: "insensitive" },
+        }),
+      }),
+    );
+  });
+
+  it("returns empty result when no repos match any selected language", async () => {
+    vi.mocked(prisma.opensourceRepo.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.opensourceRepo.count).mockResolvedValue(0);
+
+    const result = await service.listRepos({
+      ...baseQuery,
+      language: ["NonexistentLang"],
+    });
+
+    expect(result.repos).toEqual([]);
+    expect(result.pagination.total).toBe(0);
+  });
+
+  it("does not filter by language when none are selected", async () => {
+    vi.mocked(prisma.opensourceRepo.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.opensourceRepo.count).mockResolvedValue(0);
+
+    await service.listRepos({ ...baseQuery, language: undefined });
+
+    const callArgs = vi.mocked(prisma.opensourceRepo.findMany).mock.calls[0][0];
+    expect(callArgs!.where).not.toHaveProperty("language");
+  });
+
+  it("does not filter by language for empty array", async () => {
+    vi.mocked(prisma.opensourceRepo.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.opensourceRepo.count).mockResolvedValue(0);
+
+    await service.listRepos({ ...baseQuery, language: [] });
+
+    const callArgs = vi.mocked(prisma.opensourceRepo.findMany).mock.calls[0][0];
+    expect(callArgs!.where).not.toHaveProperty("language");
   });
 });

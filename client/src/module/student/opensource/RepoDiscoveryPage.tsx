@@ -35,7 +35,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
-import { formatCount, difficultyBadge } from "./_shared/repo-utils";
+import { formatCount, difficultyBadge, buildLanguageParam } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
@@ -262,19 +262,14 @@ export default function RepoDiscoveryPage() {
   };
 
   const queryParams = useMemo(() => {
-    const params: Record<string, string | number> = { page, limit: 12, sort: sortKey, sortOrder: "desc" };
+    const params: Record<string, string | number | string[]> = { page, limit: 12, sort: sortKey, sortOrder: "desc" };
 
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
 
-    if (languageMode === "auto") {
-      if (inferredLanguages.length > 0) {
-        params.language = inferredLanguages[0];
-      }
-    } else if (selectedLanguage.length > 0) {
-      params.language = selectedLanguage[0];
-    }
+    const languageParam = buildLanguageParam(languageMode, selectedLanguage, inferredLanguages);
+    if (languageParam) params.language = languageParam;
 
     if (trendingOnly) params.trending = "true";
     if (hacktoberfestOnly) params.hacktoberfest = "true";
