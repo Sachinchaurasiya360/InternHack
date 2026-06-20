@@ -193,4 +193,9 @@ jobs:
       - name: Scan for committed secrets/keys
         run: |
           echo "Scanning codebase for potential hardcoded secrets..."
-          grep -rnE "(password|secret|private_key|api_key|token)[[:space:]]*=[[:space:]]*['\"][a-zA-Z0-9_-]{20,}['\"]" client/src/ server/src/ --exclude-dir=node_modules || echo "No plain secrets found or ignored"
+          if grep -rnE "(password|secret|private_key|api_key|token)[[:space:]]*=[[:space:]]*['\"][a-zA-Z0-9_-]{20,}['\"]" client/src/ server/src/ --exclude-dir=node_modules; then
+            echo "Error: Potential hardcoded secrets found!"
+            exit 1
+          else
+            echo "No plain secrets found."
+          fi
