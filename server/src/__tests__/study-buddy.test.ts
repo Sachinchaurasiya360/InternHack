@@ -325,6 +325,29 @@ describe("StudyBuddyService", () => {
 
       const res = await service.findAndCreateMatch(1, 10);
 
+      expect(prisma.roadmapEnrollment.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 50,
+          where: expect.objectContaining({
+            roadmapId: 10,
+            user: expect.objectContaining({
+              studentAPairs: {
+                none: {
+                  roadmapId: 10,
+                  active: true,
+                },
+              },
+              studentBPairs: {
+                none: {
+                  roadmapId: 10,
+                  active: true,
+                },
+              },
+            }),
+          }),
+        }),
+      );
+
       expect(prisma.roadmapStudyBuddyPair.create).toHaveBeenCalledWith({
         data: {
           roadmapId: 10,
@@ -444,6 +467,29 @@ describe("StudyBuddyService", () => {
       );
 
       const result = await service.findAndCreateMatch(1, 10);
+
+      expect(prisma.roadmapEnrollment.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 50,
+          where: expect.objectContaining({
+            roadmapId: 10,
+            user: expect.objectContaining({
+              studentAPairs: {
+                none: {
+                  roadmapId: 10,
+                  active: true,
+                },
+              },
+              studentBPairs: {
+                none: {
+                  roadmapId: 10,
+                  active: true,
+                },
+              },
+            }),
+          }),
+        }),
+      );
 
       expect(prisma.roadmapStudyBuddyPair.create).toHaveBeenCalledWith({
         data: {
