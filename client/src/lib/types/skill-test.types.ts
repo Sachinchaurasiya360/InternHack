@@ -134,3 +134,16 @@ export interface StudentBadge {
   badge: Badge;
   earnedAt: string;
 }
+
+/** Compact badge shape returned in public profile payload — no heavy criteria. */
+export interface BadgeDisplay {
+  id: number;
+  earnedAt: string;
+  badge: {
+    id: number;
+    name: string;
+    slug: string;
+    iconUrl?: string;
+    category: BadgeCategory;
+  };
+}

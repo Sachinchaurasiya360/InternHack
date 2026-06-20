@@ -5,6 +5,8 @@ import type { Prisma, BadgeCategory, badge } from "@prisma/client";
 
 const BADGES_CACHE_KEY = "badges:active";
 const BADGES_TTL = 300; // 5 minutes
+const BADGE_DISPLAY_TTL = 300;
+const BADGE_DISPLAY_CACHE_PREFIX = "student:badges:";
 
 interface CreateBadgeInput {
   name: string;
@@ -36,6 +38,21 @@ export class BadgeService {
     });
   }
 
+  // Fields needed for badge display (excludes heavy JSON criteria)
+  private readonly displaySelect = {
+    id: true,
+    earnedAt: true,
+    badge: {
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        iconUrl: true,
+        category: true,
+      },
+    },
+  } as const;
+
   // ==================== STUDENT ====================
 
   async getStudentBadges(studentId: number) {
@@ -46,6 +63,22 @@ export class BadgeService {
         badge: true,
       },
     });
+  }
+
+  /** Lightweight badge display list — no criteria, cached per student. */
+  async getStudentBadgesDisplay(studentId: number) {
+    const cacheKey = `${BADGE_DISPLAY_CACHE_PREFIX}${studentId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
+    const badges = await prisma.studentBadge.findMany({
+      where: { studentId },
+      select: this.displaySelect,
+      orderBy: { earnedAt: "desc" },
+    });
+
+    await cacheSet(cacheKey, badges, BADGE_DISPLAY_TTL);
+    return badges;
   }
 
   // ==================== ADMIN CRUD ====================
@@ -313,6 +346,7 @@ export class BadgeService {
         data: toAward.map((badgeId) => ({ studentId, badgeId })),
         skipDuplicates: true,
       });
+      await cacheDel(`${BADGE_DISPLAY_CACHE_PREFIX}${studentId}`);
     }
 
     return newlyAwarded;
