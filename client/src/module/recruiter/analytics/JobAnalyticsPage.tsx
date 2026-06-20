@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { useParams, Link } from "react-router";
-import { ArrowLeft, TrendingDown } from "lucide-react";
+import { ArrowLeft, TrendingDown, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
+import { Button } from "../../../components/ui/button";
 
 interface AnalyticsData {
   jobId: number;
@@ -26,16 +27,41 @@ export default function JobAnalyticsPage() {
   const { id: jobId } = useParams();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const loadAnalytics = useCallback(() => {
+    setLoading(true);
+    setError(false);
     api.get(`/recruiter/jobs/${jobId}/analytics`).then((res) => {
       setData(res.data);
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }).catch(() => {
+      setLoading(false);
+      setError(true);
+    });
   }, [jobId]);
 
+  useEffect(() => { loadAnalytics(); }, [loadAnalytics]);
+
   if (loading) return <LoadingScreen />;
-  if (!data) return <div className="text-center text-gray-500 dark:text-gray-500">Failed to load analytics</div>;
+  if (error) return (
+    <div className="max-w-4xl mx-auto p-6">
+      <SEO title="Job Analytics" noIndex />
+      <Link to="/recruiters/jobs" className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 no-underline">
+        <ArrowLeft className="w-4 h-4" /> Back to Jobs
+      </Link>
+      <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
+        <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-xl border border-red-100 dark:border-red-800/30 mb-4">
+          <p className="text-red-600 dark:text-red-400 font-medium mb-1">Failed to load analytics</p>
+          <p className="text-sm text-red-500 dark:text-red-300">Could not fetch analytics data. Please check the link or try again.</p>
+        </div>
+        <Button variant="primary" mode="button" onClick={loadAnalytics}>
+          <RefreshCw className="w-4 h-4" /> Retry
+        </Button>
+      </div>
+    </div>
+  );
+  if (!data) return null;
 
   const maxSubmissions = Math.max(...data.roundAnalytics.map((r) => r.totalSubmissions), 1);
 
