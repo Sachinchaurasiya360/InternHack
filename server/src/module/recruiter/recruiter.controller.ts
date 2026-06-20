@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { RecruiterService } from "./recruiter.service.js";
 import { createLogger } from "../../utils/logger.js";
 import {
@@ -19,7 +19,7 @@ export class RecruiterController {
 
   // ==================== ROUND MANAGEMENT ====================
 
-  async createRound(req: Request, res: Response) {
+  async createRound(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -39,11 +39,11 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to create round", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async getRounds(req: Request, res: Response) {
+  async getRounds(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -58,11 +58,11 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to get rounds", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async updateRound(req: Request, res: Response) {
+  async updateRound(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -83,11 +83,11 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to update round", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async deleteRound(req: Request, res: Response) {
+  async deleteRound(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -103,11 +103,11 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to delete round", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async reorderRounds(req: Request, res: Response) {
+  async reorderRounds(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -126,13 +126,13 @@ export class RecruiterController {
         if (error.message === "Invalid round IDs") return res.status(400).json({ message: error.message });
       }
       logger.error("Failed to reorder rounds", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
   // ==================== APPLICATION MANAGEMENT ====================
 
-  async getApplications(req: Request, res: Response) {
+  async getApplications(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -150,11 +150,11 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to get applications", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async getApplicationDetail(req: Request, res: Response) {
+  async getApplicationDetail(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -169,11 +169,11 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to get application detail", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async updateApplicationStatus(req: Request, res: Response) {
+  async updateApplicationStatus(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -192,11 +192,11 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to update application status", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async advanceApplication(req: Request, res: Response) {
+  async advanceApplication(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -212,13 +212,13 @@ export class RecruiterController {
         if (error.message === "No rounds are configured for this job. Please add at least one round before advancing applicants.") return res.status(422).json({ message: error.message });
       }
       logger.error("Failed to advance application", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
   // ==================== EVALUATION ====================
 
-  async getSubmission(req: Request, res: Response) {
+  async getSubmission(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -234,11 +234,11 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to get submission", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async evaluateSubmission(req: Request, res: Response) {
+  async evaluateSubmission(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -269,13 +269,13 @@ export class RecruiterController {
         if (error.message.startsWith("Evaluation score")) return res.status(400).json({ message: error.message });
       }
       logger.error("Failed to evaluate submission", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
   // ==================== DASHBOARD & ANALYTICS ====================
 
-  async getDashboard(req: Request, res: Response) {
+  async getDashboard(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -283,11 +283,11 @@ export class RecruiterController {
       return res.status(200).json(data);
     } catch (error) {
       logger.error("Failed to get dashboard", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async searchTalent(req: Request, res: Response) {
+  async searchTalent(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -302,11 +302,11 @@ export class RecruiterController {
       return res.status(200).json(data);
     } catch (error) {
       logger.error("Failed to search talent", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async getJobAnalytics(req: Request, res: Response) {
+  async getJobAnalytics(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -321,35 +321,35 @@ export class RecruiterController {
         if (error.message === "Not authorized") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to get job analytics", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
   // ==================== SAVED CANDIDATES ====================
 
-  async getSavedCandidates(req: Request, res: Response) {
+  async getSavedCandidates(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       const saved = await this.recruiterService.getSavedCandidates(req.user.id);
       return res.status(200).json({ saved });
     } catch (error) {
       logger.error("Failed to get saved candidates", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async getSavedIds(req: Request, res: Response) {
+  async getSavedIds(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       const ids = await this.recruiterService.getSavedIds(req.user.id);
       return res.status(200).json({ ids });
     } catch (error) {
       logger.error("Failed to get saved IDs", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async saveCandidate(req: Request, res: Response) {
+  async saveCandidate(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -366,11 +366,11 @@ export class RecruiterController {
         if (error.message === "Student not found") return res.status(404).json({ message: error.message });
       }
       logger.error("Failed to save candidate", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 
-  async unsaveCandidate(req: Request, res: Response) {
+  async unsaveCandidate(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
@@ -382,7 +382,7 @@ export class RecruiterController {
       return res.status(200).json({ message: "Candidate removed" });
     } catch (error) {
       logger.error("Failed to unsave candidate", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   }
 }
