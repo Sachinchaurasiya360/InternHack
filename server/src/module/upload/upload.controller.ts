@@ -46,13 +46,17 @@ function isValidS3FileUrl(url: unknown): url is string {
 }
 
 /** Delete a file - keeps local fallback support just in case users have legacy local files */
-function deleteFile(url: string): void {
+async function deleteFile(url: string): Promise<void> {
   const s3Key = getS3KeyFromUrl(url);
   if (s3Key) {
-    deleteFromS3(s3Key).catch((err) => console.error("Failed to delete from S3:", err));
+    try {
+      await deleteFromS3(s3Key);
+    } catch (err) {
+      logger.warn("Failed to delete old file from S3 (file may be orphaned):", err);
+    }
   } else if (url.startsWith("/uploads/")) {
     const absPath = path.join(UPLOADS_DIR, "..", url);
-    fs.unlink(absPath, (err) => { if (err) console.error("Failed to delete local file:", err); });
+    fs.unlink(absPath, (err) => { if (err) logger.warn("Failed to delete local file:", err); });
   }
 }
 
@@ -125,7 +129,7 @@ export class UploadController {
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
-      if (current?.profilePic) deleteFile(current.profilePic);
+      if (current?.profilePic) await deleteFile(current.profilePic);
 
       if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
       if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
@@ -157,7 +161,7 @@ export class UploadController {
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
-      if (current?.coverImage) deleteFile(current.coverImage);
+      if (current?.coverImage) await deleteFile(current.coverImage);
 
       if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
       if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
@@ -189,7 +193,7 @@ export class UploadController {
       let updatedResumes = current?.resumes ?? [];
       if (updatedResumes.length >= MAX_RESUMES) {
         const oldest = updatedResumes[0]!;
-        deleteFile(oldest);
+        await deleteFile(oldest);
         updatedResumes = [...updatedResumes.slice(1), fileUrl];
       } else {
         updatedResumes = [...updatedResumes, fileUrl];
@@ -236,7 +240,7 @@ export class UploadController {
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
-      deleteFile(url);
+      await deleteFile(url);
       const signedResumes = await signUrls(user.resumes);
       
       return res.status(200).json({ message: "Resume deleted", user: { ...user, resumes: signedResumes } });
