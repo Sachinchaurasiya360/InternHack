@@ -530,4 +530,8 @@ app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
 
+// Named export for the api/ function entry; default export so Vercel's Node
+// runtime can serve the Express app directly ("default export must be a
+// function or server") when it treats this module as the server.
 export { app };
+export default app;
