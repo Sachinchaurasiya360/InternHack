@@ -347,6 +347,11 @@ export class AuthService {
       const randomPassword = crypto.randomBytes(32).toString("hex");
       const hashedPassword = await hashPassword(randomPassword);
 
+      /**
+       * Derive a company name for recruiter accounts from the Google email domain.
+       * e.g. "jane@microsoft.com" → "Microsoft". Falls back to "Company" if
+       * the domain segment cannot be parsed.
+       */
       let companyName: string | null = null;
       if (data.role === "RECRUITER") {
         const domain = email.split("@")[1];

@@ -1,3 +1,8 @@
+/**
+ * @file Unit tests for the registerSchema Zod validator.
+ * Covers student/recruiter success paths and recruiter-specific rejections:
+ * missing company name, whitespace-only company, and personal email domains.
+ */
 import { describe, it, expect } from "vitest";
 import { registerSchema } from "../auth.validation.js";
 

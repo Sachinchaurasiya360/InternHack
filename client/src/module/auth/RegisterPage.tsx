@@ -392,7 +392,8 @@ export default function RegisterPage() {
                     setRole("STUDENT");
                     setForm((prev) => ({ ...prev, company: "" }));
                     setFieldErrors((prev) => {
-                      const { company, ...rest } = prev;
+                      const rest = { ...prev };
+                      delete rest.company;
                       return rest;
                     });
                   }}
