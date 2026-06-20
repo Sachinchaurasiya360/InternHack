@@ -1,9 +1,15 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import type { Response } from "express";
 import { setTokenCookie, clearTokenCookie } from "../utils/cookie.utils.js";
 
 describe("cookie.utils", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("should set the token cookie correctly", () => {
+    vi.stubEnv("NODE_ENV", "test");
+
     const res = {
       cookie: vi.fn(),
     } as unknown as Response;
@@ -20,8 +26,7 @@ describe("cookie.utils", () => {
   });
 
   it("should set secure cookie when NODE_ENV is production", () => {
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "production";
+    vi.stubEnv("NODE_ENV", "production");
 
     const res = {
       cookie: vi.fn(),
@@ -36,11 +41,11 @@ describe("cookie.utils", () => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     });
-
-    process.env.NODE_ENV = originalEnv;
   });
 
   it("should clear the token cookie correctly", () => {
+    vi.stubEnv("NODE_ENV", "test");
+
     const res = {
       clearCookie: vi.fn(),
     } as unknown as Response;

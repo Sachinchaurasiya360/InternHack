@@ -604,14 +604,17 @@ export class AuthService {
     if (!isOwner && !isVisitorAuthorized) {
       delete (rest as any).email;
       delete (rest as any).contactNo;
-      // We will keep resumes for now as per normal portfolio behavior, but sensitive identifiers are stripped.
     }
 
     await signProfileMedia(rest as Record<string, any>);
 
+    // Fetch lightweight badge display list — no heavy criteria JSON
+    const badges = await badgeService.getStudentBadgesDisplay(user.id);
+
     const result = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
+      badges,
     };
     await cacheSet(cacheKey, result, PROFILE_TTL);
     return result;

@@ -126,6 +126,16 @@ opensourceRouter.patch("/first-pr/progress", authMiddleware, requireRole("STUDEN
   controller.patchFirstPrProgress(req, res, next),
 );
 
+// ─── Guide Progress Routes ───────────────────────────────────────
+
+opensourceRouter.get("/guide-progress/:guideSlug", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.getGuideProgress(req, res, next),
+);
+
+opensourceRouter.patch("/guide-progress/:guideSlug", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
+  controller.patchGuideProgress(req, res, next),
+);
+
 // ─── Certificate Routes ─────────────────────────────────────────
 opensourceRouter.post("/certificate/issue", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.issueCertificate(req, res, next),

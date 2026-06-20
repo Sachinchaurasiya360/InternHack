@@ -6,6 +6,7 @@ import {
   updateTopicProgress,
   recomputePace,
   updateEnrollmentStreak,
+  getEnrollmentAnalyticsBatchForUser,
 } from "../module/roadmap/roadmap.service.js";
 import { prisma } from "../database/db.js";
 import { invalidateRecommendations } from "../module/recommendation/recommendation.service.js";
@@ -23,6 +24,7 @@ vi.mock("../database/db.js", () => ({
     roadmapEnrollment: {
       findFirst: vi.fn(),
       findUnique: vi.fn(),
+      findMany: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
     },
@@ -840,5 +842,88 @@ describe("recomputePace", () => {
     }[];
     const allSlugs = plan.flatMap((w) => w.topicSlugs);
     expect(allSlugs).toEqual(["done-1", "done-2", "todo-1"]);
+  });
+});
+
+describe("getEnrollmentAnalyticsBatchForUser", () => {
+  it("returns analytics for multiple enrollments without N+1 queries", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findMany).mockResolvedValue([
+      {
+        id: 1,
+        startDate: new Date("2026-01-01"),
+        targetEndDate: new Date("2026-02-01"),
+        weeklyPlan: [],
+        roadmap: {
+          topicCount: 10,
+        },
+        topicProgress: [
+          {
+            status: "COMPLETED",
+            completedAt: new Date("2026-01-02"),
+          },
+          {
+            status: "COMPLETED",
+            completedAt: new Date("2026-01-03"),
+          },
+          {
+            status: "IN_PROGRESS",
+            completedAt: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        startDate: new Date("2026-01-01"),
+        targetEndDate: new Date("2026-03-01"),
+        weeklyPlan: [],
+        roadmap: {
+          topicCount: 20,
+        },
+        topicProgress: [
+          {
+            status: "COMPLETED",
+            completedAt: new Date("2026-01-04"),
+          },
+        ],
+      },
+    ] as any);
+
+    const analytics =
+      await getEnrollmentAnalyticsBatchForUser({
+        userId: USER_ID,
+      });
+
+    expect(analytics).toHaveLength(2);
+
+    expect(analytics[0]).toMatchObject({
+      enrollmentId: 1,
+      actualTopicsCompleted: 2,
+    });
+
+    expect(analytics[1]).toMatchObject({
+      enrollmentId: 2,
+      actualTopicsCompleted: 1,
+    });
+
+    expect(
+      prisma.roadmapEnrollment.findMany,
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns an empty array when the user has no enrollments", async () => {
+    vi.mocked(
+      prisma.roadmapEnrollment.findMany,
+    ).mockResolvedValue([]);
+
+    const analytics =
+      await getEnrollmentAnalyticsBatchForUser({
+        userId: USER_ID,
+      });
+
+    expect(analytics).toEqual([]);
+
+    expect(
+      prisma.roadmapEnrollment.findMany,
+    ).toHaveBeenCalledTimes(1);
   });
 });

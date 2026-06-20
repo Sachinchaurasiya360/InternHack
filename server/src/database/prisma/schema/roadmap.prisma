@@ -232,6 +232,11 @@ model roadmapStudyBuddyPair {
   @@index([roadmapId])
   @@index([studentAId])
   @@index([studentBId])
+
+  @@index([roadmapId, active])
+  @@index([roadmapId, active, studentAId])
+  @@index([roadmapId, active, studentBId])
+
   @@unique([roadmapId, studentAId], map: "unique_active_pair_student_a", where: { active: true })
   @@unique([roadmapId, studentBId], map: "unique_active_pair_student_b", where: { active: true })
 }

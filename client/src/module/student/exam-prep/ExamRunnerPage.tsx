@@ -89,6 +89,54 @@ export default function ExamRunnerPage({ mode }: { mode: Mode }) {
     return () => clearInterval(t);
   }, [submitted, questions.length, paused]);
 
+  useEffect(() => {
+    if (submitted && exam) {
+      const correct = questions.filter((q) => answers[q.id] === q.correctIndex).length;
+      const scorePct = Math.round((correct / questions.length) * 100);
+      const passed = scorePct >= exam.passCutoff;
+      const historyKey = "exam-attempts-history";
+      try {
+        const raw = localStorage.getItem(historyKey);
+        const history = raw ? JSON.parse(raw) : {};
+        const existingData = history[exam.id] || {};
+        
+        const attempts = Array.isArray(existingData.attempts) ? existingData.attempts : [];
+        if (existingData.completedAt && attempts.length === 0) {
+          attempts.push({
+            completedAt: existingData.completedAt,
+            correct: existingData.correct,
+            total: existingData.total,
+            scorePct: existingData.scorePct,
+            passed: existingData.passed,
+            mode: existingData.mode,
+            sectionId: existingData.sectionId,
+          });
+        }
+        
+        const newAttempt = {
+          completedAt: new Date().toISOString(),
+          correct,
+          total: questions.length,
+          scorePct,
+          passed,
+          mode,
+          sectionId: mode === "section" ? sectionId : undefined,
+        };
+        
+        attempts.unshift(newAttempt);
+        
+        history[exam.id] = {
+          ...newAttempt,
+          attempts,
+        };
+        localStorage.setItem(historyKey, JSON.stringify(history));
+      } catch (e) {
+        console.error("Failed to save exam history to localStorage", e);
+      }
+    }
+  }, [submitted, exam, questions, answers, mode, sectionId]);
+
+
   if (!exam) return <Navigate to="/learn/exam-prep" replace />;
   if (!questions.length) {
     return (

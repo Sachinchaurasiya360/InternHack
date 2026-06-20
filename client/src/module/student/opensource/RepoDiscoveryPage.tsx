@@ -32,10 +32,11 @@ import { SEO } from "../../../components/SEO";
 import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { EmptyState } from "../../../components/ui/EmptyState";
 import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
-import { formatCount, difficultyBadge } from "./_shared/repo-utils";
+import { formatCount, difficultyBadge, buildLanguageParam } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { GuidanceCards } from "./GuidanceCards";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
@@ -262,19 +263,14 @@ export default function RepoDiscoveryPage() {
   };
 
   const queryParams = useMemo(() => {
-    const params: Record<string, string | number> = { page, limit: 12, sort: sortKey, sortOrder: "desc" };
+    const params: Record<string, string | number | string[]> = { page, limit: 12, sort: sortKey, sortOrder: "desc" };
 
     if (search.trim()) params.search = search.trim();
     if (selectedDomain !== "ALL") params.domain = selectedDomain;
     if (selectedDifficulty !== "ALL") params.difficulty = selectedDifficulty;
 
-    if (languageMode === "auto") {
-      if (inferredLanguages.length > 0) {
-        params.language = inferredLanguages[0];
-      }
-    } else if (selectedLanguage.length > 0) {
-      params.language = selectedLanguage[0];
-    }
+    const languageParam = buildLanguageParam(languageMode, selectedLanguage, inferredLanguages);
+    if (languageParam) params.language = languageParam;
 
     if (trendingOnly) params.trending = "true";
     if (hacktoberfestOnly) params.hacktoberfest = "true";
@@ -706,13 +702,11 @@ export default function RepoDiscoveryPage() {
 
         {/* Empty */}
         {!isLoading && !isLoadingBookmarks && !isError && displayedRepos.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-            <div className="w-12 h-12 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-3">
-              <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
-            </div>
-            <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mb-1">No repositories found</h3>
-            <p className="text-sm text-stone-500 dark:text-stone-400">Try adjusting your search or filters.</p>
-          </div>
+          <EmptyState
+            icon={<Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />}
+            title="No repositories found"
+            description="Try adjusting your search or filters."
+          />
         )}
 
         {/* Cards grid */}

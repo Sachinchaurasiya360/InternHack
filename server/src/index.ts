@@ -108,14 +108,15 @@ for (const key of REQUIRED_ENV) {
   }
 }
 
-// ── Enforce Redis in production ──
-// Without REDIS_URL, rate limiters use per-process MemoryStore which is
-// trivially bypassable when multiple instances run behind a load balancer.
+// ── Redis is optional ──
+// Without REDIS_URL, rate limiters fall back to per-process MemoryStore. That
+// is fine for a single instance; behind a load balancer the limits are
+// per-process (not shared), so set REDIS_URL when running multiple instances.
 if (process.env["NODE_ENV"] === "production" && !process.env["REDIS_URL"]) {
-  throw new Error(
-    "REDIS_URL is required in production. " +
-    "In-memory rate-limit stores are per-process and unsafe behind a load balancer. " +
-    "Set REDIS_URL or use NODE_ENV=development for local testing.",
+  console.warn(
+    "[Redis] Running in production without REDIS_URL. " +
+    "Rate-limit stores are per-process and not shared across instances. " +
+    "Set REDIS_URL for shared rate limiting behind a load balancer.",
   );
 }
 
@@ -529,4 +530,8 @@ app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
 
+// Named export for the api/ function entry; default export so Vercel's Node
+// runtime can serve the Express app directly ("default export must be a
+// function or server") when it treats this module as the server.
 export { app };
+export default app;

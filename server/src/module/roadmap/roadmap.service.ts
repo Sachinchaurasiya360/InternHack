@@ -1,7 +1,7 @@
 import { prisma } from "../../database/db.js";
 import { invalidateRecommendations } from "../recommendation/recommendation.service.js";
 import { appCache } from "../../middleware/cache.middleware.js";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import type { EnrollInput } from "./roadmap.validation.js";
 
 const ROADMAP_STRUCTURE_TTL = 300; // 5 minutes
@@ -1034,6 +1034,150 @@ export async function getEnrollmentAnalyticsForUser(args: {
     targetEndDate: row.targetEndDate.toISOString(),
     progressTrend: row.progressTrend,
   };
+}
+
+function buildProgressTrend(
+  completedEvents: { completedAt: string | Date }[],
+): RoadmapProgressTrendPoint[] {
+  const dailyCounts = new Map<string, number>();
+
+  for (const event of completedEvents) {
+    const date =
+      event.completedAt instanceof Date
+        ? event.completedAt
+        : new Date(event.completedAt);
+
+    const day = date.toISOString().split("T")[0];
+
+    dailyCounts.set(
+      day,
+      (dailyCounts.get(day) ?? 0) + 1,
+    );
+  }
+
+  let cumulative = 0;
+
+  return [...dailyCounts.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, completed]) => {
+      cumulative += completed;
+
+      return {
+        date,
+        completed,
+        cumulative,
+      };
+    });
+}
+
+export async function getEnrollmentAnalyticsBatchForUser(args: {
+  userId: number;
+}): Promise<RoadmapEnrollmentAnalytics[]> {
+  const enrollments = await listEnrollmentsForUser(args.userId);
+
+  const now = new Date();
+
+  return enrollments.map((enrollment) => {
+    const completedEvents = enrollment.topicProgress
+      .filter(
+        (p) =>
+          p.status === "COMPLETED" &&
+          p.completedAt,
+      )
+      .map((p) => ({
+        completedAt: p.completedAt!,
+      }));
+
+    const progressTrend = buildProgressTrend(completedEvents);  
+
+    const completedDayKeys =
+      getCompletedUtcDays(completedEvents);
+
+    const {
+      currentStreak,
+      longestStreak,
+    } = calculateStreaks(completedDayKeys);
+
+    const weeklyPlan = parseWeeklyPlan(
+      enrollment.weeklyPlan,
+    );
+
+    const {
+      expectedTopicsCompleted,
+      weeklyTarget,
+    } = getPlanStats(
+      weeklyPlan,
+      now,
+    );
+
+    const {
+      paceDeviation,
+      onTrackStatus,
+    } = getOnTrackStatus(
+      completedEvents.length,
+      expectedTopicsCompleted,
+    );
+
+    const activePlanWeek =
+      getActivePlanWeek(
+        weeklyPlan,
+        now,
+      );
+
+    const topicsCompletedThisWeek =
+      activePlanWeek
+        ? completedEvents.filter((event) => {
+            const completedAt =
+              event.completedAt instanceof Date
+                ? event.completedAt
+                : new Date(event.completedAt);
+
+            const weekStart =
+              new Date(
+                activePlanWeek.startDate,
+              );
+
+            const weekEnd =
+              new Date(
+                activePlanWeek.endDate,
+              );
+
+            return (
+              completedAt >= weekStart &&
+              completedAt <= weekEnd &&
+              completedAt <= now
+            );
+          }).length
+        : 0;
+
+    return {
+      enrollmentId: enrollment.id,
+      currentStreak,
+      longestStreak,
+      onTrackStatus,
+      paceDeviation,
+      expectedTopicsCompleted,
+      actualTopicsCompleted:
+        completedEvents.length,
+      topicsCompletedThisWeek,
+      weeklyTarget,
+      estimatedCompletionDate:
+        getEstimatedCompletionDate({
+          startDate:
+            enrollment.startDate,
+          targetEndDate:
+            enrollment.targetEndDate,
+          totalTopics:
+            enrollment.roadmap.topicCount,
+          actualCompletedTopics:
+            completedEvents.length,
+          now,
+        }),
+      targetEndDate:
+        enrollment.targetEndDate.toISOString(),
+      progressTrend,
+    };
+  });
 }
 
 export function summarizeProgress(

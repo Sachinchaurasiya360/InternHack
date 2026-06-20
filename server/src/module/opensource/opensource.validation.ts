@@ -6,7 +6,13 @@ export const opensourceListQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().optional(),
-  language: z.string().optional(),  
+  language: z
+    .union([z.string().min(1), z.array(z.string().min(1))])
+    .optional()
+    .transform((val) => {
+      if (val === undefined) return undefined;
+      return Array.isArray(val) ? val : [val];
+    }),
   difficulty: z.string().optional(),
   domain: z.string().optional(),
   sort: z.enum(opensourceSortFields).optional(),
@@ -112,6 +118,12 @@ export const approveRequestOverrideSchema = z.object({
 export const firstPrProgressUpdateSchema = z.object({
   stepId: z.string().min(1, "Step ID is required").max(200),
   completed: z.boolean(),
+});
+
+export const guideProgressUpdateSchema = z.object({
+  completedStepIds: z.array(
+    z.string().min(1).max(200),
+  ).max(500).transform((arr) => [...new Set(arr)]),
 });
 
 export const guideFeedbackSchema = z.object({
