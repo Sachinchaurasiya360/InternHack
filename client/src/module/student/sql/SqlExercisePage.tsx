@@ -124,6 +124,7 @@ export default function SqlExercisePage() {
   useEffect(() => {
     if (!exercise || !section) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDbReady(false);
     setResult(null);
     setValidation(null);
@@ -144,6 +145,7 @@ export default function SqlExercisePage() {
     };
 
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise, section]);
 
   const handleRun = useCallback(async () => {

@@ -88,8 +88,8 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   const dismissShortcutHint = () => {
   try {
     localStorage.setItem("guide-hint-dismissed", "true");
-  } catch {
-    
+  } catch (err) {
+    console.warn("Could not save to localStorage", err);
   }
   setShowShortcutHint(false);
 };
