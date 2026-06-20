@@ -9,13 +9,11 @@ export const aiRoadmapLimiter = rateLimit({
   legacyHeaders: false,
   store: createRateLimitStore("ai-roadmap"),
   keyGenerator: (req) => {
-    // Prefer user ID if authenticated, fallback to IP
-    const defaultIp = req.ip || "unknown_ip";
     const user = (req as any).user;
     if (user && user.id) {
       return `user_${user.id}`;
     }
-     return ipKeyGenerator(req.ip || "unknown_ip");
+    return ipKeyGenerator(req.ip || "unknown_ip");
   },
   message: { 
     message: "Too many AI roadmap generation requests. Please try again later."
@@ -29,9 +27,54 @@ export const contactLimiter = rateLimit({
   legacyHeaders: false,
   store: createRateLimitStore("contact"),
   keyGenerator: (req) => {
-    return req.ip || "unknown_ip";
+    return ipKeyGenerator(req.ip || "unknown_ip");
   },
   message: {
     message: "Too many contact submissions. Please try again later."
   },
 });
+
+export const authIpKeyGenerator = (req: any): string => {
+  return ipKeyGenerator(req.ip || "unknown_ip");
+};
+
+export const authIpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRateLimitStore("auth-ip"),
+  keyGenerator: authIpKeyGenerator,
+  message: {
+    message: "Too many login attempts from this network, please try again later"
+  },
+});
+
+export const authEmailKeyGenerator = (req: any): string => {
+  const email = req.body && typeof req.body === "object" && typeof req.body.email === "string"
+    ? req.body.email.trim().toLowerCase()
+    : "";
+  return email ? `email:${email}` : `ip:${ipKeyGenerator(req.ip || "unknown_ip")}`;
+};
+
+export const authEmailSkip = (req: any): boolean => {
+  const isLoginOrForgotPassword = req.originalUrl.includes("login") || req.originalUrl.includes("forgot-password") || req.originalUrl.includes("reset-password");
+  if (!isLoginOrForgotPassword) return true;
+  const email = req.body && typeof req.body === "object" && typeof req.body.email === "string" ? req.body.email : "";
+  return !email;
+};
+
+export const authEmailLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRateLimitStore("auth-email"),
+  keyGenerator: authEmailKeyGenerator,
+  message: {
+    message: "Too many login attempts for this account, please try again later"
+  },
+  skip: authEmailSkip,
+});
+
+
