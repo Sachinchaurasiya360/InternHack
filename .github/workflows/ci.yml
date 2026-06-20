@@ -193,7 +193,7 @@ jobs:
       - name: Scan for committed secrets/keys
         run: |
           echo "Scanning codebase for potential hardcoded secrets..."
-          if grep -rnE "(password|secret|private_key|api_key|token)[[:space:]]*=[[:space:]]*['\"][a-zA-Z0-9_-]{20,}['\"]" client/src/ server/src/ --exclude-dir=node_modules; then
+          if grep -rnE "(password|secret|private_key|api_key|token)[[:space:]]*=[[:space:]]*['\"][a-zA-Z0-9_-]{20,}['\"]" client/src/ server/src/ --exclude-dir=node_modules | grep -v "your-github-client-secret"; then
             echo "Error: Potential hardcoded secrets found!"
             exit 1
           else
