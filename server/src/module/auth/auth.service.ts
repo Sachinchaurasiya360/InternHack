@@ -884,40 +884,32 @@ export class AuthService {
 
     // 2. If the authenticated user has already connected GitHub via OAuth, reuse
     //    the synced DB snapshot instead of making a live GitHub API call.
-    //    Note: (prisma as any) is needed because the local Prisma client may not yet be
-    //    regenerated after the githubConnection migration was added.
+    //    Both paths compute totalStars and topLanguages identically so the shared
+    //    cache key always contains consistent data regardless of who fills it first.
     if (userId) {
-      type GithubConnectionRow = {
-        githubUsername: string;
-        publicRepos: number;
-        contributedStars: number;
-        contributedRepos: Array<{ language: string | null; mergedPrs: number }>;
-      };
-      const connection = await (prisma as any).githubConnection.findUnique({
+      const connection = await prisma.githubConnection.findUnique({
         where: { userId },
         select: {
           githubUsername: true,
           publicRepos: true,
-          contributedStars: true,
           contributedRepos: {
-            select: { language: true, mergedPrs: true },
-            orderBy: [{ mergedPrs: "desc" }, { stars: "desc" }],
-            take: 100,
+            select: { language: true, stars: true },
           },
         },
-      }) as GithubConnectionRow | null;
+      });
 
       if (
         connection &&
         connection.githubUsername.toLowerCase() === username.toLowerCase()
       ) {
-        const languageCounts = new Map<string, number>();
+        // Per-repo language frequency + star sum — identical algorithm to the
+        // live-API path below, so cache consumers always see consistent data.
+        const langCounts = new Map<string, number>();
+        let totalStars = 0;
         for (const repo of connection.contributedRepos) {
+          totalStars += repo.stars;
           if (repo.language) {
-            languageCounts.set(
-              repo.language,
-              (languageCounts.get(repo.language) ?? 0) + repo.mergedPrs,
-            );
+            langCounts.set(repo.language, (langCounts.get(repo.language) ?? 0) + 1);
           }
         }
 
@@ -925,8 +917,8 @@ export class AuthService {
           username: connection.githubUsername,
           profileUrl: `https://github.com/${connection.githubUsername}`,
           publicRepos: connection.publicRepos,
-          totalStars: connection.contributedStars,
-          topLanguages: [...languageCounts.entries()]
+          totalStars,
+          topLanguages: [...langCounts.entries()]
             .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
             .slice(0, 3)
             .map(([name, count]) => ({ name, count })),
