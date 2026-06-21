@@ -78,7 +78,7 @@ export class StudentController {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const usage = (req as any).usageInfo;
+      const usage = req.usageInfo;
       const used = usage ? usage.used + 1 : 1;
       const limit = usage ? usage.limit : 1;
 
