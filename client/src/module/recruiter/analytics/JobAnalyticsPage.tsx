@@ -5,6 +5,7 @@ import { ArrowLeft, TrendingDown, BarChart3, AlertTriangle, RefreshCw } from "lu
 import { motion } from "framer-motion";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
+import { Button } from "@/components/ui/button";
 
 interface AnalyticsData {
   jobId: number;
@@ -24,14 +25,15 @@ interface AnalyticsData {
 
 // Priority order and colour for status breakdown cards
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  HIRED:       { label: "Hired",       color: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300" },
-  IN_PROGRESS: { label: "In Progress", color: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300" },
-  APPLIED: { label: "Applied", color: "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300" },
-  REJECTED:    { label: "Rejected",    color: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" },
-  WITHDRAWN:   { label: "Withdrawn",   color: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300" },
+  HIRED:        { label: "Hired",        color: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300" },
+  IN_PROGRESS:  { label: "In Progress",  color: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300" },
+  APPLIED:      { label: "Applied",      color: "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300" },
+  SHORTLISTED:  { label: "Shortlisted",  color: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300" },
+  REJECTED:     { label: "Rejected",     color: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" },
+  WITHDRAWN:    { label: "Withdrawn",    color: "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400" },
 };
 
-const STATUS_ORDER = ["HIRED", "IN_PROGRESS", "APPLIED", "REJECTED", "WITHDRAWN"];
+const STATUS_ORDER = ["HIRED", "IN_PROGRESS", "APPLIED", "SHORTLISTED", "REJECTED", "WITHDRAWN"];
 
 function sortedStatusEntries(breakdown: Record<string, number>): [string, number][] {
   const known = STATUS_ORDER.filter((s) => s in breakdown).map((s) => [s, breakdown[s]] as [string, number]);
@@ -86,7 +88,7 @@ export default function JobAnalyticsPage() {
   const backToJobsLink = (
     <Link
       to="/recruiters/jobs"
-      className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 no-underline"
+      className="flex items-center gap-2 text-sm text-stone-500 dark:text-stone-500 hover:text-black dark:hover:text-white mb-4 no-underline"
     >
       <ArrowLeft className="w-4 h-4" /> Back to Jobs
     </Link>
@@ -99,21 +101,22 @@ export default function JobAnalyticsPage() {
       <div className="max-w-4xl mx-auto">
         <SEO title="Job Analytics" noIndex />
         {backToJobsLink}
-        <div className="flex flex-col items-center justify-center text-center gap-3 py-16 px-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <div className="flex flex-col items-center justify-center text-center gap-3 py-16 px-6 bg-white dark:bg-stone-900 rounded-xl border border-stone-100 dark:border-stone-800 shadow-sm">
           <AlertTriangle className="w-10 h-10 text-red-400 dark:text-red-500" />
-          <p className="text-gray-900 dark:text-white font-semibold">
+          <p className="text-stone-900 dark:text-white font-semibold">
             Failed to load analytics
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">
+          <p className="text-sm text-stone-500 dark:text-stone-400 max-w-sm">
             {error ?? "Something went wrong while loading analytics."}
           </p>
-          <button
+          <Button
             type="button"
             onClick={fetchAnalytics}
-            className="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium hover:opacity-90 transition-opacity"
+            variant="default"
+            className="mt-2 inline-flex items-center gap-2"
           >
             <RefreshCw className="w-4 h-4" /> Retry
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -128,15 +131,15 @@ export default function JobAnalyticsPage() {
       <SEO title="Job Analytics" noIndex />
       {backToJobsLink}
 
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 className="text-2xl font-bold text-stone-900 dark:text-white mb-2">
         {data.jobTitle}
       </h1>
-      <p className="text-gray-500 dark:text-gray-500 mb-6">
+      <p className="text-stone-500 dark:text-stone-500 mb-6">
         {data.totalApplications} total applications
       </p>
 
       {/* FIX 4 — Status Breakdown: sorted + colour-coded */}
-      <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
+      <div className="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-100 dark:border-stone-800 shadow-sm mb-6">
         <h2 className="text-lg font-semibold mb-4 dark:text-white">
           Application Status
         </h2>
@@ -162,7 +165,7 @@ export default function JobAnalyticsPage() {
       </div>
 
       {/* Recruitment Funnel */}
-      <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
+      <div className="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-100 dark:border-stone-800 shadow-sm mb-6">
         <h2 className="text-lg font-semibold mb-4 dark:text-white">
           Recruitment Funnel
         </h2>
@@ -182,7 +185,7 @@ export default function JobAnalyticsPage() {
           <div className="space-y-3">
             {/* Applied — always 100% of baseline */}
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500 dark:text-gray-500 w-40 shrink-0">
+              <span className="text-sm text-stone-500 dark:text-stone-500 w-40 shrink-0">
                 Applied
               </span>
               <div className="flex-1 bg-stone-100 dark:bg-stone-800 rounded-full h-8 overflow-hidden">
@@ -227,7 +230,7 @@ export default function JobAnalyticsPage() {
               return (
                 <div key={round.id}>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-500 dark:text-gray-500 w-40 shrink-0 truncate">
+                    <span className="text-sm text-stone-500 dark:text-stone-500 w-40 shrink-0 truncate">
                       {round.name}
                     </span>
                     <div className="flex-1 bg-stone-100 dark:bg-stone-800 rounded-full h-8 overflow-hidden">
@@ -246,7 +249,7 @@ export default function JobAnalyticsPage() {
                       <TrendingDown className="w-3 h-3" /> {dropRate}%
                     </span>
                   </div>
-                  <div className="sm:ml-44 flex flex-wrap gap-2 sm:gap-4 text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  <div className="sm:ml-44 flex flex-wrap gap-2 sm:gap-4 text-xs text-stone-400 dark:text-stone-500 mt-1">
                     <span>{round.completed} completed</span>
                     <span>{round.inProgress} in progress</span>
                     <span>{round.pending} pending</span>
@@ -305,33 +308,33 @@ export default function JobAnalyticsPage() {
       </div>
 
       {/* Key Metrics */}
-      <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+      <div className="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-100 dark:border-stone-800 shadow-sm">
         <h2 className="text-lg font-semibold mb-4 dark:text-white">
           Key Metrics
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="text-center">
-            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">
               {data.totalApplications}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-500">
+            <p className="text-sm text-stone-500 dark:text-stone-500">
               Total Applicants
             </p>
           </div>
           <div className="text-center">
-            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">
               {hiredCount}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-500">Hired</p>
+            <p className="text-sm text-stone-500 dark:text-stone-500">Hired</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">
               {data.totalApplications > 0
                 ? ((hiredCount / data.totalApplications) * 100).toFixed(1)
                 : "0"}
               %
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-500">
+            <p className="text-sm text-stone-500 dark:text-stone-500">
               Conversion Rate
             </p>
           </div>
