@@ -125,7 +125,7 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   try {
     localStorage.setItem("guide-hint-dismissed", "true");
   } catch {
-    
+    console.warn("Failed to persist shortcut hint dismissal to localStorage");
   }
   setShowShortcutHint(false);
 };
