@@ -127,7 +127,7 @@ function assertNotLocked(lockedUntil: Date | null) {
   }
 }
 
-const GITHUB_STATS_CACHE_TTL = 60 * 60 * 1000;
+const GITHUB_STATS_CACHE_TTL_SECONDS = 60 * 60; // 1 hour
 const GITHUB_STATS_MAX_REPO_PAGES = 100;
 
 type GitHubStats = {
@@ -143,8 +143,6 @@ type GitHubStatsRepo = {
   language: string | null;
   fork: boolean;
 };
-
-const githubStatsCache = new Map<string, { data: GitHubStats; expiresAt: number }>();
 
 function parseGitHubUsername(input: string) {
   const value = input.trim();
@@ -881,18 +879,63 @@ export class AuthService {
     };
   }
 
-  async getGitHubStats(input: string): Promise<GitHubStats> {
+  async getGitHubStats(input: string, userId?: number): Promise<GitHubStats> {
     const username = parseGitHubUsername(input);
     if (!username) {
       throw new Error("GitHub username is required");
     }
 
-    const cacheKey = username.toLowerCase();
-    const cached = githubStatsCache.get(cacheKey);
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.data;
+    // Namespaced cache key to avoid collisions with other cache entries.
+    const cacheKey = `github-stats:${username.toLowerCase()}`;
+    const cached = await cacheGet<GitHubStats>(cacheKey);
+    if (cached) return cached;
+
+    // Short-circuit: if the requesting user has connected GitHub via OAuth,
+    // use the stored DB snapshot to build stats without hitting the GitHub API.
+    // Both paths produce the same shape (totalStars = star sum, topLanguages =
+    // repo-language frequency counts), so cache consumers always see consistent data.
+    if (userId) {
+      const connection = await prisma.githubConnection.findUnique({
+        where: { userId },
+        select: {
+          githubUsername: true,
+          publicRepos: true,
+          contributedStars: true,
+          contributedRepos: {
+            select: { language: true, stars: true },
+          },
+        },
+      });
+
+      if (connection && connection.githubUsername.toLowerCase() === username.toLowerCase()) {
+        // Build topLanguages from contributed repos language frequency (consistent
+        // with the live-API path which counts per-repo language occurrences).
+        const langCounts = new Map<string, number>();
+        let totalStars = 0;
+        for (const repo of connection.contributedRepos) {
+          totalStars += repo.stars;
+          if (repo.language) {
+            langCounts.set(repo.language, (langCounts.get(repo.language) ?? 0) + 1);
+          }
+        }
+
+        const snapshotData: GitHubStats = {
+          username: connection.githubUsername,
+          profileUrl: `https://github.com/${connection.githubUsername}`,
+          publicRepos: connection.publicRepos,
+          totalStars,
+          topLanguages: [...langCounts.entries()]
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .slice(0, 3)
+            .map(([name, count]) => ({ name, count })),
+        };
+
+        await cacheSet(cacheKey, snapshotData, GITHUB_STATS_CACHE_TTL_SECONDS);
+        return snapshotData;
+      }
     }
 
+    // Fallback: fetch live stats from the GitHub API.
     const headers = GITHUB_API_HEADERS;
     const [userRes, repos] = await Promise.all([
       fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
@@ -931,22 +974,7 @@ export class AuthService {
         .map(([name, count]) => ({ name, count })),
     };
 
-    githubStatsCache.set(cacheKey, { data, expiresAt: Date.now() + GITHUB_STATS_CACHE_TTL });
-    if (githubStatsCache.size > 200) {
-      const now = Date.now();
-      for (const [key, entry] of githubStatsCache) {
-        if (entry.expiresAt <= now) githubStatsCache.delete(key);
-      }
-      while (githubStatsCache.size > 200) {
-        const oldestKey = githubStatsCache.keys().next().value;
-        if (oldestKey !== undefined) {
-          githubStatsCache.delete(oldestKey);
-        } else {
-          break;
-        }
-      }
-    }
-
+    await cacheSet(cacheKey, data, GITHUB_STATS_CACHE_TTL_SECONDS);
     return data;
   }
 }
