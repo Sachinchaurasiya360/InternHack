@@ -1,14 +1,31 @@
 import type { Request, Response } from "express";
+import { prisma } from "../../database/db.js";
 import { PeerMockInterviewService } from "./peer-mock-interview.service.js";
 import { mockInterviewPreferenceSchema, mockInterviewFeedbackSchema } from "./peer-mock-interview.validation.js";
 
 const service = new PeerMockInterviewService();
 
 export class PeerMockInterviewController {
+  private async checkPremiumSubscription(userId: number): Promise<boolean> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { subscriptionPlan: true, subscriptionStatus: true },
+    });
+    return !!(
+      user &&
+      (user.subscriptionPlan === "MONTHLY" || user.subscriptionPlan === "YEARLY") &&
+      user.subscriptionStatus === "ACTIVE"
+    );
+  }
+
   async getPreference(req: Request, res: Response) {
     try {
       if (!req.user) {
         res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      if (!await this.checkPremiumSubscription(req.user.id)) {
+        res.status(403).json({ message: "Premium subscription required for peer mock interviews" });
         return;
       }
       const userId = req.user.id;
@@ -23,6 +40,10 @@ export class PeerMockInterviewController {
     try {
       if (!req.user) {
         res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      if (!await this.checkPremiumSubscription(req.user.id)) {
+        res.status(403).json({ message: "Premium subscription required for peer mock interviews" });
         return;
       }
       const userId = req.user.id;
@@ -46,6 +67,10 @@ export class PeerMockInterviewController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
+      if (!await this.checkPremiumSubscription(req.user.id)) {
+        res.status(403).json({ message: "Premium subscription required for peer mock interviews" });
+        return;
+      }
       const userId = req.user.id;
       const pairing = await service.getUpcomingPairing(userId);
       res.json(pairing);
@@ -58,6 +83,10 @@ export class PeerMockInterviewController {
     try {
       if (!req.user) {
         res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      if (!await this.checkPremiumSubscription(req.user.id)) {
+        res.status(403).json({ message: "Premium subscription required for peer mock interviews" });
         return;
       }
       const userId = req.user.id;
@@ -80,6 +109,10 @@ export class PeerMockInterviewController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
+      if (!await this.checkPremiumSubscription(req.user.id)) {
+        res.status(403).json({ message: "Premium subscription required for peer mock interviews" });
+        return;
+      }
       const userId = req.user.id;
       const pairingId = parseInt(String(req.params["id"] || ""), 10);
       if (isNaN(pairingId)) {
@@ -98,6 +131,10 @@ export class PeerMockInterviewController {
     try {
       if (!req.user) {
         res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      if (!await this.checkPremiumSubscription(req.user.id)) {
+        res.status(403).json({ message: "Premium subscription required for peer mock interviews" });
         return;
       }
       const userId = req.user.id;

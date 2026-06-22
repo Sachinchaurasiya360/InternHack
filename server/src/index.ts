@@ -488,13 +488,20 @@ const server = app.listen(PORT, async () => {
     fn: () => stopAmbassadorEligibilityCron(),
   });
 
-  // Start the weekly peer mock interview matching cron (Sundays)
-  startPeerMockInterviewMatchCron();
-  shutdownManager.register({
-    name: "Peer Mock Interview Match Cron",
-    priority: 10,
-    fn: () => stopPeerMockInterviewMatchCron(),
-  });
+  // Start weekly peer mock interview matching from one owner only in production.
+  const runPeerMockInterviewCron =
+    process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] !== "false");
+  if (runPeerMockInterviewCron) {
+    startPeerMockInterviewMatchCron();
+    shutdownManager.register({
+      name: "Peer Mock Interview Match Cron",
+      priority: 10,
+      fn: () => stopPeerMockInterviewMatchCron(),
+    });
+  } else {
+    logger.info("Peer mock interview match cron disabled on this process");
+  }
 
   const runGithubContributionsCron =
     process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] === "true" ||

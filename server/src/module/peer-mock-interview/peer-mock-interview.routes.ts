@@ -1,15 +1,33 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
+import { requireRole } from "../../middleware/role.middleware.js";
+import { usageLimit } from "../../middleware/usage-limit.middleware.js";
 import { PeerMockInterviewController } from "./peer-mock-interview.controller.js";
+import { mockInterviewPreferenceSchema, mockInterviewFeedbackSchema } from "./peer-mock-interview.validation.js";
+import { z } from "zod";
+import type { Request, Response, NextFunction } from "express";
 
 const controller = new PeerMockInterviewController();
 
 export const peerMockInterviewRouter = Router();
 
+function validateBody(schema: z.Schema) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const parsed = schema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ message: "Validation failed", errors: parsed.error.format() });
+      return;
+    }
+    next();
+  };
+}
+
 // Retrieve user's mock interview preferences
 peerMockInterviewRouter.get(
   "/preferences",
   authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("MOCK_INTERVIEW"),
   (req, res) => controller.getPreference(req, res)
 );
 
@@ -17,6 +35,9 @@ peerMockInterviewRouter.get(
 peerMockInterviewRouter.post(
   "/preferences",
   authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("MOCK_INTERVIEW"),
+  validateBody(mockInterviewPreferenceSchema),
   (req, res) => controller.upsertPreference(req, res)
 );
 
@@ -24,6 +45,8 @@ peerMockInterviewRouter.post(
 peerMockInterviewRouter.get(
   "/pairings/upcoming",
   authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("MOCK_INTERVIEW"),
   (req, res) => controller.getUpcomingPairing(req, res)
 );
 
@@ -31,6 +54,8 @@ peerMockInterviewRouter.get(
 peerMockInterviewRouter.get(
   "/pairings/:id",
   authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("MOCK_INTERVIEW"),
   (req, res) => controller.getPairingDetails(req, res)
 );
 
@@ -38,6 +63,8 @@ peerMockInterviewRouter.get(
 peerMockInterviewRouter.post(
   "/pairings/:id/complete",
   authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("MOCK_INTERVIEW"),
   (req, res) => controller.markCompleted(req, res)
 );
 
@@ -45,5 +72,8 @@ peerMockInterviewRouter.post(
 peerMockInterviewRouter.post(
   "/pairings/:id/rate",
   authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("MOCK_INTERVIEW"),
+  validateBody(mockInterviewFeedbackSchema),
   (req, res) => controller.submitRating(req, res)
 );

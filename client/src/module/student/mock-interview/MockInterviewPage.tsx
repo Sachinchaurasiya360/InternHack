@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, type ReactNode } from "react";
+import { useMemo, useState, useEffect, useRef, type ReactNode } from "react";
 import { toast } from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -1159,6 +1159,64 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
   const [rating, setRating] = useState(5);
   const [feedbackText, setFeedbackText] = useState("");
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showRatingModal) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowRatingModal(false);
+        return;
+      }
+
+      if (e.key === "Tab" && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    const previousActiveElement = document.activeElement as HTMLElement;
+
+    setTimeout(() => {
+      if (modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length > 0) {
+          (focusableElements[0] as HTMLElement).focus();
+        } else {
+          modalRef.current.focus();
+        }
+      }
+    }, 50);
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      if (previousActiveElement) {
+        previousActiveElement.focus();
+      }
+    };
+  }, [showRatingModal]);
+
   // Sync preference state
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
@@ -1326,14 +1384,16 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                       <span className="text-xs text-stone-400 italic">Session marked as completed.</span>
                     )}
                     {pairing.status === "SCHEDULED" && (
-                      <button
+                      <Button
+                        variant="ghost"
+                        mode="link"
                         onClick={() => {
                           upsertPreferenceMutation.mutate({ topic, availability, enabled: false });
                         }}
-                        className="text-xs font-bold text-red-500 hover:underline cursor-pointer bg-transparent border-0"
+                        className="text-xs font-bold text-red-500 hover:underline"
                       >
                         Cancel / Opt Out
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -1358,13 +1418,15 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                       Availability: <span className="font-semibold text-stone-950 dark:text-stone-50">{availability.join(", ") || "Anytime"}</span>
                     </p>
                   </div>
-                  <button
+                  <Button
+                    variant="ghost"
+                    mode="link"
                     onClick={handleToggleOptIn}
                     disabled={upsertPreferenceMutation.isPending}
-                    className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 underline cursor-pointer bg-transparent border-0"
+                    className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 underline"
                   >
                     Leave matching pool
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 // Opted Out Card
@@ -1497,9 +1559,18 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
       {showRatingModal && pairing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-xs">
           <motion.div
+            ref={modalRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setShowRatingModal(false);
+              }
+            }}
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md max-w-md w-full overflow-hidden"
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md max-w-md w-full overflow-hidden focus:outline-none"
           >
             <div className="px-5 py-3.5 border-b border-stone-100 dark:border-white/5 bg-stone-50 dark:bg-stone-950/40">
               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">Post Practice Session</span>

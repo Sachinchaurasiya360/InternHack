@@ -21,8 +21,8 @@ CREATE TABLE "peerMockInterviewPreference" (
 CREATE TABLE "peerMockInterview" (
     "id" SERIAL NOT NULL,
     "topic" "MockInterviewTopic" NOT NULL,
-    "studentAId" INTEGER NOT NULL,
-    "studentBId" INTEGER NOT NULL,
+    "studentAId" INTEGER,
+    "studentBId" INTEGER,
     "assignedProblemId" INTEGER,
     "status" "MockInterviewStatus" NOT NULL DEFAULT 'SCHEDULED',
     "scheduledAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -34,14 +34,15 @@ CREATE TABLE "peerMockInterview" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "peerMockInterview_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "peerMockInterview_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "peerMockInterview_no_self_pairing" CHECK ("studentAId" IS NULL OR "studentBId" IS NULL OR "studentAId" <> "studentBId"),
+    CONSTRAINT "peerMockInterview_ratingA_range" CHECK ("ratingAForB" IS NULL OR ("ratingAForB" >= 1 AND "ratingAForB" <= 5)),
+    CONSTRAINT "peerMockInterview_ratingB_range" CHECK ("ratingBForA" IS NULL OR ("ratingBForA" >= 1 AND "ratingBForA" <= 5)),
+    CONSTRAINT "peerMockInterview_completion_timestamp" CHECK ("status" <> 'COMPLETED' OR "completedAt" IS NOT NULL)
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "peerMockInterviewPreference_userId_key" ON "peerMockInterviewPreference"("userId");
-
--- CreateIndex
-CREATE INDEX "peerMockInterviewPreference_userId_idx" ON "peerMockInterviewPreference"("userId");
 
 -- CreateIndex
 CREATE INDEX "peerMockInterview_studentAId_idx" ON "peerMockInterview"("studentAId");
@@ -56,10 +57,10 @@ CREATE INDEX "peerMockInterview_status_idx" ON "peerMockInterview"("status");
 ALTER TABLE "peerMockInterviewPreference" ADD CONSTRAINT "peerMockInterviewPreference_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "peerMockInterview" ADD CONSTRAINT "peerMockInterview_studentAId_fkey" FOREIGN KEY ("studentAId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "peerMockInterview" ADD CONSTRAINT "peerMockInterview_studentAId_fkey" FOREIGN KEY ("studentAId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "peerMockInterview" ADD CONSTRAINT "peerMockInterview_studentBId_fkey" FOREIGN KEY ("studentBId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "peerMockInterview" ADD CONSTRAINT "peerMockInterview_studentBId_fkey" FOREIGN KEY ("studentBId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "peerMockInterview" ADD CONSTRAINT "peerMockInterview_assignedProblemId_fkey" FOREIGN KEY ("assignedProblemId") REFERENCES "dsaProblem"("id") ON DELETE SET NULL ON UPDATE CASCADE;

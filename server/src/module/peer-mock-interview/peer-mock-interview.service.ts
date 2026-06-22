@@ -45,14 +45,19 @@ export class PeerMockInterviewService {
       });
 
       for (const pairing of upcoming) {
-        await prisma.peerMockInterview.update({
-          where: { id: pairing.id },
+        const updateResult = await prisma.peerMockInterview.updateMany({
+          where: { id: pairing.id, status: "SCHEDULED" },
           data: { status: "CANCELLED" },
         });
+
+        if (updateResult.count === 0) {
+          continue;
+        }
 
         // Notify partner
         const partner = pairing.studentAId === userId ? pairing.studentB : pairing.studentA;
         const canceller = pairing.studentAId === userId ? pairing.studentA : pairing.studentB;
+        if (!partner || !canceller) continue;
         try {
           const emailUtils = await import("../../utils/email.utils.js");
           const html = `<h3>Upcoming Mock Interview Cancelled</h3>
@@ -184,8 +189,12 @@ export class PeerMockInterviewService {
     try {
       const badgeServiceClass = await import("../badge/badge.service.js").then(m => m.BadgeService);
       const badgeService = new badgeServiceClass();
-      await badgeService.checkAndAwardBadges(pairing.studentAId, "mock_interview");
-      await badgeService.checkAndAwardBadges(pairing.studentBId, "mock_interview");
+      if (pairing.studentAId) {
+        await badgeService.checkAndAwardBadges(pairing.studentAId, "mock_interview");
+      }
+      if (pairing.studentBId) {
+        await badgeService.checkAndAwardBadges(pairing.studentBId, "mock_interview");
+      }
     } catch (err) {
       console.error("Failed to check and award badges:", err);
     }
@@ -194,8 +203,12 @@ export class PeerMockInterviewService {
     try {
       const emailUtils = await import("../../utils/email.utils.js");
       const html = `<h3>Mock Interview Completed!</h3><p>Your practice mock interview session has been marked as completed. Please rate your session and provide feedback to your partner.</p>`;
-      await emailUtils.sendEmail({ to: pairing.studentA.email, subject: "Mock Interview Completed", html });
-      await emailUtils.sendEmail({ to: pairing.studentB.email, subject: "Mock Interview Completed", html });
+      if (pairing.studentA?.email) {
+        await emailUtils.sendEmail({ to: pairing.studentA.email, subject: "Mock Interview Completed", html });
+      }
+      if (pairing.studentB?.email) {
+        await emailUtils.sendEmail({ to: pairing.studentB.email, subject: "Mock Interview Completed", html });
+      }
     } catch (err) {
       console.error("Failed to send completion emails:", err);
     }
@@ -208,6 +221,10 @@ export class PeerMockInterviewService {
    */
   async submitRating(userId: number, pairingId: number, rating: number, feedback?: string) {
     const pairing = await this.getPairingDetails(userId, pairingId);
+
+    if (pairing.status !== "COMPLETED") {
+      throw Object.assign(new Error("Interview is not in completed state"), { status: 400 });
+    }
 
     const isStudentA = pairing.studentAId === userId;
     const updateData: any = {};
@@ -232,7 +249,16 @@ export class PeerMockInterviewService {
   async runMatchingJob() {
     // 1. Get all active preferences
     const prefs = await prisma.peerMockInterviewPreference.findMany({
-      where: { enabled: true },
+      where: {
+        enabled: true,
+        user: {
+          roadmapEnrollments: {
+            some: {
+              status: "ACTIVE",
+            },
+          },
+        },
+      },
       include: {
         user: {
           select: {
@@ -267,8 +293,8 @@ export class PeerMockInterviewService {
     });
     const pairedUserIds = new Set<number>();
     for (const p of scheduledPairings) {
-      pairedUserIds.add(p.studentAId);
-      pairedUserIds.add(p.studentBId);
+      if (p.studentAId) pairedUserIds.add(p.studentAId);
+      if (p.studentBId) pairedUserIds.add(p.studentBId);
     }
 
     const pool = prefs.filter(p => !pairedUserIds.has(p.userId));

@@ -16,6 +16,7 @@ vi.mock("../database/db.js", () => {
       findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
     },
     dsaProblem: {
       findMany: vi.fn(),
@@ -91,7 +92,7 @@ describe("PeerMockInterviewService", () => {
       };
 
       vi.mocked(prisma.peerMockInterview.findMany).mockResolvedValue([mockPairing] as any);
-      vi.mocked(prisma.peerMockInterview.update).mockResolvedValue({ ...mockPairing, status: "CANCELLED" } as any);
+      vi.mocked(prisma.peerMockInterview.updateMany).mockResolvedValue({ count: 1 } as any);
 
       const res = await service.upsertPreference(1, "DSA", ["WEEKENDS"], false);
       expect(prisma.peerMockInterview.findMany).toHaveBeenCalledWith({
@@ -107,8 +108,8 @@ describe("PeerMockInterviewService", () => {
           studentB: { select: { id: true, name: true, email: true } },
         }
       });
-      expect(prisma.peerMockInterview.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+      expect(prisma.peerMockInterview.updateMany).toHaveBeenCalledWith({
+        where: { id: 5, status: "SCHEDULED" },
         data: { status: "CANCELLED" },
       });
       expect(res).toEqual(mockPref);

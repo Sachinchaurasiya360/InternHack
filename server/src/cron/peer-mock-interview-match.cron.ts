@@ -12,16 +12,21 @@ export async function runPeerMockInterviewMatching(): Promise<void> {
     console.log(`[PeerMockInterviewMatch] Created ${matches.length} matches.`);
   } catch (err) {
     console.error("[PeerMockInterviewMatch] Match job failed:", err);
+    throw err;
   }
 }
 
 export function startPeerMockInterviewMatchCron(schedule = "0 0 * * 0"): void {
   if (cronJob) return;
-  cronJob = cron.schedule(schedule, () => {
-    void withAdvisoryLock("peer-mock-interview-match", async () => {
-      await runPeerMockInterviewMatching();
-    });
-  });
+  cronJob = cron.schedule(
+    schedule,
+    () => {
+      void withAdvisoryLock("peer-mock-interview-match", async () => {
+        await runPeerMockInterviewMatching();
+      });
+    },
+    { timezone: "Etc/UTC" }
+  );
   console.log(`[PeerMockInterviewMatch] Scheduled weekly match job at "${schedule}"`);
 }
 

@@ -304,31 +304,31 @@ export class BadgeService {
         if (completed.length === 0) {
           ctx.mockInterviewStreak = 0;
         } else {
+          const getWeekKey = (date: Date) => {
+            const d = new Date(date);
+            const onejan = new Date(d.getFullYear(), 0, 1);
+            const weekNum = Math.ceil((((d.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+            return `${d.getFullYear()}-${weekNum}`;
+          };
+
           const weeks = new Set<string>();
           for (const item of completed) {
             if (!item.completedAt) continue;
-            const d = new Date(item.completedAt);
-            const onejan = new Date(d.getFullYear(), 0, 1);
-            const weekNum = Math.ceil((((d.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
-            weeks.add(`${d.getFullYear()}-${weekNum}`);
+            weeks.add(getWeekKey(item.completedAt));
           }
 
-          const now = new Date();
-          const onejan = new Date(now.getFullYear(), 0, 1);
-          const currentWeekNum = Math.ceil((((now.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
           let currentStreak = 0;
-          let checkYear = now.getFullYear();
-          let checkWeek = currentWeekNum;
+          const checkDate = new Date();
+          
+          if (!weeks.has(getWeekKey(checkDate))) {
+            checkDate.setDate(checkDate.getDate() - 7);
+          }
 
           for (let step = 0; step < 52; step++) {
-            const key = `${checkYear}-${checkWeek}`;
+            const key = getWeekKey(checkDate);
             if (weeks.has(key)) {
               currentStreak++;
-              checkWeek--;
-              if (checkWeek === 0) {
-                checkYear--;
-                checkWeek = 52;
-              }
+              checkDate.setDate(checkDate.getDate() - 7);
             } else {
               break;
             }

@@ -269,10 +269,10 @@ model peerMockInterviewPreference {
 model peerMockInterview {
   id                 Int                 @id @default(autoincrement())
   topic              MockInterviewTopic
-  studentAId         Int
-  studentA           user                @relation("StudentAMockInterviews", fields: [studentAId], references: [id], onDelete: Cascade)
-  studentBId         Int
-  studentB           user                @relation("StudentBMockInterviews", fields: [studentBId], references: [id], onDelete: Cascade)
+  studentAId         Int?
+  studentA           user?               @relation("StudentAMockInterviews", fields: [studentAId], references: [id], onDelete: SetNull)
+  studentBId         Int?
+  studentB           user?               @relation("StudentBMockInterviews", fields: [studentBId], references: [id], onDelete: SetNull)
   assignedProblemId  Int?
   assignedProblem    dsaProblem?         @relation(fields: [assignedProblemId], references: [id], onDelete: SetNull)
   status             MockInterviewStatus @default(SCHEDULED)
