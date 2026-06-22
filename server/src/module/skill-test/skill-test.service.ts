@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../database/db.js";
+import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
 import {
   generateVerifiedSkillToken,
@@ -463,6 +463,55 @@ export class SkillTestService {
     });
     await cacheDelPattern("skill:tests:list:");
     return test;
+  }
+
+  /* ---- Incremental proctor-log flush (issue #2400) ---- */
+  async logProctorEvents(
+    testId: number,
+    studentId: number,
+    events: { type: string; timestamp: string; detail?: string }[],
+  ) {
+    const test = await prisma.skillTest.findUnique({
+      where: { id: testId },
+      select: { timeLimitSecs: true },
+    });
+    if (!test) throw new Error("Test not found");
+
+    const session = await prisma.skillTestAttempt.findFirst({
+      where: { testId, studentId, completedAt: null },
+      orderBy: { startedAt: "desc" },
+    });
+
+    if (!session) {
+      throw new Error("NO_OPEN_SESSION");
+    }
+
+    const expiresAt = new Date(
+      session.startedAt.getTime() + test.timeLimitSecs * 1000,
+    );
+    if (new Date() > expiresAt) {
+      throw new Error("TEST_EXPIRED");
+    }
+
+    // Merge events into existing proctorLog JSON under `incrementalEvents`
+    const existing = (session.proctorLog as Record<string, unknown>) ?? {};
+    const prev = Array.isArray(existing.incrementalEvents)
+      ? (existing.incrementalEvents as typeof events)
+      : [];
+
+    const merged = {
+      ...existing,
+      incrementalEvents: [...prev, ...events],
+    };
+
+    await prisma.skillTestAttempt.update({
+      where: { id: session.id },
+      data: {
+        proctorLog: merged as Prisma.InputJsonValue,
+      },
+    });
+
+    return { accepted: events.length };
   }
 
   private calculateProctoringScore(

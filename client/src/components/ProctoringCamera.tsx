@@ -8,9 +8,10 @@ interface Props {
   onSnapshot: () => void;
   onError: (err: string) => void;
   onReady: () => void;
+  onTrackDrop: (type: "camera_track_ended" | "camera_track_muted") => void;
 }
 
-export default function ProctoringCamera({ onViolation, onSnapshot, onError, onReady }: Props) {
+export default function ProctoringCamera({ onViolation, onSnapshot, onError, onReady, onTrackDrop }: Props) {
   const [minimized, setMinimized] = useState(false);
 
   const {
@@ -26,6 +27,7 @@ export default function ProctoringCamera({ onViolation, onSnapshot, onError, onR
     onSnapshot,
     onReady,
     onError,
+    onTrackDrop,
   });
 
   // Auto-start camera on mount and re-create intervals when config changes

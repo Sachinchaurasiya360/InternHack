@@ -4,6 +4,7 @@ import {
   submitTestSchema,
   createTestSchema,
   addQuestionsSchema,
+  proctorLogBatchSchema,
 } from "./skill-test.validation.js";
 
 export class SkillTestController {
@@ -126,6 +127,58 @@ export class SkillTestController {
         return;
       }
       // Return 400 if student tries to submit without starting the test first
+      if (err instanceof Error && err.message === "NO_OPEN_SESSION") {
+        res
+          .status(400)
+          .json({
+            error: "No active test session found. Please start the test first.",
+          });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  /* ---- Incremental proctor-log flush (issue #2400) ---- */
+  async logProctorEvents(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: "Authentication required" });
+        return;
+      }
+
+      const testId = parseInt(String(req.params["id"]), 10);
+      if (isNaN(testId)) {
+        res.status(400).json({ error: "Invalid test ID" });
+        return;
+      }
+
+      const parsed = proctorLogBatchSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+        });
+        return;
+      }
+
+      const result = await this.service.logProctorEvents(
+        testId,
+        req.user.id,
+        parsed.data.events,
+      );
+      res.json(result);
+    } catch (err) {
+      if (err instanceof Error && err.message === "Test not found") {
+        res.status(404).json({ error: err.message });
+        return;
+      }
+      if (err instanceof Error && err.message === "TEST_EXPIRED") {
+        res
+          .status(403)
+          .json({ error: "Time is up. Your session has expired." });
+        return;
+      }
       if (err instanceof Error && err.message === "NO_OPEN_SESSION") {
         res
           .status(400)

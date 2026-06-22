@@ -60,6 +60,12 @@ skillTestRouter.post(
   requireRole("STUDENT"),
   (req, res, next) => controller.submitTest(req, res, next)
 );
+skillTestRouter.post(
+  "/:id/proctor-logs",
+  authMiddleware,
+  requireRole("STUDENT"),
+  (req, res, next) => controller.logProctorEvents(req, res, next)
+);
 
 // ── Admin routes ──
 skillTestRouter.post(
