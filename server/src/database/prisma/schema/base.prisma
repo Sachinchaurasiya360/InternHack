@@ -93,6 +93,7 @@ model user {
   githubConnection      githubConnection?           @relation("UserGithubConnection")
   guideFeedbacks        guideFeedback[]
   interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
+  interviewQuestionStates UserInterviewQuestionState[] @relation("StudentInterviewQuestionStates")
   firstPrProgress       studentFirstPrProgress[]    @relation("StudentFirstPrProgress")
   interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
   interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
@@ -127,16 +128,32 @@ model user {
 model userInterviewProgress {
   id            Int       @id @default(autoincrement())
   userId        Int       @unique
-  completedIds  String[]  @default([])
-  bookmarkedIds String[]  @default([])
   lastVisitedId String?
   lastVisitedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  user user @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
+  user      user @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model UserInterviewQuestionState {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  questionId   String
+  isCompleted  Boolean  @default(false)
+  isBookmarked Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user user @relation("StudentInterviewQuestionStates", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([userId])
+  @@index([questionId])
+  @@index([userId, questionId, isCompleted])
+  @@index([userId, questionId, isBookmarked])
 }
 
 model studentFirstPrProgress {
