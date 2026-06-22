@@ -62,7 +62,7 @@ describe("useProctoring incremental flush", () => {
     
     // Check fetch payload
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe("http://localhost/api/skill-test/1/proctor-logs");
+    expect(url).toBe("http://localhost/api/skill-tests/1/proctor-logs");
     expect(init.keepalive).toBe(true);
     expect(init.credentials).toBe("include");
     

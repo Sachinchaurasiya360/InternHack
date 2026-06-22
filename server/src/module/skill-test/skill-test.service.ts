@@ -477,38 +477,51 @@ export class SkillTestService {
     });
     if (!test) throw new Error("Test not found");
 
-    const session = await prisma.skillTestAttempt.findFirst({
-      where: { testId, studentId, completedAt: null },
-      orderBy: { startedAt: "desc" },
-    });
+    await prisma.$transaction(async (tx) => {
+      // Use raw query to grab a row lock (FOR UPDATE) to prevent concurrent flushes from race conditions
+      const sessions = await tx.$queryRaw<
+        { id: number; startedAt: Date; proctorLog: Prisma.JsonValue }[]
+      >`
+        SELECT id, "startedAt", "proctorLog"
+        FROM "skillTestAttempt"
+        WHERE "testId" = ${testId}
+          AND "studentId" = ${studentId}
+          AND "completedAt" IS NULL
+        ORDER BY "startedAt" DESC
+        LIMIT 1
+        FOR UPDATE
+      `;
 
-    if (!session) {
-      throw new Error("NO_OPEN_SESSION");
-    }
+      if (!sessions || sessions.length === 0) {
+        throw new Error("NO_OPEN_SESSION");
+      }
 
-    const expiresAt = new Date(
-      session.startedAt.getTime() + test.timeLimitSecs * 1000,
-    );
-    if (new Date() > expiresAt) {
-      throw new Error("TEST_EXPIRED");
-    }
+      const session = sessions[0]!;
 
-    // Merge events into existing proctorLog JSON under `incrementalEvents`
-    const existing = (session.proctorLog as Record<string, unknown>) ?? {};
-    const prev = Array.isArray(existing.incrementalEvents)
-      ? (existing.incrementalEvents as typeof events)
-      : [];
+      const expiresAt = new Date(
+        session.startedAt.getTime() + test.timeLimitSecs * 1000,
+      );
+      if (new Date() > expiresAt) {
+        throw new Error("TEST_EXPIRED");
+      }
 
-    const merged = {
-      ...existing,
-      incrementalEvents: [...prev, ...events],
-    };
+      // Merge events into existing proctorLog JSON under `incrementalEvents`
+      const existing = (session.proctorLog as Record<string, unknown>) ?? {};
+      const prev = Array.isArray(existing.incrementalEvents)
+        ? (existing.incrementalEvents as typeof events)
+        : [];
 
-    await prisma.skillTestAttempt.update({
-      where: { id: session.id },
-      data: {
-        proctorLog: merged as Prisma.InputJsonValue,
-      },
+      const merged = {
+        ...existing,
+        incrementalEvents: [...prev, ...events],
+      };
+
+      await tx.skillTestAttempt.update({
+        where: { id: session.id },
+        data: {
+          proctorLog: merged as Prisma.InputJsonValue,
+        },
+      });
     });
 
     return { accepted: events.length };
