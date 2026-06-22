@@ -2,6 +2,7 @@ import { prisma } from "../../database/db.js";
 import type { RepoDomain, RepoDifficulty } from "@prisma/client";
 import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
 import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
@@ -12,7 +13,7 @@ interface ListReposQuery {
   page: number;
   limit: number;
   search?: string;
-  language?: string;
+  language?: string[];
   difficulty?: string;
   domain?: string;
   sortBy: string;
@@ -65,6 +66,9 @@ let statsCache: {
   expiresAt: number;
 } = { data: null, expiresAt: 0 };
 
+export const LANGUAGES_CACHE_KEY = "opensource:languages";
+export const LANGUAGES_CACHE_TTL = 3600; // 1 hour — languages rarely change
+
 export class OpensourceService {
   async getGlobalStats() {
     if (statsCache.data && Date.now() < statsCache.expiresAt) {
@@ -99,14 +103,20 @@ export class OpensourceService {
   }
 
   async getLanguages() {
+    const cached = await cacheGet<string[]>(LANGUAGES_CACHE_KEY);
+    if (cached) return cached;
+
     const rows = await prisma.opensourceRepo.findMany({
       select: { language: true },
       distinct: ["language"],
     });
-    return rows
+    const languages = rows
       .map((r) => r.language)
       .filter((l: string | null): l is string => Boolean(l && l.trim() !== ""))
       .sort((a: string, b: string) => a.localeCompare(b));
+
+    await cacheSet(LANGUAGES_CACHE_KEY, languages, LANGUAGES_CACHE_TTL);
+    return languages;
   }
 
   async listRepos(query: ListReposQuery) {
@@ -125,7 +135,7 @@ export class OpensourceService {
     } = query;
     const skip = (page - 1) * limit;
     const where: Record<string, unknown> = {};
-    if (language) where.language = { equals: language, mode: "insensitive" };
+    if (language && language.length > 0) where.language = { in: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
     if (trending === "true") where["trending"] = true;
@@ -463,6 +473,9 @@ export class OpensourceService {
       /* email failure is non-blocking */
     }
 
+    // Invalidate language list — new repo may introduce a new language
+    cacheDel(LANGUAGES_CACHE_KEY).catch(() => {});
+
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
@@ -601,6 +614,28 @@ export class OpensourceService {
     }).format(date);
   }
 
+  async getGuideProgress(userId: number, guideSlug: string): Promise<string[]> {
+    const progress = await prisma.guideProgress.findUnique({
+      where: { userId_guideSlug: { userId, guideSlug } },
+      select: { completedStepIds: true },
+    });
+    return progress?.completedStepIds ?? [];
+  }
+
+  async patchGuideProgress(
+    userId: number,
+    guideSlug: string,
+    completedStepIds: string[],
+  ): Promise<string[]> {
+    const progress = await prisma.guideProgress.upsert({
+      where: { userId_guideSlug: { userId, guideSlug } },
+      create: { userId, guideSlug, completedStepIds },
+      update: { completedStepIds },
+      select: { completedStepIds: true },
+    });
+    return progress.completedStepIds;
+  }
+
   async getFirstPrProgress(userId: number): Promise<string[]> {
     const progress = await prisma.studentFirstPrProgress.findUnique({
       where: { userId },
@@ -657,20 +692,26 @@ export class OpensourceService {
       });
     }
 
-    // 2. Fetch repos matching skills (language or techStack subset)
-    // We search for repos where the primary language is in the student's skills
-    const repos = await prisma.opensourceRepo.findMany({
-      where: {
-        OR: [
-          { language: { in: skills, mode: "insensitive" } },
-          { trending: true },
-        ],
-      },
+    // 2. Fetch repos matching skills, fallback to trending if not enough
+    const skillRepos = await prisma.opensourceRepo.findMany({
+      where: { language: { in: skills, mode: "insensitive" } },
       take: 8,
-      orderBy: [{ trending: "desc" }, { stars: "desc" }],
+      orderBy: { stars: "desc" },
     });
 
-    return repos;
+    if (skillRepos.length < 8) {
+      const trendingRepos = await prisma.opensourceRepo.findMany({
+        where: {
+          trending: true,
+          ...(skillRepos.length > 0 ? { id: { notIn: skillRepos.map((r) => r.id) } } : {}),
+        },
+        take: 8 - skillRepos.length,
+        orderBy: { stars: "desc" },
+      });
+      return [...skillRepos, ...trendingRepos];
+    }
+
+    return skillRepos;
   }
 
   async getCertificate(token: string) {
