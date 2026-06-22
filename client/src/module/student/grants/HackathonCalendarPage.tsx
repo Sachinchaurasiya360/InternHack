@@ -259,7 +259,11 @@ export default function HackathonCalendarPage() {
       shouldReplace = true;
     }
 
-    if (searchParams.has("eco") && parseEcosystemFilter(searchParams.get("eco"), HACKATHON_ECOSYSTEMS) === "ALL") {
+    if (
+      searchParams.has("eco") &&
+      HACKATHON_ECOSYSTEMS.length > 0 &&
+      parseEcosystemFilter(searchParams.get("eco"), HACKATHON_ECOSYSTEMS) === "ALL"
+    ) {
       next.delete("eco");
       shouldReplace = true;
     }

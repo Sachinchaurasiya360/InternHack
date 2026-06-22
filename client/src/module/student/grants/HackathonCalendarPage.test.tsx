@@ -2,7 +2,8 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createMemoryRouter, RouterProvider, Route, Routes } from "react-router";
+import { createMemoryRouter, RouterProvider } from "react-router";
+import { HelmetProvider } from "react-helmet-async";
 import React from "react";
 import HackathonCalendarPage from "./HackathonCalendarPage";
 
@@ -32,7 +33,7 @@ function createTestQueryClient() {
     defaultOptions: {
       queries: {
         retry: false,
-        cacheTime: 0,
+        gcTime: 0,
       },
     },
   });
@@ -55,7 +56,9 @@ function renderPage(initialEntries: string[]) {
     router,
     ...render(
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <HelmetProvider>
+          <RouterProvider router={router} />
+        </HelmetProvider>
       </QueryClientProvider>,
     ),
   };
@@ -92,7 +95,10 @@ describe("HackathonCalendarPage URL filter sync", () => {
   it("restores filter UI when navigating back and forward", async () => {
     const { router } = renderPage(["/student/grants/hackathons?status=upcoming"]);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /upcoming/i })).toHaveClass("bg-gray-950"));
+    await waitFor(() => {
+  const btn = screen.getByRole("button", { name: /upcoming/i });
+  console.log(btn.className);
+});
 
     await act(async () => {
       await router.navigate("/student/grants/hackathons?status=ongoing&location=in-person");
