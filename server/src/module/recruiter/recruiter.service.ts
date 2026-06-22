@@ -844,7 +844,7 @@ export class RecruiterService {
 
   async getSavedCandidates(recruiterId: number) {
     const saved = await prisma.savedCandidate.findMany({
-      where: { recruiterId, student: { isActive: true } },
+      where: { recruiterId, student: { isActive: true, isProfilePublic: true } },
       orderBy: { createdAt: "desc" },
       include: {
         student: {
@@ -870,7 +870,7 @@ export class RecruiterService {
 
   async getSavedIds(recruiterId: number) {
     const rows = await prisma.savedCandidate.findMany({
-      where: { recruiterId },
+      where: { recruiterId, student: { isActive: true, isProfilePublic: true } },
       select: { studentId: true },
     });
     return rows.map((r) => r.studentId);
@@ -878,7 +878,9 @@ export class RecruiterService {
 
   async saveCandidate(recruiterId: number, studentId: number, notes?: string) {
     const student = await prisma.user.findUnique({ where: { id: studentId } });
-    if (!student || student.role !== "STUDENT") throw new Error("Student not found");
+    if (!student || student.role !== "STUDENT" || !student.isProfilePublic) {
+      throw new Error("Student profile is private or not found");
+    }
 
     if (notes) {
       const existing = await prisma.savedCandidate.findUnique({
