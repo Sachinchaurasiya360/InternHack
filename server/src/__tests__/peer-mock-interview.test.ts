@@ -123,11 +123,25 @@ describe("PeerMockInterviewService", () => {
       const res = await service.getUpcomingPairing(1);
       expect(prisma.peerMockInterview.findFirst).toHaveBeenCalledWith({
         where: {
-          status: "SCHEDULED",
           OR: [
-            { studentAId: 1 },
-            { studentBId: 1 },
+            {
+              status: "SCHEDULED",
+              OR: [
+                { studentAId: 1 },
+                { studentBId: 1 },
+              ],
+            },
+            {
+              status: "COMPLETED",
+              OR: [
+                { studentAId: 1, ratingAForB: null },
+                { studentBId: 1, ratingBForA: null },
+              ],
+            },
           ],
+        },
+        orderBy: {
+          createdAt: "desc",
         },
         include: {
           studentA: expect.any(Object),

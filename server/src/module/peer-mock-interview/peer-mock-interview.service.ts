@@ -74,11 +74,25 @@ export class PeerMockInterviewService {
   async getUpcomingPairing(userId: number) {
     return prisma.peerMockInterview.findFirst({
       where: {
-        status: "SCHEDULED",
         OR: [
-          { studentAId: userId },
-          { studentBId: userId },
+          {
+            status: "SCHEDULED",
+            OR: [
+              { studentAId: userId },
+              { studentBId: userId },
+            ],
+          },
+          {
+            status: "COMPLETED",
+            OR: [
+              { studentAId: userId, ratingAForB: null },
+              { studentBId: userId, ratingBForA: null },
+            ],
+          },
         ],
+      },
+      orderBy: {
+        createdAt: "desc",
       },
       include: {
         studentA: {

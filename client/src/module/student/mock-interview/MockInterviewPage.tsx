@@ -1152,7 +1152,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
   // Form states
   const [topic, setTopic] = useState<"DSA" | "SYSTEM_DESIGN" | "FRONTEND">("DSA");
   const [availability, setAvailability] = useState<string[]>([]);
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
 
   // Modal states for rating
   const [showRatingModal, setShowRatingModal] = useState(false);
@@ -1166,6 +1166,8 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
       setTopic(preference.topic || "DSA");
       setAvailability(preference.availability || []);
       setEnabled(preference.enabled ?? true);
+    } else {
+      setEnabled(false);
     }
   }, [preference]);
   /* eslint-enable react-hooks/set-state-in-effect */
