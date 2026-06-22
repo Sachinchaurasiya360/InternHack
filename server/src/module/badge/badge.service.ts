@@ -232,6 +232,8 @@ export class BadgeService {
       shareCount?: number;
       solved?: number;
       streak?: number;
+      completedMockInterviews?: number;
+      mockInterviewStreak?: number;
       profileUser?: {
         name: string | null;
         bio: string | null;
@@ -284,6 +286,57 @@ export class BadgeService {
       case "oss_streak":
         ctx.streak = (context?.streak as number) ?? 0;
         break;
+      case "mock_interview": {
+        const completed = await prisma.peerMockInterview.findMany({
+          where: {
+            OR: [
+              { studentAId: studentId },
+              { studentBId: studentId },
+            ],
+            status: "COMPLETED",
+          },
+          orderBy: { completedAt: "asc" },
+          select: { completedAt: true },
+        });
+
+        ctx.completedMockInterviews = completed.length;
+
+        if (completed.length === 0) {
+          ctx.mockInterviewStreak = 0;
+        } else {
+          const weeks = new Set<string>();
+          for (const item of completed) {
+            if (!item.completedAt) continue;
+            const d = new Date(item.completedAt);
+            const onejan = new Date(d.getFullYear(), 0, 1);
+            const weekNum = Math.ceil((((d.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+            weeks.add(`${d.getFullYear()}-${weekNum}`);
+          }
+
+          const now = new Date();
+          const onejan = new Date(now.getFullYear(), 0, 1);
+          const currentWeekNum = Math.ceil((((now.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+          let currentStreak = 0;
+          let checkYear = now.getFullYear();
+          let checkWeek = currentWeekNum;
+
+          for (let step = 0; step < 52; step++) {
+            const key = `${checkYear}-${checkWeek}`;
+            if (weeks.has(key)) {
+              currentStreak++;
+              checkWeek--;
+              if (checkWeek === 0) {
+                checkYear--;
+                checkWeek = 52;
+              }
+            } else {
+              break;
+            }
+          }
+          ctx.mockInterviewStreak = currentStreak;
+        }
+        break;
+      }
     }
 
     // 5. Evaluate each badge using pre-fetched data — zero additional DB queries
@@ -330,6 +383,15 @@ export class BadgeService {
           const s = ctx.streak ?? 0;
           const required = (params["count"] as number) || 1;
           earned = s >= required;
+          break;
+        }
+        case "mock_interview": {
+          const type = params["type"] as string;
+          if (type === "streak") {
+            earned = (ctx.mockInterviewStreak ?? 0) >= ((params["count"] as number) || 1);
+          } else {
+            earned = (ctx.completedMockInterviews ?? 0) >= ((params["count"] as number) || 1);
+          }
           break;
         }
       }

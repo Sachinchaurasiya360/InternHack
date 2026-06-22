@@ -102,6 +102,9 @@ model user {
   studyBuddyPreferences roadmapStudyBuddyPreference[] @relation("UserStudyBuddyPreferences")
   studentAPairs        roadmapStudyBuddyPair[]        @relation("StudentAPairs")
   studentBPairs        roadmapStudyBuddyPair[]        @relation("StudentBPairs")
+  mockInterviewPreference peerMockInterviewPreference? @relation("UserMockInterviewPreference")
+  studentAMockInterviews  peerMockInterview[]           @relation("StudentAMockInterviews")
+  studentBMockInterviews  peerMockInterview[]           @relation("StudentBMockInterviews")
   generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
   leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
   generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
@@ -789,6 +792,7 @@ model dsaProblem {
   submissions      dsaSubmission[]
   reports          dsaProblemReport[]
   labels           dsaProblemLabel[]
+  mockInterviews   peerMockInterview[]
 
   @@index([difficulty])
   @@index([leetcodeId])

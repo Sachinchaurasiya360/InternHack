@@ -240,3 +240,54 @@ model roadmapStudyBuddyPair {
   @@unique([roadmapId, studentAId], map: "unique_active_pair_student_a", where: { active: true })
   @@unique([roadmapId, studentBId], map: "unique_active_pair_student_b", where: { active: true })
 }
+
+enum MockInterviewTopic {
+  DSA
+  SYSTEM_DESIGN
+  FRONTEND
+}
+
+enum MockInterviewStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model peerMockInterviewPreference {
+  id           Int                  @id @default(autoincrement())
+  userId       Int                  @unique
+  user         user                 @relation("UserMockInterviewPreference", fields: [userId], references: [id], onDelete: Cascade)
+  enabled      Boolean              @default(true)
+  topic        MockInterviewTopic
+  availability String[]             @default([])
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([userId])
+}
+
+model peerMockInterview {
+  id                 Int                 @id @default(autoincrement())
+  topic              MockInterviewTopic
+  studentAId         Int
+  studentA           user                @relation("StudentAMockInterviews", fields: [studentAId], references: [id], onDelete: Cascade)
+  studentBId         Int
+  studentB           user                @relation("StudentBMockInterviews", fields: [studentBId], references: [id], onDelete: Cascade)
+  assignedProblemId  Int?
+  assignedProblem    dsaProblem?         @relation(fields: [assignedProblemId], references: [id], onDelete: SetNull)
+  status             MockInterviewStatus @default(SCHEDULED)
+  scheduledAt        DateTime            @default(now())
+  completedAt        DateTime?
+  
+  ratingAForB        Int?
+  ratingBForA        Int?
+  feedbackAForB      String?             @db.Text
+  feedbackBForA      String?             @db.Text
+  
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([studentAId])
+  @@index([studentBId])
+  @@index([status])
+}
