@@ -50,7 +50,6 @@ model user {
   achievements          Json                        @default("[]")
   leetcodeUrl           String?
   unsubscribeDigest     Boolean                     @default(false)
-  trackedPrograms       String[]                    @default([])
   tokenVersion          Int                         @default(0)
   ossTier               String?
   adminProfile          adminProfile?               @relation("AdminProfile")
@@ -559,11 +558,16 @@ model programInterest {
   id        Int      @id @default(autoincrement())
   userId    Int
   programId Int
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
-  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+
+  user    user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program ossProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
 
   @@unique([userId, programId])
-  @@index([userId])
+  @@index([userId, active])
+  @@index([programId, active])
 }
 
 model repoRequest {
@@ -1706,9 +1710,10 @@ model ossProgram {
   resultsDate         DateTime?
   programStart        DateTime?
   programEnd          DateTime?
-  active              Boolean   @default(true)
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  active              Boolean          @default(true)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  programInterests    programInterest[]
 
   @@index([active])
   @@index([slug])
