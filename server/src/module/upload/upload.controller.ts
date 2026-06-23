@@ -41,8 +41,23 @@ function getExpectedS3UrlPrefix(): string {
   return `https://${bucketName}.s3.${region}.amazonaws.com/`;
 }
 
-function isValidS3FileUrl(url: unknown): url is string {
-  return typeof url === "string" && url.startsWith(getExpectedS3UrlPrefix());
+function isValidS3FileUrl(url: unknown, userId?: number): url is string {
+  if (typeof url !== "string" || !url.startsWith(getExpectedS3UrlPrefix())) {
+    return false;
+  }
+  
+  if (userId !== undefined) {
+    const key = getS3KeyFromUrl(url);
+    if (!key) return false;
+    
+    // Key format is <folder>/<userId>/<uuid>-<filename>
+    const parts = key.split('/');
+    if (parts.length < 3 || parts[1] !== String(userId)) {
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 /** Delete a file - keeps local fallback support just in case users have legacy local files */
@@ -112,8 +127,8 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl } = req.body;
-      if (!isValidS3FileUrl(fileUrl)) {
-        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      if (!isValidS3FileUrl(fileUrl, req.user.id)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin or ownership" });
       }
 
       const userId = req.user.id;
@@ -144,8 +159,8 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl } = req.body;
-      if (!isValidS3FileUrl(fileUrl)) {
-        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      if (!isValidS3FileUrl(fileUrl, req.user.id)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin or ownership" });
       }
 
       const userId = req.user.id;
@@ -176,8 +191,8 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl, originalName, size, mimeType } = req.body;
-      if (!isValidS3FileUrl(fileUrl)) {
-        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      if (!isValidS3FileUrl(fileUrl, req.user.id)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin or ownership" });
       }
       if (typeof size === "number" && size > MAX_FILE_SIZE) {
         return res.status(400).json({ message: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB limit` });
