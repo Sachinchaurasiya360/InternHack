@@ -1,8 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import type { LatexChatService } from "./latex-chat.service.js";
 import { latexChatSchema, latexJDOptimizeSchema } from "./latex-chat.validation.js";
-import { prisma } from "../../database/db.js";
-import type { UsageAction } from "@prisma/client";
 import { isPremiumUser } from "../../utils/premium.utils.js";
 
 export class LatexChatController {
@@ -28,10 +26,6 @@ export class LatexChatController {
       }
 
       const response = await this.chatService.chat(result.data, req.user.id);
-
-      await prisma.usageLog.create({
-        data: { userId: req.user.id, action: "GENERATE_RESUME" as UsageAction },
-      });
 
       res.json(response);
     } catch (err) {
@@ -63,10 +57,6 @@ export class LatexChatController {
         result.data.jobDescription,
         req.user.id,
       );
-
-      await prisma.usageLog.create({
-        data: { userId: req.user.id, action: "GENERATE_RESUME" as UsageAction },
-      });
 
       res.json(response);
     } catch (err) {
