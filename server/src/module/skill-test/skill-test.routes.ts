@@ -3,6 +3,7 @@ import { SkillTestService } from "./skill-test.service.js";
 import { SkillTestController } from "./skill-test.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
+import { validateBody, proctorLogBatchSchema } from "./skill-test.validation.js";
 
 const service = new SkillTestService();
 const controller = new SkillTestController(service);
@@ -64,6 +65,7 @@ skillTestRouter.post(
   "/:id/proctor-logs",
   authMiddleware,
   requireRole("STUDENT"),
+  validateBody(proctorLogBatchSchema),
   (req, res, next) => controller.logProctorEvents(req, res, next)
 );
 

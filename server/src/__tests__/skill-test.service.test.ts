@@ -14,7 +14,7 @@ vi.mock("../database/db.js", () => ({
     },
     // $transaction receives a callback; we invoke it with a fake tx object
     // that exposes the two methods the service actually calls.
-    $transaction: vi.fn((cb: (tx: unknown) => Promise<unknown>) =>
+    $transaction: vi.fn((cb: any) =>
       cb({
         $queryRaw: txQueryRaw,
         skillTestAttempt: { update: txUpdate },
@@ -36,8 +36,8 @@ describe("SkillTestService.logProctorEvents", () => {
     vi.clearAllMocks();
 
     // Re-wire $transaction after clearAllMocks wipes the implementation
-    vi.mocked(prisma.$transaction).mockImplementation(
-      (cb: (tx: unknown) => Promise<unknown>) =>
+    (prisma.$transaction as any).mockImplementation(
+      (cb: any) =>
         cb({
           $queryRaw: txQueryRaw,
           skillTestAttempt: { update: txUpdate },

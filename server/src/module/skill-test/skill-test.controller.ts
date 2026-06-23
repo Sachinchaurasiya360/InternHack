@@ -4,7 +4,6 @@ import {
   submitTestSchema,
   createTestSchema,
   addQuestionsSchema,
-  proctorLogBatchSchema,
 } from "./skill-test.validation.js";
 
 export class SkillTestController {
@@ -153,19 +152,10 @@ export class SkillTestController {
         return;
       }
 
-      const parsed = proctorLogBatchSchema.safeParse(req.body);
-      if (!parsed.success) {
-        res.status(400).json({
-          error: "Validation failed",
-          details: parsed.error.flatten(),
-        });
-        return;
-      }
-
       const result = await this.service.logProctorEvents(
         testId,
         req.user.id,
-        parsed.data.events,
+        req.body.events,
       );
       res.json(result);
     } catch (err) {
