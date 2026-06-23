@@ -53,6 +53,10 @@ opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
     const queryStudentId = req.query.studentId as string | undefined;
     const userId = queryStudentId ? parseInt(queryStudentId, 10) : req.user!.id;
 
+    if (queryStudentId && isNaN(userId)) {
+      return res.status(400).json({ success: false, error: "Invalid studentId parameter" });
+    }
+
     if (queryStudentId && req.user!.role === "STUDENT" && userId !== req.user!.id) {
       return res.status(403).json({ success: false, error: "Cannot view other student's activity" });
     }
