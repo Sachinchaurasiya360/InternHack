@@ -89,6 +89,11 @@ describe("SkillTestService.logProctorEvents", () => {
 
     expect(result.accepted).toBe(1);
     expect(txExecuteRaw).toHaveBeenCalledTimes(1);
+    expect(txExecuteRaw).toHaveBeenCalledWith(
+      expect.any(Array),
+      JSON.stringify(newEvents),
+      99
+    );
   });
 
   it("initializes incrementalEvents array if it does not exist", async () => {
@@ -108,5 +113,10 @@ describe("SkillTestService.logProctorEvents", () => {
     await service.logProctorEvents(1, 2, newEvents);
 
     expect(txExecuteRaw).toHaveBeenCalledTimes(1);
+    expect(txExecuteRaw).toHaveBeenCalledWith(
+      expect.any(Array),
+      JSON.stringify(newEvents),
+      99
+    );
   });
 });
