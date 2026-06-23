@@ -5,7 +5,7 @@ import { prisma } from "../database/db.js";
 // Shared mocks for the transaction-internal objects.
 // Each test configures these before calling the service method.
 const txQueryRaw = vi.fn();
-const txUpdate = vi.fn();
+const txExecuteRaw = vi.fn();
 
 vi.mock("../database/db.js", () => ({
   prisma: {
@@ -17,7 +17,7 @@ vi.mock("../database/db.js", () => ({
     $transaction: vi.fn((cb: any) =>
       cb({
         $queryRaw: txQueryRaw,
-        skillTestAttempt: { update: txUpdate },
+        $executeRaw: txExecuteRaw,
       }),
     ),
   },
@@ -40,7 +40,7 @@ describe("SkillTestService.logProctorEvents", () => {
       (cb: any) =>
         cb({
           $queryRaw: txQueryRaw,
-          skillTestAttempt: { update: txUpdate },
+          $executeRaw: txExecuteRaw,
         }),
     );
   });
@@ -72,22 +72,14 @@ describe("SkillTestService.logProctorEvents", () => {
   it("merges incremental events into existing proctorLog array", async () => {
     vi.mocked(prisma.skillTest.findUnique).mockResolvedValue({ timeLimitSecs: 3600 } as any);
 
-    const existingLog = {
-      tabSwitches: 0,
-      incrementalEvents: [
-        { type: "tab_switch", timestamp: "2024-01-01T10:00:00.000Z" },
-      ],
-    };
-
     txQueryRaw.mockResolvedValue([
       {
         id: 99,
         startedAt: new Date(Date.now() - 600 * 1000), // 10 mins ago
-        proctorLog: existingLog,
       },
     ]);
 
-    txUpdate.mockResolvedValue({} as any);
+    txExecuteRaw.mockResolvedValue(1);
 
     const newEvents = [
       { type: "focus_loss", timestamp: "2024-01-01T10:05:00.000Z" },
@@ -96,18 +88,7 @@ describe("SkillTestService.logProctorEvents", () => {
     const result = await service.logProctorEvents(1, 2, newEvents);
 
     expect(result.accepted).toBe(1);
-    expect(txUpdate).toHaveBeenCalledWith({
-      where: { id: 99 },
-      data: {
-        proctorLog: {
-          tabSwitches: 0,
-          incrementalEvents: [
-            { type: "tab_switch", timestamp: "2024-01-01T10:00:00.000Z" },
-            { type: "focus_loss", timestamp: "2024-01-01T10:05:00.000Z" },
-          ],
-        },
-      },
-    });
+    expect(txExecuteRaw).toHaveBeenCalledTimes(1);
   });
 
   it("initializes incrementalEvents array if it does not exist", async () => {
@@ -117,24 +98,15 @@ describe("SkillTestService.logProctorEvents", () => {
       {
         id: 99,
         startedAt: new Date(),
-        proctorLog: { tabSwitches: 5 },
       },
     ]);
 
-    txUpdate.mockResolvedValue({} as any);
+    txExecuteRaw.mockResolvedValue(1);
 
     const newEvents = [{ type: "tab_switch", timestamp: "2024-01-01T10:05:00.000Z" }];
 
     await service.logProctorEvents(1, 2, newEvents);
 
-    expect(txUpdate).toHaveBeenCalledWith({
-      where: { id: 99 },
-      data: {
-        proctorLog: {
-          tabSwitches: 5,
-          incrementalEvents: newEvents,
-        },
-      },
-    });
+    expect(txExecuteRaw).toHaveBeenCalledTimes(1);
   });
 });

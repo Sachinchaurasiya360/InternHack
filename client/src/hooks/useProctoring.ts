@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import toast from "../components/ui/toast";
-import { API_BASE } from "../lib/axios";
+import toast from "@/components/ui/toast";
+import { API_BASE } from "@/lib/axios";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */

@@ -1,20 +1,4 @@
-import { z, type ZodSchema } from "zod";
-import type { Request, Response, NextFunction } from "express";
-
-/** Route-level body validation middleware (same pattern as auth, notes, learn). */
-export const validateBody = <T>(schema: ZodSchema<T>) =>
-  (req: Request, res: Response, next: NextFunction): void => {
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      res.status(400).json({
-        message: "Validation failed",
-        errors: result.error.flatten(),
-      });
-      return;
-    }
-    req.body = result.data;
-    next();
-  };
+import { z } from "zod";
 
 export const submitTestSchema = z.object({
   answers: z

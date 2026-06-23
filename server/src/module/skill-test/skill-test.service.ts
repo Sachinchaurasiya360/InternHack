@@ -478,11 +478,12 @@ export class SkillTestService {
     if (!test) throw new Error("Test not found");
 
     await prisma.$transaction(async (tx) => {
-      // Use raw query to grab a row lock (FOR UPDATE) to prevent concurrent flushes from race conditions
+      // Use raw query to grab a row lock (FOR UPDATE) to prevent concurrent flushes from race conditions.
+      // We no longer select proctorLog here to avoid read amplification.
       const sessions = await tx.$queryRaw<
-        { id: number; startedAt: Date; proctorLog: Prisma.JsonValue }[]
+        { id: number; startedAt: Date }[]
       >`
-        SELECT id, "startedAt", "proctorLog"
+        SELECT id, "startedAt"
         FROM "skillTestAttempt"
         WHERE "testId" = ${testId}
           AND "studentId" = ${studentId}
@@ -505,23 +506,16 @@ export class SkillTestService {
         throw new Error("TEST_EXPIRED");
       }
 
-      // Merge events into existing proctorLog JSON under `incrementalEvents`
-      const existing = (session.proctorLog as Record<string, unknown>) ?? {};
-      const prev = Array.isArray(existing.incrementalEvents)
-        ? (existing.incrementalEvents as typeof events)
-        : [];
-
-      const merged = {
-        ...existing,
-        incrementalEvents: [...prev, ...events],
-      };
-
-      await tx.skillTestAttempt.update({
-        where: { id: session.id },
-        data: {
-          proctorLog: merged as Prisma.InputJsonValue,
-        },
-      });
+      // Atomic JSONB array append using raw SQL to eliminate write amplification
+      await tx.$executeRaw`
+        UPDATE "skillTestAttempt"
+        SET "proctorLog" = jsonb_set(
+          COALESCE("proctorLog", '{}'::jsonb),
+          '{incrementalEvents}',
+          COALESCE("proctorLog"->'incrementalEvents', '[]'::jsonb) || CAST(${JSON.stringify(events)} AS jsonb)
+        )
+        WHERE id = ${session.id}
+      `;
     });
 
     return { accepted: events.length };
