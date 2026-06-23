@@ -155,23 +155,13 @@ export class OpensourceService {
     const trimmedSearch = search?.trim();
 
     if (trimmedSearch) {
-      // Prisma's scalar-list filters can't do case-insensitive substring match
-      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-      // subquery and merge the matching ids into the OR clause.
-      const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
-        SELECT id FROM "opensourceRepo"
-        WHERE EXISTS (
-          SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${trimmedSearch}%`}
-        )
-      `;
-
-      const tagMatchIds = tagMatches.map((r) => r.id);
+      const searchWords = trimmedSearch.split(/\s+/).filter(Boolean);
       where["OR"] = [
         { name: { contains: trimmedSearch, mode: "insensitive" } },
         { owner: { contains: trimmedSearch, mode: "insensitive" } },
         { description: { contains: trimmedSearch, mode: "insensitive" } },
         { language: { contains: trimmedSearch, mode: "insensitive" } },
-        ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
+        { tags: { hasSome: searchWords } },
       ];
     }
 
