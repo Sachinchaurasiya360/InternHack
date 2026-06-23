@@ -1205,8 +1205,8 @@ export function summarizeProgress(
     }
   }
 
-  const totalTopics = allTopics.length - skippedTopics;
-  const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0) - skippedHours;
+  const totalTopics = allTopics.length;
+  const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0);
 
   return {
     totalTopics,
@@ -1219,3 +1219,4 @@ export function summarizeProgress(
     hoursTotal,
   };
 }
+
