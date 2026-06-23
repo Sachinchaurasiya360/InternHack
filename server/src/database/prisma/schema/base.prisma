@@ -8,123 +8,123 @@ datasource db {
 }
 
 model user {
-  id                    Int                         @id @default(autoincrement())
-  name                  String
-  profileSlug           String?                     @unique
-  email                 String                      @unique
-  password              String
-  role                  UserRole                    @default(STUDENT)
-  isActive              Boolean                     @default(true)
-  isProfilePublic       Boolean                     @default(false)
-  isVerified            Boolean                     @default(false)
-  verificationOtp       String?
-  otpExpiresAt          DateTime?
-  resetPasswordOtp      String?
-  resetOtpExpiresAt     DateTime?
-  passwordResetAttempts Int                         @default(0)
+  id                       Int                            @id @default(autoincrement())
+  name                     String
+  email                    String                         @unique
+  password                 String
+  role                     UserRole                       @default(STUDENT)
+  isActive                 Boolean                        @default(true)
+  isProfilePublic          Boolean                        @default(false)
+  isVerified               Boolean                        @default(false)
+  verificationOtp          String?
+  otpExpiresAt             DateTime?
+  resetPasswordOtp         String?
+  resetOtpExpiresAt        DateTime?
+  contactNo                String?
+  profilePic               String?
+  coverImage               String?
+  resumes                  String[]                       @default([])
+  company                  String?
+  designation              String?
+  createdAt                DateTime                       @default(now())
+  updatedAt                DateTime                       @updatedAt
+  subscriptionPlan         SubscriptionPlan               @default(FREE)
+  subscriptionStatus       SubscriptionStatus             @default(EXPIRED)
+  subscriptionStartDate    DateTime?
+  subscriptionEndDate      DateTime?
+  bio                      String?
+  college                  String?
+  graduationYear           Int?
+  skills                   String[]                       @default([])
+  linkedinUrl              String?
+  githubUrl                String?
+  portfolioUrl             String?
+  leetcodeUrl              String?
+  location                 String?
+  jobStatus                String?
+  projects                 Json                           @default("[]")
+  achievements             Json                           @default("[]")
+  tokenVersion             Int                            @default(0)
+  unsubscribeDigest        Boolean                        @default(false)
+  profileSlug              String?                        @unique
+  passwordResetAttempts    Int                            @default(0)
   passwordResetLockedUntil DateTime?
-  verificationAttempts  Int                         @default(0)
-  verificationLockedUntil DateTime?
-  contactNo             String?
-  profilePic            String?
-  coverImage            String?
-  resumes               String[]                    @default([])
-  company               String?
-  designation           String?
-  createdAt             DateTime                    @default(now())
-  updatedAt             DateTime                    @updatedAt
-  subscriptionPlan      SubscriptionPlan            @default(FREE)
-  subscriptionStatus    SubscriptionStatus          @default(EXPIRED)
-  subscriptionStartDate DateTime?
-  subscriptionEndDate   DateTime?
-  bio                   String?
-  college               String?
-  graduationYear        Int?
-  skills                String[]                    @default([])
-  linkedinUrl           String?
-  githubUrl             String?
-  portfolioUrl          String?
-  location              String?
-  jobStatus             String?
-  projects              Json                        @default("[]")
-  achievements          Json                        @default("[]")
-  leetcodeUrl           String?
-  unsubscribeDigest     Boolean                     @default(false)
-  tokenVersion          Int                         @default(0)
-  ossTier               String?
-  adminProfile          adminProfile?               @relation("AdminProfile")
-  applications          application[]               @relation("StudentApplications")
-  atsScores             atsScore[]                  @relation("StudentAtsScores")
-  blogPosts             blogPost[]                  @relation("BlogAuthor")
-  createdCompanies      company[]                   @relation("UserCreatedCompanies")
-  addedContacts         companyContact[]            @relation("UserAddedContacts")
-  reviewedContributions companyContribution[]       @relation("AdminReviewedContributions")
-  contributions         companyContribution[]       @relation("UserContributions")
-  companyReviews        companyReview[]             @relation("UserReviews")
-  dsaBookmarks          dsaBookmark[]               @relation("StudentDsaBookmarks")
-  dsaProblemLabels      dsaProblemLabel[]           @relation("StudentDsaProblemLabels")
-  dsaProblemReports     dsaProblemReport[]
-  emailCampaigns        emailCampaign[]             @relation("UserEmailCampaigns")
-  employeeProfile       employee?                   @relation("EmployeeUser")
-  postedJobs            job[]                       @relation("RecruiterJobs")
-  payments              payment[]                   @relation("UserPayments")
-  createdSkillTests     skillTest[]                 @relation("SkillTestCreator")
-  skillTestAttempts     skillTestAttempt[]          @relation("StudentSkillTestAttempts")
-  aptitudeProgress      studentAptitudeProgress[]   @relation("StudentAptitudeProgress")
-  aptitudeTopicProgress studentAptitudeTopicProgress[] @relation("StudentAptitudeTopicProgress")
-  studentBadges         studentBadge[]              @relation("StudentBadges")
-  dsaProgress           studentDsaProgress[]        @relation("StudentDsaProgress")
-  dsaSubmissions        dsaSubmission[]             @relation("StudentDsaSubmissions")
-  sqlProgress           studentSqlProgress[]        @relation("StudentSqlProgress")
-  savedCandidates       savedCandidate[]            @relation("RecruiterSavedCandidates")
-  savedByRecruiters     savedCandidate[]            @relation("StudentSavedByRecruiters")
-  usageLogs             usageLog[]                  @relation("UserUsageLogs")
-  customRoles           userCustomRole[]            @relation("UserCustomRoles")
-  verifiedSkills        verifiedSkill[]             @relation("StudentVerifiedSkills")
-  jobPreference         userJobPreference?          @relation("UserJobPreferences")
-  jobMatches            jobMatch[]                  @relation("UserJobMatches")
-  agentConversations    jobAgentConversation[]      @relation("UserAgentConversations")
-  jobAgentEmailLogs     jobAgentEmailLog[]          @relation("UserJobAgentEmailLogs")
-  milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
-  externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
-  opensourceStreak      opensourceStreak?
-  repoRequests          repoRequest[]               @relation("UserRepoRequests")
-  githubConnection      githubConnection?           @relation("UserGithubConnection")
-  guideFeedbacks        guideFeedback[]
-  interviewProgress     userInterviewProgress[]     @relation("StudentInterviewProgress")
-  firstPrProgress       studentFirstPrProgress[]    @relation("StudentFirstPrProgress")
-  interviewExperiences  interviewExperience[]       @relation("UserInterviewExperiences")
-  interviewUpvotes      interviewExperienceUpvote[] @relation("UserInterviewUpvotes")
-  roadmapEnrollments    roadmapEnrollment[]         @relation("UserRoadmapEnrollments")
-  scheduledEmails       scheduledEmail[]            @relation("UserScheduledEmails")
-  privateRoadmaps       roadmap[]                   @relation("UserPrivateRoadmaps")
-  studyBuddyPreferences roadmapStudyBuddyPreference[] @relation("UserStudyBuddyPreferences")
-  studentAPairs        roadmapStudyBuddyPair[]        @relation("StudentAPairs")
-  studentBPairs        roadmapStudyBuddyPair[]        @relation("StudentBPairs")
-  generatedResumes      generatedResume[]           @relation("UserGeneratedResumes")
-  leetcodeImports       leetcodeImportLog[]          @relation("UserLeetcodeImports")
-  generatedCoverLetters generatedCoverLetter[]       @relation("StudentCoverLetters")
-  recommendation            userRecommendation?          @relation("UserRecommendation")
-  hackathonParticipations   hackathonParticipation[]     @relation("UserHackathonParticipations")
-  contentViews              contentView[]                @relation("UserContentViews")
-  statusHistory             applicationStatusHistory[]   @relation("ChangerStatusHistory")
-  coachAdvice               coachAdvice[]                @relation("UserCoachAdvice")
-  ossBookmarks              opensourceBookmark[]         @relation("UserOssBookmarks")
-  programInterests          programInterest[]
-  guideCertificates         guideCertificate[]           @relation("UserCertificates")
-  studentNotes              studentNote[]                @relation("StudentNotes")
-  ambassador                ambassador?
-  ambassadorReviews         ambassador[]                @relation("AmbassadorReviewer")
-  shareReviews              ambassadorShare[]           @relation("ShareReviewer")
-  referralConversions       referralConversion[]         @relation("ReferredConversions")
-  guideProgress             guideProgress[]             @relation("UserGuideProgress")
+  ossTier                  String?
+  verificationAttempts     Int                            @default(0)
+  verificationLockedUntil  DateTime?
+  adminProfile             adminProfile?                  @relation("AdminProfile")
+  ambassadorReviews        ambassador[]                   @relation("AmbassadorReviewer")
+  ambassador               ambassador?
+  shareReviews             ambassadorShare[]              @relation("ShareReviewer")
+  applications             application[]                  @relation("StudentApplications")
+  statusHistory            applicationStatusHistory[]     @relation("ChangerStatusHistory")
+  atsScores                atsScore[]                     @relation("StudentAtsScores")
+  blogPosts                blogPost[]                     @relation("BlogAuthor")
+  coachAdvice              coachAdvice[]                  @relation("UserCoachAdvice")
+  createdCompanies         company[]                      @relation("UserCreatedCompanies")
+  addedContacts            companyContact[]               @relation("UserAddedContacts")
+  reviewedContributions    companyContribution[]          @relation("AdminReviewedContributions")
+  contributions            companyContribution[]          @relation("UserContributions")
+  companyReviews           companyReview[]                @relation("UserReviews")
+  contentViews             contentView[]                  @relation("UserContentViews")
+  dsaBookmarks             dsaBookmark[]                  @relation("StudentDsaBookmarks")
+  dsaProblemLabels         dsaProblemLabel[]              @relation("StudentDsaProblemLabels")
+  dsaProblemReports        dsaProblemReport[]
+  dsaSubmissions           dsaSubmission[]                @relation("StudentDsaSubmissions")
+  emailCampaigns           emailCampaign[]                @relation("UserEmailCampaigns")
+  employeeProfile          employee?                      @relation("EmployeeUser")
+  externalApplications     externalJobApplication[]       @relation("StudentExternalApplications")
+  generatedCoverLetters    generatedCoverLetter[]         @relation("StudentCoverLetters")
+  generatedResumes         generatedResume[]              @relation("UserGeneratedResumes")
+  githubConnection         githubConnection?              @relation("UserGithubConnection")
+  guideCertificates        guideCertificate[]             @relation("UserCertificates")
+  guideFeedbacks           guideFeedback[]
+  guideProgress            guideProgress[]                @relation("UserGuideProgress")
+  hackathonParticipations  hackathonParticipation[]       @relation("UserHackathonParticipations")
+  interviewExperiences     interviewExperience[]          @relation("UserInterviewExperiences")
+  interviewUpvotes         interviewExperienceUpvote[]    @relation("UserInterviewUpvotes")
+  postedJobs               job[]                          @relation("RecruiterJobs")
+  agentConversations       jobAgentConversation[]         @relation("UserAgentConversations")
+  jobAgentEmailLogs        jobAgentEmailLog[]             @relation("UserJobAgentEmailLogs")
+  jobMatches               jobMatch[]                     @relation("UserJobMatches")
+  leetcodeImports          leetcodeImportLog[]            @relation("UserLeetcodeImports")
+  milestoneEmails          milestoneEmail[]               @relation("StudentMilestoneEmails")
+  ossBookmarks             opensourceBookmark[]           @relation("UserOssBookmarks")
+  opensourceStreak         opensourceStreak?
+  payments                 payment[]                      @relation("UserPayments")
+  programInterests         programInterest[]
+  referralConversions      referralConversion?            @relation("ReferredConversions")
+  repoRequests             repoRequest[]                  @relation("UserRepoRequests")
+  privateRoadmaps          roadmap[]                      @relation("UserPrivateRoadmaps")
+  roadmapEnrollments       roadmapEnrollment[]            @relation("UserRoadmapEnrollments")
+  studentAPairs            roadmapStudyBuddyPair[]        @relation("StudentAPairs")
+  studentBPairs            roadmapStudyBuddyPair[]        @relation("StudentBPairs")
+  studyBuddyPreferences    roadmapStudyBuddyPreference[]  @relation("UserStudyBuddyPreferences")
+  savedCandidates          savedCandidate[]               @relation("RecruiterSavedCandidates")
+  savedByRecruiters        savedCandidate[]               @relation("StudentSavedByRecruiters")
+  scheduledEmails          scheduledEmail[]               @relation("UserScheduledEmails")
+  createdSkillTests        skillTest[]                    @relation("SkillTestCreator")
+  skillTestAttempts        skillTestAttempt[]             @relation("StudentSkillTestAttempts")
+  aptitudeProgress         studentAptitudeProgress[]      @relation("StudentAptitudeProgress")
+  aptitudeTopicProgress    studentAptitudeTopicProgress[] @relation("StudentAptitudeTopicProgress")
+  studentBadges            studentBadge[]                 @relation("StudentBadges")
+  dsaProgress              studentDsaProgress[]           @relation("StudentDsaProgress")
+  firstPrProgress          studentFirstPrProgress?        @relation("StudentFirstPrProgress")
+  studentNotes             studentNote[]                  @relation("StudentNotes")
+  sqlProgress              studentSqlProgress[]           @relation("StudentSqlProgress")
+  usageLogs                usageLog[]                     @relation("UserUsageLogs")
+  customRoles              userCustomRole[]               @relation("UserCustomRoles")
+  interviewProgress        userInterviewProgress?         @relation("StudentInterviewProgress")
+  jobPreference            userJobPreference?             @relation("UserJobPreferences")
+  recommendation           userRecommendation?            @relation("UserRecommendation")
+  verifiedSkills           verifiedSkill[]                @relation("StudentVerifiedSkills")
+
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
 }
 
 model userInterviewProgress {
-  id            Int       @id @default(autoincrement())
   userId        Int       @unique
   completedIds  String[]  @default([])
   bookmarkedIds String[]  @default([])
@@ -132,20 +132,19 @@ model userInterviewProgress {
   lastVisitedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-
-  user user @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
+  id            Int       @id @default(autoincrement())
+  user          user      @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 model studentFirstPrProgress {
-  id                Int      @id @default(autoincrement())
-  userId            Int      @unique
-  completedStepIds   String[] @default([])
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  user user @relation("StudentFirstPrProgress", fields: [userId], references: [id], onDelete: Cascade)
+  id               Int      @id @default(autoincrement())
+  userId           Int      @unique
+  completedStepIds String[] @default([])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             user     @relation("StudentFirstPrProgress", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -157,8 +156,7 @@ model guideProgress {
   completedStepIds String[] @default([])
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-
-  user user @relation("UserGuideProgress", fields: [userId], references: [id], onDelete: Cascade)
+  user             user     @relation("UserGuideProgress", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, guideSlug])
   @@index([userId])
@@ -213,9 +211,9 @@ model round {
   timeLimitSecs       Int?
   autoGrade           Boolean           @default(false)
   activateAt          DateTime?
-  isArchived          Boolean           @default(false)
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  isArchived          Boolean           @default(false)
   job                 job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   roundSubmissions    roundSubmission[]
 
@@ -224,22 +222,22 @@ model round {
 }
 
 model application {
-  id                 Int               @id @default(autoincrement())
+  id                 Int                        @id @default(autoincrement())
   jobId              Int
   studentId          Int
-  status             ApplicationStatus @default(APPLIED)
+  status             ApplicationStatus          @default(APPLIED)
   currentRoundId     Int?
-  customFieldAnswers Json              @default("{}")
+  customFieldAnswers Json                       @default("{}")
   resumeUrl          String?
   coverLetter        String?
-  studentNotes       String?           @db.Text
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  job                job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  student            user              @relation("StudentApplications", fields: [studentId], references: [id], onDelete: Cascade)
-  interviews         interview[]                  @relation("ApplicationInterviews")
-  roundSubmissions   roundSubmission[]
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  studentNotes       String?
+  job                job                        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  student            user                       @relation("StudentApplications", fields: [studentId], references: [id], onDelete: Cascade)
   statusHistory      applicationStatusHistory[]
+  interviews         interview[]                @relation("ApplicationInterviews")
+  roundSubmissions   roundSubmission[]
 
   @@unique([jobId, studentId])
   @@index([jobId])
@@ -257,7 +255,7 @@ model applicationStatusHistory {
   changedBy     Int?
   changedAt     DateTime          @default(now())
   application   application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  changer       user?             @relation("ChangerStatusHistory", fields: [changedBy], references: [id], onDelete: SetNull)
+  changer       user?             @relation("ChangerStatusHistory", fields: [changedBy], references: [id])
 
   @@index([applicationId])
 }
@@ -506,36 +504,35 @@ model payment {
 }
 
 model opensourceRepo {
-  id          Int            @id @default(autoincrement())
-  name        String
-  owner       String
-  description String
-  language    String
-  techStack   String[]       @default([])
-  difficulty  RepoDifficulty @default(BEGINNER)
-  domain      RepoDomain     @default(WEB)
-  issueTypes  String[]       @default([])
-  stars       Int            @default(0)
-  forks       Int            @default(0)
-  openIssues  Int            @default(0)
-  url         String
-  logo        String?
-  tags        String[]       @default([])
-  highlights  String[]       @default([])
-  trending      Boolean        @default(false)
-  hacktoberfest Boolean        @default(false)
-  lastUpdated   DateTime       @default(now())
+  id                   Int                  @id @default(autoincrement())
+  name                 String
+  owner                String
+  description          String
+  language             String
+  techStack            String[]             @default([])
+  difficulty           RepoDifficulty       @default(BEGINNER)
+  domain               RepoDomain           @default(WEB)
+  issueTypes           String[]             @default([])
+  stars                Int                  @default(0)
+  forks                Int                  @default(0)
+  openIssues           Int                  @default(0)
+  url                  String
+  logo                 String?
+  tags                 String[]             @default([])
+  highlights           String[]             @default([])
+  trending             Boolean              @default(false)
+  lastUpdated          DateTime             @default(now())
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  hacktoberfest        Boolean              @default(false)
+  healthScore          Int                  @default(0)
   githubStatsUpdatedAt DateTime?
-  healthScore          Int            @default(0)
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
-  bookmarks     opensourceBookmark[]
-  repoRequests  repoRequest[]
+  bookmarks            opensourceBookmark[]
+  repoRequests         repoRequest[]
 
   @@index([domain])
   @@index([difficulty])
   @@index([language])
-
   @@index([trending, stars(sort: Desc)])
   @@index([hacktoberfest, stars(sort: Desc)])
   @@index([domain, difficulty, stars(sort: Desc)])
@@ -543,12 +540,12 @@ model opensourceRepo {
 }
 
 model opensourceBookmark {
-  id        Int             @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   userId    Int
   repoId    Int
-  createdAt DateTime        @default(now())
-  user      user            @relation("UserOssBookmarks", fields: [userId], references: [id], onDelete: Cascade)
-  repo      opensourceRepo  @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+  repo      opensourceRepo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  user      user           @relation("UserOssBookmarks", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, repoId])
   @@index([userId])
@@ -585,22 +582,23 @@ model repoRequest {
   status      RepoRequestStatus @default(PENDING)
   adminNote   String?
   userId      Int
-  user        user              @relation("UserRepoRequests", fields: [userId], references: [id], onDelete: Cascade)
-  repoId      Int?
-  repo        opensourceRepo?   @relation(fields: [repoId], references: [id], onDelete: SetNull)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+  repoId      Int?
+  repo        opensourceRepo?   @relation(fields: [repoId], references: [id])
+  user        user              @relation("UserRepoRequests", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@index([userId])
   @@index([userId, status])
+  @@index([repoId])
 }
 
 model githubConnection {
   id                 Int                     @id @default(autoincrement())
   userId             Int                     @unique
   githubUsername     String
-  accessToken        String                  @db.Text
+  accessToken        String
   connectedAt        DateTime                @default(now())
   lastSyncAt         DateTime?
   syncStatus         GithubSyncStatus        @default(PENDING)
@@ -609,9 +607,9 @@ model githubConnection {
   reposContributed   Int                     @default(0)
   publicRepos        Int                     @default(0)
   contributedStars   Int                     @default(0)
-  recentPullRequests githubPullRequest[]     @relation("GithubConnectionPullRequests")
-  contributedRepos   githubContributedRepo[] @relation("GithubConnectionRepos")
   user               user                    @relation("UserGithubConnection", fields: [userId], references: [id], onDelete: Cascade)
+  contributedRepos   githubContributedRepo[] @relation("GithubConnectionRepos")
+  recentPullRequests githubPullRequest[]     @relation("GithubConnectionPullRequests")
 
   @@index([githubUsername])
   @@index([lastSyncAt])
@@ -701,8 +699,8 @@ model gsocOrganization {
 }
 
 model ycCompany {
-  id              Int      @id @default(autoincrement())
-  ycId            Int      @unique
+  id              Int       @id @default(autoincrement())
+  ycId            Int       @unique
   name            String
   slug            String
   oneLiner        String?
@@ -716,19 +714,19 @@ model ycCompany {
   teamSize        Int?
   industry        String?
   subindustry     String?
-  tags            String[] @default([])
-  industries      String[] @default([])
-  regions         String[] @default([])
+  tags            String[]  @default([])
+  industries      String[]  @default([])
+  regions         String[]  @default([])
   stage           String?
-  isHiring        Boolean  @default(false)
-  topCompany      Boolean  @default(false)
+  isHiring        Boolean   @default(false)
+  topCompany      Boolean   @default(false)
   ycUrl           String?
   launchedAt      DateTime?
   founders        Json?
   socialLinks     Json?
   scrapedAt       DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([batchShort])
   @@index([industry])
@@ -764,11 +762,8 @@ model dsaTopic {
 model dsaProblem {
   id               Int                  @id @default(autoincrement())
   title            String
-  slug             String               @unique
   difficulty       String
-  leetcodeId       Int?
   leetcodeUrl      String?
-  leetcodeSlug     String?              @unique
   gfgUrl           String?
   articleUrl       String?
   videoUrl         String?
@@ -776,47 +771,50 @@ model dsaProblem {
   codechefUrl      String?
   tags             String[]             @default([])
   companies        String[]             @default([])
-  hints            String[]             @default([])
   sheets           String[]             @default([])
+  acceptanceRate   String?
+  category         String?
+  constraints      String?
   description      String?
   examples         String?
-  constraints      String?
-  acceptanceRate   String?
+  isPremium        Boolean              @default(false)
+  leetcodeId       Int?
+  leetcodeSlug     String?              @unique
+  similarQuestions Json?                @default("[]")
+  slug             String               @unique
   totalAccepted    Int?
   totalSubmissions Int?
-  similarQuestions Json?                @default("[]")
-  category         String?
-  isPremium        Boolean              @default(false)
+  hints            String[]             @default([])
   bookmarks        dsaBookmark[]
-  progress         studentDsaProgress[]
-  testCases        dsaTestCase[]
-  submissions      dsaSubmission[]
-  reports          dsaProblemReport[]
   labels           dsaProblemLabel[]
+  reports          dsaProblemReport[]
+  submissions      dsaSubmission[]
+  testCases        dsaTestCase[]
+  progress         studentDsaProgress[]
 
   @@index([difficulty])
   @@index([leetcodeId])
 }
 
 model dsaProblemReport {
-  id         Int        @id @default(autoincrement())
-  reason     String
-  message    String?
-  createdAt  DateTime   @default(now())
-  userId     Int
-  user       user       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  problemId  Int
-  problem    dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  id        Int        @id @default(autoincrement())
+  reason    String
+  message   String?
+  createdAt DateTime   @default(now())
+  userId    Int
+  problemId Int
+  problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  user      user       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model studentDsaProgress {
   id        Int        @id @default(autoincrement())
   studentId Int
   problemId Int
-  source    String     @default("INTERNAL")
   solved    Boolean    @default(true)
   notes     String?
   solvedAt  DateTime   @default(now())
+  source    String     @default("INTERNAL")
   problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
   student   user       @relation("StudentDsaProgress", fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -842,8 +840,8 @@ model dsaProblemLabel {
   problemId Int
   label     String
   createdAt DateTime   @default(now())
-  user      user       @relation("StudentDsaProblemLabels", fields: [userId], references: [id], onDelete: Cascade)
   problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  user      user       @relation("StudentDsaProblemLabels", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, problemId, label])
   @@index([userId])
@@ -876,8 +874,8 @@ model dsaSubmission {
   memoryKb  Int?
   results   Json       @default("[]")
   createdAt DateTime   @default(now())
-  student   user       @relation("StudentDsaSubmissions", fields: [studentId], references: [id], onDelete: Cascade)
   problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  student   user       @relation("StudentDsaSubmissions", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId, problemId])
   @@index([studentId])
@@ -908,17 +906,17 @@ model aptitudeCategory {
 }
 
 model aptitudeTopic {
-  id          Int                            @id @default(autoincrement())
-  categoryId  Int
-  name        String
-  slug        String                         @unique
-  description String?
-  orderIndex  Int                            @default(0)
-  sourceUrl   String?
-  createdAt   DateTime                       @default(now())
-  questions   aptitudeQuestion[]
+  id            Int                            @id @default(autoincrement())
+  categoryId    Int
+  name          String
+  slug          String                         @unique
+  description   String?
+  orderIndex    Int                            @default(0)
+  sourceUrl     String?
+  createdAt     DateTime                       @default(now())
+  questions     aptitudeQuestion[]
+  category      aptitudeCategory               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   topicProgress studentAptitudeTopicProgress[]
-  category    aptitudeCategory               @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model aptitudeQuestion {
@@ -957,15 +955,15 @@ model studentAptitudeTopicProgress {
 }
 
 model studentAptitudeProgress {
-  id         Int              @id @default(autoincrement())
-  studentId  Int
-  questionId Int
-  answered   Boolean          @default(false)
-  correct    Boolean          @default(false)
-  createdAt  DateTime         @default(now())
-  lastPracticedAt DateTime @default(now())
-  question   aptitudeQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  student    user             @relation("StudentAptitudeProgress", fields: [studentId], references: [id], onDelete: Cascade)
+  id              Int              @id @default(autoincrement())
+  studentId       Int
+  questionId      Int
+  answered        Boolean          @default(false)
+  correct         Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  lastPracticedAt DateTime         @default(now())
+  question        aptitudeQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  student         user             @relation("StudentAptitudeProgress", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, questionId])
   @@index([studentId])
@@ -1088,11 +1086,6 @@ model hackathon {
   @@index([ecosystem])
 }
 
-enum HackathonParticipationStatus {
-  INTERESTED
-  PARTICIPATING
-}
-
 model hackathonParticipation {
   id          Int                          @id @default(autoincrement())
   userId      Int
@@ -1100,13 +1093,14 @@ model hackathonParticipation {
   status      HackathonParticipationStatus @default(INTERESTED)
   createdAt   DateTime                     @default(now())
   updatedAt   DateTime                     @updatedAt
-  user        user                         @relation("UserHackathonParticipations", fields: [userId], references: [id], onDelete: Cascade)
   hackathon   hackathon                    @relation(fields: [hackathonId], references: [id], onDelete: Cascade)
+  user        user                         @relation("UserHackathonParticipations", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, hackathonId])
   @@index([userId])
   @@index([hackathonId])
 }
+
 model iitProfessor {
   id             Int      @id @default(autoincrement())
   collegeName    String
@@ -1132,8 +1126,8 @@ model govInternship {
   stipend     String
   eligibility String
   reality     String
-  applyUrl    String?
   createdAt   DateTime @default(now())
+  applyUrl    String?
 
   @@index([category])
 }
@@ -1231,14 +1225,14 @@ model adminJob {
 }
 
 model externalJobApplication {
-  id         Int      @id @default(autoincrement())
-  studentId  Int
-  adminJobId Int
-  studentNotes String?  @db.Text
+  id           Int      @id @default(autoincrement())
+  studentId    Int
+  adminJobId   Int
+  createdAt    DateTime @default(now())
+  studentNotes String?
   updatedAt    DateTime @default(now()) @updatedAt
-  createdAt  DateTime @default(now())
-  student    user     @relation("StudentExternalApplications", fields: [studentId], references: [id], onDelete: Cascade)
-  adminJob   adminJob @relation("AdminJobApplications", fields: [adminJobId], references: [id], onDelete: Cascade)
+  adminJob     adminJob @relation("AdminJobApplications", fields: [adminJobId], references: [id], onDelete: Cascade)
+  student      user     @relation("StudentExternalApplications", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, adminJobId])
   @@index([studentId])
@@ -1286,6 +1280,321 @@ model emailLog {
 
   @@index([campaignId])
   @@index([status])
+}
+
+model contactSubmission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model errorLog {
+  id          Int      @id @default(autoincrement())
+  method      String
+  path        String
+  statusCode  Int
+  message     String
+  rawError    String?
+  userId      Int?
+  ipAddress   String?
+  userAgent   String?
+  requestBody Json?
+  createdAt   DateTime @default(now())
+
+  @@index([statusCode])
+  @@index([createdAt])
+}
+
+model milestoneEmail {
+  id            Int      @id @default(autoincrement())
+  studentId     Int
+  milestoneType String
+  milestoneKey  String
+  sentAt        DateTime @default(now())
+  student       user     @relation("StudentMilestoneEmails", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, milestoneType, milestoneKey])
+  @@index([studentId])
+}
+
+model interviewExperience {
+  id              Int                         @id @default(autoincrement())
+  companyId       Int?
+  companyName     String?
+  userId          Int
+  role            String
+  experienceYears Int?
+  interviewYear   Int
+  interviewMonth  Int?
+  source          InterviewSource             @default(ON_CAMPUS)
+  difficulty      InterviewDifficulty         @default(MEDIUM)
+  outcome         InterviewOutcome            @default(PENDING)
+  offered         Boolean                     @default(false)
+  ctcLpa          Float?
+  totalRounds     Int                         @default(1)
+  overallRating   Int                         @default(3)
+  rounds          Json                        @default("[]")
+  tips            String?
+  prepResources   Json                        @default("[]")
+  isAnonymous     Boolean                     @default(false)
+  status          ReviewStatus                @default(PENDING)
+  upvotes         Int                         @default(0)
+  views           Int                         @default(0)
+  createdAt       DateTime                    @default(now())
+  updatedAt       DateTime                    @updatedAt
+  company         company?                    @relation(fields: [companyId], references: [id])
+  user            user                        @relation("UserInterviewExperiences", fields: [userId], references: [id], onDelete: Cascade)
+  upvoteRecords   interviewExperienceUpvote[]
+
+  @@index([companyId, status])
+  @@index([status])
+  @@index([role])
+  @@index([interviewYear])
+  @@index([userId])
+}
+
+model interviewExperienceUpvote {
+  id           Int                 @id @default(autoincrement())
+  experienceId Int
+  userId       Int
+  createdAt    DateTime            @default(now())
+  experience   interviewExperience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  user         user                @relation("UserInterviewUpvotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([experienceId, userId])
+  @@index([experienceId])
+}
+
+model userRecommendation {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  weakAreas       Json     @default("[]")
+  lastRefreshedAt DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            user     @relation("UserRecommendation", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model guideFeedback {
+  id        Int      @id @default(autoincrement())
+  guideId   String
+  stepId    String
+  userId    Int
+  rating    String
+  createdAt DateTime @default(now())
+  reason    String?
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideId, stepId])
+  @@index([guideId])
+  @@index([stepId])
+  @@index([userId, guideId])
+}
+
+model contentView {
+  id          Int         @id @default(autoincrement())
+  userId      Int?
+  contentType ContentType
+  contentId   String
+  timeSpentMs Int
+  completed   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  user        user?       @relation("UserContentViews", fields: [userId], references: [id])
+
+  @@index([contentType, contentId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model opensourceStreak {
+  id             Int       @id @default(autoincrement())
+  userId         Int       @unique
+  currentStreak  Int       @default(0)
+  longestStreak  Int       @default(0)
+  lastActivityAt DateTime?
+  totalDays      Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  user           user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ossProgram {
+  id                  Int       @id @default(autoincrement())
+  slug                String    @unique
+  name                String
+  short               String
+  description         String
+  fullDescription     String?
+  eligibility         String?
+  eligibilityType     String?
+  stipend             String?
+  stipendPaid         String?
+  stipendRange        String?
+  window              String?
+  region              String?
+  website             String?
+  applyUrl            String?
+  color               String?
+  bgColor             String?
+  tags                String[]  @default([])
+  requirements        String[]  @default([])
+  timeline            Json?
+  howToApply          String?
+  applicationStart    DateTime?
+  applicationDeadline DateTime?
+  resultsDate         DateTime?
+  programStart        DateTime?
+  programEnd          DateTime?
+  active              Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  programInterests    programInterest[]
+
+  @@index([active])
+  @@index([slug])
+}
+
+model coachAdvice {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  trigger   String
+  title     String   @default("Coach suggestion")
+  content   String
+  createdAt DateTime @default(now())
+  user      user     @relation("UserCoachAdvice", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model guideCertificate {
+  id          Int      @id @default(autoincrement())
+  token       String   @unique @default(cuid())
+  userId      Int
+  guideName   String
+  issuedAt    DateTime @default(now())
+  studentName String
+  user        user     @relation("UserCertificates", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guideName])
+  @@index([userId])
+  @@index([token])
+}
+
+model studentNote {
+  id          Int             @id @default(autoincrement())
+  userId      Int
+  contentType NoteContentType
+  contentId   String
+  note        String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  user        user            @relation("StudentNotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentType, contentId])
+  @@index([userId])
+  @@index([contentType, contentId])
+  @@index([userId, updatedAt])
+}
+
+model ambassador {
+  id               Int                   @id @default(autoincrement())
+  userId           Int                   @unique
+  status           AmbassadorStatus      @default(PENDING)
+  guidesCompleted  Int                   @default(0)
+  reposContributed Int                   @default(0)
+  leaderboardRank  Int?
+  accountAgeDays   Int                   @default(0)
+  premiumGranted   Boolean               @default(false)
+  premiumGrantedAt DateTime?
+  appliedAt        DateTime?
+  reviewedAt       DateTime?
+  reviewedBy       Int?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  reviewer         user?                 @relation("AmbassadorReviewer", fields: [reviewedBy], references: [id])
+  user             user                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shares           ambassadorShare[]
+  spotlights       ambassadorSpotlight[]
+  referralLinks    referralLink[]
+
+  @@index([status])
+  @@index([userId])
+}
+
+model referralLink {
+  id           String               @id @default(cuid())
+  ambassadorId Int
+  code         String               @unique
+  url          String
+  label        String?
+  isActive     Boolean              @default(true)
+  clicks       Int                  @default(0)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  conversions  referralConversion[]
+  ambassador   ambassador           @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+
+  @@index([ambassadorId])
+  @@index([code])
+}
+
+model referralConversion {
+  id             Int          @id @default(autoincrement())
+  referralLinkId String
+  referredUserId Int          @unique
+  referredAt     DateTime     @default(now())
+  link           referralLink @relation(fields: [referralLinkId], references: [id], onDelete: Cascade)
+  referredUser   user         @relation("ReferredConversions", fields: [referredUserId], references: [id], onDelete: Cascade)
+
+  @@index([referralLinkId])
+  @@index([referredUserId])
+}
+
+model ambassadorSpotlight {
+  id           Int        @id @default(autoincrement())
+  ambassadorId Int
+  month        String
+  year         Int
+  title        String?
+  description  String?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  ambassador   ambassador @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+
+  @@unique([ambassadorId, month, year])
+  @@index([month, year, isActive])
+}
+
+model ambassadorShare {
+  id           Int         @id @default(autoincrement())
+  ambassadorId Int
+  platform     String
+  url          String
+  description  String?
+  status       ShareStatus @default(PENDING)
+  adminNotes   String?
+  reviewedAt   DateTime?
+  reviewedBy   Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  ambassador   ambassador  @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
+  reviewer     user?       @relation("ShareReviewer", fields: [reviewedBy], references: [id])
+
+  @@index([ambassadorId])
+  @@index([status])
+}
+
+enum HackathonParticipationStatus {
+  INTERESTED
+  PARTICIPATING
 }
 
 enum UserRole {
@@ -1380,7 +1689,6 @@ enum AIProviderType {
   GROQ
   OPENROUTER
   CODESTRAL
-  
 }
 
 enum AIServiceType {
@@ -1400,7 +1708,6 @@ enum BadgeCategory {
   CONTRIBUTION
   MILESTONE
 }
-
 
 enum ScrapedJobStatus {
   ACTIVE
@@ -1484,11 +1791,11 @@ enum UsageAction {
   GENERATE_RESUME
   JOB_APPLICATION
   MOCK_INTERVIEW
-  BEHAVIORAL_EVAL
   AI_JOB_CHAT
   CODE_RUN
   GITHUB_STATS
   ROADMAP_GENERATION
+  BEHAVIORAL_EVAL
   STREAK_TICK
 }
 
@@ -1505,109 +1812,6 @@ enum EmailLogStatus {
   PENDING
   SENT
   FAILED
-}
-
-model contactSubmission {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  subject   String
-  message   String
-  createdAt DateTime @default(now())
-
-  @@index([createdAt])
-}
-
-model errorLog {
-  id          Int      @id @default(autoincrement())
-  method      String
-  path        String
-  statusCode  Int
-  message     String
-  rawError    String?
-  userId      Int?
-  ipAddress   String?
-  userAgent   String?
-  requestBody Json?
-  createdAt   DateTime @default(now())
-
-  @@index([statusCode])
-  @@index([createdAt])
-}
-
-model milestoneEmail {
-  id            Int      @id @default(autoincrement())
-  studentId     Int
-  milestoneType String
-  milestoneKey  String
-  sentAt        DateTime @default(now())
-  student       user     @relation("StudentMilestoneEmails", fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@unique([studentId, milestoneType, milestoneKey])
-  @@index([studentId])
-}
-
-// Interview experiences shared by students, structured by round + question.
-// Moderated via ReviewStatus. Upvotes float the most useful submissions.
-model interviewExperience {
-  id              Int                 @id @default(autoincrement())
-  companyId       Int?
-  companyName     String?
-  userId          Int
-  role            String
-  experienceYears Int?
-  interviewYear   Int
-  interviewMonth  Int?
-  source          InterviewSource     @default(ON_CAMPUS)
-  difficulty      InterviewDifficulty @default(MEDIUM)
-  outcome         InterviewOutcome    @default(PENDING)
-  offered         Boolean             @default(false)
-  ctcLpa          Float?
-  totalRounds     Int                 @default(1)
-  overallRating   Int                 @default(3)
-  rounds          Json                @default("[]")
-  tips            String?
-  prepResources   Json                @default("[]")
-  isAnonymous     Boolean             @default(false)
-  status          ReviewStatus        @default(PENDING)
-  upvotes         Int                 @default(0)
-  views           Int                 @default(0)
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-
-  company       company?                    @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  user          user                        @relation("UserInterviewExperiences", fields: [userId], references: [id], onDelete: Cascade)
-  upvoteRecords interviewExperienceUpvote[]
-
-  @@index([companyId, status])
-  @@index([status])
-  @@index([role])
-  @@index([interviewYear])
-  @@index([userId])
-}
-
-model interviewExperienceUpvote {
-  id           Int      @id @default(autoincrement())
-  experienceId Int
-  userId       Int
-  createdAt    DateTime @default(now())
-
-  experience interviewExperience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
-  user       user                @relation("UserInterviewUpvotes", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([experienceId, userId])
-  @@index([experienceId])
-}
-
-model userRecommendation {
-  id              Int      @id @default(autoincrement())
-  userId          Int      @unique
-  weakAreas       Json     @default("[]")
-  lastRefreshedAt DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            user     @relation("UserRecommendation", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
 }
 
 enum InterviewSource {
@@ -1633,116 +1837,10 @@ enum InterviewOutcome {
   GHOSTED
 }
 
-model guideFeedback {
-  id        Int      @id @default(autoincrement())
-  guideId   String
-  stepId    String
-  userId    Int
-  rating    String
-  reason    String?
-  createdAt DateTime @default(now())
-
-  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, guideId, stepId])
-  @@index([guideId])
-  @@index([stepId])
-  }
-
 enum ContentType {
   LESSON
   DSA
   INTERVIEW_QUESTION
-}
-
-model contentView {
-  id          Int         @id @default(autoincrement())
-  userId      Int?
-  user        user?       @relation("UserContentViews", fields: [userId], references: [id], onDelete: SetNull)
-  contentType ContentType
-  contentId   String
-  timeSpentMs Int
-  completed   Boolean     @default(false)
-  createdAt   DateTime    @default(now())
-
-  @@index([contentType, contentId])
-  @@index([userId])
-  @@index([createdAt])
-}
-
-model opensourceStreak {
-  id              Int       @id @default(autoincrement())
-  userId          Int       @unique
-  currentStreak   Int       @default(0)
-  longestStreak   Int       @default(0)
-  lastActivityAt  DateTime?
-  totalDays       Int       @default(0)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model ossProgram {
-  id                  Int       @id @default(autoincrement())
-  slug                String    @unique
-  name                String
-  short               String
-  description         String
-  fullDescription     String?
-  eligibility         String?
-  eligibilityType     String?
-  stipend             String?
-  stipendPaid         String?
-  stipendRange        String?
-  window              String?
-  region              String?
-  website             String?
-  applyUrl            String?
-  color               String?
-  bgColor             String?
-  tags                String[]  @default([])
-  requirements        String[]  @default([])
-  timeline            Json?
-  howToApply          String?
-  applicationStart    DateTime?
-  applicationDeadline DateTime?
-  resultsDate         DateTime?
-  programStart        DateTime?
-  programEnd          DateTime?
-  active              Boolean          @default(true)
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-  programInterests    programInterest[]
-
-  @@index([active])
-  @@index([slug])
-}
-
-model coachAdvice {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  trigger   String
-  title     String   @default("Coach suggestion")
-  content   String   @db.Text
-  createdAt DateTime @default(now())
-  user      user     @relation("UserCoachAdvice", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([createdAt])
-}
-model guideCertificate {
-  id          Int      @id @default(autoincrement())
-  token       String   @unique @default(cuid())
-  userId      Int
-  guideName   String
-  issuedAt    DateTime @default(now())
-  studentName String
-  user        user     @relation("UserCertificates", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, guideName])
-  @@index([userId])
-  @@index([token])
 }
 
 enum NoteContentType {
@@ -1750,116 +1848,6 @@ enum NoteContentType {
   ROADMAP_TOPIC
   INTERVIEW_QUESTION
   APTITUDE_QUESTION
-}
-
-model studentNote {
-  id          Int             @id @default(autoincrement())
-  userId      Int
-  contentType NoteContentType
-  contentId   String
-  note        String          @db.Text
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  user        user            @relation("StudentNotes", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, contentType, contentId])
-  @@index([userId])
-  @@index([contentType, contentId])
-  @@index([userId, updatedAt])
-}
-
-model ambassador {
-  id                 Int               @id @default(autoincrement())
-  userId             Int               @unique
-  status             AmbassadorStatus  @default(PENDING)
-  guidesCompleted    Int               @default(0)
-  reposContributed   Int               @default(0)
-  leaderboardRank    Int?
-  accountAgeDays     Int               @default(0)
-  premiumGranted     Boolean           @default(false)
-  premiumGrantedAt   DateTime?
-  appliedAt          DateTime?
-  reviewedAt         DateTime?
-  reviewedBy         Int?
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-
-  user          user                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reviewer      user?                 @relation("AmbassadorReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
-  referralLinks referralLink[]
-  shares        ambassadorShare[]
-  spotlights    ambassadorSpotlight[]
-
-  @@index([status])
-  @@index([userId])
-}
-
-model referralLink {
-  id            String   @id @default(cuid())
-  ambassadorId  Int
-  code          String   @unique
-  url           String
-  label         String?
-  isActive      Boolean  @default(true)
-  clicks        Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  ambassador    ambassador            @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
-  conversions   referralConversion[]
-
-  @@index([ambassadorId])
-  @@index([code])
-}
-
-model referralConversion {
-  id              Int      @id @default(autoincrement())
-  referralLinkId  String
-  referredUserId  Int      @unique
-  referredAt      DateTime @default(now())
-
-  link          referralLink          @relation(fields: [referralLinkId], references: [id], onDelete: Cascade)
-  referredUser  user                  @relation("ReferredConversions", fields: [referredUserId], references: [id], onDelete: Cascade)
-
-  @@index([referralLinkId])
-  @@index([referredUserId])
-}
-
-model ambassadorSpotlight {
-  id            Int      @id @default(autoincrement())
-  ambassadorId  Int
-  month         String
-  year          Int
-  title         String?
-  description   String?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  ambassador    ambassador @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
-
-  @@unique([ambassadorId, month, year])
-  @@index([month, year, isActive])
-}
-
-model ambassadorShare {
-  id            Int         @id @default(autoincrement())
-  ambassadorId  Int
-  platform      String
-  url           String
-  description   String?
-  status        ShareStatus @default(PENDING)
-  adminNotes    String?
-  reviewedAt    DateTime?
-  reviewedBy    Int?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  ambassador    ambassador  @relation(fields: [ambassadorId], references: [id], onDelete: Cascade)
-  reviewer      user?       @relation("ShareReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
-
-  @@index([ambassadorId])
-  @@index([status])
 }
 
 enum AmbassadorStatus {
@@ -1873,4 +1861,3 @@ enum ShareStatus {
   APPROVED
   REJECTED
 }
-
