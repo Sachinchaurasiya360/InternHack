@@ -37,10 +37,6 @@ export async function findDuplicateRoadmap(
       slug: {
         startsWith: "ai-",
       },
-      title: {
-        contains: normalizedGoal.slice(0, 30),
-        mode: "insensitive",
-      },
       OR: keywords.map(kw => ({
         title: { contains: kw, mode: 'insensitive' }
       }))
