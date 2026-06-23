@@ -75,16 +75,6 @@ opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
       getOrInit(date).repoSuggestions += 1;
     }
 
-    const now = new Date();
-    for (let i = 0; i < 90; i += 3) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().split("T")[0];
-      const entry = getOrInit(dateStr);
-      if (i % 5 === 0) entry.guideSteps += Math.floor(Math.random() * 3) + 1;
-      if (i % 7 === 0) entry.prsMerged += Math.floor(Math.random() * 2) + 1;
-    }
-
     const result = Array.from(activityMap.entries()).map(([date, counts]) => {
       const total = counts.guideSteps + counts.repoSuggestions + counts.prsMerged;
       let level = 0;
@@ -229,3 +219,4 @@ opensourceRouter.get("/:owner/:name/issues", (req, res, next) =>
 );
 opensourceRouter.get("/:owner/:name", (req, res, next) => controller.getRepoByOwnerAndName(req, res, next));
 opensourceRouter.get("/:id", (req, res, next) => controller.getRepoById(req, res, next));
+
