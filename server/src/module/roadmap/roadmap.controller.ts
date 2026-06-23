@@ -177,7 +177,7 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
       });
       if (full) {
         const pdfBuffer = await generateRoadmapPdf({
-          user: { name: req.user!.email },
+          user: { name: req.user!.name },
           roadmap: {
             title: full.roadmap.title,
             shortDescription: full.roadmap.shortDescription,
@@ -1429,3 +1429,4 @@ export async function getAiUsage(req: Request, res: Response, next: NextFunction
     next(err);
   }
 }
+
