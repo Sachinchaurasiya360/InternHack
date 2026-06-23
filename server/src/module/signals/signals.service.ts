@@ -94,6 +94,11 @@ export class SignalsService {
     }
   }
 
+  /** Run the ingest pass once (used by the Vercel daily cron endpoint). */
+  async runOnce() {
+    return this.ingestAll();
+  }
+
   async ingestAll(): Promise<{
     results: Array<{
       source: string;

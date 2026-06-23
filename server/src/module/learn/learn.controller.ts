@@ -72,7 +72,8 @@ export class LearnController {
   }
   async getInterviewReadinessReport(req: Request, res: Response) {
     try {
-      const userId = req.user?.id || "anonymous";
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      const userId = req.user.id;
       const { targetRole, companyTier, availableTime } = req.body;
 
       const report = await this.learnService.calculateReadinessReport({

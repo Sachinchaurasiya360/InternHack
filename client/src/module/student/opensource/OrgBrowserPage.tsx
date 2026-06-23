@@ -8,6 +8,7 @@ import {
   Filter,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
+import { EmptyState } from "../../../components/ui/EmptyState";
 
 // Program Type Enum
 export type ProgramType = "OUTREACHY" | "LFX" | "MLH" | "SEASON_OF_DOCS";
@@ -531,12 +532,10 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
 
         {/* Organization Discovery Grid (gap-6 responsive) */}
         {filteredOrgs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center py-20 border border-dashed border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-stone-900 space-y-3">
-            <Filter className="w-8 h-8 text-stone-300 dark:text-stone-600" />
-            <p className="text-sm font-semibold text-stone-500">
-              No participating organizations found matching your search.
-            </p>
-          </div>
+          <EmptyState
+            icon={<Filter className="w-5 h-5 text-stone-400 dark:text-stone-500" />}
+            title="No participating organizations found matching your search."
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedOrgs.map((org) => (
@@ -554,6 +553,7 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
               variant="outline"
               disabled={currentPage === 1}
               onClick={() => handlePageChange(currentPage - 1)}
+              aria-label="Go to previous page"
               className="rounded-md h-8 px-2 border-stone-200 dark:border-white/10 hover:bg-stone-100 dark:hover:bg-white/5"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -568,6 +568,8 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
                   size="sm"
                   variant={active ? "primary" : "outline"}
                   onClick={() => handlePageChange(page)}
+                  aria-label={`Go to page ${page}`}
+                  aria-current={active ? "page" : undefined}
                   className={`rounded-md h-8 w-8 min-w-0 p-0 ${
                     active
                       ? "bg-lime-500 text-stone-950 font-bold border-none"
@@ -585,6 +587,7 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
               variant="outline"
               disabled={currentPage === totalPages}
               onClick={() => handlePageChange(currentPage + 1)}
+              aria-label="Go to next page"
               className="rounded-md h-8 px-2 border-stone-200 dark:border-white/10 hover:bg-stone-100 dark:hover:bg-white/5"
             >
               <ChevronRight className="w-4 h-4" />
@@ -592,7 +595,7 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
           </div>
         )}
 
-      </div>
+        </div>
     </div>
   );
 }

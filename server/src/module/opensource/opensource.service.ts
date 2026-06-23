@@ -1,18 +1,20 @@
 import { prisma } from "../../database/db.js";
-import type { RepoDomain, RepoDifficulty } from "@prisma/client";
+import type { opensourceRepo, RepoDomain, RepoDifficulty } from "@prisma/client";
 import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
 import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
 import { UserService } from "../user/user.service.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
 
 interface ListReposQuery {
   page: number;
   limit: number;
   search?: string;
-  language?: string;
+  language?: string[];
   difficulty?: string;
   domain?: string;
   sortBy: string;
@@ -53,6 +55,7 @@ interface GsocOrgsQuery {
 
 const userService = new UserService();
 
+const REPO_CACHE_TTL = 300; // 5 minutes - single-repo cache
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 let statsCache: {
   data: {
@@ -64,6 +67,9 @@ let statsCache: {
   } | null;
   expiresAt: number;
 } = { data: null, expiresAt: 0 };
+
+export const LANGUAGES_CACHE_KEY = "opensource:languages";
+export const LANGUAGES_CACHE_TTL = 3600; // 1 hour — languages rarely change
 
 export class OpensourceService {
   async getGlobalStats() {
@@ -99,14 +105,20 @@ export class OpensourceService {
   }
 
   async getLanguages() {
+    const cached = await cacheGet<string[]>(LANGUAGES_CACHE_KEY);
+    if (cached) return cached;
+
     const rows = await prisma.opensourceRepo.findMany({
       select: { language: true },
       distinct: ["language"],
     });
-    return rows
+    const languages = rows
       .map((r) => r.language)
       .filter((l: string | null): l is string => Boolean(l && l.trim() !== ""))
       .sort((a: string, b: string) => a.localeCompare(b));
+
+    await cacheSet(LANGUAGES_CACHE_KEY, languages, LANGUAGES_CACHE_TTL);
+    return languages;
   }
 
   async listRepos(query: ListReposQuery) {
@@ -125,7 +137,7 @@ export class OpensourceService {
     } = query;
     const skip = (page - 1) * limit;
     const where: Record<string, unknown> = {};
-    if (language) where.language = { equals: language, mode: "insensitive" };
+    if (language && language.length > 0) where.language = { in: language, mode: "insensitive" };
     if (difficulty) where["difficulty"] = difficulty;
     if (domain) where["domain"] = domain;
     if (trending === "true") where["trending"] = true;
@@ -143,23 +155,13 @@ export class OpensourceService {
     const trimmedSearch = search?.trim();
 
     if (trimmedSearch) {
-      // Prisma's scalar-list filters can't do case-insensitive substring match
-      // on array elements, so resolve tag matches via a raw ILIKE-on-unnest
-      // subquery and merge the matching ids into the OR clause.
-      const tagMatches = await prisma.$queryRaw<Array<{ id: number }>>`
-        SELECT id FROM "opensourceRepo"
-        WHERE EXISTS (
-          SELECT 1 FROM unnest(tags) AS t WHERE t ILIKE ${`%${trimmedSearch}%`}
-        )
-      `;
-
-      const tagMatchIds = tagMatches.map((r) => r.id);
+      const searchWords = trimmedSearch.split(/\s+/).filter(Boolean);
       where["OR"] = [
         { name: { contains: trimmedSearch, mode: "insensitive" } },
         { owner: { contains: trimmedSearch, mode: "insensitive" } },
         { description: { contains: trimmedSearch, mode: "insensitive" } },
         { language: { contains: trimmedSearch, mode: "insensitive" } },
-        ...(tagMatchIds.length > 0 ? [{ id: { in: tagMatchIds } }] : []),
+        { tags: { hasSome: searchWords } },
       ];
     }
 
@@ -180,51 +182,30 @@ export class OpensourceService {
   }
 
   async getRepoById(id: number) {
-    const repo = await prisma.opensourceRepo.findUnique({
-      where: { id },
-    });
-    if (!repo) return null;
+    const cacheKey = `opensource:repo:id:${id}`;
+    const cached = await cacheGet<opensourceRepo>(cacheKey);
+    if (cached) return cached;
 
-    const SIX_HOURS = 6 * 60 * 60 * 1000;
-    const neverFetched = !repo.githubStatsUpdatedAt;
-    const isStale =
-      neverFetched ||
-      Date.now() - new Date(repo.githubStatsUpdatedAt!).getTime() > SIX_HOURS;
-
-    if (isStale && repo.url?.includes("github.com")) {
-      if (neverFetched) {
-        // First-ever fetch: await so the caller gets live stats, not 0s
-        await this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-          console.error(`[github] initial stats fetch failed for ${id}:`, err),
-        );
-        return await prisma.opensourceRepo.findUnique({ where: { id } });
-      }
-      // Stale but previously fetched: update in background, return cached
-      this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-        console.error(`[github] background update failed for ${id}:`, err),
-      );
+    const repo = await prisma.opensourceRepo.findUnique({ where: { id } });
+    if (repo) {
+      await cacheSet(cacheKey, repo, REPO_CACHE_TTL);
     }
     return repo;
   }
 
   async getRepoByOwnerAndName(owner: string, name: string) {
+    const cacheKey = `opensource:repo:owner:${owner.toLowerCase()}:${name.toLowerCase()}`;
+    const cached = await cacheGet<opensourceRepo>(cacheKey);
+    if (cached) return cached;
+
     const repo = await prisma.opensourceRepo.findFirst({
       where: {
         owner: { equals: owner, mode: "insensitive" },
         name: { equals: name, mode: "insensitive" },
       },
     });
-    if (!repo) return null;
-
-    const SIX_HOURS = 6 * 60 * 60 * 1000;
-    const isStale =
-      !repo.githubStatsUpdatedAt ||
-      Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
-
-    if (isStale && repo.url?.includes("github.com")) {
-      this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-        console.error(`[github] background update failed for ${repo.id}:`, err),
-      );
+    if (repo) {
+      await cacheSet(cacheKey, repo, REPO_CACHE_TTL);
     }
     return repo;
   }
@@ -269,12 +250,44 @@ export class OpensourceService {
       },
     });
     console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
+
+    const parsed = await this.getRepoOwnerAndNameFromUrl(url);
+    if (parsed) {
+      await cacheDel(`opensource:repo:id:${id}`);
+      await cacheDel(`opensource:repo:owner:${parsed.owner.toLowerCase()}:${parsed.name.toLowerCase()}`);
+    }
   }
 
   private async getRepoOwnerAndNameFromUrl(url: string) {
     const match = url.match(/github\.com\/([^\/]+)\/([^\/\s\.]+)/);
     if (!match) return null;
     return { owner: match[1], name: match[2].replace(".git", "") };
+  }
+
+  async refreshStaleRepoStats(batchSize = 50) {
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    const staleRepos = await prisma.opensourceRepo.findMany({
+      where: {
+        url: { contains: "github.com" },
+        OR: [
+          { githubStatsUpdatedAt: null },
+          { githubStatsUpdatedAt: { lt: sixHoursAgo } },
+        ],
+      },
+      take: batchSize,
+      select: { id: true, url: true, name: true },
+    });
+
+    let updated = 0;
+    for (const repo of staleRepos) {
+      try {
+        await this.updateGithubStats(repo.id, repo.url, repo.name);
+        updated++;
+      } catch (err) {
+        console.error(`[github] cron stats refresh failed for repo ${repo.id}:`, err);
+      }
+    }
+    return { scanned: staleRepos.length, updated };
   }
 
   async getGsocOrgs(query: GsocOrgsQuery & { tech?: string }) {
@@ -446,7 +459,7 @@ export class OpensourceService {
 
     await prisma.repoRequest.update({
       where: { id },
-      data: { status: "APPROVED", adminNote: overrides.adminNote ?? null },
+      data: { status: "APPROVED", adminNote: overrides.adminNote ?? null, repoId: repo.id },
     });
 
     try {
@@ -462,6 +475,9 @@ export class OpensourceService {
     } catch {
       /* email failure is non-blocking */
     }
+
+    // Invalidate language list — new repo may introduce a new language
+    cacheDel(LANGUAGES_CACHE_KEY).catch(() => {});
 
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
@@ -599,6 +615,28 @@ export class OpensourceService {
       year: "numeric",
       timeZone: "UTC",
     }).format(date);
+  }
+
+  async getGuideProgress(userId: number, guideSlug: string): Promise<string[]> {
+    const progress = await prisma.guideProgress.findUnique({
+      where: { userId_guideSlug: { userId, guideSlug } },
+      select: { completedStepIds: true },
+    });
+    return progress?.completedStepIds ?? [];
+  }
+
+  async patchGuideProgress(
+    userId: number,
+    guideSlug: string,
+    completedStepIds: string[],
+  ): Promise<string[]> {
+    const progress = await prisma.guideProgress.upsert({
+      where: { userId_guideSlug: { userId, guideSlug } },
+      create: { userId, guideSlug, completedStepIds },
+      update: { completedStepIds },
+      select: { completedStepIds: true },
+    });
+    return progress.completedStepIds;
   }
 
   async getFirstPrProgress(userId: number): Promise<string[]> {

@@ -21,6 +21,7 @@ import {
   buildWeeklyPlan,
   getEnrollmentAnalyticsForUser,
     enrollUser,
+  getEnrollmentAnalyticsBatchForUser,
   findDuplicateRoadmap,
   getEnrollmentByRoadmapSlugForUser,
   getEnrollmentForUser,
@@ -351,16 +352,11 @@ export async function getMyEnrollmentAnalytics(req: Request, res: Response, next
 
 export async function getMyEnrollmentsAnalyticsBatch(req: Request, res: Response, next: NextFunction) {
   try {
-    const enrollments = await listEnrollmentsForUser(req.user!.id);
-    const analytics = await Promise.all(
-      enrollments.map((e) =>
-        getEnrollmentAnalyticsForUser({
-          userId: req.user!.id,
-          enrollmentId: e.id,
-        }),
-      ),
-    );
-    res.json({ analytics: analytics.filter(Boolean) });
+    const analytics =
+  await getEnrollmentAnalyticsBatchForUser({
+    userId: req.user!.id,
+  });
+    res.json({ analytics });
   } catch (err) {
     next(err);
   }
@@ -470,6 +466,9 @@ export async function updateRoadmap(
         where: { slug },
         data: result.data,
       });
+
+    clearCache(`roadmap:structure:${slug}`);
+    clearCache(`roadmap:/api/roadmaps/${slug}`);
 
     return res.json({
       roadmap: updatedRoadmap,
@@ -850,6 +849,7 @@ export async function postAiGenerate(req: Request, res: Response, next: NextFunc
     // always hits the DB and returns the freshly created roadmap, not a
     // stale cache entry from a previous 404 or an earlier roadmap at the
     // same URL pattern.
+    clearCache(`roadmap:structure:${slug}`);
     clearCache(`roadmap:/api/roadmaps/${slug}`);
 
     res.status(201).json({
@@ -1335,6 +1335,7 @@ export async function postRegenerateSection(req: Request, res: Response, next: N
     }, { timeout: 30000 });
 
     // FIX: Bust the cache for this roadmap so section changes are visible immediately
+    clearCache(`roadmap:structure:${slug}`);
     clearCache(`roadmap:/api/roadmaps/${slug}`);
 
     res.json({
@@ -1377,6 +1378,7 @@ export async function toggleShare(req: Request, res: Response, next: NextFunctio
     });
 
     // Bust cache so share state is immediately reflected
+    clearCache(`roadmap:structure:${slug}`);
     clearCache(`roadmap:/api/roadmaps/${slug}`);
 
     res.json({

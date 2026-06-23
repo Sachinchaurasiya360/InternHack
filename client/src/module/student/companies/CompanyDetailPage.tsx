@@ -146,9 +146,10 @@ export default function CompanyDetailPage() {
     documentTitle: `${company?.name || "Company"}_Profile`,
     onBeforePrint: () => { setIsExporting(true); return Promise.resolve(); },
     onAfterPrint: () => setIsExporting(false),
-    onPrintError: (errorType: any, error: any) => {
+    onPrintError: (errorType: "onBeforePrint" | "print", error: Error) => {
       console.error("Failed to generate PDF:", error);
-      alert("Failed to generate PDF: " + (error?.message || String(errorType)));
+      const err = error as { message?: string } | null;
+      alert("Failed to generate PDF: " + (err?.message || String(errorType)));
       setIsExporting(false);
     }
   });

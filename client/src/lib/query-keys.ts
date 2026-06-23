@@ -98,7 +98,7 @@ export const queryKeys = {
   // Open Source
   opensource: {
     all: ["opensource"] as const,
-    list: (params?: Record<string, string | number>) =>
+    list: (params?: Record<string, string | number | string[]>) =>
       ["opensource", "list", params] as const,
     detail: (id: number) => ["opensource", "detail", id] as const,
     myRequests: () => ["opensource", "my-requests"] as const,

@@ -12,6 +12,7 @@ import {
   bookmarkBodySchema,
   bulkMigrateBookmarksSchema,
   guideFeedbackSchema,
+  guideProgressUpdateSchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
@@ -327,6 +328,40 @@ export class OpensourceController {
       next(err);
     }
   };
+
+  async getGuideProgress(req: Request, res: Response, next: NextFunction) {
+    try {
+      const guideSlug = req.params.guideSlug as string;
+      const completedStepIds = await service.getGuideProgress(req.user!.id, guideSlug);
+      res.json({ completedStepIds });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async patchGuideProgress(req: Request, res: Response, next: NextFunction) {
+    try {
+      const guideSlug = req.params.guideSlug as string;
+      const parsed = guideProgressUpdateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+
+      const completedStepIds = await service.patchGuideProgress(
+        req.user!.id,
+        guideSlug,
+        parsed.data.completedStepIds,
+      );
+
+      res.json({ completedStepIds });
+    } catch (err) {
+      next(err);
+    }
+  }
 
   async getFirstPrProgress(req: Request, res: Response, next: NextFunction) {
     try {
