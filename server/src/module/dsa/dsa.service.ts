@@ -1481,10 +1481,6 @@ Return ONLY a JSON array, no markdown fences:
 
     const hint = `${baseHint}${tagContext} (level: ${level})`;
 
-    await prisma.usageLog.create({
-      data: { userId, action: "CODE_RUN" },
-    });
-
     return {
       hint,
       level,
