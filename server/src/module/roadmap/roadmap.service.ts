@@ -566,21 +566,28 @@ export async function updateTopicProgress(args: {
   });
 
   if (args.status === "COMPLETED") {
-  await updateEnrollmentStreak(enrollment.id);
-}
+    await updateEnrollmentStreak(enrollment.id);
+  }
 
-  // Check if all topics are now complete
   let roadmapCompleted = false;
   if (args.status === "COMPLETED" || args.status === "SKIPPED") {
-    const fullEnrollment = await getEnrollmentForUser({
-      userId: args.userId,
-      enrollmentId: args.enrollmentId,
-    });
-    if (fullEnrollment) {
-      const summary = summarizeProgress(fullEnrollment);
-      roadmapCompleted = summary.percentComplete === 100;
-    }
+    const [topicCount, completedCount, skippedCount] = await Promise.all([
+      prisma.roadmap.findUnique({
+        where: { id: enrollment.roadmapId },
+        select: { topicCount: true },
+      }).then((r) => r?.topicCount ?? 0),
+      prisma.roadmapTopicProgress.count({
+        where: { enrollmentId: enrollment.id, status: "COMPLETED" },
+      }),
+      prisma.roadmapTopicProgress.count({
+        where: { enrollmentId: enrollment.id, status: "SKIPPED" },
+      }),
+    ]);
+
+    const adjustedTotal = topicCount - skippedCount;
+    roadmapCompleted = adjustedTotal > 0 && completedCount >= adjustedTotal;
   }
+
   void invalidateRecommendations(args.userId).catch((error) => {
     console.warn("[RoadmapService] Recommendation invalidation failed", {
       userId: args.userId,
