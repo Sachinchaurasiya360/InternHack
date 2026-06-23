@@ -143,3 +143,7 @@ export const bulkMigrateBookmarksSchema = z.object({
     .min(1, "At least one repoId is required")
     .max(500, "Cannot migrate more than 500 bookmarks at once"),
 });
+
+export const issueCertificateSchema = z.object({
+  guideName: z.string().min(1, "guideName is required"),
+});
