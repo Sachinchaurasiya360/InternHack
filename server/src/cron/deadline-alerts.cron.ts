@@ -32,8 +32,10 @@ export async function runDeadlineAlerts(): Promise<void> {
       where: {
         isActive: true,
         isVerified: true,
-        trackedPrograms: { has: program.slug },
         unsubscribeDigest: false,
+        programInterests: {
+          some: { program: { slug: program.slug }, active: true },
+        },
       },
       select: { id: true, name: true, email: true },
     });
