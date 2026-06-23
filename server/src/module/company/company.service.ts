@@ -100,14 +100,14 @@ export class CompanyService {
     // Free/unauthenticated users: cap at 20 when filtering by city
     const isCityLimited = !!params.city && tier === "FREE";
     const effectiveLimit = isCityLimited ? Math.min(limit, 20) : limit;
-    const effectiveSkip = isCityLimited ? Math.min(skip, 20) : skip;
+    const effectiveSkip = skip;
 
     const [companies, total] = await Promise.all([
       prisma.company.findMany({
         where,
         orderBy: { avgRating: "desc" },
-        skip: isCityLimited && effectiveSkip >= 20 ? 20 : effectiveSkip,
-        take: isCityLimited ? Math.max(0, 20 - effectiveSkip) : effectiveLimit,
+        skip: effectiveSkip,
+        take: effectiveLimit,
         select: {
           id: true,
           name: true,
