@@ -100,6 +100,9 @@ model user {
   studentAPairs            roadmapStudyBuddyPair[]        @relation("StudentAPairs")
   studentBPairs            roadmapStudyBuddyPair[]        @relation("StudentBPairs")
   studyBuddyPreferences    roadmapStudyBuddyPreference[]  @relation("UserStudyBuddyPreferences")
+  mockInterviewPreference  peerMockInterviewPreference?   @relation("UserMockInterviewPreference")
+  studentAMockInterviews   peerMockInterview[]            @relation("StudentAMockInterviews")
+  studentBMockInterviews   peerMockInterview[]            @relation("StudentBMockInterviews")
   savedCandidates          savedCandidate[]               @relation("RecruiterSavedCandidates")
   savedByRecruiters        savedCandidate[]               @relation("StudentSavedByRecruiters")
   scheduledEmails          scheduledEmail[]               @relation("UserScheduledEmails")
@@ -808,6 +811,7 @@ model dsaProblem {
   submissions      dsaSubmission[]
   testCases        dsaTestCase[]
   progress         studentDsaProgress[]
+  mockInterviews   peerMockInterview[]
 
   @@index([difficulty])
   @@index([leetcodeId])
