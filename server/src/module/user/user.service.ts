@@ -28,7 +28,7 @@ export class UserService {
     if (!userSummary) return null;
 
     const repoContributions = userSummary.repoRequests.length;
-    const firstPr = userSummary.firstPrProgress[0] ?? null;
+    const firstPr = userSummary.firstPrProgress ?? null;
     const isFirstPrRoadmapCompleted = (firstPr?.completedStepIds.length ?? 0) >= 7;
     const completedGuidesCount = new Set(userSummary.guideFeedbacks.map(g => g.guideId)).size;
     const badges = userSummary.studentBadges;

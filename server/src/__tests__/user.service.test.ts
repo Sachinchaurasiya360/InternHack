@@ -37,7 +37,7 @@ describe("UserService.calculateOssTier", () => {
   it("returns Ambassador when user has verified_ambassador badge", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: [],
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [],
       studentBadges: [{ badge: { slug: "verified_ambassador" } }],
     });
@@ -54,7 +54,7 @@ describe("UserService.calculateOssTier", () => {
   it("returns OSS Leader when user has program badge and >= 10 approved repos", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: Array.from({ length: 10 }, (_, i) => ({ id: i })),
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [],
       studentBadges: [{ badge: { slug: "gsoc_participant" } }],
     });
@@ -67,7 +67,7 @@ describe("UserService.calculateOssTier", () => {
   it("returns OSS Leader when user has gsoc badge and >= 10 approved repos", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: Array.from({ length: 10 }, (_, i) => ({ id: i })),
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [],
       studentBadges: [{ badge: { slug: "gsoc" } }],
     });
@@ -80,7 +80,7 @@ describe("UserService.calculateOssTier", () => {
   it("does not return OSS Leader when user has program badge but < 10 repos", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: Array.from({ length: 9 }, (_, i) => ({ id: i })),
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [],
       studentBadges: [{ badge: { slug: "gsoc_participant" } }],
     });
@@ -93,7 +93,7 @@ describe("UserService.calculateOssTier", () => {
   it("returns Active Contributor when >= 5 approved repos and >= 3 distinct guides", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: Array.from({ length: 5 }, (_, i) => ({ id: i })),
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [
         { guideId: "guide-a" },
         { guideId: "guide-b" },
@@ -110,7 +110,7 @@ describe("UserService.calculateOssTier", () => {
   it("does not return Active Contributor when >= 5 repos but < 3 guides", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: Array.from({ length: 5 }, (_, i) => ({ id: i })),
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [
         { guideId: "guide-a" },
         { guideId: "guide-b" },
@@ -126,7 +126,7 @@ describe("UserService.calculateOssTier", () => {
   it("returns Contributor when first PR roadmap completed and >= 1 approved repo", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: [{ id: 1 }],
-      firstPrProgress: [{ completedStepIds: Array.from({ length: 7 }, (_, i) => `${i}`) }],
+      firstPrProgress: { completedStepIds: Array.from({ length: 7 }, (_, i) => `${i}`) },
       guideFeedbacks: [],
       studentBadges: [],
     });
@@ -139,7 +139,7 @@ describe("UserService.calculateOssTier", () => {
   it("does not return Contributor when roadmap incomplete despite having a repo", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: [{ id: 1 }],
-      firstPrProgress: [{ completedStepIds: Array.from({ length: 6 }, (_, i) => `${i}`) }],
+      firstPrProgress: { completedStepIds: Array.from({ length: 6 }, (_, i) => `${i}`) },
       guideFeedbacks: [],
       studentBadges: [],
     });
@@ -152,7 +152,7 @@ describe("UserService.calculateOssTier", () => {
   it("does not return Contributor when roadmap complete but 0 repos", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: [],
-      firstPrProgress: [{ completedStepIds: Array.from({ length: 7 }, (_, i) => `${i}`) }],
+      firstPrProgress: { completedStepIds: Array.from({ length: 7 }, (_, i) => `${i}`) },
       guideFeedbacks: [],
       studentBadges: [],
     });
@@ -165,7 +165,7 @@ describe("UserService.calculateOssTier", () => {
   it("returns First Steps when >= 1 distinct guide completed", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: [],
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [{ guideId: "guide-a" }],
       studentBadges: [],
     });
@@ -178,7 +178,7 @@ describe("UserService.calculateOssTier", () => {
   it("counts distinct guideIds — duplicate guideId does not inflate count", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: Array.from({ length: 5 }, (_, i) => ({ id: i })),
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [
         { guideId: "guide-a" },
         { guideId: "guide-a" },
@@ -196,7 +196,7 @@ describe("UserService.calculateOssTier", () => {
   it("returns null when no conditions are met", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: [],
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [],
       studentBadges: [],
     });
@@ -213,7 +213,7 @@ describe("UserService.calculateOssTier", () => {
   it("selects only badge slugs from studentBadges", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: [],
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [],
       studentBadges: [{ badge: { slug: "verified_ambassador" } }],
     });
@@ -227,7 +227,7 @@ describe("UserService.calculateOssTier", () => {
   it("handles case-insensitive program badge matching", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: Array.from({ length: 10 }, (_, i) => ({ id: i })),
-      firstPrProgress: [],
+      firstPrProgress: null,
       guideFeedbacks: [],
       studentBadges: [{ badge: { slug: "GSOC_PARTICIPANT" } }],
     });

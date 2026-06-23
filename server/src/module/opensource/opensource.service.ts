@@ -8,7 +8,6 @@ import {
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
 import { UserService } from "../user/user.service.js";
-import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
 
 interface ListReposQuery {
   page: number;
