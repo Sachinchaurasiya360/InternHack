@@ -1,5 +1,5 @@
 import { prisma } from "../../database/db.js";
-import type { RepoDomain, RepoDifficulty } from "@prisma/client";
+import type { opensourceRepo, RepoDomain, RepoDifficulty } from "@prisma/client";
 import { fetchGithubGoodFirstIssues, fetchGithubStats, fetchRepoHealthData } from "../../lib/github.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
@@ -8,6 +8,7 @@ import {
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
 import { UserService } from "../user/user.service.js";
+import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
 
 interface ListReposQuery {
   page: number;
@@ -54,6 +55,7 @@ interface GsocOrgsQuery {
 
 const userService = new UserService();
 
+const REPO_CACHE_TTL = 300; // 5 minutes - single-repo cache
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 let statsCache: {
   data: {
@@ -190,51 +192,30 @@ export class OpensourceService {
   }
 
   async getRepoById(id: number) {
-    const repo = await prisma.opensourceRepo.findUnique({
-      where: { id },
-    });
-    if (!repo) return null;
+    const cacheKey = `opensource:repo:id:${id}`;
+    const cached = await cacheGet<opensourceRepo>(cacheKey);
+    if (cached) return cached;
 
-    const SIX_HOURS = 6 * 60 * 60 * 1000;
-    const neverFetched = !repo.githubStatsUpdatedAt;
-    const isStale =
-      neverFetched ||
-      Date.now() - new Date(repo.githubStatsUpdatedAt!).getTime() > SIX_HOURS;
-
-    if (isStale && repo.url?.includes("github.com")) {
-      if (neverFetched) {
-        // First-ever fetch: await so the caller gets live stats, not 0s
-        await this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-          console.error(`[github] initial stats fetch failed for ${id}:`, err),
-        );
-        return await prisma.opensourceRepo.findUnique({ where: { id } });
-      }
-      // Stale but previously fetched: update in background, return cached
-      this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-        console.error(`[github] background update failed for ${id}:`, err),
-      );
+    const repo = await prisma.opensourceRepo.findUnique({ where: { id } });
+    if (repo) {
+      await cacheSet(cacheKey, repo, REPO_CACHE_TTL);
     }
     return repo;
   }
 
   async getRepoByOwnerAndName(owner: string, name: string) {
+    const cacheKey = `opensource:repo:owner:${owner.toLowerCase()}:${name.toLowerCase()}`;
+    const cached = await cacheGet<opensourceRepo>(cacheKey);
+    if (cached) return cached;
+
     const repo = await prisma.opensourceRepo.findFirst({
       where: {
         owner: { equals: owner, mode: "insensitive" },
         name: { equals: name, mode: "insensitive" },
       },
     });
-    if (!repo) return null;
-
-    const SIX_HOURS = 6 * 60 * 60 * 1000;
-    const isStale =
-      !repo.githubStatsUpdatedAt ||
-      Date.now() - new Date(repo.githubStatsUpdatedAt).getTime() > SIX_HOURS;
-
-    if (isStale && repo.url?.includes("github.com")) {
-      this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
-        console.error(`[github] background update failed for ${repo.id}:`, err),
-      );
+    if (repo) {
+      await cacheSet(cacheKey, repo, REPO_CACHE_TTL);
     }
     return repo;
   }
@@ -279,12 +260,44 @@ export class OpensourceService {
       },
     });
     console.info(`[github] updated stats & health score for ${name}: ${healthScore}`);
+
+    const parsed = await this.getRepoOwnerAndNameFromUrl(url);
+    if (parsed) {
+      await cacheDel(`opensource:repo:id:${id}`);
+      await cacheDel(`opensource:repo:owner:${parsed.owner.toLowerCase()}:${parsed.name.toLowerCase()}`);
+    }
   }
 
   private async getRepoOwnerAndNameFromUrl(url: string) {
     const match = url.match(/github\.com\/([^\/]+)\/([^\/\s\.]+)/);
     if (!match) return null;
     return { owner: match[1], name: match[2].replace(".git", "") };
+  }
+
+  async refreshStaleRepoStats(batchSize = 50) {
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    const staleRepos = await prisma.opensourceRepo.findMany({
+      where: {
+        url: { contains: "github.com" },
+        OR: [
+          { githubStatsUpdatedAt: null },
+          { githubStatsUpdatedAt: { lt: sixHoursAgo } },
+        ],
+      },
+      take: batchSize,
+      select: { id: true, url: true, name: true },
+    });
+
+    let updated = 0;
+    for (const repo of staleRepos) {
+      try {
+        await this.updateGithubStats(repo.id, repo.url, repo.name);
+        updated++;
+      } catch (err) {
+        console.error(`[github] cron stats refresh failed for repo ${repo.id}:`, err);
+      }
+    }
+    return { scanned: staleRepos.length, updated };
   }
 
   async getGsocOrgs(query: GsocOrgsQuery & { tech?: string }) {
