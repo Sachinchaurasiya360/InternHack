@@ -115,6 +115,7 @@ model user {
   usageLogs                usageLog[]                     @relation("UserUsageLogs")
   customRoles              userCustomRole[]               @relation("UserCustomRoles")
   interviewProgress        userInterviewProgress?         @relation("StudentInterviewProgress")
+  interviewQuestionStates  UserInterviewQuestionState[]   @relation("StudentInterviewQuestionStates")
   jobPreference            userJobPreference?             @relation("UserJobPreferences")
   recommendation           userRecommendation?            @relation("UserRecommendation")
   verifiedSkills           verifiedSkill[]                @relation("StudentVerifiedSkills")
@@ -126,8 +127,6 @@ model user {
 
 model userInterviewProgress {
   userId        Int       @unique
-  completedIds  String[]  @default([])
-  bookmarkedIds String[]  @default([])
   lastVisitedId String?
   lastVisitedAt DateTime?
   createdAt     DateTime  @default(now())
@@ -136,6 +135,24 @@ model userInterviewProgress {
   user          user      @relation("StudentInterviewProgress", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model UserInterviewQuestionState {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  questionId   String
+  isCompleted  Boolean  @default(false)
+  isBookmarked Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user user @relation("StudentInterviewQuestionStates", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([userId])
+  @@index([questionId])
+  @@index([userId, questionId, isCompleted])
+  @@index([userId, questionId, isBookmarked])
 }
 
 model studentFirstPrProgress {
