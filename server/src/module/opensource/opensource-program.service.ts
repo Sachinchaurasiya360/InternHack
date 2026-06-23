@@ -25,36 +25,49 @@ export class OpensourceProgramService {
   }
 
   async toggleProgram(userId: number, slug: string, tracked: boolean) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { trackedPrograms: true },
+    const program = await prisma.ossProgram.findUnique({
+      where: { slug },
+      select: { id: true },
     });
-    if (!user) throw new Error("User not found");
+    if (!program) throw new Error("Program not found");
 
-    let programs = user.trackedPrograms;
-    if (tracked && !programs.includes(slug)) {
-      programs = [...programs, slug];
-    } else if (!tracked) {
-      programs = programs.filter((s) => s !== slug);
+    if (tracked) {
+      await prisma.programInterest.upsert({
+        where: { userId_programId: { userId, programId: program.id } },
+        create: { userId, programId: program.id, active: true },
+        update: { active: true },
+      });
+    } else {
+      await prisma.programInterest.updateMany({
+        where: { userId, programId: program.id, active: true },
+        data: { active: false },
+      });
     }
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { trackedPrograms: programs },
-    });
-
-    return programs;
+    return this.#getTrackedSlugs(userId);
   }
 
   async getTrackedPrograms(userId: number) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { trackedPrograms: true },
+    const interests = await prisma.programInterest.findMany({
+      where: { userId, active: true },
+      select: { programId: true },
     });
-    if (!user) return [];
+
+    if (interests.length === 0) return [];
 
     return prisma.ossProgram.findMany({
-      where: { slug: { in: user.trackedPrograms }, active: true },
+      where: {
+        id: { in: interests.map((i) => i.programId) },
+        active: true,
+      },
     });
+  }
+
+  async #getTrackedSlugs(userId: number): Promise<string[]> {
+    const interests = await prisma.programInterest.findMany({
+      where: { userId, active: true },
+      select: { program: { select: { slug: true } } },
+    });
+    return interests.map((i) => i.program.slug);
   }
 }
