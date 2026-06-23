@@ -14,6 +14,7 @@ import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
 import { recruiterRouter } from "./module/recruiter/recruiter.routes.js";
 import { studentRouter } from "./module/student/student.routes.js";
+import { peerMockInterviewRouter } from "./module/peer-mock-interview/peer-mock-interview.routes.js";
 import { uploadRouter } from "./module/upload/upload.routes.js";
 import { scraperRouter, scraperController } from "./module/scraper/scraper.routes.js";
 import { signalsRouter, signalsController } from "./module/signals/signals.routes.js";
@@ -84,6 +85,7 @@ import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron
 import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
 import { startAmbassadorEligibilityCron, stopAmbassadorEligibilityCron } from "./cron/ambassador-eligibility.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
+import { startPeerMockInterviewMatchCron, stopPeerMockInterviewMatchCron } from "./cron/peer-mock-interview-match.cron.js";
 import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
@@ -108,14 +110,15 @@ for (const key of REQUIRED_ENV) {
   }
 }
 
-// ── Enforce Redis in production ──
-// Without REDIS_URL, rate limiters use per-process MemoryStore which is
-// trivially bypassable when multiple instances run behind a load balancer.
+// ── Redis is optional ──
+// Without REDIS_URL, rate limiters fall back to per-process MemoryStore. That
+// is fine for a single instance; behind a load balancer the limits are
+// per-process (not shared), so set REDIS_URL when running multiple instances.
 if (process.env["NODE_ENV"] === "production" && !process.env["REDIS_URL"]) {
-  throw new Error(
-    "REDIS_URL is required in production. " +
-    "In-memory rate-limit stores are per-process and unsafe behind a load balancer. " +
-    "Set REDIS_URL or use NODE_ENV=development for local testing.",
+  console.warn(
+    "[Redis] Running in production without REDIS_URL. " +
+    "Rate-limit stores are per-process and not shared across instances. " +
+    "Set REDIS_URL for shared rate limiting behind a load balancer.",
   );
 }
 
@@ -263,6 +266,7 @@ app.use("/api/jobs", jobRouter);
 app.use("/api/recruiter", recruiterRouter);
 app.use("/api/student/recommendations", recommendationRouter);
 app.use("/api/student", studentRouter);
+app.use("/api/student/peer-mock-interview", peerMockInterviewRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/scraped-jobs", scraperRouter);
 app.use("/api/signals", signalsRouter);
@@ -484,6 +488,21 @@ const server = app.listen(PORT, async () => {
     fn: () => stopAmbassadorEligibilityCron(),
   });
 
+  // Start weekly peer mock interview matching from one owner only in production.
+  const runPeerMockInterviewCron =
+    process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] !== "false");
+  if (runPeerMockInterviewCron) {
+    startPeerMockInterviewMatchCron();
+    shutdownManager.register({
+      name: "Peer Mock Interview Match Cron",
+      priority: 10,
+      fn: () => stopPeerMockInterviewMatchCron(),
+    });
+  } else {
+    logger.info("Peer mock interview match cron disabled on this process");
+  }
+
   const runGithubContributionsCron =
     process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] === "true" ||
     (process.env["NODE_ENV"] !== "production" && process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] !== "false");
@@ -529,4 +548,8 @@ app.get("/", (req, res) => {
   res.send("Server Running Successfully");
 });
 
+// Named export for the api/ function entry; default export so Vercel's Node
+// runtime can serve the Express app directly ("default export must be a
+// function or server") when it treats this module as the server.
 export { app };
+export default app;

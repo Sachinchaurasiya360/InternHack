@@ -912,7 +912,7 @@ export class DsaService {
 
   async getMyProgress(studentId: number) {
     const allProblems = await prisma.dsaProblem.findMany({
-      select: { id: true, difficulty: true },
+      select: { id: true, difficulty: true, slug: true },
     });
 
     const solved = await prisma.studentDsaProgress.findMany({
@@ -935,10 +935,14 @@ export class DsaService {
       }
     }
 
+    // solvedSlugs is used by the Placement Prep Plans dashboard to auto-complete daily DSA tasks matching solved slugs
+    const solvedSlugs = allProblems.filter((p) => solvedIds.has(p.id)).map((p) => p.slug);
+
     return {
       totalProblems: allProblems.length,
       totalSolved: solvedIds.size,
       byDifficulty: stats,
+      solvedSlugs,
     };
   }
 
@@ -1481,9 +1485,7 @@ Return ONLY a JSON array, no markdown fences:
 
     const hint = `${baseHint}${tagContext} (level: ${level})`;
 
-    await prisma.usageLog.create({
-      data: { userId, action: "CODE_RUN" },
-    });
+
 
     return {
       hint,
@@ -1575,9 +1577,7 @@ Return ONLY a JSON array, no markdown fences:
       // 5. Log success
       logAIRequest("DSA_CODE_REVIEW", response, true, undefined, studentId);
 
-      await prisma.usageLog.create({
-        data: { userId: studentId, action: "CODE_RUN" },
-      });
+
 
       return parsed;
     } catch (err) {

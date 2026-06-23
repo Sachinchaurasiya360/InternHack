@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -12,8 +12,8 @@ import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import { QuizBlock, type QuizQuestion } from "../../../../components/quiz/QuizBlock";
 import api from "../../../../lib/axios";
+import { useAuthStore } from "../../../../lib/auth.store";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
-import toast from "../../../../components/ui/toast";
 
 
 interface Resource { title: string; url: string; type: string }
@@ -45,6 +45,7 @@ interface Props {
 export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffix }: Props) {
   const { sectionSlug } = useParams<{ sectionSlug: string }>();
   const navigate = useNavigate();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const stepIndex = steps.findIndex((s) => s.id === sectionSlug);
   const step = steps[stepIndex];
 
@@ -54,14 +55,49 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  const hydratingRef = useRef(false);
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [showReasons, setShowReasons] = useState(false);
 
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    hydratingRef.current = true;
+    let cancelled = false;
+
+    api.get<{ completedStepIds: string[] }>(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`)
+      .then((res) => {
+        if (cancelled) return;
+        const serverIds = new Set(res.data.completedStepIds ?? []);
+
+        setCompleted((prev) => {
+          const localIds = new Set(prev);
+          const union = new Set([...localIds, ...serverIds]);
+
+          const hasLocalIds = [...localIds].some((id) => !serverIds.has(id));
+          if (hasLocalIds) {
+            api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, {
+              completedStepIds: [...union],
+            }).catch(() => { console.warn("Failed to sync guide progress to server"); });
+          }
+
+          try { localStorage.setItem(storageKey, JSON.stringify([...union])); } catch { console.warn("Failed to persist guide progress to localStorage"); }
+          return union;
+        });
+      })
+      .catch(() => { console.warn("No server progress found — using localStorage default"); })
+      .finally(() => {
+        if (!cancelled) hydratingRef.current = false;
+      });
+
+    return () => { cancelled = true; };
+  }, [isAuthenticated, storageKey]);
   const [showShortcutHint, setShowShortcutHint] = useState(() => {
   try {
     return localStorage.getItem("guide-hint-dismissed") !== "true";
   } catch {
+    console.warn("Failed to read shortcut hint dismissal from localStorage");
     return true;
   }
 });
@@ -72,24 +108,24 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       if (!step) return prev;
       const next = new Set(prev);
       if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
-      try { 
-        localStorage.setItem(storageKey, JSON.stringify([...next])); 
-        notifyLearningPathProgressChanged();
-        return next;
-      } 
-      catch { 
-        toast.error("Couldn't save progress");
-        return prev; 
+      const ids = [...next];
+      try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { console.warn("Failed to persist guide progress to localStorage"); }
+      notifyLearningPathProgressChanged();
+
+      if (isAuthenticated && !hydratingRef.current) {
+        api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, { completedStepIds: ids })
+          .catch(() => { console.warn("Failed to sync guide progress to server"); });
       }
-      
+
+      return next;
     });
-  }, [step, storageKey]);
+  }, [step, storageKey, isAuthenticated]);
 
   const dismissShortcutHint = () => {
   try {
     localStorage.setItem("guide-hint-dismissed", "true");
   } catch {
-    
+    console.warn("Failed to persist shortcut hint dismissal to localStorage");
   }
   setShowShortcutHint(false);
 };

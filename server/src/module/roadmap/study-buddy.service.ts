@@ -272,28 +272,7 @@ export class StudyBuddyService {
       ? (lastPair.studentAId === userId ? lastPair.studentBId : lastPair.studentAId)
       : null;
 
-    // 4. Fetch all active pairs to know who is already paired (outside transaction)
-    const activePairs = await prisma.roadmapStudyBuddyPair.findMany({
-      where: { roadmapId, active: true },
-      select: { studentAId: true, studentBId: true },
-    });
-    const pairedUserIds = new Set(activePairs.flatMap((p) => [p.studentAId, p.studentBId]));
-
-    // Double-check if the user themselves became paired concurrently
-    if (pairedUserIds.has(userId)) {
-      const currentActivePair = await prisma.roadmapStudyBuddyPair.findFirst({
-        where: {
-          roadmapId,
-          active: true,
-          OR: [
-            { studentAId: userId },
-            { studentBId: userId },
-          ],
-        },
-      });
-      return currentActivePair;
-    }
-
+    
     // 5. Query candidate roadmap enrollments in same roadmap (outside transaction, using filtered _count)
     const candidates = await prisma.roadmapEnrollment.findMany({
       where: {
@@ -306,6 +285,18 @@ export class StudyBuddyService {
             some: {
               roadmapId,
               enabled: true,
+            },
+          },
+          studentAPairs: {
+            none: {
+              roadmapId,
+              active: true,
+            },
+          },
+          studentBPairs: {
+            none: {
+              roadmapId,
+              active: true,
             },
           },
         },
@@ -331,10 +322,11 @@ export class StudyBuddyService {
           },
         },
       },
+      take: 50,
     });
 
     // Filter out candidates that are already paired
-    let eligibleCandidates = candidates.filter((c) => !pairedUserIds.has(c.userId));
+    let eligibleCandidates = candidates;
 
     if (eligibleCandidates.length === 0) return null;
 

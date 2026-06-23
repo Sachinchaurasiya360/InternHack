@@ -5,6 +5,8 @@ import type { Prisma, BadgeCategory, badge } from "@prisma/client";
 
 const BADGES_CACHE_KEY = "badges:active";
 const BADGES_TTL = 300; // 5 minutes
+const BADGE_DISPLAY_TTL = 300;
+const BADGE_DISPLAY_CACHE_PREFIX = "student:badges:";
 
 interface CreateBadgeInput {
   name: string;
@@ -36,6 +38,21 @@ export class BadgeService {
     });
   }
 
+  // Fields needed for badge display (excludes heavy JSON criteria)
+  private readonly displaySelect = {
+    id: true,
+    earnedAt: true,
+    badge: {
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        iconUrl: true,
+        category: true,
+      },
+    },
+  } as const;
+
   // ==================== STUDENT ====================
 
   async getStudentBadges(studentId: number) {
@@ -46,6 +63,22 @@ export class BadgeService {
         badge: true,
       },
     });
+  }
+
+  /** Lightweight badge display list — no criteria, cached per student. */
+  async getStudentBadgesDisplay(studentId: number) {
+    const cacheKey = `${BADGE_DISPLAY_CACHE_PREFIX}${studentId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
+    const badges = await prisma.studentBadge.findMany({
+      where: { studentId },
+      select: this.displaySelect,
+      orderBy: { earnedAt: "desc" },
+    });
+
+    await cacheSet(cacheKey, badges, BADGE_DISPLAY_TTL);
+    return badges;
   }
 
   // ==================== ADMIN CRUD ====================
@@ -199,6 +232,8 @@ export class BadgeService {
       shareCount?: number;
       solved?: number;
       streak?: number;
+      completedMockInterviews?: number;
+      mockInterviewStreak?: number;
       profileUser?: {
         name: string | null;
         bio: string | null;
@@ -251,6 +286,57 @@ export class BadgeService {
       case "oss_streak":
         ctx.streak = (context?.streak as number) ?? 0;
         break;
+      case "mock_interview": {
+        const completed = await prisma.peerMockInterview.findMany({
+          where: {
+            OR: [
+              { studentAId: studentId },
+              { studentBId: studentId },
+            ],
+            status: "COMPLETED",
+          },
+          orderBy: { completedAt: "asc" },
+          select: { completedAt: true },
+        });
+
+        ctx.completedMockInterviews = completed.length;
+
+        if (completed.length === 0) {
+          ctx.mockInterviewStreak = 0;
+        } else {
+          const getWeekKey = (date: Date) => {
+            const d = new Date(date);
+            const onejan = new Date(d.getFullYear(), 0, 1);
+            const weekNum = Math.ceil((((d.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+            return `${d.getFullYear()}-${weekNum}`;
+          };
+
+          const weeks = new Set<string>();
+          for (const item of completed) {
+            if (!item.completedAt) continue;
+            weeks.add(getWeekKey(item.completedAt));
+          }
+
+          let currentStreak = 0;
+          const checkDate = new Date();
+          
+          if (!weeks.has(getWeekKey(checkDate))) {
+            checkDate.setDate(checkDate.getDate() - 7);
+          }
+
+          for (let step = 0; step < 52; step++) {
+            const key = getWeekKey(checkDate);
+            if (weeks.has(key)) {
+              currentStreak++;
+              checkDate.setDate(checkDate.getDate() - 7);
+            } else {
+              break;
+            }
+          }
+          ctx.mockInterviewStreak = currentStreak;
+        }
+        break;
+      }
     }
 
     // 5. Evaluate each badge using pre-fetched data — zero additional DB queries
@@ -299,6 +385,15 @@ export class BadgeService {
           earned = s >= required;
           break;
         }
+        case "mock_interview": {
+          const type = params["type"] as string;
+          if (type === "streak") {
+            earned = (ctx.mockInterviewStreak ?? 0) >= ((params["count"] as number) || 1);
+          } else {
+            earned = (ctx.completedMockInterviews ?? 0) >= ((params["count"] as number) || 1);
+          }
+          break;
+        }
       }
 
       if (earned) {
@@ -313,6 +408,7 @@ export class BadgeService {
         data: toAward.map((badgeId) => ({ studentId, badgeId })),
         skipDuplicates: true,
       });
+      await cacheDel(`${BADGE_DISPLAY_CACHE_PREFIX}${studentId}`);
     }
 
     return newlyAwarded;
