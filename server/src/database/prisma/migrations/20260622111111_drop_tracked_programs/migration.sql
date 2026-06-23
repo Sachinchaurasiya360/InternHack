@@ -2,34 +2,29 @@
 --
 -- Backfill legacy user.trackedPrograms (slug array) into the programInterest
 -- join table BEFORE dropping the column, so no tracked-program data is lost
--- when this migration is applied on deploy. The programInterest.active /
--- updatedAt columns this relies on are added in the preceding migration
--- 20260622094358_add_program_interest_fields. Idempotent via ON CONFLICT.
+-- when this migration runs on a fresh/non-prod database. The programInterest
+-- active / updatedAt columns this relies on are added in the preceding
+-- migration 20260622094358_add_program_interest_fields.
+--
+-- Guarded on column existence so it is a no-op on environments already
+-- advanced via `db push` (prod), where "trackedPrograms" is already dropped;
+-- without the guard the backfill would throw `column does not exist` and fail
+-- the deploy. Idempotent via ON CONFLICT; unknown slugs are skipped (the inner
+-- JOIN drops them) to avoid violating the programId foreign key.
 DO $$
-DECLARE
-  u       RECORD;
-  p       TEXT;
-  prog_id INT;
 BEGIN
-  FOR u IN
-    SELECT id, "trackedPrograms"
-    FROM "user"
-    WHERE array_length("trackedPrograms", 1) > 0
-  LOOP
-    FOREACH p IN ARRAY u."trackedPrograms"
-    LOOP
-      SELECT id INTO prog_id FROM "ossProgram" WHERE slug = p;
-      IF prog_id IS NULL THEN
-        RAISE WARNING '[SKIP] Program slug "%" not found for user %', p, u.id;
-        CONTINUE;
-      END IF;
-
-      INSERT INTO "programInterest" ("userId", "programId", "active", "createdAt", "updatedAt")
-      VALUES (u.id, prog_id, TRUE, NOW(), NOW())
-      ON CONFLICT ("userId", "programId")
-      DO UPDATE SET "active" = TRUE, "updatedAt" = NOW();
-    END LOOP;
-  END LOOP;
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'user' AND column_name = 'trackedPrograms'
+  ) THEN
+    INSERT INTO "programInterest" ("userId", "programId", "active", "createdAt", "updatedAt")
+    SELECT u.id, p.id, TRUE, NOW(), NOW()
+    FROM "user" u
+    CROSS JOIN LATERAL unnest(u."trackedPrograms") AS s(slug)
+    JOIN "ossProgram" p ON p.slug = s.slug
+    ON CONFLICT ("userId", "programId")
+    DO UPDATE SET "active" = TRUE, "updatedAt" = NOW();
+  END IF;
 END $$;
 
 DROP INDEX IF EXISTS "programInterest_userId_idx";
