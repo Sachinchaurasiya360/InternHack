@@ -85,6 +85,7 @@ model user {
   jobMatches            jobMatch[]                  @relation("UserJobMatches")
   agentConversations    jobAgentConversation[]      @relation("UserAgentConversations")
   jobAgentEmailLogs     jobAgentEmailLog[]          @relation("UserJobAgentEmailLogs")
+  jobAlerts             JobAlert[]
   milestoneEmails       milestoneEmail[]            @relation("StudentMilestoneEmails")
   externalApplications  externalJobApplication[]    @relation("StudentExternalApplications")
   opensourceStreak      opensourceStreak?
@@ -175,6 +176,27 @@ model job {
   @@index([status, createdAt])
   @@index([deadline])
   @@index([createdAt])
+}
+
+model JobAlert {
+  id               String   @id @default(cuid())
+
+  userId           Int
+
+  tags             String[]
+  location         String?
+  jobType          String?
+
+  isActive         Boolean  @default(true)
+
+  lastNotifiedAt   DateTime?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model round {

@@ -8,6 +8,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { createRateLimitStore } from "./utils/rate-limit-store.js";
+import { startJobAlertCron, stopJobAlertCron } from "./cron/job-alerts.cron.js";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
 import { recruiterRouter } from "./module/recruiter/recruiter.routes.js";
@@ -450,6 +451,14 @@ const server = app.listen(PORT, async () => {
     name: "Deadline Alert Cron",
     priority: 10,
     fn: () => stopDeadlineAlertCron(),
+  });
+
+  // Start Job Alert cron
+  startJobAlertCron();
+  shutdownManager.register({
+    name: "Job Alert Cron",
+    priority: 10,
+    fn: () => stopJobAlertCron(),
   });
 
   const runGithubContributionsCron =

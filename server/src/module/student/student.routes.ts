@@ -1,12 +1,16 @@
 import { Router } from "express";
 import { StudentController } from "./student.controller.js";
 import { StudentService } from "./student.service.js";
+import { JobAlertController } from "./job-alert.controller.js";
+import { JobAlertService } from "./job-alert.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
 
 const studentService = new StudentService();
 const studentController = new StudentController(studentService);
+const jobAlertService = new JobAlertService();
+const jobAlertController = new JobAlertController(jobAlertService);
 
 export const studentRouter = Router();
 
@@ -38,6 +42,12 @@ studentRouter.get("/saved-jobs", (req, res) => studentController.getSavedJobs(re
 studentRouter.post("/jobs/:jobId/save", (req, res) => studentController.saveJob(req, res));
 studentRouter.delete("/jobs/:jobId/save", (req, res) => studentController.unsaveJob(req, res));
 studentRouter.get("/jobs/:jobId/save", (req, res) => studentController.isJobSaved(req, res));
+
+// Job alerts
+studentRouter.post("/job-alerts", (req, res, next) => jobAlertController.createAlert(req, res, next));
+studentRouter.get("/job-alerts", (req, res, next) => jobAlertController.getAlerts(req, res, next));
+studentRouter.patch("/job-alerts/:id", (req, res, next) => jobAlertController.updateAlert(req, res, next));
+studentRouter.delete("/job-alerts/:id", (req, res, next) => jobAlertController.deleteAlert(req, res, next));
 
 // Mock interview
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));
