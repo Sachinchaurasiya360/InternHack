@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import prerender from '@prerenderer/rollup-plugin'
@@ -98,6 +98,10 @@ server: {
     },
   },
 },
+  test: {
+    globals: true,
+    environment: "node",
+  },
   build: {
     chunkSizeWarningLimit: 2000,
     rollupOptions: {

@@ -14,6 +14,7 @@ import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
 import { recruiterRouter } from "./module/recruiter/recruiter.routes.js";
 import { studentRouter } from "./module/student/student.routes.js";
+import { peerMockInterviewRouter } from "./module/peer-mock-interview/peer-mock-interview.routes.js";
 import { uploadRouter } from "./module/upload/upload.routes.js";
 import { scraperRouter, scraperController } from "./module/scraper/scraper.routes.js";
 import { signalsRouter, signalsController } from "./module/signals/signals.routes.js";
@@ -84,6 +85,7 @@ import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron
 import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
 import { startAmbassadorEligibilityCron, stopAmbassadorEligibilityCron } from "./cron/ambassador-eligibility.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
+import { startPeerMockInterviewMatchCron, stopPeerMockInterviewMatchCron } from "./cron/peer-mock-interview-match.cron.js";
 import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
@@ -264,6 +266,7 @@ app.use("/api/jobs", jobRouter);
 app.use("/api/recruiter", recruiterRouter);
 app.use("/api/student/recommendations", recommendationRouter);
 app.use("/api/student", studentRouter);
+app.use("/api/student/peer-mock-interview", peerMockInterviewRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/scraped-jobs", scraperRouter);
 app.use("/api/signals", signalsRouter);
@@ -484,6 +487,21 @@ const server = app.listen(PORT, async () => {
     priority: 10,
     fn: () => stopAmbassadorEligibilityCron(),
   });
+
+  // Start weekly peer mock interview matching from one owner only in production.
+  const runPeerMockInterviewCron =
+    process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] === "true" ||
+    (process.env["NODE_ENV"] !== "production" && process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] !== "false");
+  if (runPeerMockInterviewCron) {
+    startPeerMockInterviewMatchCron();
+    shutdownManager.register({
+      name: "Peer Mock Interview Match Cron",
+      priority: 10,
+      fn: () => stopPeerMockInterviewMatchCron(),
+    });
+  } else {
+    logger.info("Peer mock interview match cron disabled on this process");
+  }
 
   const runGithubContributionsCron =
     process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] === "true" ||

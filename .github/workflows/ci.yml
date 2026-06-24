@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/dummy"
+
 jobs:
   typecheck-client:
     name: Typecheck Client

@@ -4,8 +4,8 @@ const mocks = vi.hoisted(() => {
   return {
     generateText: vi.fn(),
     prisma: {
-      userInterviewProgress: {
-        findUnique: vi.fn(),
+      userInterviewQuestionState: {
+        findMany: vi.fn(),
       },
       studentDsaProgress: {
         count: vi.fn(),
@@ -43,9 +43,10 @@ describe("LearnService - calculateReadinessReport", () => {
 
   it("calculates readiness report successfully via Gemini", async () => {
     // Mock DB progress stats
-    mocks.prisma.userInterviewProgress.findUnique.mockResolvedValue({
-      completedIds: ["lesson-1", "lesson-2"],
-    } as any);
+    mocks.prisma.userInterviewQuestionState.findMany.mockResolvedValue([
+      { questionId: "lesson-1", isCompleted: true },
+      { questionId: "lesson-2", isCompleted: true },
+    ] as any);
     mocks.prisma.studentDsaProgress.count.mockResolvedValue(5);
     mocks.prisma.studentSqlProgress.count.mockResolvedValue(3);
     mocks.prisma.studentAptitudeProgress.count.mockResolvedValue(10);
@@ -72,9 +73,9 @@ describe("LearnService - calculateReadinessReport", () => {
     });
 
     expect(result).toEqual(mockReport);
-    expect(mocks.prisma.userInterviewProgress.findUnique).toHaveBeenCalledWith({
-      where: { userId: 42 },
-      select: { completedIds: true },
+    expect(mocks.prisma.userInterviewQuestionState.findMany).toHaveBeenCalledWith({
+      where: { userId: 42, isCompleted: true },
+      select: { questionId: true },
     });
     expect(mocks.prisma.studentDsaProgress.count).toHaveBeenCalledWith({
       where: { studentId: 42, solved: true },
@@ -84,9 +85,10 @@ describe("LearnService - calculateReadinessReport", () => {
 
   it("falls back to heuristic calculations if Gemini fails", async () => {
     // Mock DB progress stats
-    mocks.prisma.userInterviewProgress.findUnique.mockResolvedValue({
-      completedIds: ["lesson-1", "lesson-2"],
-    } as any);
+    mocks.prisma.userInterviewQuestionState.findMany.mockResolvedValue([
+      { questionId: "lesson-1", isCompleted: true },
+      { questionId: "lesson-2", isCompleted: true },
+    ] as any);
     mocks.prisma.studentDsaProgress.count.mockResolvedValue(5);
     mocks.prisma.studentSqlProgress.count.mockResolvedValue(3);
     mocks.prisma.studentAptitudeProgress.count.mockResolvedValue(10);

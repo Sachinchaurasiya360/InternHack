@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Award } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { StudentBadge } from "../../../lib/types";
+import type { BadgeDisplay, StudentBadge } from "../../../lib/types";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -33,9 +33,10 @@ const categoryLabels: Record<string, string> = {
 interface BadgesSectionProps {
   studentId?: number;
   showTitle?: boolean;
+  badges?: BadgeDisplay[];
 }
 
-export function BadgesSection({ studentId, showTitle = true }: BadgesSectionProps) {
+export function BadgesSection({ studentId, showTitle = true, badges: propBadges }: BadgesSectionProps) {
   const { data, isLoading } = useQuery({
     queryKey: studentId
       ? queryKeys.badges.student(studentId)
@@ -45,9 +46,10 @@ export function BadgesSection({ studentId, showTitle = true }: BadgesSectionProp
       const res = await api.get(url);
       return res.data as { badges: StudentBadge[] };
     },
+    enabled: !propBadges,
   });
 
-  const badges = data?.badges ?? [];
+  const badges = (propBadges ?? data?.badges ?? []) as (BadgeDisplay | StudentBadge)[];
 
   if (isLoading) {
     return (

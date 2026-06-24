@@ -1,0 +1,115 @@
+name: PR Issue Assignment Guard
+
+# Closes a PR when its description references an issue (Fixes/Closes/Resolves #N)
+# that is NOT assigned to the PR author. This stops contributors from opening
+# PRs for issues that belong to someone else.
+#
+# Uses pull_request_target so it has write access on PRs from forks. It never
+# checks out PR code — only the GitHub API via github-script — so it is safe.
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  guard:
+    name: Close PRs referencing issues not assigned to the author
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify referenced issues are assigned to the PR author
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr     = context.payload.pull_request;
+            const prNum  = pr.number;
+            const author = pr.user.login;
+            const repo   = { owner: context.repo.owner, repo: context.repo.repo };
+            const body   = pr.body || "";
+
+            // Authors exempt from this check (maintainers, etc.). Add logins here.
+            const EXEMPT_AUTHORS = ['Sachinchaurasiya360'];
+
+            // Skip bots and explicitly exempt authors.
+            if (pr.user.type === 'Bot' || EXEMPT_AUTHORS.includes(author)) {
+              console.log(`Author @${author} is exempt — skipping.`);
+              return;
+            }
+
+            // Only act on open PRs (an "edited" event can fire on a closed PR).
+            if (pr.state !== 'open') {
+              console.log(`PR #${prNum} is ${pr.state}, not open — skipping.`);
+              return;
+            }
+
+            // 1. Extract linked issue numbers — same keywords as PR Label Inheritance.
+            const regex = /(?:fixes|closes|resolves|fixed|closed|resolved)\s+#(\d+)/gi;
+            const linkedIssues = [...new Set([...body.matchAll(regex)].map(m => parseInt(m[1], 10)))];
+
+            if (linkedIssues.length === 0) {
+              console.log('No linked issues referenced — nothing to check.');
+              return;
+            }
+            console.log(`Linked issues: ${linkedIssues.join(', ')}`);
+
+            // 2. For each linked issue, check whether the PR author is an assignee.
+            const unassigned = []; // issues that exist but are NOT assigned to the author
+            for (const issue_number of linkedIssues) {
+              try {
+                const { data: issue } = await github.rest.issues.get({ ...repo, issue_number });
+
+                // The number might point to a PR, not an issue — ignore those.
+                if (issue.pull_request) {
+                  console.log(`#${issue_number} is a PR, not an issue — ignoring.`);
+                  continue;
+                }
+
+                const assignees = (issue.assignees || []).map(a => a.login);
+                if (assignees.includes(author)) {
+                  console.log(`✅ Issue #${issue_number} is assigned to @${author}.`);
+                } else {
+                  console.log(`⛔ Issue #${issue_number} assigned to [${assignees.join(', ') || 'nobody'}], not @${author}.`);
+                  unassigned.push({ number: issue_number, assignees });
+                }
+              } catch (err) {
+                // Cannot verify (e.g. 404 / bad number) — do NOT close on that basis.
+                console.warn(`Could not fetch issue #${issue_number}: ${err.message} — skipping this reference.`);
+              }
+            }
+
+            // 3. If every referenced issue is assigned to the author, allow the PR.
+            if (unassigned.length === 0) {
+              console.log('All referenced issues are assigned to the author — PR allowed.');
+              return;
+            }
+
+            // 4. Otherwise, comment with the reason and close the PR.
+            const lines = unassigned.map(u =>
+              `- #${u.number} → assigned to ${u.assignees.length ? u.assignees.map(a => '@' + a).join(', ') : '_no one_'}`
+            ).join('\n');
+
+            const comment = [
+              `Hi @${author}, this PR was closed automatically. 🚫`,
+              ``,
+              `It references an issue that is **not assigned to you**:`,
+              ``,
+              lines,
+              ``,
+              `To keep work from being duplicated, we only accept PRs for issues assigned to their author. Please:`,
+              `1. Comment on the issue to request assignment, and wait for a maintainer to assign it to you.`,
+              `2. Once you're assigned, open a fresh PR (or ask a maintainer to reopen this one).`,
+              ``,
+              `If you think this is a mistake, ping a maintainer. Thanks for contributing to **InternHack**! 🙌`,
+            ].join('\n');
+
+            try {
+              await github.rest.issues.createComment({ ...repo, issue_number: prNum, body: comment });
+            } catch (err) {
+              console.error(`Failed to post comment on PR #${prNum}: ${err.message}`);
+            }
+
+            await github.rest.pulls.update({ ...repo, pull_number: prNum, state: 'closed' });
+            console.log(`Closed PR #${prNum} — referenced unassigned issue(s).`);

@@ -39,6 +39,7 @@ function getLocalProgress(): SqlProgress {
   try {
     return JSON.parse(localStorage.getItem("sql-progress") || "{}");
   } catch {
+    console.warn("Failed to parse sql-progress from localStorage");
     return {};
   }
 }

@@ -62,6 +62,7 @@ const DsaProblemDetailPage = lazyWithRetry(() => import("./module/student/dsa/Ds
 const DsaFoundationsHubPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsHubPage"));
 const DsaFoundationsLevelPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsLevelPage"));
 const DsaFoundationsLessonPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsLessonPage"));
+const PlacementPrepPlansPage = lazyWithRetry(() => import("./module/student/learn/placement-prep/PlacementPrepPlansPage"));
 const SystemDesignHubPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignHubPage"));
 const SystemDesignLevelPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLevelPage"));
 const SystemDesignLessonPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLessonPage"));
@@ -487,6 +488,7 @@ function App() {
               <Route path="interview/behavioral-interview/trainer" element={<BehavioralTrainerPage />} />
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
+              <Route path="placement-prep" element={<ProtectedRoute role="STUDENT"><PlacementPrepPlansPage /></ProtectedRoute>} />
               <Route path="notes" element={<ProtectedRoute role="STUDENT"><NotesDashboardPage /></ProtectedRoute>} />
             </Route>
 

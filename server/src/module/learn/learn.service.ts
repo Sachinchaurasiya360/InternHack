@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
 import type { InterviewProgressAction, BulkInterviewProgressInput } from "./learn.validation.js";
 import { GeminiProvider } from "../../lib/providers/gemini.provider.js";
@@ -17,43 +16,24 @@ const EMPTY_PROGRESS: InterviewProgressDto = {
   lastVisitedAt: null,
 };
 
-function uniqueIds(ids: string[]) {
-  return Array.from(new Set(ids.map((id) => id.trim()).filter(Boolean))).slice(0, 1000);
-}
+async function aggregateProgress(userId: number): Promise<InterviewProgressDto> {
+  const [states, progress] = await Promise.all([
+    prisma.userInterviewQuestionState.findMany({
+      where: { userId },
+      select: { questionId: true, isCompleted: true, isBookmarked: true },
+    }),
+    prisma.userInterviewProgress.findUnique({
+      where: { userId },
+      select: { lastVisitedId: true, lastVisitedAt: true },
+    }),
+  ]);
 
-function serializeProgress(progress: {
-  completedIds: string[];
-  bookmarkedIds: string[];
-  lastVisitedId: string | null;
-  lastVisitedAt: Date | null;
-}): InterviewProgressDto {
   return {
-    completedIds: progress.completedIds,
-    bookmarkedIds: progress.bookmarkedIds,
-    lastVisitedId: progress.lastVisitedId,
-    lastVisitedAt: progress.lastVisitedAt,
+    completedIds: states.filter((s) => s.isCompleted).map((s) => s.questionId),
+    bookmarkedIds: states.filter((s) => s.isBookmarked).map((s) => s.questionId),
+    lastVisitedId: progress?.lastVisitedId ?? null,
+    lastVisitedAt: progress?.lastVisitedAt ?? null,
   };
-}
-
-async function runRepeatableRead<T>(operation: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
-  const maxAttempts = 3;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    try {
-      return await prisma.$transaction(operation, {
-        isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
-      });
-    } catch (error) {
-      const canRetry =
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2034" &&
-        attempt < maxAttempts;
-
-      if (!canRetry) throw error;
-    }
-  }
-
-  throw new Error("Could not save interview progress");
 }
 
 export class LearnService {
@@ -73,10 +53,10 @@ export class LearnService {
     let completedLessonIds: string[] = [];
 
     if (typeof userIdNum === "number" && !isNaN(userIdNum)) {
-      const [interviewProgress, dsaSolved, sqlSolved, aptitudeSolved] = await Promise.all([
-        prisma.userInterviewProgress.findUnique({
-          where: { userId: userIdNum },
-          select: { completedIds: true },
+      const [completedStates, dsaSolved, sqlSolved, aptitudeSolved] = await Promise.all([
+        prisma.userInterviewQuestionState.findMany({
+          where: { userId: userIdNum, isCompleted: true },
+          select: { questionId: true },
         }),
         prisma.studentDsaProgress.count({
           where: { studentId: userIdNum, solved: true },
@@ -89,10 +69,8 @@ export class LearnService {
         }),
       ]);
 
-      if (interviewProgress) {
-        completedLessonIds = interviewProgress.completedIds;
-        completedLessonsCount = interviewProgress.completedIds.length;
-      }
+      completedLessonIds = completedStates.map((s) => s.questionId);
+      completedLessonsCount = completedStates.length;
       totalDsaSolved = dsaSolved;
       totalSqlSolved = sqlSolved;
       totalAptitudeSolved = aptitudeSolved;
@@ -159,7 +137,6 @@ export class LearnService {
       }
     } catch (error) {
       console.error("Gemini exception in readiness report, using fallback:", error);
-      // Clean safety fallback so the server never crashes even if API keys are missing locally
       return {
         overallReadiness: Math.min(100, Math.max(10, completedLessonsCount * 10 + totalDsaSolved * 5)),
         estimatedTimeToReady: availableTime || "3 weeks",
@@ -177,18 +154,13 @@ export class LearnService {
       };
     }
   }
-  async getInterviewProgress(userId: number): Promise<InterviewProgressDto> {
-    const progress = await prisma.userInterviewProgress.findUnique({
-      where: { userId },
-      select: {
-        completedIds: true,
-        bookmarkedIds: true,
-        lastVisitedId: true,
-        lastVisitedAt: true,
-      },
-    });
 
-    return progress ? serializeProgress(progress) : EMPTY_PROGRESS;
+  async getInterviewProgress(userId: number): Promise<InterviewProgressDto> {
+    const result = await aggregateProgress(userId);
+    return result.completedIds.length === 0 && result.bookmarkedIds.length === 0 &&
+      result.lastVisitedId === null
+      ? EMPTY_PROGRESS
+      : result;
   }
 
   async updateInterviewProgress(
@@ -196,89 +168,77 @@ export class LearnService {
     questionId: string,
     action: InterviewProgressAction,
   ): Promise<InterviewProgressDto> {
-    const progress = await runRepeatableRead(async (tx) => {
-      const existing = await tx.userInterviewProgress.findUnique({ where: { userId } });
-      const completedIds = new Set(existing?.completedIds ?? []);
-      const bookmarkedIds = new Set(existing?.bookmarkedIds ?? []);
-      let lastVisitedId = existing?.lastVisitedId ?? null;
-      let lastVisitedAt = existing?.lastVisitedAt ?? null;
-
-      if (action === "complete") completedIds.add(questionId);
-      if (action === "uncomplete") completedIds.delete(questionId);
-      if (action === "bookmark") bookmarkedIds.add(questionId);
-      if (action === "unbookmark") bookmarkedIds.delete(questionId);
-      if (action === "visit") {
-        lastVisitedId = questionId;
-        lastVisitedAt = new Date();
-      }
-
-      return tx.userInterviewProgress.upsert({
-        where: { userId },
-        update: {
-          completedIds: Array.from(completedIds),
-          bookmarkedIds: Array.from(bookmarkedIds),
-          lastVisitedId,
-          lastVisitedAt,
-        },
-        create: {
-          userId,
-          completedIds: Array.from(completedIds),
-          bookmarkedIds: Array.from(bookmarkedIds),
-          lastVisitedId,
-          lastVisitedAt,
-        },
-        select: {
-          completedIds: true,
-          bookmarkedIds: true,
-          lastVisitedId: true,
-          lastVisitedAt: true,
-        },
+    if (action === "complete" || action === "uncomplete") {
+      await prisma.userInterviewQuestionState.upsert({
+        where: { userId_questionId: { userId, questionId } },
+        update: { isCompleted: action === "complete" },
+        create: { userId, questionId, isCompleted: action === "complete" },
       });
-    });
+    }
 
-    return serializeProgress(progress);
+    if (action === "bookmark" || action === "unbookmark") {
+      await prisma.userInterviewQuestionState.upsert({
+        where: { userId_questionId: { userId, questionId } },
+        update: { isBookmarked: action === "bookmark" },
+        create: { userId, questionId, isBookmarked: action === "bookmark" },
+      });
+    }
+
+    if (action === "visit") {
+      await prisma.userInterviewProgress.upsert({
+        where: { userId },
+        update: { lastVisitedId: questionId, lastVisitedAt: new Date() },
+        create: { userId, lastVisitedId: questionId, lastVisitedAt: new Date() },
+      });
+    }
+
+    return aggregateProgress(userId);
   }
 
   async bulkMigrateInterviewProgress(
     userId: number,
     input: BulkInterviewProgressInput,
   ): Promise<InterviewProgressDto> {
-    const progress = await runRepeatableRead(async (tx) => {
-      const existing = await tx.userInterviewProgress.findUnique({ where: { userId } });
-      const completedIds = uniqueIds([...(existing?.completedIds ?? []), ...input.completedIds]);
-      const bookmarkedIds = uniqueIds([...(existing?.bookmarkedIds ?? []), ...input.bookmarkedIds]);
-      const lastVisitedId = existing?.lastVisitedId ?? input.lastVisitedId ?? null;
-      const lastVisitedAt = existing?.lastVisitedAt ?? (lastVisitedId ? new Date() : null);
+    const { completedIds, bookmarkedIds, lastVisitedId: incomingLastVisited } = input;
 
-      return tx.userInterviewProgress.upsert({
-        where: { userId },
-        update: {
-          completedIds,
-          bookmarkedIds,
-          lastVisitedId,
-          lastVisitedAt,
-        },
-        create: {
-          userId,
-          completedIds,
-          bookmarkedIds,
-          lastVisitedId,
-          lastVisitedAt,
-        },
-        select: {
-          completedIds: true,
-          bookmarkedIds: true,
-          lastVisitedId: true,
-          lastVisitedAt: true,
-        },
+    if (completedIds.length > 0) {
+      await prisma.userInterviewQuestionState.createMany({
+        data: completedIds.map((qId) => ({ userId, questionId: qId, isCompleted: true })),
+        skipDuplicates: true,
       });
-    });
+      await prisma.userInterviewQuestionState.updateMany({
+        where: { userId, questionId: { in: completedIds }, isCompleted: false },
+        data: { isCompleted: true },
+      });
+    }
 
-    return serializeProgress(progress);
+    if (bookmarkedIds.length > 0) {
+      await prisma.userInterviewQuestionState.createMany({
+        data: bookmarkedIds.map((qId) => ({ userId, questionId: qId, isBookmarked: true })),
+        skipDuplicates: true,
+      });
+      await prisma.userInterviewQuestionState.updateMany({
+        where: { userId, questionId: { in: bookmarkedIds } },
+        data: { isBookmarked: true },
+      });
+    }
+
+    if (incomingLastVisited) {
+      await prisma.userInterviewProgress.upsert({
+        where: { userId },
+        update: { lastVisitedId: incomingLastVisited, lastVisitedAt: new Date() },
+        create: { userId, lastVisitedId: incomingLastVisited, lastVisitedAt: new Date() },
+      });
+    }
+
+    return aggregateProgress(userId);
   }
 
   async resetInterviewProgress(userId: number): Promise<InterviewProgressDto> {
-    await prisma.userInterviewProgress.deleteMany({ where: { userId } });
+    const [_, __] = await Promise.all([
+      prisma.userInterviewQuestionState.deleteMany({ where: { userId } }),
+      prisma.userInterviewProgress.deleteMany({ where: { userId } }),
+    ]);
     return EMPTY_PROGRESS;
   }
 }

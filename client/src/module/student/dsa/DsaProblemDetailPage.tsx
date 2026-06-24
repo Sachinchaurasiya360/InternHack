@@ -138,7 +138,7 @@ export default function DsaProblemDetailPage() {
   const handleCodeChange = useCallback((val: string) => {
     setCodeMap((prev) => ({ ...prev, [language]: val }));
     if (slug) {
-      try { localStorage.setItem(`dsa-code-${slug}-${language}`, val); } catch { /* quota */ }
+      try { localStorage.setItem(`dsa-code-${slug}-${language}`, val); } catch { console.warn("localStorage quota exceeded for dsa-code"); }
     }
   }, [language, slug]);
 
@@ -147,7 +147,7 @@ export default function DsaProblemDetailPage() {
     setCodeMap((prev) => ({ ...prev, [lang]: code }));
     setRightTab("results");
     if (slug) {
-      try { localStorage.setItem(`dsa-code-${slug}-${lang}`, code); } catch { /* quota */ }
+      try { localStorage.setItem(`dsa-code-${slug}-${lang}`, code); } catch { console.warn("localStorage quota exceeded for dsa-code"); }
     }
   }, [slug]);
 

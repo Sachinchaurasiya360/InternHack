@@ -347,6 +347,25 @@ export class AuthService {
       const randomPassword = crypto.randomBytes(32).toString("hex");
       const hashedPassword = await hashPassword(randomPassword);
 
+      /**
+       * Derive a company name for recruiter accounts from the Google email domain.
+       * e.g. "jane@microsoft.com" → "Microsoft". Falls back to "Company" if
+       * the domain segment cannot be parsed.
+       */
+      let companyName: string | null = null;
+      if (data.role === "RECRUITER") {
+        const domain = email.split("@")[1];
+        if (domain) {
+          const domainName = domain.split(".")[0];
+          if (domainName) {
+            companyName = domainName.charAt(0).toUpperCase() + domainName.slice(1);
+          }
+        }
+        if (!companyName) {
+          companyName = "Company";
+        }
+      }
+
       user = await prisma.user.create({
         data: {
           name: name ?? email.split("@")[0] ?? "User",
@@ -355,6 +374,7 @@ export class AuthService {
           role: data.role ?? "STUDENT",
           profilePic: picture ?? null,
           isVerified: true,
+          company: companyName,
         },
       });
 
@@ -604,14 +624,17 @@ export class AuthService {
     if (!isOwner && !isVisitorAuthorized) {
       delete (rest as any).email;
       delete (rest as any).contactNo;
-      // We will keep resumes for now as per normal portfolio behavior, but sensitive identifiers are stripped.
     }
 
     await signProfileMedia(rest as Record<string, any>);
 
+    // Fetch lightweight badge display list — no heavy criteria JSON
+    const badges = await badgeService.getStudentBadgesDisplay(user.id);
+
     const result = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
+      badges,
     };
     await cacheSet(cacheKey, result, PROFILE_TTL);
     return result;

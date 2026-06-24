@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "prisma generate --config src/database/prisma.config.ts && tsc",
+    "build": "prisma generate --config src/database/prisma.config.ts && tsc && node scripts/migrate-on-deploy.mjs",
+    "db:deploy": "prisma migrate deploy --config src/database/prisma.config.ts",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.api.json",
     "test": "vitest run",

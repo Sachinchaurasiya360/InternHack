@@ -9,6 +9,7 @@ import { drainScheduledEmails } from "./scheduled-email-worker.js";
 import { runFollowUpEmails } from "./scheduled-emails.js";
 import { runSignalsCleanup } from "./signals-cleanup.js";
 import { runSubscriptionExpiry } from "./subscription-expiry.js";
+import { runPeerMockInterviewMatching } from "./peer-mock-interview-match.cron.js";
 import { scraperController } from "../module/scraper/scraper.routes.js";
 import { signalsController } from "../module/signals/signals.routes.js";
 import { withAdvisoryLock } from "../utils/cron-lock.js";
@@ -68,6 +69,8 @@ const HEAVY_JOBS: CronJob[] = [
   { name: "github-contributions", lockKey: "github-contributions-sync", run: runGithubContributionsSync },
   // Weekly: roadmap progress digest ran Mondays.
   { name: "roadmap-weekly-digest", lockKey: "roadmap-weekly-digest", onlyOnUtcDay: 1, run: sendWeeklyRoadmapDigests },
+  // Weekly: peer mock interview matching ran Sundays.
+  { name: "peer-mock-interview-match", lockKey: "peer-mock-interview-match", onlyOnUtcDay: 0, run: runPeerMockInterviewMatching },
 ];
 
 // Stop launching new jobs once this much wall-clock has elapsed, leaving headroom
