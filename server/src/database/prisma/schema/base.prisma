@@ -180,6 +180,7 @@ model guideProgress {
 
   @@unique([userId, guideSlug])
   @@index([userId])
+  @@index([userId, createdAt])
   @@index([guideSlug])
 }
 
@@ -611,6 +612,7 @@ model repoRequest {
   @@index([status])
   @@index([userId])
   @@index([userId, status])
+  @@index([userId, status, createdAt])
   @@index([repoId])
 }
 
@@ -1416,6 +1418,7 @@ model guideFeedback {
   @@index([guideId])
   @@index([stepId])
   @@index([userId, guideId])
+  @@index([userId, createdAt])
 }
 
 model contentView {

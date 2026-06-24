@@ -48,58 +48,9 @@ opensourceRouter.get("/analytics/hacktoberfest", authMiddleware, requireRole("ST
   controller.getHacktoberfestProgress(req, res, next),
 );
 
-opensourceRouter.get("/activity", authMiddleware, async (req, res, next) => {
-  try {
-    const queryStudentId = req.query.studentId as string | undefined;
-    const userId = queryStudentId ? parseInt(queryStudentId, 10) : req.user!.id;
-
-    if (queryStudentId && req.user!.role === "STUDENT" && userId !== req.user!.id) {
-      return res.status(403).json({ success: false, error: "Cannot view other student's activity" });
-    }
-    const requests = await prisma.repoRequest.findMany({
-      where: { userId, status: { in: ["PENDING", "APPROVED"] } },
-      select: { createdAt: true },
-    });
-
-    const activityMap = new Map<string, { guideSteps: number; repoSuggestions: number; prsMerged: number }>();
-
-    const getOrInit = (date: string) => {
-      if (!activityMap.has(date)) {
-        activityMap.set(date, { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 });
-      }
-      return activityMap.get(date)!;
-    };
-
-    for (const req of requests) {
-      const date = req.createdAt.toISOString().split("T")[0];
-      getOrInit(date).repoSuggestions += 1;
-    }
-
-    const now = new Date();
-    for (let i = 0; i < 90; i += 3) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().split("T")[0];
-      const entry = getOrInit(dateStr);
-      if (i % 5 === 0) entry.guideSteps += Math.floor(Math.random() * 3) + 1;
-      if (i % 7 === 0) entry.prsMerged += Math.floor(Math.random() * 2) + 1;
-    }
-
-    const result = Array.from(activityMap.entries()).map(([date, counts]) => {
-      const total = counts.guideSteps + counts.repoSuggestions + counts.prsMerged;
-      let level = 0;
-      if (total >= 6) level = 3;
-      else if (total >= 3) level = 2;
-      else if (total >= 1) level = 1;
-      return { date, count: total, level, details: counts };
-    });
-
-    result.sort((a, b) => a.date.localeCompare(b.date));
-    res.json({ activity: result });
-  } catch (err) {
-    next(err);
-  }
-});
+opensourceRouter.get("/activity", authMiddleware, (req, res, next) =>
+  controller.getActivityHeatmap(req, res, next),
+);
 
 opensourceRouter.get("/premium/status", authMiddleware, requireRole("STUDENT"), async (req, res, next) => {
   try {
