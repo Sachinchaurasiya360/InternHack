@@ -376,6 +376,12 @@ export async function enrollUser(args: {
     return created;
   });
 
+  import("../peer-mock-interview/peer-mock-interview.service.js").then(({ PeerMockInterviewService }) => {
+    new PeerMockInterviewService().runMatchingJob().catch(err => {
+      console.error("Failed to run background matching job on roadmap enrollment:", err);
+    });
+  }).catch(err => console.error("Could not load PeerMockInterviewService", err));
+
   return { enrollment, weeklyPlan: plan };
 }
 

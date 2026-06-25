@@ -68,6 +68,11 @@ export class PeerMockInterviewService {
           console.error("Failed to send cancellation email:", err);
         }
       }
+    } else {
+      // Run match making job in the background to pair them immediately if possible
+      this.runMatchingJob().catch(err => {
+        console.error("Failed to run background matching job on preference update:", err);
+      });
     }
 
     return preference;
@@ -388,13 +393,6 @@ export class PeerMockInterviewService {
     const prefs = await prisma.peerMockInterviewPreference.findMany({
       where: {
         enabled: true,
-        user: {
-          roadmapEnrollments: {
-            some: {
-              status: "ACTIVE",
-            },
-          },
-        },
       },
       include: {
         user: {
