@@ -19,7 +19,7 @@ interface Day10Payload {
  * Drain due rows from scheduledEmail. Each kind has its own renderer.
  * Idempotent: a row is considered done once sentAt is set.
  */
-async function drainScheduledEmails(): Promise<void> {
+export async function drainScheduledEmails(): Promise<void> {
   const now = new Date();
   const due = await prisma.scheduledEmail.findMany({
     where: {

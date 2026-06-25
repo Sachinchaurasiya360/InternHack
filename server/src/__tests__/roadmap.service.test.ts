@@ -5,6 +5,7 @@ import {
   enrollUser,
   updateTopicProgress,
   recomputePace,
+  getEnrollmentAnalyticsBatchForUser,
 } from "../module/roadmap/roadmap.service.js";
 import { prisma } from "../database/db.js";
 import { invalidateRecommendations } from "../module/recommendation/recommendation.service.js";
@@ -18,10 +19,11 @@ import type { EnrollInput } from "../module/roadmap/roadmap.validation.js";
 // `tx.roadmapEnrollment.create` resolve against the same configurable mocks.
 vi.mock("../database/db.js", () => ({
   prisma: {
-    roadmap: { findFirst: vi.fn(), update: vi.fn() },
+    roadmap: { findFirst: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
     roadmapEnrollment: {
       findFirst: vi.fn(),
       findUnique: vi.fn(),
+      findMany: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
     },
@@ -30,6 +32,7 @@ vi.mock("../database/db.js", () => ({
       upsert: vi.fn(),
       findMany: vi.fn(),
       update: vi.fn(),
+      count: vi.fn(),
     },
     $transaction: vi.fn(),
   },
@@ -548,18 +551,10 @@ describe("updateTopicProgress", () => {
   });
 
   it("sets completedAt, recomputes the streak, and detects 100% completion", async () => {
-    // 1st findFirst: ownership lookup. 2nd findFirst: getEnrollmentForUser (all done).
-    vi.mocked(prisma.roadmapEnrollment.findFirst)
-      .mockResolvedValueOnce({
-        id: ENROLLMENT_ID,
-        roadmapId: ROADMAP_ID,
-      } as any)
-      .mockResolvedValueOnce(
-        makeEnrollment(
-          [{ id: 5, estimatedHours: 2 }],
-          [{ topicId: 5, status: "COMPLETED" }],
-        ),
-      );
+    vi.mocked(prisma.roadmapEnrollment.findFirst).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      roadmapId: ROADMAP_ID,
+    } as any);
     vi.mocked(prisma.roadmapTopic.findFirst).mockResolvedValue({
       id: 5,
     } as any);
@@ -571,6 +566,12 @@ describe("updateTopicProgress", () => {
       { completedAt: new Date() },
     ] as any);
     vi.mocked(prisma.roadmapEnrollment.update).mockResolvedValue({} as any);
+    vi.mocked(prisma.roadmap.findUnique).mockResolvedValue({
+      topicCount: 1,
+    } as any);
+    vi.mocked(prisma.roadmapTopicProgress.count)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(0);
 
     const result = await updateTopicProgress({
       userId: USER_ID,
@@ -593,20 +594,10 @@ describe("updateTopicProgress", () => {
   });
 
   it("does not flag completion when topics remain unfinished", async () => {
-    vi.mocked(prisma.roadmapEnrollment.findFirst)
-      .mockResolvedValueOnce({
-        id: ENROLLMENT_ID,
-        roadmapId: ROADMAP_ID,
-      } as any)
-      .mockResolvedValueOnce(
-        makeEnrollment(
-          [
-            { id: 5, estimatedHours: 2 },
-            { id: 6, estimatedHours: 2 },
-          ],
-          [{ topicId: 5, status: "COMPLETED" }],
-        ),
-      );
+    vi.mocked(prisma.roadmapEnrollment.findFirst).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      roadmapId: ROADMAP_ID,
+    } as any);
     vi.mocked(prisma.roadmapTopic.findFirst).mockResolvedValue({
       id: 5,
     } as any);
@@ -618,6 +609,12 @@ describe("updateTopicProgress", () => {
       { completedAt: new Date() },
     ] as any);
     vi.mocked(prisma.roadmapEnrollment.update).mockResolvedValue({} as any);
+    vi.mocked(prisma.roadmap.findUnique).mockResolvedValue({
+      topicCount: 2,
+    } as any);
+    vi.mocked(prisma.roadmapTopicProgress.count)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(0);
 
     const result = await updateTopicProgress({
       userId: USER_ID,
@@ -724,5 +721,88 @@ describe("recomputePace", () => {
     }[];
     const allSlugs = plan.flatMap((w) => w.topicSlugs);
     expect(allSlugs).toEqual(["done-1", "done-2", "todo-1"]);
+  });
+});
+
+describe("getEnrollmentAnalyticsBatchForUser", () => {
+  it("returns analytics for multiple enrollments without N+1 queries", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findMany).mockResolvedValue([
+      {
+        id: 1,
+        startDate: new Date("2026-01-01"),
+        targetEndDate: new Date("2026-02-01"),
+        weeklyPlan: [],
+        roadmap: {
+          topicCount: 10,
+        },
+        topicProgress: [
+          {
+            status: "COMPLETED",
+            completedAt: new Date("2026-01-02"),
+          },
+          {
+            status: "COMPLETED",
+            completedAt: new Date("2026-01-03"),
+          },
+          {
+            status: "IN_PROGRESS",
+            completedAt: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        startDate: new Date("2026-01-01"),
+        targetEndDate: new Date("2026-03-01"),
+        weeklyPlan: [],
+        roadmap: {
+          topicCount: 20,
+        },
+        topicProgress: [
+          {
+            status: "COMPLETED",
+            completedAt: new Date("2026-01-04"),
+          },
+        ],
+      },
+    ] as any);
+
+    const analytics =
+      await getEnrollmentAnalyticsBatchForUser({
+        userId: USER_ID,
+      });
+
+    expect(analytics).toHaveLength(2);
+
+    expect(analytics[0]).toMatchObject({
+      enrollmentId: 1,
+      actualTopicsCompleted: 2,
+    });
+
+    expect(analytics[1]).toMatchObject({
+      enrollmentId: 2,
+      actualTopicsCompleted: 1,
+    });
+
+    expect(
+      prisma.roadmapEnrollment.findMany,
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns an empty array when the user has no enrollments", async () => {
+    vi.mocked(
+      prisma.roadmapEnrollment.findMany,
+    ).mockResolvedValue([]);
+
+    const analytics =
+      await getEnrollmentAnalyticsBatchForUser({
+        userId: USER_ID,
+      });
+
+    expect(analytics).toEqual([]);
+
+    expect(
+      prisma.roadmapEnrollment.findMany,
+    ).toHaveBeenCalledTimes(1);
   });
 });

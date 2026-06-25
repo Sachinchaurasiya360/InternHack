@@ -28,9 +28,6 @@ import {
   type googleAuthSchema,
 } from "./auth.validation.js";
 
-// Input shapes are derived from the Zod schemas so there is a single source of
-// truth. The route-level validateBody(...) middleware guarantees req.body
-// already matches these types before the service is called.
 type RegisterInput = z.infer<typeof registerSchema>;
 type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 type LoginInput = z.infer<typeof loginSchema>;
@@ -224,11 +221,45 @@ export class AuthService {
     });
 
     const slug = await createUniqueProfileSlug(user.name, user.id, prisma);
-    user.profileSlug = slug;
+    (user as any).profileSlug = slug;
 
-    sendVerificationEmail(user.email, user.name, otp);
+    // Send OTP email (fire-and-forget, don't block registration)
+    sendEmail({
+      to: user.email,
+      subject: "Verify your InternHack account",
+      html: otpEmailHtml(user.name, otp),
+    }).catch((err) => console.error("Failed to send OTP email:", err));
+
+    // Record referral conversion if a ref code was provided
+    if (data.ref) {
+      this.recordReferral(data.ref, user.id).catch((err) =>
+        console.error("Failed to record referral during registration:", err)
+      );
+    }
 
     return { user };
+  }
+
+  private async recordReferral(code: string, userId: number) {
+    try {
+      const link = await prisma.referralLink.findUnique({
+        where: { code },
+        select: { id: true },
+      });
+      if (!link) return;
+
+      try {
+        await prisma.referralConversion.upsert({
+          where: { referredUserId: userId },
+          update: {},
+          create: { referralLinkId: link.id, referredUserId: userId },
+        });
+      } catch (err: any) {
+        console.error("Failed to write referral conversion (likely duplicate/unique violation):", err);
+      }
+    } catch (err: any) {
+      console.error("Failed to record referral:", err);
+    }
   }
 
   async googleAuth(data: GoogleAuthInput) {
@@ -316,6 +347,25 @@ export class AuthService {
       const randomPassword = crypto.randomBytes(32).toString("hex");
       const hashedPassword = await hashPassword(randomPassword);
 
+      /**
+       * Derive a company name for recruiter accounts from the Google email domain.
+       * e.g. "jane@microsoft.com" → "Microsoft". Falls back to "Company" if
+       * the domain segment cannot be parsed.
+       */
+      let companyName: string | null = null;
+      if (data.role === "RECRUITER") {
+        const domain = email.split("@")[1];
+        if (domain) {
+          const domainName = domain.split(".")[0];
+          if (domainName) {
+            companyName = domainName.charAt(0).toUpperCase() + domainName.slice(1);
+          }
+        }
+        if (!companyName) {
+          companyName = "Company";
+        }
+      }
+
       user = await prisma.user.create({
         data: {
           name: name ?? email.split("@")[0] ?? "User",
@@ -324,6 +374,7 @@ export class AuthService {
           role: data.role ?? "STUDENT",
           profilePic: picture ?? null,
           isVerified: true,
+          company: companyName,
         },
       });
 
@@ -573,14 +624,17 @@ export class AuthService {
     if (!isOwner && !isVisitorAuthorized) {
       delete (rest as any).email;
       delete (rest as any).contactNo;
-      // We will keep resumes for now as per normal portfolio behavior, but sensitive identifiers are stripped.
     }
 
     await signProfileMedia(rest as Record<string, any>);
 
+    // Fetch lightweight badge display list — no heavy criteria JSON
+    const badges = await badgeService.getStudentBadgesDisplay(user.id);
+
     const result = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
+      badges,
     };
     await cacheSet(cacheKey, result, PROFILE_TTL);
     return result;

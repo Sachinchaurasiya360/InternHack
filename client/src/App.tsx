@@ -11,17 +11,17 @@ import ScrollProgressBar from "./components/common/ScrollProgressBar";
 import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
+let hasReloaded = false;
+
 function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>): LazyExoticComponent<T> {
   return lazy(
     () =>
       factory().catch((err: unknown) => {
-        const key = "chunk_reload";
-        if (!sessionStorage.getItem(key)) {
-          sessionStorage.setItem(key, "1");
+        if (!hasReloaded) {
+          hasReloaded = true;
           window.location.reload();
-          return new Promise<never>(() => { }); // never resolves, page is reloading
+          return new Promise<never>(() => { });
         }
-        sessionStorage.removeItem(key);
         throw err;
       }) as Promise<{ default: T }>,
   ) as LazyExoticComponent<T>;
@@ -62,6 +62,7 @@ const DsaProblemDetailPage = lazyWithRetry(() => import("./module/student/dsa/Ds
 const DsaFoundationsHubPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsHubPage"));
 const DsaFoundationsLevelPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsLevelPage"));
 const DsaFoundationsLessonPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsLessonPage"));
+const PlacementPrepPlansPage = lazyWithRetry(() => import("./module/student/learn/placement-prep/PlacementPrepPlansPage"));
 const SystemDesignHubPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignHubPage"));
 const SystemDesignLevelPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLevelPage"));
 const SystemDesignLessonPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLessonPage"));
@@ -122,6 +123,7 @@ const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/openso
 const HackathonGuidePage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuidePage"));
 const HackathonGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
+const AmbassadorPage = lazyWithRetry(() => import("./module/student/opensource/AmbassadorPage"));
 const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
@@ -266,6 +268,7 @@ const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broad
 const AdminSignalsPage = lazyWithRetry(() => import("./module/admin/signals/AdminSignalsPage"));
 const AdminInterviewsPage = lazyWithRetry(() => import("./module/admin/interviews/AdminInterviewsPage"));
 const GuideFeedbackDashboard = lazyWithRetry(() => import("./module/admin/GuideFeedbackDashboard"));
+const AdminAmbassadorPage = lazyWithRetry(() => import("./module/admin/ambassador/AdminAmbassadorPage"));
 
 function JobBrowseOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -318,7 +321,8 @@ function ApplyRedirect() {
 function ProfileRedirect() {
   const { id } = useParams();
   const { user } = useAuthStore();
-  const base = user?.role === "ADMIN" ? "/admin" : "/recruiters";
+  if (!user) return <Navigate to="/login" replace />;
+  const base = user.role === "ADMIN" ? "/admin" : "/recruiters";
   return <Navigate to={`${base}/profile/${id}`} replace />;
 }
 
@@ -485,6 +489,7 @@ function App() {
               <Route path="interview/behavioral-interview/trainer" element={<BehavioralTrainerPage />} />
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
+              <Route path="placement-prep" element={<ProtectedRoute role="STUDENT"><PlacementPrepPlansPage /></ProtectedRoute>} />
               <Route path="notes" element={<ProtectedRoute role="STUDENT"><NotesDashboardPage /></ProtectedRoute>} />
             </Route>
 
@@ -566,6 +571,7 @@ function App() {
                 <Route path="hackathon-prep" element={<HackathonGuidePage />} />
                 <Route path="hackathon-prep/:sectionSlug" element={<HackathonGuideSectionPage />} />
                 <Route path="my-submissions" element={<MySubmissionsPage />} />
+                <Route path="ambassador" element={<AmbassadorPage />} />
               </Route>
               <Route path="ai-agent" element={<JobAgentPage />} />
               <Route path="signals" element={<SignalsPage />} />
@@ -642,6 +648,7 @@ function App() {
               <Route path="blog" element={<AdminBlogPage />} />
               <Route path="blog/editor" element={<AdminBlogEditor />} />
               <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
+              <Route path="ambassadors" element={<AdminAmbassadorPage />} />
               <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
               <Route path="profile/:identifier" element={<PublicProfilePage />} />
             </Route>

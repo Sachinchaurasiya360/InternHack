@@ -50,6 +50,7 @@ export const registerSchema = z.object({
   company: z.string().optional(),
   designation: z.string().optional(),
   contactNo: z.string().optional(),
+  ref: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.role === "RECRUITER") {
     const domain = data.email.split("@")[1]?.toLowerCase();
@@ -58,6 +59,13 @@ export const registerSchema = z.object({
         code: z.ZodIssueCode.custom,
         message: "Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.",
         path: ["email"],
+      });
+    }
+    if (!data.company || !data.company.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Company name is required for recruiter accounts",
+        path: ["company"],
       });
     }
   }

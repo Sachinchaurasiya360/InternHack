@@ -418,6 +418,7 @@ function MobileNavLink({
     <Link
       to={href}
       onClick={onClick}
+      role="menuitem"
       className="block px-3 py-2 text-sm text-stone-700 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-300 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-all font-medium no-underline"
     >
       {children}

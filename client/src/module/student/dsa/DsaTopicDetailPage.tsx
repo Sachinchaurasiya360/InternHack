@@ -32,7 +32,7 @@ import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import { sanitizeHtml } from "../../../lib/sanitize";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 import { cleanHint } from "../../../lib/sanitize";
 import { useDsaLabels } from "./components/useDsaLabels";
 import { DsaLabelManager } from "./components/DsaLabelManager";

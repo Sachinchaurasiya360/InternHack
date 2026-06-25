@@ -287,9 +287,6 @@ describe("StudyBuddyService", () => {
       const mockPref = { enabled: true, preferSameCollege: true };
       vi.mocked(prisma.roadmapStudyBuddyPreference.findUnique).mockResolvedValue(mockPref as any);
 
-      // Active pairs in roadmap (empty)
-      vi.mocked(prisma.roadmapStudyBuddyPair.findMany).mockResolvedValue([]);
-
       // Candidates
       const mockCandidates = [
         {
@@ -328,6 +325,29 @@ describe("StudyBuddyService", () => {
 
       const res = await service.findAndCreateMatch(1, 10);
 
+      expect(prisma.roadmapEnrollment.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 50,
+          where: expect.objectContaining({
+            roadmapId: 10,
+            user: expect.objectContaining({
+              studentAPairs: {
+                none: {
+                  roadmapId: 10,
+                  active: true,
+                },
+              },
+              studentBPairs: {
+                none: {
+                  roadmapId: 10,
+                  active: true,
+                },
+              },
+            }),
+          }),
+        }),
+      );
+
       expect(prisma.roadmapStudyBuddyPair.create).toHaveBeenCalledWith({
         data: {
           roadmapId: 10,
@@ -337,6 +357,150 @@ describe("StudyBuddyService", () => {
         },
       });
       expect(res).toEqual(mockCreatedPair);
+    });
+
+    it("should handle concurrent match creation race (P2002) and return existing pair", async () => {
+      vi.mocked(prisma.roadmapStudyBuddyPair.findFirst)
+        .mockResolvedValueOnce(null) // existing pair check
+        .mockResolvedValueOnce(null) // lastPair
+        .mockResolvedValueOnce(null) // tx userActivePair
+        .mockResolvedValueOnce(null) // candidate availability
+        .mockResolvedValueOnce({
+          id: 99,
+          roadmapId: 10,
+          studentAId: 1,
+          studentBId: 2,
+          active: true,
+        } as any); // concurrent pair lookup
+
+      vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+        experienceLevel: "BEGINNER",
+        roadmap: { topicCount: 10 },
+        user: { college: "Harvard" },
+        _count: { topicProgress: 4 },
+      } as any);
+
+      vi.mocked(prisma.roadmapStudyBuddyPreference.findUnique).mockResolvedValue({
+        enabled: true,
+        preferSameCollege: false,
+      } as any);
+
+      vi.mocked(prisma.roadmapEnrollment.findMany).mockResolvedValue([
+        {
+          userId: 2,
+          experienceLevel: "BEGINNER",
+          _count: { topicProgress: 4 },
+          user: {
+            college: "Harvard",
+            studyBuddyPreferences: [{}],
+          },
+        },
+      ] as any);
+
+      vi.mocked(prisma.roadmapStudyBuddyPair.create).mockRejectedValue({
+        code: "P2002",
+      });
+
+      const result = await service.findAndCreateMatch(1, 10);
+
+      expect(result).toEqual({
+        id: 99,
+        roadmapId: 10,
+        studentAId: 1,
+        studentBId: 2,
+        active: true,
+      });
+    });
+    it("should avoid rematching the most recent buddy when other candidates exist", async () => {
+      vi.mocked(prisma.roadmapStudyBuddyPair.findFirst)
+        .mockResolvedValueOnce(null) // existing pair check
+        .mockResolvedValueOnce({
+          studentAId: 1,
+          studentBId: 2,
+        } as any) // lastPair -> buddy 2
+        .mockResolvedValueOnce(null) // tx userActivePair
+        .mockResolvedValueOnce(null); // candidate availability
+
+      vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+        experienceLevel: "BEGINNER",
+        roadmap: { topicCount: 10 },
+        user: { college: "Harvard" },
+        _count: { topicProgress: 4 },
+      } as any);
+
+      vi.mocked(prisma.roadmapStudyBuddyPreference.findUnique).mockResolvedValue({
+        enabled: true,
+        preferSameCollege: false,
+      } as any);
+
+      vi.mocked(prisma.roadmapEnrollment.findMany).mockResolvedValue([
+        {
+          userId: 2, // previous buddy
+          experienceLevel: "BEGINNER",
+          _count: { topicProgress: 4 },
+          user: {
+            college: "Harvard",
+            studyBuddyPreferences: [{}],
+          },
+        },
+        {
+          userId: 3, // new candidate
+          experienceLevel: "BEGINNER",
+          _count: { topicProgress: 4 },
+          user: {
+            college: "Harvard",
+            studyBuddyPreferences: [{}],
+          },
+        },
+      ] as any);
+
+      const createdPair = {
+        id: 100,
+        roadmapId: 10,
+        studentAId: 1,
+        studentBId: 3,
+        active: true,
+      };
+
+      vi.mocked(prisma.roadmapStudyBuddyPair.create).mockResolvedValue(
+        createdPair as any,
+      );
+
+      const result = await service.findAndCreateMatch(1, 10);
+
+      expect(prisma.roadmapEnrollment.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 50,
+          where: expect.objectContaining({
+            roadmapId: 10,
+            user: expect.objectContaining({
+              studentAPairs: {
+                none: {
+                  roadmapId: 10,
+                  active: true,
+                },
+              },
+              studentBPairs: {
+                none: {
+                  roadmapId: 10,
+                  active: true,
+                },
+              },
+            }),
+          }),
+        }),
+      );
+
+      expect(prisma.roadmapStudyBuddyPair.create).toHaveBeenCalledWith({
+        data: {
+          roadmapId: 10,
+          studentAId: 1,
+          studentBId: 3,
+          active: true,
+        },
+      });
+
+      expect(result).toEqual(createdPair);
     });
   });
 });

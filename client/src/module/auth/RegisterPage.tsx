@@ -233,6 +233,12 @@ export default function RegisterPage() {
       } else {
         delete newErrors.confirmPassword;
       }
+    } else if (field === "company") {
+      if (role === "RECRUITER" && !value.trim()) {
+        newErrors.company = "Company name is required for recruiter accounts";
+      } else {
+        delete newErrors.company;
+      }
     }
     setFieldErrors(newErrors);
   };
@@ -278,6 +284,9 @@ export default function RegisterPage() {
     if (emailError) newErrors.email = emailError;
     if (passwordError) newErrors.password = passwordError;
     if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
+    if (role === "RECRUITER" && !form.company.trim()) {
+      newErrors.company = "Company name is required for recruiter accounts";
+    }
     
     if (Object.keys(newErrors).length > 0) {
       setFieldErrors(newErrors);
@@ -289,6 +298,8 @@ export default function RegisterPage() {
     try {
       const payload: Record<string, string> = { name: form.name, email: form.email, password: form.password, role };
       if (role === "RECRUITER" && form.company) payload.company = form.company;
+      const ref = searchParams.get("ref");
+      if (ref) payload.ref = ref;
       const { data } = await api.post("/auth/register", payload);
       if (!data.user.isVerified) {
         navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
@@ -377,7 +388,15 @@ export default function RegisterPage() {
               <div className="grid grid-cols-2 gap-0 border border-stone-300 dark:border-white/10 rounded-md overflow-hidden">
                 <button
                   type="button"
-                  onClick={() => setRole("STUDENT")}
+                  onClick={() => {
+                    setRole("STUDENT");
+                    setForm((prev) => ({ ...prev, company: "" }));
+                    setFieldErrors((prev) => {
+                      const rest = { ...prev };
+                      delete rest.company;
+                      return rest;
+                    });
+                  }}
                   className={`py-2.5 text-sm font-bold transition-colors border-0 cursor-pointer ${role === "STUDENT"
                     ? "bg-lime-400 text-stone-950"
                     : "bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
@@ -460,12 +479,18 @@ export default function RegisterPage() {
               </FormField>
 
               {isRecruiter && (
-                <FormField label="Company" fieldName="company">
+                <FormField label="Company" error={fieldErrors.company} fieldName="company">
                   <input
                     type="text"
                     value={form.company}
-                    onChange={(e) => setForm({ ...form, company: e.target.value })}
-                    className="w-full px-4 py-3 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm"
+                    onChange={(e) => handleFieldChange("company", e.target.value)}
+                    aria-invalid={!!fieldErrors.company}
+                    aria-describedby={fieldErrors.company ? "error-company" : undefined}
+                    className={`w-full px-4 py-3 border rounded-md focus:outline-none transition-colors bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600 text-sm ${
+                      fieldErrors.company
+                        ? "border-red-300 dark:border-red-800 focus:border-red-400"
+                        : "border-stone-300 dark:border-white/10 focus:border-lime-400"
+                    }`}
                     placeholder="Your company name"
                   />
                 </FormField>

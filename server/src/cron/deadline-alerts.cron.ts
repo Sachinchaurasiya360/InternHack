@@ -8,7 +8,7 @@ let cronJob: cron.ScheduledTask | null = null;
 
 const ALERT_DAYS = [30, 7, 3, 1];
 
-async function sendDeadlineAlerts(): Promise<void> {
+export async function runDeadlineAlerts(): Promise<void> {
   const now = new Date();
 
   const programs = await prisma.ossProgram.findMany({
@@ -32,8 +32,10 @@ async function sendDeadlineAlerts(): Promise<void> {
       where: {
         isActive: true,
         isVerified: true,
-        trackedPrograms: { has: program.slug },
         unsubscribeDigest: false,
+        programInterests: {
+          some: { program: { slug: program.slug }, active: true },
+        },
       },
       select: { id: true, name: true, email: true },
     });
@@ -58,7 +60,7 @@ export function startDeadlineAlertCron(schedule = "0 9 * * *"): void {
   if (cronJob) return;
   cronJob = cron.schedule(schedule, () => {
     void withAdvisoryLock("deadline-alerts", async () => {
-      await sendDeadlineAlerts();
+      await runDeadlineAlerts();
     });
   });
   console.log(`[DeadlineAlert] Scheduled daily at "${schedule}"`);

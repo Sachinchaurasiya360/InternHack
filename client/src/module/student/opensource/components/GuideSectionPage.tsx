@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
   ArrowRight, ChevronLeft, ChevronRight,
-  CheckCircle2, ExternalLink, Lightbulb, Info,
+  CheckCircle2, ExternalLink, Lightbulb, Info, X
 } from "lucide-react";
 import { VideoEmbed } from "../../../../components/ui/VideoEmbed";
 import { SEO } from "../../../../components/SEO";
@@ -12,7 +12,9 @@ import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import { QuizBlock, type QuizQuestion } from "../../../../components/quiz/QuizBlock";
 import api from "../../../../lib/axios";
+import { useAuthStore } from "../../../../lib/auth.store";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
+
 
 interface Resource { title: string; url: string; type: string }
 interface Command { label: string; code: string }
@@ -43,6 +45,7 @@ interface Props {
 export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffix }: Props) {
   const { sectionSlug } = useParams<{ sectionSlug: string }>();
   const navigate = useNavigate();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const stepIndex = steps.findIndex((s) => s.id === sectionSlug);
   const step = steps[stepIndex];
 
@@ -52,21 +55,80 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  const hydratingRef = useRef(false);
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [showReasons, setShowReasons] = useState(false);
 
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    hydratingRef.current = true;
+    let cancelled = false;
+
+    api.get<{ completedStepIds: string[] }>(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`)
+      .then((res) => {
+        if (cancelled) return;
+        const serverIds = new Set(res.data.completedStepIds ?? []);
+
+        setCompleted((prev) => {
+          const localIds = new Set(prev);
+          const union = new Set([...localIds, ...serverIds]);
+
+          const hasLocalIds = [...localIds].some((id) => !serverIds.has(id));
+          if (hasLocalIds) {
+            api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, {
+              completedStepIds: [...union],
+            }).catch(() => { console.warn("Failed to sync guide progress to server"); });
+          }
+
+          try { localStorage.setItem(storageKey, JSON.stringify([...union])); } catch { console.warn("Failed to persist guide progress to localStorage"); }
+          return union;
+        });
+      })
+      .catch(() => { console.warn("No server progress found — using localStorage default"); })
+      .finally(() => {
+        if (!cancelled) hydratingRef.current = false;
+      });
+
+    return () => { cancelled = true; };
+  }, [isAuthenticated, storageKey]);
+  const [showShortcutHint, setShowShortcutHint] = useState(() => {
+  try {
+    return localStorage.getItem("guide-hint-dismissed") !== "true";
+  } catch {
+    console.warn("Failed to read shortcut hint dismissal from localStorage");
+    return true;
+  }
+});
+
 
   const toggleComplete = useCallback(() => {
     setCompleted((prev) => {
+      if (!step) return prev;
       const next = new Set(prev);
-      if (!step) return next;
       if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
-      try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
+      const ids = [...next];
+      try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { console.warn("Failed to persist guide progress to localStorage"); }
       notifyLearningPathProgressChanged();
+
+      if (isAuthenticated && !hydratingRef.current) {
+        api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, { completedStepIds: ids })
+          .catch(() => { console.warn("Failed to sync guide progress to server"); });
+      }
+
       return next;
     });
-  }, [step, storageKey]);
+  }, [step, storageKey, isAuthenticated]);
+
+  const dismissShortcutHint = () => {
+  try {
+    localStorage.setItem("guide-hint-dismissed", "true");
+  } catch {
+    console.warn("Failed to persist shortcut hint dismissal to localStorage");
+  }
+  setShowShortcutHint(false);
+};
 
   useEffect(() => {
     if (!step) return;
@@ -200,6 +262,28 @@ if (!step) return <Navigate to={basePath} replace />;
           </div>
         </div>
       </motion.div>
+
+      
+      {showShortcutHint && (
+        <div className="mb-4 flex items-center justify-between rounded-md border border-amber-100 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/20 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <Lightbulb className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+             Press your keyboard's ← and → arrow keys to navigate between sections.
+            </p>
+          </div>
+
+          <Button
+            variant="ghost"
+            mode="icon"
+            onClick={dismissShortcutHint}
+            aria-label="Dismiss keyboard shortcuts hint"
+            title="Dismiss"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       <div className="space-y-5">
         {step.mentor_guidance && (

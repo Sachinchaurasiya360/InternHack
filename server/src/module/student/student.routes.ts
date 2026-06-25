@@ -41,5 +41,5 @@ studentRouter.get("/jobs/:jobId/save", (req, res) => studentController.isJobSave
 
 // Mock interview
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));
-studentRouter.post("/mock-interview/book", (req, res, next) => studentController.bookMockInterview(req, res, next));
+studentRouter.post("/mock-interview/book", usageLimit("MOCK_INTERVIEW"), (req, res, next) => studentController.bookMockInterview(req, res, next));
 studentRouter.post("/mock-interview/feedback", (req, res) => studentController.generateMockInterviewFeedback(req, res));

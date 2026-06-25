@@ -1,4 +1,7 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, useEffect, useRef, type ReactNode } from "react";
+import { toast } from "react-hot-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "../../../lib/auth.store";
 import { motion } from "framer-motion";
 import {
   Calendar,
@@ -23,6 +26,7 @@ import {
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
+import type { AxiosError } from "axios";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
 import type {
@@ -33,7 +37,7 @@ import type {
 
 const CALENDLY_URL = "https://calendly.com/mrsachinchaurasiya/30min";
 
-type InterviewMode = null | "ai" | "expert";
+type InterviewMode = null | "ai" | "expert" | "peer";
 
 const OPTIONS = [
   {
@@ -53,6 +57,15 @@ const OPTIONS = [
       "Book a 30-minute live session with an industry expert via Calendly for personalised, real-world feedback.",
     icon: Users,
     tags: ["1 on 1", "real feedback"],
+  },
+  {
+    id: "peer" as const,
+    number: "03",
+    title: "Peer Mock Interview",
+    description:
+      "Practice 1-on-1 with fellow students on your roadmap. Coordinate sessions, solve assigned problems, and review each other's performance.",
+    icon: Users,
+    tags: ["Weekly Matches", "Collaborative"],
   },
 ];
 
@@ -931,6 +944,11 @@ export default function MockInterviewPage() {
     );
   }
 
+  // Peer mode
+  if (mode === "peer") {
+    return <PeerMockInterview onBack={() => setMode(null)} />;
+  }
+
   // AI mode
   if (mode === "ai") {
     return <AiMockInterview onBack={() => setMode(null)} />;
@@ -972,7 +990,7 @@ export default function MockInterviewPage() {
           </div>
 
           {/* Option tiles */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
             {OPTIONS.map((opt) => {
               const Icon = opt.icon;
               return (
@@ -1060,6 +1078,559 @@ export default function MockInterviewPage() {
           </div>
         </motion.div>
       </div>
+    </div>
+  );
+}
+
+function PeerMockInterview({ onBack }: { onBack: () => void }) {
+  const queryClient = useQueryClient();
+
+  // Query preferences
+  const { data: preference, isLoading: loadingPref } = useQuery({
+    queryKey: ["peer-mock-interview", "preferences"],
+    queryFn: async () => {
+      const res = await api.get("/student/peer-mock-interview/preferences");
+      return res.data;
+    },
+  });
+
+  // Query upcoming pairing
+  const { data: pairing, isLoading: loadingPairing } = useQuery({
+    queryKey: ["peer-mock-interview", "upcoming"],
+    queryFn: async () => {
+      const res = await api.get("/student/peer-mock-interview/pairings/upcoming");
+      return res.data;
+    },
+  });
+
+  // Preferences mutation
+  const upsertPreferenceMutation = useMutation({
+    mutationFn: async (payload: { topic: string; availability: string[]; enabled: boolean }) => {
+      const res = await api.post("/student/peer-mock-interview/preferences", payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Preferences updated successfully!");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to update preferences.");
+    },
+  });
+
+  // Complete mutation
+  const completeMutation = useMutation({
+    mutationFn: async (pairingId: number) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/complete`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Mock interview marked completed!");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to mark complete.");
+    },
+  });
+
+  // Rating mutation
+  const rateMutation = useMutation({
+    mutationFn: async ({ pairingId, rating, feedback }: { pairingId: number; rating: number; feedback?: string }) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/rate`, { rating, feedback });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Rating submitted successfully!");
+      setShowRatingModal(false);
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to submit rating.");
+    },
+  });
+
+  // Form states
+  const [topic, setTopic] = useState<"DSA" | "SYSTEM_DESIGN" | "FRONTEND">("DSA");
+  const [availability, setAvailability] = useState<string[]>([]);
+  const [enabled, setEnabled] = useState(false);
+
+  // Modal states for rating
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [feedbackText, setFeedbackText] = useState("");
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showRatingModal) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowRatingModal(false);
+        return;
+      }
+
+      if (e.key === "Tab" && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    const previousActiveElement = document.activeElement as HTMLElement;
+
+    setTimeout(() => {
+      if (modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length > 0) {
+          (focusableElements[0] as HTMLElement).focus();
+        } else {
+          modalRef.current.focus();
+        }
+      }
+    }, 50);
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      if (previousActiveElement) {
+        previousActiveElement.focus();
+      }
+    };
+  }, [showRatingModal]);
+
+  // Sync preference state
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (preference) {
+      setTopic(preference.topic || "DSA");
+      setAvailability(preference.availability || []);
+      setEnabled(preference.enabled ?? true);
+    } else {
+      setEnabled(false);
+    }
+  }, [preference]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const handleSavePreferences = () => {
+    upsertPreferenceMutation.mutate({ topic, availability, enabled });
+  };
+
+  const handleToggleOptIn = () => {
+    const nextEnabled = !enabled;
+    setEnabled(nextEnabled);
+    upsertPreferenceMutation.mutate({ topic, availability, enabled: nextEnabled });
+  };
+
+  const handleCheckboxChange = (slot: string) => {
+    setAvailability((prev) =>
+      prev.includes(slot) ? prev.filter((s) => s !== slot) : [...prev, slot]
+    );
+  };
+
+  const isLoading = loadingPref || loadingPairing;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-stone-50 dark:bg-stone-950">
+        <Loader2 className="w-8 h-8 animate-spin text-lime-400" />
+      </div>
+    );
+  }
+
+  const currentUserId = useAuthStore.getState().user?.id;
+  const isA = pairing && pairing.studentAId === currentUserId;
+  const partner = pairing ? (isA ? pairing.studentB : pairing.studentA) : null;
+  const alreadyRated = pairing ? (isA ? pairing.ratingAForB !== null : pairing.ratingBForA !== null) : false;
+
+  return (
+    <div className="min-h-[calc(100vh-4rem)] bg-stone-50 dark:bg-stone-950">
+      <SEO title="Peer Mock Interview" noIndex />
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Header */}
+          <div className="mb-8 flex items-start justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-7">
+            <div>
+              <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <span className="h-1.5 w-1.5 bg-lime-400" />
+                practice / peer mock interview
+              </div>
+              <h1 className="mt-3 text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                Peer mock interview matching.
+              </h1>
+              <p className="mt-2 text-sm text-stone-500 max-w-xl">
+                Match weekly with students for live mock interviews. Practice, rate, and level up together.
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              mode="icon"
+              size="sm"
+              onClick={onBack}
+              className="bg-stone-100 hover:bg-stone-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-md shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6">
+            {/* Left Column: Dashboard Status / Match */}
+            <div className="space-y-6">
+              {enabled && pairing ? (
+                // Match Found Card
+                <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden p-6 space-y-6">
+                  <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/5 pb-4">
+                    <div>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">Match Found</span>
+                      <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mt-1">Upcoming Practice Session</h2>
+                    </div>
+                    <span className="px-2.5 py-1 rounded bg-lime-400/10 text-lime-500 text-xs font-mono uppercase tracking-wider">
+                      {pairing.topic}
+                    </span>
+                  </div>
+
+                  {/* Partner Details */}
+                  {partner && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-stone-100 dark:bg-white/5 border border-stone-200 dark:border-white/10 flex items-center justify-center text-lg font-bold text-stone-700 dark:text-stone-300 rounded shrink-0">
+                        {partner.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-bold text-stone-900 dark:text-stone-50">{partner.name}</h3>
+                        <p className="text-xs text-stone-500 dark:text-stone-400">{partner.college || "No College Specified"}</p>
+                        <div className="flex flex-wrap gap-2 pt-1.5">
+                          {partner.linkedinUrl && (
+                            <a
+                              href={partner.linkedinUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+                            >
+                              LinkedIn <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                          <a
+                            href={`mailto:${partner.email}`}
+                            className="inline-flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+                          >
+                            Email <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Assigned Problem Section */}
+                  {pairing.assignedProblem ? (
+                    <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-2">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
+                      <h4 className="font-bold text-stone-900 dark:text-stone-50">{pairing.assignedProblem.title}</h4>
+                      <p className="text-xs text-stone-500 dark:text-stone-400">
+                        Difficulty: <span className="font-semibold text-stone-700 dark:text-stone-300">{pairing.assignedProblem.difficulty}</span>
+                      </p>
+                      <div className="pt-2">
+                        <a
+                          href={`/learn/dsa/problem/${pairing.assignedProblem.slug}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-lime-400 hover:bg-lime-300 text-stone-950 text-xs font-bold rounded transition-colors"
+                        >
+                          View Problem Details
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
+                      <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                        No code problem auto-assigned for this topic. Use the availability details to coordinate custom questions.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Complete/Feedback Actions */}
+                  <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
+                    {pairing.status === "SCHEDULED" ? (
+                      <Button
+                        variant="primary"
+                        onClick={() => completeMutation.mutate(pairing.id)}
+                        disabled={completeMutation.isPending}
+                        className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+                      >
+                        Mark Session Completed
+                      </Button>
+                    ) : (
+                      <span className="text-xs text-stone-400 italic">Session marked as completed.</span>
+                    )}
+                    {pairing.status === "SCHEDULED" && (
+                      <Button
+                        variant="ghost"
+                        mode="link"
+                        onClick={() => {
+                          upsertPreferenceMutation.mutate({ topic, availability, enabled: false });
+                        }}
+                        className="text-xs font-bold text-red-500 hover:underline"
+                      >
+                        Cancel / Opt Out
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ) : enabled ? (
+                // Searching pool Card
+                <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 text-center space-y-4">
+                  <div className="w-12 h-12 bg-lime-400/10 text-lime-500 flex items-center justify-center rounded mx-auto">
+                    <RotateCcw className="w-6 h-6 animate-spin" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">Searching for a partner...</h2>
+                    <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
+                      You are in the matching pool! A weekly matching job runs every Sunday at midnight UTC to pair compatible students.
+                    </p>
+                  </div>
+                  <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 text-left max-w-md mx-auto space-y-2">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Your matching settings</span>
+                    <p className="text-xs text-stone-600 dark:text-stone-400">
+                      Topic: <span className="font-semibold text-stone-950 dark:text-stone-50">{topic}</span>
+                    </p>
+                    <p className="text-xs text-stone-600 dark:text-stone-400">
+                      Availability: <span className="font-semibold text-stone-950 dark:text-stone-50">{availability.join(", ") || "Anytime"}</span>
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    mode="link"
+                    onClick={handleToggleOptIn}
+                    disabled={upsertPreferenceMutation.isPending}
+                    className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 underline"
+                  >
+                    Leave matching pool
+                  </Button>
+                </div>
+              ) : (
+                // Opted Out Card
+                <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 text-center space-y-4">
+                  <div className="w-12 h-12 bg-stone-100 dark:bg-white/5 text-stone-400 flex items-center justify-center rounded mx-auto">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">Peer Mock Interviews are disabled</h2>
+                    <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
+                      Opt in to get paired with other students on your roadmap for live mock interview practice.
+                    </p>
+                  </div>
+                  <Button
+                    variant="primary"
+                    onClick={handleToggleOptIn}
+                    disabled={upsertPreferenceMutation.isPending}
+                    className="bg-lime-400 text-stone-950 hover:bg-lime-300 mx-auto"
+                  >
+                    Opt In to Matches
+                  </Button>
+                </div>
+              )}
+
+              {/* Completed / Review needed matches */}
+              {pairing && pairing.status === "COMPLETED" && !alreadyRated && (
+                <div className="bg-amber-50 dark:bg-amber-400/10 border border-amber-200 dark:border-amber-400/20 rounded-md p-5 flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-bold text-amber-900 dark:text-amber-200 text-sm">Review your session</h3>
+                    <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                      Your practice session is completed. Please rate your partner's performance.
+                    </p>
+                  </div>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setShowRatingModal(true)}
+                    className="bg-amber-400 hover:bg-amber-300 text-stone-950"
+                  >
+                    Rate Partner
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column: Preferences Settings */}
+            <div className="space-y-6">
+              <SessionPanel title="Matching Preferences">
+                <div className="space-y-5">
+                  {/* Enabled flag */}
+                  <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/5 pb-3">
+                    <span className="text-sm font-bold text-stone-900 dark:text-stone-50">Participate in matching</span>
+                    <button
+                      type="button"
+                      onClick={handleToggleOptIn}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        enabled ? "bg-lime-400" : "bg-stone-200 dark:bg-stone-700"
+                      }`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          enabled ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Topic Select */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-stone-900 dark:text-stone-50">Select Topic</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["DSA", "SYSTEM_DESIGN", "FRONTEND"] as const).map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setTopic(t)}
+                          className={`px-3 py-2 text-center text-xs font-semibold rounded border transition-colors cursor-pointer ${
+                            topic === t
+                              ? "border-lime-400 bg-lime-50 dark:bg-lime-400/10 text-stone-900 dark:text-stone-50"
+                              : "border-stone-200 dark:border-white/10 bg-transparent text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5"
+                          }`}
+                        >
+                          {t.replace("_", " ")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Availability checkboxes */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-stone-900 dark:text-stone-50">Availability</label>
+                    <div className="space-y-2.5">
+                      {[
+                        { id: "WEEKDAYS_MORNING", label: "Weekdays Morning (9am - 12pm)" },
+                        { id: "WEEKDAYS_AFTERNOON", label: "Weekdays Afternoon (12pm - 5pm)" },
+                        { id: "WEEKDAYS_EVENING", label: "Weekdays Evening (5pm - 9pm)" },
+                        { id: "WEEKENDS", label: "Weekends (Anytime)" },
+                      ].map((item) => (
+                        <label key={item.id} className="flex items-center gap-2.5 text-xs text-stone-700 dark:text-stone-300 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={availability.includes(item.id)}
+                            onChange={() => handleCheckboxChange(item.id)}
+                            className="rounded border-stone-300 dark:border-white/15 text-lime-500 focus:ring-lime-400 focus:ring-offset-0 bg-transparent"
+                          />
+                          <span>{item.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Save button */}
+                  <Button
+                    variant="primary"
+                    onClick={handleSavePreferences}
+                    disabled={upsertPreferenceMutation.isPending}
+                    className="w-full bg-lime-400 text-stone-950 hover:bg-lime-300"
+                  >
+                    Save Preferences
+                  </Button>
+                </div>
+              </SessionPanel>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Peer Rating Modal */}
+      {showRatingModal && pairing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-xs">
+          <motion.div
+            ref={modalRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setShowRatingModal(false);
+              }
+            }}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md max-w-md w-full overflow-hidden focus:outline-none"
+          >
+            <div className="px-5 py-3.5 border-b border-stone-100 dark:border-white/5 bg-stone-50 dark:bg-stone-950/40">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">Post Practice Session</span>
+              <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mt-0.5">Rate Your Partner</h3>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-900 dark:text-stone-50">Score</label>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="p-1 cursor-pointer bg-transparent border-0 shrink-0"
+                    >
+                      <Star
+                        className={`w-7 h-7 ${
+                          star <= rating
+                            ? "text-lime-400 fill-lime-400"
+                            : "text-stone-200 dark:text-stone-700"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-900 dark:text-stone-50">Constructive Feedback</label>
+                <Textarea
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  rows={4}
+                  placeholder="What went well? Where can they improve?"
+                  className="bg-transparent border border-stone-200 dark:border-white/10 text-stone-900 dark:text-stone-50 text-xs"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-3">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowRatingModal(false)}
+                  className="bg-stone-100 dark:bg-white/5 text-stone-700 dark:text-stone-300"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => rateMutation.mutate({ pairingId: pairing.id, rating, feedback: feedbackText })}
+                  disabled={rateMutation.isPending}
+                  className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+                >
+                  Submit Review
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
