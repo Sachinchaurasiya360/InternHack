@@ -362,6 +362,8 @@ describe("PeerMockInterviewService", () => {
       vi.mocked(prisma.peerMockInterview.create).mockResolvedValue({ id: 99 } as any);
 
       const res = await service.runMatchingJob();
+      expect(res).not.toBeNull();
+      expect(res!.length).toEqual(1);
       expect(prisma.peerMockInterview.create).toHaveBeenCalledWith({
         data: {
           topic: "DSA",
@@ -378,7 +380,6 @@ describe("PeerMockInterviewService", () => {
           assignedProblem: true,
         }
       });
-      expect(res.length).toEqual(1);
     });
   });
 });

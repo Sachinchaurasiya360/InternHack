@@ -9,7 +9,11 @@ export async function runPeerMockInterviewMatching(): Promise<void> {
   console.log("[PeerMockInterviewMatch] Running matching job...");
   try {
     const matches = await service.runMatchingJob();
-    console.log(`[PeerMockInterviewMatch] Created ${matches.length} matches.`);
+    if (matches) {
+      console.log(`[PeerMockInterviewMatch] Created ${matches.length} matches.`);
+    } else {
+      console.log(`[PeerMockInterviewMatch] Skipped matching (lock not acquired).`);
+    }
   } catch (err) {
     console.error("[PeerMockInterviewMatch] Match job failed:", err);
     throw err;

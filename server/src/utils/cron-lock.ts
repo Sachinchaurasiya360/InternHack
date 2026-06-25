@@ -33,4 +33,5 @@ export async function withAdvisoryLock<T = void>(jobName: string, fn: () => Prom
       );
     }
   }
+  return null;
 }
