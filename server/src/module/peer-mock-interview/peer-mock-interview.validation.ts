@@ -10,3 +10,11 @@ export const mockInterviewFeedbackSchema = z.object({
   rating: z.number().int().min(1).max(5),
   feedback: z.string().trim().max(1000).optional(),
 });
+
+export const proposeTimeSchema = z.object({
+  proposedTime: z.coerce.date(),
+});
+
+export const acceptTimeSchema = z.object({
+  meetingLink: z.string().url().max(500).optional(),
+});

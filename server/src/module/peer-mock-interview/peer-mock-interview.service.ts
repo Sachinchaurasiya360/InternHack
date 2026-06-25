@@ -81,7 +81,7 @@ export class PeerMockInterviewService {
       where: {
         OR: [
           {
-            status: "SCHEDULED",
+            status: { in: ["PENDING_SCHEDULE", "SCHEDULED"] },
             OR: [
               { studentAId: userId },
               { studentBId: userId },
@@ -240,6 +240,135 @@ export class PeerMockInterviewService {
       where: { id: pairingId },
       data: updateData,
     });
+  }
+
+  /**
+   * Propose a time for the mock interview.
+   */
+  async proposeTime(userId: number, pairingId: number, proposedTime: Date) {
+    const pairing = await this.getPairingDetails(userId, pairingId);
+    if (pairing.status !== "PENDING_SCHEDULE") {
+      throw Object.assign(new Error("Interview is not pending schedule"), { status: 400 });
+    }
+    if (proposedTime <= new Date()) {
+      throw Object.assign(new Error("Proposed time must be in the future"), { status: 400 });
+    }
+
+    const updated = await prisma.peerMockInterview.update({
+      where: { id: pairingId },
+      data: {
+        proposedTime,
+        proposedById: userId,
+      },
+      include: {
+        studentA: true,
+        studentB: true,
+      }
+    });
+
+    const partner = pairing.studentAId === userId ? updated.studentB : updated.studentA;
+    const proposer = pairing.studentAId === userId ? updated.studentA : updated.studentB;
+
+    if (partner?.email && proposer?.name) {
+      try {
+        const emailUtils = await import("../../utils/email.utils.js");
+        const html = `<h3>New Time Proposed</h3>
+          <p><strong>${proposer.name}</strong> has proposed a time for your upcoming practice session:</p>
+          <p><strong>${proposedTime.toLocaleString()}</strong></p>
+          <p>Please log in to your dashboard to accept or reject this proposed time.</p>`;
+        await emailUtils.sendEmail({ to: partner.email, subject: "Mock Interview Time Proposed", html });
+      } catch (err) {
+        console.error("Failed to send proposal email:", err);
+      }
+    }
+
+    return updated;
+  }
+
+  /**
+   * Accept a proposed time for the mock interview.
+   */
+  async acceptTime(userId: number, pairingId: number, meetingLink?: string) {
+    const pairing = await this.getPairingDetails(userId, pairingId);
+    if (pairing.status !== "PENDING_SCHEDULE") {
+      throw Object.assign(new Error("Interview is not pending schedule"), { status: 400 });
+    }
+    if (!pairing.proposedTime || !pairing.proposedById) {
+      throw Object.assign(new Error("No time has been proposed"), { status: 400 });
+    }
+    if (pairing.proposedById === userId) {
+      throw Object.assign(new Error("You cannot accept your own proposed time"), { status: 400 });
+    }
+
+    const updated = await prisma.peerMockInterview.update({
+      where: { id: pairingId },
+      data: {
+        scheduledAt: pairing.proposedTime,
+        schedulingConfirmed: true,
+        status: "SCHEDULED",
+        meetingLink,
+      },
+      include: {
+        studentA: true,
+        studentB: true,
+      }
+    });
+
+    const emailUtils = await import("../../utils/email.utils.js");
+    const html = `<h3>Mock Interview Scheduled!</h3>
+      <p>Your mock interview has been scheduled for <strong>${pairing.proposedTime.toLocaleString()}</strong>.</p>
+      ${meetingLink ? `<p>Meeting Link: <a href="${meetingLink}">${meetingLink}</a></p>` : ""}
+      <p>Please mark your calendar!</p>`;
+
+    try {
+      if (updated.studentA?.email) await emailUtils.sendEmail({ to: updated.studentA.email, subject: "Mock Interview Scheduled", html });
+      if (updated.studentB?.email) await emailUtils.sendEmail({ to: updated.studentB.email, subject: "Mock Interview Scheduled", html });
+    } catch (err) {
+      console.error("Failed to send scheduled emails:", err);
+    }
+
+    return updated;
+  }
+
+  /**
+   * Reject a proposed time for the mock interview.
+   */
+  async rejectTime(userId: number, pairingId: number) {
+    const pairing = await this.getPairingDetails(userId, pairingId);
+    if (pairing.status !== "PENDING_SCHEDULE") {
+      throw Object.assign(new Error("Interview is not pending schedule"), { status: 400 });
+    }
+    if (!pairing.proposedTime || !pairing.proposedById) {
+      throw Object.assign(new Error("No time has been proposed"), { status: 400 });
+    }
+    if (pairing.proposedById === userId) {
+      throw Object.assign(new Error("You cannot reject your own proposed time"), { status: 400 });
+    }
+
+    const proposer = pairing.studentAId === pairing.proposedById ? pairing.studentA : pairing.studentB;
+    const rejecter = pairing.studentAId === userId ? pairing.studentA : pairing.studentB;
+
+    const updated = await prisma.peerMockInterview.update({
+      where: { id: pairingId },
+      data: {
+        proposedTime: null,
+        proposedById: null,
+      },
+    });
+
+    if (proposer?.email && rejecter?.name) {
+      try {
+        const emailUtils = await import("../../utils/email.utils.js");
+        const html = `<h3>Proposed Time Rejected</h3>
+          <p><strong>${rejecter.name}</strong> was unable to meet at your proposed time.</p>
+          <p>Please log in to your dashboard to propose a different time, or reach out to them directly.</p>`;
+        await emailUtils.sendEmail({ to: proposer.email, subject: "Mock Interview Time Rejected", html });
+      } catch (err) {
+        console.error("Failed to send rejection email:", err);
+      }
+    }
+
+    return updated;
   }
 
   /**
@@ -427,13 +556,17 @@ export class PeerMockInterviewService {
           }
         }
 
+        const sharedAvailability = pair.u1.availability.filter((slot: string) => pair.u2.availability.includes(slot));
+
         const match = await prisma.peerMockInterview.create({
           data: {
             topic,
             studentAId: pair.u1.userId,
             studentBId: pair.u2.userId,
             assignedProblemId,
-            status: "SCHEDULED",
+            status: "PENDING_SCHEDULE",
+            sharedAvailability,
+            scheduledAt: null,
           },
           include: {
             studentA: { select: { id: true, name: true, email: true } },
@@ -457,13 +590,13 @@ export class PeerMockInterviewService {
             <p>You have been matched with <strong>${pair.u2.user.name}</strong> for a ${topic} practice mock interview.</p>
             <p>Their college: ${pair.u2.user.college || "N/A"}</p>
             ${problemInfo}
-            <p>Please reach out to coordinate a time.</p>`;
+            <p>Log in to your dashboard to propose a time to meet.</p>`;
 
           const htmlB = `<h3>You've been matched!</h3>
             <p>You have been matched with <strong>${pair.u1.user.name}</strong> for a ${topic} practice mock interview.</p>
             <p>Their college: ${pair.u1.user.college || "N/A"}</p>
             ${problemInfo}
-            <p>Please reach out to coordinate a time.</p>`;
+            <p>Log in to your dashboard to propose a time to meet.</p>`;
 
           await emailUtils.sendEmail({ to: pair.u1.user.email, subject: `Peer Mock Interview Match - ${topic}`, html: htmlA });
           await emailUtils.sendEmail({ to: pair.u2.user.email, subject: `Peer Mock Interview Match - ${topic}`, html: htmlB });

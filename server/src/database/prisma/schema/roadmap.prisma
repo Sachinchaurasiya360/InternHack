@@ -238,6 +238,7 @@ enum MockInterviewTopic {
 }
 
 enum MockInterviewStatus {
+  PENDING_SCHEDULE
   SCHEDULED
   COMPLETED
   CANCELLED
@@ -266,7 +267,12 @@ model peerMockInterview {
   assignedProblemId Int?
   assignedProblem   dsaProblem?         @relation(fields: [assignedProblemId], references: [id], onDelete: SetNull)
   status            MockInterviewStatus @default(SCHEDULED)
-  scheduledAt       DateTime            @default(now())
+  scheduledAt       DateTime?
+  sharedAvailability String[]           @default([])
+  proposedTime       DateTime?
+  proposedById       Int?
+  schedulingConfirmed Boolean           @default(false)
+  meetingLink        String?            @db.Text
   completedAt       DateTime?
 
   ratingAForB   Int?

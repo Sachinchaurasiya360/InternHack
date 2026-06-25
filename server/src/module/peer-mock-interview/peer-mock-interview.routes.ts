@@ -3,7 +3,7 @@ import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
 import { PeerMockInterviewController } from "./peer-mock-interview.controller.js";
-import { mockInterviewPreferenceSchema, mockInterviewFeedbackSchema } from "./peer-mock-interview.validation.js";
+import { mockInterviewPreferenceSchema, mockInterviewFeedbackSchema, proposeTimeSchema, acceptTimeSchema } from "./peer-mock-interview.validation.js";
 import { z } from "zod";
 import type { Request, Response, NextFunction } from "express";
 
@@ -76,4 +76,33 @@ peerMockInterviewRouter.post(
   usageLimit("MOCK_INTERVIEW"),
   validateBody(mockInterviewFeedbackSchema),
   (req, res) => controller.submitRating(req, res)
+);
+
+// Propose a time for a pending mock interview
+peerMockInterviewRouter.post(
+  "/pairings/:id/propose-time",
+  authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("MOCK_INTERVIEW"),
+  validateBody(proposeTimeSchema),
+  (req, res) => controller.proposeTime(req, res)
+);
+
+// Accept a proposed time
+peerMockInterviewRouter.post(
+  "/pairings/:id/accept-time",
+  authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("MOCK_INTERVIEW"),
+  validateBody(acceptTimeSchema),
+  (req, res) => controller.acceptTime(req, res)
+);
+
+// Reject a proposed time
+peerMockInterviewRouter.post(
+  "/pairings/:id/reject-time",
+  authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("MOCK_INTERVIEW"),
+  (req, res) => controller.rejectTime(req, res)
 );

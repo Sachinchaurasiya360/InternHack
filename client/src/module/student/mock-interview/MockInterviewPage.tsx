@@ -33,6 +33,7 @@ import type {
   MockInterviewFeedback,
   MockInterviewFeedbackResponse,
   MockInterviewTranscriptEntry,
+  PeerMockInterview
 } from "../../../lib/types";
 
 const CALENDLY_URL = "https://calendly.com/mrsachinchaurasiya/30min";
@@ -1095,7 +1096,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
   });
 
   // Query upcoming pairing
-  const { data: pairing, isLoading: loadingPairing } = useQuery({
+  const { data: pairing, isLoading: loadingPairing } = useQuery<PeerMockInterview>({
     queryKey: ["peer-mock-interview", "upcoming"],
     queryFn: async () => {
       const res = await api.get("/student/peer-mock-interview/pairings/upcoming");
@@ -1149,6 +1150,51 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
     },
   });
 
+  // Propose Time mutation
+  const proposeTimeMutation = useMutation({
+    mutationFn: async ({ pairingId, proposedTime }: { pairingId: number; proposedTime: string }) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/propose-time`, { proposedTime });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Time proposed successfully!");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to propose time.");
+    },
+  });
+
+  // Accept Time mutation
+  const acceptTimeMutation = useMutation({
+    mutationFn: async ({ pairingId, meetingLink }: { pairingId: number; meetingLink?: string }) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/accept-time`, { meetingLink });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Time accepted successfully!");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to accept time.");
+    },
+  });
+
+  // Reject Time mutation
+  const rejectTimeMutation = useMutation({
+    mutationFn: async (pairingId: number) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/reject-time`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Time rejected.");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to reject time.");
+    },
+  });
+
   // Form states
   const [topic, setTopic] = useState<"DSA" | "SYSTEM_DESIGN" | "FRONTEND">("DSA");
   const [availability, setAvailability] = useState<string[]>([]);
@@ -1158,6 +1204,9 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [rating, setRating] = useState(5);
   const [feedbackText, setFeedbackText] = useState("");
+
+  const [proposedDate, setProposedDate] = useState("");
+  const [meetingLink, setMeetingLink] = useState("");
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -1369,32 +1418,116 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                     </div>
                   )}
 
-                  {/* Complete/Feedback Actions */}
-                  <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
-                    {pairing.status === "SCHEDULED" ? (
-                      <Button
-                        variant="primary"
-                        onClick={() => completeMutation.mutate(pairing.id)}
-                        disabled={completeMutation.isPending}
-                        className="bg-lime-400 text-stone-950 hover:bg-lime-300"
-                      >
-                        Mark Session Completed
-                      </Button>
-                    ) : (
-                      <span className="text-xs text-stone-400 italic">Session marked as completed.</span>
+                  {/* Complete/Feedback/Scheduling Actions */}
+                  <div className="flex flex-col gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
+                    {pairing.status === "PENDING_SCHEDULE" && !pairing.proposedTime && (
+                      <div className="space-y-3 bg-stone-50 dark:bg-white/5 p-3 rounded border border-stone-200 dark:border-white/10">
+                        <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Propose a meeting time</p>
+                        <div className="flex flex-wrap gap-2">
+                          <input
+                            type="datetime-local"
+                            value={proposedDate}
+                            onChange={(e) => setProposedDate(e.target.value)}
+                            className="text-xs rounded border-stone-300 dark:border-white/15 bg-transparent text-stone-900 dark:text-stone-50 px-2 py-1"
+                          />
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            disabled={!proposedDate || proposeTimeMutation.isPending}
+                            onClick={() => proposeTimeMutation.mutate({ pairingId: pairing.id, proposedTime: new Date(proposedDate).toISOString() })}
+                            className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+                          >
+                            Propose Time
+                          </Button>
+                        </div>
+                      </div>
                     )}
+
+                    {pairing.status === "PENDING_SCHEDULE" && pairing.proposedTime && pairing.proposedById === currentUserId && (
+                      <div className="bg-stone-50 dark:bg-white/5 p-3 rounded border border-stone-200 dark:border-white/10 flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Time Proposed</p>
+                          <p className="text-xs text-stone-500">Waiting for {partner?.name} to accept {new Date(pairing.proposedTime).toLocaleString()}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {pairing.status === "PENDING_SCHEDULE" && pairing.proposedTime && pairing.proposedById !== currentUserId && (
+                      <div className="space-y-3 bg-stone-50 dark:bg-white/5 p-3 rounded border border-stone-200 dark:border-white/10">
+                        <div>
+                          <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Partner Proposed Time</p>
+                          <p className="text-xs text-stone-500">{partner?.name} proposed {new Date(pairing.proposedTime).toLocaleString()}</p>
+                        </div>
+                        <div className="space-y-2">
+                          <input
+                            type="url"
+                            placeholder="Optional meeting link (e.g., Google Meet)"
+                            value={meetingLink}
+                            onChange={(e) => setMeetingLink(e.target.value)}
+                            className="w-full text-xs rounded border-stone-300 dark:border-white/15 bg-transparent text-stone-900 dark:text-stone-50 px-2 py-1.5"
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              disabled={acceptTimeMutation.isPending}
+                              onClick={() => acceptTimeMutation.mutate({ pairingId: pairing.id, meetingLink })}
+                              className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+                            >
+                              Accept Time
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled={rejectTimeMutation.isPending}
+                              onClick={() => rejectTimeMutation.mutate(pairing.id)}
+                              className="text-red-500 hover:text-red-600"
+                            >
+                              Reject & Propose New
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {pairing.status === "SCHEDULED" && (
-                      <Button
-                        variant="ghost"
-                        mode="link"
-                        onClick={() => {
-                          upsertPreferenceMutation.mutate({ topic, availability, enabled: false });
-                        }}
-                        className="text-xs font-bold text-red-500 hover:underline"
-                      >
-                        Cancel / Opt Out
-                      </Button>
+                      <div className="bg-lime-50 dark:bg-lime-400/10 border border-lime-200 dark:border-lime-400/20 p-3 rounded">
+                        <p className="text-xs font-semibold text-lime-900 dark:text-lime-500">Scheduled for {pairing.scheduledAt && new Date(pairing.scheduledAt).toLocaleString()}</p>
+                        {pairing.meetingLink && (
+                          <a href={pairing.meetingLink} target="_blank" rel="noreferrer" className="text-xs text-lime-600 dark:text-lime-400 underline mt-1 block">
+                            Join Meeting Link
+                          </a>
+                        )}
+                      </div>
                     )}
+
+                    <div className="flex items-center gap-3 pt-2">
+                      {pairing.status === "SCHEDULED" ? (
+                        <Button
+                          variant="primary"
+                          onClick={() => completeMutation.mutate(pairing.id)}
+                          disabled={completeMutation.isPending}
+                          className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+                        >
+                          Mark Session Completed
+                        </Button>
+                      ) : pairing.status === "COMPLETED" ? (
+                        <span className="text-xs text-stone-400 italic">Session marked as completed.</span>
+                      ) : null}
+                      
+                      {(pairing.status === "SCHEDULED" || pairing.status === "PENDING_SCHEDULE") && (
+                        <Button
+                          variant="ghost"
+                          mode="link"
+                          onClick={() => {
+                            upsertPreferenceMutation.mutate({ topic, availability, enabled: false });
+                          }}
+                          className="text-xs font-bold text-red-500 hover:underline"
+                        >
+                          Cancel / Opt Out
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : enabled ? (

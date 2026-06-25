@@ -86,6 +86,7 @@ import { startGithubContributionsCron, stopGithubContributionsCron } from "./cro
 import { startAmbassadorEligibilityCron, stopAmbassadorEligibilityCron } from "./cron/ambassador-eligibility.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { startPeerMockInterviewMatchCron, stopPeerMockInterviewMatchCron } from "./cron/peer-mock-interview-match.cron.js";
+import { startPeerMockInterviewRemindersCron, stopPeerMockInterviewRemindersCron } from "./cron/peer-mock-interview-reminders.cron.js";
 import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
 import { redis } from "./config/redis.js";
@@ -498,6 +499,13 @@ const server = app.listen(PORT, async () => {
       name: "Peer Mock Interview Match Cron",
       priority: 10,
       fn: () => stopPeerMockInterviewMatchCron(),
+    });
+
+    startPeerMockInterviewRemindersCron();
+    shutdownManager.register({
+      name: "Peer Mock Interview Reminders Cron",
+      priority: 10,
+      fn: () => stopPeerMockInterviewRemindersCron(),
     });
   } else {
     logger.info("Peer mock interview match cron disabled on this process");

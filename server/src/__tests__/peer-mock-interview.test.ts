@@ -126,7 +126,7 @@ describe("PeerMockInterviewService", () => {
         where: {
           OR: [
             {
-              status: "SCHEDULED",
+              status: { in: ["PENDING_SCHEDULE", "SCHEDULED"] },
               OR: [
                 { studentAId: 1 },
                 { studentBId: 1 },
@@ -197,6 +197,76 @@ describe("PeerMockInterviewService", () => {
     });
   });
 
+  describe("proposeTime", () => {
+    it("should propose a time and notify partner", async () => {
+      const futureDate = new Date(Date.now() + 86400000);
+      const mockPairing = {
+        id: 5,
+        studentAId: 1,
+        studentBId: 2,
+        status: "PENDING_SCHEDULE",
+        studentA: { id: 1, name: "A", email: "a@test.com" },
+        studentB: { id: 2, name: "B", email: "b@test.com" },
+      };
+      vi.mocked(prisma.peerMockInterview.findUnique).mockResolvedValue(mockPairing as any);
+      vi.mocked(prisma.peerMockInterview.update).mockResolvedValue({ ...mockPairing, proposedTime: futureDate, proposedById: 1 } as any);
+
+      await service.proposeTime(1, 5, futureDate);
+      expect(prisma.peerMockInterview.update).toHaveBeenCalledWith(expect.objectContaining({
+        where: { id: 5 },
+        data: { proposedTime: futureDate, proposedById: 1 }
+      }));
+    });
+  });
+
+  describe("acceptTime", () => {
+    it("should accept proposed time and set to SCHEDULED", async () => {
+      const futureDate = new Date(Date.now() + 86400000);
+      const mockPairing = {
+        id: 5,
+        studentAId: 1,
+        studentBId: 2,
+        status: "PENDING_SCHEDULE",
+        proposedTime: futureDate,
+        proposedById: 1,
+        studentA: { id: 1, name: "A", email: "a@test.com" },
+        studentB: { id: 2, name: "B", email: "b@test.com" },
+      };
+      vi.mocked(prisma.peerMockInterview.findUnique).mockResolvedValue(mockPairing as any);
+      vi.mocked(prisma.peerMockInterview.update).mockResolvedValue({ ...mockPairing, status: "SCHEDULED", scheduledAt: futureDate } as any);
+
+      await service.acceptTime(2, 5, "https://meet.google.com/test");
+      expect(prisma.peerMockInterview.update).toHaveBeenCalledWith(expect.objectContaining({
+        where: { id: 5 },
+        data: { status: "SCHEDULED", scheduledAt: futureDate, schedulingConfirmed: true, meetingLink: "https://meet.google.com/test" }
+      }));
+    });
+  });
+
+  describe("rejectTime", () => {
+    it("should reset proposed time", async () => {
+      const futureDate = new Date(Date.now() + 86400000);
+      const mockPairing = {
+        id: 5,
+        studentAId: 1,
+        studentBId: 2,
+        status: "PENDING_SCHEDULE",
+        proposedTime: futureDate,
+        proposedById: 1,
+        studentA: { id: 1, name: "A", email: "a@test.com" },
+        studentB: { id: 2, name: "B", email: "b@test.com" },
+      };
+      vi.mocked(prisma.peerMockInterview.findUnique).mockResolvedValue(mockPairing as any);
+      vi.mocked(prisma.peerMockInterview.update).mockResolvedValue({ ...mockPairing, proposedTime: null, proposedById: null } as any);
+
+      await service.rejectTime(2, 5);
+      expect(prisma.peerMockInterview.update).toHaveBeenCalledWith(expect.objectContaining({
+        where: { id: 5 },
+        data: { proposedTime: null, proposedById: null }
+      }));
+    });
+  });
+
   describe("runMatchingJob", () => {
     it("should match eligible users in the pool", async () => {
       const mockPrefs = [
@@ -252,7 +322,9 @@ describe("PeerMockInterviewService", () => {
           studentAId: 1,
           studentBId: 2,
           assignedProblemId: 101,
-          status: "SCHEDULED",
+          status: "PENDING_SCHEDULE",
+          sharedAvailability: ["WEEKENDS"],
+          scheduledAt: null,
         },
         include: {
           studentA: { select: { id: true, name: true, email: true } },
