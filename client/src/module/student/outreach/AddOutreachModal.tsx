@@ -27,7 +27,7 @@ export default function AddOutreachModal({ onClose, onSuccess }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+      <div className="bg-white dark:bg-stone-900 rounded-xl p-6 w-full max-w-md shadow-xl">
         <h2 className="text-lg font-semibold mb-4">Log Outreach</h2>
         <div className="flex flex-col gap-3">
           {["contactName", "company", "role"].map((field) => (
@@ -57,11 +57,11 @@ export default function AddOutreachModal({ onClose, onSuccess }: Props) {
           />
         </div>
         <div className="flex justify-end gap-2 mt-4">
-          <button onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+          <button onClick={onClose} className="px-4 py-2 text-sm text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800 rounded-lg">Cancel</button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="px-4 py-2 text-sm bg-lime-600 text-white rounded-lg hover:bg-lime-700 disabled:opacity-50"
           >
             {loading ? "Saving..." : "Save"}
           </button>

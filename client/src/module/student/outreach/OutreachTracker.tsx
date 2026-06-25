@@ -15,9 +15,9 @@ interface Log {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  sent: "bg-blue-100 text-blue-700",
+  sent: "bg-lime-100 text-lime-700 dark:bg-lime-900 dark:text-lime-300",
   replied: "bg-green-100 text-green-700",
-  ghosted: "bg-gray-100 text-gray-600",
+  ghosted: "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400",
   referral_given: "bg-purple-100 text-purple-700",
   rejected: "bg-red-100 text-red-700",
 };
@@ -55,19 +55,19 @@ export default function OutreachTracker() {
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
+          className="bg-lime-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-lime-700"
         >
           + Log Outreach
         </button>
       </div>
 
       {logs.length === 0 ? (
-        <p className="text-gray-400 text-center py-12">No outreach logged yet. Start by clicking "Log Outreach".</p>
+        <p className="text-stone-400 text-center py-12">No outreach logged yet. Start by clicking "Log Outreach".</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="bg-gray-50 text-left text-gray-600">
+              <tr className="bg-stone-50 text-left text-stone-600 dark:bg-stone-800 dark:text-stone-400">
                 <th className="px-3 py-2">Contact</th>
                 <th className="px-3 py-2">Company</th>
                 <th className="px-3 py-2">Role</th>
@@ -80,7 +80,7 @@ export default function OutreachTracker() {
             </thead>
             <tbody>
               {logs.map((log) => (
-                <tr key={log.id} className="border-t hover:bg-gray-50">
+                <tr key={log.id} className="border-t hover:bg-stone-50 dark:hover:bg-stone-800">
                   <td className="px-3 py-2 font-medium">{log.contactName}</td>
                   <td className="px-3 py-2">{log.company}</td>
                   <td className="px-3 py-2">{log.role}</td>
