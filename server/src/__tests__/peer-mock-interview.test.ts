@@ -25,6 +25,7 @@ vi.mock("../database/db.js", () => {
       findUnique: vi.fn(),
       findMany: vi.fn(),
     },
+    $queryRaw: vi.fn().mockResolvedValue([{ locked: true }]),
   };
   return { prisma: mockPrisma };
 });

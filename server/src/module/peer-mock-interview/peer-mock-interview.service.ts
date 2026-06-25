@@ -389,15 +389,17 @@ export class PeerMockInterviewService {
    * scores, pairs them greedily, assigns problems for DSA, and dispatches email confirmations.
    */
   async runMatchingJob() {
-    // 1. Get all active preferences
-    const prefs = await prisma.peerMockInterviewPreference.findMany({
-      where: {
-        enabled: true,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
+    const { withAdvisoryLock } = await import("../../utils/cron-lock.js");
+    return withAdvisoryLock("peer_mock_interview_match_service", async () => {
+      // 1. Get all active preferences
+      const prefs = await prisma.peerMockInterviewPreference.findMany({
+        where: {
+          enabled: true,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
             name: true,
             email: true,
             college: true,
@@ -613,5 +615,6 @@ export class PeerMockInterviewService {
     }
 
     return matchesCreated;
+    });
   }
 }
