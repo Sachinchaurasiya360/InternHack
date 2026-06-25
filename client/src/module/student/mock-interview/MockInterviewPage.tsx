@@ -1470,7 +1470,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                             <Button
                               variant="primary"
                               size="sm"
-                              disabled={acceptTimeMutation.isPending}
+                              disabled={acceptTimeMutation.isPending || rejectTimeMutation.isPending}
                               onClick={() => acceptTimeMutation.mutate({ pairingId: pairing.id, meetingLink: meetingLink || undefined })}
                               className="bg-lime-400 text-stone-950 hover:bg-lime-300"
                             >
@@ -1479,7 +1479,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              disabled={rejectTimeMutation.isPending}
+                              disabled={acceptTimeMutation.isPending || rejectTimeMutation.isPending}
                               onClick={() => rejectTimeMutation.mutate(pairing.id)}
                               className="text-red-500 hover:text-red-600"
                             >
@@ -1524,7 +1524,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                           }}
                           className="text-xs font-bold text-red-500 hover:underline"
                         >
-                          Cancel / Opt Out
+                          Opt Out of Future Matches
                         </Button>
                       )}
                     </div>

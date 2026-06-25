@@ -26,8 +26,8 @@ const checkAndSendReminders = async () => {
       status: "SCHEDULED",
       scheduledAt: { not: null },
       OR: [
-        { scheduledAt: { gte: windowStart24, lte: windowEnd24 } },
-        { scheduledAt: { gte: windowStart1, lte: windowEnd1 } },
+        { scheduledAt: { gte: windowStart24, lt: windowEnd24 } },
+        { scheduledAt: { gte: windowStart1, lt: windowEnd1 } },
       ]
     },
     include: {

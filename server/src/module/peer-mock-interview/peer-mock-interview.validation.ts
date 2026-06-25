@@ -12,7 +12,7 @@ export const mockInterviewFeedbackSchema = z.object({
 });
 
 export const proposeTimeSchema = z.object({
-  proposedTime: z.coerce.date(),
+  proposedTime: z.string().datetime().transform((val) => new Date(val)),
 });
 
 export const acceptTimeSchema = z.object({

@@ -160,8 +160,8 @@ export type PeerMockInterviewStatus = "PENDING_SCHEDULE" | "SCHEDULED" | "COMPLE
 export interface PeerMockInterview {
   id: number;
   topic: string;
-  studentAId: number;
-  studentBId: number;
+  studentAId: number | null;
+  studentBId: number | null;
   assignedProblemId: number | null;
   status: PeerMockInterviewStatus;
   sharedAvailability: string[];
@@ -176,7 +176,7 @@ export interface PeerMockInterview {
   feedbackBForA: string | null;
   createdAt: string;
   updatedAt: string;
-  studentA: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null };
-  studentB: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null };
+  studentA: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null } | null;
+  studentB: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null } | null;
   assignedProblem: { id: number; title: string; slug: string; difficulty: string } | null;
 }

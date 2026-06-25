@@ -104,5 +104,6 @@ peerMockInterviewRouter.post(
   authMiddleware,
   requireRole("STUDENT"),
   usageLimit("MOCK_INTERVIEW"),
+  validateBody(z.object({})),
   (req, res) => controller.rejectTime(req, res)
 );

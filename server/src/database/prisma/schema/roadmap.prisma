@@ -266,7 +266,7 @@ model peerMockInterview {
   studentB          user?               @relation("StudentBMockInterviews", fields: [studentBId], references: [id], onDelete: SetNull)
   assignedProblemId Int?
   assignedProblem   dsaProblem?         @relation(fields: [assignedProblemId], references: [id], onDelete: SetNull)
-  status            MockInterviewStatus @default(SCHEDULED)
+  status            MockInterviewStatus @default(PENDING_SCHEDULE)
   scheduledAt       DateTime?
   sharedAvailability String[]           @default([])
   proposedTime       DateTime?

@@ -136,16 +136,24 @@ export default function SqlExercisePage() {
     setCode(savedEntry?.code || exercise.starterCode || "");
     setSolved(!!savedEntry?.solved);
 
+    let isCancelled = false;
+
     const load = async () => {
       const datasetSql = datasets[exercise.dataset];
       if (datasetSql) {
         await sqlEngine.resetDataset(exercise.dataset, datasetSql);
       }
-      setSchema(sqlEngine.getSchema());
-      setDbReady(true);
+      if (!isCancelled) {
+        setSchema(sqlEngine.getSchema());
+        setDbReady(true);
+      }
     };
 
     load();
+
+    return () => {
+      isCancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise, section, progress]);
 

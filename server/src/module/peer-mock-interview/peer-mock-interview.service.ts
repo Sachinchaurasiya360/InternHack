@@ -32,7 +32,7 @@ export class PeerMockInterviewService {
       // Find upcoming pairings
       const upcoming = await prisma.peerMockInterview.findMany({
         where: {
-          status: "SCHEDULED",
+          status: { in: ["SCHEDULED", "PENDING_SCHEDULE"] },
           OR: [
             { studentAId: userId },
             { studentBId: userId },
@@ -46,7 +46,7 @@ export class PeerMockInterviewService {
 
       for (const pairing of upcoming) {
         const updateResult = await prisma.peerMockInterview.updateMany({
-          where: { id: pairing.id, status: "SCHEDULED" },
+          where: { id: pairing.id, status: pairing.status },
           data: { status: "CANCELLED" },
         });
 
@@ -298,6 +298,14 @@ export class PeerMockInterviewService {
     }
     if (pairing.proposedById === userId) {
       throw Object.assign(new Error("You cannot accept your own proposed time"), { status: 400 });
+    }
+
+    if (new Date(pairing.proposedTime) < new Date()) {
+      await prisma.peerMockInterview.update({
+        where: { id: pairingId },
+        data: { proposedTime: null, proposedById: null },
+      });
+      throw Object.assign(new Error("The proposed time has already passed. Please propose a new time."), { status: 400 });
     }
 
     const updated = await prisma.peerMockInterview.update({
