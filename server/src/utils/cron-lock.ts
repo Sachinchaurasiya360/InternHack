@@ -26,6 +26,7 @@ export async function withAdvisoryLock<T = void>(jobName: string, fn: () => Prom
     return await fn();
   } catch (err) {
     console.error(`[CronLock] Error acquiring lock or executing job "${jobName}":`, err);
+    return null;
   } finally {
     if (locked) {
       await prisma.$queryRaw`SELECT pg_advisory_unlock(${lockId})`.catch((e) =>
@@ -33,5 +34,4 @@ export async function withAdvisoryLock<T = void>(jobName: string, fn: () => Prom
       );
     }
   }
-  return null;
 }

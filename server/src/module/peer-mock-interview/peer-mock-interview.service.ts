@@ -390,7 +390,7 @@ export class PeerMockInterviewService {
    */
   async runMatchingJob() {
     const { withAdvisoryLock } = await import("../../utils/cron-lock.js");
-    return withAdvisoryLock("peer_mock_interview_match_service", async () => {
+    const result = await withAdvisoryLock("peer_mock_interview_match_service", async () => {
       // 1. Get all active preferences
       const prefs = await prisma.peerMockInterviewPreference.findMany({
         where: {
@@ -613,8 +613,8 @@ export class PeerMockInterviewService {
         }
       }
     }
-
     return matchesCreated;
     });
+    return result ?? [];
   }
 }
