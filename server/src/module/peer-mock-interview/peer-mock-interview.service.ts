@@ -415,9 +415,9 @@ export class PeerMockInterviewService {
       }
     });
 
-    // 2. Filter out users who already have a SCHEDULED pairing
+    // 2. Filter out users who already have a SCHEDULED or PENDING_SCHEDULE pairing
     const scheduledPairings = await prisma.peerMockInterview.findMany({
-      where: { status: "SCHEDULED" },
+      where: { status: { in: ["SCHEDULED", "PENDING_SCHEDULE"] } },
       select: { studentAId: true, studentBId: true },
     });
     const pairedUserIds = new Set<number>();

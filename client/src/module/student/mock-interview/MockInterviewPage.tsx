@@ -1471,7 +1471,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                               variant="primary"
                               size="sm"
                               disabled={acceptTimeMutation.isPending}
-                              onClick={() => acceptTimeMutation.mutate({ pairingId: pairing.id, meetingLink })}
+                              onClick={() => acceptTimeMutation.mutate({ pairingId: pairing.id, meetingLink: meetingLink || undefined })}
                               className="bg-lime-400 text-stone-950 hover:bg-lime-300"
                             >
                               Accept Time

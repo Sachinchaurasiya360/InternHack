@@ -147,7 +147,7 @@ export default function SqlExercisePage() {
 
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exercise, section]);
+  }, [exercise, section, progress]);
 
   const handleRun = useCallback(async () => {
     if (!exercise || !dbReady) return;
