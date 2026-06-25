@@ -45,12 +45,20 @@ describe("password.utils", () => {
     expect(await comparePassword(plain, hash2)).toBe(true);
   });
 
-  it("should handle empty and special character passwords", async () => {
+  it("should handle special character passwords", async () => {
     const specialChars = "p@$$w0rd!#%&*()[]{}";
     const hashed = await hashPassword(specialChars);
     
     expect(await comparePassword(specialChars, hashed)).toBe(true);
     expect(await comparePassword("p@$$w0rd", hashed)).toBe(false);
+  });
+
+  it("should handle empty string passwords", async () => {
+    const emptyPassword = "";
+    const hashed = await hashPassword(emptyPassword);
+    
+    expect(await comparePassword(emptyPassword, hashed)).toBe(true);
+    expect(await comparePassword("notEmpty", hashed)).toBe(false);
   });
 
   it("should be case-sensitive", async () => {
