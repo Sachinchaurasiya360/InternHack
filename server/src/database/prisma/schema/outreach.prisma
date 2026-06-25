@@ -1,12 +1,3 @@
-model outreachTemplate {
-  id           Int      @id @default(autoincrement())
-  type         String
-  title        String
-  body         String
-  placeholders String[]
-  createdAt    DateTime @default(now())
-}
-
 model outreachLog {
   id           Int      @id @default(autoincrement())
   studentId    Int
