@@ -16,7 +16,7 @@ describe("password.utils", () => {
     expect(isNotMatch).toBe(false);
   });
 
-  it("should use bcrypt with at least 12 salt rounds (OWASP recommendation)", async () => {
+  it("should use bcrypt with exactly 12 salt rounds (OWASP recommendation)", async () => {
     const plain = "testPassword123!";
     const hashed = await hashPassword(plain);
 
@@ -27,9 +27,9 @@ describe("password.utils", () => {
     
     const rounds = parseInt(parts[2] || "0", 10);
     
-    // Verify salt rounds meet OWASP minimum recommendation (12 rounds as of 2023+)
-    expect(rounds).toBeGreaterThanOrEqual(12);
-    expect(rounds).toBeLessThanOrEqual(14); // Reasonable upper bound for performance
+    // Verify salt rounds match the configured value exactly (12 rounds as of 2023+)
+    // This ensures the test catches any unintended configuration drift
+    expect(rounds).toBe(12);
   });
 
   it("should generate unique hashes for the same password", async () => {
