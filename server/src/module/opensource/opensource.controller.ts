@@ -332,7 +332,14 @@ export class OpensourceController {
   async getActivityHeatmap(req: Request, res: Response, next: NextFunction) {
     try {
       const queryStudentId = req.query.studentId as string | undefined;
-      const userId = queryStudentId ? parseInt(queryStudentId, 10) : req.user!.id;
+      const parsedId = queryStudentId ? parseInt(queryStudentId, 10) : req.user!.id;
+
+      if (queryStudentId && isNaN(parsedId)) {
+        res.status(400).json({ success: false, error: "Invalid studentId parameter" });
+        return;
+      }
+
+      const userId = parsedId;
 
       if (queryStudentId && req.user!.role === "STUDENT" && userId !== req.user!.id) {
         res.status(403).json({ success: false, error: "Cannot view other student's activity" });
