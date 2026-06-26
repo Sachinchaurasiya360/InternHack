@@ -26,6 +26,7 @@ export default function AdminContributionsPage() {
   const [contributions, setContributions] = useState<CompanyContribution[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
+  
   const [statusFilter, setStatusFilter] = useState("PENDING");
   const [page, setPage] = useState(1);
   const [expandedId, setExpandedId] = useState<number | null>(null);
