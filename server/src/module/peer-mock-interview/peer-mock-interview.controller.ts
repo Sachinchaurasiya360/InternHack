@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { prisma } from "../../database/db.js";
 import { PeerMockInterviewService } from "./peer-mock-interview.service.js";
-import { mockInterviewPreferenceSchema, mockInterviewFeedbackSchema } from "./peer-mock-interview.validation.js";
+import { mockInterviewPreferenceSchema, mockInterviewFeedbackSchema, proposeTimeSchema, acceptTimeSchema } from "./peer-mock-interview.validation.js";
 
 const service = new PeerMockInterviewService();
 
@@ -155,6 +155,91 @@ export class PeerMockInterviewController {
       res.json({ message: "Feedback submitted successfully", pairing: updated });
     } catch (err: any) {
       res.status(err.status || 500).json({ message: err.message || "Failed to submit feedback" });
+    }
+  }
+  async proposeTime(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      if (!await this.checkPremiumSubscription(req.user.id)) {
+        res.status(403).json({ message: "Premium subscription required for peer mock interviews" });
+        return;
+      }
+      const userId = req.user.id;
+      const pairingId = parseInt(String(req.params["id"] || ""), 10);
+      if (isNaN(pairingId)) {
+        res.status(400).json({ message: "Invalid pairing ID" });
+        return;
+      }
+
+      const parsed = proposeTimeSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Invalid time proposal input", errors: parsed.error.format() });
+        return;
+      }
+
+      const { proposedTime } = parsed.data;
+      const updated = await service.proposeTime(userId, pairingId, proposedTime);
+      res.json({ message: "Time proposed successfully", pairing: updated });
+    } catch (err: any) {
+      res.status(err.status || 500).json({ message: err.message || "Failed to propose time" });
+    }
+  }
+
+  async acceptTime(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      if (!await this.checkPremiumSubscription(req.user.id)) {
+        res.status(403).json({ message: "Premium subscription required for peer mock interviews" });
+        return;
+      }
+      const userId = req.user.id;
+      const pairingId = parseInt(String(req.params["id"] || ""), 10);
+      if (isNaN(pairingId)) {
+        res.status(400).json({ message: "Invalid pairing ID" });
+        return;
+      }
+
+      const parsed = acceptTimeSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Invalid acceptance input", errors: parsed.error.format() });
+        return;
+      }
+
+      const { meetingLink } = parsed.data;
+      const updated = await service.acceptTime(userId, pairingId, meetingLink);
+      res.json({ message: "Time accepted successfully", pairing: updated });
+    } catch (err: any) {
+      res.status(err.status || 500).json({ message: err.message || "Failed to accept time" });
+    }
+  }
+
+  async rejectTime(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      if (!await this.checkPremiumSubscription(req.user.id)) {
+        res.status(403).json({ message: "Premium subscription required for peer mock interviews" });
+        return;
+      }
+      const userId = req.user.id;
+      const pairingId = parseInt(String(req.params["id"] || ""), 10);
+      if (isNaN(pairingId)) {
+        res.status(400).json({ message: "Invalid pairing ID" });
+        return;
+      }
+
+      const updated = await service.rejectTime(userId, pairingId);
+      res.json({ message: "Time rejected successfully", pairing: updated });
+    } catch (err: any) {
+      res.status(err.status || 500).json({ message: err.message || "Failed to reject time" });
     }
   }
 }

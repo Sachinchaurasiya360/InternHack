@@ -110,6 +110,9 @@ async function seedUsers() {
       skills: ["C++", "DSA", "Competitive Programming"],
       bio: "Competitive programmer and algorithm enthusiast",
       location: "Pune",
+      subscriptionPlan: "MONTHLY" as const,
+      subscriptionStatus: "ACTIVE" as const,
+      subscriptionEndDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
     {
       name: "Neha Kapoor",
@@ -139,6 +142,15 @@ async function seedUsers() {
         });
       }
       created++;
+    } else {
+      await prisma.user.update({
+        where: { email: u.email },
+        data: {
+          subscriptionPlan: u.subscriptionPlan,
+          subscriptionStatus: u.subscriptionStatus,
+          subscriptionEndDate: u.subscriptionEndDate,
+        },
+      });
     }
   }
   log("Users", created);

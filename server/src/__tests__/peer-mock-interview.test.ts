@@ -25,6 +25,7 @@ vi.mock("../database/db.js", () => {
       findUnique: vi.fn(),
       findMany: vi.fn(),
     },
+    $queryRaw: vi.fn().mockResolvedValue([{ locked: true }]),
   };
   return { prisma: mockPrisma };
 });
@@ -97,7 +98,7 @@ describe("PeerMockInterviewService", () => {
       const res = await service.upsertPreference(1, "DSA", ["WEEKENDS"], false);
       expect(prisma.peerMockInterview.findMany).toHaveBeenCalledWith({
         where: {
-          status: "SCHEDULED",
+          status: { in: ["SCHEDULED", "PENDING_SCHEDULE"] },
           OR: [
             { studentAId: 1 },
             { studentBId: 1 },
@@ -114,6 +115,29 @@ describe("PeerMockInterviewService", () => {
       });
       expect(res).toEqual(mockPref);
     });
+
+    it("should cancel PENDING_SCHEDULE pairings when disabling preferences", async () => {
+      const mockPref = { id: 1, userId: 1, topic: "DSA", availability: ["WEEKENDS"], enabled: false };
+      vi.mocked(prisma.peerMockInterviewPreference.upsert).mockResolvedValue(mockPref as any);
+
+      const mockPairing = {
+        id: 6,
+        studentAId: 1,
+        studentBId: 2,
+        status: "PENDING_SCHEDULE",
+        studentA: { id: 1, name: "Student A", email: "a@test.com" },
+        studentB: { id: 2, name: "Student B", email: "b@test.com" },
+      };
+
+      vi.mocked(prisma.peerMockInterview.findMany).mockResolvedValue([mockPairing] as any);
+      vi.mocked(prisma.peerMockInterview.updateMany).mockResolvedValue({ count: 1 } as any);
+
+      await service.upsertPreference(1, "DSA", ["WEEKENDS"], false);
+      expect(prisma.peerMockInterview.updateMany).toHaveBeenCalledWith({
+        where: { id: 6, status: "PENDING_SCHEDULE" },
+        data: { status: "CANCELLED" },
+      });
+    });
   });
 
   describe("getUpcomingPairing", () => {
@@ -126,7 +150,7 @@ describe("PeerMockInterviewService", () => {
         where: {
           OR: [
             {
-              status: "SCHEDULED",
+              status: { in: ["PENDING_SCHEDULE", "SCHEDULED"] },
               OR: [
                 { studentAId: 1 },
                 { studentBId: 1 },
@@ -197,6 +221,98 @@ describe("PeerMockInterviewService", () => {
     });
   });
 
+  describe("proposeTime", () => {
+    it("should propose a time and notify partner", async () => {
+      const futureDate = new Date(Date.now() + 86400000);
+      const mockPairing = {
+        id: 5,
+        studentAId: 1,
+        studentBId: 2,
+        status: "PENDING_SCHEDULE",
+        studentA: { id: 1, name: "A", email: "a@test.com" },
+        studentB: { id: 2, name: "B", email: "b@test.com" },
+      };
+      vi.mocked(prisma.peerMockInterview.findUnique).mockResolvedValue(mockPairing as any);
+      vi.mocked(prisma.peerMockInterview.update).mockResolvedValue({ ...mockPairing, proposedTime: futureDate, proposedById: 1 } as any);
+
+      await service.proposeTime(1, 5, futureDate);
+      expect(prisma.peerMockInterview.update).toHaveBeenCalledWith(expect.objectContaining({
+        where: { id: 5 },
+        data: { proposedTime: futureDate, proposedById: 1 }
+      }));
+    });
+  });
+
+  describe("acceptTime", () => {
+    it("should accept proposed time and set to SCHEDULED", async () => {
+      const futureDate = new Date(Date.now() + 86400000);
+      const mockPairing = {
+        id: 5,
+        studentAId: 1,
+        studentBId: 2,
+        status: "PENDING_SCHEDULE",
+        proposedTime: futureDate,
+        proposedById: 1,
+        studentA: { id: 1, name: "A", email: "a@test.com" },
+        studentB: { id: 2, name: "B", email: "b@test.com" },
+      };
+      vi.mocked(prisma.peerMockInterview.findUnique).mockResolvedValue(mockPairing as any);
+      vi.mocked(prisma.peerMockInterview.update).mockResolvedValue({ ...mockPairing, status: "SCHEDULED", scheduledAt: futureDate } as any);
+
+      await service.acceptTime(2, 5, "https://meet.google.com/test");
+      expect(prisma.peerMockInterview.update).toHaveBeenCalledWith(expect.objectContaining({
+        where: { id: 5 },
+        data: { status: "SCHEDULED", scheduledAt: futureDate, schedulingConfirmed: true, meetingLink: "https://meet.google.com/test" }
+      }));
+    });
+
+    it("should reject expired proposed time", async () => {
+      const pastDate = new Date(Date.now() - 86400000);
+      const mockPairing = {
+        id: 5,
+        studentAId: 1,
+        studentBId: 2,
+        status: "PENDING_SCHEDULE",
+        proposedTime: pastDate,
+        proposedById: 1,
+        studentA: { id: 1, name: "A", email: "a@test.com" },
+        studentB: { id: 2, name: "B", email: "b@test.com" },
+      };
+      vi.mocked(prisma.peerMockInterview.findUnique).mockResolvedValue(mockPairing as any);
+      vi.mocked(prisma.peerMockInterview.update).mockResolvedValue({ ...mockPairing, proposedTime: null, proposedById: null } as any);
+
+      await expect(service.acceptTime(2, 5, "https://meet.google.com/test")).rejects.toThrow("The proposed time has already passed");
+      expect(prisma.peerMockInterview.update).toHaveBeenCalledWith(expect.objectContaining({
+        where: { id: 5 },
+        data: { proposedTime: null, proposedById: null }
+      }));
+    });
+  });
+
+  describe("rejectTime", () => {
+    it("should reset proposed time", async () => {
+      const futureDate = new Date(Date.now() + 86400000);
+      const mockPairing = {
+        id: 5,
+        studentAId: 1,
+        studentBId: 2,
+        status: "PENDING_SCHEDULE",
+        proposedTime: futureDate,
+        proposedById: 1,
+        studentA: { id: 1, name: "A", email: "a@test.com" },
+        studentB: { id: 2, name: "B", email: "b@test.com" },
+      };
+      vi.mocked(prisma.peerMockInterview.findUnique).mockResolvedValue(mockPairing as any);
+      vi.mocked(prisma.peerMockInterview.update).mockResolvedValue({ ...mockPairing, proposedTime: null, proposedById: null } as any);
+
+      await service.rejectTime(2, 5);
+      expect(prisma.peerMockInterview.update).toHaveBeenCalledWith(expect.objectContaining({
+        where: { id: 5 },
+        data: { proposedTime: null, proposedById: null }
+      }));
+    });
+  });
+
   describe("runMatchingJob", () => {
     it("should match eligible users in the pool", async () => {
       const mockPrefs = [
@@ -246,13 +362,16 @@ describe("PeerMockInterviewService", () => {
       vi.mocked(prisma.peerMockInterview.create).mockResolvedValue({ id: 99 } as any);
 
       const res = await service.runMatchingJob();
+      expect(res.length).toEqual(1);
       expect(prisma.peerMockInterview.create).toHaveBeenCalledWith({
         data: {
           topic: "DSA",
           studentAId: 1,
           studentBId: 2,
           assignedProblemId: 101,
-          status: "SCHEDULED",
+          status: "PENDING_SCHEDULE",
+          sharedAvailability: ["WEEKENDS"],
+          scheduledAt: null,
         },
         include: {
           studentA: { select: { id: true, name: true, email: true } },
@@ -260,7 +379,6 @@ describe("PeerMockInterviewService", () => {
           assignedProblem: true,
         }
       });
-      expect(res.length).toEqual(1);
     });
   });
 });
