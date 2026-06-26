@@ -1,6 +1,8 @@
 .env
 server/.env
 client/.env
+# Local env overrides (e.g. Vercel-generated .env.local with OIDC tokens)
+.env*.local
 node_modules/
 .local-postgres/
 
