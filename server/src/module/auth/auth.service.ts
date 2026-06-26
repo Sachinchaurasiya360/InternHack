@@ -629,24 +629,37 @@ export class AuthService {
 
     const { atsScores, ...rest } = user;
 
-    // Sanitize for unauthorized guest viewers
-    if (!isOwner && !isVisitorAuthorized) {
-      delete (rest as any).email;
-      delete (rest as any).contactNo;
-    }
-
     await signProfileMedia(rest as Record<string, any>);
 
     // Fetch lightweight badge display list — no heavy criteria JSON
     const badges = await badgeService.getStudentBadgesDisplay(user.id);
 
-    const result = {
+    // Full view (includes email/contactNo). Only the owner and authorized
+    // viewers ever receive this; it is never written to the shared guest key.
+    const fullResult = {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
       badges,
     };
-    await cacheSet(cacheKey, result, PROFILE_TTL);
-    return { profile: result, cacheHit: false };
+    // Guest-safe view: strip PII regardless of who triggered the request.
+    const { email: _email, contactNo: _contactNo, ...guestRest } = fullResult as any;
+    const guestResult = guestRest;
+
+    // Authorized tier (admin/recruiter): cache and return the full view under
+    // the ":auth" key, which is only ever served back to authorized viewers.
+    if (isVisitorAuthorized) {
+      await cacheSet(cacheKey, fullResult, PROFILE_TTL);
+      return { profile: fullResult, cacheHit: false };
+    }
+
+    // Guest tier (this also covers the owner viewing their own profile via the
+    // public endpoint). Only cache PUBLIC profiles, and only the PII-stripped
+    // view — so an owner request can never poison the shared key with private
+    // data or contact details that a later anonymous visitor would read.
+    if (user.isProfilePublic) {
+      await cacheSet(cacheKey, guestResult, PROFILE_TTL);
+    }
+    return { profile: isOwner ? fullResult : guestResult, cacheHit: false };
   }
 
   async verifyEmail(email: string, otp: string) {

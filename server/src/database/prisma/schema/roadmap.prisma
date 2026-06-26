@@ -125,7 +125,7 @@ model roadmapTopicProgress {
   topic        roadmapTopic       @relation(fields: [topicId], references: [id], onDelete: Cascade)
 
   @@unique([enrollmentId, topicId])
-  @@index([enrollmentId])
+  @@index([enrollmentId, status, completedAt])
   @@index([topicId])
 }
 

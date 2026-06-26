@@ -11,6 +11,12 @@ node_modules/
 *.dump
 *.sql.gz
 
+# Test runner output logs (accidental commits)
+vitest-output.txt
+
+# No root lockfile: deps live in client/ and server/ subprojects
+/package-lock.json
+
 # Claude Code
 CLAUDE.md
 agents.md

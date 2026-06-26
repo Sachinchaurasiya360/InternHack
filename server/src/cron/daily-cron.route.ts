@@ -111,12 +111,19 @@ async function runOneJob(job: CronJob): Promise<JobResult> {
   };
 }
 
-async function runGroup(jobs: CronJob[], utcDay: number): Promise<JobResult[]> {
+async function runGroup(
+  jobs: CronJob[],
+  utcDay: number,
+  opts: { only?: Set<string> } = {},
+): Promise<JobResult[]> {
   const groupStart = Date.now();
   const results: JobResult[] = [];
+  // An explicit ?jobs= list is an operator override: run exactly those, in
+  // order, ignoring the day-of-week gate (but still honoring the time budget).
+  const selected = opts.only ? jobs.filter((j) => opts.only?.has(j.name)) : jobs;
 
-  for (const job of jobs) {
-    if (job.onlyOnUtcDay !== undefined && job.onlyOnUtcDay !== utcDay) {
+  for (const job of selected) {
+    if (!opts.only && job.onlyOnUtcDay !== undefined && job.onlyOnUtcDay !== utcDay) {
       results.push({ name: job.name, status: "skipped", ms: 0, reason: "not scheduled today" });
       continue;
     }
@@ -155,9 +162,14 @@ function makeCronHandler(label: string, jobs: CronJob[]) {
 
     const startedAt = new Date();
     const utcDay = startedAt.getUTCDay();
-    logger.info(`Cron "${label}" started (UTC day ${utcDay})`);
+    const onlyParam = req.query["jobs"];
+    const only =
+      typeof onlyParam === "string" && onlyParam.trim()
+        ? new Set(onlyParam.split(",").map((s) => s.trim()).filter(Boolean))
+        : undefined;
+    logger.info(`Cron "${label}" started (UTC day ${utcDay}${only ? `, jobs=${[...only].join(",")}` : ""})`);
 
-    const jobResults = await runGroup(jobs, utcDay);
+    const jobResults = await runGroup(jobs, utcDay, { only });
 
     const failed = jobResults.filter((r) => r.status === "error").length;
     res.status(failed > 0 ? 207 : 200).json({

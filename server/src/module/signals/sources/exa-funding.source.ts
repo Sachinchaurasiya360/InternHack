@@ -64,8 +64,11 @@ export class ExaFundingSource extends BaseSignalSource {
         continue;
       }
       for (const item of result.results) {
-        if (seen.has(item.id)) continue;
-        seen.add(item.id);
+        // Dedupe by the stable URL-derived id, not Exa's volatile result id,
+        // so the same article from the two queries collapses to one signal.
+        const id = this.stableId(item.url);
+        if (seen.has(id)) continue;
+        seen.add(id);
         const signal = this.toSignal(item);
         if (signal) signals.push(signal);
       }
@@ -112,6 +115,23 @@ export class ExaFundingSource extends BaseSignalSource {
     }
   }
 
+  /**
+   * Exa hands back a fresh `id` for the same article on every search, so it
+   * cannot dedupe across cron runs. Derive a stable id from the canonical
+   * article URL (host + path, lowercased, query/hash stripped) so the unique
+   * (source, sourceId) constraint collapses repeat ingests into updates instead
+   * of inserting a new row each run.
+   */
+  private stableId(url: string): string {
+    try {
+      const u = new URL(url);
+      const path = u.pathname.replace(/\/+$/, "");
+      return `${u.host}${path}`.toLowerCase();
+    } catch {
+      return url.trim().toLowerCase();
+    }
+  }
+
   private toSignal(item: ExaResult): FundingSignalData | null {
     const parsed = this.extractFundingFromTitle(item.title);
     if (!parsed) return null;
@@ -123,7 +143,7 @@ export class ExaFundingSource extends BaseSignalSource {
     return {
       companyName: parsed.companyName,
       sourceUrl: item.url,
-      sourceId: item.id,
+      sourceId: this.stableId(item.url),
       announcedAt,
       description,
       fundingRound: parsed.round,

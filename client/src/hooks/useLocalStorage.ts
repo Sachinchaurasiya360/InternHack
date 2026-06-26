@@ -39,17 +39,21 @@ export function useLocalStorage<T>(
 
   useEffect(() => {
     const handler = (e: StorageEvent) => {
-      if (e.key === key && e.newValue !== null) {
-        try {
-          setStoredValue(JSON.parse(e.newValue) as T);
-        } catch {
-          /* noop */
-        }
+      if (e.key !== key) return;
+      if (e.newValue === null) {
+        // Key was removed in another tab; mirror the reset locally.
+        setStoredValue(initialValue);
+        return;
+      }
+      try {
+        setStoredValue(JSON.parse(e.newValue) as T);
+      } catch {
+        /* noop */
       }
     };
     window.addEventListener("storage", handler);
     return () => window.removeEventListener("storage", handler);
-  }, [key]);
+  }, [key, initialValue]);
 
   return [storedValue, setValue, removeValue];
 }
