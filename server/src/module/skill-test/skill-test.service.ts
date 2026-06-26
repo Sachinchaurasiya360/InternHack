@@ -278,9 +278,22 @@ export class SkillTestService {
         ? Math.round((correctCount / totalQuestions) * 100)
         : 0;
 
-    // Calculate proctoring integrity score
-    const proctoringScore = this.calculateProctoringScore(proctorLog);
-    const autoTerminated = !!(proctorLog && (proctorLog as any).terminated);
+    // Merge the server-side incremental proctor log (appended during the test via
+    // /proctor-logs) into the client-submitted summary. The incremental events are
+    // the tamper-resistant record; the client payload can be under-reported, so we
+    // must not let submit clobber them.
+    const existingEvents = (session.proctorLog as Record<string, unknown> | null)?.[
+      "incrementalEvents"
+    ];
+    const serverEvents = Array.isArray(existingEvents) ? existingEvents : [];
+    const mergedProctorLog: Record<string, unknown> | undefined =
+      proctorLog || serverEvents.length > 0
+        ? { ...(proctorLog ?? {}), incrementalEvents: serverEvents }
+        : undefined;
+
+    // Calculate proctoring integrity score from the merged (server-authoritative) log
+    const proctoringScore = this.calculateProctoringScore(mergedProctorLog);
+    const autoTerminated = !!(mergedProctorLog && (mergedProctorLog as any).terminated);
 
     const PROCTOR_MINIMUM = 60;
     const passed = score >= test.passThreshold && proctoringScore >= PROCTOR_MINIMUM;
@@ -292,7 +305,7 @@ export class SkillTestService {
         score,
         passed,
         answers: gradedAnswers,
-        proctorLog: (proctorLog as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
+        proctorLog: (mergedProctorLog as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
         proctoringScore,
         autoTerminated,
         completedAt: new Date(),
@@ -526,17 +539,62 @@ export class SkillTestService {
   ): number {
     if (!proctorLog) return 100;
     const log = proctorLog as any;
+
+    // Prefer the server-side, tamper-resistant incremental event log when present;
+    // fall back to the client-reported aggregate counts for older/partial sessions
+    // (e.g. a client that never flushed any incremental events).
+    const events: { type?: string }[] = Array.isArray(log.incrementalEvents)
+      ? log.incrementalEvents
+      : [];
+
+    let tabSwitches: number;
+    let focusLosses: number;
+    let fullscreenExits: number;
+    let devtoolsAttempts: number;
+    let copyPasteAttempts: number;
+    let rightClickAttempts: number;
+    let faceViolations: number;
+    let cameraDropped = log.cameraEnabled === false;
+
+    if (events.length > 0) {
+      tabSwitches = focusLosses = fullscreenExits = 0;
+      devtoolsAttempts = copyPasteAttempts = rightClickAttempts = faceViolations = 0;
+      for (const e of events) {
+        switch (e.type) {
+          case "tab_switch": tabSwitches++; break;
+          case "focus_loss": focusLosses++; break;
+          case "fullscreen_exit": fullscreenExits++; break;
+          case "devtools": devtoolsAttempts++; break;
+          case "copy_paste": copyPasteAttempts++; break;
+          case "right_click": rightClickAttempts++; break;
+          case "face_violation": faceViolations++; break;
+          case "camera_track_ended":
+          case "camera_track_muted": cameraDropped = true; break;
+        }
+      }
+    } else {
+      tabSwitches = log.tabSwitches ?? 0;
+      focusLosses = log.focusLosses ?? 0;
+      fullscreenExits = log.fullscreenExits ?? 0;
+      devtoolsAttempts = log.devtoolsAttempts ?? 0;
+      copyPasteAttempts = log.copyPasteAttempts ?? 0;
+      rightClickAttempts = log.rightClickAttempts ?? 0;
+      faceViolations = Array.isArray(log.faceViolations)
+        ? log.faceViolations.length
+        : 0;
+    }
+
     let s = 100;
-    s -= (log.tabSwitches ?? 0) * 15;
-    s -= (log.focusLosses ?? 0) * 5;
-    s -= (log.fullscreenExits ?? 0) * 20;
-    s -= (log.devtoolsAttempts ?? 0) * 25;
-    s -= (log.copyPasteAttempts ?? 0) * 10;
-    s -= (log.rightClickAttempts ?? 0) * 3;
-    s -=
-      (Array.isArray(log.faceViolations) ? log.faceViolations.length : 0) * 10;
+    s -= tabSwitches * 15;
+    s -= focusLosses * 5;
+    s -= fullscreenExits * 20;
+    s -= devtoolsAttempts * 25;
+    s -= copyPasteAttempts * 10;
+    s -= rightClickAttempts * 3;
+    s -= faceViolations * 10;
     if (log.terminated) s -= 30;
-    if (log.cameraEnabled === false) s -= 20;
+    // Camera dropped mid-test (hardware unplug / permission revoke) or never enabled.
+    if (cameraDropped) s -= 20;
     return Math.max(0, s);
   }
 
