@@ -174,6 +174,7 @@ export interface PeerMockInterview {
   feedbackAForB: string | null;
   ratingBForA: number | null;
   feedbackBForA: string | null;
+  completedAt: string | null;
   createdAt: string;
   updatedAt: string;
   studentA: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null } | null;

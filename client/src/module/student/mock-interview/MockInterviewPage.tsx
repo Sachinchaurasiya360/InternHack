@@ -219,7 +219,7 @@ function SessionPanel({
       <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950/40">
         <div className="flex items-center gap-2">
           <div className="h-1 w-1 bg-lime-400 shrink-0" />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
             {title}
           </span>
         </div>
@@ -345,7 +345,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
             {/* Header */}
             <div className="mb-8 flex items-start justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-7">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1.5 w-1.5 bg-lime-400" />
                   interview / ai
                 </div>
@@ -407,7 +407,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                         <p className="mt-1 text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
                           {topic.description}
                         </p>
-                        <p className="mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+                        <p className="mt-3 text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
                           5 questions
                         </p>
                       </button>
@@ -503,7 +503,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                 <Loader2 className="h-7 w-7 text-lime-500" />
               </motion.div>
             </div>
-            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-3">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-3">
               <span className="h-1.5 w-1.5 bg-lime-400" />
               analysis in progress
             </div>
@@ -546,7 +546,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
             {/* Header */}
             <div className="mb-8 flex items-start justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-7">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1.5 w-1.5 bg-lime-400" />
                   interview / results
                 </div>
@@ -576,13 +576,13 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                 <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-1">
                         overall rating
                       </p>
                       <FeedbackStars rating={feedback.overallRating} />
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-1">
                         topic
                       </p>
                       <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
@@ -614,7 +614,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                       key={item.label}
                       className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4"
                     >
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
                         {item.label}
                       </p>
                       <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
@@ -627,7 +627,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                 {/* Strengths + Areas to improve */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4">
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3">
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3">
                       strengths
                     </p>
                     <ul className="space-y-2">
@@ -640,7 +640,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                     </ul>
                   </div>
                   <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4">
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3">
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3">
                       areas to improve
                     </p>
                     <ul className="space-y-2">
@@ -678,7 +678,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               <SessionPanel
                 title="session transcript"
                 right={
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
                     {transcript.length} questions
                   </span>
                 }
@@ -689,7 +689,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                       key={`${entry.question}-${index}`}
                       className="rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 p-4"
                     >
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
                         Q{index + 1}
                       </p>
                       <p className="text-sm font-semibold text-stone-900 dark:text-stone-50 leading-relaxed">
@@ -735,7 +735,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               <div className="min-w-0">
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-0.5">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-0.5">
                   <span className="h-1 w-1 bg-lime-400 shrink-0" />
                   {activeTopic.title}
                 </div>
@@ -743,7 +743,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                   <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
                     Question {questionIndex + 1} of {activeTopic.questions.length}
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-400">
                     {progress}% done
                   </span>
                 </div>
@@ -780,7 +780,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
 
               {/* Question card */}
               <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6">
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mb-3">
+                <p className="text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mb-3">
                   current question
                 </p>
                 <p className="text-lg font-semibold leading-8 text-stone-900 dark:text-stone-50">
@@ -797,7 +797,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               {/* Answer area */}
               <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                 <div className="px-5 pt-5 pb-3">
-                  <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
+                  <label className="block text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
                     Your answer
                   </label>
                   <Textarea
@@ -821,7 +821,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                   />
                 </div>
                 <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-stone-100 dark:border-white/5">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
                     Ctrl + Enter to submit
                   </span>
                   <Button
@@ -844,7 +844,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               title="transcript"
               right={
                 transcript.length > 0 ? (
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
                     {transcript.length} answered
                   </span>
                 ) : null
@@ -861,7 +861,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                       key={`${entry.question}-${index}`}
                       className="rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 p-4"
                     >
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mb-1.5">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mb-1.5">
                         Q{index + 1}
                       </p>
                       <p className="text-xs font-semibold text-stone-800 dark:text-stone-200 leading-relaxed mb-2">
@@ -899,7 +899,7 @@ export default function MockInterviewPage() {
           >
             <div className="mb-8 flex items-start justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-7">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1.5 w-1.5 bg-lime-400" />
                   interview / expert
                 </div>
@@ -924,7 +924,7 @@ export default function MockInterviewPage() {
               <div className="flex items-center justify-between px-5 py-3 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950/40">
                 <div className="flex items-center gap-2">
                   <div className="h-1 w-1 bg-lime-400" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                     calendly / 30 min slot
                   </span>
                 </div>
@@ -985,7 +985,7 @@ export default function MockInterviewPage() {
         >
           {/* Editorial header */}
           <div className="mt-2 mb-10 border-b border-stone-200 dark:border-white/10 pb-8">
-            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
               <span className="h-1.5 w-1.5 bg-lime-400" />
               practice / mock interview
             </div>
@@ -1021,7 +1021,7 @@ export default function MockInterviewPage() {
                 >
                   {/* Number + icon */}
                   <div className="flex items-start justify-between">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 group-hover:text-lime-400 dark:group-hover:text-lime-500">
+                    <span className="text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 group-hover:text-lime-400 dark:group-hover:text-lime-500">
                       / {opt.number}
                     </span>
                     <div className="w-11 h-11 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center transition-colors group-hover:bg-lime-400">
@@ -1045,7 +1045,7 @@ export default function MockInterviewPage() {
                       {opt.tags.map((t) => (
                         <span
                           key={t}
-                          className="px-2 py-1 rounded-md text-[10px] font-mono uppercase tracking-widest bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 group-hover:bg-white/10 dark:group-hover:bg-black/10 group-hover:text-stone-200 dark:group-hover:text-stone-600"
+                          className="px-2 py-1 rounded-md text-xs font-mono uppercase tracking-widest bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 group-hover:bg-white/10 dark:group-hover:bg-black/10 group-hover:text-stone-200 dark:group-hover:text-stone-600"
                         >
                           {t}
                         </span>
@@ -1088,7 +1088,7 @@ export default function MockInterviewPage() {
                   <p className="text-xs font-bold text-stone-900 dark:text-stone-50">
                     {f.label}
                   </p>
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                     {f.sub}
                   </p>
                 </div>
@@ -1105,7 +1105,7 @@ function PreparationCard({ material }: { material?: MockInterviewPreparationMate
   if (!material) {
     return (
       <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
+        <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
         <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
           No code problem auto-assigned for this topic. Use the availability details to coordinate custom questions.
         </p>
@@ -1116,19 +1116,21 @@ function PreparationCard({ material }: { material?: MockInterviewPreparationMate
   if (material.type === "DSA" && material.dsaProblem) {
     return (
       <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-2">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
+        <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
         <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.dsaProblem.title}</h4>
         <p className="text-xs text-stone-500 dark:text-stone-400">
           Difficulty: <span className="font-semibold text-stone-700 dark:text-stone-300">{material.dsaProblem.difficulty}</span>
         </p>
         <div className="pt-2">
-          <a
-            href={`/learn/dsa/problem/${material.dsaProblem.slug}`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-lime-400 hover:bg-lime-300 text-stone-950 text-xs font-bold rounded transition-colors"
-          >
-            View Problem Details
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+          <Button variant="primary" size="sm" asChild>
+            <a
+              href={`/learn/dsa/problem/${material.dsaProblem.slug}`}
+              className="inline-flex items-center gap-1.5"
+            >
+              View Problem Details
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </Button>
         </div>
       </div>
     );
@@ -1137,7 +1139,7 @@ function PreparationCard({ material }: { material?: MockInterviewPreparationMate
   if (material.generic) {
     return (
       <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-3">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Preparation Material</span>
+        <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Preparation Material</span>
         <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.generic.prompt}</h4>
         
         {material.generic.requirements.length > 0 && (
@@ -1175,7 +1177,7 @@ function PreparationCard({ material }: { material?: MockInterviewPreparationMate
 
 function HistorySection({ userId }: { userId: number }) {
   const { data: pairings, isLoading } = useQuery<PeerMockInterview[]>({
-    queryKey: ["peer-mock-interview", "history"],
+    queryKey: ["peer-mock-interview", "history", userId],
     queryFn: async () => {
       const res = await api.get("/student/peer-mock-interview/pairings/history");
       return res.data;
@@ -1210,7 +1212,7 @@ function HistorySection({ userId }: { userId: number }) {
           <div key={pairing.id} className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5 space-y-4">
             <div className="flex justify-between items-start">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">{new Date(pairing.createdAt).toLocaleDateString()}</span>
+                <span className="text-xs font-mono uppercase tracking-widest text-stone-400">{new Date(pairing.completedAt || pairing.createdAt).toLocaleDateString()}</span>
                 <h3 className="font-bold text-stone-900 dark:text-stone-50 mt-1">{pairing.topic} Mock Interview</h3>
                 {partner && (
                   <p className="text-xs text-stone-500 mt-1">
@@ -1218,7 +1220,7 @@ function HistorySection({ userId }: { userId: number }) {
                   </p>
                 )}
               </div>
-              <span className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded ${pairing.status === "COMPLETED" ? "bg-lime-400/10 text-lime-600 dark:text-lime-400" : "bg-red-400/10 text-red-600 dark:text-red-400"}`}>
+              <span className={`text-xs font-mono uppercase tracking-widest px-2 py-0.5 rounded ${pairing.status === "COMPLETED" ? "bg-lime-400/10 text-lime-600 dark:text-lime-400" : "bg-red-400/10 text-red-600 dark:text-red-400"}`}>
                 {pairing.status}
               </span>
             </div>
@@ -1226,7 +1228,7 @@ function HistorySection({ userId }: { userId: number }) {
             {pairing.status === "COMPLETED" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-stone-100 dark:border-white/5 pt-4">
                 <div>
-                  <h4 className="text-[10px] font-mono uppercase tracking-widest text-stone-400 mb-2">Partner's Feedback for You</h4>
+                  <h4 className="text-xs font-mono uppercase tracking-widest text-stone-400 mb-2">Partner's Feedback for You</h4>
                   {myRating ? (
                     <div className="space-y-1">
                       <div className="flex gap-0.5">
@@ -1497,7 +1499,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
           {/* Header */}
           <div className="mb-8 flex items-start justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-7">
             <div>
-              <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                 <span className="h-1.5 w-1.5 bg-lime-400" />
                 practice / peer mock interview
               </div>
@@ -1524,26 +1526,28 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
             <div className="space-y-6">
               
               <div className="flex items-center gap-2 border-b border-stone-200 dark:border-white/10 mb-4">
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => setActiveTab("upcoming")}
-                  className={`pb-2 text-sm font-semibold border-b-2 transition-colors ${
+                  className={`pb-2 rounded-none rounded-t border-b-2 transition-colors ${
                     activeTab === "upcoming"
                       ? "border-lime-400 text-stone-900 dark:text-stone-50"
                       : "border-transparent text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
                   }`}
                 >
                   Upcoming Match
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
                   onClick={() => setActiveTab("history")}
-                  className={`pb-2 text-sm font-semibold border-b-2 transition-colors ${
+                  className={`pb-2 rounded-none rounded-t border-b-2 transition-colors ${
                     activeTab === "history"
                       ? "border-lime-400 text-stone-900 dark:text-stone-50"
                       : "border-transparent text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
                   }`}
                 >
                   History
-                </button>
+                </Button>
               </div>
 
               {activeTab === "history" && currentUserId ? (
@@ -1553,7 +1557,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                 <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden p-6 space-y-6">
                   <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/5 pb-4">
                     <div>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">Match Found</span>
+                      <span className="text-xs font-mono uppercase tracking-widest text-stone-400">Match Found</span>
                       <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mt-1">Upcoming Practice Session</h2>
                     </div>
                     <span className="px-2.5 py-1 rounded bg-lime-400/10 text-lime-500 text-xs font-mono uppercase tracking-wider">
@@ -1720,7 +1724,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                     </p>
                   </div>
                   <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 text-left max-w-md mx-auto space-y-2">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Your matching settings</span>
+                    <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Your matching settings</span>
                     <p className="text-xs text-stone-600 dark:text-stone-400">
                       Topic: <span className="font-semibold text-stone-950 dark:text-stone-50">{topic}</span>
                     </p>
@@ -1883,7 +1887,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
             className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md max-w-md w-full overflow-hidden focus:outline-none"
           >
             <div className="px-5 py-3.5 border-b border-stone-100 dark:border-white/5 bg-stone-50 dark:bg-stone-950/40">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">Post Practice Session</span>
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-400">Post Practice Session</span>
               <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mt-0.5">Rate Your Partner</h3>
             </div>
             <div className="p-5 space-y-4">
