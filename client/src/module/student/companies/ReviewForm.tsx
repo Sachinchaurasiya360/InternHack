@@ -54,7 +54,7 @@ export default function ReviewForm({ slug, onClose, onSubmitted }: ReviewFormPro
       <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Write a Review</h2>
-          <Button variant="ghost" mode="icon" size="sm" onClick={onClose}>
+          <Button variant="ghost" mode="icon" aria-label="Close" size="sm" onClick={onClose}>
             <X className="w-5 h-5 text-gray-500 dark:text-gray-500" />
           </Button>
         </div>

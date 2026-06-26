@@ -360,6 +360,7 @@ export default function FirstPRRoadmapPage() {
                 <Button
                   variant="ghost"
                   mode="icon"
+                  aria-label="Toggle completion"
                   size="sm"
                   onClick={(e) => {
                     e.preventDefault();

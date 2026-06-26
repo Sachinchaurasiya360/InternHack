@@ -362,7 +362,7 @@ export default function GSoCProposalAIReview() {
                           <BarChart3 className={`w-3.5 h-3.5 ${scoreColor(result.overallScore)}`} />
                           <span className={scoreColor(result.overallScore)}>{result.overallScore}/10</span>
                         </div>
-                        <Button variant="ghost" mode="icon" size="sm" onClick={handleReset} title="New review">
+                        <Button variant="ghost" mode="icon" aria-label="New review" size="sm" onClick={handleReset} title="New review">
                           <RefreshCw className="w-4 h-4" />
                         </Button>
                       </div>

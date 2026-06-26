@@ -201,7 +201,7 @@ export default function BehavioralTrainerPage() {
                     {currentQuestion}
                   </p>
                 </div>
-                <Button variant="ghost" mode="icon" size="sm" onClick={handleShuffle} title="Next question">
+                <Button variant="ghost" mode="icon" aria-label="Next question" size="sm" onClick={handleShuffle} title="Next question">
                   <Shuffle className="w-4 h-4" />
                 </Button>
               </div>

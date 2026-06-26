@@ -232,6 +232,7 @@ export default function FirstPRSectionPage() {
             <Button
               variant="ghost"
               mode="icon"
+              aria-label="Previous"
               onClick={() =>
                 prev && navigate(`/student/opensource/first-pr/${prev.id}`)
               }
@@ -247,6 +248,7 @@ export default function FirstPRSectionPage() {
             <Button
               variant="ghost"
               mode="icon"
+              aria-label="Next"
               onClick={() =>
                 next && navigate(`/student/opensource/first-pr/${next.id}`)
               }

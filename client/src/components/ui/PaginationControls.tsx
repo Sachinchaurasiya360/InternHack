@@ -88,7 +88,7 @@ export function PaginationControls({
               <PaginationItem key={page}>
                 <Button
                   variant={page === currentPage ? "outline" : "ghost"}
-                  mode="icon"
+                  mode="icon" aria-label={`Page ${page}`}
                   size="sm"
                   onClick={() => onPageChange(page as number)}
                 >

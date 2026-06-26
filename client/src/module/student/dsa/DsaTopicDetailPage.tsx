@@ -508,6 +508,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
           <Button
             variant="ghost"
             mode="icon"
+            aria-label="Toggle completion"
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
@@ -576,6 +577,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
           <Button
             variant="ghost"
             mode="icon"
+            aria-label="Toggle bookmark"
             size="sm"
             onClick={(e) => {
               e.stopPropagation();

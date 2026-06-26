@@ -265,6 +265,7 @@ export default function DsaBookmarksPage() {
                     onClick={() => removeMutation.mutate(b.problemId)}
                     variant="ghost"
                     mode="icon"
+                    aria-label="Remove bookmark"
                     size="sm"
                     className="text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 shrink-0"
                     title="Remove bookmark"
