@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import toast from "@/components/ui/toast";
+import { API_BASE } from "@/lib/axios";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -48,6 +49,7 @@ export interface ProctorState {
 
 export interface ProctoringConfig {
   enabled: boolean;
+  testId?: number;
   maxTabSwitches?: number;        // default 3
   maxFullscreenExits?: number;    // default 2
   maxDevtoolsAttempts?: number;   // default 2
@@ -76,6 +78,7 @@ const MAX_TOTAL_SCORE = 60;
 export function useProctoring(config: ProctoringConfig) {
   const {
     enabled,
+    testId,
     maxTabSwitches = 3,
     maxFullscreenExits = 2,
     maxDevtoolsAttempts = 2,
@@ -99,6 +102,8 @@ export function useProctoring(config: ProctoringConfig) {
   const snapshotCountRef = useRef(0);
   const cameraEnabledRef = useRef(false);
   const onTerminateRef = useRef(onTerminate);
+  const violationQueueRef = useRef<{ type: string; timestamp: string; detail?: string }[]>([]);
+
   useEffect(() => { onTerminateRef.current = onTerminate; });
 
   // Reactive state for UI
@@ -118,6 +123,14 @@ export function useProctoring(config: ProctoringConfig) {
   });
 
   /* ---- helpers ---------------------------------------------------- */
+  const queueEvent = useCallback((type: string, detail?: string) => {
+    violationQueueRef.current.push({
+      type,
+      timestamp: new Date().toISOString(),
+      ...(detail ? { detail } : {}),
+    });
+  }, []);
+
   const pushWarning = useCallback((type: string, message: string) => {
     warningsRef.current.push({ type, message, timestamp: new Date().toISOString() });
   }, []);
@@ -185,6 +198,7 @@ export function useProctoring(config: ProctoringConfig) {
         graceTimerRef.current = null;
         setState((prev) => ({ ...prev, showFullscreenWarning: false, fullscreenGraceRemaining: 0 }));
         fullscreenExitsRef.current += 1;
+        queueEvent("fullscreen_exit");
         syncState();
         pushWarning("fullscreen_timeout", "Fullscreen grace period expired");
         checkThresholds();
@@ -192,7 +206,7 @@ export function useProctoring(config: ProctoringConfig) {
         setState((prev) => ({ ...prev, fullscreenGraceRemaining: remaining }));
       }
     }, 1000);
-  }, [fullscreenGraceSecs, syncState, pushWarning, checkThresholds]);
+  }, [fullscreenGraceSecs, syncState, pushWarning, checkThresholds, queueEvent]);
 
   const clearGracePeriod = useCallback(() => {
     if (graceTimerRef.current) {
@@ -214,6 +228,7 @@ export function useProctoring(config: ProctoringConfig) {
         e.preventDefault();
         e.stopPropagation();
         devtoolsAttemptsRef.current += 1;
+        queueEvent("devtools", "F12");
         pushWarning("devtools", "F12 blocked");
         toast.error("DevTools are disabled during the test!", { id: "devtools", duration: 2000 });
         syncState();
@@ -226,6 +241,7 @@ export function useProctoring(config: ProctoringConfig) {
         e.preventDefault();
         e.stopPropagation();
         devtoolsAttemptsRef.current += 1;
+        queueEvent("devtools", `Ctrl+Shift+${e.key.toUpperCase()}`);
         pushWarning("devtools", `Ctrl+Shift+${e.key.toUpperCase()} blocked`);
         toast.error("DevTools are disabled during the test!", { id: "devtools", duration: 2000 });
         syncState();
@@ -238,6 +254,7 @@ export function useProctoring(config: ProctoringConfig) {
         e.preventDefault();
         e.stopPropagation();
         devtoolsAttemptsRef.current += 1;
+        queueEvent("devtools", "Ctrl+U");
         pushWarning("devtools", "Ctrl+U blocked");
         syncState();
         checkThresholds();
@@ -258,6 +275,7 @@ export function useProctoring(config: ProctoringConfig) {
         e.preventDefault();
         e.stopPropagation();
         copyPasteAttemptsRef.current += 1;
+        queueEvent("copy_paste", "PrintScreen");
         pushWarning("screenshot", "PrintScreen blocked");
         toast.error("Screenshots are disabled during the test!", { id: "screenshot", duration: 2000 });
         syncState();
@@ -297,6 +315,7 @@ export function useProctoring(config: ProctoringConfig) {
       e.preventDefault();
       if (terminatedRef.current) return;
       rightClickAttemptsRef.current += 1;
+      queueEvent("right_click");
       pushWarning("right_click", "Right-click blocked");
       toast.error("Right-click is disabled!", { id: "rightclick", duration: 1500 });
       syncState();
@@ -306,6 +325,7 @@ export function useProctoring(config: ProctoringConfig) {
       e.preventDefault();
       if (terminatedRef.current) return;
       copyPasteAttemptsRef.current += 1;
+      queueEvent("copy_paste", e.type);
       pushWarning("copy_paste", `${e.type} blocked`);
       toast.error("Copy/paste is disabled during the test!", { id: "copypaste", duration: 1500 });
       syncState();
@@ -315,6 +335,7 @@ export function useProctoring(config: ProctoringConfig) {
       if (terminatedRef.current || !document.hidden) return;
       lastVisibilityTs.current = Date.now();
       tabSwitchesRef.current += 1;
+      queueEvent("tab_switch");
       pushWarning("tab_switch", "Tab switch detected");
       toast.error(`Warning: Tab switch detected! (${tabSwitchesRef.current}/${maxTabSwitches})`, { duration: 3000 });
       syncState();
@@ -326,6 +347,7 @@ export function useProctoring(config: ProctoringConfig) {
       // Deduplicate: skip if visibility change fired within 500ms
       if (Date.now() - lastVisibilityTs.current < 500) return;
       focusLossesRef.current += 1;
+      queueEvent("focus_loss");
       pushWarning("focus_loss", "Window focus lost");
       syncState();
     };
@@ -413,16 +435,59 @@ export function useProctoring(config: ProctoringConfig) {
         navigator.clipboard.writeText = origWrite;
       }
     };
-  }, [enabled, maxTabSwitches, syncState, pushWarning, checkThresholds, startGracePeriod, clearGracePeriod]);
+  }, [enabled, maxTabSwitches, syncState, pushWarning, checkThresholds, startGracePeriod, clearGracePeriod, queueEvent]);
+
+  /* ---- Incremental Sync ---- */
+  const flushQueue = useCallback(() => {
+    if (violationQueueRef.current.length === 0 || !testId) return;
+    const batch = [...violationQueueRef.current];
+    violationQueueRef.current = [];
+
+    // Use keepalive fetch so it survives page unload
+    fetch(`${API_BASE}/skill-tests/${testId}/proctor-logs`, {
+      method: "POST",
+      keepalive: true,
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ events: batch }),
+    }).catch(() => {
+      // If it fails, we put them back so the next interval can retry
+      // (unless page is actually unloading, in which case they're lost, which is unavoidable)
+      violationQueueRef.current.unshift(...batch);
+    });
+  }, [testId]);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    const interval = setInterval(flushQueue, 10000);
+    window.addEventListener("beforeunload", flushQueue);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("beforeunload", flushQueue);
+      flushQueue(); // one last flush on unmount
+    };
+  }, [enabled, flushQueue]);
 
   /* ---- Public API ------------------------------------------------- */
   const registerFaceViolation = useCallback((v: FaceViolation) => {
     if (terminatedRef.current) return;
     faceViolationsRef.current.push(v);
+    queueEvent("face_violation", v.type);
     pushWarning("face_violation", `${v.type} detected`);
     syncState();
     checkThresholds();
-  }, [syncState, pushWarning, checkThresholds]);
+  }, [syncState, pushWarning, checkThresholds, queueEvent]);
+
+  const registerCameraEvent = useCallback((type: "camera_track_ended" | "camera_track_muted") => {
+    if (terminatedRef.current) return;
+    queueEvent(type);
+    pushWarning("camera_drop", `Camera track ${type === "camera_track_ended" ? "ended" : "muted"}`);
+    syncState();
+  }, [syncState, pushWarning, queueEvent]);
 
   const setCameraEnabled = useCallback((val: boolean) => {
     cameraEnabledRef.current = val;
@@ -459,6 +524,7 @@ export function useProctoring(config: ProctoringConfig) {
   return {
     state,
     registerFaceViolation,
+    registerCameraEvent,
     setCameraEnabled,
     addSnapshot,
     requestFullscreen,

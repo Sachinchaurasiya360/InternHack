@@ -1,4 +1,4 @@
-﻿import { prisma } from "../../database/db.js";
+import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
 import {
   generateVerifiedSkillToken,
@@ -463,6 +463,62 @@ export class SkillTestService {
     });
     await cacheDelPattern("skill:tests:list:");
     return test;
+  }
+
+  /* ---- Incremental proctor-log flush (issue #2400) ---- */
+  async logProctorEvents(
+    testId: number,
+    studentId: number,
+    events: { type: string; timestamp: string; detail?: string }[],
+  ) {
+    const test = await prisma.skillTest.findUnique({
+      where: { id: testId },
+      select: { timeLimitSecs: true },
+    });
+    if (!test) throw new Error("Test not found");
+
+    await prisma.$transaction(async (tx) => {
+      // Use raw query to grab a row lock (FOR UPDATE) to prevent concurrent flushes from race conditions.
+      // We no longer select proctorLog here to avoid read amplification.
+      const sessions = await tx.$queryRaw<
+        { id: number; startedAt: Date }[]
+      >`
+        SELECT id, "startedAt"
+        FROM "skillTestAttempt"
+        WHERE "testId" = ${testId}
+          AND "studentId" = ${studentId}
+          AND "completedAt" IS NULL
+        ORDER BY "startedAt" DESC
+        LIMIT 1
+        FOR UPDATE
+      `;
+
+      if (!sessions || sessions.length === 0) {
+        throw new Error("NO_OPEN_SESSION");
+      }
+
+      const session = sessions[0]!;
+
+      const expiresAt = new Date(
+        session.startedAt.getTime() + test.timeLimitSecs * 1000,
+      );
+      if (new Date() > expiresAt) {
+        throw new Error("TEST_EXPIRED");
+      }
+
+      // Atomic JSONB array append using raw SQL to eliminate write amplification
+      await tx.$executeRaw`
+        UPDATE "skillTestAttempt"
+        SET "proctorLog" = jsonb_set(
+          COALESCE("proctorLog", '{}'::jsonb),
+          '{incrementalEvents}',
+          COALESCE("proctorLog"->'incrementalEvents', '[]'::jsonb) || CAST(${JSON.stringify(events)} AS jsonb)
+        )
+        WHERE id = ${session.id}
+      `;
+    });
+
+    return { accepted: events.length };
   }
 
   private calculateProctoringScore(

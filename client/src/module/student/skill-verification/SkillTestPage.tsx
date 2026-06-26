@@ -130,6 +130,7 @@ export default function SkillTestPage() {
 
   const proctor = useProctoring({
     enabled: started && !result,
+    testId: testId ? Number(testId) : undefined,
     onTerminate: handleTerminate,
   });
 
@@ -767,6 +768,7 @@ export default function SkillTestPage() {
             proctor.setCameraEnabled(false);
           }}
           onReady={() => proctor.setCameraEnabled(true)}
+          onTrackDrop={proctor.registerCameraEvent}
         />
 
         {/* Sticky header */}
