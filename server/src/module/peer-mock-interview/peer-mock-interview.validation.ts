@@ -16,5 +16,16 @@ export const proposeTimeSchema = z.object({
 });
 
 export const acceptTimeSchema = z.object({
-  meetingLink: z.string().url().max(500).optional(),
+  // Restrict to http(s): z.string().url() also accepts javascript:/data: URLs,
+  // and the meeting link is rendered as an <a href> in the UI and emails, so an
+  // unrestricted scheme is a stored-XSS / phishing vector for the matched peer.
+  meetingLink: z
+    .string()
+    .url()
+    .max(500)
+    .refine(
+      (url) => /^https?:\/\//i.test(url),
+      "Meeting link must start with http:// or https://",
+    )
+    .optional(),
 });

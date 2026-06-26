@@ -78,12 +78,13 @@ peerMockInterviewRouter.post(
   (req, res) => controller.submitRating(req, res)
 );
 
-// Propose a time for a pending mock interview
+// Propose / accept / reject a time. These are scheduling-coordination calls, not
+// interview consumption, so they intentionally do NOT go through usageLimit:
+// re-proposing after a reject must not burn the user's mock-interview quota.
 peerMockInterviewRouter.post(
   "/pairings/:id/propose-time",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("MOCK_INTERVIEW"),
   validateBody(proposeTimeSchema),
   (req, res) => controller.proposeTime(req, res)
 );
@@ -93,7 +94,6 @@ peerMockInterviewRouter.post(
   "/pairings/:id/accept-time",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("MOCK_INTERVIEW"),
   validateBody(acceptTimeSchema),
   (req, res) => controller.acceptTime(req, res)
 );
@@ -103,7 +103,6 @@ peerMockInterviewRouter.post(
   "/pairings/:id/reject-time",
   authMiddleware,
   requireRole("STUDENT"),
-  usageLimit("MOCK_INTERVIEW"),
   validateBody(z.object({})),
   (req, res) => controller.rejectTime(req, res)
 );

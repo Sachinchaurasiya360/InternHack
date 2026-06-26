@@ -47,8 +47,14 @@ const checkAndSendReminders = async () => {
       ? `Reminder: Mock Interview in 1 hour!`
       : `Reminder: Mock Interview tomorrow!`;
       
+    const scheduledLabel =
+      pairing.scheduledAt.toLocaleString("en-US", {
+        timeZone: "UTC",
+        dateStyle: "medium",
+        timeStyle: "short",
+      }) + " UTC";
     const html = `<h3>Mock Interview Reminder</h3>
-      <p>Your practice mock interview is scheduled for <strong>${pairing.scheduledAt.toLocaleString()}</strong>.</p>
+      <p>Your practice mock interview is scheduled for <strong>${scheduledLabel}</strong>.</p>
       ${pairing.meetingLink ? `<p>Meeting Link: <a href="${pairing.meetingLink}">${pairing.meetingLink}</a></p>` : "<p>No meeting link was provided. Please coordinate with your partner if you haven't already.</p>"}
       <p>Good luck!</p>`;
 
