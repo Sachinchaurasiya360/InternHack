@@ -6,6 +6,7 @@ import {
   updateTopicProgress,
   recomputePace,
   getEnrollmentAnalyticsBatchForUser,
+  findDuplicateRoadmap,
 } from "../module/roadmap/roadmap.service.js";
 import { prisma } from "../database/db.js";
 import { invalidateRecommendations } from "../module/recommendation/recommendation.service.js";
@@ -19,7 +20,7 @@ import type { EnrollInput } from "../module/roadmap/roadmap.validation.js";
 // `tx.roadmapEnrollment.create` resolve against the same configurable mocks.
 vi.mock("../database/db.js", () => ({
   prisma: {
-    roadmap: { findFirst: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
+    roadmap: { findFirst: vi.fn(), findUnique: vi.fn(), findMany: vi.fn(), update: vi.fn() },
     roadmapEnrollment: {
       findFirst: vi.fn(),
       findUnique: vi.fn(),
@@ -804,5 +805,92 @@ describe("getEnrollmentAnalyticsBatchForUser", () => {
     expect(
       prisma.roadmapEnrollment.findMany,
     ).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ─── findDuplicateRoadmap ──────────────────────────────────────────────────────
+
+describe("findDuplicateRoadmap", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const makeRoadmap = (title: string) => ({
+    id: 1,
+    title,
+    slug: "ai-test",
+    ownerUserId: USER_ID,
+    isAiGenerated: true,
+    updatedAt: new Date(),
+  } as any);
+
+  it("returns null for empty goal", async () => {
+    await expect(findDuplicateRoadmap("", USER_ID)).resolves.toBeNull();
+  });
+
+  it("returns null for goal with only stop words", async () => {
+    await expect(findDuplicateRoadmap("want to learn how for", USER_ID)).resolves.toBeNull();
+  });
+
+  it("returns null when no roadmaps exist at all", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([]);
+    const result = await findDuplicateRoadmap("machine learning", USER_ID);
+    expect(result).toBeNull();
+    expect(prisma.roadmap.findMany).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns a roadmap when title contains all keywords", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([
+      makeRoadmap("Machine Learning Roadmap"),
+    ]);
+    const result = await findDuplicateRoadmap("i want to learn machine learning", USER_ID);
+    expect(result).not.toBeNull();
+    expect(result!.title).toBe("Machine Learning Roadmap");
+  });
+
+  it("returns a roadmap when title contains enough keywords to exceed threshold", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([
+      makeRoadmap("Data Science with Python"),
+    ]);
+    const result = await findDuplicateRoadmap("learn data science python for beginners", USER_ID);
+    expect(result).not.toBeNull();
+    expect(result!.title).toBe("Data Science with Python");
+  });
+
+  it("returns null when keyword overlap is below threshold", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([
+      makeRoadmap("Advanced Quantum Computing"),
+    ]);
+    const result = await findDuplicateRoadmap("learn web development with react", USER_ID);
+    expect(result).toBeNull();
+  });
+
+  it("selects the best-matching roadmap from multiple candidates", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([
+      makeRoadmap("React for Beginners"),
+      makeRoadmap("Full Stack Web Development"),
+      makeRoadmap("DevOps with Docker and Kubernetes"),
+    ]);
+    const result = await findDuplicateRoadmap("learn react web development full stack", USER_ID);
+    expect(result).not.toBeNull();
+    expect(result!.title).toBe("Full Stack Web Development");
+  });
+
+  it("passes correct prisma query parameters", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([]);
+    await findDuplicateRoadmap("learn python data science", USER_ID);
+    expect(prisma.roadmap.findMany).toHaveBeenCalledWith({
+      where: {
+        ownerUserId: USER_ID,
+        isAiGenerated: true,
+        slug: { startsWith: "ai-" },
+        OR: [
+          { title: { contains: "python", mode: "insensitive" } },
+          { title: { contains: "data", mode: "insensitive" } },
+          { title: { contains: "science", mode: "insensitive" } },
+        ],
+      },
+      orderBy: { updatedAt: "desc" },
+    });
   });
 });

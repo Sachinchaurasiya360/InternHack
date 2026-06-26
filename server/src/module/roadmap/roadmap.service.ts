@@ -13,6 +13,22 @@ interface WeeklyPlanWeek {
   topicSlugs: string[];
   totalHours: number;
 }
+const STOP_WORDS = new Set([
+  "want", "learn", "how", "for", "the", "and", "get", "become",
+  "need", "use", "can", "know", "like", "just", "all", "any",
+  "are", "but", "not", "out", "new", "way", "its", "has",
+  "was", "had", "his", "her", "she", "him", "who", "why",
+  "yes", "maybe", "also", "every", "able", "make", "take",
+  "some", "such", "than", "that", "them", "then", "they",
+  "this", "will", "with", "have", "from", "which", "were",
+  "study", "about", "what", "being", "done", "each", "else",
+  "over", "should", "into", "more", "much", "must", "only",
+  "other", "same", "well", "does", "doing", "would", "could",
+  "most", "still", "thing", "things", "help",
+]);
+
+const SIMILARITY_THRESHOLD = 0.3;
+
 export async function findDuplicateRoadmap(
   goalDescription: string,
   userId: number,
@@ -20,33 +36,41 @@ export async function findDuplicateRoadmap(
   const normalizedGoal = goalDescription.toLowerCase().trim();
   if (!normalizedGoal) return null;
 
-  // Simple keyword-based similarity: extract significant words
   const keywords = normalizedGoal
     .split(/\s+/)
-    .filter((w) => w.length >= 3 && !["want", "learn", "how", "for", "the", "and"].includes(w));
+    .filter((w) => w.length >= 3 && !STOP_WORDS.has(w));
 
   if (keywords.length === 0) return null;
 
-  // We'll search for roadmaps where the title contains at least one of the major keywords
-  // and then we can do a secondary check if needed, or just let the user Decide.
-  // For now, let's find the most recent one that matches.
-  return prisma.roadmap.findFirst({
+  const candidates = await prisma.roadmap.findMany({
     where: {
       ownerUserId: userId,
       isAiGenerated: true,
-      slug: {
-        startsWith: "ai-",
-      },
-      title: {
-        contains: normalizedGoal.slice(0, 30),
-        mode: "insensitive",
-      },
+      slug: { startsWith: "ai-" },
       OR: keywords.map(kw => ({
         title: { contains: kw, mode: 'insensitive' }
-      }))
+      })),
     },
-    orderBy: { updatedAt: 'desc' }
+    orderBy: { updatedAt: 'desc' },
   });
+
+  if (candidates.length === 0) return null;
+
+  let bestMatch: typeof candidates[0] | null = null;
+  let bestScore = 0;
+
+  for (const roadmap of candidates) {
+    const title = roadmap.title.toLowerCase();
+    const matchCount = keywords.filter(kw => title.includes(kw)).length;
+    const score = matchCount / keywords.length;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = roadmap;
+    }
+  }
+
+  return bestScore >= SIMILARITY_THRESHOLD ? bestMatch : null;
 }
 export interface EnrolledRoadmap {
   enrollment: Prisma.roadmapEnrollmentGetPayload<{
@@ -1219,3 +1243,4 @@ export function summarizeProgress(
     hoursTotal,
   };
 }
+
