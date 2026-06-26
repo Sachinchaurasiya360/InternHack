@@ -10,8 +10,14 @@ vi.mock("../database/db.js", () => ({
   },
 }));
 
+// Mock the email util so we can assert whether the admin alert is sent
+vi.mock("../utils/email.utils.js", () => ({
+  sendEmail: vi.fn().mockResolvedValue(true),
+}));
+
 // We need real Prisma error classes, so import them directly
 import { Prisma } from "@prisma/client";
+import { sendEmail } from "../utils/email.utils.js";
 import { errorMiddleware } from "../middleware/error.middleware.js";
 import { FileUploadError } from "../lib/errors.js";
 
@@ -282,6 +288,37 @@ describe("errorMiddleware", () => {
         },
         items: [{ token: "[REDACTED]" }],
       });
+    });
+  });
+
+  // ── Admin alert email (cron suppression) ──────────────────────────
+  // Emails only fire on 5xx in production. Cron-route failures must not page
+  // the admin inbox even though they are still written to errorLog.
+  describe("admin alert email", () => {
+    let originalEnv: string | undefined;
+    beforeEach(() => {
+      originalEnv = process.env["NODE_ENV"];
+      process.env["NODE_ENV"] = "production";
+    });
+    afterEach(() => {
+      process.env["NODE_ENV"] = originalEnv;
+    });
+
+    it("should send an admin alert for a 500 on a non-cron route", () => {
+      errorMiddleware(new Error("something broke"), mockReq(), mockRes(), noop);
+      expect(sendEmail).toHaveBeenCalledTimes(1);
+    });
+
+    it("should NOT send an admin alert for a 500 on a cron route", () => {
+      const req = mockReq({ originalUrl: "/api/cron/pipeline", url: "/api/cron/pipeline", method: "GET" });
+      errorMiddleware(new Error("scraper blew up"), req, mockRes(), noop);
+      expect(sendEmail).not.toHaveBeenCalled();
+    });
+
+    it("should NOT send an admin alert for a non-5xx cron-route error", () => {
+      const req = mockReq({ originalUrl: "/api/cron/daily", url: "/api/cron/daily", method: "GET" });
+      errorMiddleware(new Error("Topic not found"), req, mockRes(), noop);
+      expect(sendEmail).not.toHaveBeenCalled();
     });
   });
 

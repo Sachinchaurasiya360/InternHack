@@ -69,7 +69,11 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
     console.error("[ErrorLog] Failed to write:", dbErr);
   });
 
-  if (statusCode >= 500) {
+  // Cron failures are already captured in errorLog and the run's JSON status;
+  // they should not page the admin inbox on every failed/aborted job.
+  const isCronRoute = path.startsWith("/api/cron/");
+
+  if (statusCode >= 500 && !isCronRoute) {
     const rawDetails = rawErr ? formatRawError(rawErr) : "No stack trace";
     sendEmail({
       to: ADMIN_ALERT_EMAIL,
