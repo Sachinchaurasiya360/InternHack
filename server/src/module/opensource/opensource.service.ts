@@ -761,8 +761,11 @@ export class OpensourceService {
     });
   }
   async getActivityHeatmap(userId: number) {
+    // 90-day window inclusive of today: the result loop below emits 90 cells
+    // [since .. since+89], so start `since` 89 days back to land the last cell
+    // on today. Querying/displaying from the same `since` keeps them aligned.
     const since = new Date();
-    since.setDate(since.getDate() - 90);
+    since.setDate(since.getDate() - 89);
     since.setHours(0, 0, 0, 0);
 
     const [repoRequests, guideProgressRecords, guideFeedbackRecords, pullRequestRecords] = await Promise.all([
