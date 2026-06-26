@@ -73,6 +73,7 @@ import analyticsRouter from "./module/analytics/analytics.routes.js";
 import { healthRouter } from "./module/health/health.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
+import { authIpLimiter, authEmailLimiter } from "./middleware/rate-limit.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
 import { startFollowUpCron, stopFollowUpCron } from "./cron/scheduled-emails.js";
@@ -240,15 +241,9 @@ const globalLimiter = rateLimit({
 });
 app.use("/api/", globalLimiter);
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  store: createRateLimitStore("auth"),
-  message: { message: "Too many login attempts, please try again later" },
-});
-app.use("/api/auth/login", authLimiter);
-app.use("/api/auth/register", authLimiter);
-app.use("/api/admin/login", authLimiter);
+app.use("/api/auth/login", authIpLimiter, authEmailLimiter);
+app.use("/api/auth/register", authIpLimiter, authEmailLimiter);
+app.use("/api/admin/login", authIpLimiter, authEmailLimiter);
 
 const latexLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,

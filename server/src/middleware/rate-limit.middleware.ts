@@ -34,6 +34,49 @@ export const contactLimiter = rateLimit({
   },
 });
 
+export const authIpKeyGenerator = (req: any): string => {
+  return ipKeyGenerator(req.ip || "unknown_ip");
+};
+
+export const authIpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRateLimitStore("auth-ip"),
+  keyGenerator: authIpKeyGenerator,
+  message: {
+    message: "Too many login attempts from this network, please try again later"
+  },
+});
+
+export const authEmailKeyGenerator = (req: any): string => {
+  const email = req.body && typeof req.body === "object" && typeof req.body.email === "string"
+    ? req.body.email.trim().toLowerCase()
+    : "";
+  return email ? `email:${email}` : `ip:${ipKeyGenerator(req.ip || "unknown_ip")}`;
+};
+
+export const authEmailSkip = (req: any): boolean => {
+  const isLoginOrForgotPassword = req.originalUrl.includes("login") || req.originalUrl.includes("forgot-password") || req.originalUrl.includes("reset-password");
+  if (!isLoginOrForgotPassword) return true;
+  const email = req.body && typeof req.body === "object" && typeof req.body.email === "string" ? req.body.email : "";
+  return !email;
+};
+
+export const authEmailLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRateLimitStore("auth-email"),
+  keyGenerator: authEmailKeyGenerator,
+  message: {
+    message: "Too many login attempts for this account, please try again later"
+  },
+  skip: authEmailSkip,
+});
+
 // GitHub connect/sync each fan out to many GitHub API calls; cap per user to
 // avoid abuse and GitHub quota exhaustion.
 export const githubSyncLimiter = rateLimit({
