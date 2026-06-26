@@ -760,6 +760,88 @@ export class OpensourceService {
       },
     });
   }
+  async getActivityHeatmap(userId: number) {
+    const since = new Date();
+    since.setDate(since.getDate() - 90);
+    since.setHours(0, 0, 0, 0);
+
+    const [repoRequests, guideProgressRecords, guideFeedbackRecords, pullRequestRecords] = await Promise.all([
+      prisma.repoRequest.findMany({
+        where: {
+          userId,
+          status: { in: ["PENDING", "APPROVED"] },
+          createdAt: { gte: since },
+        },
+        select: { createdAt: true },
+      }),
+      prisma.guideProgress.findMany({
+        where: { userId, createdAt: { gte: since } },
+        select: { createdAt: true },
+      }),
+      prisma.guideFeedback.findMany({
+        where: { userId, createdAt: { gte: since } },
+        select: { createdAt: true },
+      }),
+      prisma.githubPullRequest.findMany({
+        where: { connection: { userId }, mergedAt: { gte: since } },
+        select: { mergedAt: true },
+      }),
+    ]);
+
+    const dateKey = (d: Date) => d.toISOString().split("T")[0];
+    const detailsMap = new Map<string, { guideSteps: number; repoSuggestions: number; prsMerged: number }>();
+
+    for (const r of repoRequests) {
+      const key = dateKey(r.createdAt);
+      const entry = detailsMap.get(key) ?? { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
+      entry.repoSuggestions += 1;
+      detailsMap.set(key, entry);
+    }
+
+    for (const r of guideProgressRecords) {
+      const key = dateKey(r.createdAt);
+      const entry = detailsMap.get(key) ?? { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
+      entry.guideSteps += 1;
+      detailsMap.set(key, entry);
+    }
+
+    for (const r of guideFeedbackRecords) {
+      const key = dateKey(r.createdAt);
+      const entry = detailsMap.get(key) ?? { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
+      entry.guideSteps += 1;
+      detailsMap.set(key, entry);
+    }
+
+    for (const r of pullRequestRecords) {
+      const key = dateKey(r.mergedAt);
+      const entry = detailsMap.get(key) ?? { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
+      entry.prsMerged += 1;
+      detailsMap.set(key, entry);
+    }
+
+    const result: {
+      date: string;
+      count: number;
+      level: number;
+      details: { guideSteps: number; repoSuggestions: number; prsMerged: number };
+    }[] = [];
+
+    for (let i = 0; i < 90; i++) {
+      const d = new Date(since);
+      d.setDate(d.getDate() + i);
+      const key = dateKey(d);
+      const details = detailsMap.get(key) ?? { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
+      const total = details.guideSteps + details.repoSuggestions + details.prsMerged;
+      let level = 0;
+      if (total >= 6) level = 3;
+      else if (total >= 3) level = 2;
+      else if (total >= 1) level = 1;
+      result.push({ date: key, count: total, level, details });
+    }
+
+    return { activity: result };
+  }
+
   // ─── Bookmarks ────────────────────────────────────────────────
 
   async getBookmarkedRepoIds(userId: number): Promise<number[]> {

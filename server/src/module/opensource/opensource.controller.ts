@@ -329,6 +329,23 @@ export class OpensourceController {
     }
   };
 
+  async getActivityHeatmap(req: Request, res: Response, next: NextFunction) {
+    try {
+      const queryStudentId = req.query.studentId as string | undefined;
+      const userId = queryStudentId ? parseInt(queryStudentId, 10) : req.user!.id;
+
+      if (queryStudentId && req.user!.role === "STUDENT" && userId !== req.user!.id) {
+        res.status(403).json({ success: false, error: "Cannot view other student's activity" });
+        return;
+      }
+
+      const result = await service.getActivityHeatmap(userId);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getGuideProgress(req: Request, res: Response, next: NextFunction) {
     try {
       const guideSlug = req.params.guideSlug as string;
