@@ -12,6 +12,13 @@ vi.mock("../database/db.js", () => ({
     skillTest: {
       findUnique: vi.fn(),
     },
+    skillTestAttempt: {
+      findFirst: vi.fn(),
+      update: vi.fn(),
+    },
+    verifiedSkill: {
+      upsert: vi.fn(),
+    },
     // $transaction receives a callback; we invoke it with a fake tx object
     // that exposes the two methods the service actually calls.
     $transaction: vi.fn((cb: any) =>
@@ -27,6 +34,7 @@ vi.mock("../utils/cache.js", () => ({
   cacheGet: vi.fn(),
   cacheSet: vi.fn(),
   cacheDel: vi.fn(),
+  cacheDelPattern: vi.fn(),
 }));
 
 const service = new SkillTestService();
@@ -118,5 +126,60 @@ describe("SkillTestService.logProctorEvents", () => {
       JSON.stringify(newEvents),
       99
     );
+  });
+});
+
+describe("SkillTestService.submitTest proctoring integrity", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("preserves server-side incrementalEvents and scores from them, ignoring under-reported client counts", async () => {
+    // Test with one question the student answers correctly.
+    vi.mocked(prisma.skillTest.findUnique).mockResolvedValue({
+      id: 10,
+      passThreshold: 70,
+      timeLimitSecs: 3600,
+      skillName: "react",
+      questions: [{ id: 1, correctIndex: 0, explanation: null }],
+    } as any);
+
+    // The open session already holds tamper-resistant events appended during the test.
+    const serverEvents = [
+      { type: "tab_switch", timestamp: "2024-01-01T10:01:00.000Z" },
+      { type: "devtools", timestamp: "2024-01-01T10:02:00.000Z", detail: "F12" },
+      { type: "camera_track_ended", timestamp: "2024-01-01T10:03:00.000Z" },
+    ];
+    vi.mocked(prisma.skillTestAttempt.findFirst).mockResolvedValue({
+      id: 99,
+      startedAt: new Date(Date.now() - 600 * 1000), // 10 mins ago, not expired
+      answers: [{ questionId: 1 }],
+      proctorLog: { incrementalEvents: serverEvents },
+    } as any);
+
+    vi.mocked(prisma.skillTestAttempt.update).mockResolvedValue({ id: 99 } as any);
+
+    // Client tries to under-report: claims a clean run.
+    const clientProctorLog = { tabSwitches: 0, devtoolsAttempts: 0, cameraEnabled: true };
+
+    const result = await service.submitTest(
+      10,
+      2,
+      [{ questionId: 1, selectedIndex: 0 }],
+      clientProctorLog,
+    );
+
+    expect(result.score).toBe(100); // answered correctly
+
+    const updateArg = vi.mocked(prisma.skillTestAttempt.update).mock.calls[0]![0] as any;
+    // Score derived from the server log: 100 - 15 (tab) - 25 (devtools) - 20 (camera) = 40
+    expect(updateArg.data.proctoringScore).toBe(40);
+    // Below the 60 minimum → fails despite a perfect quiz score
+    expect(updateArg.data.passed).toBe(false);
+    expect(result.passed).toBe(false);
+    // The incremental events survive submit instead of being clobbered.
+    expect(updateArg.data.proctorLog.incrementalEvents).toHaveLength(3);
+    // Passing branch never runs, so no verified skill is written.
+    expect(prisma.verifiedSkill.upsert).not.toHaveBeenCalled();
   });
 });
