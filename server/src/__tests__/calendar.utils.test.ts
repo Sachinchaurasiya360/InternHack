@@ -6,7 +6,7 @@ describe("calendar.utils", () => {
     it("should generate a valid ICS calendar event", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics = generateICS({
         uid: "test-event-123",
         title: "Team Meeting",
@@ -29,7 +29,7 @@ describe("calendar.utils", () => {
     it("should format dates correctly in ICS format", () => {
       const start = new Date("2024-06-25T10:00:00.000Z");
       const end = new Date("2024-06-25T11:00:00.000Z");
-      
+
       const ics = generateICS({
         uid: "date-test",
         title: "Date Test",
@@ -46,7 +46,7 @@ describe("calendar.utils", () => {
     it("should include location when provided", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics = generateICS({
         uid: "location-test",
         title: "Conference",
@@ -62,7 +62,7 @@ describe("calendar.utils", () => {
     it("should not include location line when not provided", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics = generateICS({
         uid: "no-location-test",
         title: "Virtual Meeting",
@@ -77,7 +77,7 @@ describe("calendar.utils", () => {
     it("should escape special characters in title", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics = generateICS({
         uid: "escape-test",
         title: "Meeting; Important, Review\\Update",
@@ -93,7 +93,7 @@ describe("calendar.utils", () => {
     it("should escape special characters in description", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics = generateICS({
         uid: "escape-desc-test",
         title: "Meeting",
@@ -103,13 +103,15 @@ describe("calendar.utils", () => {
       });
 
       // Newlines, semicolons, commas, and backslashes should be escaped
-      expect(ics).toContain("DESCRIPTION:Line 1\\nLine 2\\; with semicolon\\, and comma\\\\backslash");
+      expect(ics).toContain(
+        "DESCRIPTION:Line 1\\nLine 2\\; with semicolon\\, and comma\\\\backslash",
+      );
     });
 
     it("should escape special characters in location", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics = generateICS({
         uid: "escape-location-test",
         title: "Meeting",
@@ -119,13 +121,15 @@ describe("calendar.utils", () => {
         location: "Room A; Building B, Floor 3\\Wing C",
       });
 
-      expect(ics).toContain("LOCATION:Room A\\; Building B\\, Floor 3\\\\Wing C");
+      expect(ics).toContain(
+        "LOCATION:Room A\\; Building B\\, Floor 3\\\\Wing C",
+      );
     });
 
     it("should use CRLF line endings", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics = generateICS({
         uid: "crlf-test",
         title: "Test",
@@ -142,7 +146,7 @@ describe("calendar.utils", () => {
     it("should include DTSTAMP with current timestamp", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics = generateICS({
         uid: "timestamp-test",
         title: "Test",
@@ -158,7 +162,7 @@ describe("calendar.utils", () => {
     it("should handle events spanning multiple days", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-27T18:00:00Z");
-      
+
       const ics = generateICS({
         uid: "multi-day-test",
         title: "Conference",
@@ -174,7 +178,7 @@ describe("calendar.utils", () => {
     it("should handle empty strings in title and description", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics = generateICS({
         uid: "empty-test",
         title: "",
@@ -192,7 +196,7 @@ describe("calendar.utils", () => {
     it("should generate unique UIDs with @internhack.xyz domain", () => {
       const start = new Date("2024-06-25T10:00:00Z");
       const end = new Date("2024-06-25T11:00:00Z");
-      
+
       const ics1 = generateICS({
         uid: "event-1",
         title: "Event 1",
