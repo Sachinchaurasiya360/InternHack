@@ -6,7 +6,7 @@ import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
 import { UserService } from "../user/user.service.js";
-import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from "../../utils/cache.js";
 
 const userService = new UserService();
 
@@ -127,7 +127,7 @@ function assertNotLocked(lockedUntil: Date | null) {
   }
 }
 
-const GITHUB_STATS_CACHE_TTL = 60 * 60 * 1000;
+const GITHUB_STATS_CACHE_TTL_SECONDS = 60 * 60; // 1 hour
 const GITHUB_STATS_MAX_REPO_PAGES = 100;
 
 type GitHubStats = {
@@ -143,8 +143,6 @@ type GitHubStatsRepo = {
   language: string | null;
   fork: boolean;
 };
-
-const githubStatsCache = new Map<string, { data: GitHubStats; expiresAt: number }>();
 
 function parseGitHubUsername(input: string) {
   const value = input.trim();
@@ -565,23 +563,34 @@ export class AuthService {
 
     await signProfileMedia(user as Record<string, any>);
 
-    // Bust cached profile so next GET /auth/me returns fresh data
+    // Bust cached profile so next GET /auth/me and public profile returns fresh data.
+    // Use cacheDelPattern so both visitor variants (:auth and :guest) are flushed.
     await cacheDel(`profile:me:${userId}`);
-    await cacheDel(`profile:public:${userId}`);
+    await cacheDelPattern(`profile:public:${userId}:`);
     if (user.profileSlug) {
-      await cacheDel(`profile:public:${user.profileSlug}`);
+      await cacheDelPattern(`profile:public:${user.profileSlug}:`);
     }
-
 
     return user;
   }
 
-  async getPublicProfile(identifier: string, visitor?: { id: number; role: string }) {
-    // Because public profiles vary by visitor authorization, include role in cache key if authorized
+  /**
+   * Fetch the public profile for a given identifier (slug or numeric id).
+   *
+   * DB query count per request:
+   *   CACHED  – 0 Prisma queries (served from Redis / in-process fallback)
+   *   UNCACHED – 1-2 Prisma queries:
+   *     • 1 × user.findUnique (by profileSlug)
+   *     • +1 × user.findUnique (by id, only when slug lookup returns null and identifier is numeric)
+   *
+   * Returns the profile object and whether the response was served from cache.
+   */
+  async getPublicProfile(identifier: string, visitor?: { id: number; role: string }): Promise<{ profile: unknown; cacheHit: boolean }> {
+    // Because public profiles vary by visitor authorization, include role in cache key.
     const isVisitorAuthorized = visitor?.role === "ADMIN" || visitor?.role === "RECRUITER";
     const cacheKey = `profile:public:${identifier}:${isVisitorAuthorized ? "auth" : "guest"}`;
     const cached = await cacheGet(cacheKey);
-    if (cached) return cached as never;
+    if (cached) return { profile: cached, cacheHit: true };
 
     const selectOptions = {
       ...this.profileSelect,
@@ -619,7 +628,7 @@ export class AuthService {
     }
 
     const { atsScores, ...rest } = user;
-    
+
     // Sanitize for unauthorized guest viewers
     if (!isOwner && !isVisitorAuthorized) {
       delete (rest as any).email;
@@ -637,7 +646,7 @@ export class AuthService {
       badges,
     };
     await cacheSet(cacheKey, result, PROFILE_TTL);
-    return result;
+    return { profile: result, cacheHit: false };
   }
 
   async verifyEmail(email: string, otp: string) {
@@ -894,18 +903,63 @@ export class AuthService {
     };
   }
 
-  async getGitHubStats(input: string): Promise<GitHubStats> {
+  async getGitHubStats(input: string, userId?: number): Promise<GitHubStats> {
     const username = parseGitHubUsername(input);
     if (!username) {
       throw new Error("GitHub username is required");
     }
 
-    const cacheKey = username.toLowerCase();
-    const cached = githubStatsCache.get(cacheKey);
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.data;
+    // Namespaced cache key to avoid collisions with other cache entries.
+    const cacheKey = `github-stats:${username.toLowerCase()}`;
+    const cached = await cacheGet<GitHubStats>(cacheKey);
+    if (cached) return cached;
+
+    // Short-circuit: if the requesting user has connected GitHub via OAuth,
+    // use the stored DB snapshot to build stats without hitting the GitHub API.
+    // Both paths produce the same shape (totalStars = star sum, topLanguages =
+    // repo-language frequency counts), so cache consumers always see consistent data.
+    if (userId) {
+      const connection = await prisma.githubConnection.findUnique({
+        where: { userId },
+        select: {
+          githubUsername: true,
+          publicRepos: true,
+          contributedStars: true,
+          contributedRepos: {
+            select: { language: true, stars: true },
+          },
+        },
+      });
+
+      if (connection && connection.githubUsername.toLowerCase() === username.toLowerCase()) {
+        // Build topLanguages from contributed repos language frequency (consistent
+        // with the live-API path which counts per-repo language occurrences).
+        const langCounts = new Map<string, number>();
+        let totalStars = 0;
+        for (const repo of connection.contributedRepos) {
+          totalStars += repo.stars;
+          if (repo.language) {
+            langCounts.set(repo.language, (langCounts.get(repo.language) ?? 0) + 1);
+          }
+        }
+
+        const snapshotData: GitHubStats = {
+          username: connection.githubUsername,
+          profileUrl: `https://github.com/${connection.githubUsername}`,
+          publicRepos: connection.publicRepos,
+          totalStars,
+          topLanguages: [...langCounts.entries()]
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .slice(0, 3)
+            .map(([name, count]) => ({ name, count })),
+        };
+
+        await cacheSet(cacheKey, snapshotData, GITHUB_STATS_CACHE_TTL_SECONDS);
+        return snapshotData;
+      }
     }
 
+    // Fallback: fetch live stats from the GitHub API.
     const headers = GITHUB_API_HEADERS;
     const [userRes, repos] = await Promise.all([
       fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
@@ -944,22 +998,7 @@ export class AuthService {
         .map(([name, count]) => ({ name, count })),
     };
 
-    githubStatsCache.set(cacheKey, { data, expiresAt: Date.now() + GITHUB_STATS_CACHE_TTL });
-    if (githubStatsCache.size > 200) {
-      const now = Date.now();
-      for (const [key, entry] of githubStatsCache) {
-        if (entry.expiresAt <= now) githubStatsCache.delete(key);
-      }
-      while (githubStatsCache.size > 200) {
-        const oldestKey = githubStatsCache.keys().next().value;
-        if (oldestKey !== undefined) {
-          githubStatsCache.delete(oldestKey);
-        } else {
-          break;
-        }
-      }
-    }
-
+    await cacheSet(cacheKey, data, GITHUB_STATS_CACHE_TTL_SECONDS);
     return data;
   }
 }
