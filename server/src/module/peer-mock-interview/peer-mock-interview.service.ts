@@ -405,11 +405,22 @@ export class PeerMockInterviewService {
   async runMatchingJob() {
     const { withAdvisoryLock } = await import("../../utils/cron-lock.js");
     const result = await withAdvisoryLock("peer_mock_interview_match_service", async () => {
-      // 1. Get all active preferences
+      // 1. Get active preferences for actively-enrolled PREMIUM users only.
+      // The candidate pool must match what the API gates on (requirePremium /
+      // getPlanTier), otherwise a lapsed user gets matched by the cron and then
+      // hits 403 viewing their own pairing. This mirrors getPlanTier's PREMIUM
+      // condition at the query level (plan in {MONTHLY,YEARLY} + ACTIVE + not
+      // past subscriptionEndDate).
       const prefs = await prisma.peerMockInterviewPreference.findMany({
         where: {
           enabled: true,
           user: {
+            subscriptionStatus: "ACTIVE",
+            subscriptionPlan: { in: ["MONTHLY", "YEARLY"] },
+            OR: [
+              { subscriptionEndDate: null },
+              { subscriptionEndDate: { gt: new Date() } },
+            ],
             roadmapEnrollments: {
               some: { status: "ACTIVE" },
             },

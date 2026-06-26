@@ -1,32 +1,29 @@
 import { Router } from "express";
+import { z } from "zod";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
+import { requirePremium } from "../../middleware/premium.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
+import { validateBody } from "../../middleware/validation.middleware.js";
 import { PeerMockInterviewController } from "./peer-mock-interview.controller.js";
 import { mockInterviewPreferenceSchema, mockInterviewFeedbackSchema, proposeTimeSchema, acceptTimeSchema } from "./peer-mock-interview.validation.js";
-import { z } from "zod";
-import type { Request, Response, NextFunction } from "express";
 
 const controller = new PeerMockInterviewController();
 
 export const peerMockInterviewRouter = Router();
 
-function validateBody(schema: z.Schema) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const parsed = schema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ message: "Validation failed", errors: parsed.error.format() });
-      return;
-    }
-    next();
-  };
-}
+// Every route requires an authenticated STUDENT with an active Premium
+// subscription. requirePremium centralises the subscription lookup (via the
+// canonical getPlanTier) so the controllers no longer repeat it, and the shared
+// validateBody attaches parsed/transformed input to req.body so controllers do
+// not re-parse.
 
 // Retrieve user's mock interview preferences
 peerMockInterviewRouter.get(
   "/preferences",
   authMiddleware,
   requireRole("STUDENT"),
+  requirePremium,
   usageLimit("MOCK_INTERVIEW"),
   (req, res) => controller.getPreference(req, res)
 );
@@ -36,6 +33,7 @@ peerMockInterviewRouter.post(
   "/preferences",
   authMiddleware,
   requireRole("STUDENT"),
+  requirePremium,
   usageLimit("MOCK_INTERVIEW"),
   validateBody(mockInterviewPreferenceSchema),
   (req, res) => controller.upsertPreference(req, res)
@@ -46,6 +44,7 @@ peerMockInterviewRouter.get(
   "/pairings/upcoming",
   authMiddleware,
   requireRole("STUDENT"),
+  requirePremium,
   usageLimit("MOCK_INTERVIEW"),
   (req, res) => controller.getUpcomingPairing(req, res)
 );
@@ -55,6 +54,7 @@ peerMockInterviewRouter.get(
   "/pairings/:id",
   authMiddleware,
   requireRole("STUDENT"),
+  requirePremium,
   usageLimit("MOCK_INTERVIEW"),
   (req, res) => controller.getPairingDetails(req, res)
 );
@@ -64,6 +64,7 @@ peerMockInterviewRouter.post(
   "/pairings/:id/complete",
   authMiddleware,
   requireRole("STUDENT"),
+  requirePremium,
   usageLimit("MOCK_INTERVIEW"),
   (req, res) => controller.markCompleted(req, res)
 );
@@ -73,6 +74,7 @@ peerMockInterviewRouter.post(
   "/pairings/:id/rate",
   authMiddleware,
   requireRole("STUDENT"),
+  requirePremium,
   usageLimit("MOCK_INTERVIEW"),
   validateBody(mockInterviewFeedbackSchema),
   (req, res) => controller.submitRating(req, res)
@@ -85,6 +87,7 @@ peerMockInterviewRouter.post(
   "/pairings/:id/propose-time",
   authMiddleware,
   requireRole("STUDENT"),
+  requirePremium,
   validateBody(proposeTimeSchema),
   (req, res) => controller.proposeTime(req, res)
 );
@@ -94,6 +97,7 @@ peerMockInterviewRouter.post(
   "/pairings/:id/accept-time",
   authMiddleware,
   requireRole("STUDENT"),
+  requirePremium,
   validateBody(acceptTimeSchema),
   (req, res) => controller.acceptTime(req, res)
 );
@@ -103,6 +107,7 @@ peerMockInterviewRouter.post(
   "/pairings/:id/reject-time",
   authMiddleware,
   requireRole("STUDENT"),
+  requirePremium,
   validateBody(z.object({})),
   (req, res) => controller.rejectTime(req, res)
 );
