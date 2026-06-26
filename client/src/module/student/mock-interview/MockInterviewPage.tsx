@@ -38,6 +38,20 @@ import type {
 
 const CALENDLY_URL = "https://calendly.com/mrsachinchaurasiya/30min";
 
+/**
+ * A meeting link is supplied by the matched peer, so treat it as untrusted:
+ * only render it as a clickable link when it is an http(s) URL. Guards against a
+ * javascript:/data: href slipping past the API validation (defense in depth).
+ */
+function isSafeHttpUrl(url: string): boolean {
+  try {
+    const protocol = new URL(url).protocol;
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 type InterviewMode = null | "ai" | "expert" | "peer";
 
 const OPTIONS = [
@@ -1493,7 +1507,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                     {pairing.status === "SCHEDULED" && (
                       <div className="bg-lime-50 dark:bg-lime-400/10 border border-lime-200 dark:border-lime-400/20 p-3 rounded">
                         <p className="text-xs font-semibold text-lime-900 dark:text-lime-500">Scheduled for {pairing.scheduledAt && new Date(pairing.scheduledAt).toLocaleString()}</p>
-                        {pairing.meetingLink && (
+                        {pairing.meetingLink && isSafeHttpUrl(pairing.meetingLink) && (
                           <a href={pairing.meetingLink} target="_blank" rel="noreferrer" className="text-xs text-lime-600 dark:text-lime-400 underline mt-1 block">
                             Join Meeting Link
                           </a>

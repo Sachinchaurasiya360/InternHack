@@ -7,6 +7,21 @@ export interface ScoredPair {
   score: number;
 }
 
+/**
+ * Format a date for emails in UTC with an explicit label. Server-side
+ * `toLocaleString()` renders in the server's timezone (UTC on Vercel) with no
+ * indication, which is ambiguous for recipients; this makes the zone explicit.
+ */
+function formatUtc(d: Date): string {
+  return (
+    d.toLocaleString("en-US", {
+      timeZone: "UTC",
+      dateStyle: "medium",
+      timeStyle: "short",
+    }) + " UTC"
+  );
+}
+
 export class PeerMockInterviewService {
   /**
    * Retrieves the peer mock interview preferences for a user.
@@ -68,12 +83,11 @@ export class PeerMockInterviewService {
           console.error("Failed to send cancellation email:", err);
         }
       }
-    } else {
-      // Run match making job in the background to pair them immediately if possible
-      this.runMatchingJob().catch(err => {
-        console.error("Failed to run background matching job on preference update:", err);
-      });
     }
+    // Note: matching runs on the scheduled match cron. We deliberately do not
+    // fire runMatchingJob() here: on Vercel serverless the function can freeze
+    // after responding, so a fire-and-forget job would not reliably finish, and
+    // running the full matching engine inline would make this endpoint slow.
 
     return preference;
   }
@@ -279,7 +293,7 @@ export class PeerMockInterviewService {
         const emailUtils = await import("../../utils/email.utils.js");
         const html = `<h3>New Time Proposed</h3>
           <p><strong>${proposer.name}</strong> has proposed a time for your upcoming practice session:</p>
-          <p><strong>${proposedTime.toLocaleString()}</strong></p>
+          <p><strong>${formatUtc(proposedTime)}</strong></p>
           <p>Please log in to your dashboard to accept or reject this proposed time.</p>`;
         await emailUtils.sendEmail({ to: partner.email, subject: "Mock Interview Time Proposed", html });
       } catch (err) {
@@ -329,7 +343,7 @@ export class PeerMockInterviewService {
 
     const emailUtils = await import("../../utils/email.utils.js");
     const html = `<h3>Mock Interview Scheduled!</h3>
-      <p>Your mock interview has been scheduled for <strong>${pairing.proposedTime.toLocaleString()}</strong>.</p>
+      <p>Your mock interview has been scheduled for <strong>${formatUtc(pairing.proposedTime)}</strong>.</p>
       ${meetingLink ? `<p>Meeting Link: <a href="${meetingLink}">${meetingLink}</a></p>` : ""}
       <p>Please mark your calendar!</p>`;
 
@@ -395,6 +409,11 @@ export class PeerMockInterviewService {
       const prefs = await prisma.peerMockInterviewPreference.findMany({
         where: {
           enabled: true,
+          user: {
+            roadmapEnrollments: {
+              some: { status: "ACTIVE" },
+            },
+          },
         },
         include: {
           user: {
