@@ -33,7 +33,8 @@ import type {
   MockInterviewFeedback,
   MockInterviewFeedbackResponse,
   MockInterviewTranscriptEntry,
-  PeerMockInterview
+  PeerMockInterview,
+  MockInterviewPreparationMaterial
 } from "../../../lib/types";
 
 const CALENDLY_URL = "https://calendly.com/mrsachinchaurasiya/30min";
@@ -1100,6 +1101,161 @@ export default function MockInterviewPage() {
   );
 }
 
+function PreparationCard({ material }: { material?: MockInterviewPreparationMaterial | null }) {
+  if (!material) {
+    return (
+      <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
+        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+          No code problem auto-assigned for this topic. Use the availability details to coordinate custom questions.
+        </p>
+      </div>
+    );
+  }
+
+  if (material.type === "DSA" && material.dsaProblem) {
+    return (
+      <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-2">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
+        <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.dsaProblem.title}</h4>
+        <p className="text-xs text-stone-500 dark:text-stone-400">
+          Difficulty: <span className="font-semibold text-stone-700 dark:text-stone-300">{material.dsaProblem.difficulty}</span>
+        </p>
+        <div className="pt-2">
+          <a
+            href={`/learn/dsa/problem/${material.dsaProblem.slug}`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-lime-400 hover:bg-lime-300 text-stone-950 text-xs font-bold rounded transition-colors"
+          >
+            View Problem Details
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (material.generic) {
+    return (
+      <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-3">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Preparation Material</span>
+        <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.generic.prompt}</h4>
+        
+        {material.generic.requirements.length > 0 && (
+          <div>
+            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Requirements:</h5>
+            <ul className="list-disc pl-4 text-xs text-stone-500 dark:text-stone-400 space-y-0.5">
+              {material.generic.requirements.map((req, i) => <li key={i}>{req}</li>)}
+            </ul>
+          </div>
+        )}
+        
+        {material.generic.objectives && material.generic.objectives.length > 0 && (
+          <div>
+            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Objectives / Tradeoffs:</h5>
+            <ul className="list-disc pl-4 text-xs text-stone-500 dark:text-stone-400 space-y-0.5">
+              {material.generic.objectives.map((obj, i) => <li key={i}>{obj}</li>)}
+            </ul>
+          </div>
+        )}
+
+        {material.generic.followUpQuestions && material.generic.followUpQuestions.length > 0 && (
+          <div>
+            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Follow-up Questions:</h5>
+            <ul className="list-disc pl-4 text-xs text-stone-500 dark:text-stone-400 space-y-0.5">
+              {material.generic.followUpQuestions.map((q, i) => <li key={i}>{q}</li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function HistorySection({ userId }: { userId: number }) {
+  const { data: pairings, isLoading } = useQuery<PeerMockInterview[]>({
+    queryKey: ["peer-mock-interview", "history"],
+    queryFn: async () => {
+      const res = await api.get("/student/peer-mock-interview/pairings/history");
+      return res.data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md">
+        <Loader2 className="w-6 h-6 animate-spin text-stone-400" />
+      </div>
+    );
+  }
+
+  if (!pairings || pairings.length === 0) {
+    return (
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-8 text-center">
+        <p className="text-sm text-stone-500">No mock interview history found.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {pairings.map((pairing) => {
+        const isA = pairing.studentAId === userId;
+        const partner = isA ? pairing.studentB : pairing.studentA;
+        const myRating = isA ? pairing.ratingBForA : pairing.ratingAForB;
+        const myFeedback = isA ? pairing.feedbackBForA : pairing.feedbackAForB;
+
+        return (
+          <div key={pairing.id} className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5 space-y-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">{new Date(pairing.createdAt).toLocaleDateString()}</span>
+                <h3 className="font-bold text-stone-900 dark:text-stone-50 mt-1">{pairing.topic} Mock Interview</h3>
+                {partner && (
+                  <p className="text-xs text-stone-500 mt-1">
+                    Partner: <span className="font-medium text-stone-700 dark:text-stone-300">{partner.name}</span>
+                  </p>
+                )}
+              </div>
+              <span className={`text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded ${pairing.status === "COMPLETED" ? "bg-lime-400/10 text-lime-600 dark:text-lime-400" : "bg-red-400/10 text-red-600 dark:text-red-400"}`}>
+                {pairing.status}
+              </span>
+            </div>
+            
+            {pairing.status === "COMPLETED" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-stone-100 dark:border-white/5 pt-4">
+                <div>
+                  <h4 className="text-[10px] font-mono uppercase tracking-widest text-stone-400 mb-2">Partner's Feedback for You</h4>
+                  {myRating ? (
+                    <div className="space-y-1">
+                      <div className="flex gap-0.5">
+                        {[1,2,3,4,5].map(star => (
+                          <Star key={star} className={`w-3.5 h-3.5 ${star <= myRating ? "text-lime-400 fill-lime-400" : "text-stone-200 dark:text-stone-700"}`} />
+                        ))}
+                      </div>
+                      <p className="text-xs text-stone-600 dark:text-stone-300 italic">"{myFeedback}"</p>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-stone-500">No feedback submitted yet.</p>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {/* Assigned Problem / Preparation Section */}
+            {(pairing.assignedProblem || pairing.preparationMaterial) && (
+              <div className="mt-4 pt-4 border-t border-stone-100 dark:border-white/5">
+                 <PreparationCard material={pairing.preparationMaterial} />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function PeerMockInterview({ onBack }: { onBack: () => void }) {
   const queryClient = useQueryClient();
 
@@ -1224,6 +1380,8 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
 
   const [proposedDate, setProposedDate] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
+
+  const [activeTab, setActiveTab] = useState<"upcoming" | "history">("upcoming");
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -1364,7 +1522,33 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
           <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6">
             {/* Left Column: Dashboard Status / Match */}
             <div className="space-y-6">
-              {enabled && pairing ? (
+              
+              <div className="flex items-center gap-2 border-b border-stone-200 dark:border-white/10 mb-4">
+                <button
+                  onClick={() => setActiveTab("upcoming")}
+                  className={`pb-2 text-sm font-semibold border-b-2 transition-colors ${
+                    activeTab === "upcoming"
+                      ? "border-lime-400 text-stone-900 dark:text-stone-50"
+                      : "border-transparent text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
+                  }`}
+                >
+                  Upcoming Match
+                </button>
+                <button
+                  onClick={() => setActiveTab("history")}
+                  className={`pb-2 text-sm font-semibold border-b-2 transition-colors ${
+                    activeTab === "history"
+                      ? "border-lime-400 text-stone-900 dark:text-stone-50"
+                      : "border-transparent text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
+                  }`}
+                >
+                  History
+                </button>
+              </div>
+
+              {activeTab === "history" && currentUserId ? (
+                <HistorySection userId={currentUserId} />
+              ) : enabled && pairing ? (
                 // Match Found Card
                 <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden p-6 space-y-6">
                   <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/5 pb-4">
@@ -1408,32 +1592,8 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                     </div>
                   )}
 
-                  {/* Assigned Problem Section */}
-                  {pairing.assignedProblem ? (
-                    <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-2">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
-                      <h4 className="font-bold text-stone-900 dark:text-stone-50">{pairing.assignedProblem.title}</h4>
-                      <p className="text-xs text-stone-500 dark:text-stone-400">
-                        Difficulty: <span className="font-semibold text-stone-700 dark:text-stone-300">{pairing.assignedProblem.difficulty}</span>
-                      </p>
-                      <div className="pt-2">
-                        <a
-                          href={`/learn/dsa/problem/${pairing.assignedProblem.slug}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-lime-400 hover:bg-lime-300 text-stone-950 text-xs font-bold rounded transition-colors"
-                        >
-                          View Problem Details
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
-                      <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                        No code problem auto-assigned for this topic. Use the availability details to coordinate custom questions.
-                      </p>
-                    </div>
-                  )}
+                  {/* Assigned Problem / Preparation Section */}
+                  <PreparationCard material={pairing.preparationMaterial} />
 
                   {/* Complete/Feedback/Scheduling Actions */}
                   <div className="flex flex-col gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
@@ -1547,7 +1707,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                     </div>
                   </div>
                 </div>
-              ) : enabled ? (
+              ) : enabled && !pairing ? (
                 // Searching pool Card
                 <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 text-center space-y-4">
                   <div className="w-12 h-12 bg-lime-400/10 text-lime-500 flex items-center justify-center rounded mx-auto">
@@ -1556,7 +1716,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                   <div>
                     <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">Searching for a partner...</h2>
                     <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
-                      You are in the matching pool! A weekly matching job runs every Sunday at midnight UTC to pair compatible students.
+                      You are in the matching pool! We match students every week on Sunday based on roadmap progress and availability.
                     </p>
                   </div>
                   <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 text-left max-w-md mx-auto space-y-2">
@@ -1587,7 +1747,7 @@ function PeerMockInterview({ onBack }: { onBack: () => void }) {
                   <div>
                     <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">Peer Mock Interviews are disabled</h2>
                     <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
-                      Opt in to get paired with other students on your roadmap for live mock interview practice.
+                      Opt-in on the right to start receiving weekly peer mock interview pairings.
                     </p>
                   </div>
                   <Button

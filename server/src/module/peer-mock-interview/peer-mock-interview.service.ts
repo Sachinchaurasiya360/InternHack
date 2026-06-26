@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
 import type { MockInterviewTopic, peerMockInterview } from "@prisma/client";
+import { getGenericPrepMaterial } from "./peer-mock-interview.prep.js";
 
 export interface ScoredPair {
   u1: any;
@@ -23,6 +24,26 @@ function formatUtc(d: Date): string {
 }
 
 export class PeerMockInterviewService {
+  private attachPreparationMaterial(pairing: any) {
+    if (!pairing) return null;
+    let preparationMaterial = null;
+    if (pairing.topic === "DSA" && pairing.assignedProblem) {
+      preparationMaterial = {
+        type: "DSA",
+        dsaProblem: pairing.assignedProblem
+      };
+    } else {
+      const genericPrep = getGenericPrepMaterial(pairing.topic as MockInterviewTopic);
+      if (genericPrep) {
+        preparationMaterial = {
+          type: pairing.topic,
+          generic: genericPrep
+        };
+      }
+    }
+    return { ...pairing, preparationMaterial };
+  }
+
   /**
    * Retrieves the peer mock interview preferences for a user.
    */
@@ -96,7 +117,7 @@ export class PeerMockInterviewService {
    * Retrieves the active SCHEDULED mock interview for a user.
    */
   async getUpcomingPairing(userId: number) {
-    return prisma.peerMockInterview.findFirst({
+    const pairing = await prisma.peerMockInterview.findFirst({
       where: {
         OR: [
           {
@@ -142,6 +163,7 @@ export class PeerMockInterviewService {
         assignedProblem: true,
       }
     });
+    return this.attachPreparationMaterial(pairing);
   }
 
   /**
@@ -183,7 +205,50 @@ export class PeerMockInterviewService {
       throw Object.assign(new Error("Unauthorized access to pairing"), { status: 403 });
     }
 
-    return pairing;
+    return this.attachPreparationMaterial(pairing);
+  }
+
+  /**
+   * Retrieves all completed or cancelled mock interviews for a user (history).
+   */
+  async getHistoryPairings(userId: number) {
+    const pairings = await prisma.peerMockInterview.findMany({
+      where: {
+        OR: [
+          { studentAId: userId },
+          { studentBId: userId },
+        ],
+        status: { in: ["COMPLETED", "CANCELLED"] }
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        studentA: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            profilePic: true,
+            college: true,
+            linkedinUrl: true,
+          }
+        },
+        studentB: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            profilePic: true,
+            college: true,
+            linkedinUrl: true,
+          }
+        },
+        assignedProblem: true,
+      }
+    });
+
+    return pairings.map(p => this.attachPreparationMaterial(p));
   }
 
   /**
