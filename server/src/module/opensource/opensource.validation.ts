@@ -70,16 +70,6 @@ export const submitRepoRequestSchema = z.object({
     .max(1000),
 });
 
-export const bulkRepoRequestSchema = z.object({
-  ids: z
-    .array(z.number().int().positive("Invalid ID in request list"))
-    .min(1, "At least one ID must be specified"),
-  action: z.enum(["approve", "reject"], {
-    message: "Action must be either 'approve' or 'reject'",
-  }),
-  adminNote: z.string().max(1000).optional(),
-});
-
 export const gsocOrgsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(100).optional().default(20),
@@ -87,6 +77,10 @@ export const gsocOrgsQuerySchema = z.object({
   category: z.string().min(1).max(100).optional(),
   technology: z.string().min(1).max(100).optional(),
   year: z.coerce.number().int().optional(),
+});
+
+export const rejectRequestSchema = z.object({
+  adminNote: z.string().max(2000).optional(),
 });
 
 export const approveRequestOverrideSchema = z.object({
@@ -137,9 +131,19 @@ export const bookmarkBodySchema = z.object({
   repoId: z.number().int().positive("repoId must be a positive integer"),
 });
 
+const dateStringRegex = /^\d{4}-\d{2}-\d{2}$/;
+export const contributionTrendQuerySchema = z.object({
+  startDate: z.string().regex(dateStringRegex, "startDate must be YYYY-MM-DD").optional(),
+  endDate: z.string().regex(dateStringRegex, "endDate must be YYYY-MM-DD").optional(),
+});
+
 export const bulkMigrateBookmarksSchema = z.object({
   repoIds: z
     .array(z.number().int().positive())
     .min(1, "At least one repoId is required")
     .max(500, "Cannot migrate more than 500 bookmarks at once"),
+});
+
+export const issueCertificateSchema = z.object({
+  guideName: z.string().min(1, "guideName is required"),
 });
