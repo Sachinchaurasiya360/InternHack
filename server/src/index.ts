@@ -11,7 +11,6 @@ import morgan from "morgan";
 import { rateLimit } from "express-rate-limit";
 import { createRateLimitStore } from "./utils/rate-limit-store.js";
 import { authRouter } from "./module/auth/auth.routes.js";
-import { jobRouter } from "./module/job/job.routes.js";
 import { studentRouter } from "./module/student/student.routes.js";
 import { peerMockInterviewRouter } from "./module/peer-mock-interview/peer-mock-interview.routes.js";
 import { uploadRouter } from "./module/upload/upload.routes.js";
@@ -37,7 +36,6 @@ import { sqlRouter } from "./module/sql/sql.routes.js";
 import { interviewProgressRouter } from "./module/interview-progress/interview-progress.routes.js";
 import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
-import { professorRouter } from "./module/professor/professor.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
 import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
@@ -243,7 +241,6 @@ app.use(botSeoMiddleware);
 
 // ── Routes ──
 app.use("/api/auth", authRouter);
-app.use("/api/jobs", jobRouter);
 app.use("/api/student/recommendations", recommendationRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/student/peer-mock-interview", peerMockInterviewRouter);
@@ -268,7 +265,6 @@ app.use("/api/sql", sqlRouter);
 app.use("/api/interview-progress", interviewProgressRouter);
 app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
-app.use("/api/professors", professorRouter);
 app.use("/api/internships", internshipRouter);
 app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
@@ -327,7 +323,7 @@ app.get("/api/stats", async (_req, res) => {
 
     const [users, jobs, companies] = await Promise.all([
       prisma.user.count({ where: { role: "STUDENT" } }),
-      prisma.job.count({ where: { status: "PUBLISHED" } }),
+      prisma.scrapedJob.count({ where: { status: "ACTIVE" } }),
       prisma.company.count(),
     ]);
 

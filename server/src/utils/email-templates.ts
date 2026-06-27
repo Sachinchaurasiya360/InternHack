@@ -283,19 +283,6 @@ export function followUpEmailHtml(name: string): string {
               <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">Browse Y Combinator startups with founder info and hiring status</p>
             </td>
           </tr>
-          <tr><td colspan="3" style="height:8px;"></td></tr>
-          <!-- Row 6 -->
-          <tr>
-            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
-              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">IIT Professors</p>
-              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">1,500+ IIT professors with email, department, and research areas</p>
-            </td>
-            <td style="width:4%;"></td>
-            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
-              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">HR Contacts</p>
-              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">1,800+ IT HR contacts with email and LinkedIn for direct outreach</p>
-            </td>
-          </tr>
         </table>
 
         <!-- Separator -->

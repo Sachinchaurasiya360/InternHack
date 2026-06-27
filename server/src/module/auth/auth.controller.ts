@@ -77,9 +77,9 @@ export class AuthController {
   async googleAuth(req: Request, res: Response) {
     try {
       // Body is already validated & typed by route-level validateBody(googleAuthSchema)
-      const { credential, accessToken, role } = req.body as z.infer<typeof googleAuthSchema>;
+      const { credential, accessToken } = req.body as z.infer<typeof googleAuthSchema>;
 
-      const input: { credential?: string; accessToken?: string; role: "STUDENT" | "RECRUITER" } = { role };
+      const input: { credential?: string; accessToken?: string } = {};
       if (credential) input.credential = credential;
       if (accessToken) input.accessToken = accessToken;
       const data = await this.authService.googleAuth(input);

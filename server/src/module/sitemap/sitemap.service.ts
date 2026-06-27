@@ -111,22 +111,6 @@ export class SitemapService {
       });
     }
 
-    // ── 3. Published jobs ────────────────────────────────────────
-    const jobs = await prisma.job.findMany({
-      where: { status: "PUBLISHED" },
-      select: { id: true, updatedAt: true },
-      orderBy: { updatedAt: "desc" },
-      take: 5000,
-    });
-    for (const job of jobs) {
-      urls.push({
-        loc: `${SITE_URL}/jobs/${job.id}`,
-        lastmod: toIsoDate(job.updatedAt),
-        changefreq: "weekly",
-        priority: 0.7,
-      });
-    }
-
     // ── 4. Published blog posts ──────────────────────────────────
     const posts = await prisma.blogPost.findMany({
       where: { status: "PUBLISHED" },

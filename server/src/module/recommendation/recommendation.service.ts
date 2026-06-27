@@ -64,7 +64,6 @@ async function computeWeakAreas(userId: number): Promise<WeakArea[]> {
     analyzeDsa(userId, weakAreas),
     analyzeAptitude(userId, weakAreas),
     analyzeSkillTests(userId, weakAreas),
-    analyzeAts(userId, weakAreas),
     analyzeRoadmap(userId, weakAreas),
   ]);
 
@@ -172,29 +171,6 @@ async function analyzeSkillTests(
         score: attempt.score,
       });
     }
-  }
-}
-
-// ── ATS: missing keywords from latest resume scan ─────────────────────────
-async function analyzeAts(userId: number, out: WeakArea[]): Promise<void> {
-  const latest = await prisma.atsScore.findFirst({
-    where: { studentId: userId },
-    orderBy: { createdAt: "desc" },
-  });
-
-  if (!latest) return;
-
-  const keywordAnalysis = latest.keywordAnalysis as {
-    missing?: string[];
-  };
-
-  const missing = keywordAnalysis?.missing ?? [];
-  for (const keyword of missing.slice(0, 5)) {
-    out.push({
-      type: "ats",
-      topic: keyword,
-      reason: "Missing from your resume based on latest ATS scan",
-    });
   }
 }
 

@@ -25,11 +25,11 @@ skillTestRouter.get(
   (req, res, next) => controller.getMyVerified(req, res, next)
 );
 
-// ── Recruiter route ──
+// ── Admin route ──
 skillTestRouter.get(
   "/verified/:studentId",
   authMiddleware,
-  requireRole("RECRUITER"),
+  requireRole("ADMIN"),
   (req, res, next) => controller.getStudentVerified(req, res, next)
 );
 

@@ -252,14 +252,10 @@ export class BadgeService {
         ctx.verified = await prisma.verifiedSkill.count({ where: { studentId } });
         break;
       case "first_application":
-        ctx.appCount = await prisma.application.count({ where: { studentId } });
+        ctx.appCount = await prisma.externalJobApplication.count({ where: { studentId } });
         break;
       case "job_apply": {
-        const [internal, external] = await Promise.all([
-          prisma.application.count({ where: { studentId } }),
-          prisma.externalJobApplication.count({ where: { studentId } }),
-        ]);
-        ctx.total = internal + external;
+        ctx.total = await prisma.externalJobApplication.count({ where: { studentId } });
         break;
       }
       case "interview_share":

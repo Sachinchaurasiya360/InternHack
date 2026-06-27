@@ -12,7 +12,6 @@
 import "dotenv/config";
 import {
   PrismaClient,
-  JobStatus,
   InterviewSource,
   InterviewDifficulty,
   InterviewOutcome,
@@ -41,15 +40,6 @@ async function seedUsers() {
       password,
       role: "ADMIN" as const,
       isVerified: true,
-    },
-    {
-      name: "Demo Recruiter",
-      email: "recruiter@internhack.xyz",
-      password,
-      role: "RECRUITER" as const,
-      isVerified: true,
-      company: "TechCorp",
-      designation: "Hiring Manager",
     },
     {
       name: "Aarav Sharma",
@@ -622,140 +612,6 @@ async function seedGovInternships() {
     }
   }
   log("Government Internships", count);
-}
-
-// ─── 10. Jobs ─────────────────────────────────────────────────────────
-async function seedJobs() {
-  const recruiter = await prisma.user.findFirst({ where: { role: "RECRUITER" } });
-  if (!recruiter) {
-    console.log("  ⚠ Skipping jobs, no recruiter user found");
-    return;
-  }
-
-  const jobs = [
-    {
-      title: "Frontend Developer Intern",
-      description: "Join TechCorp's frontend team and work on real-world React applications. You'll build responsive UIs, collaborate with designers, and ship features to thousands of users.\n\nResponsibilities:\n- Build and maintain React components\n- Implement designs from Figma mockups\n- Write unit tests and participate in code reviews\n\nRequirements:\n- Proficiency in React and TypeScript\n- Familiarity with TailwindCSS or any CSS framework\n- Understanding of REST APIs",
-      location: "Bangalore, India",
-      salary: "₹20,000 – ₹25,000/month",
-      company: "TechCorp India",
-      status: JobStatus.PUBLISHED,
-      tags: ["React", "TypeScript", "Frontend", "Internship"],
-      deadline: new Date("2026-07-31"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Backend Engineer (Node.js)",
-      description: "DataWave Analytics is looking for a backend engineer to build scalable APIs and data pipelines.\n\nResponsibilities:\n- Design and implement RESTful APIs with Express/Node.js\n- Optimize PostgreSQL queries and database schemas\n- Integrate third-party APIs and manage background jobs\n\nRequirements:\n- 0–2 years experience with Node.js\n- Good understanding of SQL databases\n- Experience with Docker is a plus",
-      location: "Hyderabad, India",
-      salary: "₹6 – ₹10 LPA",
-      company: "DataWave Analytics",
-      status: JobStatus.PUBLISHED,
-      tags: ["Node.js", "PostgreSQL", "Backend", "API"],
-      deadline: new Date("2026-08-15"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Full Stack Developer",
-      description: "CloudNine Solutions is hiring a full-stack developer to work on their next-gen SaaS product.\n\nResponsibilities:\n- Build end-to-end features across React frontend and Express backend\n- Manage infrastructure on AWS (S3, EC2, Lambda)\n- Participate in sprint planning and technical design discussions\n\nRequirements:\n- Strong React + Node.js skills\n- Familiarity with cloud services (AWS/GCP/Azure)\n- Experience with CI/CD pipelines",
-      location: "Pune, India",
-      salary: "₹8 – ₹14 LPA",
-      company: "CloudNine Solutions",
-      status: JobStatus.PUBLISHED,
-      tags: ["React", "Node.js", "AWS", "Full Stack"],
-      deadline: new Date("2026-08-30"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Data Science Intern",
-      description: "Work on cutting-edge machine learning models at DataWave Analytics.\n\nResponsibilities:\n- Explore and clean large datasets\n- Build and evaluate ML models using scikit-learn and TensorFlow\n- Present findings to the product team\n\nRequirements:\n- Strong Python skills\n- Knowledge of pandas, numpy, and ML basics\n- Statistics fundamentals",
-      location: "Remote",
-      salary: "₹15,000 – ₹20,000/month",
-      company: "DataWave Analytics",
-      status: JobStatus.PUBLISHED,
-      tags: ["Python", "Machine Learning", "Data Science", "Internship"],
-      deadline: new Date("2026-07-15"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "DevOps Engineer",
-      description: "CyberShield Security needs a DevOps engineer to own their cloud infrastructure and CI/CD pipelines.\n\nResponsibilities:\n- Maintain and scale Kubernetes clusters on AWS EKS\n- Automate deployments with Terraform and GitHub Actions\n- Monitor system health and set up alerting\n\nRequirements:\n- Experience with Docker and Kubernetes\n- Familiarity with Terraform or similar IaC tools\n- Linux administration skills",
-      location: "Delhi, India",
-      salary: "₹10 – ₹16 LPA",
-      company: "CyberShield Security",
-      status: JobStatus.PUBLISHED,
-      tags: ["DevOps", "Kubernetes", "AWS", "Terraform"],
-      deadline: new Date("2026-09-01"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Android Developer",
-      description: "Build EduTech Pro's mobile learning app used by 100,000+ students across India.\n\nResponsibilities:\n- Develop features in Kotlin for Android\n- Integrate REST APIs and handle offline caching\n- Optimize app performance and battery usage\n\nRequirements:\n- Kotlin proficiency\n- Experience with Jetpack Compose or XML layouts\n- Understanding of MVVM architecture",
-      location: "Bangalore, India",
-      salary: "₹7 – ₹12 LPA",
-      company: "EduTech Pro",
-      status: JobStatus.PUBLISHED,
-      tags: ["Android", "Kotlin", "Mobile", "Jetpack Compose"],
-      deadline: new Date("2026-08-20"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Product Manager Intern",
-      description: "FinEdge Technologies is looking for a PM intern to help shape the roadmap for their digital banking product.\n\nResponsibilities:\n- Conduct user research and competitive analysis\n- Write product requirements documents (PRDs)\n- Work closely with engineering and design teams\n\nRequirements:\n- Strong analytical and communication skills\n- Familiarity with fintech or consumer apps\n- Prior internship in product or business roles is a plus",
-      location: "Mumbai, India",
-      salary: "₹25,000 – ₹30,000/month",
-      company: "FinEdge Technologies",
-      status: JobStatus.PUBLISHED,
-      tags: ["Product Management", "Fintech", "Internship", "Business"],
-      deadline: new Date("2026-07-20"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "UI/UX Designer",
-      description: "HealthBridge Systems needs a designer to craft intuitive experiences for their telemedicine platform.\n\nResponsibilities:\n- Create wireframes, prototypes, and high-fidelity designs in Figma\n- Conduct usability testing and incorporate feedback\n- Maintain the design system and component library\n\nRequirements:\n- Proficiency in Figma\n- Portfolio demonstrating UI/UX work\n- Understanding of accessibility standards (WCAG)",
-      location: "Noida, India",
-      salary: "₹6 – ₹10 LPA",
-      company: "HealthBridge Systems",
-      status: JobStatus.PUBLISHED,
-      tags: ["UI/UX", "Figma", "Design", "Healthcare"],
-      deadline: new Date("2026-08-10"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Machine Learning Engineer",
-      description: "Build and deploy production ML systems at DataWave Analytics.\n\nResponsibilities:\n- Train, evaluate, and deploy ML models at scale\n- Build data pipelines with Apache Spark\n- Collaborate with data scientists to productionize models\n\nRequirements:\n- Strong Python and ML fundamentals\n- Experience with TensorFlow or PyTorch\n- Familiarity with MLOps tools (MLflow, Kubeflow)",
-      location: "Hyderabad, India",
-      salary: "₹12 – ₹20 LPA",
-      company: "DataWave Analytics",
-      status: JobStatus.PUBLISHED,
-      tags: ["Python", "Machine Learning", "MLOps", "TensorFlow"],
-      deadline: new Date("2026-09-15"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Security Analyst Intern",
-      description: "Get hands-on experience in cybersecurity at CyberShield Security.\n\nResponsibilities:\n- Assist with vulnerability assessments and penetration testing\n- Monitor security alerts and investigate incidents\n- Document security findings and remediation steps\n\nRequirements:\n- Basic knowledge of networking (TCP/IP, DNS, HTTP)\n- Familiarity with OWASP Top 10\n- Interest in ethical hacking and security tools",
-      location: "Delhi, India",
-      salary: "₹18,000 – ₹22,000/month",
-      company: "CyberShield Security",
-      status: JobStatus.PUBLISHED,
-      tags: ["Cybersecurity", "Penetration Testing", "Internship", "Security"],
-      deadline: new Date("2026-07-25"),
-      recruiterId: recruiter.id,
-    },
-  ];
-
-  let count = 0;
-  for (const j of jobs) {
-    const existing = await prisma.job.findFirst({
-      where: { title: j.title, company: j.company },
-    });
-    if (!existing) {
-      await prisma.job.create({ data: j });
-      count++;
-    }
-  }
-  log("Jobs", count);
 }
 
 // ─── 12. Funding Signals ──────────────────────────────────────────────
@@ -1429,49 +1285,6 @@ async function seedYCCompanies() {
   log("YC Companies", count);
 }
 
-// ─── 15. IIT Professors ───────────────────────────────────────────────
-async function seedProfessors() {
-  const professors = [
-    { collegeName: "IIT Bombay", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Supratik Chakraborty", areaOfInterest: "Formal Methods, SAT Solving, Program Analysis", email: "supratik@cse.iitb.ac.in" },
-    { collegeName: "IIT Bombay", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Ganesh Ramakrishnan", areaOfInterest: "Machine Learning, NLP, Information Extraction", email: "ganesh@cse.iitb.ac.in" },
-    { collegeName: "IIT Bombay", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Soumen Chakrabarti", areaOfInterest: "Web Mining, Information Retrieval, Knowledge Graphs", email: "soumen@cse.iitb.ac.in" },
-    { collegeName: "IIT Delhi", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Naveen Garg", areaOfInterest: "Algorithms, Graph Theory, Approximation Algorithms", email: "naveen@cse.iitd.ac.in" },
-    { collegeName: "IIT Delhi", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Subhashis Banerjee", areaOfInterest: "Computer Vision, Robotics, Machine Learning", email: "suban@cse.iitd.ac.in" },
-    { collegeName: "IIT Delhi", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Maya Ramanath", areaOfInterest: "Knowledge Graphs, Semantic Web, Databases", email: "maya@cse.iitd.ac.in" },
-    { collegeName: "IIT Madras", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Balaraman Ravindran", areaOfInterest: "Reinforcement Learning, Graph Neural Networks, AI", email: "ravi@cse.iitm.ac.in" },
-    { collegeName: "IIT Madras", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. C. Chandra Sekhar", areaOfInterest: "Pattern Recognition, Speech Processing, Neural Networks", email: "chandra@cse.iitm.ac.in" },
-    { collegeName: "IIT Madras", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Mitesh Khapra", areaOfInterest: "Deep Learning, NLP, AI for Indic Languages", email: "miteshk@cse.iitm.ac.in" },
-    { collegeName: "IIT Kanpur", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Sandeep Kumar Shukla", areaOfInterest: "Cyber Security, Embedded Systems, Hardware Security", email: "sandeeps@cse.iitk.ac.in" },
-    { collegeName: "IIT Kanpur", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Arnab Bhattacharya", areaOfInterest: "Database Systems, Data Mining, Spatial Databases", email: "arnabb@cse.iitk.ac.in" },
-    { collegeName: "IIT Kharagpur", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Sudeshna Sarkar", areaOfInterest: "Natural Language Processing, Information Retrieval", email: "sudeshna@cse.iitkgp.ac.in" },
-    { collegeName: "IIT Kharagpur", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Pabitra Mitra", areaOfInterest: "Machine Learning, Data Science, Remote Sensing", email: "pabitra@cse.iitkgp.ac.in" },
-    { collegeName: "IIT Roorkee", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Partha Pratim Roy", areaOfInterest: "Document Analysis, Computer Vision, Deep Learning", email: "partha.roy@cs.iitr.ac.in" },
-    { collegeName: "IIT Roorkee", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Durga Toshniwal", areaOfInterest: "Data Mining, Big Data, IoT", email: "durgatoshniwal@cs.iitr.ac.in" },
-    { collegeName: "IIT Hyderabad", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Vineeth N. Balasubramanian", areaOfInterest: "Deep Learning, Explainable AI, Computer Vision", email: "vineethnb@ai.iith.ac.in" },
-    { collegeName: "IIT Hyderabad", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Srijith P. K.", areaOfInterest: "Probabilistic Machine Learning, NLP, Bayesian Methods", email: "srijith@cse.iith.ac.in" },
-    { collegeName: "IIIT Hyderabad", collegeType: "IIIT", department: "Computer Science & Engineering", name: "Prof. P. J. Narayanan", areaOfInterest: "Computer Vision, Graphics, HPC", email: "pjn@iiit.ac.in" },
-    { collegeName: "IIIT Hyderabad", collegeType: "IIIT", department: "Computer Science & Engineering", name: "Prof. Manish Singh", areaOfInterest: "Algorithms, Combinatorics, Complexity Theory", email: "msingh@iiit.ac.in" },
-    { collegeName: "IISc Bangalore", collegeType: "IISc", department: "Computer Science & Automation", name: "Prof. V. Vinay", areaOfInterest: "Algorithms, Complexity, Combinatorics", email: null },
-    { collegeName: "IISc Bangalore", collegeType: "IISc", department: "Computer Science & Automation", name: "Prof. Chiranjib Bhattacharyya", areaOfInterest: "Machine Learning, Optimization, Kernel Methods", email: "chiru@csa.iisc.ac.in" },
-    { collegeName: "IISc Bangalore", collegeType: "IISc", department: "Computer Science & Automation", name: "Prof. Shalabh Bhatnagar", areaOfInterest: "Reinforcement Learning, Stochastic Optimization, AI", email: "shalabh@iisc.ac.in" },
-    { collegeName: "NIT Trichy", collegeType: "NIT", department: "Computer Science & Engineering", name: "Prof. N. Krishnan", areaOfInterest: "Image Processing, Computer Vision, Deep Learning", email: "nkrishnan@nitt.edu" },
-    { collegeName: "NIT Trichy", collegeType: "NIT", department: "Computer Science & Engineering", name: "Prof. S. P. Victor", areaOfInterest: "Data Mining, Cloud Computing, Big Data", email: "spvictor@nitt.edu" },
-    { collegeName: "BITS Pilani", collegeType: "BITS", department: "Computer Science & Information Systems", name: "Prof. Navneet Goyal", areaOfInterest: "Machine Learning, Data Analytics, Bioinformatics", email: "navneet@pilani.bits-pilani.ac.in" },
-  ];
-
-  let count = 0;
-  for (const p of professors) {
-    const existing = await prisma.iitProfessor.findFirst({
-      where: { name: p.name, collegeName: p.collegeName },
-    });
-    if (!existing) {
-      await prisma.iitProfessor.create({ data: p });
-      count++;
-    }
-  }
-  log("IIT Professors", count);
-}
-
 // ─── 12. Blog Posts ───────────────────────────────────────────────────
 async function seedBlogPosts() {
   const admin = await prisma.user.findFirst({ where: { role: "ADMIN" } });
@@ -1571,11 +1384,9 @@ async function main() {
   await seedHackathons();
   await seedOpensourceRepos();
   await seedGovInternships();
-  await seedJobs();
   await seedFundingSignals();
   await seedInterviewExperiences();
   await seedYCCompanies();
-  await seedProfessors();
   await seedBlogPosts();
   await seedGsocOrgs();
   console.log("\n✅ Seed complete!\n");

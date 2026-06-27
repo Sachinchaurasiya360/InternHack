@@ -11,11 +11,11 @@ scraperRouter.get("/", (req, res, next) => controller.getScrapedJobs(req, res, n
 scraperRouter.get("/sources", (req, res) => controller.getSources(req, res));
 scraperRouter.get("/stats", (req, res, next) => controller.getStats(req, res, next));
 
-// Protected: Only recruiters can manually trigger scraping
+// Protected: Only admins can manually trigger scraping
 scraperRouter.post(
   "/trigger",
   authMiddleware,
-  requireRole("RECRUITER"),
+  requireRole("ADMIN"),
   (req, res, next) => controller.triggerScrape(req, res, next)
 );
 

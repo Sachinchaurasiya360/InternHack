@@ -56,8 +56,8 @@ describe("requireRole middleware", () => {
   });
 
   it("should call next() if user role matches one of multiple allowed roles", () => {
-    const middleware = requireRole("STUDENT", "RECRUITER");
-    const req = mockReq({ id: 2, email: "r@t.com", role: "RECRUITER" });
+    const middleware = requireRole("STUDENT", "ADMIN");
+    const req = mockReq({ id: 2, email: "r@t.com", role: "ADMIN" });
     const res = mockRes();
     const next = vi.fn();
 
@@ -67,8 +67,8 @@ describe("requireRole middleware", () => {
   });
 
   it("should return 403 when user role is not in a multi-role list", () => {
-    const middleware = requireRole("STUDENT", "RECRUITER");
-    const req = mockReq({ id: 3, email: "a@t.com", role: "ADMIN" });
+    const middleware = requireRole("ADMIN");
+    const req = mockReq({ id: 3, email: "a@t.com", role: "STUDENT" });
     const res = mockRes();
     const next = vi.fn();
 

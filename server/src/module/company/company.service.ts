@@ -40,7 +40,6 @@ interface SubmitReviewInput {
 interface ContributeCompanyInput {
   name: string;
   description: string;
-  mission?: string | undefined;
   industry: string;
   size: "STARTUP" | "SMALL" | "MEDIUM" | "LARGE" | "ENTERPRISE";
   city: string;
