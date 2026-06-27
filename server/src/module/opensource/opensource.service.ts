@@ -570,14 +570,14 @@ export class OpensourceService {
       where: {
         userId,
         status: "APPROVED",
-        updatedAt: { gte: startMonth, lt: endMonth },
+        createdAt: { gte: startMonth, lt: endMonth },
       },
-      select: { updatedAt: true },
+      select: { createdAt: true },
     });
 
     const countsByMonth = new Map<string, number>();
     for (const request of approvedRequests) {
-      const monthKey = this.getMonthKeyUTC(request.updatedAt);
+      const monthKey = this.getMonthKeyUTC(request.createdAt);
       countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
     }
 
@@ -906,5 +906,6 @@ export class OpensourceService {
   }
 
 }
+
 
 
