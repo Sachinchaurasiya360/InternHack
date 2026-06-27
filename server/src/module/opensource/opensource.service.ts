@@ -145,7 +145,7 @@ export class OpensourceService {
       where["healthScore"] = { gte: 75 };
     }
     if (ids) {
-      const idList = id
+      const idList = ids
         .split(",")
         .map((id: string) => Number(id))
         .filter((id: number) => !Number.isNaN(id));
@@ -801,7 +801,7 @@ export class OpensourceService {
       detailsMap.set(key, entry);
     }
 
-    for (const r of guideProgressRecords) {
+   for (const r of guideProgressRecords) {
   const key = dateKey(r.updatedAt);
       const entry = detailsMap.get(key) ?? { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
       entry.guideSteps += 1;
