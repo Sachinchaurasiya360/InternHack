@@ -58,19 +58,19 @@ export async function listExperiences(
   if (q.year) params["year"] = q.year;
   if (q.search) params["search"] = q.search;
 
-  const { data } = await api.get<InterviewListResponse>("/interviews", { params });
+  const { data } = await api.get<InterviewListResponse>("/interview-experiences", { params });
   return data;
 }
 
 export async function getExperience(id: number): Promise<InterviewExperience> {
-  const { data } = await api.get<{ experience: InterviewExperience }>(`/interviews/${String(id)}`);
+  const { data } = await api.get<{ experience: InterviewExperience }>(`/interview-experiences/${String(id)}`);
   return data.experience;
 }
 
 export async function createExperience(
   payload: CreateExperiencePayload,
 ): Promise<InterviewExperience> {
-  const { data } = await api.post<{ experience: InterviewExperience }>("/interviews", payload);
+  const { data } = await api.post<{ experience: InterviewExperience }>("/interview-experiences", payload);
   return data.experience;
 }
 
@@ -79,18 +79,18 @@ export async function updateExperience(
   payload: UpdateExperiencePayload,
 ): Promise<InterviewExperience> {
   const { data } = await api.patch<{ experience: InterviewExperience }>(
-    `/interviews/${String(id)}`,
+    `/interview-experiences/${String(id)}`,
     payload,
   );
   return data.experience;
 }
 
 export async function deleteExperience(id: number): Promise<void> {
-  await api.delete(`/interviews/${String(id)}`);
+  await api.delete(`/interview-experiences/${String(id)}`);
 }
 
 export async function toggleUpvote(id: number): Promise<{ upvoted: boolean }> {
-  const { data } = await api.post<{ upvoted: boolean }>(`/interviews/${String(id)}/upvote`);
+  const { data } = await api.post<{ upvoted: boolean }>(`/interview-experiences/${String(id)}/upvote`);
   return data;
 }
 
@@ -102,7 +102,7 @@ export async function listInterviewCompanies(
     limit: q.limit ?? 24,
   };
   if (q.search) params["search"] = q.search;
-  const { data } = await api.get<InterviewCompanyListResponse>("/interviews/companies", {
+  const { data } = await api.get<InterviewCompanyListResponse>("/interview-experiences/companies", {
     params,
   });
   return data;
@@ -112,7 +112,7 @@ export async function getCompanyInterviewSummary(
   slug: string,
 ): Promise<InterviewCompanySummary> {
   const { data } = await api.get<InterviewCompanySummary>(
-    `/interviews/companies/${slug}/summary`,
+    `/interview-experiences/companies/${slug}/summary`,
   );
   return data;
 }
@@ -122,7 +122,7 @@ export async function getCompanyTopQuestions(
   limit = 20,
 ): Promise<{ questions: InterviewTopQuestion[] }> {
   const { data } = await api.get<{ questions: InterviewTopQuestion[] }>(
-    `/interviews/companies/${slug}/top-questions`,
+    `/interview-experiences/companies/${slug}/top-questions`,
     { params: { limit } },
   );
   return data;

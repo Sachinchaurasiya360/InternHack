@@ -12,10 +12,12 @@ import {
   FileText,
   ShieldCheck,
   Loader2,
+  CalendarPlus,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { EvaluationForm } from "./EvaluationForm";
+import ScheduleInterviewModal from "../../interview-schedule/components/ScheduleInterviewModal";
 import type { Application, VerifiedSkill } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 
@@ -96,6 +98,7 @@ export default function ApplicationDetail() {
   const navigate = useNavigate();
   const [application, setApplication] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [evaluatingRoundId, setEvaluatingRoundId] = useState<number | null>(
     null,
   );
@@ -256,6 +259,13 @@ const fetchDetail = useCallback(async (signal?: AbortSignal) => {
               <option value="REJECTED">Rejected</option>
               <option value="HIRED">Hired</option>
             </select>
+            <Button
+              onClick={() => setShowScheduleModal(true)}
+              className="flex items-center gap-2 px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              <CalendarPlus className="w-4 h-4" />
+              Schedule Interview
+            </Button>
             <Button
               onClick={handleAdvance}
               disabled={isAdvancing}
@@ -470,6 +480,14 @@ const fetchDetail = useCallback(async (signal?: AbortSignal) => {
           ))}
         </div>
       </div>
+      {application?.student && (
+        <ScheduleInterviewModal
+          open={showScheduleModal}
+          onClose={() => setShowScheduleModal(false)}
+          studentId={application.student.id}
+          studentName={application.student.name}
+        />
+      )}
     </div>
   );
 }

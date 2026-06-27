@@ -1635,3 +1635,47 @@ You received this because you clicked "Email me these jobs" in your InternHack c
 Manage email preferences: ${args.settingsUrl}
 `;
 }
+
+export function interviewScheduledEmailHtml(args: { studentName: string; recruiterName: string; scheduledAt: Date; durationMinutes: number; meetingLink?: string; notes?: string }): string {
+  const firstName = args.studentName.split(" ")[0];
+  const dateStr = args.scheduledAt.toLocaleString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+  return `<!DOCTYPE html>
+<html>
+<body>
+  <h2>Interview Scheduled</h2>
+  <p>Hi ${firstName},</p>
+  <p>Your interview with ${args.recruiterName} has been scheduled for ${dateStr} (${args.durationMinutes} mins).</p>
+  ${args.meetingLink ? `<p>Meeting Link: <a href="${args.meetingLink}">${args.meetingLink}</a></p>` : ''}
+  ${args.notes ? `<p>Notes: ${args.notes}</p>` : ''}
+  <p>Please find the calendar invite attached.</p>
+</body>
+</html>`;
+}
+
+export function interviewUpdatedEmailHtml(args: { studentName: string; recruiterName: string; scheduledAt: Date; durationMinutes: number; meetingLink?: string; notes?: string }): string {
+  const firstName = args.studentName.split(" ")[0];
+  const dateStr = args.scheduledAt.toLocaleString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+  return `<!DOCTYPE html>
+<html>
+<body>
+  <h2>Interview Updated</h2>
+  <p>Hi ${firstName},</p>
+  <p>Your interview with ${args.recruiterName} has been updated. The new time is ${dateStr} (${args.durationMinutes} mins).</p>
+  ${args.meetingLink ? `<p>Meeting Link: <a href="${args.meetingLink}">${args.meetingLink}</a></p>` : ''}
+  ${args.notes ? `<p>Notes: ${args.notes}</p>` : ''}
+  <p>Please find the updated calendar invite attached.</p>
+</body>
+</html>`;
+}
+
+export function interviewCancelledEmailHtml(args: { studentName: string; recruiterName: string }): string {
+  const firstName = args.studentName.split(" ")[0];
+  return `<!DOCTYPE html>
+<html>
+<body>
+  <h2>Interview Cancelled</h2>
+  <p>Hi ${firstName},</p>
+  <p>Your interview with ${args.recruiterName} has been cancelled.</p>
+</body>
+</html>`;
+}

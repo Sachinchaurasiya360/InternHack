@@ -18,6 +18,7 @@ const RECRUITMENT_ITEMS: NavItem[] = [
   { to: "/recruiters/jobs", icon: Briefcase, label: "My Jobs" },
   { to: "/recruiters/talent-search", icon: Search, label: "Talent Search" },
   { to: "/recruiters/saved", icon: Bookmark, label: "Saved" },
+  { to: "/recruiters/interviews", icon: Video, label: "Interviews" },
 ];
 
 const HR_ITEMS: NavItem[] = [

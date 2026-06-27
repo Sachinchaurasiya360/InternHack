@@ -21,6 +21,7 @@ import {
   Lock,
   BrainCircuit,
   Radar,
+  Calendar,
 } from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 
@@ -43,6 +44,7 @@ const NAV_GROUPS: NavGroup[] = [
     { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
     { to: "/student/signals", icon: Radar, label: "Funding Signals" },
     { to: "/student/applications", icon: FileText, label: "My Applications" },
+    { to: "/student/interviews", icon: Calendar, label: "Interviews" },
     { to: "/student/companies", icon: Building2, label: "Explore Companies" },
   ],
 },

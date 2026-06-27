@@ -148,6 +148,9 @@ const InterviewSectionPage = lazyWithRetry(() => import("./module/student/interv
 const InterviewQuestionPage = lazyWithRetry(() => import("./module/student/interview-prep/InterviewQuestionPage"));
 const JsLessonsPage = lazyWithRetry(() => import("./module/student/javascript/JsLessonsPage"));
 const JsSectionPage = lazyWithRetry(() => import("./module/student/javascript/JsSectionPage"));
+
+const RecruiterInterviewsPage = lazyWithRetry(() => import("./module/recruiter/interviews/RecruiterInterviewsPage"));
+const StudentInterviewsPage = lazyWithRetry(() => import("./module/student/StudentInterviewsPage"));
 const JsLessonDetailPage = lazyWithRetry(() => import("./module/student/javascript/JsLessonDetailPage"));
 const HtmlLessonsPage = lazyWithRetry(() => import("./module/student/html/HtmlLessonsPage"));
 const HtmlSectionPage = lazyWithRetry(() => import("./module/student/html/HtmlSectionPage"));
@@ -576,6 +579,7 @@ function App() {
               <Route path="signals" element={<SignalsPage />} />
               <Route path="signals/:id" element={<SignalDetailPage />} />
               <Route path="interviews" element={<InterviewsDirectoryPage />} />
+              <Route path="my-interviews" element={<StudentInterviewsPage />} />
               <Route path="interviews/share" element={<ShareInterviewPage />} />
               <Route path="interviews/:id" element={<InterviewExperienceDetailPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
@@ -596,6 +600,7 @@ function App() {
               <Route path="applications/:applicationId" element={<ApplicationDetail />} />
               <Route path="talent-search" element={<TalentSearchPage />} />
               <Route path="saved" element={<SavedCandidatesPage />} />
+              <Route path="interviews" element={<RecruiterInterviewsPage />} />
               <Route path="profile" element={<RecruiterProfilePage />} />
               <Route path="profile/:identifier" element={<PublicProfilePage />} />
               {/* HR Management */}

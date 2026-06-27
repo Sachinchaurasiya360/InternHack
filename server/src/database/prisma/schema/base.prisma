@@ -122,6 +122,8 @@ model user {
   jobPreference            userJobPreference?             @relation("UserJobPreferences")
   recommendation           userRecommendation?            @relation("UserRecommendation")
   verifiedSkills           verifiedSkill[]                @relation("StudentVerifiedSkills")
+  recruiterInterviews      interviewSchedule[]            @relation("RecruiterInterviews")
+  studentInterviews        interviewSchedule[]            @relation("StudentInterviews")
 
   @@index([role])
   @@index([role, isActive])
@@ -1884,4 +1886,31 @@ enum ShareStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum InterviewScheduleStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model interviewSchedule {
+  id              Int                     @id @default(autoincrement())
+  recruiterId     Int
+  studentId       Int
+  scheduledAt     DateTime
+  durationMinutes Int
+  meetingLink     String?
+  notes           String?
+  status          InterviewScheduleStatus @default(SCHEDULED)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  recruiter       user                    @relation("RecruiterInterviews", fields: [recruiterId], references: [id])
+  student         user                    @relation("StudentInterviews", fields: [studentId], references: [id])
+
+  @@index([recruiterId])
+  @@index([studentId])
+  @@index([scheduledAt])
+  @@index([status])
 }
