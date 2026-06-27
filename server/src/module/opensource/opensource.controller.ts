@@ -428,11 +428,15 @@ export class OpensourceController {
 
   async issueCertificate(req: Request, res: Response, next: NextFunction) {
     try {
-      const { guideName } = req.body;
-      if (!guideName) {
-        res.status(400).json({ message: "guideName is required" });
+      const parsed = issueCertificateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
         return;
       }
+      const { guideName } = parsed.data;
       const certificate = await service.issueCertificate(req.user!.id, guideName);
       res.status(201).json({ certificate });
     } catch (err) {
