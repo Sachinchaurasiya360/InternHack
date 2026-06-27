@@ -43,9 +43,7 @@ function HeroGeometric() {
   const getStartedHref = isAuthenticated
     ? user?.role === "ADMIN"
       ? "/admin"
-      : user?.role === "RECRUITER"
-        ? "/recruiters"
-        : "/student/applications"
+      : "/student/applications"
     : "/register";
 
   const [wordIdx, setWordIdx] = useState(0);

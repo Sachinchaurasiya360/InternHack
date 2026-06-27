@@ -12,7 +12,6 @@ import { rateLimit } from "express-rate-limit";
 import { createRateLimitStore } from "./utils/rate-limit-store.js";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
-import { recruiterRouter } from "./module/recruiter/recruiter.routes.js";
 import { studentRouter } from "./module/student/student.routes.js";
 import { peerMockInterviewRouter } from "./module/peer-mock-interview/peer-mock-interview.routes.js";
 import { uploadRouter } from "./module/upload/upload.routes.js";
@@ -42,21 +41,7 @@ import { professorRouter } from "./module/professor/professor.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
 import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
-// ── HR Modules ──
-import { rbacRouter } from "./module/rbac/rbac.routes.js";
-import { departmentRouter } from "./module/department/department.routes.js";
-import { employeeRouter } from "./module/employee/employee.routes.js";
-import { leaveRouter } from "./module/leave/leave.routes.js";
-import { attendanceRouter } from "./module/attendance/attendance.routes.js";
-import { interviewRouter } from "./module/interview/interview.routes.js";
-import { hrTaskRouter } from "./module/hr-task/hr-task.routes.js";
-import { performanceRouter } from "./module/performance/performance.routes.js";
-import { payrollRouter } from "./module/payroll/payroll.routes.js";
-import { reimbursementRouter } from "./module/reimbursement/reimbursement.routes.js";
-import { onboardingRouter } from "./module/onboarding/onboarding.routes.js";
-import { complianceRouter } from "./module/compliance/compliance.routes.js";
-import { workflowRouter } from "./module/workflow/workflow.routes.js";
-import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
+// ── Recruiter + HR modules archived to /archived (feature removed) ──
 import { contactRouter } from "./module/contact/contact.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
@@ -259,7 +244,6 @@ app.use(botSeoMiddleware);
 // ── Routes ──
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobRouter);
-app.use("/api/recruiter", recruiterRouter);
 app.use("/api/student/recommendations", recommendationRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/student/peer-mock-interview", peerMockInterviewRouter);
@@ -293,21 +277,7 @@ app.use("/api/leetcode", leetcodeRouter);
 app.use("/api/job-feed", jobFeedRouter);
 app.use("/api/job-agent", jobAgentRouter);
 
-// ── HR Routes ──
-app.use("/api/hr/rbac", rbacRouter);
-app.use("/api/hr/departments", departmentRouter);
-app.use("/api/hr/employees", employeeRouter);
-app.use("/api/hr/leave", leaveRouter);
-app.use("/api/hr/attendance", attendanceRouter);
-app.use("/api/hr/interviews", interviewRouter);
-app.use("/api/hr/tasks", hrTaskRouter);
-app.use("/api/hr/performance", performanceRouter);
-app.use("/api/hr/payroll", payrollRouter);
-app.use("/api/hr/reimbursements", reimbursementRouter);
-app.use("/api/hr/onboarding", onboardingRouter);
-app.use("/api/hr/compliance", complianceRouter);
-app.use("/api/hr/workflows", workflowRouter);
-app.use("/api/hr/analytics", hrAnalyticsRouter);
+// ── HR routes removed (recruiter/HR feature archived to /archived) ──
 app.use("/api/email-inbound", emailInboundRouter);
 app.use("/api/milestones", milestoneRouter);
 app.use("/api/roadmaps", roadmapRouter);

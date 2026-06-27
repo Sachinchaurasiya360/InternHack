@@ -125,16 +125,6 @@ export function Footer() {
             </div>
             <div>
               <h4 className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-4">
-                For recruiters
-              </h4>
-              <ul className="space-y-3">
-                <li><Link to="/for-recruiters" className={linkClass}>Overview</Link></li>
-                <li><Link to="/register" className={linkClass}>Post a job</Link></li>
-                <li><Link to="/recruiters" className={linkClass}>Dashboard</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-4">
                 Account
               </h4>
               <ul className="space-y-3">

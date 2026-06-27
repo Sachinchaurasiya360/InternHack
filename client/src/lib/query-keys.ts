@@ -72,12 +72,6 @@ export const queryKeys = {
     landing: () => ["stats", "landing"] as const,
   },
 
-  // Recruiter
-  recruiter: {
-    talentSearch: (params?: Record<string, string | number>) =>
-      ["recruiter", "talent-search", params] as const,
-  },
-
   // GSoC
   gsoc: {
     list: (params?: Record<string, string | number>) =>

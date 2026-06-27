@@ -30,7 +30,6 @@ const NAV_ITEMS = [
   { label: "Jobs", href: "/jobs" },
   { label: "Learn", href: "/learn" },
   { label: "Companies", href: "/companies" },
-  { label: "Recruiters", href: "/for-recruiters" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
 ];
@@ -58,13 +57,8 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
   };
 
   const dashboardLink =
-    user?.role === "ADMIN"
-      ? "/admin"
-      : user?.role === "RECRUITER"
-        ? "/recruiters"
-        : "/student/applications";
-  const profileLink =
-    user?.role === "RECRUITER" ? "/recruiters/profile" : "/student/profile";
+    user?.role === "ADMIN" ? "/admin" : "/student/applications";
+  const profileLink = "/student/profile";
 
   return (
     <motion.nav

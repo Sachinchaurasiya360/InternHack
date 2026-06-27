@@ -69,7 +69,6 @@ export class SitemapService {
       { loc: `${SITE_URL}/grants`, changefreq: "weekly", priority: 0.7, lastmod: now },
       { loc: `${SITE_URL}/opensource`, changefreq: "weekly", priority: 0.7, lastmod: now },
       { loc: `${SITE_URL}/blog`, changefreq: "daily", priority: 0.8, lastmod: now },
-      { loc: `${SITE_URL}/for-recruiters`, changefreq: "monthly", priority: 0.6, lastmod: now },
       { loc: `${SITE_URL}/learn`, changefreq: "weekly", priority: 0.9, lastmod: now },
       { loc: `${SITE_URL}/roadmaps`, changefreq: "weekly", priority: 0.9, lastmod: now },
       { loc: `${SITE_URL}/login`, changefreq: "monthly", priority: 0.3 },
