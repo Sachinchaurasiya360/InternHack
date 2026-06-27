@@ -729,6 +729,30 @@ export class OpensourceService {
     });
     if (!user) throw new Error("User not found");
 
+    const guideSlug = guideName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    const progress = await prisma.guideProgress.findUnique({
+      where: { userId_guideSlug: { userId, guideSlug } },
+      select: { completedStepIds: true },
+    });
+
+    const hasCompletedProgress = progress && progress.completedStepIds.length > 0;
+
+    if (!hasCompletedProgress) {
+      const firstPrProgress = await prisma.studentFirstPrProgress.findUnique({
+        where: { userId },
+        select: { completedStepIds: true },
+      });
+      const isFirstPrComplete = firstPrProgress && firstPrProgress.completedStepIds.length >= 7;
+
+      if (!isFirstPrComplete) {
+        throw new Error("Guide not completed. Complete all guide steps before requesting a certificate.");
+      }
+    }
+
     return prisma.guideCertificate.upsert({
       where: { userId_guideName: { userId, guideName } },
       update: {},

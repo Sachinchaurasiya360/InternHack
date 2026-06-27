@@ -15,6 +15,38 @@ export class OpensourceStreakService {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayEnd = new Date(todayStart.getTime() + 86400000);
 
+    let actionVerified = false;
+
+    if (action === "guide_step") {
+      const recentGuideProgress = await prisma.guideProgress.findFirst({
+        where: {
+          userId,
+          createdAt: { gte: todayStart, lt: todayEnd },
+        },
+      });
+      actionVerified = !!recentGuideProgress;
+    } else if (action === "repo_suggestion") {
+      const recentSuggestion = await prisma.repoRequest.findFirst({
+        where: {
+          userId,
+          createdAt: { gte: todayStart, lt: todayEnd },
+        },
+      });
+      actionVerified = !!recentSuggestion;
+    } else if (action === "pr_merged") {
+      const recentPr = await prisma.githubPullRequest.findFirst({
+        where: {
+          connection: { userId },
+          mergedAt: { gte: todayStart, lt: todayEnd },
+        },
+      });
+      actionVerified = !!recentPr;
+    }
+
+    if (!actionVerified) {
+      throw new Error(`No verified ${action.replace("_", " ")} activity found today. Complete the activity before updating your streak.`);
+    }
+
     const existing = await prisma.opensourceStreak.findUnique({ where: { userId } });
     const streak = existing ?? await prisma.opensourceStreak.create({ data: { userId } });
 

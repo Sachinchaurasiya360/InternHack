@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, type ComponentType, type LazyExoticComponent } from "react";
 import { Navigate, Route, Routes, useParams, useNavigate } from "react-router";
 import { useAuthStore } from "./lib/auth.store";
+import { resetAuthExpiredFlag } from "./lib/axios";
 import type { ProgramType } from "./module/student/opensource/OrgBrowserPage";
 import toast, { Toaster } from "./components/ui/toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -332,6 +333,7 @@ function AuthExpiredRedirect() {
     const handler = () => {
       toast.error("Session expired. Please log in again.");
       navigate("/login", { replace: true });
+      resetAuthExpiredFlag();
     };
     window.addEventListener("auth:expired", handler);
     return () => window.removeEventListener("auth:expired", handler);
