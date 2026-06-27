@@ -174,7 +174,34 @@ describe("PeerMockInterviewService", () => {
           assignedProblem: true,
         }
       });
-      expect(res).toEqual(mockPairing);
+      expect(res).toEqual({ ...mockPairing, preparationMaterial: null });
+    });
+  });
+
+  describe("getHistoryPairings", () => {
+    it("should return history pairings for user with generic prep material", async () => {
+      const mockPairing1 = { id: 1, studentAId: 1, studentBId: 2, status: "COMPLETED", topic: "SYSTEM_DESIGN" };
+      const mockPairing2 = { id: 2, studentAId: 2, studentBId: 1, status: "CANCELLED", topic: "DSA", assignedProblem: { id: 1, title: "Test", slug: "test", difficulty: "EASY" } };
+      
+      vi.mocked(prisma.peerMockInterview.findMany).mockResolvedValue([mockPairing1, mockPairing2] as any);
+
+      const res = await service.getHistoryPairings(1);
+      
+      expect(prisma.peerMockInterview.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [{ studentAId: 1 }, { studentBId: 1 }],
+          status: { in: ["COMPLETED", "CANCELLED"] },
+        },
+        orderBy: { createdAt: "desc" },
+        include: expect.any(Object),
+      });
+
+      expect(res.length).toBe(2);
+      expect(res[0].preparationMaterial.type).toBe("SYSTEM_DESIGN");
+      expect(res[0].preparationMaterial.generic.prompt).toBeDefined();
+      
+      expect(res[1].preparationMaterial.type).toBe("DSA");
+      expect(res[1].preparationMaterial.dsaProblem.title).toBe("Test");
     });
   });
 

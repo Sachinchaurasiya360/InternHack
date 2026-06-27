@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useLayoutEffect, useRef, type RefObject } from "react";
 
 type Handler = (event: MouseEvent | TouchEvent) => void;
 
@@ -9,7 +9,9 @@ export function useOnClickOutside<T extends HTMLElement>(
   // Keep the latest handler in a ref so the listeners attach once and an
   // inline handler does not force a re-subscribe on every render.
   const handlerRef = useRef(handler);
-  handlerRef.current = handler;
+  useLayoutEffect(() => {
+    handlerRef.current = handler;
+  }, [handler]);
 
   useEffect(() => {
     const listener = (event: MouseEvent | TouchEvent) => {
