@@ -233,7 +233,7 @@ export function platformOrganizationSchema(): JsonLd {
     sameAs: [
       "https://twitter.com/internhack",
       "https://www.linkedin.com/company/internhack",
-      "https://github.com/SachinChaurasiya/InternHack",
+      "https://github.com/SachinChaurasiya360/InternHack",
     ],
   };
 }

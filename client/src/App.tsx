@@ -124,7 +124,6 @@ const HackathonGuideSectionPage = lazyWithRetry(() => import("./module/student/o
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
 const AmbassadorPage = lazyWithRetry(() => import("./module/student/opensource/AmbassadorPage"));
 const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
-const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
 const SkillVerificationPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillVerificationPage"));
@@ -137,7 +136,6 @@ const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayo
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
 const NotesDashboardPage = lazyWithRetry(() => import("./module/student/learn/NotesDashboardPage"));
 const BuildChallengesPage = lazyWithRetry(() => import("./module/student/learn/challenges/BuildChallengesPage"));
-const MentorMatchingPage = lazyWithRetry(() => import("./module/student/learn/mentors/MentorMatchingPage"));
 const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
 const ExamDetailPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamDetailPage"));
 const ExamMockPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamRunnerPage").then((m) => ({ default: m.ExamMockPage })));
@@ -367,7 +365,6 @@ function App() {
             <Route path="/learn" element={<LearnLayout />}>
               <Route index element={<LearnHubPage />} />
               <Route path="challenges" element={<BuildChallengesPage />} />
-              <Route path="mentors" element={<MentorMatchingPage />} />
               <Route path="skill-tests" element={<ProtectedRoute role="STUDENT"><SkillVerificationPage /></ProtectedRoute>} />
               <Route path="javascript" element={<JsLessonsPage />} />
               <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
@@ -507,7 +504,6 @@ function App() {
               <Route path="mock-interview" element={<MockInterviewPage />} />
               <Route path="companies/add" element={<AddCompanyPage />} />
               <Route path="grants" element={<GrantsPage />} />
-              <Route path="grants/tracker" element={<GrantTrackerPage />} />
               <Route path="opensource" element={<OpenSourceLayout />}>
                 <Route index element={<OpenSourceDashboardPage />} />
                 <Route path="discover" element={<RepoDiscoveryPage />} />

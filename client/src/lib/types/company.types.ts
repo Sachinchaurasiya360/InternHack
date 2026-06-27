@@ -9,7 +9,6 @@ export interface Company {
   slug: string;
   logo?: string;
   description: string;
-  mission?: string;
   industry: string;
   size: CompanySize;
   city: string;

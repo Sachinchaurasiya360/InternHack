@@ -23,8 +23,8 @@ import {
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
-import { Link } from "react-router";
 import { GridBackground } from "../../../components/ui/GridBackground";
+import GrantTrackerDialog from "./GrantTrackerDialog";
 
 
 function resolveGrantLogo(logo: string, website: string): string {
@@ -135,6 +135,7 @@ export default function GrantsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showTracker, setShowTracker] = useState(false);
   const [savedGrants, setSavedGrants] = useState<Set<number>>(() => {
     try {
       const stored = localStorage.getItem("savedGrants");
@@ -266,9 +267,10 @@ export default function GrantsPage() {
           transition={{ delay: 0.05 }}
           className="mb-6"
         >
-          <Link
-            to="/student/grants/tracker"
-            className="group flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
+          <button
+            type="button"
+            onClick={() => setShowTracker(true)}
+            className="group w-full flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors text-left cursor-pointer"
           >
             <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
               <ClipboardList className="w-4 h-4 text-stone-600 dark:text-stone-400" />
@@ -282,7 +284,7 @@ export default function GrantsPage() {
               </p>
             </div>
             <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </Link>
+          </button>
         </motion.div>
 
         {/* Search + filters */}
@@ -477,6 +479,12 @@ export default function GrantsPage() {
       <AnimatePresence>
         {selectedGrant && (
           <GrantDetailModal grant={selectedGrant} onClose={handleCloseModal} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showTracker && (
+          <GrantTrackerDialog onClose={() => setShowTracker(false)} />
         )}
       </AnimatePresence>
     </div>

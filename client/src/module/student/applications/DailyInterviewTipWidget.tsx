@@ -26,7 +26,6 @@ export default function DailyInterviewTipWidget() {
     ? QUESTIONS
     : QUESTIONS.filter(q => q.category === categoryFilter);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [focusMode, setFocusMode] = useState(false);
 
   const safeIndex = currentIndex >= filteredQuestions.length ? 0 : currentIndex;
   const q = filteredQuestions[safeIndex];
@@ -70,7 +69,6 @@ export default function DailyInterviewTipWidget() {
         opacity: 1,
         y: 0,
         scale: 1,
-        filter: focusMode ? "brightness(1.05)" : "brightness(1)"
       }}
       transition={{ duration: 0.35, ease: "easeOut" }}
       className="mb-5 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 overflow-hidden"
@@ -84,14 +82,6 @@ export default function DailyInterviewTipWidget() {
           </span>
         </div>
         <div className="flex items-center gap-0.5">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => setFocusMode(v => !v)}
-            className="text-[10px] mx-1 px-2 py-1 rounded border bg-stone-100 dark:bg-stone-800 cursor-pointer hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
-          >
-            {focusMode ? "Focus Mode ON" : "Focus Mode"}
-          </motion.button>
           <button
             type="button"
             onClick={handleNav}
@@ -106,25 +96,17 @@ export default function DailyInterviewTipWidget() {
       {/* Body */}
       <div className="px-4 py-4">
         {/* Category + difficulty */}
-        {!focusMode &&
-          <div className="flex items-center gap-2 mb-3">
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-sm ${CATEGORY_STYLE[q.category] ?? CATEGORY_STYLE["HR"]}`}>
-              {q.category}
-            </span>
-            <span className={`text-[10px] font-mono border px-2 py-0.5 rounded-sm ${DIFFICULTY_STYLE[q.difficulty]}`}>
-              {q.difficulty}
+        <div className="flex items-center gap-2 mb-3">
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-sm ${CATEGORY_STYLE[q.category] ?? CATEGORY_STYLE["HR"]}`}>
+            {q.category}
           </span>
-        </div>}
+          <span className={`text-[10px] font-mono border px-2 py-0.5 rounded-sm ${DIFFICULTY_STYLE[q.difficulty]}`}>
+            {q.difficulty}
+          </span>
+        </div>
 
         {/* Filter Bar */}
-        <AnimatePresence>
-        {!focusMode && <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.25 }}
-          className="flex flex-wrap gap-2 mb-4 overflow-hidden"
-        >
+        <div className="flex flex-wrap gap-2 mb-4">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
@@ -139,7 +121,7 @@ export default function DailyInterviewTipWidget() {
               {cat}
             </button>
           ))}
-        </motion.div>}</AnimatePresence>
+        </div>
 
         {/* Question */}
         <AnimatePresence mode="wait">
@@ -149,7 +131,7 @@ export default function DailyInterviewTipWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
             transition={{ duration: 0.25 }}
-            className={`font-semibold text-stone-900 dark:text-stone-50 leading-relaxed mb-3 ${focusMode ? "text-lg md:text-xl" : "text-sm"}`}
+            className="font-semibold text-stone-900 dark:text-stone-50 leading-relaxed mb-3 text-sm"
           >
             {q.question}
           </motion.p>

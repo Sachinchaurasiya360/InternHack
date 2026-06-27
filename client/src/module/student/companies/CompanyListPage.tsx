@@ -16,9 +16,6 @@ import {
   ExternalLink,
   ChevronDown,
   Lock,
-  GraduationCap,
-  Mail,
-  BookOpen,
   ArrowUpRight,
   Plus,
   MessageCircle,
@@ -383,69 +380,6 @@ const InterviewCompanyCard = React.memo(function InterviewCompanyCard({
   );
 });
 
-// ─── Professor types ──────────────────────────────────────
-interface Professor {
-  id: number;
-  collegeName: string;
-  collegeType: string;
-  department: string;
-  name: string;
-  areaOfInterest: string | null;
-  email: string | null;
-}
-
-interface ProfessorStats {
-  total: number;
-  colleges: { name: string; count: number }[];
-  departments: { name: string; count: number }[];
-}
-
-const ProfessorCard = React.memo(function ProfessorCard({ professor }: { professor: Professor }) {
-  return (
-    <div className={cardBase}>
-      <div className="flex items-start gap-3 mb-3">
-        <CompanyMark label={professor.name} />
-        <div className="flex-1 min-w-0">
-          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
-            {professor.name}
-          </h3>
-          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
-            {professor.collegeName}
-          </span>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-1.5 mb-3">
-        <MetaChip icon={<BookOpen className="w-3 h-3" />}>{professor.department}</MetaChip>
-        {professor.collegeType && (
-          <MetaChip icon={<GraduationCap className="w-3 h-3" />}>{professor.collegeType}</MetaChip>
-        )}
-      </div>
-
-      {professor.areaOfInterest && (
-        <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
-          {professor.areaOfInterest}
-        </p>
-      )}
-
-      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
-          {professor.email ? "contact" : "no email"}
-        </span>
-        {professor.email && (
-          <a
-            href={`mailto:${professor.email}`}
-            className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-stone-500 hover:text-lime-500 transition-colors truncate max-w-48"
-          >
-            <Mail className="w-3 h-3 shrink-0" />
-            <span className="truncate">{professor.email}</span>
-          </a>
-        )}
-      </div>
-    </div>
-  );
-});
-
 // ─── Dropdown (hover-driven select) ───────────────────────
 interface DropdownOption {
   value: string;
@@ -515,7 +449,7 @@ function EditorialDropdown({
 }
 
 // ─── Tab type ─────────────────────────────────────────────
-type Tab = "all" | "interviews" | "yc" | "professors";
+type Tab = "all" | "interviews" | "yc";
 
 export default function CompanyListPage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
@@ -533,13 +467,6 @@ export default function CompanyListPage() {
   const [ycHiring, setYcHiring] = useState(false);
   const [ycPage, setYcPage] = useState(1);
 
-  // Professor filters
-  const [profSearchInput, setProfSearchInput] = useState("");
-  const [profSearch, setProfSearch] = useState("");
-  const [profCollege, setProfCollege] = useState("");
-  const [profDepartment, setProfDepartment] = useState("");
-  const [profPage, setProfPage] = useState(1);
-
   // Interview filters
   const [interviewSearchInput, setInterviewSearchInput] = useState("");
   const [interviewSearch, setInterviewSearch] = useState("");
@@ -552,14 +479,6 @@ export default function CompanyListPage() {
     }, 400);
     return () => clearTimeout(timer);
   }, [ycSearchInput]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setProfSearch(profSearchInput);
-      setProfPage(1);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [profSearchInput]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -656,33 +575,6 @@ export default function CompanyListPage() {
   const ycCompanies = ycData?.companies ?? [];
   const ycPagination = ycData?.pagination ?? null;
 
-  // ── Professor queries ──
-  const { data: profStats } = useQuery<ProfessorStats>({
-    queryKey: queryKeys.professors.stats(),
-    queryFn: () => api.get("/professors/stats").then((r) => r.data),
-    staleTime: 60 * 60 * 1000,
-  });
-
-  const profQueryParams: Record<string, string | number> = { page: profPage, limit: 24 };
-  if (profSearch) profQueryParams["search"] = profSearch;
-  if (profCollege) profQueryParams["college"] = profCollege;
-  if (profDepartment) profQueryParams["department"] = profDepartment;
-
-  const { data: profData, isLoading: profLoading } = useQuery<{
-    professors: Professor[];
-    pagination: Pagination;
-    premiumRequired?: boolean;
-  }>({
-    queryKey: queryKeys.professors.list(profQueryParams),
-    queryFn: () => api.get("/professors", { params: profQueryParams }).then((r) => r.data),
-    enabled: activeTab === "professors",
-    staleTime: 60 * 60 * 1000,
-    placeholderData: keepPreviousData,
-  });
-
-  const professors = profData?.professors ?? [];
-  const profPagination = profData?.pagination ?? null;
-
   // ── Interview experience queries ──
   const interviewQueryParams: Record<string, string | number> = {
     page: interviewPage,
@@ -710,7 +602,6 @@ export default function CompanyListPage() {
     { key: "all", label: "Companies", icon: <Building2 className="w-4 h-4" />, count: pagination?.total },
     { key: "interviews", label: "Interviews", icon: <MessageCircle className="w-4 h-4" />, count: interviewPagination?.total },
     { key: "yc", label: "YC", icon: <Rocket className="w-4 h-4" />, count: ycPagination?.total ?? ycStats?.total },
-    { key: "professors", label: "Professors", icon: <GraduationCap className="w-4 h-4" />, count: profStats?.total },
   ];
 
   return (
@@ -752,7 +643,7 @@ export default function CompanyListPage() {
               </span>
             </h1>
             <p className="mt-3 text-sm text-stone-500 max-w-md">
-              Partner companies, YC startups, and professors. One directory to map your next move.
+              Partner companies and YC startups. One directory to map your next move.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -769,14 +660,6 @@ export default function CompanyListPage() {
                 yc{" "}
                 <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
                   {ycStats.total}
-                </span>
-              </span>
-            )}
-            {typeof profStats?.total === "number" && (
-              <span>
-                profs{" "}
-                <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-                  {profStats.total}
                 </span>
               </span>
             )}
@@ -1176,116 +1059,6 @@ export default function CompanyListPage() {
                     currentPage={ycPage}
                     totalPages={ycPagination.totalPages}
                     onPageChange={setYcPage}
-                  />
-                )}
-              </>
-            )}
-          </>
-        )}
-
-        {/* ── TAB: Professors ──────────────────────────── */}
-        {activeTab === "professors" && (
-          <>
-            <div className="flex flex-col sm:flex-row gap-2 mb-6">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-                <input
-                  type="text"
-                  value={profSearchInput}
-                  onChange={(e) => setProfSearchInput(e.target.value)}
-                  placeholder="Search by name, area of interest..."
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 transition-colors text-sm text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-600"
-                />
-              </div>
-              <EditorialDropdown
-                icon={<GraduationCap className="w-3.5 h-3.5" />}
-                label="college"
-                value={profCollege}
-                onChange={(v) => {
-                  setProfCollege(v);
-                  setProfPage(1);
-                }}
-                options={[
-                  { value: "", label: "All" },
-                  ...(profStats?.colleges ?? []).map((c) => ({
-                    value: c.name,
-                    label: c.name,
-                    count: c.count,
-                  })),
-                ]}
-              />
-              <EditorialDropdown
-                icon={<BookOpen className="w-3.5 h-3.5" />}
-                label="dept"
-                value={profDepartment}
-                onChange={(v) => {
-                  setProfDepartment(v);
-                  setProfPage(1);
-                }}
-                options={[
-                  { value: "", label: "All" },
-                  ...(profStats?.departments ?? []).map((d) => ({
-                    value: d.name,
-                    label: d.name,
-                    count: d.count,
-                  })),
-                ]}
-              />
-              {(profSearch || profCollege || profDepartment) && (
-                <button
-                  onClick={() => {
-                    setProfSearchInput("");
-                    setProfSearch("");
-                    setProfCollege("");
-                    setProfDepartment("");
-                    setProfPage(1);
-                  }}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
-                >
-                  <X className="w-3 h-3" /> clear
-                </button>
-              )}
-            </div>
-
-            {profLoading ? (
-              <Spinner />
-            ) : professors.length === 0 ? (
-              <>
-                {profPagination && <ResultCount currentCount={professors.length} totalCount={profPagination.total} />}
-                <EmptyState
-                  icon={<GraduationCap className="w-5 h-5" />}
-                  title="No professors found"
-                  hint="try different search criteria"
-                />
-              </>
-            ) : (
-              <>
-                {profPagination && <ResultCount currentCount={professors.length} totalCount={profPagination.total} />}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {professors.map((prof, i) => (
-                    <motion.div
-                      key={prof.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.03, duration: 0.3 }}
-                    >
-                      <ProfessorCard professor={prof} />
-                    </motion.div>
-                  ))}
-                </div>
-
-                {profData?.premiumRequired && (
-                  <UpgradeBanner
-                    title="First 100 professors are free"
-                    subtitle={`upgrade to premium / unlock all ${profStats?.total ?? 1584} iit professors`}
-                  />
-                )}
-
-                {profPagination && (
-                  <PaginationControls
-                    currentPage={profPage}
-                    totalPages={profPagination.totalPages}
-                    onPageChange={setProfPage}
                   />
                 )}
               </>

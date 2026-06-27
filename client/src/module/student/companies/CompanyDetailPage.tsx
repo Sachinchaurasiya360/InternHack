@@ -342,14 +342,6 @@ export default function CompanyDetailPage() {
                 <p className="mt-4 text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
                   {company.description || "No description provided."}
                 </p>
-                {company.mission && (
-                  <div className="mt-6 pt-6 border-t border-stone-100 dark:border-white/5">
-                    <Kicker>mission</Kicker>
-                    <p className="mt-3 text-sm text-stone-700 dark:text-stone-300 italic leading-relaxed">
-                      {company.mission}
-                    </p>
-                  </div>
-                )}
               </motion.div>
 
               {/* Tech Stack */}
