@@ -145,7 +145,7 @@ export class OpensourceService {
       where["healthScore"] = { gte: 75 };
     }
     if (ids) {
-      const idList = ids
+      const idList = id
         .split(",")
         .map((id: string) => Number(id))
         .filter((id: number) => !Number.isNaN(id));
@@ -778,9 +778,9 @@ export class OpensourceService {
         select: { createdAt: true },
       }),
       prisma.guideProgress.findMany({
-        where: { userId, createdAt: { gte: since } },
-        select: { createdAt: true },
-      }),
+  where: { userId, updatedAt: { gte: since } },
+  select: { updatedAt: true },
+})
       prisma.guideFeedback.findMany({
         where: { userId, createdAt: { gte: since } },
         select: { createdAt: true },
@@ -802,7 +802,7 @@ export class OpensourceService {
     }
 
     for (const r of guideProgressRecords) {
-      const key = dateKey(r.createdAt);
+  const key = dateKey(r.updatedAt);
       const entry = detailsMap.get(key) ?? { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
       entry.guideSteps += 1;
       detailsMap.set(key, entry);
