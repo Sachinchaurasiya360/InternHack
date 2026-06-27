@@ -20,6 +20,7 @@ import {
 } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { hashPassword } from "../../utils/password.utils.js";
+import { seedBlogs } from "../seed-blogs.js";
 
 const connectionString = process.env["DATABASE_URL"] ?? "";
 const adapter = new PrismaPg({ connectionString });
@@ -1472,32 +1473,7 @@ async function seedProfessors() {
   log("IIT Professors", count);
 }
 
-// ─── 12. Blog Posts ───────────────────────────────────────────────────
-async function seedBlogPosts() {
-  const admin = await prisma.user.findFirst({ where: { role: "ADMIN" } });
-  if (!admin) {
-    console.log("  ⚠ Skipping blog posts, no admin user found");
-    return;
-  }
-
-  const posts = [
-    { title: "How to Ace Your First Technical Interview", slug: "ace-first-technical-interview", content: "Technical interviews can be daunting, but with the right preparation strategy, you can walk in with confidence. Start by mastering the fundamentals of data structures and algorithms. Practice on LeetCode, focusing on the top 100 problems. During the interview, always think out loud and communicate your approach before coding.", excerpt: "A complete guide to preparing for and succeeding in your first technical interview.", category: "INTERVIEW_TIPS" as const, tags: ["interview", "dsa", "career"], status: "PUBLISHED" as const, readingTime: 8, publishedAt: new Date("2026-03-15") },
-    { title: "Top 10 Skills Every Fresher Needs in 2026", slug: "top-skills-freshers-2026", content: "The tech landscape in 2026 demands a diverse skill set. Beyond coding, employers want strong communication, problem-solving abilities, and familiarity with AI tools. Cloud computing (AWS/Azure), full-stack development, and data literacy round out the must-haves for new graduates entering the workforce.", excerpt: "Essential skills that employers are looking for in fresh graduates this year.", category: "CAREER_ADVICE" as const, tags: ["skills", "freshers", "career"], status: "PUBLISHED" as const, readingTime: 6, publishedAt: new Date("2026-03-20") },
-    { title: "Writing a Resume That Gets Past ATS Systems", slug: "resume-past-ats-systems", content: "Applicant Tracking Systems scan your resume before any human sees it. Use standard section headers (Education, Experience, Skills), include keywords from the job description, and avoid fancy formatting. Stick to common fonts and PDF format. Quantify your achievements with numbers wherever possible.", excerpt: "Practical tips for crafting an ATS-friendly resume that stands out.", category: "RESUME_TIPS" as const, tags: ["resume", "ats", "job-search"], status: "PUBLISHED" as const, readingTime: 5, publishedAt: new Date("2026-03-25") },
-    { title: "Understanding Salary Negotiation for New Grads", slug: "salary-negotiation-new-grads", content: "Many new graduates accept the first offer without negotiating. Research market rates on Glassdoor and Levels.fyi. Consider the total compensation package including stock options, bonuses, and benefits. Practice your negotiation pitch and always get offers in writing.", excerpt: "A beginner-friendly guide to negotiating your first salary package.", category: "SALARY_GUIDE" as const, tags: ["salary", "negotiation", "freshers"], status: "PUBLISHED" as const, readingTime: 7, publishedAt: new Date("2026-04-01") },
-    { title: "The Rise of AI in Software Development", slug: "rise-of-ai-software-development", content: "AI is transforming how we write, test, and deploy code. Tools like GitHub Copilot and Claude Code are boosting developer productivity by 30-50%. Understanding how to leverage AI assistants while maintaining code quality and security is becoming a critical skill for modern developers.", excerpt: "How AI tools are reshaping the software development landscape.", category: "TECH_TRENDS" as const, tags: ["ai", "development", "tools"], status: "PUBLISHED" as const, readingTime: 6, publishedAt: new Date("2026-04-03") },
-  ];
-
-  let count = 0;
-  for (const p of posts) {
-    const existing = await prisma.blogPost.findUnique({ where: { slug: p.slug } });
-    if (!existing) {
-      await prisma.blogPost.create({ data: { ...p, authorId: admin.id } });
-      count++;
-    }
-  }
-  log("Blog Posts", count);
-}
+// Removed seedBlogPosts function since it has been moved to seed-blogs.ts
 
 async function seedGsocOrgs() {
   const orgs = [
@@ -1576,7 +1552,7 @@ async function main() {
   await seedInterviewExperiences();
   await seedYCCompanies();
   await seedProfessors();
-  await seedBlogPosts();
+  await seedBlogs(prisma);
   await seedGsocOrgs();
   console.log("\n✅ Seed complete!\n");
 }
