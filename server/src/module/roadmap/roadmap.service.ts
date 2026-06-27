@@ -1240,8 +1240,13 @@ export function summarizeProgress(
     }
   }
 
-  const totalTopics = allTopics.length - skippedTopics;
-  const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0) - skippedHours;
+  const totalTopics = allTopics.length;
+  const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0);
+
+  // Skipped topics count toward 100%: they stay in the denominator (totalTopics)
+  // and are treated as accounted-for in the numerator, so a learner who completes
+  // every non-skipped topic still reaches 100%.
+  const accountedTopics = completedTopics + skippedTopics;
 
   return {
     totalTopics,
@@ -1249,8 +1254,8 @@ export function summarizeProgress(
     inProgressTopics,
     bookmarkedTopics,
     percentComplete:
-      totalTopics === 0 ? 0 : Math.round((completedTopics / totalTopics) * 100),
-    hoursDone,
+      totalTopics === 0 ? 0 : Math.round((accountedTopics / totalTopics) * 100),
+    hoursDone: hoursDone + skippedHours,
     hoursTotal,
   };
 }

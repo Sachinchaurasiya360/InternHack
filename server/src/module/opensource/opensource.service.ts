@@ -570,14 +570,14 @@ export class OpensourceService {
       where: {
         userId,
         status: "APPROVED",
-        updatedAt: { gte: startMonth, lt: endMonth },
+        createdAt: { gte: startMonth, lt: endMonth },
       },
-      select: { updatedAt: true },
+      select: { createdAt: true },
     });
 
     const countsByMonth = new Map<string, number>();
     for (const request of approvedRequests) {
-      const monthKey = this.getMonthKeyUTC(request.updatedAt);
+      const monthKey = this.getMonthKeyUTC(request.createdAt);
       countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
     }
 
@@ -694,20 +694,26 @@ export class OpensourceService {
       });
     }
 
-    // 2. Fetch repos matching skills (language or techStack subset)
-    // We search for repos where the primary language is in the student's skills
-    const repos = await prisma.opensourceRepo.findMany({
-      where: {
-        OR: [
-          { language: { in: skills, mode: "insensitive" } },
-          { trending: true },
-        ],
-      },
+    // 2. Fetch repos matching skills, fallback to trending if not enough
+    const skillRepos = await prisma.opensourceRepo.findMany({
+      where: { language: { in: skills, mode: "insensitive" } },
       take: 8,
-      orderBy: [{ trending: "desc" }, { stars: "desc" }],
+      orderBy: { stars: "desc" },
     });
 
-    return repos;
+    if (skillRepos.length < 8) {
+      const trendingRepos = await prisma.opensourceRepo.findMany({
+        where: {
+          trending: true,
+          ...(skillRepos.length > 0 ? { id: { notIn: skillRepos.map((r) => r.id) } } : {}),
+        },
+        take: 8 - skillRepos.length,
+        orderBy: { stars: "desc" },
+      });
+      return [...skillRepos, ...trendingRepos];
+    }
+
+    return skillRepos;
   }
 
   async getCertificate(token: string) {
@@ -906,5 +912,6 @@ export class OpensourceService {
   }
 
 }
+
 
 
