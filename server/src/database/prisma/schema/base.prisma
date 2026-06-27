@@ -72,7 +72,6 @@ model user {
   dsaProblemReports        dsaProblemReport[]
   dsaSubmissions           dsaSubmission[]                @relation("StudentDsaSubmissions")
   emailCampaigns           emailCampaign[]                @relation("UserEmailCampaigns")
-  employeeProfile          employee?                      @relation("EmployeeUser")
   externalApplications     externalJobApplication[]       @relation("StudentExternalApplications")
   generatedCoverLetters    generatedCoverLetter[]         @relation("StudentCoverLetters")
   generatedResumes         generatedResume[]              @relation("UserGeneratedResumes")
@@ -116,7 +115,6 @@ model user {
   studentNotes             studentNote[]                  @relation("StudentNotes")
   sqlProgress              studentSqlProgress[]           @relation("StudentSqlProgress")
   usageLogs                usageLog[]                     @relation("UserUsageLogs")
-  customRoles              userCustomRole[]               @relation("UserCustomRoles")
   interviewProgress        userInterviewProgress?         @relation("StudentInterviewProgress")
   interviewQuestionStates  UserInterviewQuestionState[]   @relation("StudentInterviewQuestionStates")
   jobPreference            userJobPreference?             @relation("UserJobPreferences")
@@ -257,7 +255,6 @@ model application {
   job                job                        @relation(fields: [jobId], references: [id], onDelete: Cascade)
   student            user                       @relation("StudentApplications", fields: [studentId], references: [id], onDelete: Cascade)
   statusHistory      applicationStatusHistory[]
-  interviews         interview[]                @relation("ApplicationInterviews")
   roundSubmissions   roundSubmission[]
 
   @@unique([jobId, studentId])
