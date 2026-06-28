@@ -88,10 +88,6 @@ const grouped = useMemo(() => {
         return a.title.localeCompare(b.title);
       } else if (sortBy === "recent") {
         return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-      } else if (sortBy === "salary") {
-        const aVal = a.salary ? parseInt(a.salary.replace(/\D/g, "")) || 0 : 0;
-        const bVal = b.salary ? parseInt(b.salary.replace(/\D/g, "")) || 0 : 0;
-        return bVal - aVal;
       } else {
         return (b.enrolledStudents || 0) - (a.enrolledStudents || 0);
       }
@@ -324,7 +320,6 @@ const grouped = useMemo(() => {
               className="text-sm bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:border-lime-400 cursor-pointer"
             >
               <option value="popular">Most Popular</option>
-              <option value="salary">Salary</option>
               <option value="alphabetical">Alphabetical</option>
               <option value="recent">Recently Added</option>
             </select>

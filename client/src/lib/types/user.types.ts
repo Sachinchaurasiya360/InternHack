@@ -87,7 +87,6 @@ export interface TalentSearchResult {
   portfolioUrl?: string;
   leetcodeUrl?: string;
   resumes: string[];
-  jobStatus?: string | null;
   bestAtsScore: number | null;
   verifiedSkillCount: number;
   verifiedSkills: string[];

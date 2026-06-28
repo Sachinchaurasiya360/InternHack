@@ -14,7 +14,6 @@ model user {
   password                 String
   role                     UserRole                       @default(STUDENT)
   isActive                 Boolean                        @default(true)
-  isProfilePublic          Boolean                        @default(false)
   isVerified               Boolean                        @default(false)
   verificationOtp          String?
   otpExpiresAt             DateTime?
@@ -41,9 +40,7 @@ model user {
   portfolioUrl             String?
   leetcodeUrl              String?
   location                 String?
-  jobStatus                String?
   projects                 Json                           @default("[]")
-  achievements             Json                           @default("[]")
   tokenVersion             Int                            @default(0)
   unsubscribeDigest        Boolean                        @default(false)
   profileSlug              String?                        @unique
