@@ -10,6 +10,7 @@ import type { Application, Pagination } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { Button } from "../../../components/ui/button";
 
 export default function ApplicationsList() {
   const { id: jobId } = useParams();
@@ -169,20 +170,25 @@ export default function ApplicationsList() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-between gap-4">
         Applications
         <div className="flex items-center gap-3">
-          <button
+          <Button
             onClick={handleExportCSV}
             disabled={isExporting}
-            className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            variant="outline"
           >
             {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             Export CSV
-          </button>
-          <Link
-            to={`/recruiters/jobs/${jobId}/import-candidates`}
-            className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
+          </Button>
+          <Button
+            asChild
+            variant="mono"
           >
-            <Upload className="w-4 h-4" /> Import Candidates
-          </Link>
+            <Link
+              to={`/recruiters/jobs/${jobId}/import-candidates`}
+              className="no-underline"
+            >
+              <Upload className="w-4 h-4" /> Import Candidates
+            </Link>
+          </Button>
         </div>
       </h1>
 
