@@ -34,23 +34,6 @@ describe("UserService.calculateOssTier", () => {
     expect(mocks.prisma.user.update).not.toHaveBeenCalled();
   });
 
-  it("returns Ambassador when user has verified_ambassador badge", async () => {
-    mocks.prisma.user.findUnique.mockResolvedValue({
-      repoRequests: [],
-      firstPrProgress: null,
-      guideFeedbacks: [],
-      studentBadges: [{ badge: { slug: "verified_ambassador" } }],
-    });
-
-    const result = await service.calculateOssTier(userId);
-
-    expect(result).toBe("Ambassador");
-    expect(mocks.prisma.user.update).toHaveBeenCalledWith({
-      where: { id: userId },
-      data: { ossTier: "Ambassador" },
-    });
-  });
-
   it("returns OSS Leader when user has program badge and >= 10 approved repos", async () => {
     mocks.prisma.user.findUnique.mockResolvedValue({
       repoRequests: Array.from({ length: 10 }, (_, i) => ({ id: i })),
@@ -215,7 +198,7 @@ describe("UserService.calculateOssTier", () => {
       repoRequests: [],
       firstPrProgress: null,
       guideFeedbacks: [],
-      studentBadges: [{ badge: { slug: "verified_ambassador" } }],
+      studentBadges: [{ badge: { slug: "gsoc_participant" } }],
     });
 
     await service.calculateOssTier(userId);

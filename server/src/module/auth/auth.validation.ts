@@ -47,7 +47,6 @@ export const registerSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[\W_]/, "Password must contain at least one special character"),
   contactNo: z.string().optional(),
-  ref: z.string().optional(),
 });
 
 export const loginSchema = z.object({

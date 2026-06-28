@@ -148,8 +148,6 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
     "Problem not found": 404,
     "Question not found": 404,
     "Pattern not found": 404,
-    "Ambassador not found": 404,
-    "Share not found": 404,
   };
 
   const status = clientErrors[err.message];

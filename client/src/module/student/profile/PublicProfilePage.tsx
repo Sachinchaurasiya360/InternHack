@@ -49,7 +49,6 @@ const OSS_TIER_COLORS: Record<string, string> = {
   "Contributor": "bg-stone-100 text-stone-700 border-stone-300",
   "Active Contributor": "bg-stone-200 text-stone-800 border-stone-400",
   "OSS Leader": "bg-stone-300 text-stone-900 border-stone-500",
-  "Ambassador": "bg-lime-400 text-stone-900 border-lime-500",
 };
 
 const fadeInUp = {

@@ -226,36 +226,7 @@ export class AuthService {
       html: otpEmailHtml(user.name, otp),
     }).catch((err) => console.error("Failed to send OTP email:", err));
 
-    // Record referral conversion if a ref code was provided
-    if (data.ref) {
-      this.recordReferral(data.ref, user.id).catch((err) =>
-        console.error("Failed to record referral during registration:", err)
-      );
-    }
-
     return { user };
-  }
-
-  private async recordReferral(code: string, userId: number) {
-    try {
-      const link = await prisma.referralLink.findUnique({
-        where: { code },
-        select: { id: true },
-      });
-      if (!link) return;
-
-      try {
-        await prisma.referralConversion.upsert({
-          where: { referredUserId: userId },
-          update: {},
-          create: { referralLinkId: link.id, referredUserId: userId },
-        });
-      } catch (err: any) {
-        console.error("Failed to write referral conversion (likely duplicate/unique violation):", err);
-      }
-    } catch (err: any) {
-      console.error("Failed to record referral:", err);
-    }
   }
 
   async googleAuth(data: GoogleAuthInput) {

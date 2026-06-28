@@ -50,7 +50,6 @@ import { recommendationRouter } from "./module/recommendation/recommendation.rou
 import { learnRouter } from "./module/learn/learn.routes.js";
 import { notesRouter } from "./module/notes/notes.routes.js";
 import { behavioralRouter } from "./module/behavioral/behavioral.routes.js";
-import { ambassadorRouter } from "./module/ambassador/ambassador.routes.js";
 import analyticsRouter from "./module/analytics/analytics.routes.js";
 import { healthRouter } from "./module/health/health.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
@@ -66,7 +65,6 @@ import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cro
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron.js";
 import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
-import { startAmbassadorEligibilityCron, stopAmbassadorEligibilityCron } from "./cron/ambassador-eligibility.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { startPeerMockInterviewMatchCron, stopPeerMockInterviewMatchCron } from "./cron/peer-mock-interview-match.cron.js";
 import { startPeerMockInterviewRemindersCron, stopPeerMockInterviewRemindersCron } from "./cron/peer-mock-interview-reminders.cron.js";
@@ -265,7 +263,6 @@ app.use("/api/analytics", analyticsRouter);
 app.use("/api/behavioral", behavioralRouter);
 app.use("/api/learn", learnRouter);
 app.use("/api/notes", notesRouter);
-app.use("/api/ambassador", ambassadorRouter);
 
 // ── Consolidated daily cron (triggered by Vercel Cron; bearer-authed) ──
 app.use("/api/cron", cronRouter);
@@ -424,14 +421,6 @@ const server = app.listen(PORT, async () => {
     name: "Deadline Alert Cron",
     priority: 10,
     fn: () => stopDeadlineAlertCron(),
-  });
-
-  // Start the daily ambassador eligibility cron
-  startAmbassadorEligibilityCron();
-  shutdownManager.register({
-    name: "Ambassador Eligibility Cron",
-    priority: 10,
-    fn: () => stopAmbassadorEligibilityCron(),
   });
 
   // Start weekly peer mock interview matching from one owner only in production.

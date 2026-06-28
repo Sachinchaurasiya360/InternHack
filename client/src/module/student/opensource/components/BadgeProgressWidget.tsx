@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { Button } from "../../../../components/ui/button";
 
-const TIER_ORDER = ["First Steps", "Contributor", "Active Contributor", "OSS Leader", "Ambassador"];
+const TIER_ORDER = ["First Steps", "Contributor", "Active Contributor", "OSS Leader"];
 
 const TIER_COLORS: Record<string, { bg: string; text: string; border: string; accent: string }> = {
   "First Steps": {
@@ -30,12 +30,6 @@ const TIER_COLORS: Record<string, { bg: string; text: string; border: string; ac
     text: "text-stone-900 dark:text-stone-100",
     border: "border-stone-500 dark:border-stone-500",
     accent: "bg-stone-700"
-  },
-  "Ambassador": {
-    bg: "bg-lime-400",
-    text: "text-stone-900",
-    border: "border-lime-500",
-    accent: "bg-lime-400"
   }
 };
 
@@ -44,7 +38,6 @@ const TIER_REQS: Record<string, string[]> = {
   "Contributor": ["Complete First PR Roadmap", "1+ Approved Repo Contribution"],
   "Active Contributor": ["3+ Guides Completed", "5+ Approved Repo Contributions"],
   "OSS Leader": ["Program Participant (GSoC/Outreachy/LFX)", "10+ Approved Repo Contributions"],
-  "Ambassador": ["Verified Ambassador Status"]
 };
 
 export function BadgeProgressWidget() {
