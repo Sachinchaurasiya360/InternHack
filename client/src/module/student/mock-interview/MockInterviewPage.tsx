@@ -1,4 +1,7 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, useEffect, useRef, type ReactNode } from "react";
+import { toast } from "react-hot-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "../../../lib/auth.store";
 import { motion } from "framer-motion";
 import {
   Calendar,
@@ -23,17 +26,34 @@ import {
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
+import type { AxiosError } from "axios";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
 import type {
   MockInterviewFeedback,
   MockInterviewFeedbackResponse,
   MockInterviewTranscriptEntry,
+  PeerMockInterview,
+  MockInterviewPreparationMaterial
 } from "../../../lib/types";
 
 const CALENDLY_URL = "https://calendly.com/mrsachinchaurasiya/30min";
 
-type InterviewMode = null | "ai" | "expert";
+/**
+ * A meeting link is supplied by the matched peer, so treat it as untrusted:
+ * only render it as a clickable link when it is an http(s) URL. Guards against a
+ * javascript:/data: href slipping past the API validation (defense in depth).
+ */
+function isSafeHttpUrl(url: string): boolean {
+  try {
+    const protocol = new URL(url).protocol;
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+type InterviewMode = null | "ai" | "expert" | "peer";
 
 const OPTIONS = [
   {
@@ -53,6 +73,15 @@ const OPTIONS = [
       "Book a 30-minute live session with an industry expert via Calendly for personalised, real-world feedback.",
     icon: Users,
     tags: ["1 on 1", "real feedback"],
+  },
+  {
+    id: "peer" as const,
+    number: "03",
+    title: "Peer Mock Interview",
+    description:
+      "Practice 1-on-1 with fellow students on your roadmap. Coordinate sessions, solve assigned problems, and review each other's performance.",
+    icon: Users,
+    tags: ["Weekly Matches", "Collaborative"],
   },
 ];
 
@@ -190,7 +219,7 @@ function SessionPanel({
       <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950/40">
         <div className="flex items-center gap-2">
           <div className="h-1 w-1 bg-lime-400 shrink-0" />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
             {title}
           </span>
         </div>
@@ -316,7 +345,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
             {/* Header */}
             <div className="mb-8 flex items-start justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-7">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1.5 w-1.5 bg-lime-400" />
                   interview / ai
                 </div>
@@ -331,6 +360,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               <Button
                 variant="ghost"
                 mode="icon"
+                aria-label="Go back"
                 size="sm"
                 onClick={onBack}
                 className="bg-stone-100 hover:bg-stone-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-md shrink-0"
@@ -377,7 +407,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                         <p className="mt-1 text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
                           {topic.description}
                         </p>
-                        <p className="mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+                        <p className="mt-3 text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
                           5 questions
                         </p>
                       </button>
@@ -473,7 +503,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                 <Loader2 className="h-7 w-7 text-lime-500" />
               </motion.div>
             </div>
-            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-3">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-3">
               <span className="h-1.5 w-1.5 bg-lime-400" />
               analysis in progress
             </div>
@@ -516,7 +546,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
             {/* Header */}
             <div className="mb-8 flex items-start justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-7">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1.5 w-1.5 bg-lime-400" />
                   interview / results
                 </div>
@@ -530,6 +560,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               <Button
                 variant="ghost"
                 mode="icon"
+                aria-label="Go back"
                 size="sm"
                 onClick={onBack}
                 className="bg-stone-100 hover:bg-stone-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-md shrink-0"
@@ -545,13 +576,13 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                 <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-1">
                         overall rating
                       </p>
                       <FeedbackStars rating={feedback.overallRating} />
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-1">
                         topic
                       </p>
                       <p className="text-sm font-bold text-stone-900 dark:text-stone-50">
@@ -583,7 +614,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                       key={item.label}
                       className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4"
                     >
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
                         {item.label}
                       </p>
                       <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
@@ -596,7 +627,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                 {/* Strengths + Areas to improve */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4">
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3">
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3">
                       strengths
                     </p>
                     <ul className="space-y-2">
@@ -609,7 +640,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                     </ul>
                   </div>
                   <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4">
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3">
+                    <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-3">
                       areas to improve
                     </p>
                     <ul className="space-y-2">
@@ -647,7 +678,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               <SessionPanel
                 title="session transcript"
                 right={
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
                     {transcript.length} questions
                   </span>
                 }
@@ -658,7 +689,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                       key={`${entry.question}-${index}`}
                       className="rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 p-4"
                     >
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
                         Q{index + 1}
                       </p>
                       <p className="text-sm font-semibold text-stone-900 dark:text-stone-50 leading-relaxed">
@@ -696,6 +727,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               <Button
                 variant="ghost"
                 mode="icon"
+                aria-label="Go back"
                 size="sm"
                 onClick={onBack}
                 className="bg-stone-100 hover:bg-stone-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-md shrink-0"
@@ -703,7 +735,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               <div className="min-w-0">
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-0.5">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500 mb-0.5">
                   <span className="h-1 w-1 bg-lime-400 shrink-0" />
                   {activeTopic.title}
                 </div>
@@ -711,7 +743,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                   <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
                     Question {questionIndex + 1} of {activeTopic.questions.length}
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-400">
                     {progress}% done
                   </span>
                 </div>
@@ -748,7 +780,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
 
               {/* Question card */}
               <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6">
-                <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mb-3">
+                <p className="text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mb-3">
                   current question
                 </p>
                 <p className="text-lg font-semibold leading-8 text-stone-900 dark:text-stone-50">
@@ -765,7 +797,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               {/* Answer area */}
               <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
                 <div className="px-5 pt-5 pb-3">
-                  <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
+                  <label className="block text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">
                     Your answer
                   </label>
                   <Textarea
@@ -789,7 +821,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                   />
                 </div>
                 <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-stone-100 dark:border-white/5">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
                     Ctrl + Enter to submit
                   </span>
                   <Button
@@ -812,7 +844,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
               title="transcript"
               right={
                 transcript.length > 0 ? (
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500">
                     {transcript.length} answered
                   </span>
                 ) : null
@@ -829,7 +861,7 @@ function AiMockInterview({ onBack }: { onBack: () => void }) {
                       key={`${entry.question}-${index}`}
                       className="rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 p-4"
                     >
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mb-1.5">
+                      <p className="text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 mb-1.5">
                         Q{index + 1}
                       </p>
                       <p className="text-xs font-semibold text-stone-800 dark:text-stone-200 leading-relaxed mb-2">
@@ -867,7 +899,7 @@ export default function MockInterviewPage() {
           >
             <div className="mb-8 flex items-start justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-7">
               <div>
-                <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
                   <span className="h-1.5 w-1.5 bg-lime-400" />
                   interview / expert
                 </div>
@@ -892,7 +924,7 @@ export default function MockInterviewPage() {
               <div className="flex items-center justify-between px-5 py-3 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-950/40">
                 <div className="flex items-center gap-2">
                   <div className="h-1 w-1 bg-lime-400" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <span className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                     calendly / 30 min slot
                   </span>
                 </div>
@@ -931,6 +963,11 @@ export default function MockInterviewPage() {
     );
   }
 
+  // Peer mode
+  if (mode === "peer") {
+    return <PeerMockInterview onBack={() => setMode(null)} />;
+  }
+
   // AI mode
   if (mode === "ai") {
     return <AiMockInterview onBack={() => setMode(null)} />;
@@ -948,7 +985,7 @@ export default function MockInterviewPage() {
         >
           {/* Editorial header */}
           <div className="mt-2 mb-10 border-b border-stone-200 dark:border-white/10 pb-8">
-            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
               <span className="h-1.5 w-1.5 bg-lime-400" />
               practice / mock interview
             </div>
@@ -972,7 +1009,7 @@ export default function MockInterviewPage() {
           </div>
 
           {/* Option tiles */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
             {OPTIONS.map((opt) => {
               const Icon = opt.icon;
               return (
@@ -984,7 +1021,7 @@ export default function MockInterviewPage() {
                 >
                   {/* Number + icon */}
                   <div className="flex items-start justify-between">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 group-hover:text-lime-400 dark:group-hover:text-lime-500">
+                    <span className="text-xs font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600 group-hover:text-lime-400 dark:group-hover:text-lime-500">
                       / {opt.number}
                     </span>
                     <div className="w-11 h-11 rounded-md bg-stone-100 dark:bg-white/5 flex items-center justify-center transition-colors group-hover:bg-lime-400">
@@ -1008,7 +1045,7 @@ export default function MockInterviewPage() {
                       {opt.tags.map((t) => (
                         <span
                           key={t}
-                          className="px-2 py-1 rounded-md text-[10px] font-mono uppercase tracking-widest bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 group-hover:bg-white/10 dark:group-hover:bg-black/10 group-hover:text-stone-200 dark:group-hover:text-stone-600"
+                          className="px-2 py-1 rounded-md text-xs font-mono uppercase tracking-widest bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 group-hover:bg-white/10 dark:group-hover:bg-black/10 group-hover:text-stone-200 dark:group-hover:text-stone-600"
                         >
                           {t}
                         </span>
@@ -1051,7 +1088,7 @@ export default function MockInterviewPage() {
                   <p className="text-xs font-bold text-stone-900 dark:text-stone-50">
                     {f.label}
                   </p>
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+                  <p className="text-xs font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
                     {f.sub}
                   </p>
                 </div>
@@ -1060,6 +1097,854 @@ export default function MockInterviewPage() {
           </div>
         </motion.div>
       </div>
+    </div>
+  );
+}
+
+function PreparationCard({ material }: { material?: MockInterviewPreparationMaterial | null }) {
+  if (!material) {
+    return (
+      <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4">
+        <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
+        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+          No code problem auto-assigned for this topic. Use the availability details to coordinate custom questions.
+        </p>
+      </div>
+    );
+  }
+
+  if (material.type === "DSA" && material.dsaProblem) {
+    return (
+      <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-2">
+        <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Assigned practice problem</span>
+        <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.dsaProblem.title}</h4>
+        <p className="text-xs text-stone-500 dark:text-stone-400">
+          Difficulty: <span className="font-semibold text-stone-700 dark:text-stone-300">{material.dsaProblem.difficulty}</span>
+        </p>
+        <div className="pt-2">
+          <Button variant="primary" size="sm" asChild>
+            <a
+              href={`/learn/dsa/problem/${material.dsaProblem.slug}`}
+              className="inline-flex items-center gap-1.5"
+            >
+              View Problem Details
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (material.generic) {
+    return (
+      <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 space-y-3">
+        <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Preparation Material</span>
+        <h4 className="font-bold text-stone-900 dark:text-stone-50">{material.generic.prompt}</h4>
+        
+        {material.generic.requirements.length > 0 && (
+          <div>
+            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Requirements:</h5>
+            <ul className="list-disc pl-4 text-xs text-stone-500 dark:text-stone-400 space-y-0.5">
+              {material.generic.requirements.map((req, i) => <li key={i}>{req}</li>)}
+            </ul>
+          </div>
+        )}
+        
+        {material.generic.objectives && material.generic.objectives.length > 0 && (
+          <div>
+            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Objectives / Tradeoffs:</h5>
+            <ul className="list-disc pl-4 text-xs text-stone-500 dark:text-stone-400 space-y-0.5">
+              {material.generic.objectives.map((obj, i) => <li key={i}>{obj}</li>)}
+            </ul>
+          </div>
+        )}
+
+        {material.generic.followUpQuestions && material.generic.followUpQuestions.length > 0 && (
+          <div>
+            <h5 className="text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">Follow-up Questions:</h5>
+            <ul className="list-disc pl-4 text-xs text-stone-500 dark:text-stone-400 space-y-0.5">
+              {material.generic.followUpQuestions.map((q, i) => <li key={i}>{q}</li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function HistorySection({ userId }: { userId: number }) {
+  const { data: pairings, isLoading } = useQuery<PeerMockInterview[]>({
+    queryKey: ["peer-mock-interview", "history", userId],
+    queryFn: async () => {
+      const res = await api.get("/student/peer-mock-interview/pairings/history");
+      return res.data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md">
+        <Loader2 className="w-6 h-6 animate-spin text-stone-400" />
+      </div>
+    );
+  }
+
+  if (!pairings || pairings.length === 0) {
+    return (
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-8 text-center">
+        <p className="text-sm text-stone-500">No mock interview history found.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {pairings.map((pairing) => {
+        const isA = pairing.studentAId === userId;
+        const partner = isA ? pairing.studentB : pairing.studentA;
+        const myRating = isA ? pairing.ratingBForA : pairing.ratingAForB;
+        const myFeedback = isA ? pairing.feedbackBForA : pairing.feedbackAForB;
+
+        return (
+          <div key={pairing.id} className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5 space-y-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-stone-400">{new Date(pairing.completedAt || pairing.createdAt).toLocaleDateString()}</span>
+                <h3 className="font-bold text-stone-900 dark:text-stone-50 mt-1">{pairing.topic} Mock Interview</h3>
+                {partner && (
+                  <p className="text-xs text-stone-500 mt-1">
+                    Partner: <span className="font-medium text-stone-700 dark:text-stone-300">{partner.name}</span>
+                  </p>
+                )}
+              </div>
+              <span className={`text-xs font-mono uppercase tracking-widest px-2 py-0.5 rounded ${pairing.status === "COMPLETED" ? "bg-lime-400/10 text-lime-600 dark:text-lime-400" : "bg-red-400/10 text-red-600 dark:text-red-400"}`}>
+                {pairing.status}
+              </span>
+            </div>
+            
+            {pairing.status === "COMPLETED" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-stone-100 dark:border-white/5 pt-4">
+                <div>
+                  <h4 className="text-xs font-mono uppercase tracking-widest text-stone-400 mb-2">Partner's Feedback for You</h4>
+                  {myRating ? (
+                    <div className="space-y-1">
+                      <div className="flex gap-0.5">
+                        {[1,2,3,4,5].map(star => (
+                          <Star key={star} className={`w-3.5 h-3.5 ${star <= myRating ? "text-lime-400 fill-lime-400" : "text-stone-200 dark:text-stone-700"}`} />
+                        ))}
+                      </div>
+                      <p className="text-xs text-stone-600 dark:text-stone-300 italic">"{myFeedback}"</p>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-stone-500">No feedback submitted yet.</p>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {/* Assigned Problem / Preparation Section */}
+            {(pairing.assignedProblem || pairing.preparationMaterial) && (
+              <div className="mt-4 pt-4 border-t border-stone-100 dark:border-white/5">
+                 <PreparationCard material={pairing.preparationMaterial} />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function PeerMockInterview({ onBack }: { onBack: () => void }) {
+  const queryClient = useQueryClient();
+
+  // Query preferences
+  const { data: preference, isLoading: loadingPref } = useQuery({
+    queryKey: ["peer-mock-interview", "preferences"],
+    queryFn: async () => {
+      const res = await api.get("/student/peer-mock-interview/preferences");
+      return res.data;
+    },
+  });
+
+  // Query upcoming pairing
+  const { data: pairing, isLoading: loadingPairing } = useQuery<PeerMockInterview>({
+    queryKey: ["peer-mock-interview", "upcoming"],
+    queryFn: async () => {
+      const res = await api.get("/student/peer-mock-interview/pairings/upcoming");
+      return res.data;
+    },
+  });
+
+  // Preferences mutation
+  const upsertPreferenceMutation = useMutation({
+    mutationFn: async (payload: { topic: string; availability: string[]; enabled: boolean }) => {
+      const res = await api.post("/student/peer-mock-interview/preferences", payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Preferences updated successfully!");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to update preferences.");
+    },
+  });
+
+  // Complete mutation
+  const completeMutation = useMutation({
+    mutationFn: async (pairingId: number) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/complete`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Mock interview marked completed!");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to mark complete.");
+    },
+  });
+
+  // Rating mutation
+  const rateMutation = useMutation({
+    mutationFn: async ({ pairingId, rating, feedback }: { pairingId: number; rating: number; feedback?: string }) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/rate`, { rating, feedback });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Rating submitted successfully!");
+      setShowRatingModal(false);
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to submit rating.");
+    },
+  });
+
+  // Propose Time mutation
+  const proposeTimeMutation = useMutation({
+    mutationFn: async ({ pairingId, proposedTime }: { pairingId: number; proposedTime: string }) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/propose-time`, { proposedTime });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Time proposed successfully!");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to propose time.");
+    },
+  });
+
+  // Accept Time mutation
+  const acceptTimeMutation = useMutation({
+    mutationFn: async ({ pairingId, meetingLink }: { pairingId: number; meetingLink?: string }) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/accept-time`, { meetingLink });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Time accepted successfully!");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to accept time.");
+    },
+  });
+
+  // Reject Time mutation
+  const rejectTimeMutation = useMutation({
+    mutationFn: async (pairingId: number) => {
+      const res = await api.post(`/student/peer-mock-interview/pairings/${pairingId}/reject-time`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["peer-mock-interview"] });
+      toast.success("Time rejected.");
+    },
+    onError: (err: AxiosError<{ message?: string }>) => {
+      toast.error(err.response?.data?.message || "Failed to reject time.");
+    },
+  });
+
+  // Form states
+  const [topic, setTopic] = useState<"DSA" | "SYSTEM_DESIGN" | "FRONTEND">("DSA");
+  const [availability, setAvailability] = useState<string[]>([]);
+  const [enabled, setEnabled] = useState(false);
+
+  // Modal states for rating
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [feedbackText, setFeedbackText] = useState("");
+
+  const [proposedDate, setProposedDate] = useState("");
+  const [meetingLink, setMeetingLink] = useState("");
+
+  const [activeTab, setActiveTab] = useState<"upcoming" | "history">("upcoming");
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showRatingModal) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowRatingModal(false);
+        return;
+      }
+
+      if (e.key === "Tab" && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    const previousActiveElement = document.activeElement as HTMLElement;
+
+    setTimeout(() => {
+      if (modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length > 0) {
+          (focusableElements[0] as HTMLElement).focus();
+        } else {
+          modalRef.current.focus();
+        }
+      }
+    }, 50);
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      if (previousActiveElement) {
+        previousActiveElement.focus();
+      }
+    };
+  }, [showRatingModal]);
+
+  // Sync preference state
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (preference) {
+      setTopic(preference.topic || "DSA");
+      setAvailability(preference.availability || []);
+      setEnabled(preference.enabled ?? true);
+    } else {
+      setEnabled(false);
+    }
+  }, [preference]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const handleSavePreferences = () => {
+    upsertPreferenceMutation.mutate({ topic, availability, enabled });
+  };
+
+  const handleToggleOptIn = () => {
+    const nextEnabled = !enabled;
+    setEnabled(nextEnabled);
+    upsertPreferenceMutation.mutate({ topic, availability, enabled: nextEnabled });
+  };
+
+  const handleCheckboxChange = (slot: string) => {
+    setAvailability((prev) =>
+      prev.includes(slot) ? prev.filter((s) => s !== slot) : [...prev, slot]
+    );
+  };
+
+  const isLoading = loadingPref || loadingPairing;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-stone-50 dark:bg-stone-950">
+        <Loader2 className="w-8 h-8 animate-spin text-lime-400" />
+      </div>
+    );
+  }
+
+  const currentUserId = useAuthStore.getState().user?.id;
+  const isA = pairing && pairing.studentAId === currentUserId;
+  const partner = pairing ? (isA ? pairing.studentB : pairing.studentA) : null;
+  const alreadyRated = pairing ? (isA ? pairing.ratingAForB !== null : pairing.ratingBForA !== null) : false;
+
+  return (
+    <div className="min-h-[calc(100vh-4rem)] bg-stone-50 dark:bg-stone-950">
+      <SEO title="Peer Mock Interview" noIndex />
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Header */}
+          <div className="mb-8 flex items-start justify-between gap-4 border-b border-stone-200 dark:border-white/10 pb-7">
+            <div>
+              <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
+                <span className="h-1.5 w-1.5 bg-lime-400" />
+                practice / peer mock interview
+              </div>
+              <h1 className="mt-3 text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                Peer mock interview matching.
+              </h1>
+              <p className="mt-2 text-sm text-stone-500 max-w-xl">
+                Match weekly with students for live mock interviews. Practice, rate, and level up together.
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              mode="icon"
+              size="sm"
+              onClick={onBack}
+              className="bg-stone-100 hover:bg-stone-200 dark:bg-white/5 dark:hover:bg-white/10 rounded-md shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6">
+            {/* Left Column: Dashboard Status / Match */}
+            <div className="space-y-6">
+              
+              <div className="flex items-center gap-2 border-b border-stone-200 dark:border-white/10 mb-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveTab("upcoming")}
+                  className={`pb-2 rounded-none rounded-t border-b-2 transition-colors ${
+                    activeTab === "upcoming"
+                      ? "border-lime-400 text-stone-900 dark:text-stone-50"
+                      : "border-transparent text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
+                  }`}
+                >
+                  Upcoming Match
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveTab("history")}
+                  className={`pb-2 rounded-none rounded-t border-b-2 transition-colors ${
+                    activeTab === "history"
+                      ? "border-lime-400 text-stone-900 dark:text-stone-50"
+                      : "border-transparent text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
+                  }`}
+                >
+                  History
+                </Button>
+              </div>
+
+              {activeTab === "history" && currentUserId ? (
+                <HistorySection userId={currentUserId} />
+              ) : enabled && pairing ? (
+                // Match Found Card
+                <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden p-6 space-y-6">
+                  <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/5 pb-4">
+                    <div>
+                      <span className="text-xs font-mono uppercase tracking-widest text-stone-400">Match Found</span>
+                      <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mt-1">Upcoming Practice Session</h2>
+                    </div>
+                    <span className="px-2.5 py-1 rounded bg-lime-400/10 text-lime-500 text-xs font-mono uppercase tracking-wider">
+                      {pairing.topic}
+                    </span>
+                  </div>
+
+                  {/* Partner Details */}
+                  {partner && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-stone-100 dark:bg-white/5 border border-stone-200 dark:border-white/10 flex items-center justify-center text-lg font-bold text-stone-700 dark:text-stone-300 rounded shrink-0">
+                        {partner.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-bold text-stone-900 dark:text-stone-50">{partner.name}</h3>
+                        <p className="text-xs text-stone-500 dark:text-stone-400">{partner.college || "No College Specified"}</p>
+                        <div className="flex flex-wrap gap-2 pt-1.5">
+                          {partner.linkedinUrl && (
+                            <a
+                              href={partner.linkedinUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+                            >
+                              LinkedIn <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                          <a
+                            href={`mailto:${partner.email}`}
+                            className="inline-flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+                          >
+                            Email <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Assigned Problem / Preparation Section */}
+                  <PreparationCard material={pairing.preparationMaterial} />
+
+                  {/* Complete/Feedback/Scheduling Actions */}
+                  <div className="flex flex-col gap-3 pt-4 border-t border-stone-100 dark:border-white/5">
+                    {pairing.status === "PENDING_SCHEDULE" && !pairing.proposedTime && (
+                      <div className="space-y-3 bg-stone-50 dark:bg-white/5 p-3 rounded border border-stone-200 dark:border-white/10">
+                        <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Propose a meeting time</p>
+                        <div className="flex flex-wrap gap-2">
+                          <input
+                            type="datetime-local"
+                            value={proposedDate}
+                            onChange={(e) => setProposedDate(e.target.value)}
+                            className="text-xs rounded border-stone-300 dark:border-white/15 bg-transparent text-stone-900 dark:text-stone-50 px-2 py-1"
+                          />
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            disabled={!proposedDate || proposeTimeMutation.isPending}
+                            onClick={() => proposeTimeMutation.mutate({ pairingId: pairing.id, proposedTime: new Date(proposedDate).toISOString() })}
+                            className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+                          >
+                            Propose Time
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {pairing.status === "PENDING_SCHEDULE" && pairing.proposedTime && pairing.proposedById === currentUserId && (
+                      <div className="bg-stone-50 dark:bg-white/5 p-3 rounded border border-stone-200 dark:border-white/10 flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Time Proposed</p>
+                          <p className="text-xs text-stone-500">Waiting for {partner?.name} to accept {new Date(pairing.proposedTime).toLocaleString()}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {pairing.status === "PENDING_SCHEDULE" && pairing.proposedTime && pairing.proposedById !== currentUserId && (
+                      <div className="space-y-3 bg-stone-50 dark:bg-white/5 p-3 rounded border border-stone-200 dark:border-white/10">
+                        <div>
+                          <p className="text-xs font-semibold text-stone-900 dark:text-stone-50">Partner Proposed Time</p>
+                          <p className="text-xs text-stone-500">{partner?.name} proposed {new Date(pairing.proposedTime).toLocaleString()}</p>
+                        </div>
+                        <div className="space-y-2">
+                          <input
+                            type="url"
+                            placeholder="Optional meeting link (e.g., Google Meet)"
+                            value={meetingLink}
+                            onChange={(e) => setMeetingLink(e.target.value)}
+                            className="w-full text-xs rounded border-stone-300 dark:border-white/15 bg-transparent text-stone-900 dark:text-stone-50 px-2 py-1.5"
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              disabled={acceptTimeMutation.isPending || rejectTimeMutation.isPending}
+                              onClick={() => acceptTimeMutation.mutate({ pairingId: pairing.id, meetingLink: meetingLink || undefined })}
+                              className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+                            >
+                              Accept Time
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled={acceptTimeMutation.isPending || rejectTimeMutation.isPending}
+                              onClick={() => rejectTimeMutation.mutate(pairing.id)}
+                              className="text-red-500 hover:text-red-600"
+                            >
+                              Reject & Propose New
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {pairing.status === "SCHEDULED" && (
+                      <div className="bg-lime-50 dark:bg-lime-400/10 border border-lime-200 dark:border-lime-400/20 p-3 rounded">
+                        <p className="text-xs font-semibold text-lime-900 dark:text-lime-500">Scheduled for {pairing.scheduledAt && new Date(pairing.scheduledAt).toLocaleString()}</p>
+                        {pairing.meetingLink && isSafeHttpUrl(pairing.meetingLink) && (
+                          <a href={pairing.meetingLink} target="_blank" rel="noreferrer" className="text-xs text-lime-600 dark:text-lime-400 underline mt-1 block">
+                            Join Meeting Link
+                          </a>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-3 pt-2">
+                      {pairing.status === "SCHEDULED" ? (
+                        <Button
+                          variant="primary"
+                          onClick={() => completeMutation.mutate(pairing.id)}
+                          disabled={completeMutation.isPending}
+                          className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+                        >
+                          Mark Session Completed
+                        </Button>
+                      ) : pairing.status === "COMPLETED" ? (
+                        <span className="text-xs text-stone-400 italic">Session marked as completed.</span>
+                      ) : null}
+                      
+                      {(pairing.status === "SCHEDULED" || pairing.status === "PENDING_SCHEDULE") && (
+                        <Button
+                          variant="ghost"
+                          mode="link"
+                          onClick={() => {
+                            upsertPreferenceMutation.mutate({ topic, availability, enabled: false });
+                          }}
+                          className="text-xs font-bold text-red-500 hover:underline"
+                        >
+                          Opt Out of Future Matches
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : enabled && !pairing ? (
+                // Searching pool Card
+                <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 text-center space-y-4">
+                  <div className="w-12 h-12 bg-lime-400/10 text-lime-500 flex items-center justify-center rounded mx-auto">
+                    <RotateCcw className="w-6 h-6 animate-spin" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">Searching for a partner...</h2>
+                    <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
+                      You are in the matching pool! We match students every week on Sunday based on roadmap progress and availability.
+                    </p>
+                  </div>
+                  <div className="bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md p-4 text-left max-w-md mx-auto space-y-2">
+                    <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block">Your matching settings</span>
+                    <p className="text-xs text-stone-600 dark:text-stone-400">
+                      Topic: <span className="font-semibold text-stone-950 dark:text-stone-50">{topic}</span>
+                    </p>
+                    <p className="text-xs text-stone-600 dark:text-stone-400">
+                      Availability: <span className="font-semibold text-stone-950 dark:text-stone-50">{availability.join(", ") || "Anytime"}</span>
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    mode="link"
+                    onClick={handleToggleOptIn}
+                    disabled={upsertPreferenceMutation.isPending}
+                    className="text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 underline"
+                  >
+                    Leave matching pool
+                  </Button>
+                </div>
+              ) : (
+                // Opted Out Card
+                <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 text-center space-y-4">
+                  <div className="w-12 h-12 bg-stone-100 dark:bg-white/5 text-stone-400 flex items-center justify-center rounded mx-auto">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-stone-900 dark:text-stone-50">Peer Mock Interviews are disabled</h2>
+                    <p className="text-sm text-stone-500 mt-1 max-w-sm mx-auto">
+                      Opt-in on the right to start receiving weekly peer mock interview pairings.
+                    </p>
+                  </div>
+                  <Button
+                    variant="primary"
+                    onClick={handleToggleOptIn}
+                    disabled={upsertPreferenceMutation.isPending}
+                    className="bg-lime-400 text-stone-950 hover:bg-lime-300 mx-auto"
+                  >
+                    Opt In to Matches
+                  </Button>
+                </div>
+              )}
+
+              {/* Completed / Review needed matches */}
+              {pairing && pairing.status === "COMPLETED" && !alreadyRated && (
+                <div className="bg-amber-50 dark:bg-amber-400/10 border border-amber-200 dark:border-amber-400/20 rounded-md p-5 flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-bold text-amber-900 dark:text-amber-200 text-sm">Review your session</h3>
+                    <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                      Your practice session is completed. Please rate your partner's performance.
+                    </p>
+                  </div>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setShowRatingModal(true)}
+                    className="bg-amber-400 hover:bg-amber-300 text-stone-950"
+                  >
+                    Rate Partner
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column: Preferences Settings */}
+            <div className="space-y-6">
+              <SessionPanel title="Matching Preferences">
+                <div className="space-y-5">
+                  {/* Enabled flag */}
+                  <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/5 pb-3">
+                    <span className="text-sm font-bold text-stone-900 dark:text-stone-50">Participate in matching</span>
+                    <button
+                      type="button"
+                      onClick={handleToggleOptIn}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        enabled ? "bg-lime-400" : "bg-stone-200 dark:bg-stone-700"
+                      }`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          enabled ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Topic Select */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-stone-900 dark:text-stone-50">Select Topic</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["DSA", "SYSTEM_DESIGN", "FRONTEND"] as const).map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setTopic(t)}
+                          className={`px-3 py-2 text-center text-xs font-semibold rounded border transition-colors cursor-pointer ${
+                            topic === t
+                              ? "border-lime-400 bg-lime-50 dark:bg-lime-400/10 text-stone-900 dark:text-stone-50"
+                              : "border-stone-200 dark:border-white/10 bg-transparent text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5"
+                          }`}
+                        >
+                          {t.replace("_", " ")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Availability checkboxes */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-stone-900 dark:text-stone-50">Availability</label>
+                    <div className="space-y-2.5">
+                      {[
+                        { id: "WEEKDAYS_MORNING", label: "Weekdays Morning (9am - 12pm)" },
+                        { id: "WEEKDAYS_AFTERNOON", label: "Weekdays Afternoon (12pm - 5pm)" },
+                        { id: "WEEKDAYS_EVENING", label: "Weekdays Evening (5pm - 9pm)" },
+                        { id: "WEEKENDS", label: "Weekends (Anytime)" },
+                      ].map((item) => (
+                        <label key={item.id} className="flex items-center gap-2.5 text-xs text-stone-700 dark:text-stone-300 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={availability.includes(item.id)}
+                            onChange={() => handleCheckboxChange(item.id)}
+                            className="rounded border-stone-300 dark:border-white/15 text-lime-500 focus:ring-lime-400 focus:ring-offset-0 bg-transparent"
+                          />
+                          <span>{item.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Save button */}
+                  <Button
+                    variant="primary"
+                    onClick={handleSavePreferences}
+                    disabled={upsertPreferenceMutation.isPending}
+                    className="w-full bg-lime-400 text-stone-950 hover:bg-lime-300"
+                  >
+                    Save Preferences
+                  </Button>
+                </div>
+              </SessionPanel>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Peer Rating Modal */}
+      {showRatingModal && pairing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-xs">
+          <motion.div
+            ref={modalRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setShowRatingModal(false);
+              }
+            }}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md max-w-md w-full overflow-hidden focus:outline-none"
+          >
+            <div className="px-5 py-3.5 border-b border-stone-100 dark:border-white/5 bg-stone-50 dark:bg-stone-950/40">
+              <span className="text-xs font-mono uppercase tracking-widest text-stone-400">Post Practice Session</span>
+              <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 mt-0.5">Rate Your Partner</h3>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-900 dark:text-stone-50">Score</label>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="p-1 cursor-pointer bg-transparent border-0 shrink-0"
+                    >
+                      <Star
+                        className={`w-7 h-7 ${
+                          star <= rating
+                            ? "text-lime-400 fill-lime-400"
+                            : "text-stone-200 dark:text-stone-700"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-900 dark:text-stone-50">Constructive Feedback</label>
+                <Textarea
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  rows={4}
+                  placeholder="What went well? Where can they improve?"
+                  className="bg-transparent border border-stone-200 dark:border-white/10 text-stone-900 dark:text-stone-50 text-xs"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-3">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowRatingModal(false)}
+                  className="bg-stone-100 dark:bg-white/5 text-stone-700 dark:text-stone-300"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => rateMutation.mutate({ pairingId: pairing.id, rating, feedback: feedbackText })}
+                  disabled={rateMutation.isPending}
+                  className="bg-lime-400 text-stone-950 hover:bg-lime-300"
+                >
+                  Submit Review
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

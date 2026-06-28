@@ -11,17 +11,17 @@ import ScrollProgressBar from "./components/common/ScrollProgressBar";
 import ScrollToTop from "./components/common/ScrollToTop";
 const ContributorsPage = lazyWithRetry(() => import("./module/contributors/ContributorsPage"));
 
+let hasReloaded = false;
+
 function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>): LazyExoticComponent<T> {
   return lazy(
     () =>
       factory().catch((err: unknown) => {
-        const key = "chunk_reload";
-        if (!sessionStorage.getItem(key)) {
-          sessionStorage.setItem(key, "1");
+        if (!hasReloaded) {
+          hasReloaded = true;
           window.location.reload();
-          return new Promise<never>(() => { }); // never resolves, page is reloading
+          return new Promise<never>(() => { });
         }
-        sessionStorage.removeItem(key);
         throw err;
       }) as Promise<{ default: T }>,
   ) as LazyExoticComponent<T>;
@@ -47,7 +47,6 @@ const PublicOpenSourcePage = lazyWithRetry(() => import("./module/student/openso
 const RepoPublicPage = lazyWithRetry(() => import("./module/student/opensource/RepoPublicPage"));
 const BlogListPage = lazyWithRetry(() => import("./module/blog/BlogListPage"));
 const BlogPostPage = lazyWithRetry(() => import("./module/blog/BlogPostPage"));
-const RecruiterLandingPage = lazyWithRetry(() => import("./module/recruiter/RecruiterLandingPage"));
 const AptitudeCategoriesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCategoriesPage"));
 const AptitudeTopicPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTopicPage"));
 const AptitudeCompaniesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
@@ -62,6 +61,7 @@ const DsaProblemDetailPage = lazyWithRetry(() => import("./module/student/dsa/Ds
 const DsaFoundationsHubPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsHubPage"));
 const DsaFoundationsLevelPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsLevelPage"));
 const DsaFoundationsLessonPage = lazyWithRetry(() => import("./module/student/learn/dsa-foundations/DsaFoundationsLessonPage"));
+const PlacementPrepPlansPage = lazyWithRetry(() => import("./module/student/learn/placement-prep/PlacementPrepPlansPage"));
 const SystemDesignHubPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignHubPage"));
 const SystemDesignLevelPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLevelPage"));
 const SystemDesignLessonPage = lazyWithRetry(() => import("./module/student/learn/system-design/SystemDesignLessonPage"));
@@ -124,7 +124,6 @@ const HackathonGuideSectionPage = lazyWithRetry(() => import("./module/student/o
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
 const AmbassadorPage = lazyWithRetry(() => import("./module/student/opensource/AmbassadorPage"));
 const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
-const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
 const SkillVerificationPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillVerificationPage"));
@@ -137,7 +136,6 @@ const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayo
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
 const NotesDashboardPage = lazyWithRetry(() => import("./module/student/learn/NotesDashboardPage"));
 const BuildChallengesPage = lazyWithRetry(() => import("./module/student/learn/challenges/BuildChallengesPage"));
-const MentorMatchingPage = lazyWithRetry(() => import("./module/student/learn/mentors/MentorMatchingPage"));
 const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
 const ExamDetailPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamDetailPage"));
 const ExamMockPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamRunnerPage").then((m) => ({ default: m.ExamMockPage })));
@@ -182,40 +180,7 @@ const DataAnalyticsLessonsPage = lazyWithRetry(() => import("./module/student/da
 const DataAnalyticsSectionPage = lazyWithRetry(() => import("./module/student/data-analytics/DataAnalyticsSectionPage"));
 const DataAnalyticsLessonDetailPage = lazyWithRetry(() => import("./module/student/data-analytics/DataAnalyticsLessonDetailPage"));
 
-// Recruiter auth pages
-// Redirected to unified auth pages
-
-
-// Recruiter pages
-const RecruiterLayout = lazyWithRetry(() => import("./module/recruiter/RecruiterLayout"));
-const RecruiterDashboard = lazyWithRetry(() => import("./module/recruiter/RecruiterDashboard"));
-const RecruiterJobsList = lazyWithRetry(() => import("./module/recruiter/jobs/RecruiterJobsList"));
-const CreateJobPage = lazyWithRetry(() => import("./module/recruiter/jobs/CreateJobPage"));
-const EditJobPage = lazyWithRetry(() => import("./module/recruiter/jobs/EditJobPage"));
-const ApplicationsList = lazyWithRetry(() => import("./module/recruiter/applications/ApplicationsList"));
-const ApplicationDetail = lazyWithRetry(() => import("./module/recruiter/applications/ApplicationDetail"));
-const CandidateImportPage = lazyWithRetry(() => import("./module/recruiter/applications/CandidateImportPage"));
-const JobAnalyticsPage = lazyWithRetry(() => import("./module/recruiter/analytics/JobAnalyticsPage"));
-const TalentSearchPage = lazyWithRetry(() => import("./module/recruiter/talent/TalentSearchPage"));
-const SavedCandidatesPage = lazyWithRetry(() => import("./module/recruiter/talent/SavedCandidatesPage"));
-const RecruiterProfilePage = lazyWithRetry(() => import("./module/recruiter/profile/RecruiterProfilePage"));
-
-// HR Management pages
-const HRDashboardPage = lazyWithRetry(() => import("./module/recruiter/hr/HRDashboardPage"));
-const EmployeesPage = lazyWithRetry(() => import("./module/recruiter/hr/EmployeesPage"));
-const EmployeeDetailPage = lazyWithRetry(() => import("./module/recruiter/hr/EmployeeDetailPage"));
-const DepartmentsPage = lazyWithRetry(() => import("./module/recruiter/hr/DepartmentsPage"));
-const LeavePage = lazyWithRetry(() => import("./module/recruiter/hr/LeavePage"));
-const AttendancePage = lazyWithRetry(() => import("./module/recruiter/hr/AttendancePage"));
-const HRInterviewsPage = lazyWithRetry(() => import("./module/recruiter/hr/InterviewsPage"));
-const TasksPage = lazyWithRetry(() => import("./module/recruiter/hr/TasksPage"));
-const PerformancePage = lazyWithRetry(() => import("./module/recruiter/hr/PerformancePage"));
-const PayrollPage = lazyWithRetry(() => import("./module/recruiter/hr/PayrollPage"));
-const ReimbursementsPage = lazyWithRetry(() => import("./module/recruiter/hr/ReimbursementsPage"));
-const OnboardingPage = lazyWithRetry(() => import("./module/recruiter/hr/OnboardingPage"));
-const CompliancePage = lazyWithRetry(() => import("./module/recruiter/hr/CompliancePage"));
-const WorkflowsPage = lazyWithRetry(() => import("./module/recruiter/hr/WorkflowsPage"));
-const RolesPage = lazyWithRetry(() => import("./module/recruiter/hr/RolesPage"));
+// Recruiter + HR pages archived to /archived (feature removed)
 
 // InternHack AI pages
 const JobAgentPage = lazyWithRetry(() => import("./module/student/job-agent/JobAgentPage"));
@@ -319,8 +284,9 @@ function ApplyRedirect() {
 function ProfileRedirect() {
   const { id } = useParams();
   const { user } = useAuthStore();
-  const base = user?.role === "ADMIN" ? "/admin" : "/recruiters";
-  return <Navigate to={`${base}/profile/${id}`} replace />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === "ADMIN") return <Navigate to={`/admin/profile/${id}`} replace />;
+  return <Navigate to={`/student/profile/public/${id}`} replace />;
 }
 
 /** Listens for 401 auth:expired events and redirects via React Router instead of window.location */
@@ -373,9 +339,6 @@ function App() {
 
             {/* Public Profile without auth wrapper */}
             <Route path="/student/profile/public/:identifier" element={<PublicProfilePage />} />
-            <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
-            <Route path="/recruiter/login" element={<Navigate to="/login?role=RECRUITER" replace />} />
-            <Route path="/recruiter/register" element={<Navigate to="/register?role=RECRUITER" replace />} />
             <Route path="/opensource" element={<PublicOpenSourcePage />} />
             <Route path="/opensource/:owner/:name" element={<RepoPublicPage />} />
             {/* Roadmaps (public + auth) */}
@@ -402,7 +365,6 @@ function App() {
             <Route path="/learn" element={<LearnLayout />}>
               <Route index element={<LearnHubPage />} />
               <Route path="challenges" element={<BuildChallengesPage />} />
-              <Route path="mentors" element={<MentorMatchingPage />} />
               <Route path="skill-tests" element={<ProtectedRoute role="STUDENT"><SkillVerificationPage /></ProtectedRoute>} />
               <Route path="javascript" element={<JsLessonsPage />} />
               <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
@@ -486,6 +448,7 @@ function App() {
               <Route path="interview/behavioral-interview/trainer" element={<BehavioralTrainerPage />} />
               <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
               <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
+              <Route path="placement-prep" element={<ProtectedRoute role="STUDENT"><PlacementPrepPlansPage /></ProtectedRoute>} />
               <Route path="notes" element={<ProtectedRoute role="STUDENT"><NotesDashboardPage /></ProtectedRoute>} />
             </Route>
 
@@ -541,7 +504,6 @@ function App() {
               <Route path="mock-interview" element={<MockInterviewPage />} />
               <Route path="companies/add" element={<AddCompanyPage />} />
               <Route path="grants" element={<GrantsPage />} />
-              <Route path="grants/tracker" element={<GrantTrackerPage />} />
               <Route path="opensource" element={<OpenSourceLayout />}>
                 <Route index element={<OpenSourceDashboardPage />} />
                 <Route path="discover" element={<RepoDiscoveryPage />} />
@@ -581,39 +543,9 @@ function App() {
               <Route path="learn/readiness" element={<InterviewReadinessPage />} />
             </Route>
 
-            {/* Recruiter protected routes */}
-            <Route path="/recruiters" element={<ProtectedRoute role="RECRUITER"><RecruiterLayout /></ProtectedRoute>}>
-              <Route index element={<RecruiterDashboard />} />
-              <Route path="jobs" element={<RecruiterJobsList />} />
-              <Route path="jobs/create" element={<CreateJobPage />} />
-              <Route path="jobs/:id/edit" element={<EditJobPage />} />
-              <Route path="jobs/:id/applications" element={<ApplicationsList />} />
-              <Route path="jobs/:id/import-candidates" element={<CandidateImportPage />} />
-              <Route path="jobs/:id/analytics" element={<JobAnalyticsPage />} />
-              <Route path="applications/:applicationId" element={<ApplicationDetail />} />
-              <Route path="talent-search" element={<TalentSearchPage />} />
-              <Route path="saved" element={<SavedCandidatesPage />} />
-              <Route path="profile" element={<RecruiterProfilePage />} />
-              <Route path="profile/:identifier" element={<PublicProfilePage />} />
-              {/* HR Management */}
-              <Route path="hr" element={<HRDashboardPage />} />
-              <Route path="hr/employees" element={<EmployeesPage />} />
-              <Route path="hr/employees/:id" element={<EmployeeDetailPage />} />
-              <Route path="hr/departments" element={<DepartmentsPage />} />
-              <Route path="hr/leave" element={<LeavePage />} />
-              <Route path="hr/attendance" element={<AttendancePage />} />
-              <Route path="hr/interviews" element={<HRInterviewsPage />} />
-              <Route path="hr/tasks" element={<TasksPage />} />
-              <Route path="hr/performance" element={<PerformancePage />} />
-              <Route path="hr/payroll" element={<PayrollPage />} />
-              <Route path="hr/reimbursements" element={<ReimbursementsPage />} />
-              <Route path="hr/onboarding" element={<OnboardingPage />} />
-              <Route path="hr/compliance" element={<CompliancePage />} />
-              <Route path="hr/workflows" element={<WorkflowsPage />} />
-              <Route path="hr/roles" element={<RolesPage />} />
-            </Route>
+            {/* Recruiter + HR routes removed (feature archived to /archived) */}
 
-            {/* Profile view redirect → recruiter layout */}
+            {/* Profile view redirect */}
             <Route path="/profile/:id" element={<ProtectedRoute><ProfileRedirect /></ProtectedRoute>} />
 
             {/* Admin login (public) */}

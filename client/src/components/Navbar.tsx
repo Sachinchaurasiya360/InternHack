@@ -30,7 +30,6 @@ const NAV_ITEMS = [
   { label: "Jobs", href: "/jobs" },
   { label: "Learn", href: "/learn" },
   { label: "Companies", href: "/companies" },
-  { label: "Recruiters", href: "/for-recruiters" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
 ];
@@ -58,13 +57,8 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
   };
 
   const dashboardLink =
-    user?.role === "ADMIN"
-      ? "/admin"
-      : user?.role === "RECRUITER"
-        ? "/recruiters"
-        : "/student/applications";
-  const profileLink =
-    user?.role === "RECRUITER" ? "/recruiters/profile" : "/student/profile";
+    user?.role === "ADMIN" ? "/admin" : "/student/applications";
+  const profileLink = "/student/profile";
 
   return (
     <motion.nav
@@ -418,6 +412,7 @@ function MobileNavLink({
     <Link
       to={href}
       onClick={onClick}
+      role="menuitem"
       className="block px-3 py-2 text-sm text-stone-700 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-300 dark:hover:text-stone-50 dark:hover:bg-white/5 rounded-md transition-all font-medium no-underline"
     >
       {children}

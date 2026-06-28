@@ -1,10 +1,12 @@
 ﻿import { prisma } from "../../database/db.js";
 import type { Prisma } from "@prisma/client";
 import type { PlanTier } from "../../config/usage-limits.js";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { cacheGet, cacheSet, cacheDelPattern } from "../../utils/cache.js";
 
-const sanitize = (s: string) => DOMPurify.sanitize(s, { ALLOWED_TAGS: [] });
+// Strip all HTML tags, leaving plain text. sanitize-html is pure CommonJS (no
+// jsdom), so it avoids the ESM-only transitive deps that crash the runtime.
+const sanitize = (s: string) => sanitizeHtml(s, { allowedTags: [], allowedAttributes: {} });
 
 const COMPANY_LIST_TTL = 3600;
 const COMPANY_DETAIL_TTL = 3600;
@@ -38,7 +40,6 @@ interface SubmitReviewInput {
 interface ContributeCompanyInput {
   name: string;
   description: string;
-  mission?: string | undefined;
   industry: string;
   size: "STARTUP" | "SMALL" | "MEDIUM" | "LARGE" | "ENTERPRISE";
   city: string;

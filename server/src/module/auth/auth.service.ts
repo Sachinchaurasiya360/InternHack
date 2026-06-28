@@ -6,7 +6,7 @@ import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
 import { UserService } from "../user/user.service.js";
-import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
+import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from "../../utils/cache.js";
 
 const userService = new UserService();
 
@@ -127,7 +127,7 @@ function assertNotLocked(lockedUntil: Date | null) {
   }
 }
 
-const GITHUB_STATS_CACHE_TTL = 60 * 60 * 1000;
+const GITHUB_STATS_CACHE_TTL_SECONDS = 60 * 60; // 1 hour
 const GITHUB_STATS_MAX_REPO_PAGES = 100;
 
 type GitHubStats = {
@@ -143,8 +143,6 @@ type GitHubStatsRepo = {
   language: string | null;
   fork: boolean;
 };
-
-const githubStatsCache = new Map<string, { data: GitHubStats; expiresAt: number }>();
 
 function parseGitHubUsername(input: string) {
   const value = input.trim();
@@ -206,9 +204,7 @@ export class AuthService {
         name: data.name,
         email: data.email,
         password: hashedPassword,
-        role: data.role,
-        company: data.company ?? null,
-        designation: data.designation ?? null,
+        role: "STUDENT",
         contactNo: data.contactNo ?? null,
       },
       select: AUTH_USER_SELECT,
@@ -318,14 +314,6 @@ export class AuthService {
       throw new Error("Invalid Google token");
     }
 
-    // Block personal emails for recruiter signups
-    if (data.role === "RECRUITER") {
-      const domain = email.split("@")[1]?.toLowerCase();
-      if (domain && PERSONAL_EMAIL_DOMAINS.includes(domain)) {
-        throw new Error("Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.");
-      }
-    }
-
     // Check if user already exists
     let user = await prisma.user.findUnique({ where: { email } });
 
@@ -352,7 +340,7 @@ export class AuthService {
           name: name ?? email.split("@")[0] ?? "User",
           email,
           password: hashedPassword,
-          role: data.role ?? "STUDENT",
+          role: "STUDENT",
           profilePic: picture ?? null,
           isVerified: true,
         },
@@ -451,10 +439,7 @@ export class AuthService {
     githubUrl: true,
     portfolioUrl: true,
     leetcodeUrl: true,
-    jobStatus: true,
-    isProfilePublic: true,
     projects: true,
-    achievements: true,
     createdAt: true,
     subscriptionPlan: true,
     subscriptionStatus: true,
@@ -495,9 +480,6 @@ export class AuthService {
     if ("skills" in data) {
       updateData.skills = Array.isArray(data.skills) ? data.skills.map((s) => s.trim().toLowerCase()) : [];
     }
-    if ("jobStatus" in data) {
-      updateData.jobStatus = data.jobStatus || null;
-    }
     if ("projects" in data) {
       if (Array.isArray(data.projects)) {
         const dateRegex = /^\d{4}-(?:0[1-9]|1[0-2])$/;
@@ -527,12 +509,6 @@ export class AuthService {
         updateData.projects = [];
       }
     }
-    if ("achievements" in data) {
-      updateData.achievements = Array.isArray(data.achievements) ? data.achievements : [];
-    }
-    if ("isProfilePublic" in data) {
-      updateData.isProfilePublic = !!data.isProfilePublic;
-    }
 
     const user = await prisma.user.update({
       where: { id: userId },
@@ -545,33 +521,39 @@ export class AuthService {
 
     await signProfileMedia(user as Record<string, any>);
 
-    // Bust cached profile so next GET /auth/me returns fresh data
+    // Bust cached profile so next GET /auth/me and public profile returns fresh data.
+    // Use cacheDelPattern so both visitor variants (:auth and :guest) are flushed.
     await cacheDel(`profile:me:${userId}`);
-    await cacheDel(`profile:public:${userId}`);
+    await cacheDelPattern(`profile:public:${userId}:`);
     if (user.profileSlug) {
-      await cacheDel(`profile:public:${user.profileSlug}`);
+      await cacheDelPattern(`profile:public:${user.profileSlug}:`);
     }
-
 
     return user;
   }
 
-  async getPublicProfile(identifier: string, visitor?: { id: number; role: string }) {
-    // Because public profiles vary by visitor authorization, include role in cache key if authorized
-    const isVisitorAuthorized = visitor?.role === "ADMIN" || visitor?.role === "RECRUITER";
+  /**
+   * Fetch the public profile for a given identifier (slug or numeric id).
+   *
+   * DB query count per request:
+   *   CACHED  – 0 Prisma queries (served from Redis / in-process fallback)
+   *   UNCACHED – 1-2 Prisma queries:
+   *     • 1 × user.findUnique (by profileSlug)
+   *     • +1 × user.findUnique (by id, only when slug lookup returns null and identifier is numeric)
+   *
+   * Returns the profile object and whether the response was served from cache.
+   */
+  async getPublicProfile(identifier: string, visitor?: { id: number; role: string }): Promise<{ profile: unknown; cacheHit: boolean }> {
+    // Because public profiles vary by visitor authorization, include role in cache key.
+    const isVisitorAuthorized = visitor?.role === "ADMIN";
     const cacheKey = `profile:public:${identifier}:${isVisitorAuthorized ? "auth" : "guest"}`;
     const cached = await cacheGet(cacheKey);
-    if (cached) return cached as never;
+    if (cached) return { profile: cached, cacheHit: true };
 
     const selectOptions = {
       ...this.profileSelect,
       verifiedSkills: {
         select: { skillName: true, score: true, verifiedAt: true },
-      },
-      atsScores: {
-        select: { overallScore: true },
-        orderBy: { overallScore: "desc" as const },
-        take: 1,
       },
     };
 
@@ -594,27 +576,38 @@ export class AuthService {
 
     const isOwner = visitor?.id === user.id;
 
-    if (!user.isProfilePublic && !isOwner && !isVisitorAuthorized) {
+    if (!isOwner && !isVisitorAuthorized) {
       throw new Error("Profile is private");
     }
 
-    const { atsScores, ...rest } = user;
-    
-    // Sanitize for unauthorized guest viewers
-    if (!isOwner && !isVisitorAuthorized) {
-      delete (rest as any).email;
-      delete (rest as any).contactNo;
-      // We will keep resumes for now as per normal portfolio behavior, but sensitive identifiers are stripped.
-    }
+    const rest = { ...user };
 
     await signProfileMedia(rest as Record<string, any>);
 
-    const result = {
+    // Fetch lightweight badge display list — no heavy criteria JSON
+    const badges = await badgeService.getStudentBadgesDisplay(user.id);
+
+    // Full view (includes email/contactNo). Only the owner and authorized
+    // viewers ever receive this; it is never written to the shared guest key.
+    const fullResult = {
       ...rest,
-      bestAtsScore: atsScores[0]?.overallScore ?? null,
+      badges,
     };
-    await cacheSet(cacheKey, result, PROFILE_TTL);
-    return result;
+    // Guest-safe view: strip PII regardless of who triggered the request.
+    const { email: _email, contactNo: _contactNo, ...guestRest } = fullResult as any;
+    const guestResult = guestRest;
+
+    // Authorized tier (admin/recruiter): cache and return the full view under
+    // the ":auth" key, which is only ever served back to authorized viewers.
+    if (isVisitorAuthorized) {
+      await cacheSet(cacheKey, fullResult, PROFILE_TTL);
+      return { profile: fullResult, cacheHit: false };
+    }
+
+    // Only the owner reaches this point (non-owner, non-authorized visitors are
+    // rejected above). Return the owner's full view; never cache under the
+    // shared key so it can't be served to another visitor.
+    return { profile: isOwner ? fullResult : guestResult, cacheHit: false };
   }
 
   async verifyEmail(email: string, otp: string) {
@@ -676,7 +669,6 @@ export class AuthService {
       select: AUTH_USER_SELECT,
     });
 
-    // Send welcome email (fire-and-forget) â€” temporarily disabled
     sendEmail({
       to: user.email,
       subject: "Welcome to InternHack!",
@@ -871,18 +863,63 @@ export class AuthService {
     };
   }
 
-  async getGitHubStats(input: string): Promise<GitHubStats> {
+  async getGitHubStats(input: string, userId?: number): Promise<GitHubStats> {
     const username = parseGitHubUsername(input);
     if (!username) {
       throw new Error("GitHub username is required");
     }
 
-    const cacheKey = username.toLowerCase();
-    const cached = githubStatsCache.get(cacheKey);
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.data;
+    // Namespaced cache key to avoid collisions with other cache entries.
+    const cacheKey = `github-stats:${username.toLowerCase()}`;
+    const cached = await cacheGet<GitHubStats>(cacheKey);
+    if (cached) return cached;
+
+    // Short-circuit: if the requesting user has connected GitHub via OAuth,
+    // use the stored DB snapshot to build stats without hitting the GitHub API.
+    // Both paths produce the same shape (totalStars = star sum, topLanguages =
+    // repo-language frequency counts), so cache consumers always see consistent data.
+    if (userId) {
+      const connection = await prisma.githubConnection.findUnique({
+        where: { userId },
+        select: {
+          githubUsername: true,
+          publicRepos: true,
+          contributedStars: true,
+          contributedRepos: {
+            select: { language: true, stars: true },
+          },
+        },
+      });
+
+      if (connection && connection.githubUsername.toLowerCase() === username.toLowerCase()) {
+        // Build topLanguages from contributed repos language frequency (consistent
+        // with the live-API path which counts per-repo language occurrences).
+        const langCounts = new Map<string, number>();
+        let totalStars = 0;
+        for (const repo of connection.contributedRepos) {
+          totalStars += repo.stars;
+          if (repo.language) {
+            langCounts.set(repo.language, (langCounts.get(repo.language) ?? 0) + 1);
+          }
+        }
+
+        const snapshotData: GitHubStats = {
+          username: connection.githubUsername,
+          profileUrl: `https://github.com/${connection.githubUsername}`,
+          publicRepos: connection.publicRepos,
+          totalStars,
+          topLanguages: [...langCounts.entries()]
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .slice(0, 3)
+            .map(([name, count]) => ({ name, count })),
+        };
+
+        await cacheSet(cacheKey, snapshotData, GITHUB_STATS_CACHE_TTL_SECONDS);
+        return snapshotData;
+      }
     }
 
+    // Fallback: fetch live stats from the GitHub API.
     const headers = GITHUB_API_HEADERS;
     const [userRes, repos] = await Promise.all([
       fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
@@ -921,22 +958,7 @@ export class AuthService {
         .map(([name, count]) => ({ name, count })),
     };
 
-    githubStatsCache.set(cacheKey, { data, expiresAt: Date.now() + GITHUB_STATS_CACHE_TTL });
-    if (githubStatsCache.size > 200) {
-      const now = Date.now();
-      for (const [key, entry] of githubStatsCache) {
-        if (entry.expiresAt <= now) githubStatsCache.delete(key);
-      }
-      while (githubStatsCache.size > 200) {
-        const oldestKey = githubStatsCache.keys().next().value;
-        if (oldestKey !== undefined) {
-          githubStatsCache.delete(oldestKey);
-        } else {
-          break;
-        }
-      }
-    }
-
+    await cacheSet(cacheKey, data, GITHUB_STATS_CACHE_TTL_SECONDS);
     return data;
   }
 }

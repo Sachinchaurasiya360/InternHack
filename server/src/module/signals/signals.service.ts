@@ -94,6 +94,11 @@ export class SignalsService {
     }
   }
 
+  /** Run the ingest pass once (used by the Vercel daily cron endpoint). */
+  async runOnce() {
+    return this.ingestAll();
+  }
+
   async ingestAll(): Promise<{
     results: Array<{
       source: string;
@@ -214,6 +219,32 @@ export class SignalsService {
     });
     const existingMap = new Map(existing.map((e) => [e.sourceId, e.id]));
 
+    // Cross-source dedup: one row per normalized (company, round). News outlets
+    // report the same raise many times, so without this every article would
+    // become its own card. Look up any existing row matching this batch's
+    // companies (one batched query) and update it instead of inserting a twin.
+    const normKey = (name: string, round?: string | null) =>
+      `${name.trim().toLowerCase()}|${(round ?? "").trim().toLowerCase()}`;
+    const normNames = [...new Set(uniqueSignals.map((s) => s.companyName.trim().toLowerCase()))];
+    const normRows = await prisma.$queryRaw<
+      { id: number; c: string; r: string; status: string }[]
+    >`
+      SELECT id, lower(btrim("companyName")) AS c, coalesce(lower(btrim("fundingRound")), '') AS r, status::text AS status
+      FROM "fundingSignal"
+      WHERE lower(btrim("companyName")) = ANY(${normNames})`;
+    // Keep the best existing row per normKey: prefer ACTIVE, then lowest id.
+    const normMap = new Map<string, number>();
+    for (const row of normRows) {
+      const key = `${row.c}|${row.r}`;
+      const current = normMap.get(key);
+      if (current === undefined) {
+        normMap.set(key, row.id);
+      } else if (row.status === "ACTIVE" && row.id < current) {
+        normMap.set(key, row.id);
+      }
+    }
+    const seenNormKeys = new Set<string>();
+
     let created = 0;
     let updated = 0;
 
@@ -224,6 +255,25 @@ export class SignalsService {
 
       for (const s of batch) {
         const existingId = existingMap.get(s.sourceId);
+        const key = normKey(s.companyName, s.fundingRound);
+        // Same (company, round) already handled this run, or present under a
+        // different source: refresh the canonical row, never insert a duplicate.
+        if (existingId === undefined) {
+          if (seenNormKeys.has(key)) continue;
+          const twinId = normMap.get(key);
+          if (twinId !== undefined) {
+            ops.push(
+              prisma.fundingSignal.update({
+                where: { id: twinId },
+                data: { status: "ACTIVE", lastSeenAt: new Date() },
+              }),
+            );
+            updated++;
+            seenNormKeys.add(key);
+            continue;
+          }
+        }
+        seenNormKeys.add(key);
         const data = {
           companyName: s.companyName,
           companyWebsite: s.companyWebsite ?? null,

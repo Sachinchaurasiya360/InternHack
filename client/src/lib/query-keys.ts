@@ -33,7 +33,6 @@ export const queryKeys = {
   ats: {
     all: ["ats"] as const,
     usage: () => ["ats", "usage"] as const,
-    history: () => ["ats", "history"] as const,
   },
   coverLetter: {
     history: () => ["cover-letter", "history"] as const,
@@ -72,12 +71,6 @@ export const queryKeys = {
     landing: () => ["stats", "landing"] as const,
   },
 
-  // Recruiter
-  recruiter: {
-    talentSearch: (params?: Record<string, string | number>) =>
-      ["recruiter", "talent-search", params] as const,
-  },
-
   // GSoC
   gsoc: {
     list: (params?: Record<string, string | number>) =>
@@ -98,7 +91,7 @@ export const queryKeys = {
   // Open Source
   opensource: {
     all: ["opensource"] as const,
-    list: (params?: Record<string, string | number>) =>
+    list: (params?: Record<string, string | number | string[]>) =>
       ["opensource", "list", params] as const,
     detail: (id: number) => ["opensource", "detail", id] as const,
     myRequests: () => ["opensource", "my-requests"] as const,
@@ -171,13 +164,6 @@ export const queryKeys = {
     detail: (slug: string) => ["external-job", slug] as const,
     similar: (id: string | number) => ["external-job-similar", id] as const,
     status: (id: string | number) => ["external-job-status", id] as const,
-  },
-
-  // Professors
-  professors: {
-    list: (params?: Record<string, string | number>) =>
-      ["professors", "list", params] as const,
-    stats: () => ["professors", "stats"] as const,
   },
 
   // Badges

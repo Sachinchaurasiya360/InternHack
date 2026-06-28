@@ -18,7 +18,7 @@ export const userQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
   search: z.string().optional(),
-  role: z.enum(["STUDENT", "RECRUITER", "ADMIN"]).optional(),
+  role: z.enum(["STUDENT", "ADMIN"]).optional(),
   sortBy: z.enum(["createdAt", "name", "email"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
@@ -56,7 +56,6 @@ export const errorLogQuerySchema = z.object({
 export const createCompanySchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().min(10).max(5000),
-  mission: z.string().max(2000).optional(),
   industry: z.string().min(1).max(100),
   size: z.enum(["STARTUP", "SMALL", "MEDIUM", "LARGE", "ENTERPRISE"]),
   city: z.string().min(1).max(100),
@@ -338,7 +337,7 @@ export const broadcastEmailSchema = z.object({
   subject: z.string().min(1).max(200),
   body: z.string().min(1).max(20000),
   filter: z.object({
-    role: z.enum(["STUDENT", "RECRUITER", "ADMIN", "ALL"]).default("ALL"),
+    role: z.enum(["STUDENT", "ADMIN", "ALL"]).default("ALL"),
     isVerified: z.boolean().optional(),
     subscriptionPlan: z.enum(["FREE", "MONTHLY", "YEARLY", "ALL"]).default("ALL"),
   }).default({ role: "ALL", subscriptionPlan: "ALL" }),

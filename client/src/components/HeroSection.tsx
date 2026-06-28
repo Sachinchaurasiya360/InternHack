@@ -18,8 +18,6 @@ export function HeroSection() {
   const getStartedHref = isAuthenticated
     ? user?.role === "ADMIN"
       ? "/admin"
-      : user?.role === "RECRUITER"
-      ? "/recruiters"
       : "/student/applications"
     : "/register";
 

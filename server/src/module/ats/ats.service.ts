@@ -13,14 +13,9 @@ import type {
   AtsKeywordAnalysis,
   ApplySuggestionsInput,
 } from "./ats.types.js";
-import type { Prisma } from "@prisma/client";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// If the same student re-scores the same resume + job context within this
-// window, return the prior AtsScore row instead of re-calling Gemini.
-const SCORE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export class AtsService {
   private normalizeResumeUrl(resumeUrl: string): string {
@@ -42,20 +37,6 @@ export class AtsService {
       throw new Error("Resume does not belong to this user");
     }
 
-    // Cache hit: identical (resumeUrl, jobTitle, jobDescription) from the same
-    // student within the TTL, return the prior row without burning AI quota.
-    const cached = await prisma.atsScore.findFirst({
-      where: {
-        studentId,
-        resumeUrl,
-        jobTitle: input.jobTitle ?? null,
-        jobDescription: input.jobDescription ?? null,
-        createdAt: { gte: new Date(Date.now() - SCORE_CACHE_TTL_MS) },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    if (cached) return cached;
-
     const resumeText = await this.extractPdfText(resumeUrl);
 
     if (!resumeText || resumeText.trim().length < 50) {
@@ -71,29 +52,16 @@ export class AtsService {
       input.jobDescription,
     );
 
-    const atsScore = await prisma.atsScore.create({
-      data: {
-        studentId,
-        resumeUrl,
-        jobTitle: input.jobTitle ?? null,
-        jobDescription: input.jobDescription ?? null,
-        overallScore: result.overallScore,
-        categoryScores: JSON.parse(
-          JSON.stringify(result.categoryScores),
-        ) as Prisma.InputJsonValue,
-        suggestions: JSON.parse(
-          JSON.stringify(result.suggestions),
-        ) as Prisma.InputJsonValue,
-        keywordAnalysis: JSON.parse(
-          JSON.stringify(result.keywordAnalysis),
-        ) as Prisma.InputJsonValue,
-        rawResponse: JSON.parse(
-          JSON.stringify(result),
-        ) as Prisma.InputJsonValue,
-      },
-    });
-
-    return atsScore;
+    // Scoring is stateless: results are returned but not persisted.
+    return {
+      resumeUrl,
+      jobTitle: input.jobTitle ?? null,
+      jobDescription: input.jobDescription ?? null,
+      overallScore: result.overallScore,
+      categoryScores: result.categoryScores,
+      suggestions: result.suggestions,
+      keywordAnalysis: result.keywordAnalysis,
+    };
   }
 
   async applySuggestions(studentId: number, input: ApplySuggestionsInput) {
@@ -439,23 +407,5 @@ Final check before you answer: if your overallScore is above 75, re-read the res
         ? obj["missing"].filter((s): s is string => typeof s === "string")
         : [],
     };
-  }
-
-  /** Returns the latest 30 ATS scores for a student, sorted oldest-first for charting. */
-  async getScoreHistory(studentId: number) {
-    const rows = await prisma.atsScore.findMany({
-      where: { studentId },
-      select: {
-        id: true,
-        overallScore: true,
-        jobTitle: true,
-        jobDescription: true,
-        resumeUrl: true,
-        createdAt: true,
-      },
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      take: 30,
-    });
-    return rows.reverse();
   }
 }

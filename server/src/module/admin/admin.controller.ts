@@ -14,8 +14,6 @@ import {
   createAdminSchema,
   userQuerySchema,
   updateUserStatusSchema,
-  adminJobQuerySchema,
-  adminUpdateJobStatusSchema,
   createCompanySchema,
   updateCompanySchema,
   updateReviewStatusSchema,
@@ -173,55 +171,6 @@ export class AdminController {
         if (error.message === "Only SUPER_ADMIN can delete admin users") return res.status(403).json({ message: error.message });
       }
       logger.error("Failed to delete user", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  // ==================== JOB MANAGEMENT ====================
-
-  async getAdminJobs(req: Request, res: Response) {
-    try {
-      const query = validateRequestData(res, adminJobQuerySchema, req.query);
-      if (!query) return;
-      const data = await this.adminService.getAdminJobs(query);
-      return res.status(200).json(data);
-    } catch (error) {
-      logger.error("Failed to get admin jobs", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  async updateAdminJobStatus(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
-
-      const result = adminUpdateJobStatusSchema.safeParse(req.body);
-      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-
-      const job = await this.adminService.updateJobStatus(id, result.data.status, req.user.id, result.data.reason);
-      return res.status(200).json({ message: "Job status updated", job });
-    } catch (error) {
-      if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
-      logger.error("Failed to update admin job status", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  async deleteAdminJob(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
-
-      await this.adminService.deleteJob(id, req.user.id);
-      return res.status(200).json({ message: "Job deleted successfully" });
-    } catch (error) {
-      if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
-      logger.error("Failed to delete admin job", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

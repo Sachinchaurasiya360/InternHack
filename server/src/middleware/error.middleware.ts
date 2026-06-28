@@ -4,7 +4,7 @@ import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
 import { FileUploadError } from "../lib/errors.js";
 
-const ADMIN_ALERT_EMAIL = "mrsachinchaurasiya@gmail.com";
+const ADMIN_ALERT_EMAIL = process.env["ADMIN_ALERT_EMAIL"] ?? "mrsachinchaurasiya@gmail.com";
 
 const SENSITIVE_KEYS = new Set([
   "password", "newPassword", "confirmPassword", "currentPassword",
@@ -69,7 +69,11 @@ function logErrorToDb(req: Request, statusCode: number, message: string, rawErr?
     console.error("[ErrorLog] Failed to write:", dbErr);
   });
 
-  if (statusCode >= 500) {
+  // Cron failures are already captured in errorLog and the run's JSON status;
+  // they should not page the admin inbox on every failed/aborted job.
+  const isCronRoute = path.startsWith("/api/cron/");
+
+  if (statusCode >= 500 && !isCronRoute) {
     const rawDetails = rawErr ? formatRawError(rawErr) : "No stack trace";
     sendEmail({
       to: ADMIN_ALERT_EMAIL,
@@ -144,11 +148,28 @@ export function errorMiddleware(err: Error, req: Request, res: Response, _next: 
     "Problem not found": 404,
     "Question not found": 404,
     "Pattern not found": 404,
+    "Ambassador not found": 404,
+    "Share not found": 404,
   };
 
   const status = clientErrors[err.message];
   if (status) {
     respond(req, res, status, err.message, err);
+    return;
+  }
+
+  // Fallback: try partial matches for dynamic error messages
+  const msg = err.message.toLowerCase();
+  if (msg.includes("not found")) {
+    respond(req, res, 404, err.message, err);
+    return;
+  }
+  if (msg.includes("already") && (msg.includes("exists") || msg.includes("registered") || msg.includes("applied"))) {
+    respond(req, res, 409, err.message, err);
+    return;
+  }
+  if (msg.includes("unauthorized") || msg.includes("not authorized")) {
+    respond(req, res, 403, err.message, err);
     return;
   }
 

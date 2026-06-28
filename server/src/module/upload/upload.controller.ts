@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import { createUniqueS3Key, deleteFromS3, getS3KeyFromUrl, signUrl, signUrls, generatePresignedUploadUrl } from "../../utils/s3.utils.js";
 import { prisma } from "../../database/db.js";
 import { createLogger } from "../../utils/logger.js";
+import { cacheDel, cacheDelPattern } from "../../utils/cache.js";
 
 const logger = createLogger("UploadController");
 
@@ -41,8 +42,23 @@ function getExpectedS3UrlPrefix(): string {
   return `https://${bucketName}.s3.${region}.amazonaws.com/`;
 }
 
-function isValidS3FileUrl(url: unknown): url is string {
-  return typeof url === "string" && url.startsWith(getExpectedS3UrlPrefix());
+function isValidS3FileUrl(url: unknown, userId?: number): url is string {
+  if (typeof url !== "string" || !url.startsWith(getExpectedS3UrlPrefix())) {
+    return false;
+  }
+  
+  if (userId !== undefined) {
+    const key = getS3KeyFromUrl(url);
+    if (!key) return false;
+    
+    // Key format is <folder>/<userId>/<uuid>-<filename>
+    const parts = key.split('/');
+    if (parts.length < 3 || parts[1] !== String(userId)) {
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 /** Delete a file - keeps local fallback support just in case users have legacy local files */
@@ -112,8 +128,8 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl } = req.body;
-      if (!isValidS3FileUrl(fileUrl)) {
-        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      if (!isValidS3FileUrl(fileUrl, req.user.id)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin or ownership" });
       }
 
       const userId = req.user.id;
@@ -122,10 +138,17 @@ export class UploadController {
       const user = await prisma.user.update({
         where: { id: userId },
         data: { profilePic: fileUrl },
-        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true },
+        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true, profileSlug: true },
       });
 
       if (current?.profilePic) deleteFile(current.profilePic);
+
+      // Bust cached profiles so public viewers see the new avatar immediately.
+      await Promise.all([
+        cacheDel(`profile:me:${userId}`),
+        cacheDelPattern(`profile:public:${userId}:`),
+        user.profileSlug ? cacheDelPattern(`profile:public:${(user as any).profileSlug}:`) : Promise.resolve(),
+      ]);
 
       if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
       if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
@@ -144,8 +167,8 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl } = req.body;
-      if (!isValidS3FileUrl(fileUrl)) {
-        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      if (!isValidS3FileUrl(fileUrl, req.user.id)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin or ownership" });
       }
 
       const userId = req.user.id;
@@ -154,10 +177,17 @@ export class UploadController {
       const user = await prisma.user.update({
         where: { id: userId },
         data: { coverImage: fileUrl },
-        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true },
+        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true, profileSlug: true },
       });
 
       if (current?.coverImage) deleteFile(current.coverImage);
+
+      // Bust cached profiles so public viewers see the new cover image immediately.
+      await Promise.all([
+        cacheDel(`profile:me:${userId}`),
+        cacheDelPattern(`profile:public:${userId}:`),
+        (user as any).profileSlug ? cacheDelPattern(`profile:public:${(user as any).profileSlug}:`) : Promise.resolve(),
+      ]);
 
       if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
       if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
@@ -176,8 +206,8 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl, originalName, size, mimeType } = req.body;
-      if (!isValidS3FileUrl(fileUrl)) {
-        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      if (!isValidS3FileUrl(fileUrl, req.user.id)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin or ownership" });
       }
       if (typeof size === "number" && size > MAX_FILE_SIZE) {
         return res.status(400).json({ message: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB limit` });
@@ -202,6 +232,13 @@ export class UploadController {
       });
 
       const signedResumes = await signUrls(user.resumes);
+
+      // Bust cached profiles so public viewers see the latest resume list.
+      await Promise.all([
+        cacheDel(`profile:me:${userId}`),
+        cacheDelPattern(`profile:public:${userId}:`),
+      ]);
+
       return res.status(200).json({
         message: "Resume updated",
         user: { ...user, resumes: signedResumes },
@@ -238,7 +275,13 @@ export class UploadController {
 
       deleteFile(url);
       const signedResumes = await signUrls(user.resumes);
-      
+
+      // Bust cached profiles so public viewers no longer see the deleted resume.
+      await Promise.all([
+        cacheDel(`profile:me:${userId}`),
+        cacheDelPattern(`profile:public:${userId}:`),
+      ]);
+
       return res.status(200).json({ message: "Resume deleted", user: { ...user, resumes: signedResumes } });
     } catch (error) {
       console.error(error);

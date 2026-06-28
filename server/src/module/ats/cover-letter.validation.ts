@@ -23,5 +23,4 @@ export interface UserProfile {
   company?: string | null;
   designation?: string | null;
   projects: { title: string; description: string; techStack: string[] }[];
-  achievements: { title: string; description: string; date?: string }[];
 }

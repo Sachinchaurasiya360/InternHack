@@ -27,15 +27,27 @@ export type FocusArea = "DEVELOPMENT" | "TECHNICAL_WRITING" | "DESIGN" | "RESEAR
 export type ProgramDifficulty = "Beginner" | "Intermediate" | "Advanced";
 
 const STATUS_STYLE: Record<Program["status"], string> = {
-  Annual: "bg-lime-100 text-lime-800 dark:bg-lime-900/30 dark:text-lime-300",
-  Ongoing: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
-  Batch: "bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200",
+  Annual: "bg-lime-100 text-lime-900 border border-lime-200 dark:bg-lime-950/60 dark:text-lime-100 dark:border-lime-800",
+  Ongoing: "bg-stone-100 text-stone-900 border border-stone-200 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700",
+  Batch: "bg-stone-200 text-stone-950 border border-stone-300 dark:bg-stone-700 dark:text-stone-50 dark:border-stone-600",
 };
 
 const ELIGIBILITY_STYLE: Record<Program["eligibilityType"], string> = {
-  Students: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300",
-  "Open to All": "bg-lime-100 text-lime-800 dark:bg-lime-900/30 dark:text-lime-300",
-  "Diversity-focused": "bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200",
+  Students: "bg-stone-100 text-stone-900 border border-stone-200 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700",
+  "Open to All": "bg-lime-100 text-lime-900 border border-lime-200 dark:bg-lime-950/60 dark:text-lime-100 dark:border-lime-800",
+  "Diversity-focused": "bg-stone-200 text-stone-950 border border-stone-300 dark:bg-stone-700 dark:text-stone-50 dark:border-stone-600",
+};
+
+const STATUS_BADGE_LABEL: Record<Program["status"], string> = {
+  Annual: "Annual cycle",
+  Ongoing: "Ongoing",
+  Batch: "Batch cohort",
+};
+
+const ELIGIBILITY_BADGE_LABEL: Record<Program["eligibilityType"], string> = {
+  Students: "Students",
+  "Open to All": "Open to all",
+  "Diversity-focused": "Diversity focused",
 };
 
 interface Program {
@@ -1483,13 +1495,9 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
     >
       {urgency?.level === "critical" && (
         <div className="flex items-center gap-2 px-5 py-2 border-b border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900">
-          <motion.span
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-            className="h-1.5 w-1.5 bg-lime-400 shrink-0"
-          />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-            closing soon · {urgency.days} days left
+          <Calendar className="h-3.5 w-3.5 text-lime-700 dark:text-lime-300 shrink-0" aria-hidden="true" />
+          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-700 dark:text-stone-200">
+            Closing soon: {urgency.days} days left
           </span>
         </div>
       )}
@@ -1499,7 +1507,8 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             {urgency?.level === "closed" && (
-              <span className="px-2.5 py-1 rounded-md text-xs font-bold shrink-0 bg-stone-500 text-white">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold shrink-0 bg-stone-700 text-white dark:bg-stone-200 dark:text-stone-950">
+                <X className="h-3 w-3" aria-hidden="true" />
                 Closed
               </span>
             )}
@@ -1514,14 +1523,20 @@ function ProgramCard({ program, tracked, onToggleTrack }: { program: Program; tr
               </h3>
               <div className="flex flex-wrap items-center gap-1.5 mt-1">
                 <span
-                  className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${STATUS_STYLE[program.status]}`}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-md ${STATUS_STYLE[program.status]}`}
                 >
-                  {program.status}
+                  {program.status === "Annual" && <Calendar className="h-3 w-3" aria-hidden="true" />}
+                  {program.status === "Ongoing" && <CheckCircle2 className="h-3 w-3" aria-hidden="true" />}
+                  {program.status === "Batch" && <Users className="h-3 w-3" aria-hidden="true" />}
+                  {STATUS_BADGE_LABEL[program.status]}
                 </span>
                 <span
-                  className={`px-2 py-0.5 text-[10px] font-medium rounded-md ${ELIGIBILITY_STYLE[program.eligibilityType]}`}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-md ${ELIGIBILITY_STYLE[program.eligibilityType]}`}
                 >
-                  {program.eligibilityType}
+                  {program.eligibilityType === "Students" && <GraduationCap className="h-3 w-3" aria-hidden="true" />}
+                  {program.eligibilityType === "Open to All" && <Globe className="h-3 w-3" aria-hidden="true" />}
+                  {program.eligibilityType === "Diversity-focused" && <Users className="h-3 w-3" aria-hidden="true" />}
+                  {ELIGIBILITY_BADGE_LABEL[program.eligibilityType]}
                 </span>
                 {urgency?.level === "closed" && (
                   <>

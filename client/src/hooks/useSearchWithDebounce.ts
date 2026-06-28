@@ -40,12 +40,20 @@ export function useSearchWithDebounce({
   resetParams = [],
 }: UseSearchWithDebounceOptions = {}): UseSearchWithDebounceReturn {
   const [searchParams, setSearchParams] = useSearchParams();
+  const paramValue = paramName ? searchParams.get(paramName) ?? "" : "";
 
-  const [inputValue, setInputValue] = useState<string>(
-    () => (paramName ? (searchParams.get(paramName) ?? "") : ""),
-  );
+  const [inputValue, setInputValue] = useState<string>(() => paramValue);
 
   const debouncedValue = useDebounce(inputValue, delay);
+
+  useEffect(() => {
+    if (!paramName) return;
+    if (paramValue !== inputValue) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setInputValue(paramValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramName, paramValue]);
 
   useEffect(() => {
     if (!paramName) return;
@@ -61,12 +69,12 @@ export function useSearchWithDebounce({
         for (const key of resetParams) {
           next.delete(key);
         }
-        return next;
+        return next.toString() === prev.toString() ? prev : next;
       },
       { replace: true },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+  }, [debouncedValue, paramName, resetParams]);
 
   return { inputValue, setInputValue, debouncedValue };
 }

@@ -136,7 +136,7 @@ export class AdminEventsService {
   async sendBroadcastEmail(input: {
     subject: string;
     body: string;
-    filter: { role: "STUDENT" | "RECRUITER" | "ADMIN" | "ALL"; isVerified?: boolean | undefined; subscriptionPlan: "FREE" | "MONTHLY" | "YEARLY" | "ALL" };
+    filter: { role: "STUDENT" | "ADMIN" | "ALL"; isVerified?: boolean | undefined; subscriptionPlan: "FREE" | "MONTHLY" | "YEARLY" | "ALL" };
     testEmail?: string | undefined;
     adminId: number;
   }) {

@@ -11,11 +11,6 @@ import { readFile } from "fs/promises";
 vi.mock("../database/db.js", () => ({
   prisma: {
     user: { findUnique: vi.fn() },
-    atsScore: {
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      findMany: vi.fn(),
-    },
   },
 }));
 
@@ -79,30 +74,10 @@ const VALID_AI_JSON = JSON.stringify({
   },
 });
 
-const MOCK_ATS_ROW = {
-  id: 1,
-  studentId: STUDENT_ID,
-  resumeUrl: RESUME_URL,
-  jobTitle: null,
-  jobDescription: null,
-  overallScore: 72,
-  categoryScores: {},
-  suggestions: [],
-  keywordAnalysis: {},
-  rawResponse: {},
-  createdAt: new Date("2024-01-15T10:00:00Z"),
-  updatedAt: new Date("2024-01-15T10:00:00Z"),
-  student: null,
-};
-
 // ─── Setup helpers ────────────────────────────────────────────────────────────
 
 function mockUserOwnsResume(url = RESUME_URL) {
   vi.mocked(prisma.user.findUnique).mockResolvedValue({ resumes: [url] } as any);
-}
-
-function mockCacheMiss() {
-  vi.mocked(prisma.atsScore.findFirst).mockResolvedValue(null);
 }
 
 // Spy on the private extractPdfText method so tests control returned text
@@ -167,21 +142,9 @@ describe("AtsService", () => {
       ).rejects.toThrow("Resume does not belong to this user");
     });
 
-    it("returns cached row without calling AI on cache hit within TTL", async () => {
-      mockUserOwnsResume();
-      vi.mocked(prisma.atsScore.findFirst).mockResolvedValue(MOCK_ATS_ROW as any);
-
-      const result = await service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL });
-
-      expect(result).toEqual(MOCK_ATS_ROW);
-      expect(getProviderForService).not.toHaveBeenCalled();
-      expect(prisma.atsScore.create).not.toHaveBeenCalled();
-    });
-
     it("strips query params from presigned URL before ownership check", async () => {
       const presignedUrl = `${RESUME_URL}?X-Amz-Signature=abc123&X-Amz-Expires=3600`;
       mockUserOwnsResume(RESUME_URL);
-      vi.mocked(prisma.atsScore.findFirst).mockResolvedValue(MOCK_ATS_ROW as any);
 
       await expect(
         service.scoreResume(STUDENT_ID, { resumeUrl: presignedUrl }),
@@ -190,7 +153,6 @@ describe("AtsService", () => {
 
     it("throws when extracted PDF text is under 50 characters", async () => {
       mockUserOwnsResume();
-      mockCacheMiss();
       vi.spyOn(service as any, "extractPdfText").mockResolvedValue("too short");
 
       await expect(
@@ -198,15 +160,14 @@ describe("AtsService", () => {
       ).rejects.toThrow("Could not extract sufficient text from the resume PDF");
     });
 
-    it("creates and returns a new AtsScore row on cache miss without job context", async () => {
+    it("scores the resume via the AI provider and returns the result", async () => {
       mockUserOwnsResume();
-      mockCacheMiss();
-      vi.mocked(prisma.atsScore.create).mockResolvedValue(MOCK_ATS_ROW as any);
 
       const result = await service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL });
 
-      expect(prisma.atsScore.create).toHaveBeenCalledOnce();
+      expect(getProviderForService).toHaveBeenCalled();
       expect(result.overallScore).toBe(72);
+      expect(result.resumeUrl).toBe(RESUME_URL);
     });
 
     it("includes job title and description in the AI prompt when provided", async () => {
@@ -215,8 +176,6 @@ describe("AtsService", () => {
         generateText: mockGenerateText,
       } as any);
       mockUserOwnsResume();
-      mockCacheMiss();
-      vi.mocked(prisma.atsScore.create).mockResolvedValue(MOCK_ATS_ROW as any);
 
       await service.scoreResume(STUDENT_ID, {
         resumeUrl: RESUME_URL,
@@ -261,7 +220,6 @@ describe("AtsService", () => {
 
     it("throws when AI returns completely unparseable text", async () => {
       mockUserOwnsResume();
-      mockCacheMiss();
       vi.mocked(getProviderForService).mockReturnValue({
         generateText: vi.fn().mockResolvedValue({ text: "GARBLED OUTPUT @@###!!!" }),
       } as any);
@@ -273,13 +231,11 @@ describe("AtsService", () => {
 
     it("parses AI response correctly when JSON is wrapped in a markdown code block", async () => {
       mockUserOwnsResume();
-      mockCacheMiss();
       vi.mocked(getProviderForService).mockReturnValue({
         generateText: vi
           .fn()
           .mockResolvedValue({ text: `\`\`\`json\n${VALID_AI_JSON}\n\`\`\`` }),
       } as any);
-      vi.mocked(prisma.atsScore.create).mockResolvedValue(MOCK_ATS_ROW as any);
 
       await expect(
         service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL }),
@@ -297,11 +253,9 @@ describe("AtsService", () => {
         "keywordAnalysis": { "found": [], "partial": [], "missing": [], }
       }`;
       mockUserOwnsResume();
-      mockCacheMiss();
       vi.mocked(getProviderForService).mockReturnValue({
         generateText: vi.fn().mockResolvedValue({ text: trailingCommaJson }),
       } as any);
-      vi.mocked(prisma.atsScore.create).mockResolvedValue(MOCK_ATS_ROW as any);
 
       await expect(
         service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL }),
@@ -319,14 +273,9 @@ describe("AtsService", () => {
         keywordAnalysis: { found: [], partial: [], missing: [] },
       });
       mockUserOwnsResume();
-      mockCacheMiss();
       vi.mocked(getProviderForService).mockReturnValue({
         generateText: vi.fn().mockResolvedValue({ text: outOfRangeJson }),
       } as any);
-      (vi.mocked(prisma.atsScore.create) as any).mockImplementation(
-        async (args: any) =>
-          ({ ...MOCK_ATS_ROW, overallScore: args.data.overallScore }),
-      );
 
       const result = await service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL });
 
@@ -340,17 +289,12 @@ describe("AtsService", () => {
         keywordAnalysis: { found: [], partial: [], missing: [] },
       });
       mockUserOwnsResume();
-      mockCacheMiss();
       vi.mocked(getProviderForService).mockReturnValue({
         generateText: vi.fn().mockResolvedValue({ text: noCategoryJson }),
       } as any);
-      (vi.mocked(prisma.atsScore.create) as any).mockImplementation(
-        async (args: any) =>
-          ({ ...MOCK_ATS_ROW, categoryScores: args.data.categoryScores }),
-      );
 
       const result = await service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL });
-      const scores = result.categoryScores as Record<string, number>;
+      const scores = result.categoryScores as unknown as Record<string, number>;
 
       expect(scores.formatting).toBe(50);
       expect(scores.keywords).toBe(50);
@@ -367,62 +311,13 @@ describe("AtsService", () => {
         keywordAnalysis: { found: [], partial: [], missing: [] },
       });
       mockUserOwnsResume();
-      mockCacheMiss();
       vi.mocked(getProviderForService).mockReturnValue({
         generateText: vi.fn().mockResolvedValue({ text: tooManyJson }),
       } as any);
-      (vi.mocked(prisma.atsScore.create) as any).mockImplementation(
-        async (args: any) =>
-          ({ ...MOCK_ATS_ROW, suggestions: args.data.suggestions }),
-      );
 
       const result = await service.scoreResume(STUDENT_ID, { resumeUrl: RESUME_URL });
 
       expect((result.suggestions as string[]).length).toBeLessThanOrEqual(10);
-    });
-  });
-
-  // ── getScoreHistory ─────────────────────────────────────────────────────────
-
-  describe("getScoreHistory", () => {
-    it("returns scores in oldest-first order for charting", async () => {
-      const rows = [
-        { id: 3, overallScore: 80, createdAt: new Date("2024-03-01") },
-        { id: 2, overallScore: 70, createdAt: new Date("2024-02-01") },
-        { id: 1, overallScore: 60, createdAt: new Date("2024-01-01") },
-      ];
-      vi.mocked(prisma.atsScore.findMany).mockResolvedValue(rows as any);
-
-      const result = await service.getScoreHistory(STUDENT_ID);
-
-      expect(result[0].id).toBe(1);
-      expect(result[2].id).toBe(3);
-    });
-
-    it("returns an empty array when the student has no score history", async () => {
-      vi.mocked(prisma.atsScore.findMany).mockResolvedValue([]);
-
-      expect(await service.getScoreHistory(STUDENT_ID)).toEqual([]);
-    });
-
-    it("queries with the correct studentId filter", async () => {
-      vi.mocked(prisma.atsScore.findMany).mockResolvedValue([]);
-
-      await service.getScoreHistory(STUDENT_ID);
-
-      expect(prisma.atsScore.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { studentId: STUDENT_ID } }),
-      );
-    });
-
-    it("limits query to 30 rows", async () => {
-      vi.mocked(prisma.atsScore.findMany).mockResolvedValue([]);
-
-      await service.getScoreHistory(STUDENT_ID);
-
-      expect(prisma.atsScore.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ take: 30 }),
-      );
     });
   });
 

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import {
+  ArrowLeft,
   Building2,
   Globe,
   ImagePlus,
@@ -13,6 +14,46 @@ import toast from "@/components/ui/toast";
 import { uploadDirectToS3 } from "@/utils/upload";
 import api from "../../../lib/axios";
 import { Button } from "../../../components/ui/button";
+
+// Indian states + union territories, used for the location dropdown.
+const INDIAN_STATES = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry",
+];
 
 const INPUT_BASE =
   "w-full px-3 py-2.5 border border-stone-200 dark:border-white/10 rounded-md text-sm bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-900/10 dark:focus:ring-white/20 transition-colors";
@@ -33,12 +74,10 @@ export default function AddCompanyPage() {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    mission: "",
     industry: "",
     size: "STARTUP" as string,
     city: "",
     state: "",
-    address: "",
     website: "",
     hiringStatus: false,
     foundedYear: "",
@@ -96,9 +135,7 @@ export default function AddCompanyPage() {
         city: form.city.trim(),
       };
 
-      if (form.mission.trim()) body["mission"] = form.mission.trim();
       if (form.state.trim()) body["state"] = form.state.trim();
-      if (form.address.trim()) body["address"] = form.address.trim();
       if (form.website.trim()) body["website"] = form.website.trim();
       if (form.foundedYear) body["foundedYear"] = parseInt(form.foundedYear, 10);
       if (form.hiringStatus) body["hiringStatus"] = true;
@@ -127,6 +164,16 @@ export default function AddCompanyPage() {
 
   return (
     <div className="max-w-2xl mx-auto pb-12">
+      {/* Back */}
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        className="inline-flex items-center gap-1.5 mb-5 px-3 py-1.5 rounded-md border border-stone-200 dark:border-white/10 text-sm text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-50 transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back
+      </button>
+
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-1">
@@ -222,17 +269,6 @@ export default function AddCompanyPage() {
             />
           </div>
 
-          <div>
-            <label className={LABEL}>Mission</label>
-            <textarea
-              value={form.mission}
-              onChange={(e) => updateField("mission", e.target.value)}
-              rows={2}
-              placeholder="Company mission statement"
-              className={`${INPUT_BASE} resize-none`}
-            />
-          </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={LABEL}>Industry *</label>
@@ -285,25 +321,19 @@ export default function AddCompanyPage() {
             </div>
             <div>
               <label className={LABEL}>State</label>
-              <input
-                type="text"
+              <select
                 value={form.state}
                 onChange={(e) => updateField("state", e.target.value)}
-                placeholder="e.g. Karnataka"
                 className={INPUT_BASE}
-              />
+              >
+                <option value="">Select a state</option>
+                {INDIAN_STATES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
             </div>
-          </div>
-
-          <div>
-            <label className={LABEL}>Address</label>
-            <input
-              type="text"
-              value={form.address}
-              onChange={(e) => updateField("address", e.target.value)}
-              placeholder="Street address"
-              className={INPUT_BASE}
-            />
           </div>
         </div>
 

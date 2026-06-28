@@ -44,6 +44,7 @@ export default function GitHubStatsCard({
         .then((res) => res.data.stats),
     enabled: !!username,
     staleTime: 60 * 60 * 1000,
+    gcTime: 2 * 60 * 60 * 1000,
   });
 
   if (!username) {

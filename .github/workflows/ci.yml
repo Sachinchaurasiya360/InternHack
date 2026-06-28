@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/dummy"
+
 jobs:
   typecheck-client:
     name: Typecheck Client
@@ -167,3 +170,32 @@ jobs:
       - name: Build server
         run: npm run build
         working-directory: server
+
+  security-audit:
+    name: Security & Secrets Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Audit client dependencies
+        run: npm audit --audit-level=high || true
+        working-directory: client
+
+      - name: Audit server dependencies
+        run: npm audit --audit-level=high || true
+        working-directory: server
+
+      - name: Scan for committed secrets/keys
+        run: |
+          echo "Scanning codebase for potential hardcoded secrets..."
+          if grep -rnE "(password|secret|private_key|api_key|token)[[:space:]]*=[[:space:]]*['\"][a-zA-Z0-9_-]{20,}['\"]" client/src/ server/src/ --exclude-dir=node_modules | grep -v "your-github-client-secret"; then
+            echo "Error: Potential hardcoded secrets found!"
+            exit 1
+          else
+            echo "No plain secrets found."
+          fi

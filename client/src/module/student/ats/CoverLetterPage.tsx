@@ -22,7 +22,6 @@ import {
   User,
   GraduationCap,
   FolderGit2,
-  Trophy,
   AlignLeft,
   AlertCircle,
   Loader2,
@@ -175,10 +174,6 @@ const [toneManuallySelected, setToneManuallySelected] = useState(false);
     if (user.projects && user.projects.length > 0)
       parts.push(
         `${String(user.projects.length)} project${user.projects.length > 1 ? "s" : ""}`,
-      );
-    if (user.achievements && user.achievements.length > 0)
-      parts.push(
-        `${String(user.achievements.length)} achievement${user.achievements.length > 1 ? "s" : ""}`,
       );
     return parts;
   }, [user]);
@@ -815,14 +810,6 @@ useEffect(() => {
                             <FolderGit2 className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
                             <p className="text-[11px] text-stone-600 dark:text-stone-400">
                               {user.projects.map((p) => p.title).join(", ")}
-                            </p>
-                          </div>
-                        )}
-                        {user?.achievements && user.achievements.length > 0 && (
-                          <div className="flex items-start gap-2">
-                            <Trophy className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
-                            <p className="text-[11px] text-stone-600 dark:text-stone-400">
-                              {user.achievements.map((a) => a.title).join(", ")}
                             </p>
                           </div>
                         )}

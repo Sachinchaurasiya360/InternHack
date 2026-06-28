@@ -206,6 +206,7 @@ export default function GuideListPage({
                 <Button
                   variant="ghost"
                   mode="icon"
+                  aria-label="Toggle completion"
                   size="sm"
                   onClick={(e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
                   className="shrink-0"

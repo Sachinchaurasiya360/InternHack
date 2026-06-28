@@ -88,10 +88,6 @@ const grouped = useMemo(() => {
         return a.title.localeCompare(b.title);
       } else if (sortBy === "recent") {
         return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-      } else if (sortBy === "salary") {
-        const aVal = a.salary ? parseInt(a.salary.replace(/\D/g, "")) || 0 : 0;
-        const bVal = b.salary ? parseInt(b.salary.replace(/\D/g, "")) || 0 : 0;
-        return bVal - aVal;
       } else {
         return (b.enrolledStudents || 0) - (a.enrolledStudents || 0);
       }
@@ -236,19 +232,19 @@ const grouped = useMemo(() => {
           <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
         </Link>
         <Link
-          to="/learn/mentors"
+          to="/learn/placement-prep"
           className="group flex items-center justify-between bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-5 py-4 hover:border-lime-400 dark:hover:border-lime-400 transition-colors no-underline"
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-md bg-amber-100 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-800 flex items-center justify-center shrink-0">
-              <span className="text-sm font-bold text-amber-700 dark:text-amber-400">6</span>
+            <div className="w-10 h-10 rounded-md bg-lime-100 dark:bg-lime-900/20 border border-lime-300 dark:border-lime-800/50 flex items-center justify-center shrink-0">
+              <span className="text-sm font-bold text-lime-700 dark:text-lime-400">P</span>
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
-                Mentor Matching
+                Placement Prep Plans
               </p>
               <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
-                Connect with engineers from Google, Microsoft, Amazon, Netflix & more for 1:1 guidance
+                Structured 30, 60, and 90-day learning schedules utilizing DSA, Aptitude, Core & Mock Exams
               </p>
             </div>
           </div>
@@ -324,7 +320,6 @@ const grouped = useMemo(() => {
               className="text-sm bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:border-lime-400 cursor-pointer"
             >
               <option value="popular">Most Popular</option>
-              <option value="salary">Salary</option>
               <option value="alphabetical">Alphabetical</option>
               <option value="recent">Recently Added</option>
             </select>

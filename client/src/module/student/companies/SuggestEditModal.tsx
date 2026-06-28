@@ -13,7 +13,6 @@ interface SuggestEditModalProps {
 
 export default function SuggestEditModal({ slug, company, onClose }: SuggestEditModalProps) {
   const [description, setDescription] = useState(company.description);
-  const [mission, setMission] = useState(company.mission || "");
   const [website, setWebsite] = useState(company.website || "");
   const [address, setAddress] = useState(company.address || "");
   const [reason, setReason] = useState("");
@@ -30,7 +29,6 @@ export default function SuggestEditModal({ slug, company, onClose }: SuggestEdit
     try {
       const changes: Record<string, string> = {};
       if (description !== company.description) changes["description"] = description;
-      if (mission !== (company.mission || "")) changes["mission"] = mission;
       if (website !== (company.website || "")) changes["website"] = website;
       if (address !== (company.address || "")) changes["address"] = address;
 
@@ -56,7 +54,7 @@ export default function SuggestEditModal({ slug, company, onClose }: SuggestEdit
       <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Suggest Edit</h2>
-          <Button variant="ghost" mode="icon" size="sm" onClick={onClose}>
+          <Button variant="ghost" mode="icon" aria-label="Close" size="sm" onClick={onClose}>
             <X className="w-5 h-5 text-gray-500 dark:text-gray-500" />
           </Button>
         </div>
@@ -68,15 +66,6 @@ export default function SuggestEditModal({ slug, company, onClose }: SuggestEdit
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 resize-none dark:bg-gray-800 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mission</label>
-            <textarea
-              value={mission}
-              onChange={(e) => setMission(e.target.value)}
-              rows={2}
               className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 resize-none dark:bg-gray-800 dark:text-white"
             />
           </div>

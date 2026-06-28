@@ -55,46 +55,115 @@ export const syncLeetCodeSolvedProblems = async (
     return { syncedCount: 0, totalFetched: 0 };
   }
 
-  // 2. Extract unique titleSlugs
+  // 2. Extract unique titleSlugs and build a mapping of titleSlug -> earliest solve Date
   const titleSlugs: string[] = Array.from(
     new Set<string>(recentSubmissions.map((s: any) => s.titleSlug as string)),
   );
 
+  const slugToSolveDateMap = new Map<string, Date>();
+  for (const submission of recentSubmissions) {
+    const slug = submission.titleSlug;
+    if (!slug) continue;
+
+    let solveDate = new Date();
+    if (submission.timestamp) {
+      const ts = typeof submission.timestamp === "number"
+        ? submission.timestamp
+        : parseInt(submission.timestamp, 10);
+      if (!isNaN(ts)) {
+        solveDate = new Date(ts * 1000);
+      }
+    }
+
+    const existingDate = slugToSolveDateMap.get(slug);
+    if (!existingDate || solveDate < existingDate) {
+      slugToSolveDateMap.set(slug, solveDate);
+    }
+  }
+
   // 3. Find matching problems in our database by leetcodeSlug
   const matchingProblems = await prisma.dsaProblem.findMany({
     where: {
-      leetcodeSlug: { in: titleSlugs as string[] },
+      leetcodeSlug: { in: titleSlugs },
     },
-    select: { id: true },
+    select: { id: true, leetcodeSlug: true },
   });
 
   if (matchingProblems.length === 0) {
     return { syncedCount: 0, totalFetched: titleSlugs.length };
   }
 
-  // Use bulk operations to avoid concurrent database deadlocks and pool exhaustion
-  await prisma.studentDsaProgress.createMany({
-    data: matchingProblems.map((problem) => ({
-      studentId: userId,
-      problemId: problem.id,
-      solved: true,
-      solvedAt: new Date(),
-      source: "LEETCODE",
-    })),
-    skipDuplicates: true,
-  });
-
-  await prisma.studentDsaProgress.updateMany({
+  // 4. Find existing studentDsaProgress records for matching problems
+  const existingProgress = await prisma.studentDsaProgress.findMany({
     where: {
       studentId: userId,
       problemId: { in: matchingProblems.map((p) => p.id) },
     },
-    data: {
+    select: {
+      problemId: true,
       solved: true,
-      solvedAt: new Date(),
-      source: "LEETCODE",
+      solvedAt: true,
     },
   });
+
+  const existingProgressMap = new Map<number, { solved: boolean; solvedAt: Date }>();
+  for (const progress of existingProgress) {
+    existingProgressMap.set(progress.problemId, progress);
+  }
+
+  const problemsToCreate: typeof matchingProblems = [];
+  const problemsToUpdate: typeof matchingProblems = [];
+
+  for (const problem of matchingProblems) {
+    const progress = existingProgressMap.get(problem.id);
+    if (!progress) {
+      problemsToCreate.push(problem);
+    } else if (!progress.solved) {
+      problemsToUpdate.push(problem);
+    }
+  }
+
+  // Use bulk operations / transaction to avoid deadlocks and preserve timestamps
+  if (problemsToCreate.length > 0) {
+    await prisma.studentDsaProgress.createMany({
+      data: problemsToCreate.map((problem) => {
+        const solveDate = problem.leetcodeSlug
+          ? (slugToSolveDateMap.get(problem.leetcodeSlug) || new Date())
+          : new Date();
+        return {
+          studentId: userId,
+          problemId: problem.id,
+          solved: true,
+          solvedAt: solveDate,
+          source: "LEETCODE",
+        };
+      }),
+      skipDuplicates: true,
+    });
+  }
+
+  if (problemsToUpdate.length > 0) {
+    await prisma.$transaction(
+      problemsToUpdate.map((problem) => {
+        const solveDate = problem.leetcodeSlug
+          ? (slugToSolveDateMap.get(problem.leetcodeSlug) || new Date())
+          : new Date();
+        return prisma.studentDsaProgress.update({
+          where: {
+            studentId_problemId: {
+              studentId: userId,
+              problemId: problem.id,
+            },
+          },
+          data: {
+            solved: true,
+            solvedAt: solveDate,
+            source: "LEETCODE",
+          },
+        });
+      }),
+    );
+  }
 
   return {
     syncedCount: matchingProblems.length,

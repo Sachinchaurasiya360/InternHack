@@ -1,5 +1,4 @@
 export type UserRole = "STUDENT" | "RECRUITER" | "ADMIN";
-export type StudentJobStatus = "NO_OFFER" | "LOOKING" | "OPEN_TO_OFFER";
 
 export interface ProjectItem {
   id: string;
@@ -10,13 +9,6 @@ export interface ProjectItem {
   repoUrl?: string;
   // Added for GSSoC '26: Track when the project was built
   builtAt?: string;
-}
-
-export interface AchievementItem {
-  id: string;
-  title: string;
-  description: string;
-  date?: string;
 }
 
 export interface User {
@@ -41,13 +33,10 @@ export interface User {
   githubUrl?: string;
   portfolioUrl?: string;
   leetcodeUrl?: string;
-  jobStatus?: StudentJobStatus | null;
-  isProfilePublic?: boolean;
   projects?: ProjectItem[];
-  achievements?: AchievementItem[];
   createdAt?: string;
   subscriptionPlan?: "FREE" | "MONTHLY" | "YEARLY";
-  subscriptionStatus?: "ACTIVE" | "EXPIRED";
+  subscriptionStatus?: "ACTIVE" | "EXPIRED" | "CANCELLED";
   subscriptionEndDate?: string;
   ossTier?: string;
 }
@@ -98,7 +87,6 @@ export interface TalentSearchResult {
   portfolioUrl?: string;
   leetcodeUrl?: string;
   resumes: string[];
-  jobStatus?: string | null;
   bestAtsScore: number | null;
   verifiedSkillCount: number;
   verifiedSkills: string[];

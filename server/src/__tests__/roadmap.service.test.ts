@@ -1,10 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   buildWeeklyPlan,
   summarizeProgress,
   enrollUser,
   updateTopicProgress,
   recomputePace,
+  getEnrollmentAnalyticsBatchForUser,
+  findDuplicateRoadmap,
+  updateEnrollmentStreak,
 } from "../module/roadmap/roadmap.service.js";
 import { prisma } from "../database/db.js";
 import { invalidateRecommendations } from "../module/recommendation/recommendation.service.js";
@@ -18,10 +21,11 @@ import type { EnrollInput } from "../module/roadmap/roadmap.validation.js";
 // `tx.roadmapEnrollment.create` resolve against the same configurable mocks.
 vi.mock("../database/db.js", () => ({
   prisma: {
-    roadmap: { findFirst: vi.fn(), update: vi.fn() },
+    roadmap: { findFirst: vi.fn(), findUnique: vi.fn(), findMany: vi.fn(), update: vi.fn() },
     roadmapEnrollment: {
       findFirst: vi.fn(),
       findUnique: vi.fn(),
+      findMany: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
     },
@@ -30,6 +34,7 @@ vi.mock("../database/db.js", () => ({
       upsert: vi.fn(),
       findMany: vi.fn(),
       update: vi.fn(),
+      count: vi.fn(),
     },
     $transaction: vi.fn(),
   },
@@ -315,7 +320,7 @@ describe("summarizeProgress", () => {
     expect(summary.hoursTotal).toBe(10);
   });
 
-  it("handles mixed statuses and excludes skipped topics from totals", () => {
+  it("handles mixed statuses and counts skipped topics toward completion", () => {
     const enrollment = makeEnrollment(
       [
         { id: 1, estimatedHours: 2 },
@@ -338,11 +343,12 @@ describe("summarizeProgress", () => {
     expect(summary.completedTopics).toBe(2);
     expect(summary.inProgressTopics).toBe(1);
     expect(summary.bookmarkedTopics).toBe(1);
-    // Skipped topic is removed from the denominator and from total hours.
-    expect(summary.totalTopics).toBe(4);
-    expect(summary.hoursTotal).toBe(8);
-    expect(summary.hoursDone).toBe(4);
-    expect(summary.percentComplete).toBe(50);
+    // Skipped topic stays in the denominator and counts as accounted-for, so a
+    // learner who completes every non-skipped topic still reaches 100%.
+    expect(summary.totalTopics).toBe(5);
+    expect(summary.hoursTotal).toBe(10);
+    expect(summary.hoursDone).toBe(6);
+    expect(summary.percentComplete).toBe(60);
   });
 
   it("returns a zeroed summary for an empty topic list", () => {
@@ -548,18 +554,10 @@ describe("updateTopicProgress", () => {
   });
 
   it("sets completedAt, recomputes the streak, and detects 100% completion", async () => {
-    // 1st findFirst: ownership lookup. 2nd findFirst: getEnrollmentForUser (all done).
-    vi.mocked(prisma.roadmapEnrollment.findFirst)
-      .mockResolvedValueOnce({
-        id: ENROLLMENT_ID,
-        roadmapId: ROADMAP_ID,
-      } as any)
-      .mockResolvedValueOnce(
-        makeEnrollment(
-          [{ id: 5, estimatedHours: 2 }],
-          [{ topicId: 5, status: "COMPLETED" }],
-        ),
-      );
+    vi.mocked(prisma.roadmapEnrollment.findFirst).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      roadmapId: ROADMAP_ID,
+    } as any);
     vi.mocked(prisma.roadmapTopic.findFirst).mockResolvedValue({
       id: 5,
     } as any);
@@ -567,10 +565,19 @@ describe("updateTopicProgress", () => {
       id: 1,
       status: "COMPLETED",
     } as any);
-    vi.mocked(prisma.roadmapTopicProgress.findMany).mockResolvedValue([
-      { completedAt: new Date() },
-    ] as any);
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 1,
+      bestStreak: 1,
+      lastStreakDate: null,
+    } as any);
     vi.mocked(prisma.roadmapEnrollment.update).mockResolvedValue({} as any);
+    vi.mocked(prisma.roadmap.findUnique).mockResolvedValue({
+      topicCount: 1,
+    } as any);
+    vi.mocked(prisma.roadmapTopicProgress.count)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(0);
 
     const result = await updateTopicProgress({
       userId: USER_ID,
@@ -585,7 +592,7 @@ describe("updateTopicProgress", () => {
     expect((upsertArg.update as any).completedAt).toBeInstanceOf(Date);
 
     // Streak recompute ran for the completion.
-    expect(prisma.roadmapTopicProgress.findMany).toHaveBeenCalled();
+    expect(prisma.roadmapEnrollment.findUnique).toHaveBeenCalled();
     expect(prisma.roadmapEnrollment.update).toHaveBeenCalled();
 
     // All topics done → roadmap flagged complete.
@@ -593,20 +600,10 @@ describe("updateTopicProgress", () => {
   });
 
   it("does not flag completion when topics remain unfinished", async () => {
-    vi.mocked(prisma.roadmapEnrollment.findFirst)
-      .mockResolvedValueOnce({
-        id: ENROLLMENT_ID,
-        roadmapId: ROADMAP_ID,
-      } as any)
-      .mockResolvedValueOnce(
-        makeEnrollment(
-          [
-            { id: 5, estimatedHours: 2 },
-            { id: 6, estimatedHours: 2 },
-          ],
-          [{ topicId: 5, status: "COMPLETED" }],
-        ),
-      );
+    vi.mocked(prisma.roadmapEnrollment.findFirst).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      roadmapId: ROADMAP_ID,
+    } as any);
     vi.mocked(prisma.roadmapTopic.findFirst).mockResolvedValue({
       id: 5,
     } as any);
@@ -618,6 +615,12 @@ describe("updateTopicProgress", () => {
       { completedAt: new Date() },
     ] as any);
     vi.mocked(prisma.roadmapEnrollment.update).mockResolvedValue({} as any);
+    vi.mocked(prisma.roadmap.findUnique).mockResolvedValue({
+      topicCount: 2,
+    } as any);
+    vi.mocked(prisma.roadmapTopicProgress.count)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(0);
 
     const result = await updateTopicProgress({
       userId: USER_ID,
@@ -627,6 +630,118 @@ describe("updateTopicProgress", () => {
     });
 
     expect(result.roadmapCompleted).toBe(false);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// updateEnrollmentStreak — Prisma mock
+// ══════════════════════════════════════════════════════════════════════════════
+
+describe("updateEnrollmentStreak", () => {
+  const mockNow = new Date("2026-06-19T10:00:00.000Z");
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(mockNow);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("handles same-day completion: does not increment currentStreak", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 5,
+      bestStreak: 10,
+      lastStreakDate: new Date("2026-06-19T08:00:00.000Z"), // Same day UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(5);
+    expect(updateArg.data.bestStreak).toBe(10);
+    expect(updateArg.data.lastStreakDate).toEqual(mockNow);
+  });
+
+  it("handles consecutive days: increments currentStreak", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 5,
+      bestStreak: 10,
+      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // Yesterday UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(6);
+    expect(updateArg.data.bestStreak).toBe(10);
+    expect(updateArg.data.lastStreakDate).toEqual(mockNow);
+  });
+
+  it("updates bestStreak when currentStreak exceeds it", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 5,
+      bestStreak: 5,
+      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // Yesterday UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(6);
+    expect(updateArg.data.bestStreak).toBe(6);
+  });
+
+  it("handles missed days: resets currentStreak to 1", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 5,
+      bestStreak: 10,
+      lastStreakDate: new Date("2026-06-17T20:00:00.000Z"), // Before yesterday UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(1);
+    expect(updateArg.data.bestStreak).toBe(10); // bestStreak remains
+    expect(updateArg.data.lastStreakDate).toEqual(mockNow);
+  });
+
+  it("handles first completion (null lastStreakDate): sets streak to 1", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 0,
+      bestStreak: 0,
+      lastStreakDate: null,
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(1);
+    expect(updateArg.data.bestStreak).toBe(1);
+    expect(updateArg.data.lastStreakDate).toEqual(mockNow);
+  });
+
+  it("updates weeklyStreak properly when reaching 7 days", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 6,
+      bestStreak: 6,
+      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // Yesterday UTC
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(7);
+    expect(updateArg.data.weeklyStreak).toBe(1);
+    expect(updateArg.data.lastWeeklyStreakAt).toEqual(mockNow);
   });
 });
 
@@ -724,5 +839,175 @@ describe("recomputePace", () => {
     }[];
     const allSlugs = plan.flatMap((w) => w.topicSlugs);
     expect(allSlugs).toEqual(["done-1", "done-2", "todo-1"]);
+  });
+});
+
+describe("getEnrollmentAnalyticsBatchForUser", () => {
+  it("returns analytics for multiple enrollments without N+1 queries", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findMany).mockResolvedValue([
+      {
+        id: 1,
+        startDate: new Date("2026-01-01"),
+        targetEndDate: new Date("2026-02-01"),
+        weeklyPlan: [],
+        roadmap: {
+          topicCount: 10,
+        },
+        topicProgress: [
+          {
+            status: "COMPLETED",
+            completedAt: new Date("2026-01-02"),
+          },
+          {
+            status: "COMPLETED",
+            completedAt: new Date("2026-01-03"),
+          },
+          {
+            status: "IN_PROGRESS",
+            completedAt: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        startDate: new Date("2026-01-01"),
+        targetEndDate: new Date("2026-03-01"),
+        weeklyPlan: [],
+        roadmap: {
+          topicCount: 20,
+        },
+        topicProgress: [
+          {
+            status: "COMPLETED",
+            completedAt: new Date("2026-01-04"),
+          },
+        ],
+      },
+    ] as any);
+
+    const analytics =
+      await getEnrollmentAnalyticsBatchForUser({
+        userId: USER_ID,
+      });
+
+    expect(analytics).toHaveLength(2);
+
+    expect(analytics[0]).toMatchObject({
+      enrollmentId: 1,
+      actualTopicsCompleted: 2,
+    });
+
+    expect(analytics[1]).toMatchObject({
+      enrollmentId: 2,
+      actualTopicsCompleted: 1,
+    });
+
+    expect(
+      prisma.roadmapEnrollment.findMany,
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns an empty array when the user has no enrollments", async () => {
+    vi.mocked(
+      prisma.roadmapEnrollment.findMany,
+    ).mockResolvedValue([]);
+
+    const analytics =
+      await getEnrollmentAnalyticsBatchForUser({
+        userId: USER_ID,
+      });
+
+    expect(analytics).toEqual([]);
+
+    expect(
+      prisma.roadmapEnrollment.findMany,
+    ).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ─── findDuplicateRoadmap ──────────────────────────────────────────────────────
+
+describe("findDuplicateRoadmap", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const makeRoadmap = (title: string) => ({
+    id: 1,
+    title,
+    slug: "ai-test",
+    ownerUserId: USER_ID,
+    isAiGenerated: true,
+    updatedAt: new Date(),
+  } as any);
+
+  it("returns null for empty goal", async () => {
+    await expect(findDuplicateRoadmap("", USER_ID)).resolves.toBeNull();
+  });
+
+  it("returns null for goal with only stop words", async () => {
+    await expect(findDuplicateRoadmap("want to learn how for", USER_ID)).resolves.toBeNull();
+  });
+
+  it("returns null when no roadmaps exist at all", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([]);
+    const result = await findDuplicateRoadmap("machine learning", USER_ID);
+    expect(result).toBeNull();
+    expect(prisma.roadmap.findMany).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns a roadmap when title contains all keywords", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([
+      makeRoadmap("Machine Learning Roadmap"),
+    ]);
+    const result = await findDuplicateRoadmap("i want to learn machine learning", USER_ID);
+    expect(result).not.toBeNull();
+    expect(result!.title).toBe("Machine Learning Roadmap");
+  });
+
+  it("returns a roadmap when title contains enough keywords to exceed threshold", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([
+      makeRoadmap("Data Science with Python"),
+    ]);
+    const result = await findDuplicateRoadmap("learn data science python for beginners", USER_ID);
+    expect(result).not.toBeNull();
+    expect(result!.title).toBe("Data Science with Python");
+  });
+
+  it("returns null when keyword overlap is below threshold", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([
+      makeRoadmap("Advanced Quantum Computing"),
+    ]);
+    const result = await findDuplicateRoadmap("learn web development with react", USER_ID);
+    expect(result).toBeNull();
+  });
+
+  it("selects the best-matching roadmap from multiple candidates", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([
+      makeRoadmap("React for Beginners"),
+      makeRoadmap("Full Stack Web Development"),
+      makeRoadmap("DevOps with Docker and Kubernetes"),
+    ]);
+    const result = await findDuplicateRoadmap("learn react web development full stack", USER_ID);
+    expect(result).not.toBeNull();
+    expect(result!.title).toBe("Full Stack Web Development");
+  });
+
+  it("passes correct prisma query parameters", async () => {
+    vi.mocked(prisma.roadmap.findMany).mockResolvedValue([]);
+    await findDuplicateRoadmap("learn python data science", USER_ID);
+    expect(prisma.roadmap.findMany).toHaveBeenCalledWith({
+      where: {
+        ownerUserId: USER_ID,
+        isAiGenerated: true,
+        slug: { startsWith: "ai-" },
+        OR: [
+          { title: { contains: "python", mode: "insensitive" } },
+          { title: { contains: "data", mode: "insensitive" } },
+          { title: { contains: "science", mode: "insensitive" } },
+        ],
+      },
+      orderBy: { updatedAt: "desc" },
+    });
   });
 });

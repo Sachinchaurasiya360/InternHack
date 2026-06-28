@@ -6,12 +6,16 @@ import {
   gsocOrgsQuerySchema,
   submitRepoRequestSchema,
   approveRequestOverrideSchema,
+  rejectRequestSchema,
   repoIdSchema,
   repoOwnerNameSchema,
   firstPrProgressUpdateSchema,
   bookmarkBodySchema,
   bulkMigrateBookmarksSchema,
   guideFeedbackSchema,
+  guideProgressUpdateSchema,
+  issueCertificateSchema,
+  contributionTrendQuerySchema,
 } from "./opensource.validation.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
 
@@ -271,7 +275,7 @@ export class OpensourceController {
         return;
       }
 
-      const body = approveRequestOverrideSchema.safeParse(req.body);
+      const body = rejectRequestSchema.safeParse(req.body);
       if (!body.success) {
         res.status(400).json({
           message: "Validation failed",
@@ -298,7 +302,15 @@ export class OpensourceController {
     next: NextFunction,
   ) {
     try {
-      const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
+      const parsed = contributionTrendQuerySchema.safeParse(req.query);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Invalid query parameters",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+      const { startDate, endDate } = parsed.data;
       const result = await service.getStudentContributionTrend(req.user!.id, startDate, endDate);
       res.json(result);
     } catch (err) {
@@ -327,6 +339,64 @@ export class OpensourceController {
       next(err);
     }
   };
+
+  async getActivityHeatmap(req: Request, res: Response, next: NextFunction) {
+    try {
+      const queryStudentId = req.query.studentId as string | undefined;
+      const parsedId = queryStudentId ? parseInt(queryStudentId, 10) : req.user!.id;
+
+      if (queryStudentId && isNaN(parsedId)) {
+        res.status(400).json({ success: false, error: "Invalid studentId parameter" });
+        return;
+      }
+
+      const userId = parsedId;
+
+      if (queryStudentId && req.user!.role === "STUDENT" && userId !== req.user!.id) {
+        res.status(403).json({ success: false, error: "Cannot view other student's activity" });
+        return;
+      }
+
+      const result = await service.getActivityHeatmap(userId);
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getGuideProgress(req: Request, res: Response, next: NextFunction) {
+    try {
+      const guideSlug = req.params.guideSlug as string;
+      const completedStepIds = await service.getGuideProgress(req.user!.id, guideSlug);
+      res.json({ completedStepIds });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async patchGuideProgress(req: Request, res: Response, next: NextFunction) {
+    try {
+      const guideSlug = req.params.guideSlug as string;
+      const parsed = guideProgressUpdateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+
+      const completedStepIds = await service.patchGuideProgress(
+        req.user!.id,
+        guideSlug,
+        parsed.data.completedStepIds,
+      );
+
+      res.json({ completedStepIds });
+    } catch (err) {
+      next(err);
+    }
+  }
 
   async getFirstPrProgress(req: Request, res: Response, next: NextFunction) {
     try {
@@ -382,11 +452,15 @@ export class OpensourceController {
 
   async issueCertificate(req: Request, res: Response, next: NextFunction) {
     try {
-      const { guideName } = req.body;
-      if (!guideName) {
-        res.status(400).json({ message: "guideName is required" });
+      const parsed = issueCertificateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: parsed.error.flatten().fieldErrors,
+        });
         return;
       }
+      const { guideName } = parsed.data;
       const certificate = await service.issueCertificate(req.user!.id, guideName);
       res.status(201).json({ certificate });
     } catch (err) {

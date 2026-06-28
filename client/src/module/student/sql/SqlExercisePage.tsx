@@ -39,6 +39,7 @@ function getLocalProgress(): SqlProgress {
   try {
     return JSON.parse(localStorage.getItem("sql-progress") || "{}");
   } catch {
+    console.warn("Failed to parse sql-progress from localStorage");
     return {};
   }
 }
@@ -120,36 +121,40 @@ export default function SqlExercisePage() {
   const [dbReady, setDbReady] = useState(false);
   const [solved, setSolved] = useState(false);
 
-  const [prevExerciseId, setPrevExerciseId] = useState(exercise?.id);
+  // Reset and load exercise
+  useEffect(() => {
+    if (!exercise || !section) return;
 
-  if (exercise?.id !== prevExerciseId) {
-    setPrevExerciseId(exercise?.id);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDbReady(false);
     setResult(null);
     setValidation(null);
     setShowHints(0);
     setShowExpected(false);
 
-    const savedEntry = exercise ? progress[exercise.id] : undefined;
-    setCode(savedEntry?.code || exercise?.starterCode || "");
+    const savedEntry = progress[exercise.id];
+    setCode(savedEntry?.code || exercise.starterCode || "");
     setSolved(!!savedEntry?.solved);
-  }
 
-  // Load database and exercise
-  useEffect(() => {
-    if (!exercise || !section) return;
+    let isCancelled = false;
 
     const load = async () => {
       const datasetSql = datasets[exercise.dataset];
       if (datasetSql) {
         await sqlEngine.resetDataset(exercise.dataset, datasetSql);
       }
-      setSchema(sqlEngine.getSchema());
-      setDbReady(true);
+      if (!isCancelled) {
+        setSchema(sqlEngine.getSchema());
+        setDbReady(true);
+      }
     };
 
     load();
-  }, [exercise, section]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [exercise, section, progress]);
 
   const handleRun = useCallback(async () => {
     if (!exercise || !dbReady) return;

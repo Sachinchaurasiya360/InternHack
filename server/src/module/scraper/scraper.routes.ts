@@ -6,19 +6,21 @@ import { requireRole } from "../../middleware/role.middleware.js";
 const controller = new ScraperController();
 export const scraperRouter = Router();
 
-// Public endpoints
+// Public endpoints — static routes before param-based routes
 scraperRouter.get("/", (req, res, next) => controller.getScrapedJobs(req, res, next));
 scraperRouter.get("/sources", (req, res) => controller.getSources(req, res));
 scraperRouter.get("/stats", (req, res, next) => controller.getStats(req, res, next));
-scraperRouter.get("/:id", (req, res, next) => controller.getScrapedJobById(req, res, next));
 
-// Protected: Only recruiters can manually trigger scraping
+// Protected: Only admins can manually trigger scraping
 scraperRouter.post(
   "/trigger",
   authMiddleware,
-  requireRole("RECRUITER"),
+  requireRole("ADMIN"),
   (req, res, next) => controller.triggerScrape(req, res, next)
 );
+
+// Dynamic route must be registered after all static routes
+scraperRouter.get("/:id", (req, res, next) => controller.getScrapedJobById(req, res, next));
 
 // Export controller for cron initialization
 export { controller as scraperController };

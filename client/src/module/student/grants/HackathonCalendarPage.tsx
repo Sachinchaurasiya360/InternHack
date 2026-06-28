@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -25,7 +25,8 @@ import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
+import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
 type ParticipationStatus = "INTERESTED" | "PARTICIPATING";
 
 interface MyParticipation {
@@ -98,54 +99,138 @@ function formatDateRange(start: string, end: string): string {
 }
 
 export default function HackathonCalendarPage() {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<HackathonStatus | "ALL">("ALL");
-  const [locationFilter, setLocationFilter] = useState<LocationType | "ALL">("ALL");
-  const [ecosystemFilter, setEcosystemFilter] = useState<string>("ALL");
-  const [selectedHackathon, setSelectedHackathon] = useState<Hackathon | null>(null);
-  const [showMine, setShowMine] = useState(false);
+  // URL search-params integration -------------------------------------------------
+  // We derive filter values from URL params so browser history remains the
+  // single source of truth, and back/forward restores the filter UI.
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Search input uses a reusable hook that debounces and syncs with a `q` param.
+  const {
+    inputValue: search,
+    setInputValue: setSearch,
+    debouncedValue: debouncedSearch,
+  } = useSearchWithDebounce({ paramName: "q", delay: 300 });
+
+  const parseStatusFilter = (value: string | null): HackathonStatus | "ALL" =>
+    value === "upcoming" || value === "ongoing" || value === "past" ? value : "ALL";
+
+  const parseLocationFilter = (value: string | null): LocationType | "ALL" =>
+    value === "virtual" || value === "in-person" || value === "hybrid" ? value : "ALL";
+
+  const parseEcosystemFilter = (value: string | null, ecosystems: string[]): string => {
+    if (!value || value === "ALL") return "ALL";
+    return ecosystems.includes(value) ? value : "ALL";
+  };
+
+  const parseShowMine = (value: string | null): boolean => value === "1" || value === "true";
 
   const queryClient = useQueryClient();
-const { user } = useAuthStore();
+  const { user } = useAuthStore();
 
-const { data, isLoading: loading } = useQuery({
-  queryKey: queryKeys.hackathons.list(),
-  queryFn: () => api.get("/hackathons").then((res) => res.data.hackathons as Hackathon[]),
-});
-const hackathons = useMemo(() => data ?? [], [data]);
-
-const { data: myData } = useQuery({
-  queryKey: queryKeys.hackathons.myParticipations(),
-  queryFn: () => api.get("/hackathons/my").then((res) => res.data.participations as MyParticipation[]),
-  enabled: !!user,
-});
-const myParticipations = useMemo(() => myData ?? [], [myData]);
-const participationMap = useMemo(() => new Map(myParticipations.map((p) => [p.hackathonId, p.status])), [myParticipations]);
-
-const participateMutation = useMutation({
-  mutationFn: ({ id, status }: { id: number; status: ParticipationStatus }) =>
-    api.post(`/hackathons/${id}/participate`, { status }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.hackathons.myParticipations() }),
-});
-
-const removeMutation = useMutation({
-  mutationFn: (id: number) => api.delete(`/hackathons/${id}/participate`),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.hackathons.myParticipations() }),
-});
+  const { data, isLoading: loading } = useQuery({
+    queryKey: queryKeys.hackathons.list(),
+    queryFn: () => api.get("/hackathons").then((res) => res.data.hackathons as Hackathon[]),
+  });
+  const hackathons = useMemo(() => data ?? [], [data]);
 
   const HACKATHON_ECOSYSTEMS = useMemo(
     () => Array.from(new Set(hackathons.map((h) => h.ecosystem))).sort(),
-    [hackathons]
+    [hackathons],
   );
 
+  const statusFilter = useMemo(
+    () => parseStatusFilter(searchParams.get("status")),
+    [searchParams],
+  );
+
+  const locationFilter = useMemo(
+    () => parseLocationFilter(searchParams.get("location")),
+    [searchParams],
+  );
+
+  const ecosystemFilter = useMemo(
+    () => parseEcosystemFilter(searchParams.get("eco"), HACKATHON_ECOSYSTEMS),
+    [searchParams, HACKATHON_ECOSYSTEMS],
+  );
+
+  const showMine = useMemo(
+    () => parseShowMine(searchParams.get("mine")),
+    [searchParams],
+  );
+
+  const updateSearchParams = (
+    applyChanges: (next: URLSearchParams) => void,
+    replace = false,
+  ) => {
+    const options = replace ? { replace: true } : undefined;
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      applyChanges(next);
+      return next.toString() === prev.toString() ? prev : next;
+    }, options);
+  };
+
+  const applyStatusFilter = (value: HackathonStatus | "ALL") => {
+    updateSearchParams((next) => {
+      if (value === "ALL") next.delete("status");
+      else next.set("status", value);
+    });
+  };
+
+  const applyLocationFilter = (value: LocationType | "ALL") => {
+    updateSearchParams((next) => {
+      if (value === "ALL") next.delete("location");
+      else next.set("location", value);
+    });
+  };
+
+  const applyEcosystemFilter = (value: string) => {
+    updateSearchParams((next) => {
+      if (!value || value === "ALL") next.delete("eco");
+      else next.set("eco", value);
+    });
+  };
+
+  const toggleShowMine = () => {
+    updateSearchParams((next) => {
+      if (showMine) next.delete("mine");
+      else next.set("mine", "1");
+    });
+  };
+
+  const { data: myData } = useQuery({
+    queryKey: queryKeys.hackathons.myParticipations(),
+    queryFn: () => api.get("/hackathons/my").then((res) => res.data.participations as MyParticipation[]),
+    enabled: !!user,
+  });
+  const myParticipations = useMemo(() => myData ?? [], [myData]);
+  const participationMap = useMemo(
+    () => new Map(myParticipations.map((p) => [p.hackathonId, p.status])),
+    [myParticipations],
+  );
+
+  const participateMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: ParticipationStatus }) =>
+      api.post(`/hackathons/${id}/participate`, { status }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.hackathons.myParticipations() }),
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: (id: number) => api.delete(`/hackathons/${id}/participate`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.hackathons.myParticipations() }),
+  });
+
+  const [selectedHackathon, setSelectedHackathon] = useState<Hackathon | null>(null);
+
+  // Filter list derived from debounced search value and other filters.
   const filtered = useMemo(() => {
-  return hackathons.filter((h) => {
-    if (showMine && !participationMap.has(h.id)) return false;
+    const q = (debouncedSearch || "").trim().toLowerCase();
+    return hackathons.filter((h) => {
+      if (showMine && !participationMap.has(h.id)) return false;
       if (statusFilter !== "ALL" && h.status !== statusFilter) return false;
       if (locationFilter !== "ALL" && h.locationType !== locationFilter) return false;
       if (ecosystemFilter !== "ALL" && h.ecosystem !== ecosystemFilter) return false;
-      if (search) {
-        const q = search.toLowerCase();
+      if (q) {
         return (
           h.name.toLowerCase().includes(q) ||
           h.organizer.toLowerCase().includes(q) ||
@@ -155,7 +240,43 @@ const removeMutation = useMutation({
       }
       return true;
     });
-  }, [hackathons, search, statusFilter, locationFilter, ecosystemFilter, showMine, participationMap]);
+  }, [hackathons, debouncedSearch, statusFilter, locationFilter, ecosystemFilter, showMine, participationMap]);
+
+  // -----------------------------------------------------------------------------
+  // Validate incoming params and remove invalid values without adding a history
+  // entry. The search params are the source of truth for all filter state.
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    let shouldReplace = false;
+
+    if (searchParams.has("status") && parseStatusFilter(searchParams.get("status")) === "ALL") {
+      next.delete("status");
+      shouldReplace = true;
+    }
+
+    if (searchParams.has("location") && parseLocationFilter(searchParams.get("location")) === "ALL") {
+      next.delete("location");
+      shouldReplace = true;
+    }
+
+    if (
+      searchParams.has("eco") &&
+      HACKATHON_ECOSYSTEMS.length > 0 &&
+      parseEcosystemFilter(searchParams.get("eco"), HACKATHON_ECOSYSTEMS) === "ALL"
+    ) {
+      next.delete("eco");
+      shouldReplace = true;
+    }
+
+    if (searchParams.has("mine") && !parseShowMine(searchParams.get("mine"))) {
+      next.delete("mine");
+      shouldReplace = true;
+    }
+
+    if (shouldReplace) {
+      setSearchParams(next, { replace: true });
+    }
+  }, [HACKATHON_ECOSYSTEMS, searchParams, setSearchParams]);
 
   const ongoingCount = hackathons.filter((h) => h.status === "ongoing").length;
   const upcomingCount = hackathons.filter((h) => h.status === "upcoming").length;
@@ -266,7 +387,7 @@ const removeMutation = useMutation({
         <div className="flex flex-wrap items-center gap-3 mb-6">
           {user && (
   <button
-    onClick={() => setShowMine((v) => !v)}
+    onClick={toggleShowMine}
     className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
       showMine
         ? "bg-indigo-600 text-white border-indigo-600"
@@ -281,7 +402,7 @@ const removeMutation = useMutation({
             {STATUS_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
-                onClick={() => setStatusFilter(opt.value)}
+                onClick={() => applyStatusFilter(opt.value)}
                 className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
                   statusFilter === opt.value
                     ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 border-gray-950 dark:border-white"
@@ -297,7 +418,7 @@ const removeMutation = useMutation({
           <div className="relative">
             <select
               value={locationFilter}
-              onChange={(e) => setLocationFilter(e.target.value as LocationType | "ALL")}
+              onChange={(e) => applyLocationFilter(e.target.value as LocationType | "ALL")}
               className="appearance-none px-3.5 py-2 pr-8 rounded-xl text-sm font-medium border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
             >
               {LOCATION_OPTIONS.map((opt) => (
@@ -313,7 +434,7 @@ const removeMutation = useMutation({
           <div className="relative">
             <select
               value={ecosystemFilter}
-              onChange={(e) => setEcosystemFilter(e.target.value)}
+              onChange={(e) => applyEcosystemFilter(e.target.value)}
               className="appearance-none px-3.5 py-2 pr-8 rounded-xl text-sm font-medium border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
             >
               <option value="ALL">All Ecosystems</option>

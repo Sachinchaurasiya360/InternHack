@@ -9,7 +9,7 @@ import { prisma } from "../database/db.js";
  * Note: transaction-level advisory locks (pg_try_advisory_xact_lock) require
  * interactive transactions which are not supported by the PrismaPg driver adapter.
  */
-export async function withAdvisoryLock(jobName: string, fn: () => Promise<void>): Promise<void> {
+export async function withAdvisoryLock<T = void>(jobName: string, fn: () => Promise<T>): Promise<T | null> {
   const hash = crypto.createHash("sha256").update(jobName).digest();
   const lockId = hash.readBigInt64BE(0);
 
@@ -20,12 +20,13 @@ export async function withAdvisoryLock(jobName: string, fn: () => Promise<void>)
 
     if (!locked) {
       console.log(`[CronLock] Job "${jobName}" is currently locked/running on another instance. Skipping.`);
-      return;
+      return null;
     }
 
-    await fn();
+    return await fn();
   } catch (err) {
     console.error(`[CronLock] Error acquiring lock or executing job "${jobName}":`, err);
+    return null;
   } finally {
     if (locked) {
       await prisma.$queryRaw`SELECT pg_advisory_unlock(${lockId})`.catch((e) =>
