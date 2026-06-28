@@ -26,9 +26,9 @@ interface AnalyticsData {
 // Priority order and colour for status breakdown cards
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   HIRED:        { label: "Hired",        color: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300" },
-  IN_PROGRESS:  { label: "In Progress",  color: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300" },
+  IN_PROGRESS:  { label: "In Progress",  color: "bg-lime-100 dark:bg-lime-900/40 text-lime-700 dark:text-lime-800" },
   APPLIED:      { label: "Applied",      color: "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300" },
-  SHORTLISTED:  { label: "Shortlisted",  color: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300" },
+  SHORTLISTED:  { label: "Shortlisted",  color: "bg-lime-200 dark:bg-lime-900/60 text-stone-700 dark:text-stone-300" },
   REJECTED:     { label: "Rejected",     color: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" },
   WITHDRAWN:    { label: "Withdrawn",    color: "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400" },
 };
@@ -112,7 +112,7 @@ export default function JobAnalyticsPage() {
           <Button
             type="button"
             onClick={fetchAnalytics}
-            variant="default"
+            variant="primary"
             className="mt-2 inline-flex items-center gap-2"
           >
             <RefreshCw className="w-4 h-4" /> Retry
@@ -121,7 +121,7 @@ export default function JobAnalyticsPage() {
       </div>
     );
 
-  // FIX 3 — baseline is always totalApplications, never max of rounds
+  // FIX 3: baseline is always totalApplications, never max of rounds
   const baseline = Math.max(data.totalApplications, 1);
 
   const hiredCount = data.statusBreakdown["HIRED"] || 0;
@@ -138,7 +138,7 @@ export default function JobAnalyticsPage() {
         {data.totalApplications} total applications
       </p>
 
-      {/* FIX 4 — Status Breakdown: sorted + colour-coded */}
+      {/* FIX 4: Status Breakdown (sorted + colour-coded) */}
       <div className="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-100 dark:border-stone-800 shadow-sm mb-6">
         <h2 className="text-lg font-semibold mb-4 dark:text-white">
           Application Status
@@ -170,7 +170,7 @@ export default function JobAnalyticsPage() {
           Recruitment Funnel
         </h2>
 
-        {/* FIX 5 — empty state when no rounds configured */}
+        {/* FIX 5: empty state when no rounds configured */}
         {data.roundAnalytics.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center gap-2">
             <BarChart3 className="w-10 h-10 text-stone-300 dark:text-stone-700" />
@@ -183,7 +183,7 @@ export default function JobAnalyticsPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {/* Applied — always 100% of baseline */}
+            {/* Applied: always 100% of baseline */}
             <div className="flex items-center gap-4">
               <span className="text-sm text-stone-500 dark:text-stone-500 w-40 shrink-0">
                 Applied
@@ -205,7 +205,7 @@ export default function JobAnalyticsPage() {
             </div>
 
             {data.roundAnalytics.map((round, i) => {
-              // FIX 3 — bar width relative to totalApplications
+              // FIX 3: bar width relative to totalApplications
               const pct = (round.totalSubmissions / baseline) * 100;
 
               const passRate =
@@ -213,7 +213,7 @@ export default function JobAnalyticsPage() {
                   ? ((round.completed / round.totalSubmissions) * 100).toFixed(1)
                   : "0";
 
-              // FIX 2 — when prior stage had 0 submissions, drop is 100%
+              // FIX 2: when prior stage had 0 submissions, drop is 100%
               const prevCount =
                 i === 0
                   ? data.totalApplications
@@ -261,7 +261,7 @@ export default function JobAnalyticsPage() {
               );
             })}
 
-            {/* FIX 1 — HIRED end-of-funnel bar */}
+            {/* FIX 1: HIRED end-of-funnel bar */}
             {(() => {
               const lastRound =
                 data.roundAnalytics[data.roundAnalytics.length - 1]!;
@@ -289,7 +289,7 @@ export default function JobAnalyticsPage() {
                           duration: 0.5,
                           delay: data.roundAnalytics.length * 0.1,
                         }}
-                        className="bg-emerald-500 h-full rounded-full flex items-center justify-end pr-3 min-w-[40px]"
+                        className="bg-green-500 h-full rounded-full flex items-center justify-end pr-3 min-w-[40px]"
                       >
                         <span className="text-xs font-bold text-white">
                           {hiredCount}
