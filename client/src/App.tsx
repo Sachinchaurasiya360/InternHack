@@ -222,7 +222,6 @@ const AdminBlogEditor = lazyWithRetry(() => import("./module/admin/blog/AdminBlo
 const AdminDsaPage = lazyWithRetry(() => import("./module/admin/dsa/AdminDsaPage"));
 const AdminAptitudePage = lazyWithRetry(() => import("./module/admin/aptitude/AdminAptitudePage"));
 const AdminSkillTestsPage = lazyWithRetry(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
-const AdminBadgesPage = lazyWithRetry(() => import("./module/admin/AdminBadgesPage"));
 const AdminAIProvidersPage = lazyWithRetry(() => import("./module/admin/ai/AdminAIProvidersPage"));
 const AdminExternalJobsPage = lazyWithRetry(() => import("./module/admin/external-jobs/AdminExternalJobsPage"));
 const AdminRepoRequestsPage = lazyWithRetry(() => import("./module/admin/repo-requests/AdminRepoRequestsPage"));
@@ -562,7 +561,6 @@ function App() {
               <Route path="dsa" element={<AdminDsaPage />} />
               <Route path="aptitude" element={<AdminAptitudePage />} />
               <Route path="skill-tests" element={<AdminSkillTestsPage />} />
-              <Route path="badges" element={<AdminBadgesPage />} />
               <Route path="ai-providers" element={<AdminAIProvidersPage />} />
               <Route path="external-jobs" element={<AdminExternalJobsPage />} />
               <Route path="repo-requests" element={<AdminRepoRequestsPage />} />

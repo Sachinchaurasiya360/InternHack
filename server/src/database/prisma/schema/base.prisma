@@ -46,7 +46,6 @@ model user {
   profileSlug              String?                        @unique
   passwordResetAttempts    Int                            @default(0)
   passwordResetLockedUntil DateTime?
-  ossTier                  String?
   verificationAttempts     Int                            @default(0)
   verificationLockedUntil  DateTime?
   adminProfile             adminProfile?                  @relation("AdminProfile")
@@ -96,7 +95,6 @@ model user {
   skillTestAttempts        skillTestAttempt[]             @relation("StudentSkillTestAttempts")
   aptitudeProgress         studentAptitudeProgress[]      @relation("StudentAptitudeProgress")
   aptitudeTopicProgress    studentAptitudeTopicProgress[] @relation("StudentAptitudeTopicProgress")
-  studentBadges            studentBadge[]                 @relation("StudentBadges")
   dsaProgress              studentDsaProgress[]           @relation("StudentDsaProgress")
   firstPrProgress          studentFirstPrProgress?        @relation("StudentFirstPrProgress")
   studentNotes             studentNote[]                  @relation("StudentNotes")
@@ -998,36 +996,6 @@ model govInternship {
   @@index([category])
 }
 
-model badge {
-  id            Int            @id @default(autoincrement())
-  name          String
-  slug          String         @unique
-  description   String
-  iconUrl       String?
-  category      BadgeCategory
-  criteria      Json           @default("{}")
-  isActive      Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  studentBadges studentBadge[]
-
-  @@index([category])
-  @@index([isActive])
-}
-
-model studentBadge {
-  id        Int      @id @default(autoincrement())
-  studentId Int
-  badgeId   Int
-  earnedAt  DateTime @default(now())
-  badge     badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
-  student   user     @relation("StudentBadges", fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@unique([studentId, badgeId])
-  @@index([studentId])
-  @@index([badgeId])
-}
-
 model aiServiceConfig {
   id          Int            @id @default(autoincrement())
   service     AIServiceType  @unique
@@ -1426,14 +1394,6 @@ enum AIServiceType {
   EMAIL_CHAT
   AI_ROADMAP_GENERATION
   DSA_CODE_REVIEW
-}
-
-enum BadgeCategory {
-  CAREER
-  QUIZ
-  SKILL
-  CONTRIBUTION
-  MILESTONE
 }
 
 enum ScrapedJobStatus {

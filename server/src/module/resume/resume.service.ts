@@ -13,23 +13,9 @@ type RepoSummary = {
   techStack: string[];
 };
 
-type CertificateSummary = {
-  name: string;
-  category: string;
-  earnedAt: Date;
-};
-
 type RepoRequestRecord = Omit<RepoSummary, "domain" | "difficulty"> & {
   domain: unknown;
   difficulty: unknown;
-};
-
-type StudentBadgeRecord = {
-  earnedAt: Date;
-  badge: {
-    name: string;
-    category: unknown;
-  };
 };
 
 type OssSectionResult = {
@@ -38,7 +24,6 @@ type OssSectionResult = {
   rawActivity: {
     approvedRepos: RepoSummary[];
     completedGuides: Array<{ name: string; completedSteps: number; totalSteps: number }>;
-    certificates: CertificateSummary[];
   };
 };
 
@@ -47,7 +32,7 @@ const MAX_BULLETS = 5;
 
 export class ResumeService {
   async buildOssSection(userId: number): Promise<OssSectionResult> {
-    const [user, approvedRequests, firstPrProgress, badges] = await Promise.all([
+    const [user, approvedRequests, firstPrProgress] = await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
         select: { name: true, skills: true, githubUrl: true },
@@ -71,20 +56,6 @@ export class ResumeService {
         where: { userId },
         select: { completedStepIds: true },
       }),
-      prisma.studentBadge.findMany({
-        where: { studentId: userId },
-        orderBy: { earnedAt: "desc" },
-        take: 5,
-        select: {
-          earnedAt: true,
-          badge: {
-            select: {
-              name: true,
-              category: true,
-            },
-          },
-        },
-      }),
     ]);
 
     const repos: RepoSummary[] = (approvedRequests as RepoRequestRecord[]).map((repo) => ({
@@ -97,19 +68,13 @@ export class ResumeService {
       completedStepCount > 0
         ? [{ name: "First PR Guide", completedSteps: completedStepCount, totalSteps: FIRST_PR_TOTAL_STEPS }]
         : [];
-    const certificates: CertificateSummary[] = (badges as StudentBadgeRecord[]).map((item) => ({
-      name: item.badge.name,
-      category: String(item.badge.category),
-      earnedAt: item.earnedAt,
-    }));
 
-    const fallbackBullets = this.buildFallbackBullets(repos, completedGuides, certificates, user?.skills ?? []);
+    const fallbackBullets = this.buildFallbackBullets(repos, completedGuides, user?.skills ?? []);
     const polishedBullets = await this.polishBullets({
       userName: user?.name ?? "Student",
       githubUrl: user?.githubUrl ?? null,
       repos,
       completedGuides,
-      certificates,
       fallbackBullets,
     });
 
@@ -119,7 +84,6 @@ export class ResumeService {
       rawActivity: {
         approvedRepos: repos,
         completedGuides,
-        certificates,
       },
     };
   }
@@ -127,7 +91,6 @@ export class ResumeService {
   private buildFallbackBullets(
     repos: RepoSummary[],
     completedGuides: Array<{ name: string; completedSteps: number; totalSteps: number }>,
-    certificates: CertificateSummary[],
     skills: string[]
   ): string[] {
     const bullets: string[] = [];
@@ -156,10 +119,6 @@ export class ResumeService {
       );
     }
 
-    if (certificates.length > 0) {
-      bullets.push(`Earned ${String(certificates.length)} InternHack badge${certificates.length === 1 ? "" : "s"} including ${certificates.map((badge) => badge.name).slice(0, 3).join(", ")}.`);
-    }
-
     return bullets.slice(0, MAX_BULLETS);
   }
 
@@ -168,7 +127,6 @@ export class ResumeService {
     githubUrl: string | null;
     repos: RepoSummary[];
     completedGuides: Array<{ name: string; completedSteps: number; totalSteps: number }>;
-    certificates: CertificateSummary[];
     fallbackBullets: string[];
   }): Promise<string[]> {
     try {
@@ -183,7 +141,6 @@ Candidate: ${input.userName}
 GitHub: ${input.githubUrl ?? "Not provided"}
 Approved repository suggestions: ${JSON.stringify(input.repos)}
 Guide progress: ${JSON.stringify(input.completedGuides)}
-Badges/certificates: ${JSON.stringify(input.certificates)}
 Draft bullets to refine: ${JSON.stringify(input.fallbackBullets)}`;
 
       const response = await provider.generateText(prompt);

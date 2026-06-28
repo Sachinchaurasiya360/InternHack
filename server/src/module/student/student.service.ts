@@ -1,11 +1,8 @@
 import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
-import { BadgeService } from "../badge/badge.service.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { milestoneEmailHtml } from "../../utils/email-templates.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const badgeService = new BadgeService();
 
 interface MockInterviewTranscriptEntry {
   question: string;
@@ -171,9 +168,6 @@ Rules:
         return createdApplication;
       });
 
-      // Check application badges (fire-and-forget)
-      badgeService.checkAndAwardBadges(studentId, "first_application").catch((err) => console.error("Badge check failed (first_application):", err));
-      badgeService.checkAndAwardBadges(studentId, "job_apply").catch((err) => console.error("Badge check failed (job_apply):", err));
       // Check 10-application milestone (fire-and-forget)
       this.checkApplicationMilestone(studentId).catch((err) => console.error("Failed to check application milestone:", err));
       return application;

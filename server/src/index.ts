@@ -36,7 +36,6 @@ import { interviewProgressRouter } from "./module/interview-progress/interview-p
 import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
-import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
 // ── Recruiter + HR modules archived to /archived (feature removed) ──
 import { contactRouter } from "./module/contact/contact.routes.js";
@@ -248,7 +247,6 @@ app.use("/api/interview-progress", interviewProgressRouter);
 app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/internships", internshipRouter);
-app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
 
 // ── InternHack AI Routes ──

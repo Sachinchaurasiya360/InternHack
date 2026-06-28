@@ -269,20 +269,6 @@ export class PeerMockInterviewService {
       },
     });
 
-    // Award badges
-    try {
-      const badgeServiceClass = await import("../badge/badge.service.js").then(m => m.BadgeService);
-      const badgeService = new badgeServiceClass();
-      if (pairing.studentAId) {
-        await badgeService.checkAndAwardBadges(pairing.studentAId, "mock_interview");
-      }
-      if (pairing.studentBId) {
-        await badgeService.checkAndAwardBadges(pairing.studentBId, "mock_interview");
-      }
-    } catch (err) {
-      console.error("Failed to check and award badges:", err);
-    }
-
     // Send notifications
     try {
       const emailUtils = await import("../../utils/email.utils.js");

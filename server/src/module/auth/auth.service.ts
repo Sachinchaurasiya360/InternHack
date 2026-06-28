@@ -4,16 +4,11 @@ import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
-import { BadgeService } from "../badge/badge.service.js";
-import { UserService } from "../user/user.service.js";
 import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from "../../utils/cache.js";
-
-const userService = new UserService();
 
 // TTL shorter than S3 presigned URL expiry (S3 default â‰¥15 min)
 const PROFILE_TTL = 300;
 
-const badgeService = new BadgeService();
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
 import { createUniqueProfileSlug } from "../../lib/slug.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -55,7 +50,6 @@ const AUTH_USER_SELECT = {
   subscriptionPlan: true,
   subscriptionStatus: true,
   subscriptionEndDate: true,
-  ossTier: true,
 } as const;
 
 type AuthUser = Pick<User, keyof typeof AUTH_USER_SELECT>;
@@ -78,7 +72,6 @@ function buildAuthUser(user: AuthUser): AuthUser {
     subscriptionPlan: user.subscriptionPlan,
     subscriptionStatus: user.subscriptionStatus,
     subscriptionEndDate: user.subscriptionEndDate,
-    ossTier: user.ossTier,
   };
 }
 
@@ -415,7 +408,6 @@ export class AuthService {
     subscriptionPlan: true,
     subscriptionStatus: true,
     subscriptionEndDate: true,
-    ossTier: true,
   } as const;
 
   async getProfile(userId: number) {
@@ -487,9 +479,6 @@ export class AuthService {
       select: this.profileSelect,
     });
 
-    // Check profile_complete badge (fire-and-forget)
-    badgeService.checkAndAwardBadges(userId, "profile_complete").catch((err) => console.error("Badge check failed (profile_complete):", err));
-
     await signProfileMedia(user as Record<string, any>);
 
     // Bust cached profile so next GET /auth/me and public profile returns fresh data.
@@ -555,14 +544,10 @@ export class AuthService {
 
     await signProfileMedia(rest as Record<string, any>);
 
-    // Fetch lightweight badge display list — no heavy criteria JSON
-    const badges = await badgeService.getStudentBadgesDisplay(user.id);
-
     // Full view (includes email/contactNo). Only the owner and authorized
     // viewers ever receive this; it is never written to the shared guest key.
     const fullResult = {
       ...rest,
-      badges,
     };
     // Guest-safe view: strip PII regardless of who triggered the request.
     const { email: _email, contactNo: _contactNo, ...guestRest } = fullResult as any;

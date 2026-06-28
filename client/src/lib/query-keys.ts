@@ -166,14 +166,6 @@ export const queryKeys = {
     status: (id: string | number) => ["external-job-status", id] as const,
   },
 
-  // Badges
-  badges: {
-    all: () => ["badges", "all"] as const,
-    my: () => ["badges", "my"] as const,
-    student: (id: number) => ["badges", "student", id] as const,
-    admin: (params?: Record<string, string | number>) =>
-      ["badges", "admin", params] as const,
-  },
 
   // Saved Candidates
   savedCandidates: {

@@ -7,7 +7,6 @@ import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
-import { UserService } from "../user/user.service.js";
 
 interface ListReposQuery {
   page: number;
@@ -51,8 +50,6 @@ interface GsocOrgsQuery {
   technology?: string;
   year?: number;
 }
-
-const userService = new UserService();
 
 const REPO_CACHE_TTL = 300; // 5 minutes - single-repo cache
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -481,8 +478,6 @@ export class OpensourceService {
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
-    // Re-sync stored ossTier for the contributor (fire-and-forget)
-    userService.calculateOssTier(request.userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return repo;
   }
 
@@ -672,8 +667,6 @@ export class OpensourceService {
       },
       select: { completedStepIds: true },
     });
-    // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
-    userService.calculateOssTier(userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return progress.completedStepIds;
   }
 

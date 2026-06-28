@@ -124,7 +124,6 @@ export class AdminPlatformService {
             companyReviews: true,
             contributions: true,
             usageLogs: true,
-            studentBadges: true,
             skillTestAttempts: true,
             verifiedSkills: true,
           },

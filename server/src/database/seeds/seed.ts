@@ -333,39 +333,7 @@ async function seedCompanies() {
   log("Companies", count);
 }
 
-// ─── 5. Badges ────────────────────────────────────────────────────────
-async function seedBadges() {
-  const badges = [
-    { name: "First Steps", slug: "first-steps", description: "Applied to your first job", category: "MILESTONE" as const, criteria: { type: "first_application" } },
-    { name: "Job Hunter", slug: "job-hunter", description: "Applied to 5 jobs", category: "CAREER" as const, criteria: { type: "job_apply", params: { count: 5 } } },
-    { name: "Persistent", slug: "persistent", description: "Applied to 10 jobs", category: "CAREER" as const, criteria: { type: "job_apply", params: { count: 10 } } },
-    { name: "Committed", slug: "committed", description: "Applied to 25 jobs", category: "CAREER" as const, criteria: { type: "job_apply", params: { count: 25 } } },
-    { name: "Relentless", slug: "relentless", description: "Applied to 50 jobs", category: "CAREER" as const, criteria: { type: "job_apply", params: { count: 50 } } },
-    { name: "Century", slug: "century-apply", description: "Applied to 100 jobs", category: "MILESTONE" as const, criteria: { type: "job_apply", params: { count: 100 } } },
-    { name: "Storyteller", slug: "storyteller", description: "Shared your first interview experience", category: "CONTRIBUTION" as const, criteria: { type: "interview_share", params: { count: 1 } } },
-    { name: "Mentor", slug: "mentor", description: "Shared 5 interview experiences", category: "CONTRIBUTION" as const, criteria: { type: "interview_share", params: { count: 5 } } },
-    { name: "Community Pillar", slug: "community-pillar", description: "Shared 20 interview experiences", category: "CONTRIBUTION" as const, criteria: { type: "interview_share", params: { count: 20 } } },
-    { name: "Skill Verified", slug: "skill-verified", description: "Passed your first skill test", category: "SKILL" as const, criteria: { type: "skill_test_pass", params: { count: 1 } } },
-    { name: "Problem Solver", slug: "problem-solver", description: "Solved 10 DSA problems", category: "SKILL" as const, criteria: { type: "dsa_solve", params: { count: 10 } } },
-    { name: "DSA Warrior", slug: "dsa-warrior", description: "Solved 50 DSA problems", category: "SKILL" as const, criteria: { type: "dsa_solve", params: { count: 50 } } },
-    { name: "Code Ninja", slug: "code-ninja", description: "Solved 100 DSA problems", category: "MILESTONE" as const, criteria: { type: "dsa_solve", params: { count: 100 } } },
-    { name: "Profile Pro", slug: "profile-pro", description: "Completed your entire profile", category: "MILESTONE" as const, criteria: { type: "profile_complete" } },
-    { name: "Quiz Master", slug: "quiz-master", description: "Answered 100 aptitude questions correctly", category: "QUIZ" as const, criteria: { type: "aptitude_correct", params: { count: 100 } } },
-    { name: "Contributor", slug: "contributor", description: "Made your first approved company contribution", category: "CONTRIBUTION" as const, criteria: { type: "contribution_approved", params: { count: 1 } } },
-  ];
-
-  let count = 0;
-  for (const b of badges) {
-    const existing = await prisma.badge.findUnique({ where: { slug: b.slug } });
-    if (!existing) {
-      await prisma.badge.create({ data: { ...b, isActive: true } });
-      count++;
-    }
-  }
-  log("Badges", count);
-}
-
-// ─── 6. Skill Tests ──────────────────────────────────────────────────
+// ─── 5. Skill Tests ──────────────────────────────────────────────────
 async function seedSkillTests() {
   const tests = [
     {
@@ -1379,7 +1347,6 @@ async function main() {
   await seedDsa();
   await seedAptitude();
   await seedCompanies();
-  await seedBadges();
   await seedSkillTests();
   await seedHackathons();
   await seedOpensourceRepos();

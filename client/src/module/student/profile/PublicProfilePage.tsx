@@ -3,18 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, MapPin, GraduationCap, Linkedin, Github, Globe,
-  ExternalLink, FileText, ShieldCheck, Trophy, FolderGit2, Briefcase, Calendar,
+  ExternalLink, FileText, ShieldCheck, FolderGit2, Briefcase, Calendar,
   Phone, Mail, Clock, User, Lock
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
-import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import GitHubStatsCard from "./GitHubStatsCard";
 import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
-import type { ProjectItem, VerifiedSkill, BadgeDisplay } from "../../../lib/types";
+import type { ProjectItem, VerifiedSkill } from "../../../lib/types";
 
 interface PublicProfile {
   id: number;
@@ -39,17 +38,7 @@ interface PublicProfile {
   bestAtsScore: number | null;
   verifiedSkills: VerifiedSkill[];
   createdAt: string;
-  ossTier?: string;
-  badges: BadgeDisplay[];
 }
-
-// ─── TIER COLORS ────────────────────────────────────────────────
-const OSS_TIER_COLORS: Record<string, string> = {
-  "First Steps": "bg-stone-50 text-stone-600 border-stone-200",
-  "Contributor": "bg-stone-100 text-stone-700 border-stone-300",
-  "Active Contributor": "bg-stone-200 text-stone-800 border-stone-400",
-  "OSS Leader": "bg-stone-300 text-stone-900 border-stone-500",
-};
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -171,12 +160,6 @@ export default function PublicProfilePage() {
             <div className="pb-1 min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl font-bold text-gray-950 dark:text-white">{profile.name}</h1>
-                {profile.ossTier && (
-                  <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border ${OSS_TIER_COLORS[profile.ossTier] || OSS_TIER_COLORS["First Steps"]}`}>
-                    <Trophy className="w-3 h-3" />
-                    {profile.ossTier}
-                  </span>
-                )}
               </div>
               {(profile.designation || profile.company) && (
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
@@ -302,12 +285,6 @@ export default function PublicProfilePage() {
               </div>
             </motion.div>
           )}
-
-          {/* Badges — uses compact list from profile payload, no separate API call */}
-          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
-            <BadgesSection badges={profile.badges} />
-          </motion.div>
 
           <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible">
             <GitHubStatsCard githubUrl={profile.githubUrl} compact />
