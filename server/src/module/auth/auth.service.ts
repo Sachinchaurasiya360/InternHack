@@ -536,7 +536,7 @@ export class AuthService {
    * Fetch the public profile for a given identifier (slug or numeric id).
    *
    * DB query count per request:
-   *   CACHED  – 0 Prisma queries (served from Redis / in-process fallback)
+   *   CACHED  – 0 Prisma queries (served from the in-process cache)
    *   UNCACHED – 1-2 Prisma queries:
    *     • 1 × user.findUnique (by profileSlug)
    *     • +1 × user.findUnique (by id, only when slug lookup returns null and identifier is numeric)

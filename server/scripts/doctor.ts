@@ -50,49 +50,12 @@ function checkEnvVariables() {
   }
 }
 
-function checkDockerInstalled() {
-  try {
-    execSync("docker --version", { stdio: "ignore" });
-    success("Docker installed");
-  } catch {
-    fail("Docker not installed");
-  }
-}
-
-function checkDockerRunning() {
-  try {
-    execSync("docker ps", { stdio: "ignore" });
-    success("Docker Engine running");
-  } catch {
-    fail("Docker Engine not running");
-  }
-}
-
 function checkPrisma() {
   try {
     execSync("npx prisma --version", { stdio: "ignore" });
     success("Prisma available");
   } catch {
     fail("Prisma not available");
-  }
-}
-
-function checkPostgresContainer() {
-  try {
-    const output = execSync("docker ps --format \"{{.Names}}\"", {
-      encoding: "utf8",
-    });
-
-    if (
-      output.toLowerCase().includes("postgres") ||
-      output.toLowerCase().includes("internhack-postgres")
-    ) {
-      success("PostgreSQL container running");
-    } else {
-      warn("PostgreSQL container not detected");
-    }
-  } catch {
-    warn("Unable to verify PostgreSQL container");
   }
 }
 
@@ -123,10 +86,7 @@ async function main() {
 
   checkNodeVersion();
   checkEnvVariables();
-  checkDockerInstalled();
-  checkDockerRunning();
   checkPrisma();
-  checkPostgresContainer();
 
   await checkPort(3000);
   await checkPort(5173);

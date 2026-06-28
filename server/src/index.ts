@@ -9,7 +9,6 @@ import type { HelmetOptions } from "helmet";
 import type { RequestHandler } from "express";
 import morgan from "morgan";
 import { rateLimit } from "express-rate-limit";
-import { createRateLimitStore } from "./utils/rate-limit-store.js";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { studentRouter } from "./module/student/student.routes.js";
 import { peerMockInterviewRouter } from "./module/peer-mock-interview/peer-mock-interview.routes.js";
@@ -73,7 +72,6 @@ import { startPeerMockInterviewMatchCron, stopPeerMockInterviewMatchCron } from 
 import { startPeerMockInterviewRemindersCron, stopPeerMockInterviewRemindersCron } from "./cron/peer-mock-interview-reminders.cron.js";
 import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
-import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
 
 const logger = createLogger("Index");
@@ -93,18 +91,6 @@ for (const key of REQUIRED_ENV) {
   if (!process.env[key]) {
     throw new Error(`Missing required environment variable: ${key}`);
   }
-}
-
-// ── Redis is optional ──
-// Without REDIS_URL, rate limiters fall back to per-process MemoryStore. That
-// is fine for a single instance; behind a load balancer the limits are
-// per-process (not shared), so set REDIS_URL when running multiple instances.
-if (process.env["NODE_ENV"] === "production" && !process.env["REDIS_URL"]) {
-  console.warn(
-    "[Redis] Running in production without REDIS_URL. " +
-    "Rate-limit stores are per-process and not shared across instances. " +
-    "Set REDIS_URL for shared rate limiting behind a load balancer.",
-  );
 }
 
 
@@ -215,7 +201,6 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRateLimitStore("global"),
   skip: (req) => {
     const path = req.originalUrl.split("?")[0];
     return path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook";
@@ -231,7 +216,6 @@ app.use("/api/admin/login", authIpLimiter, authEmailLimiter);
 const latexLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
-  store: createRateLimitStore("latex"),
   message: { message: "LaTeX compilation limit reached. Try again later." },
 });
 app.use("/api/latex/compile", latexLimiter);
@@ -484,18 +468,6 @@ const server = app.listen(PORT, async () => {
     });
   } else {
     logger.info("GitHub contributions cron disabled on this process");
-  }
-
-  // Register Redis disconnect
-  if (redis) {
-    shutdownManager.register({
-      name: "Redis Disconnect",
-      priority: 20,
-      fn: async () => {
-        await redis!.quit();
-        logger.info("Redis Disconnected");
-      },
-    });
   }
 
   // Register Prisma disconnect

@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
-import { createRateLimitStore } from "../../utils/rate-limit-store.js";
 import { UploadController } from "./upload.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 
@@ -17,7 +16,6 @@ const presignedUrlRateLimit = rateLimit({
   message: { message: "Too many upload requests, please try again after 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRateLimitStore("upload"),
 });
 
 import { validateBody, presignRequestSchema, uploadProfilePicSchema, uploadCoverImageSchema, uploadResumeSchema } from "./upload.validation.js";
