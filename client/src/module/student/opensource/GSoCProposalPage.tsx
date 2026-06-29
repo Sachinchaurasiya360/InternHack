@@ -13,7 +13,7 @@ import guideData from "./data/gsoc-proposal-guide.json";
 import GuideCompletionSection from "./components/GuideCompletionSection";
 import { notifyLearningPathProgressChanged } from "./learning-paths.data";
 import { NextInPathCard } from "./components/NextInPathCard";
-import { issueCertificate, type Certificate } from "./api/opensource.api";
+import { issueCertificate, fetchGuideProgress, patchGuideProgress, type Certificate } from "./api/opensource.api";
 import { useAuthStore } from "../../../lib/auth.store";
 import GSoCProposalAIReview from "./GSoCProposalAIReview";
 
@@ -51,27 +51,57 @@ const LEVEL_BG: Record<string, string> = {
 
 // ─── Page ──────────────────────────────────────────────────────
 export default function GSoCProposalPage() {
-  const [completed, setCompleted] = useState<Set<string>>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
 
   const [cert, setCert] = useState<Certificate | null>(null);
   const { user } = useAuthStore();
+
+  useEffect(() => {
+    let isMounted = true;
+    let localSet = new Set<string>();
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) localSet = new Set(JSON.parse(stored));
+    } catch {}
+
+    if (user) {
+      fetchGuideProgress(STORAGE_KEY)
+        .then((serverCompleted) => {
+          if (!isMounted) return;
+          const serverSet = new Set(serverCompleted);
+          let changed = false;
+          localSet.forEach(id => {
+            if (!serverSet.has(id)) {
+              serverSet.add(id);
+              changed = true;
+            }
+          });
+          if (changed) {
+            patchGuideProgress(STORAGE_KEY, Array.from(serverSet)).catch(console.error);
+          }
+          setCompleted(serverSet);
+        })
+        .catch(() => {
+          if (isMounted) setCompleted(localSet);
+        });
+    } else {
+      setCompleted(localSet);
+    }
+    return () => { isMounted = false; };
+  }, [user]);
 
   const toggle = useCallback((id: string) => {
     setCompleted((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
+      if (user) {
+        patchGuideProgress(STORAGE_KEY, Array.from(next)).catch(console.error);
+      }
       notifyLearningPathProgressChanged();
       return next;
     });
-  }, []);
+  }, [user]);
 
   const totalSteps = STEPS.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
