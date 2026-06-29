@@ -31,9 +31,9 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
-import { sanitizeHtml } from "../../../lib/sanitize";
-import { DIFF_COLOR } from "../../../lib/difficulty-styles";
 import { cleanHint } from "../../../lib/sanitize";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
+import { SafeHtml } from "../../../components/common/SafeHtml";
 import { useDsaLabels } from "./components/useDsaLabels";
 import { DsaLabelManager } from "./components/DsaLabelManager";
 import { DsaLabelFilter } from "./components/DsaLabelFilter";
@@ -632,7 +632,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                             {i + 1}.
                           </span>
                         )}
-                        <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanHint(hint)) }} />
+                        <SafeHtml as="span" html={cleanHint(hint)} />
                       </div>
                     ))}
                   </div>

@@ -21,7 +21,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
-import { sanitizeHtml } from "../../../lib/sanitize";
+import { SafeHtml } from "../../../components/common/SafeHtml";
 
 const COMPANY_LOGOS: Record<string, string> = {
   "TCS": "https://companieslogo.com/img/orig/TCS.NS_BIG-89c50e39.png?t=1740792736",
@@ -291,9 +291,10 @@ export default function AptitudeCompaniesPage() {
                         {String(qNum).padStart(2, "0")}
                       </span>
                       <div className="flex-1 min-w-0 pt-1">
-                        <div
+                        <SafeHtml
                           className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed wrap-break-word"
-                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.question) }}
+                          html={q.question}
+                          method="sanitize-html"
                         />
                         {q.topicName && (
                           <Link
@@ -369,9 +370,10 @@ export default function AptitudeCompaniesPage() {
                             <Kicker label="explanation" />
                           </div>
                           <div className="bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-white/10 rounded-md p-4">
-                            <div
+                            <SafeHtml
                               className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed"
-                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.explanation) }}
+                              html={q.explanation}
+                              method="sanitize-html"
                             />
                           </div>
                         </motion.div>
