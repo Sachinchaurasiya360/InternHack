@@ -808,7 +808,7 @@ export default function DsaCompaniesPage() {
                                     {problem.hints.map((hint, i) => (
                                       <div key={i} className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex gap-1">
                                         {problem.hints.length > 1 && <span className="font-mono font-medium text-stone-500 dark:text-stone-400 shrink-0">{i + 1}.</span>}
-                                        <SafeHtml as="span" html={cleanHint(hint)} method="sanitize-html" />
+                                        <SafeHtml className="flex-1 min-w-0" html={cleanHint(hint)} method="sanitize-html" />
                                       </div>
                                     ))}
                                   </div>

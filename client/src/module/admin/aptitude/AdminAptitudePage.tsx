@@ -258,7 +258,9 @@ export default function AdminAptitudePage() {
   // Question management view
   if (view === "questions" && selectedTopic) {
     return (
-      <div className="max-w-5xl">
+      <>
+        <SEO title="Manage Aptitude" noIndex />
+        <div className="max-w-5xl">
         <div className="flex items-center justify-between mb-6">
           <div>
             <button
@@ -570,13 +572,16 @@ export default function AdminAptitudePage() {
           onPageChange={(p) => fetchQuestions(selectedTopic.id, p)}
         />
       </div>
+      </>
     );
   }
 
   // Category/topic edit view
   if (view === "category" && editingCat) {
     return (
-      <div className="max-w-3xl">
+      <>
+        <SEO title="Manage Aptitude" noIndex />
+        <div className="max-w-3xl">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-white">
             {creatingCat ? "Create Category" : `Edit: ${editingCat.name}`}
@@ -803,6 +808,7 @@ export default function AdminAptitudePage() {
           </div>
         )}
       </div>
+      </>
     );
   }
 

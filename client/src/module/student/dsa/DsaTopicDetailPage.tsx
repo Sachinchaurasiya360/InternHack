@@ -632,7 +632,7 @@ export const DsaProblemCard = React.memo(function DsaProblemCard({
                             {i + 1}.
                           </span>
                         )}
-                        <SafeHtml as="span" html={cleanHint(hint)} />
+                        <SafeHtml className="flex-1 min-w-0" html={cleanHint(hint)} method="sanitize-html" />
                       </div>
                     ))}
                   </div>
