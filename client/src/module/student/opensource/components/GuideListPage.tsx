@@ -39,7 +39,7 @@ export default function GuideListPage({
 }: Props) {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [cert, setCert] = useState<Certificate | null>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncCount, setSyncCount] = useState(0);
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -86,10 +86,10 @@ export default function GuideListPage({
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
       if (user) {
-        setIsSyncing(true);
+        setSyncCount(c => c + 1);
         patchGuideProgress(storageKey, Array.from(next))
           .catch(console.error)
-          .finally(() => setIsSyncing(false));
+          .finally(() => setSyncCount(c => c - 1));
       }
       notifyLearningPathProgressChanged();
       return next;
@@ -121,12 +121,12 @@ export default function GuideListPage({
   };
 
   useEffect(() => {
-    if (allDone && !cert && user && !isSyncing) {
+    if (allDone && !cert && user && syncCount === 0) {
       issueCertificate(title)
         .then(setCert)
         .catch(console.error);
     }
-  }, [allDone, cert, title, user, isSyncing]);
+  }, [allDone, cert, title, user, syncCount]);
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();

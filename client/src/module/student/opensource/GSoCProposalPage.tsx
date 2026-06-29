@@ -53,7 +53,7 @@ const LEVEL_BG: Record<string, string> = {
 export default function GSoCProposalPage() {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [cert, setCert] = useState<Certificate | null>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncCount, setSyncCount] = useState(0);
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -100,10 +100,10 @@ export default function GSoCProposalPage() {
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
       if (user) {
-        setIsSyncing(true);
+        setSyncCount(c => c + 1);
         patchGuideProgress(STORAGE_KEY, Array.from(next))
           .catch(console.error)
-          .finally(() => setIsSyncing(false));
+          .finally(() => setSyncCount(c => c - 1));
       }
       notifyLearningPathProgressChanged();
       return next;
@@ -120,12 +120,12 @@ export default function GSoCProposalPage() {
   const remainingMinutes = totalEstimatedMinutes - completedMinutes;
 
   useEffect(() => {
-    if (allDone && !cert && user && !isSyncing) {
+    if (allDone && !cert && user && syncCount === 0) {
       issueCertificate("GSoC Proposal Guide")
         .then(setCert)
         .catch(console.error);
     }
-  }, [allDone, cert, user, isSyncing]);
+  }, [allDone, cert, user, syncCount]);
 
 
   const howToSchema = {
