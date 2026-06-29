@@ -39,6 +39,7 @@ export default function GuideListPage({
 }: Props) {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [cert, setCert] = useState<Certificate | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function GuideListPage({
 
     if (user) {
       fetchGuideProgress(storageKey)
-        .then((serverCompleted) => {
+        .then(async (serverCompleted) => {
           if (!isMounted) return;
           const serverSet = new Set(serverCompleted);
           let changed = false;
@@ -62,9 +63,13 @@ export default function GuideListPage({
             }
           });
           if (changed) {
-            patchGuideProgress(storageKey, Array.from(serverSet)).catch(console.error);
+            try {
+              await patchGuideProgress(storageKey, Array.from(serverSet));
+            } catch (e) {
+              console.error(e);
+            }
           }
-          setCompleted(serverSet);
+          if (isMounted) setCompleted(serverSet);
         })
         .catch(() => {
           if (isMounted) setCompleted(localSet);
@@ -81,7 +86,10 @@ export default function GuideListPage({
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
       if (user) {
-        patchGuideProgress(storageKey, Array.from(next)).catch(console.error);
+        setIsSyncing(true);
+        patchGuideProgress(storageKey, Array.from(next))
+          .catch(console.error)
+          .finally(() => setIsSyncing(false));
       }
       notifyLearningPathProgressChanged();
       return next;
@@ -113,12 +121,12 @@ export default function GuideListPage({
   };
 
   useEffect(() => {
-    if (allDone && !cert && user) {
+    if (allDone && !cert && user && !isSyncing) {
       issueCertificate(title)
         .then(setCert)
         .catch(console.error);
     }
-  }, [allDone, cert, title, user]);
+  }, [allDone, cert, title, user, isSyncing]);
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();

@@ -52,8 +52,8 @@ const LEVEL_BG: Record<string, string> = {
 // ─── Page ──────────────────────────────────────────────────────
 export default function GSoCProposalPage() {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
-
   const [cert, setCert] = useState<Certificate | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function GSoCProposalPage() {
 
     if (user) {
       fetchGuideProgress(STORAGE_KEY)
-        .then((serverCompleted) => {
+        .then(async (serverCompleted) => {
           if (!isMounted) return;
           const serverSet = new Set(serverCompleted);
           let changed = false;
@@ -77,9 +77,13 @@ export default function GSoCProposalPage() {
             }
           });
           if (changed) {
-            patchGuideProgress(STORAGE_KEY, Array.from(serverSet)).catch(console.error);
+            try {
+              await patchGuideProgress(STORAGE_KEY, Array.from(serverSet));
+            } catch (e) {
+              console.error(e);
+            }
           }
-          setCompleted(serverSet);
+          if (isMounted) setCompleted(serverSet);
         })
         .catch(() => {
           if (isMounted) setCompleted(localSet);
@@ -96,7 +100,10 @@ export default function GSoCProposalPage() {
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
       if (user) {
-        patchGuideProgress(STORAGE_KEY, Array.from(next)).catch(console.error);
+        setIsSyncing(true);
+        patchGuideProgress(STORAGE_KEY, Array.from(next))
+          .catch(console.error)
+          .finally(() => setIsSyncing(false));
       }
       notifyLearningPathProgressChanged();
       return next;
@@ -113,12 +120,12 @@ export default function GSoCProposalPage() {
   const remainingMinutes = totalEstimatedMinutes - completedMinutes;
 
   useEffect(() => {
-    if (allDone && !cert && user) {
+    if (allDone && !cert && user && !isSyncing) {
       issueCertificate("GSoC Proposal Guide")
         .then(setCert)
         .catch(console.error);
     }
-  }, [allDone, cert, user]);
+  }, [allDone, cert, user, isSyncing]);
 
 
   const howToSchema = {
