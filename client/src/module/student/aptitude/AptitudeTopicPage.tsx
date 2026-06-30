@@ -82,10 +82,22 @@ export default function AptitudeTopicPage() {
 
   useEffect(() => {
     if (!timerRunning || !topic?.questions.length) return;
+    
+    const effectStartTime = Date.now();
+    let endTime: number | null = null;
+    
     const id = setInterval(() => {
       setTimeLeft((t) => {
-        if (t <= 1) { setTimerRunning(false); return 0; }
-        return t - 1;
+        if (endTime === null) {
+          endTime = effectStartTime + t * 1000;
+        }
+        const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+        if (remaining <= 0) {
+          setTimerRunning(false);
+          clearInterval(id);
+          return 0;
+        }
+        return remaining;
       });
     }, 1000);
     return () => clearInterval(id);
