@@ -80,18 +80,21 @@ export default function AptitudeTopicPage() {
     onError: () => toast.error("Failed to reset progress"),
   });
 
+  const endTimeRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (!timerRunning || !topic?.questions.length) return;
+    if (!timerRunning || !topic?.questions.length) {
+      endTimeRef.current = null;
+      return;
+    }
     
-    const effectStartTime = Date.now();
-    let endTime: number | null = null;
+    if (endTimeRef.current === null) {
+      endTimeRef.current = Date.now() + timeLeft * 1000;
+    }
     
     const id = setInterval(() => {
-      setTimeLeft((t) => {
-        if (endTime === null) {
-          endTime = effectStartTime + t * 1000;
-        }
-        const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+      setTimeLeft(() => {
+        const remaining = Math.max(0, Math.ceil((endTimeRef.current! - Date.now()) / 1000));
         if (remaining <= 0) {
           setTimerRunning(false);
           clearInterval(id);
@@ -101,6 +104,7 @@ export default function AptitudeTopicPage() {
       });
     }, 1000);
     return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timerRunning, topic?.questions.length]);
 
   useEffect(() => {

@@ -94,18 +94,21 @@ export default function AptitudeCompaniesPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const endTimeRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (!selectedCompany || !timerRunning || !companyData?.questions.length) return;
+    if (!selectedCompany || !timerRunning || !companyData?.questions.length) {
+      endTimeRef.current = null;
+      return;
+    }
     
-    const effectStartTime = Date.now();
-    let endTime: number | null = null;
+    if (endTimeRef.current === null) {
+      endTimeRef.current = Date.now() + timeLeft * 1000;
+    }
     
     const id = setInterval(() => {
-      setTimeLeft((t) => {
-        if (endTime === null) {
-          endTime = effectStartTime + t * 1000;
-        }
-        const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+      setTimeLeft(() => {
+        const remaining = Math.max(0, Math.ceil((endTimeRef.current! - Date.now()) / 1000));
         if (remaining <= 0) {
           setTimerRunning(false);
           clearInterval(id);
@@ -115,6 +118,7 @@ export default function AptitudeCompaniesPage() {
       });
     }, 1000);
     return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCompany, timerRunning, companyData?.questions.length]);
 
   useEffect(() => {
