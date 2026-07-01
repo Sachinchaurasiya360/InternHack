@@ -1,7 +1,4 @@
 import { prisma } from "../../database/db.js";
-import { BadgeService } from "../badge/badge.service.js";
-
-const badgeService = new BadgeService();
 
 export class OpensourceStreakService {
   async getStreak(userId: number) {
@@ -58,12 +55,6 @@ export class OpensourceStreakService {
         lastActivityAt: now,
       },
     });
-
-    if (!todayLastActivity) {
-      badgeService.checkAndAwardBadges(userId, "oss_streak", {
-        streak: newCurrentStreak,
-      }).catch((err) => console.error("Badge check failed (oss_streak):", err));
-    }
 
     return updated;
   }

@@ -7,11 +7,6 @@ import { sendEmail } from "../../utils/email.utils.js";
 import { atsScoreReportHtml } from "../../utils/email-templates.js";
 import { isPremiumUser } from "../../utils/premium.utils.js";
 
-// Only email the report when the score row was just created; cached hits
-// (re-scoring the same resume+JD within the service's 24h window) reuse the
-// same row so we don't want to spam the student's inbox.
-const FRESH_SCORE_WINDOW_MS = 30_000;
-
 export class AtsController {
   constructor(private readonly atsService: AtsService) {}
 
@@ -34,18 +29,12 @@ export class AtsController {
         ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit }
         : undefined;
 
-      const isFresh =
-        Date.now() - new Date(score.createdAt).getTime() < FRESH_SCORE_WINDOW_MS;
-      let emailQueued = false;
-      if (isFresh) {
-        emailQueued = true;
-        // Fire-and-forget: don't block the response on Resend latency.
-        void this.sendScoreReportEmail(req.user.id, score).catch((err) => {
-          console.error("[ATS] failed to send score report email:", err);
-        });
-      }
+      // Fire-and-forget: don't block the response on Resend latency.
+      void this.sendScoreReportEmail(req.user.id, score).catch((err) => {
+        console.error("[ATS] failed to send score report email:", err);
+      });
 
-      res.json({ message: "Resume scored successfully", score, usage, emailQueued });
+      res.json({ message: "Resume scored successfully", score, usage, emailQueued: true });
     } catch (err) {
       if (err instanceof Error) {
         if (err.message.includes("Could not extract")) {
@@ -186,19 +175,5 @@ export class AtsController {
 
     const subject = `Your resume scored ${score.overallScore}/100 on InternHack`;
     await sendEmail({ to: user.email, subject, html });
-  }
-
-  /** GET /api/ats/history — returns the authenticated student's recent score history. */
-  async getScoreHistory(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.user) {
-        res.status(401).json({ message: "Authentication required" });
-        return;
-      }
-      const history = await this.atsService.getScoreHistory(req.user.id);
-      res.json({ history });
-    } catch (err) {
-      next(err);
-    }
   }
 }

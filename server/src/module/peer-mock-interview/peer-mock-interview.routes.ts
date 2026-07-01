@@ -49,6 +49,16 @@ peerMockInterviewRouter.get(
   (req, res) => controller.getUpcomingPairing(req, res)
 );
 
+// Retrieve past mock interview pairings (completed/cancelled)
+peerMockInterviewRouter.get(
+  "/pairings/history",
+  authMiddleware,
+  requireRole("STUDENT"),
+  requirePremium,
+  usageLimit("MOCK_INTERVIEW"),
+  (req, res) => controller.getHistory(req, res)
+);
+
 // Retrieve full details of a specific pairing
 peerMockInterviewRouter.get(
   "/pairings/:id",

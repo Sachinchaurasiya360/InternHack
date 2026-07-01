@@ -154,7 +154,6 @@ export default function SqlExercisePage() {
     return () => {
       isCancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise, section, progress]);
 
   const handleRun = useCallback(async () => {

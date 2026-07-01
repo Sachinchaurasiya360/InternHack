@@ -99,8 +99,8 @@ export function welcomeEmailHtml(name: string): string {
             </td>
             <td style="width:4px;"></td>
             <td style="padding:10px 12px;background-color:#f8fafc;border:1px solid #f1f5f9;vertical-align:top;">
-              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Badges & Achievements</p>
-              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Earn badges as you learn, build, and grow</p>
+              <p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#18181b;">Mock Interviews</p>
+              <p style="margin:0;font-size:12px;color:#64748b;line-height:1.4;">Practice with peers and get structured feedback</p>
             </td>
           </tr>
         </table>
@@ -281,19 +281,6 @@ export function followUpEmailHtml(name: string): string {
             <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
               <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">YC Companies</p>
               <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">Browse Y Combinator startups with founder info and hiring status</p>
-            </td>
-          </tr>
-          <tr><td colspan="3" style="height:8px;"></td></tr>
-          <!-- Row 6 -->
-          <tr>
-            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
-              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">IIT Professors</p>
-              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">1,500+ IIT professors with email, department, and research areas</p>
-            </td>
-            <td style="width:4%;"></td>
-            <td style="padding:12px 14px;background-color:#fafafa;border:1px solid #e4e4e7;border-radius:8px;vertical-align:top;">
-              <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#18181b;">HR Contacts</p>
-              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.5;">1,800+ IT HR contacts with email and LinkedIn for direct outreach</p>
             </td>
           </tr>
         </table>
@@ -645,30 +632,9 @@ export function interviewExperienceApprovedHtml(args: {
   companyName: string;
   role: string;
   experienceId: number;
-  earnedBadges?: { name: string; description?: string }[];
 }): string {
   const firstName = args.name.split(" ")[0];
   const detailUrl = `https://www.internhack.xyz/student/interviews/${String(args.experienceId)}`;
-  const badges = args.earnedBadges ?? [];
-
-  const badgeBlock =
-    badges.length > 0
-      ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px;">
-        <tr><td style="padding:16px 18px;background-color:#f7fee7;border:1px solid #d9f99d;border-radius:8px;">
-          <p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#3f6212;">
-            &#127942; You earned ${String(badges.length)} new badge${badges.length === 1 ? "" : "s"}
-          </p>
-          ${badges
-            .map(
-              (b) =>
-                `<p style="margin:6px 0 0;font-size:13px;color:#365314;line-height:1.5;"><strong>${b.name}</strong>${
-                  b.description ? `, ${b.description}` : ""
-                }</p>`,
-            )
-            .join("")}
-        </td></tr>
-      </table>`
-      : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -683,7 +649,6 @@ export function interviewExperienceApprovedHtml(args: {
       <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
         Your interview experience for <strong>${args.role}</strong> at <strong>${args.companyName}</strong> has been approved and is now visible to other students preparing for the same company.
       </p>
-      ${badgeBlock}
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
         <tr><td style="text-align:center;padding:8px 0 16px;">
           <a href="${detailUrl}" style="display:inline-block;padding:12px 28px;background-color:#0a0a0a;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;border-radius:8px;">

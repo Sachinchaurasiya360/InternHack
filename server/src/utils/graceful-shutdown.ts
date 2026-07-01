@@ -10,7 +10,7 @@ const logger = createLogger("GracefulShutdown");
  * Recommended priority bands:
  *   0  – stop accepting connections (server.close)
  *  10  – stop cron jobs & background workers
- *  20  – disconnect external services (Redis, DB)
+ *  20  – disconnect external services (DB)
  */
 export interface ShutdownHook {
   /** Human-readable label for logging */

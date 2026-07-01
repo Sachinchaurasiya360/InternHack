@@ -49,6 +49,7 @@ export function useSearchWithDebounce({
   useEffect(() => {
     if (!paramName) return;
     if (paramValue !== inputValue) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputValue(paramValue);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -7,7 +7,6 @@ import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
-import { UserService } from "../user/user.service.js";
 
 interface ListReposQuery {
   page: number;
@@ -51,8 +50,6 @@ interface GsocOrgsQuery {
   technology?: string;
   year?: number;
 }
-
-const userService = new UserService();
 
 const REPO_CACHE_TTL = 300; // 5 minutes - single-repo cache
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -481,8 +478,6 @@ export class OpensourceService {
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
-    // Re-sync stored ossTier for the contributor (fire-and-forget)
-    userService.calculateOssTier(request.userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return repo;
   }
 
@@ -570,14 +565,14 @@ export class OpensourceService {
       where: {
         userId,
         status: "APPROVED",
-        updatedAt: { gte: startMonth, lt: endMonth },
+        createdAt: { gte: startMonth, lt: endMonth },
       },
-      select: { updatedAt: true },
+      select: { createdAt: true },
     });
 
     const countsByMonth = new Map<string, number>();
     for (const request of approvedRequests) {
-      const monthKey = this.getMonthKeyUTC(request.updatedAt);
+      const monthKey = this.getMonthKeyUTC(request.createdAt);
       countsByMonth.set(monthKey, (countsByMonth.get(monthKey) ?? 0) + 1);
     }
 
@@ -672,8 +667,6 @@ export class OpensourceService {
       },
       select: { completedStepIds: true },
     });
-    // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
-    userService.calculateOssTier(userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return progress.completedStepIds;
   }
 
@@ -694,20 +687,26 @@ export class OpensourceService {
       });
     }
 
-    // 2. Fetch repos matching skills (language or techStack subset)
-    // We search for repos where the primary language is in the student's skills
-    const repos = await prisma.opensourceRepo.findMany({
-      where: {
-        OR: [
-          { language: { in: skills, mode: "insensitive" } },
-          { trending: true },
-        ],
-      },
+    // 2. Fetch repos matching skills, fallback to trending if not enough
+    const skillRepos = await prisma.opensourceRepo.findMany({
+      where: { language: { in: skills, mode: "insensitive" } },
       take: 8,
-      orderBy: [{ trending: "desc" }, { stars: "desc" }],
+      orderBy: { stars: "desc" },
     });
 
-    return repos;
+    if (skillRepos.length < 8) {
+      const trendingRepos = await prisma.opensourceRepo.findMany({
+        where: {
+          trending: true,
+          ...(skillRepos.length > 0 ? { id: { notIn: skillRepos.map((r) => r.id) } } : {}),
+        },
+        take: 8 - skillRepos.length,
+        orderBy: { stars: "desc" },
+      });
+      return [...skillRepos, ...trendingRepos];
+    }
+
+    return skillRepos;
   }
 
   async getCertificate(token: string) {
@@ -906,5 +905,6 @@ export class OpensourceService {
   }
 
 }
+
 
 

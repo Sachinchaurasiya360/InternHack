@@ -43,7 +43,7 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 | **Authentication** | JWT Authentication, Google OAuth |
 | **Payments** | Dodo Payments |
 | **Cloud Storage** | AWS S3 with Local Storage Fallback |
-| **Caching & Rate Limiting** | Redis via `ioredis` (optional, in-memory fallback when `REDIS_URL` unset) |
+| **Caching & Rate Limiting** | In-process in-memory stores |
 | **Email Services** | Resend |
 | **Development Tools** | ESLint, Prettier, Nodemon, tsx |
 
@@ -104,48 +104,14 @@ git clone https://github.com/Sachinchaurasiya360/InternHack.git
 cd InternHack
 ```
 
-### Docker Compose (alternative)
-
-Requires [Docker Desktop](https://docs.docker.com/get-docker/) or Docker Engine plus Compose v2. You do **not** need a host-installed PostgreSQL or Node for this path. (Redis is **optional** for local dev — rate limiting and caching fall back to in-memory stores when `REDIS_URL` is unset. Set it in `.env` if you want to test Redis-backed rate limiting.) The API service image is defined in [`server/Dockerfile.dev`](server/Dockerfile.dev) for local dev only; production deploy continues to use [`server/dockerfile`](server/dockerfile).
-
-From the repo root:
-
-```bash
-cp .env.example .env
-# Set JWT_SECRET at minimum; add OAuth/AI keys as needed (see Environment Variables below).
-
-docker compose up --build
-```
-
-Compose falls back to the same Postgres defaults as `.env.example` when variables are absent, but the API refuses to boot without **`JWT_SECRET`**, which your root `.env` must supply.
-
-- Frontend **http://localhost:5173** — API **http://localhost:3000**
-- Source trees are bind-mounted into the containers; `CHOKIDAR_USEPOLLING` helps file watching on Docker Desktop for macOS.
-- On startup, the API container runs `prisma migrate deploy`, then `npm run dev`.
-- The frontend service runs **Vite in dev mode** (`npm run dev`) for hot reload; production client builds (`cd client && npm run build`) are still separate from this Compose file.
-
-Optional sample data:
-
-```bash
-docker compose exec server npm run seed
-```
-
-Uncomment the `postgres` `ports` section in `docker-compose.yml` if you need to reach Postgres from tools on your host defaulting to localhost.
-
-To install Node and Postgres on your machine instead, follow the numbered steps below.
-
 ### 2. Set up environment variables
 
 ```bash
-# Without Docker — per-package env files
 cp server/.env.example server/.env
 cp client/.env.example client/.env
-
-# Docker Compose — single consolidated file at the repo root
-cp .env.example .env
 ```
 
-Fill values as described below (Compose uses `.env`; per-package copies use `server/.env` and `client/.env`).
+Fill values as described below. You need a running PostgreSQL instance reachable via `DATABASE_URL`.
 
 ### 3. Install dependencies
 
@@ -200,13 +166,10 @@ Open **http://localhost:5173** and you're in!
 
 ## Environment Variables
 
-For Docker Compose, use the **repo root [`.env.example`](.env.example)** as the master template (`cp .env.example .env`).
-
-### Server (`server/.env` or root `.env` with Compose)
+### Server (`server/.env`)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `REDIS_URL` | No (required in production) | Redis connection string — without it rate limiters use per-process in-memory stores; the server **refuses to start** in `NODE_ENV=production` without this set |
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `JWT_SECRET` | Yes | Random secret for JWT signing (64+ chars recommended) |
 | `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID |
@@ -228,7 +191,7 @@ For Docker Compose, use the **repo root [`.env.example`](.env.example)** as the 
 | `JUDGE0_RAPIDAPI_KEY_1` | No | Judge0 key for code execution |
 | `EXTERNAL_JOB_API_KEY` | No | API key for external job ingest endpoint |
 
-> Only `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GEMINI_API_KEY`, and `ALLOWED_ORIGINS` are required to run the app locally. `REDIS_URL` is strongly recommended for production (see note above). Other services degrade gracefully.
+> Only `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GEMINI_API_KEY`, and `ALLOWED_ORIGINS` are required to run the app locally. Other services degrade gracefully.
 
 ### Client (`client/.env`, or root `.env` — only `VITE_*` vars are exposed to Vite)
 
@@ -243,8 +206,7 @@ For Docker Compose, use the **repo root [`.env.example`](.env.example)** as the 
 
 ```
 InternHack/
-├── docker-compose.yml        # Postgres + API + client (dev, hot reload)
-├── .env.example              # Compose + combined env documentation
+├── .env.example              # Combined env documentation
 ├── client/                   # React frontend (Vite)
 │   ├── src/
 │   │   ├── components/       # Shared UI components

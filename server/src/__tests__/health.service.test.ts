@@ -1,18 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { checkDatabase, checkRedis, getReadiness } from "../module/health/health.service.js";
+import { checkDatabase, getReadiness } from "../module/health/health.service.js";
 import { prisma } from "../database/db.js";
-import { redis } from "../config/redis.js";
 import { shutdownManager } from "../utils/graceful-shutdown.js";
 
 vi.mock("../database/db.js", () => ({
   prisma: {
     $queryRawUnsafe: vi.fn(),
-  },
-}));
-
-vi.mock("../config/redis.js", () => ({
-  redis: {
-    ping: vi.fn(),
   },
 }));
 
@@ -35,34 +28,18 @@ describe("HealthService", () => {
     expect(res.error).toBe("Connection failed");
   });
 
-  it("should return up when Redis is reachable", async () => {
-    vi.mocked(redis!.ping).mockResolvedValueOnce("PONG");
-    const res = await checkRedis();
-    expect(res.status).toBe("up");
-  });
-
-  it("should return down when Redis ping throws", async () => {
-    vi.mocked(redis!.ping).mockRejectedValueOnce(new Error("Timeout"));
-    const res = await checkRedis();
-    expect(res.status).toBe("down");
-    expect(res.error).toBe("Timeout");
-  });
-
   it("getReadiness should return ready when DB is up and shutdown is false", async () => {
     vi.mocked(prisma.$queryRawUnsafe).mockResolvedValueOnce([]);
-    vi.mocked(redis!.ping).mockResolvedValueOnce("PONG");
     vi.spyOn(shutdownManager, "isShutdown").mockReturnValue(false);
 
     const res = await getReadiness();
     expect(res.status).toBe("ready");
     expect(res.checks.database.status).toBe("up");
-    expect(res.checks.redis.status).toBe("up");
     expect(res.checks.shutdownInProgress).toBe(false);
   });
 
   it("getReadiness should return not_ready when shutdown is in progress", async () => {
     vi.mocked(prisma.$queryRawUnsafe).mockResolvedValueOnce([]);
-    vi.mocked(redis!.ping).mockResolvedValueOnce("PONG");
     vi.spyOn(shutdownManager, "isShutdown").mockReturnValue(true);
 
     const res = await getReadiness();

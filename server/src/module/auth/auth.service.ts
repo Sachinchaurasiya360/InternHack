@@ -4,16 +4,11 @@ import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
-import { BadgeService } from "../badge/badge.service.js";
-import { UserService } from "../user/user.service.js";
 import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from "../../utils/cache.js";
-
-const userService = new UserService();
 
 // TTL shorter than S3 presigned URL expiry (S3 default â‰¥15 min)
 const PROFILE_TTL = 300;
 
-const badgeService = new BadgeService();
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
 import { createUniqueProfileSlug } from "../../lib/slug.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -55,7 +50,6 @@ const AUTH_USER_SELECT = {
   subscriptionPlan: true,
   subscriptionStatus: true,
   subscriptionEndDate: true,
-  ossTier: true,
 } as const;
 
 type AuthUser = Pick<User, keyof typeof AUTH_USER_SELECT>;
@@ -78,7 +72,6 @@ function buildAuthUser(user: AuthUser): AuthUser {
     subscriptionPlan: user.subscriptionPlan,
     subscriptionStatus: user.subscriptionStatus,
     subscriptionEndDate: user.subscriptionEndDate,
-    ossTier: user.ossTier,
   };
 }
 
@@ -204,9 +197,7 @@ export class AuthService {
         name: data.name,
         email: data.email,
         password: hashedPassword,
-        role: data.role,
-        company: data.company ?? null,
-        designation: data.designation ?? null,
+        role: "STUDENT",
         contactNo: data.contactNo ?? null,
       },
       select: AUTH_USER_SELECT,
@@ -228,36 +219,7 @@ export class AuthService {
       html: otpEmailHtml(user.name, otp),
     }).catch((err) => console.error("Failed to send OTP email:", err));
 
-    // Record referral conversion if a ref code was provided
-    if (data.ref) {
-      this.recordReferral(data.ref, user.id).catch((err) =>
-        console.error("Failed to record referral during registration:", err)
-      );
-    }
-
     return { user };
-  }
-
-  private async recordReferral(code: string, userId: number) {
-    try {
-      const link = await prisma.referralLink.findUnique({
-        where: { code },
-        select: { id: true },
-      });
-      if (!link) return;
-
-      try {
-        await prisma.referralConversion.upsert({
-          where: { referredUserId: userId },
-          update: {},
-          create: { referralLinkId: link.id, referredUserId: userId },
-        });
-      } catch (err: any) {
-        console.error("Failed to write referral conversion (likely duplicate/unique violation):", err);
-      }
-    } catch (err: any) {
-      console.error("Failed to record referral:", err);
-    }
   }
 
   async googleAuth(data: GoogleAuthInput) {
@@ -316,14 +278,6 @@ export class AuthService {
       throw new Error("Invalid Google token");
     }
 
-    // Block personal emails for recruiter signups
-    if (data.role === "RECRUITER") {
-      const domain = email.split("@")[1]?.toLowerCase();
-      if (domain && PERSONAL_EMAIL_DOMAINS.includes(domain)) {
-        throw new Error("Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.");
-      }
-    }
-
     // Check if user already exists
     let user = await prisma.user.findUnique({ where: { email } });
 
@@ -345,34 +299,14 @@ export class AuthService {
       const randomPassword = crypto.randomBytes(32).toString("hex");
       const hashedPassword = await hashPassword(randomPassword);
 
-      /**
-       * Derive a company name for recruiter accounts from the Google email domain.
-       * e.g. "jane@microsoft.com" → "Microsoft". Falls back to "Company" if
-       * the domain segment cannot be parsed.
-       */
-      let companyName: string | null = null;
-      if (data.role === "RECRUITER") {
-        const domain = email.split("@")[1];
-        if (domain) {
-          const domainName = domain.split(".")[0];
-          if (domainName) {
-            companyName = domainName.charAt(0).toUpperCase() + domainName.slice(1);
-          }
-        }
-        if (!companyName) {
-          companyName = "Company";
-        }
-      }
-
       user = await prisma.user.create({
         data: {
           name: name ?? email.split("@")[0] ?? "User",
           email,
           password: hashedPassword,
-          role: data.role ?? "STUDENT",
+          role: "STUDENT",
           profilePic: picture ?? null,
           isVerified: true,
-          company: companyName,
         },
       });
 
@@ -469,15 +403,11 @@ export class AuthService {
     githubUrl: true,
     portfolioUrl: true,
     leetcodeUrl: true,
-    jobStatus: true,
-    isProfilePublic: true,
     projects: true,
-    achievements: true,
     createdAt: true,
     subscriptionPlan: true,
     subscriptionStatus: true,
     subscriptionEndDate: true,
-    ossTier: true,
   } as const;
 
   async getProfile(userId: number) {
@@ -513,9 +443,6 @@ export class AuthService {
     if ("skills" in data) {
       updateData.skills = Array.isArray(data.skills) ? data.skills.map((s) => s.trim().toLowerCase()) : [];
     }
-    if ("jobStatus" in data) {
-      updateData.jobStatus = data.jobStatus || null;
-    }
     if ("projects" in data) {
       if (Array.isArray(data.projects)) {
         const dateRegex = /^\d{4}-(?:0[1-9]|1[0-2])$/;
@@ -545,21 +472,12 @@ export class AuthService {
         updateData.projects = [];
       }
     }
-    if ("achievements" in data) {
-      updateData.achievements = Array.isArray(data.achievements) ? data.achievements : [];
-    }
-    if ("isProfilePublic" in data) {
-      updateData.isProfilePublic = !!data.isProfilePublic;
-    }
 
     const user = await prisma.user.update({
       where: { id: userId },
       data: updateData,
       select: this.profileSelect,
     });
-
-    // Check profile_complete badge (fire-and-forget)
-    badgeService.checkAndAwardBadges(userId, "profile_complete").catch((err) => console.error("Badge check failed (profile_complete):", err));
 
     await signProfileMedia(user as Record<string, any>);
 
@@ -578,7 +496,7 @@ export class AuthService {
    * Fetch the public profile for a given identifier (slug or numeric id).
    *
    * DB query count per request:
-   *   CACHED  – 0 Prisma queries (served from Redis / in-process fallback)
+   *   CACHED  – 0 Prisma queries (served from the in-process cache)
    *   UNCACHED – 1-2 Prisma queries:
    *     • 1 × user.findUnique (by profileSlug)
    *     • +1 × user.findUnique (by id, only when slug lookup returns null and identifier is numeric)
@@ -587,7 +505,7 @@ export class AuthService {
    */
   async getPublicProfile(identifier: string, visitor?: { id: number; role: string }): Promise<{ profile: unknown; cacheHit: boolean }> {
     // Because public profiles vary by visitor authorization, include role in cache key.
-    const isVisitorAuthorized = visitor?.role === "ADMIN" || visitor?.role === "RECRUITER";
+    const isVisitorAuthorized = visitor?.role === "ADMIN";
     const cacheKey = `profile:public:${identifier}:${isVisitorAuthorized ? "auth" : "guest"}`;
     const cached = await cacheGet(cacheKey);
     if (cached) return { profile: cached, cacheHit: true };
@@ -596,11 +514,6 @@ export class AuthService {
       ...this.profileSelect,
       verifiedSkills: {
         select: { skillName: true, score: true, verifiedAt: true },
-      },
-      atsScores: {
-        select: { overallScore: true },
-        orderBy: { overallScore: "desc" as const },
-        take: 1,
       },
     };
 
@@ -623,23 +536,18 @@ export class AuthService {
 
     const isOwner = visitor?.id === user.id;
 
-    if (!user.isProfilePublic && !isOwner && !isVisitorAuthorized) {
+    if (!isOwner && !isVisitorAuthorized) {
       throw new Error("Profile is private");
     }
 
-    const { atsScores, ...rest } = user;
+    const rest = { ...user };
 
     await signProfileMedia(rest as Record<string, any>);
-
-    // Fetch lightweight badge display list — no heavy criteria JSON
-    const badges = await badgeService.getStudentBadgesDisplay(user.id);
 
     // Full view (includes email/contactNo). Only the owner and authorized
     // viewers ever receive this; it is never written to the shared guest key.
     const fullResult = {
       ...rest,
-      bestAtsScore: atsScores[0]?.overallScore ?? null,
-      badges,
     };
     // Guest-safe view: strip PII regardless of who triggered the request.
     const { email: _email, contactNo: _contactNo, ...guestRest } = fullResult as any;
@@ -652,13 +560,9 @@ export class AuthService {
       return { profile: fullResult, cacheHit: false };
     }
 
-    // Guest tier (this also covers the owner viewing their own profile via the
-    // public endpoint). Only cache PUBLIC profiles, and only the PII-stripped
-    // view — so an owner request can never poison the shared key with private
-    // data or contact details that a later anonymous visitor would read.
-    if (user.isProfilePublic) {
-      await cacheSet(cacheKey, guestResult, PROFILE_TTL);
-    }
+    // Only the owner reaches this point (non-owner, non-authorized visitors are
+    // rejected above). Return the owner's full view; never cache under the
+    // shared key so it can't be served to another visitor.
     return { profile: isOwner ? fullResult : guestResult, cacheHit: false };
   }
 
@@ -721,7 +625,6 @@ export class AuthService {
       select: AUTH_USER_SELECT,
     });
 
-    // Send welcome email (fire-and-forget) â€” temporarily disabled
     sendEmail({
       to: user.email,
       subject: "Welcome to InternHack!",

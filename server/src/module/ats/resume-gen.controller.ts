@@ -35,7 +35,6 @@ export class ResumeGenController {
             company: true,
             designation: true,
             projects: true,
-            achievements: true,
           },
         });
 
@@ -50,7 +49,6 @@ export class ResumeGenController {
             company: user.company,
             designation: user.designation,
             projects: (user.projects as UserProfile["projects"]) ?? [],
-            achievements: (user.achievements as UserProfile["achievements"]) ?? [],
           };
         }
       }

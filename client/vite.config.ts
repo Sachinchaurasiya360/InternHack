@@ -11,7 +11,6 @@ const PRERENDER_ROUTES = [
   '/login',
   '/register',
   '/forgot-password',
-  '/for-recruiters',
   '/terms',
   '/privacy',
   '/refund',

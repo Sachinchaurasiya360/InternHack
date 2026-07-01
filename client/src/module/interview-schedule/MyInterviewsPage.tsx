@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getInterviews, cancelInterview, updateInterview, scheduleInterview } from "./api";
-import toast from "../../../components/ui/toast";
+import toast from "../../components/ui/toast";
 import { format } from "date-fns";
 import { Calendar, Clock, Video, FileText, X, Check, Plus, Edit } from "lucide-react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../components/ui/button";
 
 interface Props {
   role: "RECRUITER" | "STUDENT";

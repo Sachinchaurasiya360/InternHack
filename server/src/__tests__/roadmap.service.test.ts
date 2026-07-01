@@ -320,7 +320,7 @@ describe("summarizeProgress", () => {
     expect(summary.hoursTotal).toBe(10);
   });
 
-  it("handles mixed statuses and excludes skipped topics from totals", () => {
+  it("handles mixed statuses and counts skipped topics toward completion", () => {
     const enrollment = makeEnrollment(
       [
         { id: 1, estimatedHours: 2 },
@@ -343,11 +343,12 @@ describe("summarizeProgress", () => {
     expect(summary.completedTopics).toBe(2);
     expect(summary.inProgressTopics).toBe(1);
     expect(summary.bookmarkedTopics).toBe(1);
-    // Skipped topic is removed from the denominator and from total hours.
-    expect(summary.totalTopics).toBe(4);
-    expect(summary.hoursTotal).toBe(8);
-    expect(summary.hoursDone).toBe(4);
-    expect(summary.percentComplete).toBe(50);
+    // Skipped topic stays in the denominator and counts as accounted-for, so a
+    // learner who completes every non-skipped topic still reaches 100%.
+    expect(summary.totalTopics).toBe(5);
+    expect(summary.hoursTotal).toBe(10);
+    expect(summary.hoursDone).toBe(6);
+    expect(summary.percentComplete).toBe(60);
   });
 
   it("returns a zeroed summary for an empty topic list", () => {

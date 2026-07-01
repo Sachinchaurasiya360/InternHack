@@ -25,7 +25,6 @@ export const submitReviewSchema = z.object({
 export const contributeCompanySchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().min(10).max(5000),
-  mission: z.string().max(2000).optional(),
   industry: z.string().min(1).max(100),
   size: z.enum(["STARTUP", "SMALL", "MEDIUM", "LARGE", "ENTERPRISE"]),
   city: z.string().min(1).max(100),

@@ -47,6 +47,19 @@ export class PeerMockInterviewController {
     }
   }
 
+  async getHistory(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+      const pairings = await service.getHistoryPairings(req.user.id);
+      res.json(pairings);
+    } catch (err: any) {
+      res.status(err.status || 500).json({ message: err.message || "Failed to fetch mock interview history" });
+    }
+  }
+
   async getPairingDetails(req: Request, res: Response) {
     try {
       if (!req.user) {

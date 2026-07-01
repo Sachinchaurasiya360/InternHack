@@ -13,31 +13,14 @@ export const studentRouter = Router();
 // All routes require authentication and STUDENT role
 studentRouter.use(authMiddleware, requireRole("STUDENT"));
 
-// Applications
-studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, res, next) => studentController.applyToJob(req, res, next));
-studentRouter.get("/jobs/:jobId/application-status", (req, res) => studentController.getApplicationStatusByJob(req, res));
+// Applications (external/admin-posted jobs only; internal recruiter jobs removed)
 studentRouter.get("/applications", (req, res) => studentController.getMyApplications(req, res));
-studentRouter.patch("/applications/:applicationId/notes", (req, res) => studentController.updateApplicationNotes(req, res));
-studentRouter.get("/applications/:applicationId", (req, res) => studentController.getApplicationDetail(req, res));
-studentRouter.get("/applications/:applicationId/calendar.ics", (req, res) => studentController.downloadCalendarEvent(req, res));
-studentRouter.delete("/applications/:applicationId", (req, res) => studentController.withdrawApplication(req, res));
 
 // External job applications
 studentRouter.post("/external-jobs/:adminJobId/apply", usageLimit("JOB_APPLICATION"), (req, res) => studentController.applyToExternalJob(req, res));
 studentRouter.get("/external-jobs/:adminJobId/status", (req, res) => studentController.getExternalApplicationStatus(req, res));
 studentRouter.patch("/external-applications/:applicationId/notes", (req, res) => studentController.updateExternalApplicationNotes(req, res));
 studentRouter.delete("/external-applications/:applicationId", (req, res) => studentController.deleteExternalApplication(req, res));
-
-// Round submissions
-studentRouter.get("/applications/:applicationId/rounds/:roundId", (req, res) => studentController.getRoundInfo(req, res));
-studentRouter.post("/applications/:applicationId/rounds/:roundId/submit", (req, res) => studentController.submitRound(req, res));
-studentRouter.put("/applications/:applicationId/rounds/:roundId/submit", (req, res) => studentController.submitRound(req, res));
-
-// Saved jobs (wishlist)
-studentRouter.get("/saved-jobs", (req, res) => studentController.getSavedJobs(req, res));
-studentRouter.post("/jobs/:jobId/save", (req, res) => studentController.saveJob(req, res));
-studentRouter.delete("/jobs/:jobId/save", (req, res) => studentController.unsaveJob(req, res));
-studentRouter.get("/jobs/:jobId/save", (req, res) => studentController.isJobSaved(req, res));
 
 // Mock interview
 studentRouter.get("/mock-interview", (req, res, next) => studentController.getMockInterviewInfo(req, res, next));

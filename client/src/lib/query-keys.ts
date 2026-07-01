@@ -33,7 +33,6 @@ export const queryKeys = {
   ats: {
     all: ["ats"] as const,
     usage: () => ["ats", "usage"] as const,
-    history: () => ["ats", "history"] as const,
   },
   coverLetter: {
     history: () => ["cover-letter", "history"] as const,
@@ -70,12 +69,6 @@ export const queryKeys = {
   // Stats
   stats: {
     landing: () => ["stats", "landing"] as const,
-  },
-
-  // Recruiter
-  recruiter: {
-    talentSearch: (params?: Record<string, string | number>) =>
-      ["recruiter", "talent-search", params] as const,
   },
 
   // GSoC
@@ -173,21 +166,6 @@ export const queryKeys = {
     status: (id: string | number) => ["external-job-status", id] as const,
   },
 
-  // Professors
-  professors: {
-    list: (params?: Record<string, string | number>) =>
-      ["professors", "list", params] as const,
-    stats: () => ["professors", "stats"] as const,
-  },
-
-  // Badges
-  badges: {
-    all: () => ["badges", "all"] as const,
-    my: () => ["badges", "my"] as const,
-    student: (id: number) => ["badges", "student", id] as const,
-    admin: (params?: Record<string, string | number>) =>
-      ["badges", "admin", params] as const,
-  },
 
   // Saved Candidates
   savedCandidates: {

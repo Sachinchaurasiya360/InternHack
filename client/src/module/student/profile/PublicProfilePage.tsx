@@ -3,18 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, MapPin, GraduationCap, Linkedin, Github, Globe,
-  ExternalLink, FileText, ShieldCheck, Trophy, FolderGit2, Briefcase, Calendar,
+  ExternalLink, FileText, ShieldCheck, FolderGit2, Briefcase, Calendar,
   Phone, Mail, Clock, User, Lock
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
-import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import GitHubStatsCard from "./GitHubStatsCard";
 import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
-import type { ProjectItem, AchievementItem, VerifiedSkill, BadgeDisplay } from "../../../lib/types";
+import type { ProjectItem, VerifiedSkill } from "../../../lib/types";
 
 interface PublicProfile {
   id: number;
@@ -34,25 +33,12 @@ interface PublicProfile {
   contactNo?: string;
   company?: string;
   designation?: string;
-  jobStatus?: string | null;
   projects: ProjectItem[];
-  achievements: AchievementItem[];
   resumes: string[];
   bestAtsScore: number | null;
   verifiedSkills: VerifiedSkill[];
   createdAt: string;
-  ossTier?: string;
-  badges: BadgeDisplay[];
 }
-
-// ─── TIER COLORS ────────────────────────────────────────────────
-const OSS_TIER_COLORS: Record<string, string> = {
-  "First Steps": "bg-stone-50 text-stone-600 border-stone-200",
-  "Contributor": "bg-stone-100 text-stone-700 border-stone-300",
-  "Active Contributor": "bg-stone-200 text-stone-800 border-stone-400",
-  "OSS Leader": "bg-stone-300 text-stone-900 border-stone-500",
-  "Ambassador": "bg-lime-400 text-stone-900 border-lime-500",
-};
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -62,15 +48,6 @@ const fadeInUp = {
     transition: { delay: i * 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
-
-function getJobStatusInfo(status: string | null | undefined) {
-  const map: Record<string, { label: string; cls: string }> = {
-    LOOKING: { label: "Looking for job", cls: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400" },
-    OPEN_TO_OFFER: { label: "Open to offer", cls: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400" },
-    NO_OFFER: { label: "No offer", cls: "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400" },
-  };
-  return status ? map[status] ?? null : null;
-}
 
 function getFileNameFromUrl(url: string): string {
   try {
@@ -135,7 +112,6 @@ export default function PublicProfilePage() {
   }
 
   const verifiedMap = new Map(profile.verifiedSkills.map((v) => [v.skillName.toLowerCase(), v]));
-  const jobStatusInfo = getJobStatusInfo(profile.jobStatus);
 
   return (
     <div className="relative pb-12 max-w-5xl mx-auto">
@@ -184,15 +160,6 @@ export default function PublicProfilePage() {
             <div className="pb-1 min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl font-bold text-gray-950 dark:text-white">{profile.name}</h1>
-                {jobStatusInfo && (
-                  <span className={`text-xs font-medium px-2.5 py-0.5 rounded-lg ${jobStatusInfo.cls}`}>{jobStatusInfo.label}</span>
-                )}
-                {profile.ossTier && (
-                  <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border ${OSS_TIER_COLORS[profile.ossTier] || OSS_TIER_COLORS["First Steps"]}`}>
-                    <Trophy className="w-3 h-3" />
-                    {profile.ossTier}
-                  </span>
-                )}
               </div>
               {(profile.designation || profile.company) && (
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
@@ -319,12 +286,6 @@ export default function PublicProfilePage() {
             </motion.div>
           )}
 
-          {/* Badges — uses compact list from profile payload, no separate API call */}
-          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
-            <BadgesSection badges={profile.badges} />
-          </motion.div>
-
           <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible">
             <GitHubStatsCard githubUrl={profile.githubUrl} compact />
           </motion.div>
@@ -375,30 +336,6 @@ export default function PublicProfilePage() {
                         {p.repoUrl && <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 dark:text-gray-400 hover:underline flex items-center gap-1"><Github className="w-3 h-3" /> Code</a>}
                       </div>
                     )}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Achievements */}
-          {profile.achievements.length > 0 && (
-            <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white mb-4 flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-rose-500" /> Achievements & Leadership
-              </h3>
-              <div className="space-y-3">
-                {profile.achievements.map((a) => (
-                  <div key={a.id} className="flex items-start gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                    <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center shrink-0">
-                      <Trophy className="w-4 h-4 text-rose-500 dark:text-rose-400" />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-sm font-semibold text-gray-950 dark:text-white">{a.title}</h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{a.description}</p>
-                      {a.date && <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 flex items-center gap-1"><Calendar className="w-3 h-3" /> {a.date}</p>}
-                    </div>
                   </div>
                 ))}
               </div>

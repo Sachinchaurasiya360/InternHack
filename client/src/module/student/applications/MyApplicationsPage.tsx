@@ -1,7 +1,6 @@
 import { formatDate } from "../../../lib/date-utils";
 import { FilterChip } from "../../../components/ui/FilterChip";
 import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
-import { BadgeProgressWidget } from "../opensource/components/BadgeProgressWidget";
 import { Link } from "react-router";
 import { useClearFilters } from "../../../hooks/useClearFilters";
 import { motion } from "framer-motion";
@@ -453,11 +452,6 @@ export default function MyApplicationsPage() {
 
       {/* Search */}
 
-      
-      <div className="mb-6">
-        <BadgeProgressWidget />
-      </div>
-      
 
       <DailyInterviewTipWidget />
       <div className="mb-5 relative">

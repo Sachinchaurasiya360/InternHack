@@ -1,6 +1,5 @@
 import { Router, type Request, type Response } from "express";
 import { runJobCleanup } from "./job-cleanup.cron.js";
-import { runAmbassadorEligibility } from "./ambassador-eligibility.cron.js";
 import { runDeadlineAlerts } from "./deadline-alerts.cron.js";
 import { runGithubContributionsSync } from "./github-contributions.cron.js";
 import { runAiPipelineDaily } from "./internhack-ai.cron.js";
@@ -53,7 +52,6 @@ interface CronJob {
 const LIGHT_JOBS: CronJob[] = [
   { name: "subscription-expiry", lockKey: "subscription-expiry", run: runSubscriptionExpiry },
   { name: "job-cleanup", lockKey: "job-cleanup", run: runJobCleanup },
-  { name: "ambassador-eligibility", lockKey: "ambassador-eligibility", run: runAmbassadorEligibility },
   { name: "deadline-alerts", lockKey: "deadline-alerts", run: runDeadlineAlerts },
   { name: "follow-up-emails", lockKey: "scheduled-emails-followup", run: runFollowUpEmails },
   { name: "scheduled-email-worker", lockKey: "scheduled-email-worker", run: drainScheduledEmails },
