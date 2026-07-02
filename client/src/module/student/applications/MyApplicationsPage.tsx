@@ -1,5 +1,4 @@
 import { formatDate } from "../../../lib/date-utils";
-import { FilterChip } from "../../../components/ui/FilterChip";
 import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
 import { Link } from "react-router";
 import { useClearFilters } from "../../../hooks/useClearFilters";
@@ -207,9 +206,6 @@ const STATUS_ORDER: Record<string, number> = {
   WITHDRAWN: 5,
 };
 
-const STATUS_TABS = ["ALL", "APPLIED", "IN_PROGRESS", "SHORTLISTED", "HIRED", "REJECTED", "WITHDRAWN"] as const;
-type StatusFilter = typeof STATUS_TABS[number];
-
 function sortApplications(
   apps: Application[],
   option: "newest" | "oldest" | "company" | "status"
@@ -231,18 +227,16 @@ export default function MyApplicationsPage() {
   const [page, setPage] = useState(1);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null);
   const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
   const clearFilters = useClearFilters([
     () => setSearch(""),
-    () => setStatusFilter("ALL"),
     () => setPage(1),
   ]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reset to first page when filters change
     setPage(1);
-  }, [debouncedSearch, statusFilter]);
+  }, [debouncedSearch]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.applications.mine(),
@@ -263,12 +257,8 @@ export default function MyApplicationsPage() {
         (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
 
-    if (statusFilter !== "ALL") {
-      base = base.filter(a => a.status === statusFilter);
-    }
-
     return sortApplications(base, sortOption);
-  }, [applications, debouncedSearch, sortOption, statusFilter]);
+  }, [applications, debouncedSearch, sortOption]);
 
   const filteredExternal = useMemo(() => {
     const base = !debouncedSearch.trim()
@@ -367,7 +357,6 @@ export default function MyApplicationsPage() {
   if (isLoading) return <LoadingScreen />;
 
   const hasSearch = search.trim().length > 0;
-  const isFiltered = hasSearch || statusFilter !== "ALL";
 
   return (
     <div className="relative pb-16">
@@ -409,28 +398,16 @@ export default function MyApplicationsPage() {
         </div>
         {totalAll > 0 && (
           <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-            {isFiltered ? "showing" : "total"}{" "}
+            {hasSearch ? "showing" : "total"}{" "}
             <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-              {isFiltered ? totalFiltered : totalAll}
+              {hasSearch ? totalFiltered : totalAll}
             </span>
-            {isFiltered && (
+            {hasSearch && (
               <span className="ml-1">of {totalAll}</span>
             )}
           </div>
         )}
       </motion.div>
-
-      {/* Status Filter Tabs */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        {STATUS_TABS.map((tab) => (
-          <FilterChip
-            key={tab}
-            label={tab.replace("_", " ")}
-            active={statusFilter === tab}
-            onClick={() => { setStatusFilter(tab); setPage(1); }}
-          />
-        ))}
-      </div>
 
       {/* Sort */}
       <div className="mb-4 flex items-center gap-2">
@@ -465,13 +442,13 @@ export default function MyApplicationsPage() {
         />
       </div>
 
-      {isFiltered && (
+      {hasSearch && (
         <div className="mb-6">
           <button
             onClick={clearFilters}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
           >
-            <X className="w-3 h-3" /> clear all filters
+            <X className="w-3 h-3" /> clear search
           </button>
         </div>
       )}
@@ -499,14 +476,14 @@ export default function MyApplicationsPage() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <EmptyState
             icon={<Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
-            title="No applications match your current filters"
+            title="No applications match your search"
             action={
               <button
                 type="button"
                 onClick={clearFilters}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer mt-2"
               >
-                Clear all filters
+                Clear search
               </button>
             }
           />

@@ -3,9 +3,15 @@ import { execSync } from "child_process";
 import * as net from "net";
 import * as path from "path";
 
-dotenv.config({
-  path: path.resolve(process.cwd(), "../.env"),
-});
+const envFiles = [
+  path.resolve(process.cwd(), "../.env"),
+  path.resolve(process.cwd(), ".env"),
+  path.resolve(process.cwd(), ".env.local"),
+];
+
+for (const envFile of envFiles) {
+  dotenv.config({ path: envFile, override: true });
+}
 
 let passed = 0;
 let failed = 0;
