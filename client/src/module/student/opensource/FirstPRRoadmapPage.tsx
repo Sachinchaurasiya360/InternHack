@@ -45,6 +45,7 @@ export default function FirstPRRoadmapPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuthStore();
   const [cert, setCert] = useState<Certificate | null>(null);
+  const [syncCount, setSyncCount] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -74,6 +75,7 @@ export default function FirstPRRoadmapPage() {
         return next;
       });
 
+      setSyncCount(c => c + 1);
       void patchFirstPRProgress(id, nextCompleted)
         .then(() => notifyLearningPathProgressChanged())
         .catch(() => {
@@ -85,7 +87,8 @@ export default function FirstPRRoadmapPage() {
           });
           notifyLearningPathProgressChanged();
           toast.error("Failed to update progress. Please try again.");
-        });
+        })
+        .finally(() => setSyncCount(c => c - 1));
     },
     [completed],
   );
@@ -97,12 +100,12 @@ export default function FirstPRRoadmapPage() {
   const currentStep = STEPS.find((s) => !completed.has(s.id));
 
   useEffect(() => {
-    if (allDone && !cert && user) {
+    if (allDone && !cert && user && syncCount === 0) {
       issueCertificate("First Pull Request Roadmap")
         .then(setCert)
         .catch(console.error);
     }
-  }, [allDone, cert, user]);
+  }, [allDone, cert, user, syncCount]);
 
   const completedMinutes = STEPS.filter((s) => completed.has(s.id)).reduce(
     (sum, s) => sum + (s.estimatedMinutes || 0),

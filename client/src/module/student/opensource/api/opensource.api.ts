@@ -40,6 +40,16 @@ export async function patchFirstPRProgress(stepId: string, completed: boolean): 
   return getCompletedStepIds(data);
 }
 
+export async function fetchGuideProgress(guideSlug: string): Promise<string[]> {
+  const { data } = await api.get<{ completedStepIds: string[] }>(`/opensource/guide-progress/${guideSlug}`);
+  return data.completedStepIds || [];
+}
+
+export async function patchGuideProgress(guideSlug: string, completedStepIds: string[]): Promise<string[]> {
+  const { data } = await api.patch<{ completedStepIds: string[] }>(`/opensource/guide-progress/${guideSlug}`, { completedStepIds });
+  return data.completedStepIds || [];
+}
+
 export interface Certificate {
   token: string;
   studentName: string;

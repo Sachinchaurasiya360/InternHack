@@ -9,7 +9,7 @@ import { canonicalUrl } from "../../../../lib/seo.utils";
 import GuideCompletionSection from "./GuideCompletionSection";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
 import { NextInPathCard } from "./NextInPathCard";
-import { issueCertificate, type Certificate } from "../api/opensource.api";
+import { issueCertificate, fetchGuideProgress, patchGuideProgress, type Certificate } from "../api/opensource.api";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { useEffect } from "react";
 
@@ -37,24 +37,64 @@ export default function GuideListPage({
   certificateGuideName,
   ogImage,
 }: Props) {
-  const [completed, setCompleted] = useState<Set<string>>(() => {
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [cert, setCert] = useState<Certificate | null>(null);
+  const [syncCount, setSyncCount] = useState(0);
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    let isMounted = true;
+    let localSet = new Set<string>();
     try {
       const stored = localStorage.getItem(storageKey);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch { return new Set(); }
-  });
-  const [cert, setCert] = useState<Certificate | null>(null);
-  const { user } = useAuthStore();
+      if (stored) localSet = new Set(JSON.parse(stored));
+    } catch {}
+
+    if (user) {
+      fetchGuideProgress(storageKey)
+        .then(async (serverCompleted) => {
+          if (!isMounted) return;
+          const serverSet = new Set(serverCompleted);
+          let changed = false;
+          localSet.forEach(id => {
+            if (!serverSet.has(id)) {
+              serverSet.add(id);
+              changed = true;
+            }
+          });
+          if (changed) {
+            try {
+              await patchGuideProgress(storageKey, Array.from(serverSet));
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          if (isMounted) setCompleted(serverSet);
+        })
+        .catch(() => {
+          if (isMounted) setCompleted(localSet);
+        });
+    } else {
+      setCompleted(localSet);
+    }
+    return () => { isMounted = false; };
+  }, [storageKey, user]);
 
   const toggle = useCallback((id: string) => {
     setCompleted((prev: Set<string>) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
+      if (user) {
+        setSyncCount(c => c + 1);
+        patchGuideProgress(storageKey, Array.from(next))
+          .catch(console.error)
+          .finally(() => setSyncCount(c => c - 1));
+      }
       notifyLearningPathProgressChanged();
       return next;
     });
-  }, [storageKey]);
+  }, [storageKey, user]);
 
   const totalSteps = steps.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
@@ -81,12 +121,12 @@ export default function GuideListPage({
   };
 
   useEffect(() => {
-    if (allDone && !cert && user) {
+    if (allDone && !cert && user && syncCount === 0) {
       issueCertificate(title)
         .then(setCert)
         .catch(console.error);
     }
-  }, [allDone, cert, title, user]);
+  }, [allDone, cert, title, user, syncCount]);
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
