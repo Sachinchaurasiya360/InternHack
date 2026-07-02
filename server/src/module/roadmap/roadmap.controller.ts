@@ -176,8 +176,12 @@ export async function enroll(req: Request, res: Response, next: NextFunction) {
         enrollmentId: enrollment.id,
       });
       if (full) {
+        const u = await prisma.user.findUnique({
+          where: { id: req.user!.id },
+          select: { name: true },
+        });
         const pdfBuffer = await generateRoadmapPdf({
-          user: { name: req.user!.email },
+          user: { name: u?.name ?? req.user!.email },
           roadmap: {
             title: full.roadmap.title,
             shortDescription: full.roadmap.shortDescription,
@@ -1429,3 +1433,4 @@ export async function getAiUsage(req: Request, res: Response, next: NextFunction
     next(err);
   }
 }
+
