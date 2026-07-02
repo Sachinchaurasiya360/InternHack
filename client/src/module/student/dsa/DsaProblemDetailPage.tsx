@@ -20,7 +20,8 @@ import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { breadcrumbSchema } from "../../../lib/structured-data";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { AiHintPanel } from "./components/AiHintPanel";
-import { sanitizeHtml, cleanHint } from "../../../lib/sanitize";
+import { cleanHint } from "../../../lib/sanitize";
+import { SafeHtml } from "../../../components/common/SafeHtml";
 import { DsaCodeEditor } from "./components/DsaCodeEditor";
 import { DsaTestResults } from "./components/DsaTestResults";
 import { DsaSubmissionHistory } from "./components/DsaSubmissionHistory";
@@ -456,9 +457,10 @@ export default function DsaProblemDetailPage() {
                 <div>
                   <SectionLabel>description</SectionLabel>
                   <div className="mt-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
-                    <div
+                    <SafeHtml
                       className="prose dark:prose-invert max-w-none text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-wrap"
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatDescription(problem.description)) }}
+                      html={formatDescription(problem.description)}
+                      method="sanitize-html"
                     />
                   </div>
                 </div>
@@ -476,9 +478,10 @@ export default function DsaProblemDetailPage() {
                 <div>
                   <SectionLabel>constraints</SectionLabel>
                   <div className="mt-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-4">
-                    <div
+                    <SafeHtml
                       className="text-sm text-stone-700 dark:text-stone-300 whitespace-pre-wrap leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatDescription(problem.constraints)) }}
+                      html={formatDescription(problem.constraints)}
+                      method="sanitize-html"
                     />
                   </div>
                 </div>
@@ -520,9 +523,10 @@ export default function DsaProblemDetailPage() {
                               transition={{ duration: 0.2 }}
                               className="overflow-hidden"
                             >
-                              <div
+                              <SafeHtml
                                 className="px-4 pb-4 pl-11 text-sm text-stone-700 dark:text-stone-300 leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanHint(hint)) }}
+                                html={cleanHint(hint)}
+                                method="sanitize-html"
                               />
                             </motion.div>
                           )}
