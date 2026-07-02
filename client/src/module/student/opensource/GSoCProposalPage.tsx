@@ -95,20 +95,18 @@ export default function GSoCProposalPage() {
   }, [user]);
 
   const toggle = useCallback((id: string) => {
-    setCompleted((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
-      if (user) {
-        setSyncCount(c => c + 1);
-        patchGuideProgress(STORAGE_KEY, Array.from(next))
-          .catch(console.error)
-          .finally(() => setSyncCount(c => c - 1));
-      }
-      notifyLearningPathProgressChanged();
-      return next;
-    });
-  }, [user]);
+    const next = new Set(completed);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
+    setCompleted(next);
+    notifyLearningPathProgressChanged();
+    if (user) {
+      setSyncCount(c => c + 1);
+      patchGuideProgress(STORAGE_KEY, Array.from(next))
+        .catch(console.error)
+        .finally(() => setSyncCount(c => c - 1));
+    }
+  }, [completed, user]);
 
   const totalSteps = STEPS.length;
   const pct = Math.round((completed.size / totalSteps) * 100);

@@ -81,20 +81,18 @@ export default function GuideListPage({
   }, [storageKey, user]);
 
   const toggle = useCallback((id: string) => {
-    setCompleted((prev: Set<string>) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
-      if (user) {
-        setSyncCount(c => c + 1);
-        patchGuideProgress(storageKey, Array.from(next))
-          .catch(console.error)
-          .finally(() => setSyncCount(c => c - 1));
-      }
-      notifyLearningPathProgressChanged();
-      return next;
-    });
-  }, [storageKey, user]);
+    const next = new Set(completed);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
+    setCompleted(next);
+    notifyLearningPathProgressChanged();
+    if (user) {
+      setSyncCount(c => c + 1);
+      patchGuideProgress(storageKey, Array.from(next))
+        .catch(console.error)
+        .finally(() => setSyncCount(c => c - 1));
+    }
+  }, [completed, storageKey, user]);
 
   const totalSteps = steps.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
