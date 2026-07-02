@@ -27,7 +27,7 @@ function ensureAuthenticated(req: Request, res: Response): NonNullable<Request["
 }
 
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   async register(req: Request, res: Response) {
     try {
@@ -38,7 +38,7 @@ export class AuthController {
       return res.status(201).json({ message: "Registration successful. Please verify your email to continue.", user: data.user });
     } catch (error) {
       if (error instanceof Error && error.message === "Email already registered") {
-        return res.status(201).json({ message: "Registration successful. Please verify your email to continue." });
+        return res.status(409).json({ message: "Email already registered" });
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -148,7 +148,7 @@ export class AuthController {
       // Pass visitor context (req.user) to the service so it can decide what to return
       const visitor = req.user ? { id: req.user.id, role: req.user.role } : undefined;
       const profile = await this.authService.getPublicProfile(identifier, visitor);
-      
+
       return res.status(200).json({ profile });
     } catch (error) {
       if (error instanceof Error) {
