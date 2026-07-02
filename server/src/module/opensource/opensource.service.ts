@@ -7,6 +7,12 @@ import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
+import {
+  CERTIFICATE_GUIDES,
+  FIRST_PR_STEP_IDS,
+  GUIDE_STEP_IDS,
+  hasCompletedAllSteps,
+} from "./guide-steps.constants.js";
 
 interface ListReposQuery {
   page: number;
@@ -722,29 +728,25 @@ export class OpensourceService {
     });
     if (!user) throw new Error("User not found");
 
-    const guideRequirements: Record<string, { type: 'first-pr' | 'guide', slug: string, requiredSteps: number }> = {
-      "First Pull Request Roadmap": { type: 'first-pr', slug: 'first-pr', requiredSteps: 9 },
-      "Git for Open Source": { type: 'guide', slug: 'git-cheatsheet-completed', requiredSteps: 7 },
-      "Reading a Codebase": { type: 'guide', slug: 'read-codebase-completed', requiredSteps: 8 },
-      "Hackathon Preparation Guide": { type: 'guide', slug: 'hackathon-guide-completed', requiredSteps: 10 },
-      "Communication Templates": { type: 'guide', slug: 'comm-templates-completed', requiredSteps: 6 },
-      "CI/CD Basics": { type: 'guide', slug: 'cicd-guide-completed', requiredSteps: 6 },
-      "GSoC Proposal Guide": { type: 'guide', slug: 'gsoc-proposal-roadmap-completed', requiredSteps: 9 },
-    };
-
-    const reqs = guideRequirements[guideName];
-    if (!reqs) {
+    const guide = CERTIFICATE_GUIDES[guideName];
+    if (!guide) {
       throw new Error(`Invalid guide name for certification: ${guideName}`);
     }
 
-    if (reqs.type === 'first-pr') {
+    // Verify against the canonical step ids, not just the array length: a
+    // client can submit arbitrary strings to the progress endpoint, so a
+    // length check alone is bypassable. Require every documented step.
+    if (guide.type === "first-pr") {
       const progress = await prisma.studentFirstPrProgress.findUnique({ where: { userId } });
-      if (!progress || progress.completedStepIds.length < reqs.requiredSteps) {
+      if (!progress || !hasCompletedAllSteps(FIRST_PR_STEP_IDS, progress.completedStepIds)) {
         throw new Error("You must complete all steps in the guide before claiming your certificate.");
       }
     } else {
-      const progress = await prisma.guideProgress.findUnique({ where: { userId_guideSlug: { userId, guideSlug: reqs.slug } } });
-      if (!progress || progress.completedStepIds.length < reqs.requiredSteps) {
+      const requiredStepIds = GUIDE_STEP_IDS[guide.slug];
+      const progress = await prisma.guideProgress.findUnique({
+        where: { userId_guideSlug: { userId, guideSlug: guide.slug } },
+      });
+      if (!progress || !hasCompletedAllSteps(requiredStepIds, progress.completedStepIds)) {
         throw new Error("You must complete all steps in the guide before claiming your certificate.");
       }
     }
