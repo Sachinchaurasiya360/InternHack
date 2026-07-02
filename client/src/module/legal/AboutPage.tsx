@@ -28,11 +28,10 @@ const features: FeatureItem[] = [
   { icon: FileText, title: "Resume Scoring", description: "ATS-friendly resume scoring and job matching so your profile actually gets seen." },
   { icon: Mic, title: "Mock Interviews", description: "Practice with AI-driven interview simulations and get real feedback before the real thing." },
   { icon: Search, title: "Job Discovery", description: "Find opportunities and track every application in one place, no more lost tabs." },
-  { icon: Briefcase, title: "Recruiter Tools", description: "Post jobs, manage candidates, and streamline entire hiring workflows with ease." },
-  { icon: LayoutDashboard, title: "Smart Dashboards", description: "Dedicated dashboards for students, recruiters, and admins, each built for their needs." },
-  { icon: GitMerge, title: "Hiring Workflows", description: "Streamlined multi-round interview processes that save time for both sides of the table." },
-  { icon: BarChart2, title: "Data-Driven Hiring", description: "Built to make hiring more accessible, efficient, and informed by real data." },
-  { icon: Users, title: "For Everyone", description: "Whether you are a student, recruiter, or admin, InternHack has a space built just for you." },
+  { icon: LayoutDashboard, title: "Smart Dashboards", description: "Dedicated dashboards for students and admins, each built for their needs." },
+  { icon: GitMerge, title: "Interview Prep", description: "Structured multi-round practice so you walk into every interview ready." },
+  { icon: BarChart2, title: "Data-Driven Prep", description: "Built to make placement preparation more accessible, efficient, and informed by real data." },
+  { icon: Users, title: "For Everyone", description: "Whether you are a student or admin, InternHack has a space built just for you." },
 ];
 
 const containerVariants: Variants = {
@@ -73,7 +72,7 @@ export default function AboutPage() {
     <div className="min-h-screen flex flex-col bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
       <SEO
         title="About Us"
-        description="Learn more about InternHack, the AI-powered career and hiring platform built for students and recruiters."
+        description="Learn more about InternHack, the AI-powered career platform built for students."
       />
       <Navbar />
 
@@ -106,9 +105,8 @@ export default function AboutPage() {
                 </span>
               </h1>
               <p className="mt-3 text-sm text-stone-500 max-w-xl">
-                InternHack is an AI-powered career and hiring platform that helps students
-                prepare for placements, practice interviews, and get placed, while giving
-                recruiters the tools to hire smarter.
+                InternHack is an AI-powered career platform that helps students
+                prepare for placements, practice interviews, and get placed.
               </p>
             </div>
           </motion.div>

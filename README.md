@@ -23,10 +23,8 @@
 - Provides resume scoring and job matching tools
 - Offers mock interview practice and learning resources
 - Supports job discovery and application tracking
-- Enables recruiters to manage job postings and candidates
-- Streamlines hiring workflows and interview processes
-- Includes dedicated dashboards for students, recruiters, and admins
-- Built to make hiring more accessible, efficient, and data-driven
+- Includes dedicated dashboards for students and admins
+- Built to make placement preparation more accessible, efficient, and data-driven
 
 Live at **[internhack.xyz](https://www.internhack.xyz)**
 
@@ -53,7 +51,7 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 
 ### Features for Students
 
-- **Job Board** — Browse recruiter-posted jobs with advanced search, filters, tags, and one-click applications.
+- **Job Board** — Browse curated and admin-posted jobs with advanced search, filters, tags, and one-click applications.
 - **External Job Listings** — Access curated opportunities aggregated from external platforms and updated regularly.
 - **AI Job Agent** — AI-powered assistant that recommends jobs based on user profiles, skills, and interests.
 - **ATS Resume Scorer** — Upload resumes and job descriptions to receive AI-generated compatibility scores and keyword gap analysis.
@@ -67,20 +65,10 @@ Live at **[internhack.xyz](https://www.internhack.xyz)**
 - **Application Tracker** — Monitor application progress from submission to interview rounds and final offers.
 - **Open Source Guide** — Step-by-step guidance for understanding codebases and contributing to open-source projects.
 
-### Features for Recruiters
-
-- **Recruiter Dashboard** — Centralized overview of job postings, applications, and hiring pipelines.
-- **Job Management** — Create and manage job postings with custom fields, interview workflows, and automated assessments.
-- **Multi-Round Hiring Workflow** — Conduct coding, DSA, HR, and system design interview rounds with structured evaluations.
-- **Application Review System** — Filter applicants, track candidate progress, and manage round-wise selection or rejection processes.
-- **ATS Resume Analysis** — Access AI-generated ATS scores and resume evaluations for better candidate screening.
-- **Talent Pool Management** — Save, organize, and manage promising candidates for future opportunities.
-- **Campus Recruitment Drives** — Plan and manage campus hiring campaigns efficiently.
-
 ### Features for Admins
 
 - **Admin Dashboard** — Monitor real-time platform statistics, user activity, and system performance.
-- **User & Job Management** — Manage users, recruiters, job postings, companies, and platform reviews.
+- **User & Job Management** — Manage users, job postings, companies, and platform reviews.
 - **External Job Management** — Create, manage, and moderate curated external job listings.
 - **AI Provider Management** — Configure and switch between multiple AI providers such as Gemini, Groq, and Claude.
 - **Content Management System** — Manage DSA problems, aptitude questions, skill assessments, hackathons, blogs, and learning resources.
@@ -214,7 +202,6 @@ InternHack/
 │   │   └── module/           # Feature modules
 │   │       ├── auth/         # Login, register, OAuth
 │   │       ├── student/      # Student dashboard, jobs, applications, learning
-│   │       ├── recruiter/    # Recruiter dashboard, job management
 │   │       └── admin/        # Admin panel, moderation
 │   └── public/               # Static assets
 │
@@ -223,8 +210,6 @@ InternHack/
 │   │   ├── module/           # Feature modules (routes → controller → service)
 │   │   │   ├── auth/         # Authentication
 │   │   │   ├── student/      # Student APIs
-│   │   │   ├── job/          # Job CRUD
-│   │   │   ├── recruiter/    # Recruiter APIs
 │   │   │   ├── admin/        # Admin APIs
 │   │   │   ├── ats/          # ATS resume scoring
 │   │   │   ├── job-agent/    # AI chat agent
@@ -263,7 +248,6 @@ module/
 | `/api/auth` | Login, Register, Google OAuth, OTP | Public |
 | `/api/jobs` | Job browsing and search | Public |
 | `/api/student` | Applications, profile, external job apply | Student |
-| `/api/recruiter` | Job management, hiring rounds, candidates | Recruiter |
 | `/api/admin` | Platform management, moderation | Admin |
 | `/api/ats` | ATS resume scoring | Student |
 | `/api/job-agent` | AI chat for job discovery | Student |

@@ -50,12 +50,6 @@ const testimonials = [
     name: "Rohan Patil",
     role: "Prof.Vishwaniketan",
   },
-  {
-    text: "As a recruiter, the HRMS tools streamlined our entire hiring pipeline. We reduced our time-to-hire by almost 40%.",
-    image: "https://randomuser.me/api/portraits/women/32.jpg",
-    name: "Meera Iyer",
-    role: "HR , Zoho",
-  },
 ];
 
 const firstColumn = testimonials.slice(0, 3);

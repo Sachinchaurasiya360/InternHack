@@ -5,7 +5,7 @@ import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import { SEO } from "../../../components/SEO";
 
-type RoleFilter = "ALL" | "STUDENT" | "RECRUITER" | "ADMIN";
+type RoleFilter = "ALL" | "STUDENT" | "ADMIN";
 type PlanFilter = "ALL" | "FREE" | "MONTHLY" | "YEARLY";
 type VerifiedFilter = "ALL" | "VERIFIED" | "UNVERIFIED";
 
@@ -92,7 +92,7 @@ export default function AdminBroadcastEmailPage() {
           <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5 space-y-4">
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Filters</h2>
             <Select label="Role" value={role} onChange={(v) => setRole(v as RoleFilter)}
-              options={[["ALL", "All users"], ["STUDENT", "Students"], ["RECRUITER", "Recruiters"], ["ADMIN", "Admins"]]} />
+              options={[["ALL", "All users"], ["STUDENT", "Students"], ["ADMIN", "Admins"]]} />
             <Select label="Subscription" value={plan} onChange={(v) => setPlan(v as PlanFilter)}
               options={[["ALL", "All plans"], ["FREE", "Free"], ["MONTHLY", "Monthly"], ["YEARLY", "Yearly"]]} />
             <Select label="Verification" value={verified} onChange={(v) => setVerified(v as VerifiedFilter)}

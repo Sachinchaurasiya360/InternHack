@@ -535,7 +535,7 @@ export default function AptitudeCompaniesPage() {
           <div className="min-w-0">
             <Kicker label={`companies / ${search ? "filtered" : "all"}`} />
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-              Pick a recruiter
+              Pick a company
             </h2>
           </div>
           <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block tabular-nums">

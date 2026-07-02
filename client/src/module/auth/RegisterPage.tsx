@@ -562,7 +562,7 @@ function AuthPromoPanel() {
           <span className="text-stone-500">Land the offer.</span>
         </motion.h2>
         <p className="mt-6 text-base text-stone-400 leading-relaxed">
-          AI ATS scorer, LaTeX builder, 11 coding tracks, 300+ interview questions, and a direct line to recruiters. All free for students.
+          AI ATS scorer, LaTeX builder, 11 coding tracks, and 300+ interview questions. All free for students.
         </p>
 
         <div className="mt-12 grid grid-cols-3 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden">

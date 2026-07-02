@@ -86,7 +86,6 @@ export default function UsersListPage() {
         >
           <option value="">All Roles</option>
           <option value="STUDENT">Students</option>
-          <option value="RECRUITER">Recruiters</option>
           <option value="ADMIN">Admins</option>
         </select>
       </div>
@@ -178,7 +177,6 @@ export default function UsersListPage() {
 function getRoleBadge(role: string) {
   switch (role) {
     case "STUDENT": return "bg-blue-900/50 text-blue-400";
-    case "RECRUITER": return "bg-purple-900/50 text-purple-400";
     case "ADMIN": return "bg-red-900/50 text-red-400";
     default: return "bg-gray-800 text-gray-400";
   }

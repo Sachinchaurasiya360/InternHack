@@ -29,7 +29,7 @@ function log(section: string, count: number) {
   console.log(`  ✓ ${section}: ${count} records`);
 }
 
-// ─── 1. Users (Admin + Recruiter + Students) ─────────────────────────
+// ─── 1. Users (Admin + Students) ─────────────────────────
 async function seedUsers() {
   const password = await hashPassword("Test@1234");
 

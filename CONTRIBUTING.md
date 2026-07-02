@@ -124,7 +124,6 @@ npm run seed
 > | Email | Password | Role | Plan | Notes |
 > |---|---|---|---|---|
 > | `admin@internhack.xyz` | `Test@1234` | Admin | Free | Super-admin with full dashboard access |
-> | `recruiter@internhack.xyz` | `Test@1234` | Recruiter | Free | Hiring Manager at TechCorp — can post and manage jobs |
 > | `aarav@example.com` | `Test@1234` | Student | Free | IIT Delhi, JavaScript/React/Node.js |
 > | `priya@example.com` | `Test@1234` | Student | Free | NIT Trichy, Python/Django/ML |
 > | `rohan@example.com` | `Test@1234` | Student | Free | BITS Pilani, Java/Spring Boot/AWS |
@@ -256,7 +255,7 @@ git push origin feat/your-feature-name
 
 1. Create the page component in `client/src/module/<area>/<PageName>.tsx`
 2. Add a lazy import in `client/src/App.tsx`
-3. Add the route in the appropriate route group (public / student / recruiter / admin)
+3. Add the route in the appropriate route group (public / student / admin)
 
 ### Modifying the database
 

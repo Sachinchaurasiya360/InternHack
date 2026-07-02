@@ -345,7 +345,7 @@ export class AuthService {
       throw new Error("Invalid email or password");
     }
 
-    // Block unverified students/recruiters, admins skip verification
+    // Block unverified students, admins skip verification
     if (!user.isVerified && user.role !== "ADMIN") {
       const { otp, hashedOtp, expiresAt } = await generateOtp();
       await prisma.user.update({
@@ -553,7 +553,7 @@ export class AuthService {
     const { email: _email, contactNo: _contactNo, ...guestRest } = fullResult as any;
     const guestResult = guestRest;
 
-    // Authorized tier (admin/recruiter): cache and return the full view under
+    // Authorized tier (admin): cache and return the full view under
     // the ":auth" key, which is only ever served back to authorized viewers.
     if (isVisitorAuthorized) {
       await cacheSet(cacheKey, fullResult, PROFILE_TTL);
