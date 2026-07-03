@@ -33,6 +33,7 @@ export const guestPresignRequestSchema = z.object({
   fileType: z.literal("application/pdf", {
     message: "Only PDF resumes are allowed for guest uploads",
   }),
+});
 // Schema for uploading profile picture with S3 URL validation
 export const uploadProfilePicSchema = z.object({
   fileUrl: z.string().url("Valid file URL required").refine(
