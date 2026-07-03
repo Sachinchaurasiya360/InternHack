@@ -102,6 +102,10 @@ export const UPLOAD_POLICIES: Record<string, UploadPolicy> = {
     allowedMimeTypes: ["application/pdf"],
     maxSize: 5 * 1024 * 1024, // 5 MB
   },
+  "guest-resumes": {
+    allowedMimeTypes: ["application/pdf"],
+    maxSize: 5 * 1024 * 1024, // 5 MB
+  },
   "profile-pics": {
     allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
     maxSize: 5 * 1024 * 1024, // 5 MB

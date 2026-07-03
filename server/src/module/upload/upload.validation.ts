@@ -13,6 +13,13 @@ export const presignRequestSchema = z.object({
   }),
 });
 
+export const guestPresignRequestSchema = z.object({
+  fileName: z.string().min(1, "fileName is required"),
+  fileType: z.literal("application/pdf", {
+    message: "Only PDF resumes are allowed for guest uploads",
+  }),
+});
+
 export const validateBody = (schema: z.ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body);

@@ -37,6 +37,7 @@ const ScrapedJobDetailPage = lazyWithRetry(() => import("./module/scraped-jobs/S
 const CompanyListPage = lazyWithRetry(() => import("./module/student/companies/CompanyListPage"));
 const CompanyDetailPage = lazyWithRetry(() => import("./module/student/companies/CompanyDetailPage"));
 const PublicAtsPage = lazyWithRetry(() => import("./module/student/ats/PublicAtsPage"));
+const PublicAtsTryPage = lazyWithRetry(() => import("./module/student/ats/PublicAtsTryPage"));
 const GrantsPage = lazyWithRetry(() => import("./module/student/grants/GrantsPage"));
 const PublicOpenSourcePage = lazyWithRetry(() => import("./module/student/opensource/PublicOpenSourcePage"));
 const BlogListPage = lazyWithRetry(() => import("./module/blog/BlogListPage"));
@@ -334,6 +335,7 @@ function App() {
 
 
  <Route path="/ats-score" element={<PublicAtsPage />} />
+ <Route path="/ats-score/try" element={<PublicAtsTryPage />} />
 <Route path="/test-cover-letter" element={<CoverLetterPage />} />
 <Route path="/grants" element={<GrantsPage />} />
 

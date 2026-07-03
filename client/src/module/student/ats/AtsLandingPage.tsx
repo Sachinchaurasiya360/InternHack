@@ -207,7 +207,7 @@ export default function AtsLandingPage() {
   const navigate = useNavigate();
 
   const handleTryNow = () => {
-    navigate(isAuthenticated ? "/student/ats/score" : "/login");
+    navigate(isAuthenticated ? "/student/ats/score" : "/ats-score/try");
   };
 
   return (

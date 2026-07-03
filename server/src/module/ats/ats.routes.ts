@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { AtsController } from "./ats.controller.js";
 import { AtsService } from "./ats.service.js";
 import { CoverLetterController } from "./cover-letter.controller.js";
@@ -10,6 +11,7 @@ import { LatexChatService } from "./latex-chat.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
+import { createRateLimitStore } from "../../utils/rate-limit-store.js";
 
 const atsService = new AtsService();
 const atsController = new AtsController(atsService);
@@ -24,6 +26,24 @@ const latexChatService = new LatexChatService();
 const latexChatController = new LatexChatController(latexChatService);
 
 export const atsRouter = Router();
+
+const guestScoreRateLimit = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000,
+  max: 2,
+  message: {
+    message: "Daily guest limit reached. Create a free account for more ATS scores.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRateLimitStore("ats-guest-score"),
+});
+
+// Public guest scoring (before auth middleware)
+atsRouter.post(
+  "/guest/score",
+  guestScoreRateLimit,
+  (req, res, next) => atsController.scoreResumeGuest(req, res, next),
+);
 
 atsRouter.use(authMiddleware, requireRole("STUDENT"));
 

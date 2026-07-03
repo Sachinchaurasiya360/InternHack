@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import type { AtsService } from "./ats.service.js";
-import { applySuggestionsSchema, scoreResumeSchema } from "./ats.validation.js";
+import { applySuggestionsSchema, scoreResumeSchema, guestScoreResumeSchema } from "./ats.validation.js";
+import { hashGuestIp } from "../../utils/guest-ip.utils.js";
 import { prisma } from "../../database/db.js";
 import { DAILY_LIMITS, getPlanTier } from "../../config/usage-limits.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -14,6 +15,42 @@ const FRESH_SCORE_WINDOW_MS = 30_000;
 
 export class AtsController {
   constructor(private readonly atsService: AtsService) {}
+
+  async scoreResumeGuest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const ipHash = hashGuestIp(req);
+      const result = guestScoreResumeSchema(ipHash).safeParse(req.body);
+      if (!result.success) {
+        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+        return;
+      }
+
+      const score = await this.atsService.scoreResumeGuest(ipHash, result.data);
+
+      res.json({
+        message: "Resume scored successfully",
+        score,
+        guest: true,
+        usage: { used: 1, limit: 2 },
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message.includes("Could not extract")) {
+          res.status(400).json({ message: err.message });
+          return;
+        }
+        if (err.message.includes("Invalid resume URL") || err.message.includes("does not belong")) {
+          res.status(403).json({ message: err.message });
+          return;
+        }
+        if (err.message.includes("ENOENT")) {
+          res.status(404).json({ message: "Resume file not found. Please upload again." });
+          return;
+        }
+      }
+      next(err);
+    }
+  }
 
   async scoreResume(req: Request, res: Response, next: NextFunction) {
     try {

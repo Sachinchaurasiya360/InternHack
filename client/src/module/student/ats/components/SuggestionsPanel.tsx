@@ -9,6 +9,7 @@ export function SuggestionsPanel({
   onSelectAll,
   onApply,
   isApplying,
+  readOnly = false,
 }: {
   suggestions: string[];
   selectedSuggestions: Set<number>;
@@ -16,6 +17,7 @@ export function SuggestionsPanel({
   onSelectAll: (checked: boolean) => void;
   onApply: () => void;
   isApplying: boolean;
+  readOnly?: boolean;
 }) {
   return (
     <motion.div
@@ -27,6 +29,7 @@ export function SuggestionsPanel({
     >
       {suggestions.length > 0 ? (
         <div className="space-y-4">
+          {!readOnly && (
           <div className="flex items-center justify-between px-1">
             <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300 cursor-pointer">
               <input
@@ -41,12 +44,14 @@ export function SuggestionsPanel({
               {selectedSuggestions.size} selected
             </span>
           </div>
+          )}
           <div className="divide-y divide-stone-200 dark:divide-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
             {suggestions.map((s, i) => (
               <label
                 key={i}
-                className="group flex items-start gap-4 px-5 py-4 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors cursor-pointer"
+                className={`group flex items-start gap-4 px-5 py-4 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-950/60 transition-colors ${readOnly ? "" : "cursor-pointer"}`}
               >
+                {!readOnly && (
                 <div className="pt-0.5">
                   <input
                     type="checkbox"
@@ -60,6 +65,7 @@ export function SuggestionsPanel({
                     className="w-4 h-4 rounded border-stone-300 text-lime-500 focus:ring-lime-500 cursor-pointer"
                   />
                 </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed">
                     {s}
@@ -68,6 +74,7 @@ export function SuggestionsPanel({
               </label>
             ))}
           </div>
+          {!readOnly && (
           <Button
             type="button"
             variant="primary"
@@ -86,6 +93,7 @@ export function SuggestionsPanel({
               </>
             )}
           </Button>
+          )}
         </div>
       ) : (
         <div className="flex flex-col items-center py-10 text-center">
