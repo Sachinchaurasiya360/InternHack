@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
+import { buildUnsubscribeUrl } from "../utils/unsubscribe.utils.js";
 import { roadmapWeeklyDigestEmailHtml } from "../utils/email-templates.js";
 import { withAdvisoryLock } from "../utils/cron-lock.js";
 
@@ -206,6 +207,7 @@ export async function sendWeeklyRoadmapDigests(): Promise<void> {
           name: digest.user.name,
           roadmaps: digest.roadmaps,
         }),
+        unsubscribeUrl: buildUnsubscribeUrl(digest.user.id),
       });
     } catch (err) {
       console.error(`[RoadmapDigest] Failed to send digest to user ${digest.user.id}:`, err);

@@ -24,10 +24,6 @@ vi.mock("../database/db.js", () => ({
       deleteMany: vi.fn(),
       createMany: vi.fn(),
     },
-    opensourceStreak: {
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
-    },
     $transaction: vi.fn(),
   },
 }));

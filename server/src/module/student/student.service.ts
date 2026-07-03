@@ -1,6 +1,7 @@
 import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
 import { sendEmail } from "../../utils/email.utils.js";
+import { buildUnsubscribeUrl } from "../../utils/unsubscribe.utils.js";
 import { milestoneEmailHtml } from "../../utils/email-templates.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -216,9 +217,9 @@ Rules:
     if (total === 10) {
       const user = await prisma.user.findUnique({
         where: { id: studentId },
-        select: { name: true, email: true },
+        select: { name: true, email: true, unsubscribeDigest: true },
       });
-      if (user) {
+      if (user && !user.unsubscribeDigest) {
         const html = milestoneEmailHtml(
           user.name,
           "10 Applications Sent!",
@@ -228,7 +229,12 @@ Rules:
           "Browse More Jobs",
           "https://www.internhack.xyz/jobs",
         );
-        sendEmail({ to: user.email, subject: "You hit 10 applications! Keep it up", html }).catch((err) => console.error("Failed to send milestone email:", err));
+        sendEmail({
+          to: user.email,
+          subject: "You hit 10 applications! Keep it up",
+          html,
+          unsubscribeUrl: buildUnsubscribeUrl(studentId),
+        }).catch((err) => console.error("Failed to send milestone email:", err));
       }
     }
   }

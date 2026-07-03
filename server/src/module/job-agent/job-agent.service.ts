@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "../../database/db.js";
 import { jobIndexService } from "../job-index/job-index.service.js";
 import { sendEmail } from "../../utils/email.utils.js";
+import { buildUnsubscribeUrl } from "../../utils/unsubscribe.utils.js";
 import { jobAgentJobsEmailHtml, jobAgentJobsEmailText } from "../../utils/email-templates.js";
 
 const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]!);
@@ -542,6 +543,7 @@ export class JobAgentService {
         subject,
         html: jobAgentJobsEmailHtml(emailArgs),
         text: jobAgentJobsEmailText(emailArgs),
+        unsubscribeUrl: buildUnsubscribeUrl(userId),
       });
     } catch (err) {
       console.error("[JobAgent] Failed to send jobs email:", err);
