@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router";
 import { ArrowRight, GraduationCap, Briefcase, Target } from "lucide-react";
+import { useAuthStore } from "../lib/auth.store";
 
 const REVEAL_IN_VIEW = { opacity: 1, y: 0 };
 const REVEAL_VIEWPORT = { once: true };
@@ -51,6 +52,9 @@ const AUDIENCES = [
 ];
 
 export function AudienceSection() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const ctaHref = isAuthenticated ? "/student/applications" : "/register";
+
   return (
     <section className="relative py-24 md:py-32 bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
       <div className="max-w-6xl mx-auto px-6">
@@ -120,7 +124,7 @@ export function AudienceSection() {
                 ))}
               </ul>
 
-              <Link to={a.cta.href} className="no-underline mt-10">
+              <Link to={ctaHref} className="no-underline mt-10">
                 <span className="inline-flex items-center gap-2 text-sm font-bold text-stone-900 dark:text-stone-50 border-b border-stone-900 dark:border-stone-50 pb-0.5 group-hover:gap-3 transition-all duration-300">
                   {a.cta.label}
                   <ArrowRight className="w-4 h-4" />

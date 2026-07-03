@@ -43,8 +43,6 @@ This guide walks you through everything from setting up the project to submittin
 | PostgreSQL | 14+ | Database |
 | Git | 2.30+ | Version control |
 
-**Docker Compose shortcut:** You can run Postgres + API + client with only Docker by following the README “Docker Compose (alternative)” section (root `.env.example` plus `docker compose up`). That path does **not** use Redis — the app stack is PostgreSQL only.
-
 You'll also need:
 - A **Google Cloud Console** project for OAuth (client ID)
 - A **Gemini API key** ([free at aistudio.google.com](https://aistudio.google.com/apikey))
@@ -59,13 +57,7 @@ cd InternHack
 
 ### Step 2: Set up environment variables
 
-**Docker Compose:** copy the template at the repo root:
-
-```bash
-cp .env.example .env
-```
-
-**Classic setup:** separate client and server copies:
+Copy the client and server templates:
 
 ```bash
 cp server/.env.example server/.env
@@ -120,27 +112,24 @@ npx prisma db push
 ```bash
 cd server
 
-# Seed everything, users, DSA, aptitude, companies, badges, skill tests,
+# Seed everything: users, DSA, aptitude, companies, badges, skill tests,
 # hackathons, open-source repos, gov internships, and blog posts
 npm run seed
-
-# Or seed only an admin + recruiter account
-# (set ADMIN_EMAIL and ADMIN_PASSWORD in .env first)
-npm run seed:admin
 ```
 
-> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent, you can run it multiple times without creating duplicates. Default login for all seeded users is `Test@1234`.
+> The unified seed script lives at `server/src/database/seeds/seed.ts`. It is idempotent — safe to run multiple times without creating duplicates.
 >
-> Seeded accounts:
-> | Email | Role |
-> |---|---|
-> | `admin@internhack.xyz` | Admin |
-> | `recruiter@internhack.xyz` | Recruiter |
-> | `aarav@example.com` | Student |
-> | `priya@example.com` | Student |
-> | `rohan@example.com` | Student |
-> | `sneha@example.com` | Student |
-> | `arjun@example.com` | Student |
+> **Seeded accounts** (password for all: `Test@1234`):
+>
+> | Email | Password | Role | Plan | Notes |
+> |---|---|---|---|---|
+> | `admin@internhack.xyz` | `Test@1234` | Admin | Free | Super-admin with full dashboard access |
+> | `aarav@example.com` | `Test@1234` | Student | Free | IIT Delhi, JavaScript/React/Node.js |
+> | `priya@example.com` | `Test@1234` | Student | Free | NIT Trichy, Python/Django/ML |
+> | `rohan@example.com` | `Test@1234` | Student | Free | BITS Pilani, Java/Spring Boot/AWS |
+> | `sneha@example.com` | `Test@1234` | Student | Free | IIIT Hyderabad, TypeScript/React/PostgreSQL |
+> | `arjun@example.com` | `Test@1234` | Student | Free | VIT Vellore, C++/DSA |
+> | `premium@example.com` | `Test@1234` | Student | **Monthly (Active)** | Use this account to test all premium/subscription-gated features (AI roadmaps, cover letter generation, mock interviews, etc.) |
 
 ### Step 6: Start the dev servers
 
@@ -197,6 +186,10 @@ client/src/module/<area>/
 
 Shared components live in `client/src/components/`. State management uses Zustand (`lib/*.store.ts`) and data fetching uses React Query.
 
+### AI Assistant Context Files
+
+This repository includes optional AI assistant context files (`CLAUDE.md` and `.claude/`) designed for Claude Code users. These files provide project-specific development context and are not required for contributors using other tools or workflows.
+
 ### Key files to read first
 
 | File | What it tells you |
@@ -204,6 +197,7 @@ Shared components live in `client/src/components/`. State management uses Zustan
 | `server/src/index.ts` | All API routes, middleware order, CORS setup |
 | `client/src/App.tsx` | All frontend routes and lazy-loaded pages |
 | `server/src/database/prisma/schema/base.prisma` | Core database models |
+| `docs/database-schema.md` | [Visual ER diagram](../docs/database-schema.md) of all models and their relationships |
 | `client/src/lib/types.ts` | Client-side TypeScript interfaces |
 | `.claude/REPO_MAP.md` | Detailed map of every module and file |
 
@@ -261,7 +255,7 @@ git push origin feat/your-feature-name
 
 1. Create the page component in `client/src/module/<area>/<PageName>.tsx`
 2. Add a lazy import in `client/src/App.tsx`
-3. Add the route in the appropriate route group (public / student / recruiter / admin)
+3. Add the route in the appropriate route group (public / student / admin)
 
 ### Modifying the database
 
@@ -356,8 +350,13 @@ Fixes #
 ## Testing
 Explain how you tested it.
 
-## Screenshots
-(if applicable)
+## Screenshots / Video
+
+> **REQUIRED for any UI change.** PRs that modify visible UI (layout, components, styles, pages) will be rejected without this.
+
+<!-- Add a screenshot or screen recording below. Drag and drop images/GIFs here, or paste a video link. -->
+
+_No UI changes in this PR_ (delete this line if you are making UI changes)
 
 ## Checklist
 - [ ] Code follows project guidelines
@@ -365,7 +364,7 @@ Explain how you tested it.
 - [ ] Tested manually (include steps above)
 - [ ] No `.env`, credentials, or `node_modules` committed
 - [ ] Docs updated (if needed)
-- [ ] Screenshots added for UI changes (if applicable)
+- [ ] **Screenshot or video attached for every UI change** (PR will be rejected if missing)
 ```
 
 ### Review process

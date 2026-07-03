@@ -9,31 +9,29 @@ import {
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { AptitudeTopicDetail } from "../../../lib/types";
+import type { AptitudeAnswerResult, AptitudeDifficultyLevel, AptitudeTopicDetail } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
+import { SafeHtml } from "../../../components/common/SafeHtml";
+import { GridBackground } from "../../../components/ui/GridBackground";
+import { NotesPanel } from "../../../components/learning/NotesPanel";
 
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<img[^>]*src=["']\/[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<img[^>]*src=["'][^"']*indiabix[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, "")
-    .replace(/Video\s*Explanation[\s\S]*?(?=<\/div>|$)/gi, "")
-    .replace(/<a[^>]*(?:youtube|youtu\.be|video)[^>]*>[\s\S]*?<\/a>/gi, "")
-    .replace(/\s*style=["'][^"']*["']/gi, "")
-    .replace(/<(div|span|p|font)\s*>\s*<\/\1>/gi, "")
-    .replace(/<\/?font[^>]*>/gi, "")
-    .replace(/\s*class=["'][^"']*["']/gi, "")
-    .trim();
-}
 
-interface QuestionResult {
-  correct: boolean;
-  correctAnswer: string;
-  explanation?: string;
+type QuestionResult = AptitudeAnswerResult;
+
+const DIFFICULTY_LABELS: Record<AptitudeDifficultyLevel, string> = {
+  EASY: "Easy",
+  MEDIUM: "Medium",
+  HARD: "Hard",
+};
+
+function difficultyToastMessage(change: "increased" | "decreased"): string {
+  return change === "increased"
+    ? "You're on a roll! Increasing difficulty..."
+    : "Let's practice some easier ones first.";
 }
 
 function MetaChip({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -94,6 +92,7 @@ export default function AptitudeTopicPage() {
   }, [timerRunning, topic?.questions.length]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentQ(0);
     setSubmitted(false);
     setResultsMap({});
@@ -115,21 +114,28 @@ export default function AptitudeTopicPage() {
     setSubmittingAll(true);
     setTimerRunning(false);
     try {
-      const results = await Promise.all(
-        toSubmit.map(q =>
-          api.post<QuestionResult>(
-            `/aptitude/questions/${q.id}/answer`,
-            { answer: selectedAnswers[q.id] }
-          ).then(r => ({ questionId: q.id, ...r.data }))
-        )
-      );
+      const results: Array<{ questionId: number } & QuestionResult> = [];
+
+      for (const q of toSubmit) {
+        const { data } = await api.post<QuestionResult>(
+          `/aptitude/questions/${q.id}/answer`,
+          { answer: selectedAnswers[q.id] },
+        );
+        results.push({ questionId: q.id, ...data });
+
+        if (data.difficultyChange) {
+          toast.info(difficultyToastMessage(data.difficultyChange));
+        }
+      }
 
       const map: Record<number, QuestionResult> = {};
-      results.forEach(r => { map[r.questionId] = r; });
+      results.forEach((r) => {
+        map[r.questionId] = r;
+      });
       setResultsMap(map);
       setSubmitted(true);
 
-      const correct = results.filter(r => r.correct).length;
+      const correct = results.filter((r) => r.correct).length;
       toast.success(`${correct}/${results.length} correct!`);
 
       queryClient.invalidateQueries({ queryKey: queryKeys.aptitude.topic(slug!) });
@@ -184,14 +190,7 @@ export default function AptitudeTopicPage() {
         canonicalUrl={canonicalUrl(`/learn/aptitude/${slug}/practice`)}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}
@@ -214,6 +213,12 @@ export default function AptitudeTopicPage() {
             )}
             <p className="mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
               page {topic.page} / {topic.totalPages} &middot; {topic.totalQuestions} total questions
+              {topic.currentDifficulty && (
+                <>
+                  {" "}
+                  &middot; level {DIFFICULTY_LABELS[topic.currentDifficulty].toLowerCase()}
+                </>
+              )}
             </p>
           </div>
           <div className="flex items-center gap-x-4 gap-y-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 flex-wrap">
@@ -293,9 +298,16 @@ export default function AptitudeTopicPage() {
           className="mb-5 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md"
         >
           <div className="flex items-center justify-between gap-4 mb-2.5">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
-              question {currentQ + 1} / {totalQ}
-            </span>
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+                question {currentQ + 1} / {totalQ}
+              </span>
+              {topic.currentDifficulty && (
+                <MetaChip className="text-lime-700 dark:text-lime-400 border-lime-300 dark:border-lime-900/60">
+                  {DIFFICULTY_LABELS[topic.currentDifficulty]} set
+                </MetaChip>
+              )}
+            </div>
             {!submitted ? (
               <span
                 className={`inline-flex items-center gap-1.5 text-xs font-mono font-bold tabular-nums ${
@@ -385,15 +397,18 @@ export default function AptitudeTopicPage() {
                 <span className="shrink-0 w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center text-[11px] font-mono font-bold tabular-nums text-stone-900 dark:text-stone-50">
                   {String(qNum).padStart(2, "0")}
                 </span>
-                <div
+                <SafeHtml
                   className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed flex-1 min-w-0 pt-1 wrap-break-word"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.question) }}
+                  html={q.question}
+                  method="sanitize-html"
                 />
               </div>
 
-              {/* Companies */}
+              {/* Meta */}
+              <div className="flex items-center gap-2 mb-5 ml-0 sm:ml-12 flex-wrap">
+                <MetaChip>{DIFFICULTY_LABELS[q.difficulty as AptitudeDifficultyLevel] ?? q.difficulty}</MetaChip>
               {q.companies.length > 0 && (
-                <div className="flex items-center gap-2 mb-5 ml-0 sm:ml-12 flex-wrap">
+                <>
                   <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
                     <Building2 className="w-3 h-3" />
                     asked at
@@ -404,8 +419,9 @@ export default function AptitudeTopicPage() {
                   {q.companies.length > 5 && (
                     <span className="text-[10px] font-mono text-stone-500">+{q.companies.length - 5}</span>
                   )}
-                </div>
+                </>
               )}
+              </div>
 
               {/* Options */}
               <div className="space-y-2 ml-0 sm:ml-12">
@@ -469,14 +485,19 @@ export default function AptitudeTopicPage() {
                     explanation
                   </div>
                   <div className="bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-white/10 rounded-md p-4">
-                    <div
+                    <SafeHtml
                       className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed"
-                      dangerouslySetInnerHTML={{
-                        __html: sanitizeHtml(resultsMap[q.id]?.explanation || q.explanation || ""),
-                      }}
+                      html={resultsMap[q.id]?.explanation || q.explanation || ""}
+                      method="sanitize-html"
                     />
                   </div>
                 </motion.div>
+              )}
+
+              {user && (
+                <div className="ml-0 sm:ml-12 mt-5 pt-5 border-t border-stone-200 dark:border-white/10">
+                  <NotesPanel contentType="APTITUDE_QUESTION" contentId={q.id} />
+                </div>
               )}
             </motion.div>
           )}

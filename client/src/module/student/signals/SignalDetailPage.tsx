@@ -127,6 +127,13 @@ export default function SignalDetailPage() {
       >
         {/* Header card */}
         <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-6 md:p-8">
+          <Link
+            to="/student/signals"
+            className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors no-underline mb-5"
+          >
+            <ArrowLeft className="w-3 h-3" />
+            funding signals
+          </Link>
           <div className="flex items-start gap-4 flex-wrap">
             <div className="w-16 h-16 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-xl font-bold text-stone-700 dark:text-stone-300 overflow-hidden">
               {signal.logoUrl ? (
@@ -180,7 +187,7 @@ export default function SignalDetailPage() {
             <a
               href={signal.sourceUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-sm font-semibold hover:opacity-90 transition-opacity no-underline"
             >
               <ExternalLink className="w-4 h-4" />
@@ -190,7 +197,7 @@ export default function SignalDetailPage() {
               <a
                 href={careers}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-lime-400 hover:bg-lime-500 text-stone-900 rounded-md text-sm font-semibold transition-colors no-underline"
               >
                 <Briefcase className="w-4 h-4" />
@@ -201,7 +208,7 @@ export default function SignalDetailPage() {
               <a
                 href={signal.companyWebsite}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 text-stone-900 dark:text-stone-50 rounded-md text-sm font-semibold hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
               >
                 <Globe className="w-4 h-4" />

@@ -11,13 +11,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import toast from "@/components/ui/toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaCompany, DsaPaginatedProblems, DsaCompanyProblem } from "../../../lib/types";
+import type { DsaCompany, DsaPaginatedProblems, DsaCompanyProblem, DsaCompanyTrackStats } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { cleanHint } from "../../../lib/sanitize";
 import { Button } from "../../../components/ui/button";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
+import { SafeHtml } from "../../../components/common/SafeHtml";
 
 /* ── Company tier classification ─────────────────────────────────────── */
 
@@ -199,13 +201,6 @@ function externalLinks(p: DsaCompanyProblem) {
   return links;
 }
 
-function cleanHint(html: string): string {
-  return html
-    .replace(/<div[^>]*>/gi, "")
-    .replace(/<\/div>/gi, "")
-    .replace(/<code>/gi, "<code class='px-1.5 py-0.5 bg-stone-200 dark:bg-white/10 rounded-md text-sm font-mono'>");
-}
-
 export default function DsaCompaniesPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
@@ -233,6 +228,13 @@ export default function DsaCompaniesPage() {
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 
+  const { data: trackStats } = useQuery({
+    queryKey: queryKeys.dsa.companyTrackStats(selectedCompany!),
+    queryFn: () => api.get<DsaCompanyTrackStats>(`/dsa/companies/${selectedCompany}/track-stats`).then((r) => r.data),
+    enabled: !!selectedCompany,
+    staleTime: 15 * 24 * 60 * 60 * 1000,
+  });
+
   const toggleMutation = useMutation({
     mutationFn: (problemId: number) =>
       api.post<{ problemId: number; solved: boolean }>(`/dsa/problems/${problemId}/toggle`).then((r) => r.data),
@@ -256,6 +258,9 @@ export default function DsaCompaniesPage() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.dsa.progress() });
+      if (selectedCompany) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.dsa.companyTrackStats(selectedCompany) });
+      }
     },
   });
 
@@ -592,6 +597,19 @@ export default function DsaCompaniesPage() {
                               <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 tabular-nums mt-1 block">
                                 {company.count} problems
                               </span>
+                              {user && (
+                                <div className="mt-2 flex items-center gap-2">
+                                  <div className="flex-1 h-1 bg-stone-200 dark:bg-stone-700 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-lime-500 rounded-full transition-all duration-500"
+                                      style={{ width: `${Math.round((company.solved / company.count) * 100)}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-[10px] font-mono tabular-nums text-stone-500 dark:text-stone-400">
+                                    {company.solved}/{company.count}
+                                  </span>
+                                </div>
+                              )}
                             </div>
 
                             <ArrowRight className="w-4 h-4 text-stone-400 dark:text-stone-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all shrink-0" />
@@ -635,10 +653,28 @@ export default function DsaCompaniesPage() {
                     <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 capitalize mb-1.5 wrap-break-word">
                       {selectedCompany}
                     </h1>
-                    {!problemsLoading && (
-                      <p className="text-sm text-stone-600 dark:text-stone-400">
-                        <span className="tabular-nums">{problemData?.total ?? 0}</span> problems from recent interviews.
-                      </p>
+                    {trackStats && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3 text-sm">
+                          <span className="tabular-nums text-stone-900 dark:text-stone-50 font-bold">{trackStats.solved}</span>
+                          <span className="text-stone-500 dark:text-stone-400">/</span>
+                          <span className="tabular-nums text-stone-600 dark:text-stone-400">{trackStats.total}</span>
+                          <span className="text-stone-400 dark:text-stone-500">solved</span>
+                        </div>
+                        <div className="flex gap-3 text-xs">
+                          {Object.entries(trackStats.difficultyBreakdown).map(([diff, data]) => {
+                            const color =
+                              diff === "Easy" ? "text-emerald-600 dark:text-emerald-400" :
+                              diff === "Medium" ? "text-amber-600 dark:text-amber-400" :
+                              "text-red-600 dark:text-red-400";
+                            return (
+                              <span key={diff} className={`${color} tabular-nums`}>
+                                {diff}: {data.solved}/{data.total}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -679,6 +715,7 @@ export default function DsaCompaniesPage() {
                           <Button
                             variant="ghost"
                             mode="icon"
+                            aria-label="Toggle completion"
                             size="sm"
                             onClick={(e) => { e.stopPropagation(); toggleMutation.mutate(problem.id); }}
                             className="shrink-0"
@@ -733,6 +770,7 @@ export default function DsaCompaniesPage() {
                           <Button
                             variant="ghost"
                             mode="icon"
+                            aria-label="Toggle bookmark"
                             size="sm"
                             onClick={(e) => { e.stopPropagation(); bookmarkMutation.mutate(problem.id); }}
                             className="shrink-0"
@@ -770,7 +808,7 @@ export default function DsaCompaniesPage() {
                                     {problem.hints.map((hint, i) => (
                                       <div key={i} className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex gap-1">
                                         {problem.hints.length > 1 && <span className="font-mono font-medium text-stone-500 dark:text-stone-400 shrink-0">{i + 1}.</span>}
-                                        <span dangerouslySetInnerHTML={{ __html: cleanHint(hint) }} />
+                                        <SafeHtml className="flex-1 min-w-0" html={cleanHint(hint)} method="sanitize-html" />
                                       </div>
                                     ))}
                                   </div>

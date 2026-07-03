@@ -12,7 +12,6 @@
 import "dotenv/config";
 import {
   PrismaClient,
-  JobStatus,
   InterviewSource,
   InterviewDifficulty,
   InterviewOutcome,
@@ -30,7 +29,7 @@ function log(section: string, count: number) {
   console.log(`  ✓ ${section}: ${count} records`);
 }
 
-// ─── 1. Users (Admin + Recruiter + Students) ─────────────────────────
+// ─── 1. Users (Admin + Students) ─────────────────────────
 async function seedUsers() {
   const password = await hashPassword("Test@1234");
 
@@ -41,15 +40,6 @@ async function seedUsers() {
       password,
       role: "ADMIN" as const,
       isVerified: true,
-    },
-    {
-      name: "Demo Recruiter",
-      email: "recruiter@internhack.xyz",
-      password,
-      role: "RECRUITER" as const,
-      isVerified: true,
-      company: "TechCorp",
-      designation: "Hiring Manager",
     },
     {
       name: "Aarav Sharma",
@@ -110,6 +100,24 @@ async function seedUsers() {
       skills: ["C++", "DSA", "Competitive Programming"],
       bio: "Competitive programmer and algorithm enthusiast",
       location: "Pune",
+      subscriptionPlan: "MONTHLY" as const,
+      subscriptionStatus: "ACTIVE" as const,
+      subscriptionEndDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    },
+    {
+      name: "Neha Kapoor",
+      email: "premium@example.com",
+      password,
+      role: "STUDENT" as const,
+      isVerified: true,
+      college: "IIT Bombay",
+      graduationYear: 2025,
+      skills: ["React", "TypeScript", "System Design", "Node.js"],
+      bio: "Full-stack developer. Premium account for testing subscription-gated features.",
+      location: "Mumbai",
+      subscriptionPlan: "MONTHLY" as const,
+      subscriptionStatus: "ACTIVE" as const,
+      subscriptionEndDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
   ];
 
@@ -124,6 +132,15 @@ async function seedUsers() {
         });
       }
       created++;
+    } else {
+      await prisma.user.update({
+        where: { email: u.email },
+        data: {
+          subscriptionPlan: u.subscriptionPlan,
+          subscriptionStatus: u.subscriptionStatus,
+          subscriptionEndDate: u.subscriptionEndDate,
+        },
+      });
     }
   }
   log("Users", created);
@@ -316,39 +333,7 @@ async function seedCompanies() {
   log("Companies", count);
 }
 
-// ─── 5. Badges ────────────────────────────────────────────────────────
-async function seedBadges() {
-  const badges = [
-    { name: "First Steps", slug: "first-steps", description: "Applied to your first job", category: "MILESTONE" as const, criteria: { type: "first_application" } },
-    { name: "Job Hunter", slug: "job-hunter", description: "Applied to 5 jobs", category: "CAREER" as const, criteria: { type: "job_apply", params: { count: 5 } } },
-    { name: "Persistent", slug: "persistent", description: "Applied to 10 jobs", category: "CAREER" as const, criteria: { type: "job_apply", params: { count: 10 } } },
-    { name: "Committed", slug: "committed", description: "Applied to 25 jobs", category: "CAREER" as const, criteria: { type: "job_apply", params: { count: 25 } } },
-    { name: "Relentless", slug: "relentless", description: "Applied to 50 jobs", category: "CAREER" as const, criteria: { type: "job_apply", params: { count: 50 } } },
-    { name: "Century", slug: "century-apply", description: "Applied to 100 jobs", category: "MILESTONE" as const, criteria: { type: "job_apply", params: { count: 100 } } },
-    { name: "Storyteller", slug: "storyteller", description: "Shared your first interview experience", category: "CONTRIBUTION" as const, criteria: { type: "interview_share", params: { count: 1 } } },
-    { name: "Mentor", slug: "mentor", description: "Shared 5 interview experiences", category: "CONTRIBUTION" as const, criteria: { type: "interview_share", params: { count: 5 } } },
-    { name: "Community Pillar", slug: "community-pillar", description: "Shared 20 interview experiences", category: "CONTRIBUTION" as const, criteria: { type: "interview_share", params: { count: 20 } } },
-    { name: "Skill Verified", slug: "skill-verified", description: "Passed your first skill test", category: "SKILL" as const, criteria: { type: "skill_test_pass", params: { count: 1 } } },
-    { name: "Problem Solver", slug: "problem-solver", description: "Solved 10 DSA problems", category: "SKILL" as const, criteria: { type: "dsa_solve", params: { count: 10 } } },
-    { name: "DSA Warrior", slug: "dsa-warrior", description: "Solved 50 DSA problems", category: "SKILL" as const, criteria: { type: "dsa_solve", params: { count: 50 } } },
-    { name: "Code Ninja", slug: "code-ninja", description: "Solved 100 DSA problems", category: "MILESTONE" as const, criteria: { type: "dsa_solve", params: { count: 100 } } },
-    { name: "Profile Pro", slug: "profile-pro", description: "Completed your entire profile", category: "MILESTONE" as const, criteria: { type: "profile_complete" } },
-    { name: "Quiz Master", slug: "quiz-master", description: "Answered 100 aptitude questions correctly", category: "QUIZ" as const, criteria: { type: "aptitude_correct", params: { count: 100 } } },
-    { name: "Contributor", slug: "contributor", description: "Made your first approved company contribution", category: "CONTRIBUTION" as const, criteria: { type: "contribution_approved", params: { count: 1 } } },
-  ];
-
-  let count = 0;
-  for (const b of badges) {
-    const existing = await prisma.badge.findUnique({ where: { slug: b.slug } });
-    if (!existing) {
-      await prisma.badge.create({ data: { ...b, isActive: true } });
-      count++;
-    }
-  }
-  log("Badges", count);
-}
-
-// ─── 6. Skill Tests ──────────────────────────────────────────────────
+// ─── 5. Skill Tests ──────────────────────────────────────────────────
 async function seedSkillTests() {
   const tests = [
     {
@@ -357,43 +342,147 @@ async function seedSkillTests() {
       description: "Test your knowledge of core JavaScript concepts.",
       difficulty: "INTERMEDIATE" as const,
       timeLimitSecs: 1800,
-      passThreshold: 70,
+      passThreshold: 75,
       questions: [
-        { question: "What is the output of typeof null?", options: ["\"null\"", "\"object\"", "\"undefined\"", "\"boolean\""], correctIndex: 1, explanation: "typeof null returns \"object\", a known JavaScript quirk." },
-        { question: "Which method creates a new array from calling a function on every element?", options: ["forEach()", "map()", "filter()", "reduce()"], correctIndex: 1, explanation: "map() creates a new array by calling a function on each element." },
-        { question: "What does === check?", options: ["Value only", "Type only", "Value and type", "Reference only"], correctIndex: 2, explanation: "Strict equality checks both value and type without coercion." },
-        { question: "What is a closure?", options: ["A way to close the browser", "A function with access to its outer scope", "A method to end a loop", "Error handling"], correctIndex: 1, explanation: "A closure retains access to variables from its enclosing scope." },
-        { question: "What is the output of console.log(0.1 + 0.2 === 0.3)?", options: ["true", "false", "undefined", "NaN"], correctIndex: 1, explanation: "Due to floating-point precision, 0.1 + 0.2 !== exactly 0.3." },
+        { question: "Which keyword declares a block-scoped variable?", options: ["var", "const", "function", "global"], correctIndex: 1, explanation: "const declares a block-scoped constant variable." },
+        { question: "What is the output of typeof NaN?", options: ["number", "NaN", "undefined", "object"], correctIndex: 0, explanation: "NaN is still of type number in JavaScript." },
+        { question: "Which array method returns a new filtered array?", options: ["forEach()", "map()", "some()", "filter()"], correctIndex: 3, explanation: "filter() returns a new array with elements that match the condition." },
+        { question: "What does Promise.all() return?", options: ["A single resolved value", "A promise of array results", "An iterator", "Undefined"], correctIndex: 1, explanation: "Promise.all returns a promise that resolves with an array of results." },
+        { question: "Which operator merges objects and arrays?", options: ["...", "++", "&&", "||"], correctIndex: 0, explanation: "The spread operator (...) copies array and object values." },
+        { question: "How do you define a function expression?", options: ["function foo() {}", "const foo = function() {}", "let foo := {}", "function: foo() {}"], correctIndex: 1, explanation: "A function expression assigns a function to a variable." },
+        { question: "What is event bubbling?", options: ["Events captured before target", "Events propagate outward from target", "Events cancel automatically", "Events only per element"], correctIndex: 1, explanation: "Event bubbling sends event propagation from child to ancestor elements." },
+        { question: "Which method converts JSON text to an object?", options: ["JSON.stringify()", "JSON.parse()", "JSON.convert()", "JSON.toObject()"], correctIndex: 1, explanation: "JSON.parse converts JSON-formatted strings to JavaScript objects." },
+        { question: "What is the result of '5' + 3?", options: ["8", "53", "NaN", "TypeError"], correctIndex: 1, explanation: "String concatenation coerces 3 to '3', producing '53'." },
+        { question: "Which of these is a truthy value?", options: ["0", "''", "null", "[]"], correctIndex: 3, explanation: "An empty array is truthy in JavaScript." },
+        { question: "What does the map() method return?", options: ["Same array", "New array", "Boolean", "Number"], correctIndex: 1, explanation: "map() returns a new array after applying a callback." },
+        { question: "How do you create a promise that resolves immediately?", options: ["new Promise((res) => res())", "Promise.resolve()", "resolvePromise()", "Promise.start()"], correctIndex: 1, explanation: "Promise.resolve returns a promise already resolved with a value." },
+        { question: "What does Array.isArray([]) return?", options: ["true", "false", "undefined", "Error"], correctIndex: 0, explanation: "Array.isArray identifies arrays and returns true." },
+        { question: "Which keyword checks for strict equality?", options: ["==", "=", "===", "!=="], correctIndex: 2, explanation: "=== checks both value and type for equality." },
+        { question: "What is a pure function?", options: ["Modifies external state", "Always returns same output for same input", "Always asynchronous", "Uses loops"], correctIndex: 1, explanation: "Pure functions produce consistent output and no side effects." },
+        { question: "What is the value of 2 + true?", options: ["2", "3", "NaN", "true"], correctIndex: 1, explanation: "true coerces to 1 in numeric addition." },
+        { question: "Which built-in type are functions?", options: ["function", "object", "callable", "method"], correctIndex: 1, explanation: "In JavaScript, functions are objects." },
+        { question: "What does 'use strict' enable?", options: ["Legacy features", "Bug-prone mode", "Strict mode with safer syntax", "Faster loops"], correctIndex: 2, explanation: "Strict mode adds restrictions to catch common errors." },
+        { question: "Which method delays execution to the next event loop tick?", options: ["setTimeout(fn, 0)", "delay(fn)", "nextTick(fn)", "setImmediate(fn)"], correctIndex: 0, explanation: "setTimeout(fn, 0) queues callback to run after current stack clears." },
+        { question: "What is the output of Boolean([])?", options: ["true", "false", "undefined", "Error"], correctIndex: 0, explanation: "An empty array is truthy." },
       ],
     },
     {
       skillName: "python",
-      title: "Python Programming",
-      description: "Assess your Python skills covering data structures and OOP.",
+      title: "Python Basics",
+      description: "Cover Python fundamentals, data structures, and functions.",
       difficulty: "INTERMEDIATE" as const,
       timeLimitSecs: 1800,
-      passThreshold: 70,
+      passThreshold: 75,
       questions: [
-        { question: "What is the output of list('hello')?", options: ["['hello']", "['h','e','l','l','o']", "'hello'", "Error"], correctIndex: 1, explanation: "list() iterates over each character of the string." },
-        { question: "Which data structure has unique keys?", options: ["List", "Tuple", "Dictionary", "Array"], correctIndex: 2, explanation: "Dictionaries have unique keys." },
-        { question: "What does len([1, [2, 3], 4]) return?", options: ["3", "4", "5", "Error"], correctIndex: 0, explanation: "The list has 3 elements: 1, [2,3], and 4." },
-        { question: "Which keyword is used for inheritance in Python?", options: ["extends", "inherits", "class Child(Parent)", "implements"], correctIndex: 2, explanation: "Python uses class Child(Parent) syntax for inheritance." },
-        { question: "What does 'pass' do in Python?", options: ["Exits the loop", "Does nothing (placeholder)", "Skips iteration", "Returns None"], correctIndex: 1, explanation: "pass is a null statement used as a placeholder." },
+        { question: "What is the result of 3 * 'a'?", options: ["'aaa'", "Error", "3a", "['a','a','a']"], correctIndex: 0, explanation: "Multiplying a string by 3 repeats it." },
+        { question: "Which collection preserves insertion order?", options: ["set", "dict", "tuple", "list"], correctIndex: 1, explanation: "Dictionaries preserve insertion order since Python 3.7." },
+        { question: "What is the difference between list and tuple?", options: ["tuple is mutable", "list is immutable", "tuple is immutable", "list has fixed size"], correctIndex: 2, explanation: "Tuples are immutable while lists are mutable." },
+        { question: "How do you define a function in Python?", options: ["func foo():", "define foo():", "def foo():", "function foo()"], correctIndex: 2, explanation: "def is used to define functions." },
+        { question: "What does the 'elif' keyword do?", options: ["Starts a loop", "Defines a function", "Adds another if condition", "Ends an if statement"], correctIndex: 2, explanation: "elif provides an additional conditional branch." },
+        { question: "What is a list comprehension?", options: ["A code block for loops", "A single-line way to build lists", "A string formatting method", "A decorator"], correctIndex: 1, explanation: "List comprehensions build lists in a compact syntax." },
+        { question: "Which keyword is used for exception handling?", options: ["except", "catch", "handle", "error"], correctIndex: 0, explanation: "except catches exceptions in Python." },
+        { question: "How do you open a file for writing?", options: ["open('file','r')", "open('file','w')", "open('file','x')", "open('file','rw')"], correctIndex: 1, explanation: "'w' opens a file for writing, creating or truncating it." },
+        { question: "What does len('abc') return?", options: ["2", "3", "4", "Error"], correctIndex: 1, explanation: "len returns the number of characters." },
+        { question: "Which method adds an item to the end of a list?", options: ["add()", "append()", "insert()", "extend()"], correctIndex: 1, explanation: "append adds one item to the end." },
+        { question: "What does dict.get('key') return if missing?", options: ["Error", "None", "0", "''"], correctIndex: 1, explanation: "get returns None by default when key is missing." },
+        { question: "What type is returned by input() in Python?", options: ["int", "str", "float", "bool"], correctIndex: 1, explanation: "input always returns a string." },
+        { question: "Which statement creates a generator expression?", options: ["[x for x in range(5)]", "(x for x in range(5))", "{x for x in range(5)}", "<x for x in range(5)>"], correctIndex: 1, explanation: "Parentheses create a generator expression." },
+        { question: "How do you make a variable global inside a function?", options: ["use global", "use local", "use static", "use external"], correctIndex: 0, explanation: "global declares a variable as module-level within a function." },
+        { question: "What does 'None' represent in Python?", options: ["Zero", "Empty string", "No value", "False"], correctIndex: 2, explanation: "None indicates absence of a value." },
+        { question: "Which keyword defines a class?", options: ["struct", "class", "object", "type"], correctIndex: 1, explanation: "class defines a class in Python." },
+        { question: "What is the output of bool('False')?", options: ["True", "False", "Error", "None"], correctIndex: 0, explanation: "Non-empty strings are truthy." },
+        { question: "What does the strip() method do?", options: ["Removes whitespace", "Converts to uppercase", "Splits text", "Replaces text"], correctIndex: 0, explanation: "strip() removes whitespace from both ends." },
+        { question: "Which builtin sorts a list in place?", options: ["sorted()", "sort()", "order()", "arrange()"], correctIndex: 1, explanation: "list.sort() sorts the list in place." },
+        { question: "How do you import the math module?", options: ["import math", "using math", "from math import *", "require('math')"], correctIndex: 0, explanation: "import math is the standard import syntax." },
       ],
     },
     {
       skillName: "react",
-      title: "React Development",
-      description: "Test your React knowledge including hooks and component patterns.",
+      title: "React Essentials",
+      description: "Measure your understanding of React hooks, state, and component design.",
       difficulty: "INTERMEDIATE" as const,
       timeLimitSecs: 1800,
-      passThreshold: 70,
+      passThreshold: 75,
       questions: [
-        { question: "What hook manages state in a functional component?", options: ["useEffect", "useState", "useRef", "useMemo"], correctIndex: 1, explanation: "useState returns a state variable and a setter function." },
-        { question: "What is the virtual DOM?", options: ["A browser API", "A lightweight JS representation of the real DOM", "A CSS framework", "A testing tool"], correctIndex: 1, explanation: "React uses a virtual DOM to minimize expensive real DOM updates." },
-        { question: "When does useEffect run by default?", options: ["Only on mount", "After every render", "Only on unmount", "Never"], correctIndex: 1, explanation: "Without a dependency array, useEffect runs after every render." },
-        { question: "What is the purpose of keys in lists?", options: ["Styling", "Help React identify which items changed", "SEO", "Accessibility"], correctIndex: 1, explanation: "Keys help React efficiently update and reorder list items." },
-        { question: "What does React.memo do?", options: ["Stores data", "Memoizes a component to prevent unnecessary re-renders", "Creates a memo pad UI", "Logs to console"], correctIndex: 1, explanation: "React.memo skips re-rendering if props haven't changed." },
+        { question: "What does useState return?", options: ["An object", "A state value and setter", "A boolean", "A hook instance"], correctIndex: 1, explanation: "useState returns a state value and a function to update it." },
+        { question: "When does useEffect run with an empty dependency array?", options: ["Every render", "Only on mount", "Only on unmount", "Never"], correctIndex: 1, explanation: "An empty array makes useEffect run once after the first render." },
+        { question: "What is JSX?", options: ["A CSS framework", "A JavaScript syntax extension for markup", "A debugging tool", "A router library"], correctIndex: 1, explanation: "JSX lets you write HTML-like syntax in JavaScript." },
+        { question: "What is the role of keys in a list?", options: ["Control styling", "Identify list items for reconciliation", "Enable routing", "Provide accessibility"], correctIndex: 1, explanation: "Keys help React update list items efficiently." },
+        { question: "How do you create a memoized callback?", options: ["useMemo", "useCallback", "useRef", "useState"], correctIndex: 1, explanation: "useCallback memoizes a function instance." },
+        { question: "What does useMemo do?", options: ["Memoizes values", "Changes state", "Creates refs", "Handles events"], correctIndex: 0, explanation: "useMemo memoizes a computed value between renders." },
+        { question: "Which hook gives direct DOM access?", options: ["useState", "useEffect", "useRef", "useMemo"], correctIndex: 2, explanation: "useRef stores a mutable reference to a DOM node." },
+        { question: "What pattern returns early in a component?", options: ["Conditional rendering", "High-order component", "Render prop", "Context API"], correctIndex: 0, explanation: "Conditional rendering returns different JSX based on logic." },
+        { question: "What is a controlled input?", options: ["An input managed by state", "An input with no value", "Only used in forms", "A disabled input"], correctIndex: 0, explanation: "Controlled inputs keep value in React state." },
+        { question: "What is a fragment?", options: ["A styling helper", "A way to group elements without extra DOM nodes", "A router component", "A state hook"], correctIndex: 1, explanation: "Fragments group JSX children without adding an extra wrapper." },
+        { question: "Which API shares data across the component tree?", options: ["Redux", "Context", "useState", "useEffect"], correctIndex: 1, explanation: "Context provides values to deeply nested components." },
+        { question: "How do you pass JSX as a child?", options: ["Using props", "Using children", "Using state", "Using hooks"], correctIndex: 1, explanation: "children is the standard prop for nested JSX content." },
+        { question: "What is the significance of useEffect cleanup?", options: ["Improves styling", "Avoids memory leaks", "Creates more renders", "Updates state"], correctIndex: 1, explanation: "Cleanup runs before the effect re-runs or component unmounts." },
+        { question: "What React feature enables server rendering?", options: ["React Native", "Next.js", "React DOM", "React Router"], correctIndex: 1, explanation: "Next.js is commonly used for server-side rendering with React." },
+        { question: "What does lifting state up mean?", options: ["Using more hooks", "Moving state to a common parent", "Writing more components", "Using refs"], correctIndex: 1, explanation: "State is lifted to a parent component for shared access." },
+        { question: "Which hook is used for subscribing to external data?", options: ["useState", "useEffect", "useMemo", "useReducer"], correctIndex: 1, explanation: "useEffect handles subscriptions and side effects." },
+        { question: "What is a React portal?", options: ["A router", "A way to render children into a DOM node outside the parent", "A hook", "A state helper"], correctIndex: 1, explanation: "Portals render components into a different DOM subtree." },
+        { question: "How does React compare state for rerenders?", options: ["Deep compare", "Shallow compare", "No compare", "DOM compare"], correctIndex: 1, explanation: "React performs a shallow comparison on state updates." },
+        { question: "What is the correct way to update state based on previous state?", options: ["setCount(count + 1)", "setCount(prev => prev + 1)", "setCount(() => count + 1)", "setCount(() => count)"], correctIndex: 1, explanation: "The functional update uses the previous state value safely." },
+        { question: "What is a hook rule?", options: ["Hooks must be called conditionally", "Hooks can run in loops", "Hooks must be called at the top level", "Hooks can only be nested"], correctIndex: 2, explanation: "Hooks must be called at the top level of a component or custom hook." },
+      ],
+    },
+    {
+      skillName: "sql",
+      title: "SQL Intermediate",
+      description: "Practice intermediate SQL logic, joins, grouping, and query reading.",
+      difficulty: "INTERMEDIATE" as const,
+      timeLimitSecs: 2700,
+      passThreshold: 75,
+      questions: [
+        { question: "Which SQL clause filters rows after grouping?", options: ["WHERE", "HAVING", "GROUP BY", "ORDER BY"], correctIndex: 1, explanation: "HAVING filters groups after aggregation." },
+        { question: "What does INNER JOIN return?", options: ["All rows from both tables", "Only matching rows", "Rows from left table", "Rows from right table"], correctIndex: 1, explanation: "INNER JOIN returns rows that match in both tables." },
+        { question: "How do you select distinct values?", options: ["SELECT UNIQUE", "SELECT DISTINCT", "SELECT DIFFERENT", "SELECT ONLY"], correctIndex: 1, explanation: "DISTINCT removes duplicate rows from query results." },
+        { question: "Which keyword sorts results?", options: ["SORT BY", "ORDER BY", "GROUP BY", "FILTER"], correctIndex: 1, explanation: "ORDER BY sorts query results." },
+        { question: "What is the default join type?", options: ["LEFT JOIN", "INNER JOIN", "RIGHT JOIN", "FULL JOIN"], correctIndex: 1, explanation: "INNER JOIN is the default join behavior when a join is implied." },
+        { question: "What does COUNT(*) count?", options: ["Non-null values only", "All rows", "Only distinct values", "Columns"], correctIndex: 1, explanation: "COUNT(*) counts all rows, including null values." },
+        { question: "How do you add a new column to a table?", options: ["ADD COLUMN", "ALTER TABLE ... ADD", "CREATE COLUMN", "MODIFY TABLE"], correctIndex: 1, explanation: "ALTER TABLE ... ADD adds a new column." },
+        { question: "Which SQL statement updates existing rows?", options: ["INSERT", "UPDATE", "MODIFY", "REPLACE"], correctIndex: 1, explanation: "UPDATE changes values in existing rows." },
+        { question: "What does GROUP BY do?", options: ["Filters rows", "Aggregates rows by key", "Sorts rows", "Joins tables"], correctIndex: 1, explanation: "GROUP BY groups rows using one or more columns." },
+        { question: "Which function returns the maximum value?", options: ["MIN()", "MAX()", "AVG()", "SUM()"], correctIndex: 1, explanation: "MAX returns the largest value in a column." },
+        { question: "What is a correlated subquery?", options: ["Subquery with aggregation", "Subquery that references outer query columns", "Subquery in a UNION", "Subquery in a view"], correctIndex: 1, explanation: "Correlated subqueries depend on values from the outer query." },
+        { question: "How do you remove duplicate rows from results?", options: ["USE DISTINCT", "USE UNIQUE", "USE CLEAN", "USE DIFFERENT"], correctIndex: 0, explanation: "DISTINCT removes duplicates." },
+        { question: "Which operator combines results of two SELECT statements?", options: ["JOIN", "UNION", "MERGE", "INTERSECT"], correctIndex: 1, explanation: "UNION combines results from multiple SELECT queries." },
+        { question: "What does LEFT JOIN preserve?", options: ["Only matching rows", "All rows from left table", "All rows from right table", "No rows"], correctIndex: 1, explanation: "LEFT JOIN preserves all rows from the left table." },
+        { question: "How do you rename a column in the query output?", options: ["AS", "ALIAS", "RENAME", "LABEL"], correctIndex: 0, explanation: "AS assigns an alias to a column." },
+        { question: "Query exercise: Which value appears when using COUNT(DISTINCT city) on cities [Delhi, Delhi, Mumbai]?", options: ["1", "2", "3", "Error"], correctIndex: 1, explanation: "DISTINCT counts unique cities only." },
+        { question: "Query exercise: If orders table has 5 rows and status = 'done' matches 2 rows, what does SELECT COUNT(*) FROM orders WHERE status = 'done' return?", options: ["0", "2", "3", "5"], correctIndex: 1, explanation: "COUNT(*) returns the number of rows matching the WHERE clause." },
+        { question: "Query exercise: What is the result of SELECT COALESCE(NULL, 'X', 'Y')?", options: ["NULL", "X", "Y", "Error"], correctIndex: 1, explanation: "COALESCE returns the first non-null value." },
+        { question: "What does the LIKE operator do?", options: ["Performs arithmetic", "Searches text patterns", "Joins tables", "Groups rows"], correctIndex: 1, explanation: "LIKE checks strings against a pattern." },
+      ],
+    },
+    {
+      skillName: "typescript",
+      title: "TypeScript Intermediate",
+      description: "Check your TypeScript skills with typing, interfaces, and generics.",
+      difficulty: "INTERMEDIATE" as const,
+      timeLimitSecs: 1800,
+      passThreshold: 75,
+      questions: [
+        { question: "What keyword declares an interface?", options: ["type", "interface", "class", "struct"], correctIndex: 1, explanation: "interface declares a type contract in TypeScript." },
+        { question: "Which type allows any value?", options: ["unknown", "any", "never", "object"], correctIndex: 1, explanation: "any disables type checking for that variable." },
+        { question: "What does readonly do?", options: ["Makes variable constant", "Prevents property reassignment", "Allows mutations", "Removes type checks"], correctIndex: 1, explanation: "readonly prevents assignment to a property after creation." },
+        { question: "How do you declare a generic function?", options: ["function id<T>(value: T): T", "function <T> id(value): T", "generic function id<T>(value)", "function id(value: T)"], correctIndex: 0, explanation: "Generics declare parameterized types using <T>." },
+        { question: "What is the difference between type and interface?", options: ["type can alias primitives", "interface cannot extend", "type is runtime only", "interface is deprecated"], correctIndex: 0, explanation: "type aliases can describe primitives, unions, and tuples." },
+        { question: "What does the never type represent?", options: ["No possible value", "Any value", "Null or undefined", "Strings only"], correctIndex: 0, explanation: "never indicates code paths that never return normally." },
+        { question: "Which syntax makes a property optional?", options: ["name?", "?name", "optional name", "name*"], correctIndex: 0, explanation: "The ? marker makes a property optional." },
+        { question: "Which type checks are erased at runtime?", options: ["TypeScript types", "JavaScript values", "Enums", "Classes"], correctIndex: 0, explanation: "TypeScript types are compile-time only." },
+        { question: "What does union type string | number mean?", options: ["Either string or number", "Both string and number", "Only string", "Only number"], correctIndex: 0, explanation: "Union types allow one of multiple types." },
+        { question: "Which keyword narrows types with control flow?", options: ["typeof", "instanceof", "in", "All of the above"], correctIndex: 3, explanation: "typeof, instanceof, and in can all narrow types." },
+        { question: "What is the return type of a function with no return?", options: ["void", "undefined", "never", "null"], correctIndex: 0, explanation: "Functions without a return are typed as void." },
+        { question: "How do you define a tuple type?", options: ["[string, number]", "(string, number)", "tuple<string, number>", "{string, number}"], correctIndex: 0, explanation: "Tuple types use square brackets with fixed element types." },
+        { question: "Which utility type makes all props optional?", options: ["Partial<T>", "Required<T>", "Readonly<T>", "Pick<T>"], correctIndex: 0, explanation: "Partial makes every property optional." },
+        { question: "What is a type guard?", options: ["A runtime function that narrows types", "A CSS helper", "A generic constraint", "A type alias"], correctIndex: 0, explanation: "Type guards narrow union types at runtime." },
+        { question: "Which type describes any object?", options: ["object", "Object", "any", "unknown"], correctIndex: 0, explanation: "The object type describes non-primitive objects." },
+        { question: "What does keyof T return?", options: ["Union of property names", "The number of keys", "A mapped type", "A tuple"], correctIndex: 0, explanation: "keyof returns a union of an object's property names." },
+        { question: "What does typeof x === 'string' do in TypeScript?", options: ["Narrow x to string", "Define a new type", "Create a string", "Throw an error"], correctIndex: 0, explanation: "typeof checks runtime type and narrows the variable." },
+        { question: "How do you extend an interface?", options: ["interface A extends B", "interface A implements B", "type A = B", "interface A uses B"], correctIndex: 0, explanation: "extends adds properties from another interface." },
+        { question: "Which type represents a function that never returns?", options: ["never", "void", "undefined", "null"], correctIndex: 0, explanation: "never is used for functions that do not return." },
+        { question: "What is the output type of Promise<string>?", options: ["string", "Promise<string>", "any", "unknown"], correctIndex: 1, explanation: "Promise<string> represents a promise that resolves to a string." },
       ],
     },
   ];
@@ -455,6 +544,7 @@ async function seedOpensourceRepos() {
     { name: "flutter", owner: "flutter", description: "Google's UI toolkit for building natively compiled applications.", language: "Dart", techStack: ["Dart", "Skia", "C++"], difficulty: "INTERMEDIATE" as const, domain: "MOBILE" as const, stars: 163000, forks: 27000, openIssues: 12000, url: "https://github.com/flutter/flutter", tags: ["mobile", "cross-platform", "ui"] },
     { name: "prisma", owner: "prisma", description: "Next-generation ORM for Node.js and TypeScript.", language: "TypeScript", techStack: ["TypeScript", "Rust", "PostgreSQL"], difficulty: "BEGINNER" as const, domain: "WEB" as const, stars: 39000, forks: 1500, openIssues: 3000, url: "https://github.com/prisma/prisma", tags: ["orm", "database", "typescript"] },
     { name: "scikit-learn", owner: "scikit-learn", description: "Machine learning in Python.", language: "Python", techStack: ["Python", "NumPy", "Cython"], difficulty: "INTERMEDIATE" as const, domain: "AI" as const, stars: 59000, forks: 25000, openIssues: 2300, url: "https://github.com/scikit-learn/scikit-learn", tags: ["ml", "data-science", "python"] },
+    { name: "pandas", owner: "pandas-dev", description: "Flexible and powerful data analysis / manipulation library for Python.", language: "Python", techStack: ["Python", "Cython", "NumPy"], difficulty: "INTERMEDIATE" as const, domain: "DATA" as const, stars: 40000, forks: 16000, openIssues: 3000, url: "https://github.com/pandas-dev/pandas", tags: ["data-analysis", "pandas", "python"] },
   ];
 
   let count = 0;
@@ -490,140 +580,6 @@ async function seedGovInternships() {
     }
   }
   log("Government Internships", count);
-}
-
-// ─── 10. Jobs ─────────────────────────────────────────────────────────
-async function seedJobs() {
-  const recruiter = await prisma.user.findFirst({ where: { role: "RECRUITER" } });
-  if (!recruiter) {
-    console.log("  ⚠ Skipping jobs, no recruiter user found");
-    return;
-  }
-
-  const jobs = [
-    {
-      title: "Frontend Developer Intern",
-      description: "Join TechCorp's frontend team and work on real-world React applications. You'll build responsive UIs, collaborate with designers, and ship features to thousands of users.\n\nResponsibilities:\n- Build and maintain React components\n- Implement designs from Figma mockups\n- Write unit tests and participate in code reviews\n\nRequirements:\n- Proficiency in React and TypeScript\n- Familiarity with TailwindCSS or any CSS framework\n- Understanding of REST APIs",
-      location: "Bangalore, India",
-      salary: "₹20,000 – ₹25,000/month",
-      company: "TechCorp India",
-      status: JobStatus.PUBLISHED,
-      tags: ["React", "TypeScript", "Frontend", "Internship"],
-      deadline: new Date("2026-07-31"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Backend Engineer (Node.js)",
-      description: "DataWave Analytics is looking for a backend engineer to build scalable APIs and data pipelines.\n\nResponsibilities:\n- Design and implement RESTful APIs with Express/Node.js\n- Optimize PostgreSQL queries and database schemas\n- Integrate third-party APIs and manage background jobs\n\nRequirements:\n- 0–2 years experience with Node.js\n- Good understanding of SQL databases\n- Experience with Docker is a plus",
-      location: "Hyderabad, India",
-      salary: "₹6 – ₹10 LPA",
-      company: "DataWave Analytics",
-      status: JobStatus.PUBLISHED,
-      tags: ["Node.js", "PostgreSQL", "Backend", "API"],
-      deadline: new Date("2026-08-15"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Full Stack Developer",
-      description: "CloudNine Solutions is hiring a full-stack developer to work on their next-gen SaaS product.\n\nResponsibilities:\n- Build end-to-end features across React frontend and Express backend\n- Manage infrastructure on AWS (S3, EC2, Lambda)\n- Participate in sprint planning and technical design discussions\n\nRequirements:\n- Strong React + Node.js skills\n- Familiarity with cloud services (AWS/GCP/Azure)\n- Experience with CI/CD pipelines",
-      location: "Pune, India",
-      salary: "₹8 – ₹14 LPA",
-      company: "CloudNine Solutions",
-      status: JobStatus.PUBLISHED,
-      tags: ["React", "Node.js", "AWS", "Full Stack"],
-      deadline: new Date("2026-08-30"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Data Science Intern",
-      description: "Work on cutting-edge machine learning models at DataWave Analytics.\n\nResponsibilities:\n- Explore and clean large datasets\n- Build and evaluate ML models using scikit-learn and TensorFlow\n- Present findings to the product team\n\nRequirements:\n- Strong Python skills\n- Knowledge of pandas, numpy, and ML basics\n- Statistics fundamentals",
-      location: "Remote",
-      salary: "₹15,000 – ₹20,000/month",
-      company: "DataWave Analytics",
-      status: JobStatus.PUBLISHED,
-      tags: ["Python", "Machine Learning", "Data Science", "Internship"],
-      deadline: new Date("2026-07-15"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "DevOps Engineer",
-      description: "CyberShield Security needs a DevOps engineer to own their cloud infrastructure and CI/CD pipelines.\n\nResponsibilities:\n- Maintain and scale Kubernetes clusters on AWS EKS\n- Automate deployments with Terraform and GitHub Actions\n- Monitor system health and set up alerting\n\nRequirements:\n- Experience with Docker and Kubernetes\n- Familiarity with Terraform or similar IaC tools\n- Linux administration skills",
-      location: "Delhi, India",
-      salary: "₹10 – ₹16 LPA",
-      company: "CyberShield Security",
-      status: JobStatus.PUBLISHED,
-      tags: ["DevOps", "Kubernetes", "AWS", "Terraform"],
-      deadline: new Date("2026-09-01"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Android Developer",
-      description: "Build EduTech Pro's mobile learning app used by 100,000+ students across India.\n\nResponsibilities:\n- Develop features in Kotlin for Android\n- Integrate REST APIs and handle offline caching\n- Optimize app performance and battery usage\n\nRequirements:\n- Kotlin proficiency\n- Experience with Jetpack Compose or XML layouts\n- Understanding of MVVM architecture",
-      location: "Bangalore, India",
-      salary: "₹7 – ₹12 LPA",
-      company: "EduTech Pro",
-      status: JobStatus.PUBLISHED,
-      tags: ["Android", "Kotlin", "Mobile", "Jetpack Compose"],
-      deadline: new Date("2026-08-20"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Product Manager Intern",
-      description: "FinEdge Technologies is looking for a PM intern to help shape the roadmap for their digital banking product.\n\nResponsibilities:\n- Conduct user research and competitive analysis\n- Write product requirements documents (PRDs)\n- Work closely with engineering and design teams\n\nRequirements:\n- Strong analytical and communication skills\n- Familiarity with fintech or consumer apps\n- Prior internship in product or business roles is a plus",
-      location: "Mumbai, India",
-      salary: "₹25,000 – ₹30,000/month",
-      company: "FinEdge Technologies",
-      status: JobStatus.PUBLISHED,
-      tags: ["Product Management", "Fintech", "Internship", "Business"],
-      deadline: new Date("2026-07-20"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "UI/UX Designer",
-      description: "HealthBridge Systems needs a designer to craft intuitive experiences for their telemedicine platform.\n\nResponsibilities:\n- Create wireframes, prototypes, and high-fidelity designs in Figma\n- Conduct usability testing and incorporate feedback\n- Maintain the design system and component library\n\nRequirements:\n- Proficiency in Figma\n- Portfolio demonstrating UI/UX work\n- Understanding of accessibility standards (WCAG)",
-      location: "Noida, India",
-      salary: "₹6 – ₹10 LPA",
-      company: "HealthBridge Systems",
-      status: JobStatus.PUBLISHED,
-      tags: ["UI/UX", "Figma", "Design", "Healthcare"],
-      deadline: new Date("2026-08-10"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Machine Learning Engineer",
-      description: "Build and deploy production ML systems at DataWave Analytics.\n\nResponsibilities:\n- Train, evaluate, and deploy ML models at scale\n- Build data pipelines with Apache Spark\n- Collaborate with data scientists to productionize models\n\nRequirements:\n- Strong Python and ML fundamentals\n- Experience with TensorFlow or PyTorch\n- Familiarity with MLOps tools (MLflow, Kubeflow)",
-      location: "Hyderabad, India",
-      salary: "₹12 – ₹20 LPA",
-      company: "DataWave Analytics",
-      status: JobStatus.PUBLISHED,
-      tags: ["Python", "Machine Learning", "MLOps", "TensorFlow"],
-      deadline: new Date("2026-09-15"),
-      recruiterId: recruiter.id,
-    },
-    {
-      title: "Security Analyst Intern",
-      description: "Get hands-on experience in cybersecurity at CyberShield Security.\n\nResponsibilities:\n- Assist with vulnerability assessments and penetration testing\n- Monitor security alerts and investigate incidents\n- Document security findings and remediation steps\n\nRequirements:\n- Basic knowledge of networking (TCP/IP, DNS, HTTP)\n- Familiarity with OWASP Top 10\n- Interest in ethical hacking and security tools",
-      location: "Delhi, India",
-      salary: "₹18,000 – ₹22,000/month",
-      company: "CyberShield Security",
-      status: JobStatus.PUBLISHED,
-      tags: ["Cybersecurity", "Penetration Testing", "Internship", "Security"],
-      deadline: new Date("2026-07-25"),
-      recruiterId: recruiter.id,
-    },
-  ];
-
-  let count = 0;
-  for (const j of jobs) {
-    const existing = await prisma.job.findFirst({
-      where: { title: j.title, company: j.company },
-    });
-    if (!existing) {
-      await prisma.job.create({ data: j });
-      count++;
-    }
-  }
-  log("Jobs", count);
 }
 
 // ─── 12. Funding Signals ──────────────────────────────────────────────
@@ -1054,10 +1010,10 @@ async function seedInterviewExperiences() {
   for (const e of experiences) {
     const existing = await prisma.interviewExperience.findFirst({
       where: {
-  companyId: companyMap[e.companyName]!,
-  role: e.role,
-  userId: student.id,
-},
+        companyId: companyMap[e.companyName]!,
+        role: e.role,
+        userId: student.id,
+      },
     });
     if (!existing) {
       await prisma.interviewExperience.create({
@@ -1297,49 +1253,6 @@ async function seedYCCompanies() {
   log("YC Companies", count);
 }
 
-// ─── 15. IIT Professors ───────────────────────────────────────────────
-async function seedProfessors() {
-  const professors = [
-    { collegeName: "IIT Bombay", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Supratik Chakraborty", areaOfInterest: "Formal Methods, SAT Solving, Program Analysis", email: "supratik@cse.iitb.ac.in" },
-    { collegeName: "IIT Bombay", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Ganesh Ramakrishnan", areaOfInterest: "Machine Learning, NLP, Information Extraction", email: "ganesh@cse.iitb.ac.in" },
-    { collegeName: "IIT Bombay", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Soumen Chakrabarti", areaOfInterest: "Web Mining, Information Retrieval, Knowledge Graphs", email: "soumen@cse.iitb.ac.in" },
-    { collegeName: "IIT Delhi", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Naveen Garg", areaOfInterest: "Algorithms, Graph Theory, Approximation Algorithms", email: "naveen@cse.iitd.ac.in" },
-    { collegeName: "IIT Delhi", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Subhashis Banerjee", areaOfInterest: "Computer Vision, Robotics, Machine Learning", email: "suban@cse.iitd.ac.in" },
-    { collegeName: "IIT Delhi", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Maya Ramanath", areaOfInterest: "Knowledge Graphs, Semantic Web, Databases", email: "maya@cse.iitd.ac.in" },
-    { collegeName: "IIT Madras", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Balaraman Ravindran", areaOfInterest: "Reinforcement Learning, Graph Neural Networks, AI", email: "ravi@cse.iitm.ac.in" },
-    { collegeName: "IIT Madras", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. C. Chandra Sekhar", areaOfInterest: "Pattern Recognition, Speech Processing, Neural Networks", email: "chandra@cse.iitm.ac.in" },
-    { collegeName: "IIT Madras", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Mitesh Khapra", areaOfInterest: "Deep Learning, NLP, AI for Indic Languages", email: "miteshk@cse.iitm.ac.in" },
-    { collegeName: "IIT Kanpur", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Sandeep Kumar Shukla", areaOfInterest: "Cyber Security, Embedded Systems, Hardware Security", email: "sandeeps@cse.iitk.ac.in" },
-    { collegeName: "IIT Kanpur", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Arnab Bhattacharya", areaOfInterest: "Database Systems, Data Mining, Spatial Databases", email: "arnabb@cse.iitk.ac.in" },
-    { collegeName: "IIT Kharagpur", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Sudeshna Sarkar", areaOfInterest: "Natural Language Processing, Information Retrieval", email: "sudeshna@cse.iitkgp.ac.in" },
-    { collegeName: "IIT Kharagpur", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Pabitra Mitra", areaOfInterest: "Machine Learning, Data Science, Remote Sensing", email: "pabitra@cse.iitkgp.ac.in" },
-    { collegeName: "IIT Roorkee", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Partha Pratim Roy", areaOfInterest: "Document Analysis, Computer Vision, Deep Learning", email: "partha.roy@cs.iitr.ac.in" },
-    { collegeName: "IIT Roorkee", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Durga Toshniwal", areaOfInterest: "Data Mining, Big Data, IoT", email: "durgatoshniwal@cs.iitr.ac.in" },
-    { collegeName: "IIT Hyderabad", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Vineeth N. Balasubramanian", areaOfInterest: "Deep Learning, Explainable AI, Computer Vision", email: "vineethnb@ai.iith.ac.in" },
-    { collegeName: "IIT Hyderabad", collegeType: "IIT", department: "Computer Science & Engineering", name: "Prof. Srijith P. K.", areaOfInterest: "Probabilistic Machine Learning, NLP, Bayesian Methods", email: "srijith@cse.iith.ac.in" },
-    { collegeName: "IIIT Hyderabad", collegeType: "IIIT", department: "Computer Science & Engineering", name: "Prof. P. J. Narayanan", areaOfInterest: "Computer Vision, Graphics, HPC", email: "pjn@iiit.ac.in" },
-    { collegeName: "IIIT Hyderabad", collegeType: "IIIT", department: "Computer Science & Engineering", name: "Prof. Manish Singh", areaOfInterest: "Algorithms, Combinatorics, Complexity Theory", email: "msingh@iiit.ac.in" },
-    { collegeName: "IISc Bangalore", collegeType: "IISc", department: "Computer Science & Automation", name: "Prof. V. Vinay", areaOfInterest: "Algorithms, Complexity, Combinatorics", email: null },
-    { collegeName: "IISc Bangalore", collegeType: "IISc", department: "Computer Science & Automation", name: "Prof. Chiranjib Bhattacharyya", areaOfInterest: "Machine Learning, Optimization, Kernel Methods", email: "chiru@csa.iisc.ac.in" },
-    { collegeName: "IISc Bangalore", collegeType: "IISc", department: "Computer Science & Automation", name: "Prof. Shalabh Bhatnagar", areaOfInterest: "Reinforcement Learning, Stochastic Optimization, AI", email: "shalabh@iisc.ac.in" },
-    { collegeName: "NIT Trichy", collegeType: "NIT", department: "Computer Science & Engineering", name: "Prof. N. Krishnan", areaOfInterest: "Image Processing, Computer Vision, Deep Learning", email: "nkrishnan@nitt.edu" },
-    { collegeName: "NIT Trichy", collegeType: "NIT", department: "Computer Science & Engineering", name: "Prof. S. P. Victor", areaOfInterest: "Data Mining, Cloud Computing, Big Data", email: "spvictor@nitt.edu" },
-    { collegeName: "BITS Pilani", collegeType: "BITS", department: "Computer Science & Information Systems", name: "Prof. Navneet Goyal", areaOfInterest: "Machine Learning, Data Analytics, Bioinformatics", email: "navneet@pilani.bits-pilani.ac.in" },
-  ];
-
-  let count = 0;
-  for (const p of professors) {
-    const existing = await prisma.iitProfessor.findFirst({
-      where: { name: p.name, collegeName: p.collegeName },
-    });
-    if (!existing) {
-      await prisma.iitProfessor.create({ data: p });
-      count++;
-    }
-  }
-  log("IIT Professors", count);
-}
-
 // ─── 12. Blog Posts ───────────────────────────────────────────────────
 async function seedBlogPosts() {
   const admin = await prisma.user.findFirst({ where: { role: "ADMIN" } });
@@ -1367,6 +1280,65 @@ async function seedBlogPosts() {
   log("Blog Posts", count);
 }
 
+async function seedGsocOrgs() {
+  const orgs = [
+    {
+      name: "Apache Software Foundation",
+      slug: "apache",
+      url: "https://apache.org",
+      description: "The Apache Software Foundation provides support for the Apache community of open-source software projects.",
+      category: "Software Foundation",
+      technologies: ["Java", "Python", "C++", "Scala"],
+      yearsParticipated: [2021, 2022, 2023, 2024],
+      totalProjects: 100,
+      projectsData: [
+        { year: 2024, title: "Apache Kafka Stream Processing", studentName: "Rahul Sharma" },
+        { year: 2024, title: "Apache Flink Optimization", studentName: "Priya Patel" },
+        { year: 2023, title: "Apache Spark ML Pipeline", studentName: "Arjun Singh" },
+        { year: 2023, title: "Apache Cassandra Driver", studentName: "Sneha Kumar" },
+        { year: 2022, title: "Apache Hadoop YARN", studentName: "Vikram Nair" },
+        { year: 2021, title: "Apache Beam Runner", studentName: "Ananya Roy" },
+      ],
+      ideasUrl: "https://community.apache.org/gsoc.html",
+      guideUrl: "https://community.apache.org/gsoc/guide.html",
+    },
+    {
+      name: "Python Software Foundation",
+      slug: "python",
+      url: "https://python.org",
+      description: "The Python Software Foundation (PSF) is a non-profit organization devoted to the Python programming language.",
+      category: "Programming Languages",
+      technologies: ["Python", "C", "Rust"],
+      yearsParticipated: [2021, 2022, 2023, 2024],
+      totalProjects: 80,
+      projectsData: [
+        { year: 2024, title: "CPython Memory Profiler", studentName: "Amit Kumar" },
+        { year: 2024, title: "PyPI Security Enhancements", studentName: "Sanya Gupta" },
+        { year: 2023, title: "Django Async Support", studentName: "Rohan Joshi" },
+        { year: 2023, title: "Numpy BLAS Integration", studentName: "Ishita Rao" },
+        { year: 2022, title: "Pandas Performance Tuning", studentName: "Karan Singh" },
+      ],
+      ideasUrl: "https://wiki.python.org/moin/SummerOfCode/2024",
+      guideUrl: "https://wiki.python.org/moin/SummerOfCode/ContributorGuide",
+    },
+  ];
+
+  let count = 0;
+  for (const org of orgs) {
+    const existing = await prisma.gsocOrganization.findUnique({ where: { slug: org.slug } });
+    if (!existing) {
+      await prisma.gsocOrganization.create({ data: org });
+      count++;
+    } else {
+      await prisma.gsocOrganization.update({
+        where: { slug: org.slug },
+        data: org,
+      });
+    }
+  }
+  log("GSoC Organizations", count);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────
 async function main() {
   console.log("\n🌱 Seeding InternHack database...\n");
@@ -1375,18 +1347,15 @@ async function main() {
   await seedDsa();
   await seedAptitude();
   await seedCompanies();
-  await seedBadges();
   await seedSkillTests();
   await seedHackathons();
   await seedOpensourceRepos();
   await seedGovInternships();
-  await seedJobs();
   await seedFundingSignals();
   await seedInterviewExperiences();
   await seedYCCompanies();
-  await seedProfessors();
   await seedBlogPosts();
-
+  await seedGsocOrgs();
   console.log("\n✅ Seed complete!\n");
 }
 

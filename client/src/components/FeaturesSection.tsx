@@ -31,7 +31,7 @@ const FEATURES: Feature[] = [
   },
   {
     title: "Smart Job Board",
-    desc: "Curated roles from verified recruiters, one-click apply, saved filters.",
+    desc: "Curated roles from verified sources, one-click apply, saved filters.",
     icon: Briefcase,
     href: "/jobs",
     stat: "1.2k+ roles",

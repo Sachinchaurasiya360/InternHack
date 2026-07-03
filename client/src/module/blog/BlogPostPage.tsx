@@ -41,19 +41,9 @@ import { formatBlogDate } from "./utils/formatBlogDate";
 import { calculateReadingTime } from "./utils/calculateReadingTime";
 
 import type { BlogPost } from "../../lib/types";
-
-// ─────────────────────────────────────────────────────────────
-// HTML Escaping
-// ─────────────────────────────────────────────────────────────
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+import { ReadingProgressBar } from "../../components/ReadingProgressBar";
+import { escapeHtml } from "../../lib/sanitize";
+import { SafeHtml } from "../../components/common/SafeHtml";
 
 // ─────────────────────────────────────────────────────────────
 // Markdown → HTML
@@ -260,6 +250,7 @@ export default function BlogPostPage() {
 
   return (
     <div className="font-sans min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-50">
+      <ReadingProgressBar />
       {post && (
         <SEO
           title={post.title}
@@ -420,11 +411,10 @@ export default function BlogPostPage() {
               </div>
 
               {/* Content */}
-              <div
+              <SafeHtml
                 className="prose-custom max-w-none"
-                dangerouslySetInnerHTML={{
-                  __html: renderedContent,
-                }}
+                html={renderedContent}
+                method="dompurify"
               />
 
               {/* Tags */}

@@ -1,10 +1,9 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsWeb3: Grant[] = [
   {
     id: 1,
     name: "Ecosystem Support Program (ESP)",
-     deadline: "2026-06-20",
     organization: "Ethereum Foundation",
     logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg",
     description:
@@ -20,6 +19,7 @@ export const grantsWeb3: Grant[] = [
       "Academic grants and event sponsorships also offered",
     ],
     status: "Active",
+    deadline: "2027-11-02",
     ecosystem: "Ethereum",
     highlights: [
       "$32M+ distributed in Q1 2025 alone",
@@ -30,7 +30,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 2,
     name: "Community Grants Program",
-     deadline: "2026-06-20",
     organization: "Polygon Labs",
     logo: "https://cryptologos.cc/logos/polygon-matic-logo.svg",
     description:
@@ -46,6 +45,7 @@ export const grantsWeb3: Grant[] = [
       "Season 2 offers 35M POL via Questbook platform",
     ],
     status: "Active",
+    deadline: "2027-11-07",
     ecosystem: "Polygon",
     highlights: [
       "$1 billion committed over 10 years",
@@ -56,7 +56,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 3,
     name: "Foundation Grants",
-     deadline: "2026-06-20",
     organization: "Solana Foundation",
     logo: "https://cryptologos.cc/logos/solana-sol-logo.svg",
     description:
@@ -72,6 +71,7 @@ export const grantsWeb3: Grant[] = [
       "India-specific grants available via Superteam India ($200-$15,000)",
     ],
     status: "Active",
+    deadline: "2027-11-12",
     ecosystem: "Solana",
     highlights: [
       "Fast microgrants via Superteam (decisions in 72 hours)",
@@ -82,7 +82,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 4,
     name: "Community Grant Program",
-     deadline: "2026-06-20",
     organization: "Chainlink",
     logo: "https://cryptologos.cc/logos/chainlink-link-logo.svg",
     description:
@@ -98,6 +97,7 @@ export const grantsWeb3: Grant[] = [
       "Supports core tooling, integrations, and bug bounty programs",
     ],
     status: "Active",
+    deadline: "2027-11-17",
     ecosystem: "Multi-chain",
     highlights: [
       "Grants up to $500K for high-impact projects",
@@ -108,7 +108,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 5,
     name: "Foundation Grants Program",
-     deadline: "2026-06-20",
     organization: "Uniswap Foundation",
     logo: "https://cryptologos.cc/logos/uniswap-uni-logo.svg",
     description:
@@ -124,6 +123,7 @@ export const grantsWeb3: Grant[] = [
       "Hook Incubator for innovative AMM hooks",
     ],
     status: "Active",
+    deadline: "2027-11-22",
     ecosystem: "Ethereum",
     highlights: [
       "$30M pool over two years",
@@ -134,7 +134,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 6,
     name: "Aave Grants DAO",
-     deadline: "2026-06-20",
     organization: "Aave",
     logo: "https://cryptologos.cc/logos/aave-aave-logo.svg",
     description:
@@ -150,6 +149,7 @@ export const grantsWeb3: Grant[] = [
       "Larger requests (>$500K) require community governance proposals",
     ],
     status: "Active",
+    deadline: "2027-11-27",
     ecosystem: "Multi-chain",
     highlights: [
       "~$2M per quarter budget",
@@ -160,7 +160,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 7,
     name: "Retro Funding (RPGF)",
-     deadline: "2026-06-20",
     organization: "Optimism",
     logo: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.svg",
     description:
@@ -176,6 +175,7 @@ export const grantsWeb3: Grant[] = [
       "20% of total OP supply reserved for retro funding",
     ],
     status: "Active",
+    deadline: "2027-12-02",
     ecosystem: "Optimism",
     highlights: [
       "~$3 billion total allocated to public goods",
@@ -186,7 +186,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 8,
     name: "Foundation Grant Program",
-     deadline: "2026-06-20",
     organization: "Arbitrum Foundation",
     logo: "https://cryptologos.cc/logos/arbitrum-arb-logo.svg",
     description:
@@ -202,6 +201,7 @@ export const grantsWeb3: Grant[] = [
       "$190M gaming contribution program for game developers",
     ],
     status: "Active",
+    deadline: "2027-12-07",
     ecosystem: "Arbitrum",
     highlights: [
       "$1M Trailblazer AI Grant pool",
@@ -212,7 +212,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 9,
     name: "Web3 Foundation Grants",
-     deadline: "2026-06-20",
     organization: "Polkadot / Web3 Foundation",
     logo: "https://cryptologos.cc/logos/polkadot-new-dot-logo.svg",
     description:
@@ -228,6 +227,7 @@ export const grantsWeb3: Grant[] = [
       "Mechanisms include grants, investments, and service agreements",
     ],
     status: "Active",
+    deadline: "2027-12-12",
     ecosystem: "Polkadot",
     highlights: [
       "$20M + 5M DOT for Decentralized Futures",
@@ -238,7 +238,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 11,
     name: "ATOM Accelerator DAO",
-     deadline: "2026-06-20",
     organization: "Cosmos / Interchain Foundation",
     logo: "https://cryptologos.cc/logos/cosmos-atom-logo.svg",
     description:
@@ -254,6 +253,7 @@ export const grantsWeb3: Grant[] = [
       "ICF allocated $26.4M across five core areas in 2024",
     ],
     status: "Active",
+    deadline: "2027-12-17",
     ecosystem: "Cosmos",
     highlights: [
       "Grants up to $1M for high-impact projects",
@@ -264,7 +264,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 12,
     name: "Developer Grants & ProPGF",
-     deadline: "2026-06-20",
     organization: "Filecoin Foundation",
     logo: "https://cryptologos.cc/logos/filecoin-fil-logo.svg",
     description:
@@ -280,6 +279,7 @@ export const grantsWeb3: Grant[] = [
       "Builder Next Step Grants: $5K-$10K",
     ],
     status: "Active",
+    deadline: "2027-12-22",
     ecosystem: "Filecoin",
     highlights: [
       "$4M ProPGF batches for open-source projects",
@@ -290,7 +290,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 13,
     name: "Blizzard Fund",
-     deadline: "2026-06-20",
     organization: "Avalanche Foundation",
     logo: "https://cryptologos.cc/logos/avalanche-avax-logo.svg",
     description:
@@ -306,6 +305,7 @@ export const grantsWeb3: Grant[] = [
       "Additional $290M Multiverse Incentive Program available",
     ],
     status: "Active",
+    deadline: "2027-12-27",
     ecosystem: "Avalanche",
     highlights: [
       "100+ projects funded since 2021",
@@ -316,7 +316,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 14,
     name: "Builder Grants",
-     deadline: "2026-06-20",
     organization: "BNB Chain",
     logo: "https://cryptologos.cc/logos/bnb-bnb-logo.svg",
     description:
@@ -332,6 +331,7 @@ export const grantsWeb3: Grant[] = [
       "YZi Labs EASY Residence: 10-week program in Silicon Valley",
     ],
     status: "Active",
+    deadline: "2028-01-01",
     ecosystem: "BNB Chain",
     highlights: [
       "Up to $200K per project",
@@ -342,7 +342,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 15,
     name: "Foundation Grants",
-     deadline: "2026-06-20",
     organization: "Sui Foundation",
     logo: "https://cdn.prod.website-files.com/6425f546844727ce5fb9e5ab/659a55a32fcb71d65908adc3_sui-mark.svg",
     description:
@@ -358,6 +357,7 @@ export const grantsWeb3: Grant[] = [
       "Potential SUI token bonuses for outstanding contributions",
     ],
     status: "Active",
+    deadline: "2028-01-06",
     ecosystem: "Sui",
     highlights: [
       "$50M total allocated for ecosystem grants",
@@ -368,7 +368,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 16,
     name: "Grants Program",
-     deadline: "2026-06-20",
     organization: "Aptos Foundation",
     logo: "https://cryptologos.cc/logos/aptos-apt-logo.svg",
     description:
@@ -384,6 +383,7 @@ export const grantsWeb3: Grant[] = [
       "Google Cloud Credits up to $100K/year for recipients",
     ],
     status: "Active",
+    deadline: "2028-01-11",
     ecosystem: "Aptos",
     highlights: [
       "Payments grants up to $150K",
@@ -393,7 +393,6 @@ export const grantsWeb3: Grant[] = [
   },
   {
     id: 17,
-     deadline: "2026-06-20",
     name: "Seed & Growth Grants",
     organization: "Starknet Foundation",
     logo: "https://www.starknet.io/wp-content/uploads/2024/01/Symbol.svg",
@@ -410,6 +409,7 @@ export const grantsWeb3: Grant[] = [
       "Africa Fund: teams of 1-5 members, Starknet-exclusive",
     ],
     status: "Active",
+    deadline: "2028-01-16",
     ecosystem: "Starknet",
     highlights: [
       "Up to $1M for growth-stage teams",
@@ -420,7 +420,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 19,
     name: "Project Catalyst",
-     deadline: "2026-06-20",
     organization: "Cardano / IOHK",
     logo: "https://cryptologos.cc/logos/cardano-ada-logo.svg",
     description:
@@ -436,6 +435,7 @@ export const grantsWeb3: Grant[] = [
       "Categories: MVP, Product, Developers, Ecosystem, Partners",
     ],
     status: "Active",
+    deadline: "2028-01-21",
     ecosystem: "Cardano",
     highlights: [
       "$150M+ distributed to 2,000+ projects",
@@ -446,7 +446,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 20,
     name: "HBAR Foundation Grants",
-     deadline: "2026-06-20",
     organization: "Hedera Foundation",
     logo: "https://cryptologos.cc/logos/hedera-hbar-logo.svg",
     description:
@@ -462,6 +461,7 @@ export const grantsWeb3: Grant[] = [
       "$155M DeFi Development Fund available",
     ],
     status: "Active",
+    deadline: "2028-01-26",
     ecosystem: "Hedera",
     highlights: [
       "7 billion HBAR multi-year allocation",
@@ -472,7 +472,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 21,
     name: "Gitcoin Grants",
-     deadline: "2026-06-20",
     organization: "Gitcoin",
     logo: "https://cryptologos.cc/logos/gitcoin-gtc-logo.svg",
     description:
@@ -488,6 +487,7 @@ export const grantsWeb3: Grant[] = [
       "Community Rounds have $130K funding pools each",
     ],
     status: "Active",
+    deadline: "2028-01-31",
     ecosystem: "Multi-chain",
     highlights: [
       "Quadratic Funding amplifies community donations",
@@ -498,7 +498,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 23,
     name: "Developer Grant Program",
-     deadline: "2026-06-20",
     organization: "DFINITY Foundation",
     logo: "https://cryptologos.cc/logos/internet-computer-icp-logo.svg",
     description:
@@ -514,6 +513,7 @@ export const grantsWeb3: Grant[] = [
       "Applications reviewed on rolling basis",
     ],
     status: "Active",
+    deadline: "2028-02-05",
     ecosystem: "Internet Computer",
     highlights: [
       "560+ grants to 433+ teams",
@@ -524,7 +524,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 24,
     name: "Ecosystem Grants",
-     deadline: "2026-06-20",
     organization: "Tezos Foundation",
     logo: "https://cryptologos.cc/logos/tezos-xtz-logo.svg",
     description:
@@ -540,6 +539,7 @@ export const grantsWeb3: Grant[] = [
       "~4 weeks review + ~4 weeks paperwork",
     ],
     status: "Active",
+    deadline: "2028-02-10",
     ecosystem: "Tezos",
     highlights: [
       "$9.81M approved in recent biannual period",
@@ -550,7 +550,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 25,
     name: "Base Ecosystem Fund",
-     deadline: "2026-06-20",
     organization: "Coinbase / Base",
     logo: "https://avatars.githubusercontent.com/u/108554348",
     description:
@@ -566,6 +565,7 @@ export const grantsWeb3: Grant[] = [
       "8-week virtual accelerator with Demo Day in SF",
     ],
     status: "Active",
+    deadline: "2028-02-15",
     ecosystem: "Base",
     highlights: [
       "1-5 ETH retroactive grants for shipped projects",
@@ -576,7 +576,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 26,
     name: "xGov Grants & Accelerator",
-     deadline: "2026-06-20",
     organization: "Algorand Foundation",
     logo: "https://cryptologos.cc/logos/algorand-algo-logo.svg",
     description:
@@ -592,6 +591,7 @@ export const grantsWeb3: Grant[] = [
       "India Startup Lab: must have MVP or working prototype",
     ],
     status: "Active",
+    deadline: "2028-02-20",
     ecosystem: "Algorand",
     highlights: [
       "Community-governed xGov system",
@@ -602,7 +602,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 27,
     name: "Compound Foundation Grants",
-     deadline: "2026-06-20",
     organization: "Compound DAO",
     logo: "https://cryptologos.cc/logos/compound-comp-logo.svg",
     description:
@@ -618,6 +617,7 @@ export const grantsWeb3: Grant[] = [
       "Foundation established June 2025 with 18-month term",
     ],
     status: "Active",
+    deadline: "2028-02-25",
     ecosystem: "Ethereum",
     highlights: [
       "~$9M COMP for 18-month foundation",
@@ -628,7 +628,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 28,
     name: "LEGO Grants",
-     deadline: "2026-06-20",
     organization: "Lido DAO",
     logo: "https://cryptologos.cc/logos/lido-dao-ldo-logo.svg",
     description:
@@ -644,6 +643,7 @@ export const grantsWeb3: Grant[] = [
       "Each member responsible for a specific Lido segment",
     ],
     status: "Active",
+    deadline: "2028-03-01",
     ecosystem: "Ethereum",
     highlights: [
       "$60M proposed 2026 budget",
@@ -654,7 +654,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 29,
     name: "Community Grants",
-     deadline: "2026-06-20",
     organization: "MakerDAO / Sky Protocol",
     logo: "https://cryptologos.cc/logos/maker-mkr-logo.svg",
     description:
@@ -670,6 +669,7 @@ export const grantsWeb3: Grant[] = [
       "Open to projects globally",
     ],
     status: "Active",
+    deadline: "2028-03-06",
     ecosystem: "Ethereum",
     highlights: [
       "Focus on financial inclusion",
@@ -680,7 +680,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 30,
     name: "WAGBI Developer Grants",
-     deadline: "2026-06-20",
     organization: "Alchemy",
     logo: "https://www.alchemy.com/best/cdn-cgi/image/width=256,height=256/https://static.alchemyapi.io/images/marketing/alchemy-logo.png",
     description:
@@ -696,6 +695,7 @@ export const grantsWeb3: Grant[] = [
       "Commit to at least 1 co-marketing initiative annually",
     ],
     status: "Active",
+    deadline: "2028-03-11",
     ecosystem: "Multi-chain",
     highlights: [
       "$25M total pool",
@@ -706,7 +706,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 31,
     name: "MetaMask Grants DAO",
-     deadline: "2026-06-20",
     organization: "ConsenSys",
     logo: "https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg",
     description:
@@ -722,6 +721,7 @@ export const grantsWeb3: Grant[] = [
       "ConsenSys Fellowship: 12-week pre-accelerator also available",
     ],
     status: "Active",
+    deadline: "2028-03-16",
     ecosystem: "Ethereum",
     highlights: [
       "$600K per quarter budget",
@@ -732,7 +732,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 32,
     name: "XRPL Grants",
-     deadline: "2026-06-20",
     organization: "Ripple / XRPL Foundation",
     logo: "https://cryptologos.cc/logos/xrp-xrp-logo.svg",
     description:
@@ -748,6 +747,7 @@ export const grantsWeb3: Grant[] = [
       "New programming expected Spring 2026",
     ],
     status: "Paused",
+    deadline: "2028-03-21",
     ecosystem: "XRPL",
     highlights: [
       "140+ projects funded from 28 countries",
@@ -758,7 +758,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 33,
     name: "Stellar Community Fund",
-     deadline: "2026-06-20",
     organization: "Stellar Development Foundation",
     logo: "https://cryptologos.cc/logos/stellar-xlm-logo.svg",
     description:
@@ -774,6 +773,7 @@ export const grantsWeb3: Grant[] = [
       "Academic research grants for financial inclusion studies",
     ],
     status: "Active",
+    deadline: "2028-03-26",
     ecosystem: "Stellar",
     highlights: [
       "Up to $150K per project",
@@ -784,7 +784,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 36,
     name: "Grants Program",
-     deadline: "2026-06-20",
     organization: "The Graph Foundation",
     logo: "https://cryptologos.cc/logos/the-graph-grt-logo.svg",
     description:
@@ -800,6 +799,7 @@ export const grantsWeb3: Grant[] = [
       "Evolving toward multi-service data and AI infrastructure",
     ],
     status: "Active",
+    deadline: "2028-03-31",
     ecosystem: "Multi-chain",
     highlights: [
       "$5M+ distributed in Wave 1",
@@ -810,7 +810,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 37,
     name: "OceanDAO & Shipyard",
-     deadline: "2026-06-20",
     organization: "Ocean Protocol",
     logo: "https://cryptologos.cc/logos/ocean-protocol-ocean-logo.svg",
     description:
@@ -826,6 +825,7 @@ export const grantsWeb3: Grant[] = [
       "OceanDAO: up to $50K per grant in monthly rounds",
     ],
     status: "Active",
+    deadline: "2028-04-05",
     ecosystem: "Multi-chain",
     highlights: [
       "$140M total OceanDAO pool",
@@ -836,7 +836,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 38,
     name: "Community Grants",
-     deadline: "2026-06-20",
     organization: "Celo Foundation",
     logo: "https://cryptologos.cc/logos/celo-celo-logo.svg",
     description:
@@ -852,6 +851,7 @@ export const grantsWeb3: Grant[] = [
       "GoodBuilders: year-long support with funding and mentorship",
     ],
     status: "Active",
+    deadline: "2028-04-10",
     ecosystem: "Celo",
     highlights: [
       "Strong financial inclusion focus",
@@ -862,7 +862,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 39,
     name: "DAO Grants",
-     deadline: "2026-06-20",
     organization: "Decentraland",
     logo: "https://cryptologos.cc/logos/decentraland-mana-logo.svg",
     description:
@@ -878,6 +877,7 @@ export const grantsWeb3: Grant[] = [
       "Paid in MANA at current exchange rate",
     ],
     status: "Active",
+    deadline: "2028-04-15",
     ecosystem: "Decentraland",
     highlights: [
       "222M MANA DAO treasury",
@@ -888,7 +888,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 40,
     name: "Game Maker Fund & DAO",
-     deadline: "2026-06-20",
     organization: "The Sandbox",
     logo: "https://cryptologos.cc/logos/the-sandbox-sand-logo.svg",
     description:
@@ -904,6 +903,7 @@ export const grantsWeb3: Grant[] = [
       "Accelerator: up to $250K investment + $150K in SAND tokens",
     ],
     status: "Active",
+    deadline: "2028-04-20",
     ecosystem: "The Sandbox",
     highlights: [
       "$50M accelerator for 100 startups",
@@ -914,7 +914,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 41,
     name: "Ecosystem Working Group Grants",
-     deadline: "2026-06-20",
     organization: "ENS DAO",
     logo: "https://cryptologos.cc/logos/ethereum-name-service-ens-logo.svg",
     description:
@@ -930,6 +929,7 @@ export const grantsWeb3: Grant[] = [
       "Growth Grants: $10K retroactive awards to 5 projects per round",
     ],
     status: "Active",
+    deadline: "2028-04-25",
     ecosystem: "Ethereum",
     highlights: [
       "Funded by .eth domain registration fees",
@@ -940,7 +940,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 42,
     name: "Zcash Community Grants",
-     deadline: "2026-06-20",
     organization: "Zcash / Financial Privacy Foundation",
     logo: "https://cryptologos.cc/logos/zcash-zec-logo.svg",
     description:
@@ -956,6 +955,7 @@ export const grantsWeb3: Grant[] = [
       "Retroactive grants require proposal during open call periods",
     ],
     status: "Active",
+    deadline: "2028-04-30",
     ecosystem: "Zcash",
     highlights: [
       "Continuous funding from mining rewards",
@@ -966,7 +966,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 43,
     name: "1inch Grants Program",
-     deadline: "2026-06-20",
     organization: "1inch Foundation",
     logo: "https://cryptologos.cc/logos/1inch-1inch-logo.svg",
     description:
@@ -982,6 +981,7 @@ export const grantsWeb3: Grant[] = [
       "Grants paid in 1INCH tokens or other agreed currencies",
     ],
     status: "Active",
+    deadline: "2028-05-05",
     ecosystem: "Multi-chain",
     highlights: [
       "$3M over 12 months",
@@ -992,7 +992,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 44,
     name: "Radicle Grants",
-     deadline: "2026-06-20",
     organization: "Radworks",
     logo: "https://app.radworks.org/favicon.ico",
     description:
@@ -1008,6 +1007,7 @@ export const grantsWeb3: Grant[] = [
       "Payment: 40% upfront, 60% upon completion",
     ],
     status: "Active",
+    deadline: "2028-05-10",
     ecosystem: "Multi-chain",
     highlights: [
       "Up to $500K for Tree Grants",
@@ -1018,7 +1018,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 45,
     name: "Navigators & Core Grants",
-     deadline: "2026-06-20",
     organization: "Mina Foundation",
     logo: "https://cryptologos.cc/logos/mina-protocol-mina-logo.svg",
     description:
@@ -1034,6 +1033,7 @@ export const grantsWeb3: Grant[] = [
       "Navigators Growth Track: up to 100K MINA",
     ],
     status: "Active",
+    deadline: "2028-05-15",
     ecosystem: "Mina",
     highlights: [
       "2.3M MINA for Season 3 Navigators",
@@ -1044,7 +1044,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 46,
     name: "Sonic Innovator Fund",
-     deadline: "2026-06-20",
     organization: "Fantom / Sonic Foundation",
     logo: "https://cryptologos.cc/logos/fantom-ftm-logo.svg",
     description:
@@ -1060,6 +1059,7 @@ export const grantsWeb3: Grant[] = [
       "Accelerator: up to 5 projects from 1M FTM pool",
     ],
     status: "Active",
+    deadline: "2028-05-20",
     ecosystem: "Fantom",
     highlights: [
       "200M FTM Innovator Fund",
@@ -1070,7 +1070,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 47,
     name: "Foundation Grants",
-     deadline: "2026-06-20",
     organization: "Moonbeam Foundation",
     logo: "https://moonbeam.network/wp-content/uploads/2020/03/cropped-Moonbeam-Favicon-550px-32x32.png",
     description:
@@ -1086,6 +1085,7 @@ export const grantsWeb3: Grant[] = [
       "No gambling, illicit trade, or criminal activity projects",
     ],
     status: "Active",
+    deadline: "2028-05-25",
     ecosystem: "Moonbeam",
     highlights: [
       "Up to $3M for mature ecosystem projects",
@@ -1096,8 +1096,7 @@ export const grantsWeb3: Grant[] = [
   {
     id: 49,
     name: "Kadena Grants",
-     deadline: "2026-06-20",
-    organization: "Kadena",  
+    organization: "Kadena",
     logo: "https://cryptologos.cc/logos/kadena-kda-logo.svg",
     description:
       "A $50M grant initiative with dual focus: $25M toward real-world asset (RWA) tokenization and $25M toward EVM and AI-driven innovation. Strong focus on Chainweb EVM tooling.",
@@ -1112,6 +1111,7 @@ export const grantsWeb3: Grant[] = [
       "AI-integrated blockchain applications",
     ],
     status: "Active",
+    deadline: "2028-05-30",
     ecosystem: "Kadena",
     highlights: [
       "$25M for RWA tokenization",
@@ -1122,7 +1122,6 @@ export const grantsWeb3: Grant[] = [
   {
     id: 50,
     name: "Harmony Grants",
-     deadline: "2026-06-20",
     organization: "Harmony Foundation",
     logo: "https://cryptologos.cc/logos/harmony-one-logo.svg",
     description:
@@ -1138,6 +1137,7 @@ export const grantsWeb3: Grant[] = [
       "Currently not accepting new applications",
     ],
     status: "Paused",
+    deadline: "2028-06-04",
     ecosystem: "Harmony",
     highlights: [
       "$300M+ original treasury",

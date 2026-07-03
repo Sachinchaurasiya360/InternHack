@@ -64,14 +64,8 @@ Rules:
   }
 }
 
-export async function generateEmbedding(text: string): Promise<number[]> {
-  const model = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
-  const result = await model.embedContent({
-    content: { role: "user", parts: [{ text }] },
-    outputDimensionality: 768,
-  } as Parameters<typeof model.embedContent>[0] & { outputDimensionality?: number });
-  return result.embedding.values;
-}
+import { generateEmbedding, EMBEDDING_VECTOR_SIZE } from "../../lib/embedding.js";
+export { generateEmbedding, EMBEDDING_VECTOR_SIZE };
 
 export function buildJobEmbeddingText(job: {
   title: string;

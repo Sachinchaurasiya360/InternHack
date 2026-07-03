@@ -35,7 +35,6 @@ CURRENT USER PROFILE:
 - Graduating: ${user?.graduationYear || "Not set"}
 - Skills: ${user?.skills?.join(", ") || "None listed"}
 - Location: ${user?.location || "Not set"}
-- Job Status: ${user?.jobStatus || "Not set"}
 - Bio: ${user?.bio || "Not set"}
 
 CURRENT PREFERENCES:
@@ -241,7 +240,7 @@ export class JobAgentService {
       where: { id: userId },
       select: {
         name: true, skills: true, college: true,
-        graduationYear: true, bio: true, location: true, jobStatus: true,
+        graduationYear: true, bio: true, location: true,
       },
     });
     const pref = await prisma.userJobPreference.findUnique({ where: { userId } });
@@ -308,7 +307,7 @@ export class JobAgentService {
       where: { id: userId },
       select: {
         name: true, skills: true, college: true,
-        graduationYear: true, bio: true, location: true, jobStatus: true,
+        graduationYear: true, bio: true, location: true,
       },
     });
     const pref = await prisma.userJobPreference.findUnique({ where: { userId } });

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Globe, Triangle } from "lucide-react";
 import EngineeringLessonShell from "@/components/engineering/EngineeringLessonShell";
 import type { EngTabDef, EngQuizQuestion } from "@/components/engineering/EngineeringLessonShell";
+import { SafeHtml } from "@/components/common/SafeHtml";
 
 const SD = "#84cc16";
 const NEUTRAL = "#64748b";
@@ -118,9 +119,9 @@ function Definition() {
                 </div>
               </div>
             </div>
-            <div
+            <SafeHtml
               style={{ fontSize: "0.85rem", color: "var(--eng-text-muted)", lineHeight: 1.55 }}
-              dangerouslySetInnerHTML={{ __html: p.long }}
+              html={p.long}
             />
             <div
               style={{

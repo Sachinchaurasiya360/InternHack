@@ -136,7 +136,7 @@ export class AdminEventsService {
   async sendBroadcastEmail(input: {
     subject: string;
     body: string;
-    filter: { role: "STUDENT" | "RECRUITER" | "ADMIN" | "ALL"; isVerified?: boolean | undefined; subscriptionPlan: "FREE" | "MONTHLY" | "YEARLY" | "ALL" };
+    filter: { role: "STUDENT" | "ADMIN" | "ALL"; isVerified?: boolean | undefined; subscriptionPlan: "FREE" | "MONTHLY" | "YEARLY" | "ALL" };
     testEmail?: string | undefined;
     adminId: number;
   }) {
@@ -205,8 +205,7 @@ export class AdminEventsService {
       GEMINI: !!process.env["GEMINI_API_KEY"],
       GROQ: !!process.env["GROQ_API_KEY"],
       OPENROUTER: !!process.env["OPENROUTER_API_KEY"],
-      CODESTRAL: !!process.env["CODESTRAL_API_KEY"],
-      CLAUDE: !!process.env["CLAUDE_API"],
+      CODESTRAL: !!process.env["CODESTRAL_API_KEY"]
     };
 
     return { configs, envStatus };

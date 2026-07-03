@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
-import { Save, Loader2, Github } from "lucide-react";
+import { CheckCircle2, ExternalLink, RefreshCw, Save, Loader2, Github, ShieldCheck, Trash2 } from "lucide-react";
 import { ProfilePageHeader } from "./components/ProfilePageHeader";
-import type { VerifiedSkill, ProjectItem, AchievementItem } from "../../../lib/types";
+import type { GithubConnectionResponse, VerifiedSkill, ProjectItem } from "../../../lib/types";
 import api from "../../../lib/axios";
 import { uploadDirectToS3 } from "../../../utils/upload";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
 import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 import GitHubImportModal from "./GitHubImportModal";
 import GitHubStatsCard from "./GitHubStatsCard";
-import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import { SectionHeader } from "./components/SectionHeader";
 import { IdentityCard } from "./components/IdentityCard";
@@ -20,12 +22,11 @@ import { ProfileStrengthCard } from "./components/ProfileStrengthCard";
 import { BasicInfoSection } from "./components/BasicInfoSection";
 import { EducationSection } from "./components/EducationSection";
 import { SkillsSection } from "./components/SkillsSection";
-import { JobPreferencesSection } from "./components/JobPreferencesSection";
 import { ProjectsSection } from "./components/ProjectsSection";
-import { AchievementsSection } from "./components/AchievementsSection";
 import { SocialLinksSection } from "./components/SocialLinksSection";
 import { ResumesSection } from "./components/ResumesSection";
 import { cardCls } from "./components/styles";
+import { markLearningPathMilestone } from "../opensource/learning-paths.data";
 
 interface ProfileData {
   name: string;
@@ -45,10 +46,7 @@ interface ProfileData {
   githubUrl: string;
   portfolioUrl: string;
   leetcodeUrl: string;
-  jobStatus: string | null;
-  isProfilePublic: boolean;
   projects: ProjectItem[];
-  achievements: AchievementItem[];
 }
 
 const VERIFIABLE_SKILLS = [
@@ -63,6 +61,107 @@ interface CollegeSuggestion {
   name: string;
   country: string;
   stateProvince: string | null;
+}
+
+function formatGithubDate(value: string | null) {
+  if (!value) return "Never";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
+function GithubConnectionSettings({
+  data,
+  isLoading,
+  onConnect,
+  onSync,
+  onDisconnect,
+  connecting,
+  syncing,
+  disconnecting,
+}: {
+  data?: GithubConnectionResponse;
+  isLoading: boolean;
+  onConnect: () => void;
+  onSync: () => void;
+  onDisconnect: () => void;
+  connecting: boolean;
+  syncing: boolean;
+  disconnecting: boolean;
+}) {
+  const connection = data?.connection;
+  const connected = Boolean(data?.connected && connection);
+
+  return (
+    <div className="mt-5 rounded-md border border-stone-200 bg-stone-50 p-4 dark:border-white/10 dark:bg-white/5">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
+          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
+            <ShieldCheck className="h-3.5 w-3.5 text-lime-500" />
+            verified contributions
+          </div>
+          {isLoading ? (
+            <p className="flex items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Loading GitHub connection...
+            </p>
+          ) : connected && connection ? (
+            <>
+              <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-50">
+                @{connection.githubUsername} connected
+              </p>
+              <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                {connection.prsMerged.toLocaleString()} merged PRs · {connection.reposContributed.toLocaleString()} repos · synced {formatGithubDate(connection.lastSyncAt)}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-semibold text-stone-900 dark:text-stone-50">
+                Connect GitHub OAuth
+              </p>
+              <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                Verify merged public PRs from non-fork open-source repositories.
+              </p>
+            </>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {connected && connection ? (
+            <>
+              <Button asChild variant="secondary" size="sm">
+                <a href="/student/opensource/analytics?github=connected">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Analytics
+                </a>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <a href={connection.profileUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                  Profile
+                </a>
+              </Button>
+              <Button onClick={onSync} disabled={syncing || connection.syncStatus === "SYNCING"} variant="secondary" size="sm">
+                {syncing || connection.syncStatus === "SYNCING" ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                Sync
+              </Button>
+              <Button onClick={onDisconnect} disabled={disconnecting} variant="destructive" size="sm">
+                {disconnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                Disconnect
+              </Button>
+            </>
+          ) : (
+            <Button onClick={onConnect} disabled={connecting || isLoading} size="sm">
+              {connecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Github className="h-4 w-4" />}
+              Connect GitHub
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 const MAX_RESUMES = 2;
@@ -83,11 +182,10 @@ export default function StudentProfilePage() {
     resumes: [], profilePic: "", coverImage: "", bio: "", college: "",
     graduationYear: null, skills: [], location: "",
     linkedinUrl: "", githubUrl: "", portfolioUrl: "", leetcodeUrl: "",
-    jobStatus: null, isProfilePublic: false, projects: [], achievements: [],
+    projects: [],
   });
   const [memberSince, setMemberSince] = useState<string | null>(null);
   const [skillInput, setSkillInput] = useState("");
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingPic, setUploadingPic] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -95,23 +193,49 @@ export default function StudentProfilePage() {
   const [deletingResume, setDeletingResume] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    basic: true, education: true, skills: true, jobPrefs: false, projects: true, achievements: true, links: false, resumes: true,
+    basic: true, education: true, skills: true, projects: true, links: false, resumes: true,
   });
-  const [jobPrefRoles, setJobPrefRoles] = useState("");
-  const [jobPrefSkills, setJobPrefSkills] = useState("");
-  const [jobPrefLocations, setJobPrefLocations] = useState("");
-  const [jobPrefSalary, setJobPrefSalary] = useState("");
-  const [jobPrefWorkMode, setJobPrefWorkMode] = useState<string[]>([]);
-  const [jobPrefExpLevel, setJobPrefExpLevel] = useState<string[]>([]);
-  const [jobPrefDomains, setJobPrefDomains] = useState<string[]>([]);
-  const [savingJobPrefs, setSavingJobPrefs] = useState(false);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [cropType, setCropType] = useState<"profile" | "cover" | null>(null);
   const [showGitHubImport, setShowGitHubImport] = useState(false);
-  const [profileUrlCopied, setProfileUrlCopied] = useState(false);
 
-  const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
-  const verifiedMap = new Map(verifiedSkills.map((v) => [v.skillName.toLowerCase(), v]));
+  const queryClient = useQueryClient();
+  const formInitialized = useRef(false);
+
+  const { data: githubConnectionData, isLoading: githubConnectionIsLoading } = useQuery<GithubConnectionResponse>({
+    queryKey: queryKeys.opensource.githubConnection(),
+    queryFn: () => api.get("/github/connection").then((r) => r.data),
+    staleTime: 60 * 1000,
+  });
+
+  const connectGithubMutation = useMutation({
+    mutationFn: async () => {
+      const res = await api.post<{ authUrl: string }>("/github/connect");
+      return res.data.authUrl;
+    },
+    onSuccess: (authUrl) => {
+      window.location.href = authUrl;
+    },
+    onError: () => toast.error("Could not start GitHub connection"),
+  });
+
+  const syncGithubMutation = useMutation({
+    mutationFn: async () => api.post<GithubConnectionResponse>("/github/sync").then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
+      toast.success("GitHub contributions synced");
+    },
+    onError: () => toast.error("GitHub sync failed"),
+  });
+
+  const disconnectGithubMutation = useMutation({
+    mutationFn: async () => api.delete<GithubConnectionResponse>("/github/connection").then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
+      toast.success("GitHub disconnected");
+    },
+    onError: () => toast.error("Could not disconnect GitHub"),
+  });
 
   const [collegeSuggestions, setCollegeSuggestions] = useState<CollegeSuggestion[]>([]);
   const [collegeLoading, setCollegeLoading] = useState(false);
@@ -123,6 +247,7 @@ export default function StudentProfilePage() {
   const collegeDropdownRef = useRef<HTMLDivElement>(null);
   const skillInputRef = useRef<HTMLInputElement>(null);
   const skillDropdownRef = useRef<HTMLDivElement>(null);
+  const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
 
   const filteredSkillSuggestions = skillInput.trim().length > 0
     ? VERIFIABLE_SKILLS.filter((s) => {
@@ -132,46 +257,46 @@ export default function StudentProfilePage() {
       })
     : [];
 
+  // ── React Query: profile, verified skills, job prefs ─────────────────
   useEffect(() => {
-    api.get("/auth/me")
-      .then((res) => {
-        const u = res.data.user;
-        setForm({
-          name: u.name ?? "", email: u.email ?? "", contactNo: u.contactNo ?? "",
-          company: u.company ?? "", designation: u.designation ?? "",
-          resumes: u.resumes ?? [], profilePic: u.profilePic ?? "",
-          coverImage: u.coverImage ?? "", bio: u.bio ?? "", college: u.college ?? "",
-          graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
-          location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
-          githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
-          leetcodeUrl: u.leetcodeUrl ?? "",
-          jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
-          projects: u.projects ?? [], achievements: u.achievements ?? [],
-        });
-        setMemberSince(u.createdAt ?? null);
-      })
-      .catch(() => toast.error("Failed to load profile"))
-      .finally(() => setLoading(false));
+    if (form.githubUrl.trim()) {
+      markLearningPathMilestone("github-oauth");
+    }
+  }, [form.githubUrl]);
 
-    api.get("/skill-tests/my-verified")
-      .then((res) => setVerifiedSkills(res.data.verified ?? []))
-      .catch((err) => console.error("Failed to fetch verified skills:", err));
+  const { data: profileUser, isLoading } = useQuery({
+    queryKey: queryKeys.profile.me(),
+    queryFn: () => api.get("/auth/me").then((r) => r.data.user),
+    staleTime: 5 * 60 * 1000,
+  });
 
-    api.get("/job-feed/preferences")
-      .then((res) => {
-        if (res.data) {
-          const p = res.data;
-          setJobPrefRoles(p.desiredRoles?.join(", ") || "");
-          setJobPrefSkills(p.desiredSkills?.join(", ") || "");
-          setJobPrefLocations(p.desiredLocations?.join(", ") || "");
-          setJobPrefSalary(p.minSalary ? String(p.minSalary / 100000) : "");
-          setJobPrefWorkMode(p.workMode || []);
-          setJobPrefExpLevel(p.experienceLevel || []);
-          setJobPrefDomains(p.domains || []);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const { data: verifiedData } = useQuery({
+    queryKey: queryKeys.skillTests.myVerified(),
+    queryFn: () => api.get("/skill-tests/my-verified").then((r) => r.data),
+    staleTime: 60 * 60 * 1000,
+  });
+
+  // Initialise form once when profile data first arrives
+  useEffect(() => {
+    if (!profileUser || formInitialized.current) return;
+    formInitialized.current = true;
+    const u = profileUser;
+    setForm({
+      name: u.name ?? "", email: u.email ?? "", contactNo: u.contactNo ?? "",
+      company: u.company ?? "", designation: u.designation ?? "",
+      resumes: u.resumes ?? [], profilePic: u.profilePic ?? "",
+      coverImage: u.coverImage ?? "", bio: u.bio ?? "", college: u.college ?? "",
+      graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
+      location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
+      githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
+      leetcodeUrl: u.leetcodeUrl ?? "",
+      projects: u.projects ?? [],
+    });
+    setMemberSince(u.createdAt ?? null);
+  }, [profileUser]);
+
+  const verifiedSkills: VerifiedSkill[] = verifiedData?.verified ?? [];
+  const verifiedMap = new Map(verifiedSkills.map((v: VerifiedSkill) => [v.skillName.toLowerCase(), v]));
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -238,9 +363,7 @@ export default function StudentProfilePage() {
       location: updated.location, linkedinUrl: updated.linkedinUrl,
       githubUrl: updated.githubUrl, portfolioUrl: updated.portfolioUrl,
       leetcodeUrl: updated.leetcodeUrl,
-      jobStatus: updated.jobStatus as "NO_OFFER" | "LOOKING" | "OPEN_TO_OFFER" | null,
-      isProfilePublic: updated.isProfilePublic,
-      projects: updated.projects, achievements: updated.achievements,
+      projects: updated.projects,
     });
   };
 
@@ -262,6 +385,15 @@ export default function StudentProfilePage() {
     if (!form.name.trim() || form.name.trim().length < 2) {
       toast.error("Name must be at least 2 characters"); return;
     }
+    if (form.contactNo && form.contactNo.trim()) {
+      const normalizedPhone = form.contactNo.replace(/[\s-]/g, "");
+      if (!/^\+\d{11,13}$/.test(normalizedPhone)) {
+        toast.error("Phone must include country code (e.g. +91 9876543210)");
+        setFieldErrors((prev) => ({ ...prev, contactNo: ["Phone must include country code (e.g. +91 9876543210)"] }));
+        setOpenSections((prev) => ({ ...prev, basic: true }));
+        return;
+      }
+    }
     setFieldErrors({});
     setSaving(true);
     try {
@@ -273,8 +405,7 @@ export default function StudentProfilePage() {
         location: form.location.trim(), linkedinUrl: form.linkedinUrl.trim(),
         githubUrl: form.githubUrl.trim(), portfolioUrl: form.portfolioUrl.trim(),
         leetcodeUrl: form.leetcodeUrl.trim(),
-        jobStatus: form.jobStatus || null, isProfilePublic: form.isProfilePublic,
-        projects: form.projects, achievements: form.achievements,
+        projects: form.projects,
       });
       const u = res.data.user;
       const updated: ProfileData = {
@@ -285,11 +416,11 @@ export default function StudentProfilePage() {
         location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
         githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
         leetcodeUrl: u.leetcodeUrl ?? "",
-        jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
-        projects: u.projects ?? [], achievements: u.achievements ?? [],
+        projects: u.projects ?? [],
       };
       setForm(updated);
       syncUser(updated);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.profile.me() });
       toast.success("Profile updated!");
     } catch (err: unknown) {
       const errData = (err as { response?: { data?: { errors?: { fieldErrors?: Record<string, string[]> } } } })?.response?.data;
@@ -297,11 +428,11 @@ export default function StudentProfilePage() {
         const fe = errData.errors.fieldErrors;
         setFieldErrors(fe);
         const sectionMap: Record<string, string> = {
-          name: "basic", contactNo: "basic", bio: "basic", location: "basic", jobStatus: "basic",
+          name: "basic", contactNo: "basic", bio: "basic", location: "basic",
           college: "education", graduationYear: "education", company: "education", designation: "education",
           skills: "skills",
           linkedinUrl: "links", githubUrl: "links", portfolioUrl: "links",
-          projects: "projects", achievements: "achievements",
+          projects: "projects",
         };
         setOpenSections((prev) => {
           const next = { ...prev };
@@ -407,24 +538,11 @@ export default function StudentProfilePage() {
     }
   };
 
-  const handleCopyProfileUrl = async () => {
-    const url = `${window.location.origin}/student/profile/public/${user?.id}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setProfileUrlCopied(true);
-      toast.success("Profile URL copied!");
-      setTimeout(() => setProfileUrlCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy URL");
-    }
-  };
-
   const toggleSection = (key: string) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const displayDate = memberSince || user?.createdAt;
-  const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
 
   const profileCompletion = (() => {
     const fields = [form.name, form.bio, form.contactNo, form.location, form.college, form.company, form.linkedinUrl, form.githubUrl];
@@ -434,7 +552,7 @@ export default function StudentProfilePage() {
     return Math.round(((filled + hasSkills + hasResume) / (fields.length + 2)) * 100);
   })();
 
-  if (loading) return <LoadingScreen />;
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div className="relative pb-16">
@@ -458,15 +576,10 @@ export default function StudentProfilePage() {
               linkedinUrl={form.linkedinUrl}
               githubUrl={form.githubUrl}
               portfolioUrl={form.portfolioUrl}
-              isProfilePublic={form.isProfilePublic}
               uploadingPic={uploadingPic}
               uploadingCover={uploadingCover}
-              profileUrlCopied={profileUrlCopied}
-              userId={user?.id}
               onProfilePicSelect={handleProfilePicSelect}
               onCoverImageSelect={handleCoverImageSelect}
-              onTogglePublic={() => setForm((prev) => ({ ...prev, isProfilePublic: !prev.isProfilePublic }))}
-              onCopyProfileUrl={handleCopyProfileUrl}
             />
           </motion.div>
 
@@ -479,11 +592,6 @@ export default function StudentProfilePage() {
             />
           </motion.div>
 
-          {user?.id && (
-            <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible">
-              <BadgesSection studentId={user.id} />
-            </motion.div>
-          )}
 
           <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible">
             <GitHubStatsCard githubUrl={form.githubUrl} />
@@ -507,7 +615,6 @@ export default function StudentProfilePage() {
                 bio={form.bio}
                 contactNo={form.contactNo}
                 location={form.location}
-                jobStatus={form.jobStatus}
                 fieldErrors={fieldErrors}
                 onChange={(field, value) => handleChange(field as keyof ProfileData, value)}
               />
@@ -568,43 +675,12 @@ export default function StudentProfilePage() {
             )}
           </motion.div>
 
-          {/* Job Preferences */}
+          {/* Projects */}
           <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
               kicker="section / 04"
-              title="Job preferences"
-              meta="ai matching"
-              open={openSections.jobPrefs}
-              onToggle={() => toggleSection("jobPrefs")}
-            />
-            {openSections.jobPrefs && (
-              <JobPreferencesSection
-                jobPrefRoles={jobPrefRoles}
-                jobPrefSkills={jobPrefSkills}
-                jobPrefLocations={jobPrefLocations}
-                jobPrefSalary={jobPrefSalary}
-                jobPrefWorkMode={jobPrefWorkMode}
-                jobPrefExpLevel={jobPrefExpLevel}
-                jobPrefDomains={jobPrefDomains}
-                savingJobPrefs={savingJobPrefs}
-                onRolesChange={setJobPrefRoles}
-                onSkillsChange={setJobPrefSkills}
-                onLocationsChange={setJobPrefLocations}
-                onSalaryChange={setJobPrefSalary}
-                onWorkModeChange={setJobPrefWorkMode}
-                onExpLevelChange={setJobPrefExpLevel}
-                onDomainsChange={setJobPrefDomains}
-                onSavingChange={setSavingJobPrefs}
-              />
-            )}
-          </motion.div>
-
-          {/* Projects */}
-          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
-            <SectionHeader
-              kicker="section / 05"
-              title="Projects"
-              meta={`${form.projects.length}/10`}
+              title="Featured Projects"
+              meta={`${form.projects.length}/4`}
               open={openSections.projects}
               onToggle={() => toggleSection("projects")}
               right={
@@ -629,31 +705,10 @@ export default function StudentProfilePage() {
             )}
           </motion.div>
 
-          {/* Achievements */}
-          <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
-            <SectionHeader
-              kicker="section / 06"
-              title="Achievements & leadership"
-              meta={`${form.achievements.length}/10`}
-              open={openSections.achievements}
-              onToggle={() => toggleSection("achievements")}
-            />
-            {openSections.achievements && (
-              <AchievementsSection
-                achievements={form.achievements}
-                onChange={(achievements) => {
-                  setForm((prev) => ({ ...prev, achievements }));
-                  if (fieldErrors.achievements) setFieldErrors((prev) => { const next = { ...prev }; delete next.achievements; return next; });
-                }}
-                errors={fieldErrors.achievements}
-              />
-            )}
-          </motion.div>
-
           {/* Social links */}
-          <motion.div custom={6} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
-              kicker="section / 07"
+              kicker="section / 05"
               title="Social links"
               meta={
                 [form.linkedinUrl, form.githubUrl, form.portfolioUrl, form.leetcodeUrl].filter(Boolean).length > 0
@@ -664,21 +719,33 @@ export default function StudentProfilePage() {
               onToggle={() => toggleSection("links")}
             />
             {openSections.links && (
-              <SocialLinksSection
-                linkedinUrl={form.linkedinUrl}
-                githubUrl={form.githubUrl}
-                portfolioUrl={form.portfolioUrl}
-                leetcodeUrl={form.leetcodeUrl}
-                fieldErrors={fieldErrors}
-                onChange={(field, value) => handleChange(field as keyof ProfileData, value)}
-              />
+              <>
+                <SocialLinksSection
+                  linkedinUrl={form.linkedinUrl}
+                  githubUrl={form.githubUrl}
+                  portfolioUrl={form.portfolioUrl}
+                  leetcodeUrl={form.leetcodeUrl}
+                  fieldErrors={fieldErrors}
+                  onChange={(field, value) => handleChange(field as keyof ProfileData, value)}
+                />
+                <GithubConnectionSettings
+                  data={githubConnectionData}
+                  isLoading={githubConnectionIsLoading}
+                  onConnect={() => connectGithubMutation.mutate()}
+                  onSync={() => syncGithubMutation.mutate()}
+                  onDisconnect={() => disconnectGithubMutation.mutate()}
+                  connecting={connectGithubMutation.isPending}
+                  syncing={syncGithubMutation.isPending}
+                  disconnecting={disconnectGithubMutation.isPending}
+                />
+              </>
             )}
           </motion.div>
 
           {/* Resumes */}
-          <motion.div custom={7} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
+          <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible" className={cardCls}>
             <SectionHeader
-              kicker="section / 08"
+              kicker="section / 06"
               title="Resumes"
               meta={`${form.resumes.length}/${MAX_RESUMES}`}
               open={openSections.resumes}
@@ -698,8 +765,8 @@ export default function StudentProfilePage() {
           {/* Coding activity */}
           <motion.div custom={9} variants={fadeInUp} initial="hidden" animate="visible">
             <ContributionGraphs
-              githubUsername={form.githubUrl ? form.githubUrl.split("github.com/").pop()?.replace(/\/$/, "") : undefined}
-              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("leetcode.com/").pop()?.replace(/^\/?u\//, "").replace(/\/$/, "") : undefined}
+              githubUsername={form.githubUrl ? form.githubUrl.split("/").filter(Boolean).pop() : undefined}
+              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("/").filter(Boolean).pop() : undefined}
               showPrompts
             />
           </motion.div>

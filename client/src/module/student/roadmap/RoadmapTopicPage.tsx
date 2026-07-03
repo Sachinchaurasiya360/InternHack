@@ -10,8 +10,8 @@ import {
   Circle,
   ExternalLink,
   Loader2,
-  Save,
 } from "lucide-react";
+import { NotesPanel } from "../../../components/learning/NotesPanel";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
@@ -41,7 +41,6 @@ interface TopicResponse {
 export default function RoadmapTopicPage() {
   const { slug = "", topicSlug = "" } = useParams();
   const { isAuthenticated } = useAuthStore();
-  const [savingNotes, setSavingNotes] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: topicData, isLoading: topicLoading } = useQuery({
@@ -51,6 +50,7 @@ export default function RoadmapTopicPage() {
         .get<TopicResponse>(`/roadmaps/${slug}/topics/${topicSlug}`)
         .then((res) => res.data),
     enabled: !!slug && !!topicSlug,
+    staleTime: 10 * 60 * 1000,
   });
 
   const topic = topicData?.topic || null;
@@ -74,6 +74,7 @@ export default function RoadmapTopicPage() {
         }>("/roadmaps/me/enrollments")
         .then((res) => res.data),
     enabled: isAuthenticated && !!topic,
+    staleTime: 5 * 60 * 1000,
   });
 
   const enrollment = enrollmentsData?.enrollments.find(
@@ -141,13 +142,7 @@ export default function RoadmapTopicPage() {
     }
   };
 
-  const saveNotes = async () => {
-    if (!progress) return;
-    setSavingNotes(true);
-    await updateProgress({ notes: progress.notes });
-    setSavingNotes(false);
-    toast.success("Notes saved");
-  };
+
 
   if (loading) {
     return (
@@ -156,6 +151,7 @@ export default function RoadmapTopicPage() {
       </div>
     );
   }
+
   if (!topic) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center text-sm">
@@ -182,7 +178,10 @@ export default function RoadmapTopicPage() {
           transition={{ duration: 0.5 }}
         >
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-mono text-gray-400 mt-8 mb-6">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-1.5 text-xs font-mono text-gray-400 mt-8 mb-6"
+          >
             <Link
               to="/roadmaps"
               className="hover:text-gray-600 dark:hover:text-gray-300 no-underline"
@@ -197,7 +196,10 @@ export default function RoadmapTopicPage() {
               {topic.section.roadmap.title.toLowerCase()}
             </Link>
             <ChevronRight className="w-3 h-3" aria-hidden="true" />
-            <span className="text-gray-600 dark:text-gray-300" aria-current="page">
+            <span
+              className="text-gray-600 dark:text-gray-300"
+              aria-current="page"
+            >
               {topic.title.toLowerCase()}
             </span>
           </nav>
@@ -296,7 +298,10 @@ export default function RoadmapTopicPage() {
                           </p>
                         )}
                       </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400 mt-1 shrink-0 group-hover:text-indigo-500 transition-colors" aria-hidden="true" />
+                      <ExternalLink
+                        className="w-4 h-4 text-gray-400 mt-1 shrink-0 group-hover:text-indigo-500 transition-colors"
+                        aria-hidden="true"
+                      />
                     </a>
                   </li>
                 ))}
@@ -328,33 +333,8 @@ export default function RoadmapTopicPage() {
 
           {/* Notes for enrolled users */}
           {progress && (
-            <section>
-              <h2 className="font-display text-xl font-bold text-gray-950 dark:text-white mb-3">
-                Your notes
-              </h2>
-              <label htmlFor="topic-notes" className="sr-only">
-                Notes for {topic.title}
-              </label>
-              <textarea
-                id="topic-notes"
-                value={progress.notes}
-                onChange={(e) =>
-                  setProgress({ ...progress, notes: e.target.value })
-                }
-                rows={6}
-                placeholder="Anything you want to remember about this topic..."
-                className="w-full p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
-              />
-              <div className="mt-2 flex justify-end">
-                <Button size="sm" onClick={saveNotes} disabled={savingNotes}>
-                  {savingNotes ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
-                  ) : (
-                    <Save className="w-3.5 h-3.5" aria-hidden="true" />
-                  )}
-                  Save notes
-                </Button>
-              </div>
+            <section className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-6">
+              <NotesPanel contentType="ROADMAP_TOPIC" contentId={topic.id} />
             </section>
           )}
         </motion.div>

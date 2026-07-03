@@ -18,7 +18,7 @@ export const userQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
   search: z.string().optional(),
-  role: z.enum(["STUDENT", "RECRUITER", "ADMIN"]).optional(),
+  role: z.enum(["STUDENT", "ADMIN"]).optional(),
   sortBy: z.enum(["createdAt", "name", "email"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
@@ -56,7 +56,6 @@ export const errorLogQuerySchema = z.object({
 export const createCompanySchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().min(10).max(5000),
-  mission: z.string().max(2000).optional(),
   industry: z.string().min(1).max(100),
   size: z.enum(["STARTUP", "SMALL", "MEDIUM", "LARGE", "ENTERPRISE"]),
   city: z.string().min(1).max(100),
@@ -112,6 +111,7 @@ export const createRepoSchema = z.object({
   tags: z.array(z.string()).default([]),
   highlights: z.array(z.string()).default([]),
   trending: z.boolean().default(false),
+  hacktoberfest: z.boolean().default(false),
 });
 
 export const updateRepoSchema = createRepoSchema.partial();
@@ -251,7 +251,7 @@ export const hackathonQuerySchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
-export const createHackathonSchema = z.object({
+const hackathonBaseSchema = z.object({
   name: z.string().min(1).max(300),
   organizer: z.string().min(1).max(200),
   logo: z.string().optional().or(z.literal("")),
@@ -270,7 +270,21 @@ export const createHackathonSchema = z.object({
   highlights: z.array(z.string()).default([]),
 });
 
-export const updateHackathonSchema = createHackathonSchema.partial();
+export const createHackathonSchema = hackathonBaseSchema.refine(
+  (data) => new Date(data.startDate) <= new Date(data.endDate),
+  { message: "End date cannot be before start date", path: ["endDate"] }
+);
+
+// partial() must be called on the base schema before refinement (Zod v4)
+export const updateHackathonSchema = hackathonBaseSchema.partial().refine(
+  (data) => {
+    if (data.startDate && data.endDate) {
+      return new Date(data.startDate) <= new Date(data.endDate);
+    }
+    return true;
+  },
+  { message: "End date cannot be before start date", path: ["endDate"] }
+);
 
 // ==================== ADMIN EXTERNAL JOBS ====================
 
@@ -323,7 +337,7 @@ export const broadcastEmailSchema = z.object({
   subject: z.string().min(1).max(200),
   body: z.string().min(1).max(20000),
   filter: z.object({
-    role: z.enum(["STUDENT", "RECRUITER", "ADMIN", "ALL"]).default("ALL"),
+    role: z.enum(["STUDENT", "ADMIN", "ALL"]).default("ALL"),
     isVerified: z.boolean().optional(),
     subscriptionPlan: z.enum(["FREE", "MONTHLY", "YEARLY", "ALL"]).default("ALL"),
   }).default({ role: "ALL", subscriptionPlan: "ALL" }),
@@ -333,7 +347,15 @@ export const broadcastEmailSchema = z.object({
 // ==================== AI PROVIDER MANAGEMENT ====================
 
 export const switchAIProviderSchema = z.object({
-  service: z.enum(["ATS_SCORE", "COVER_LETTER", "RESUME_GEN", "LATEX_CHAT","AI_ROADMAP_GENERATION"]),
-  provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL", "CLAUDE"]),
+  service: z.enum([
+    "ATS_SCORE",
+    "COVER_LETTER",
+    "RESUME_GEN",
+    "LATEX_CHAT",
+    "EMAIL_CHAT",
+    "AI_ROADMAP_GENERATION",
+    "DSA_CODE_REVIEW",
+  ]),
+  provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL"]),
   modelName: z.string().min(1, "Model name is required"),
 });

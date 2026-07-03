@@ -30,6 +30,7 @@ export function EmailJobsButton({ jobs, precedingUserPrompt }: Props) {
 
   React.useEffect(() => {
     if (!cooldownUntil) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRemainingSeconds(0);
       return;
     }

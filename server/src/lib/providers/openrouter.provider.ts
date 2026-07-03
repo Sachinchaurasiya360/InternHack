@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { OpenAI } from "openai";
 import type { AIProvider, AIProviderResponse } from "../ai-provider.js";
 
 export class OpenRouterProvider implements AIProvider {

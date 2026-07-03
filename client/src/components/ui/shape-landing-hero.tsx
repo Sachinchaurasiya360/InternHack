@@ -1,6 +1,6 @@
-import { motion, AnimatePresence, useAnimation, useMotionValue } from "framer-motion";
+import { motion, AnimatePresence, useAnimation, useMotionValue, useReducedMotion } from "framer-motion";
 import { Link } from "react-router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import NumberFlow from "@number-flow/react";
 import { ArrowRight, Play, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/auth.store";
@@ -43,9 +43,7 @@ function HeroGeometric() {
   const getStartedHref = isAuthenticated
     ? user?.role === "ADMIN"
       ? "/admin"
-      : user?.role === "RECRUITER"
-        ? "/recruiters"
-        : "/student/applications"
+      : "/student/applications"
     : "/register";
 
   const [wordIdx, setWordIdx] = useState(0);
@@ -117,7 +115,7 @@ function HeroGeometric() {
           className="mt-8 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed"
         >
           InternHack scores your resume, sharpens your DSA, runs mock
-          interviews, and sends your application straight to recruiters hiring.
+          interviews, and sends your application straight to companies hiring.
         </motion.p>
 
         <motion.div
@@ -227,9 +225,9 @@ function StatCell({
   suffix?: string;
 }) {
   return (
-    <div className="bg-stone-50 dark:bg-stone-950 p-3 sm:p-5 text-left min-w-0">
-      <div className="text-lg sm:text-2xl md:text-4xl font-bold tracking-tight tabular-nums text-stone-900 dark:text-stone-50 wrap-break-word">
-        <NumberFlow value={value} />
+    <div className="bg-stone-50 dark:bg-stone-950 p-3 sm:p-5 min-w-0 flex flex-col items-center">
+      <div className="text-lg sm:text-2xl md:text-4xl font-bold tracking-tight tabular-nums text-stone-900 dark:text-stone-50 w-[6ch] text-right">
+        <NumberFlow value={value} className="tabular-nums"/>
         {suffix && (
           <span className="text-lime-500 dark:text-lime-400">{suffix}</span>
         )}
@@ -245,8 +243,12 @@ function WinsMarquee() {
   const controls = useAnimation();
   const x = useMotionValue(0)
   const isPausedByClick = useRef(false);
-  
-  const startAnimation = () => {
+  const shouldReduceMotion = useReducedMotion();
+  const [isDragging, setIsDragging] = useState(false);
+
+  const startAnimation = useCallback(() => {
+    if (shouldReduceMotion || isDragging) return;
+
     controls.start({
       x: "-50%",
       transition: {
@@ -255,11 +257,38 @@ function WinsMarquee() {
         ease: "linear",
       },
     });
-  };
+  }, [controls, isDragging, shouldReduceMotion]);
 
-  useEffect( () => {
+  useEffect(() => {
     startAnimation();
-  }, []);
+  }, [startAnimation]);
+
+  // Pause animation when tab is not active and resume when active again
+  useEffect(() => {
+  const handleVisibilityChange = () => {
+      if (document.hidden) {
+        controls.stop();
+      } else if (
+        !isPausedByClick.current &&
+        !shouldReduceMotion &&
+        !isDragging
+      ) {
+        startAnimation();
+      }
+    };
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
+    );
+
+    return () => {
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange,
+      );
+    };
+  }, [controls, shouldReduceMotion, isDragging, startAnimation]);
 
   const mouseEnter = () => {
     controls.stop();
@@ -285,7 +314,7 @@ function WinsMarquee() {
   return (
     <div
       className="relative py-6 border-y border-stone-200 dark:border-white/10 bg-stone-100/60 dark:bg-white/2 overflow-hidden"
-      aria-hidden
+      aria-label="Recent student placement wins"
     >
       <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r from-stone-100/60 dark:from-stone-950 to-transparent z-10" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l from-stone-100/60 dark:from-stone-950 to-transparent z-10" />
@@ -306,6 +335,21 @@ function WinsMarquee() {
         className="flex gap-3 whitespace-nowrap w-max"
         animate={ controls }
         style={{ x }}
+        drag="x"
+        dragConstraints={{ left: -1200, right: 0 }}
+        dragElastic={0.08}
+        whileTap={{ cursor: "grabbing" }}
+        onDragStart={() => {
+          setIsDragging(true);
+          controls.stop();
+        }}
+        onDragEnd={() => {
+          setIsDragging(false);
+
+          if (!isPausedByClick.current && !shouldReduceMotion) {
+            startAnimation();
+          }
+        }}
       >
         {row.map((w, i) => (
           <div

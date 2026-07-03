@@ -1,6 +1,27 @@
 import { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Lock, BrainCircuit, Radar } from "lucide-react";
+import {
+  Briefcase,
+  FileText,
+  LogOut,
+  ScanSearch,
+  Building2,
+  ChevronsLeft,
+  ChevronsRight,
+  UserCircle,
+  Award,
+  Globe,
+  Crown,
+  ShieldCheck,
+  Video,
+  GraduationCap,
+  User,
+  Menu,
+  X,
+  Lock,
+  BrainCircuit,
+  Radar,
+} from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 
 type NavItem = {
@@ -17,14 +38,14 @@ type NavGroup = {
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    label: "work",
-    items: [
-      { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
-      { to: "/student/signals", icon: Radar, label: "Funding Signals" },
-      { to: "/student/applications", icon: FileText, label: "My Applications" },
-      { to: "/student/companies", icon: Building2, label: "Explore Companies" },
-    ],
-  },
+  label: "work",
+  items: [
+    { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
+    { to: "/student/signals", icon: Radar, label: "Funding Signals" },
+    { to: "/student/applications", icon: FileText, label: "My Applications" },
+    { to: "/student/companies", icon: Building2, label: "Explore Companies" },
+  ],
+},
   {
     label: "prep",
     items: [
@@ -53,7 +74,11 @@ const NAV_GROUPS: NavGroup[] = [
 
 export function useStudentSidebar() {
   const { user, logout } = useAuthStore();
-  const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
+  const isPremium =
+    user?.subscriptionStatus === "ACTIVE" &&
+    user?.subscriptionPlan !== "FREE" &&
+    user?.subscriptionEndDate &&
+    new Date(user.subscriptionEndDate) > new Date();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("sidebar-collapsed") === "true";

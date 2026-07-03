@@ -97,3 +97,39 @@ ${code}
 }
 
 export const jsEngine = new JsEngine();
+
+export interface RunResult {
+  stdout: string;
+  stderr: string;
+  status: "success" | "error";
+}
+
+export function run(code: string): RunResult {
+  const logs: string[] = [];
+  const errs: string[] = [];
+  const originalLog = console.log;
+  const originalError = console.error;
+  const originalWarn = console.warn;
+  const originalInfo = console.info;
+
+  console.log = (...args) => logs.push(args.map(String).join(" "));
+  console.error = (...args) => errs.push(args.map(String).join(" "));
+  console.warn = (...args) => logs.push(args.map(String).join(" "));
+  console.info = (...args) => logs.push(args.map(String).join(" "));
+
+  try {
+     
+    new Function(code)();
+    console.log = originalLog;
+    console.error = originalError;
+    console.warn = originalWarn;
+    console.info = originalInfo;
+    return { stdout: logs.join("\n"), stderr: errs.join("\n"), status: "success" };
+  } catch (err) {
+    console.log = originalLog;
+    console.error = originalError;
+    console.warn = originalWarn;
+    console.info = originalInfo;
+    return { stdout: logs.join("\n"), stderr: String(err), status: "error" };
+  }
+}

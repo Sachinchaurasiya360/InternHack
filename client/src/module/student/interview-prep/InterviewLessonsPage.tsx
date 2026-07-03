@@ -11,6 +11,8 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
 import api from "../../../lib/axios"
+import { GridBackground } from "../../../components/ui/GridBackground";
+
 
 const STORAGE_KEY = "interview-progress";
 
@@ -63,6 +65,7 @@ export default function InterviewLessonsPage() {
 
   useEffect(() => {
   if (!isAuthenticated) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgress(getLocalProgress());
     return;
   }
@@ -155,14 +158,7 @@ export default function InterviewLessonsPage() {
         ]}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}
@@ -351,8 +347,8 @@ export default function InterviewLessonsPage() {
                 )}
 
                 <div className="flex flex-wrap gap-1.5">
-                  <MetaChip>
-                    {isLocked ? `${section.total} questions` : `${section.completed} / ${section.total} done`}
+                  <MetaChip className={isComplete ? "text-green-600 dark:text-green-400 border-green-300 dark:border-green-900/60" : ""}>
+                  {isLocked ? `${section.total} questions` : (<span className="inline-flex items-center gap-1"> {isComplete && <CheckCircle2 className="w-3 h-3" />}{section.completed} / {section.total} answered</span> )}
                   </MetaChip>
                   <MetaChip className={LEVEL_STYLE[section.level]}>{section.level}</MetaChip>
                 </div>

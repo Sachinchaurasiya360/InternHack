@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { X, Loader2, CheckCircle2 } from "lucide-react";
@@ -49,30 +49,131 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
   const [urlError, setUrlError] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      previousActiveElement.current = document.activeElement as HTMLElement;
+      setTimeout(() => {
+        const firstInput = modalRef.current?.querySelector(
+          "input, textarea, select",
+        ) as HTMLElement;
+        if (firstInput) {
+          firstInput.focus();
+        }
+      }, 50);
+    } else {
+      if (previousActiveElement.current) {
+        previousActiveElement.current.focus();
+      }
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      if (e.key === "Tab") {
+        if (!modalRef.current) return;
+
+        const focusableElements = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
+
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, onClose]);
+
+  const [remaining, setRemaining] = useState<number>(5);
+  const [rateLimitError, setRateLimitError] = useState<string | null>(null);
+
   const mutation = useMutation({
     mutationFn: async (data: SuggestRepoForm) => {
       const payload = {
         ...data,
-        techStack: data.techStack.split(",").map((s) => s.trim()).filter(Boolean),
-        tags: data.tags.split(",").map((s) => s.trim()).filter(Boolean),
+        techStack: data.techStack
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        tags: data.tags
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
       };
       return api.post("/opensource/requests", payload);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      const rem = response.headers["x-ratelimit-remaining"];
+      if (rem !== undefined) {
+        setRemaining(parseInt(rem, 10));
+      }
       setSuccess(true);
-      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.myRequests() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.opensource.myRequests(),
+      });
       setTimeout(() => {
         setSuccess(false);
         setForm(INITIAL_FORM);
         onClose();
-      }, 2000);
+        setTimeout(() => setRemaining(5), 300);
+      }, 2500);
+    },
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { status?: number; headers?: Record<string, string | undefined> } };
+      if (axiosError?.response?.status === 429) {
+        const resetHeader = axiosError.response?.headers?.["x-ratelimit-reset"];
+        if (resetHeader) {
+          const resetMs = new Date(resetHeader).getTime() - Date.now();
+          const hoursLeft = Math.ceil(resetMs / (1000 * 60 * 60));
+          setRateLimitError(`You've reached your daily limit. Resets in ${hoursLeft} hour${hoursLeft !== 1 ? "s" : ""}.`);
+          setRemaining(0);
+        } else {
+          setRateLimitError("You've reached your daily limit. Please try again tomorrow.");
+          setRemaining(0);
+        }
+      } else {
+        setRateLimitError(null);
+      }
     },
   });
 
   const set =
     (key: keyof SuggestRepoForm) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-      setForm((f) => ({ ...f, [key]: e.target.value }));
+      (
+        e: React.ChangeEvent<
+          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >,
+      ) =>
+        setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -90,7 +191,11 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
     if (!value.trim()) {
       setUrlError(null);
     } else {
-      setUrlError(parseGithubRepoUrl(value) ? null : "Must be a https://github.com/owner/repo URL");
+      setUrlError(
+        parseGithubRepoUrl(value)
+          ? null
+          : "Must be a https://github.com/owner/repo URL",
+      );
     }
   };
 
@@ -107,6 +212,8 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
 
   if (!open) return null;
 
+  const parsedRepo = parseGithubRepoUrl(form.url);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -116,6 +223,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
       onClick={onClose}
     >
       <motion.div
+        ref={modalRef}
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -123,8 +231,17 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
         className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 rounded-t-2xl flex items-center justify-between z-10">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Suggest a Repository</h2>
+        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 rounded-t-2xl flex items-start justify-between z-10">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+              Suggest a Repository
+            </h2>
+            {typeof remaining === 'number' && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Suggestions remaining today: <span className="font-semibold text-lime-600 dark:text-lime-400">{remaining}/5</span>
+              </p>
+            )}
+          </div>
           <Button
             variant="ghost"
             mode="icon"
@@ -137,25 +254,55 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
 
         {success ? (
           <div className="px-6 py-12 text-center">
-            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" aria-hidden />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Request Submitted!</h3>
-            <p className="text-sm text-gray-500">You'll receive an email once it's reviewed.</p>
+            <CheckCircle2
+              className="w-12 h-12 text-emerald-500 mx-auto mb-3"
+              aria-hidden
+            />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+              Request Submitted!
+            </h3>
+            <p className="text-sm text-gray-500 mb-2">
+              You'll receive an email once it's reviewed.
+            </p>
+            {remaining !== null && (
+              <p className="text-xs font-medium inline-block px-3 py-1 rounded-md bg-stone-100 dark:bg-white/5 text-stone-700 dark:text-stone-300">
+                {remaining} of 5 suggestions remaining today
+              </p>
+            )}
           </div>
         ) : (
           <form className="px-6 py-5 space-y-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Owner / Org *</label>
-                <input required className={inputCls} placeholder="e.g. facebook" value={form.owner} onChange={set("owner")} />
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
+                  Owner / Org *
+                </label>
+                <input
+                  required
+                  className={inputCls}
+                  placeholder="e.g. facebook"
+                  value={form.owner}
+                  onChange={set("owner")}
+                />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Repo Name *</label>
-                <input required className={inputCls} placeholder="e.g. react" value={form.name} onChange={set("name")} />
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
+                  Repo Name *
+                </label>
+                <input
+                  required
+                  className={inputCls}
+                  placeholder="e.g. react"
+                  value={form.name}
+                  onChange={set("name")}
+                />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">GitHub URL *</label>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
+                GitHub URL *
+              </label>
               <input
                 required
                 type="url"
@@ -166,26 +313,53 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
                 aria-invalid={!!urlError}
                 aria-describedby={urlError ? "suggest-url-error" : undefined}
               />
-              {urlError && (
+              {urlError ? (
                 <p id="suggest-url-error" className="mt-1 text-xs text-red-500">
                   {urlError}
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-gray-400">
+                  Format: https://github.com/owner/repo — we'll auto-fill the rest
                 </p>
               )}
             </div>
 
             <div>
-              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Description *</label>
-              <textarea required rows={2} className={inputCls} placeholder="What does this project do?" value={form.description} onChange={set("description")} />
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
+                Description *
+              </label>
+              <textarea
+                required
+                rows={2}
+                className={inputCls}
+                placeholder="What does this project do?"
+                value={form.description}
+                onChange={set("description")}
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Language *</label>
-                <input required className={inputCls} placeholder="TypeScript" value={form.language} onChange={set("language")} />
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
+                  Language *
+                </label>
+                <input
+                  required
+                  className={inputCls}
+                  placeholder="TypeScript"
+                  value={form.language}
+                  onChange={set("language")}
+                />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Domain</label>
-                <select className={inputCls} value={form.domain} onChange={set("domain")}>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
+                  Domain
+                </label>
+                <select
+                  className={inputCls}
+                  value={form.domain}
+                  onChange={set("domain")}
+                >
                   {REPO_DOMAINS.filter((d) => d.key !== "ALL").map((d) => (
                     <option key={d.key} value={d.key}>
                       {d.label}
@@ -194,40 +368,111 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Difficulty</label>
-                <select className={inputCls} value={form.difficulty} onChange={set("difficulty")}>
-                  {DIFFICULTY_OPTIONS.filter((d) => d.key !== "ALL").map((d) => (
-                    <option key={d.key} value={d.key}>
-                      {d.label}
-                    </option>
-                  ))}
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
+                  Difficulty
+                </label>
+                <select
+                  className={inputCls}
+                  value={form.difficulty}
+                  onChange={set("difficulty")}
+                >
+                  {DIFFICULTY_OPTIONS.filter((d) => d.key !== "ALL").map(
+                    (d) => (
+                      <option key={d.key} value={d.key}>
+                        {d.label}
+                      </option>
+                    ),
+                  )}
                 </select>
               </div>
             </div>
 
             <div>
               <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
-                Tech Stack <span className="text-gray-400">(comma-separated)</span>
+                Tech Stack{" "}
+                <span className="text-gray-400">(comma-separated)</span>
               </label>
-              <input className={inputCls} placeholder="React, Node.js, PostgreSQL" value={form.techStack} onChange={set("techStack")} />
+              <input
+                className={inputCls}
+                placeholder="React, Node.js, PostgreSQL"
+                value={form.techStack}
+                onChange={set("techStack")}
+              />
             </div>
 
             <div>
               <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
                 Tags <span className="text-gray-400">(comma-separated)</span>
               </label>
-              <input className={inputCls} placeholder="backend, api, self-hosted" value={form.tags} onChange={set("tags")} />
+              <input
+                className={inputCls}
+                placeholder="backend, api, self-hosted"
+                value={form.tags}
+                onChange={set("tags")}
+              />
             </div>
 
             <div>
-              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Why should this repo be listed? *</label>
-              <textarea required rows={2} className={inputCls} placeholder="Great for beginners, active community..." value={form.reason} onChange={set("reason")} />
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
+                Why should this repo be listed? *
+              </label>
+              <textarea
+                required
+                rows={2}
+                maxLength={1000}
+                className={inputCls}
+                placeholder="Explain why this repo is great for beginners — e.g. good documentation, active maintainers, labelled good-first-issues..."
+                value={form.reason}
+                onChange={set("reason")}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: 6,
+                }}
+              >
+                {form.reason.length < 50 ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      backgroundColor: "#FFFBEB",
+                      border: "1px solid #FDE68A",
+                      borderRadius: 6,
+                      padding: "4px 8px",
+                    }}
+                  >
+                    <span style={{ fontSize: 13 }}>💡</span>
+                    <span style={{ fontSize: 11, color: "#D97706" }}>
+                      Add more details to help reviewers approve this faster.
+                    </span>
+                  </div>
+                ) : null}
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    marginLeft: "auto",
+                    color:
+                      form.reason.length >= 100
+                        ? "#059669"
+                        : form.reason.length < 50
+                          ? "#D97706"
+                          : "#9CA3AF",
+                  }}
+                >
+                  {form.reason.length} / 1000
+                </span>
+              </div>
             </div>
 
-            {mutation.isError && (
+            {(mutation.isError || rateLimitError) && (
               <p className="text-sm text-red-500">
-                {(mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-                  "Failed to submit. Please try again."}
+                {rateLimitError ??
+                  ((mutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                    "Failed to submit. Please try again.")}
               </p>
             )}
 
@@ -235,7 +480,7 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
               type="submit"
               variant="mono"
               size="lg"
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || !parsedRepo || remaining === 0}
               className="w-full rounded-xl"
             >
               {mutation.isPending ? (
@@ -247,6 +492,11 @@ export function SuggestRepoModal({ open, onClose }: SuggestRepoModalProps) {
                 "Submit Request"
               )}
             </Button>
+            {remaining === 0 && (
+              <p className="text-center text-xs font-medium text-stone-500 dark:text-stone-400">
+                Daily limit reached. Come back tomorrow.
+              </p>
+            )}
           </form>
         )}
       </motion.div>

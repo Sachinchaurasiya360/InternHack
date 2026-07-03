@@ -1,7 +1,7 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { PDFParse } from "pdf-parse";
+import { Worker } from "worker_threads";
 import { prisma } from "../../database/db.js";
 import { getBufferFromS3, getS3KeyFromUrl } from "../../utils/s3.utils.js";
 import { guestResumeKeyPrefix } from "../../utils/guest-ip.utils.js";
@@ -14,14 +14,9 @@ import type {
   AtsKeywordAnalysis,
   ApplySuggestionsInput,
 } from "./ats.types.js";
-import type { Prisma } from "@prisma/client";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// If the same student re-scores the same resume + job context within this
-// window, return the prior AtsScore row instead of re-calling Gemini.
-const SCORE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export class AtsService {
   private normalizeResumeUrl(resumeUrl: string): string {
@@ -43,20 +38,6 @@ export class AtsService {
       throw new Error("Resume does not belong to this user");
     }
 
-    // Cache hit: identical (resumeUrl, jobTitle, jobDescription) from the same
-    // student within the TTL, return the prior row without burning AI quota.
-    const cached = await prisma.atsScore.findFirst({
-      where: {
-        studentId,
-        resumeUrl,
-        jobTitle: input.jobTitle ?? null,
-        jobDescription: input.jobDescription ?? null,
-        createdAt: { gte: new Date(Date.now() - SCORE_CACHE_TTL_MS) },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    if (cached) return cached;
-
     const resumeText = await this.extractPdfText(resumeUrl);
 
     if (!resumeText || resumeText.trim().length < 50) {
@@ -72,29 +53,16 @@ export class AtsService {
       input.jobDescription,
     );
 
-    const atsScore = await prisma.atsScore.create({
-      data: {
-        studentId,
-        resumeUrl,
-        jobTitle: input.jobTitle ?? null,
-        jobDescription: input.jobDescription ?? null,
-        overallScore: result.overallScore,
-        categoryScores: JSON.parse(
-          JSON.stringify(result.categoryScores),
-        ) as Prisma.InputJsonValue,
-        suggestions: JSON.parse(
-          JSON.stringify(result.suggestions),
-        ) as Prisma.InputJsonValue,
-        keywordAnalysis: JSON.parse(
-          JSON.stringify(result.keywordAnalysis),
-        ) as Prisma.InputJsonValue,
-        rawResponse: JSON.parse(
-          JSON.stringify(result),
-        ) as Prisma.InputJsonValue,
-      },
-    });
-
-    return atsScore;
+    // Scoring is stateless: results are returned but not persisted.
+    return {
+      resumeUrl,
+      jobTitle: input.jobTitle ?? null,
+      jobDescription: input.jobDescription ?? null,
+      overallScore: result.overallScore,
+      categoryScores: result.categoryScores,
+      suggestions: result.suggestions,
+      keywordAnalysis: result.keywordAnalysis,
+    };
   }
 
   async scoreResumeGuest(ipHash: string, input: ScoreResumeInput) {
@@ -237,10 +205,47 @@ RESPONSE FORMAT:
       throw new Error("Invalid resume URL format");
     }
 
-    const parser = new PDFParse({ data: buffer });
-    const result = await parser.getText();
-    await parser.destroy();
-    return result.text;
+    return new Promise<string>((resolve, reject) => {
+      // Detect dev (tsx) vs production (compiled JS) to resolve the worker path
+      // and register the tsx ESM loader when needed.
+      const isDev = import.meta.url.endsWith(".ts");
+      const workerFile = isDev
+        ? "../../workers/pdf-parse.worker.ts"
+        : "../../workers/pdf-parse.worker.js";
+      const workerUrl = new URL(workerFile, import.meta.url);
+      const execArgv = isDev ? ["--import", "tsx"] : [];
+
+      const worker = new Worker(workerUrl, {
+        execArgv,
+        workerData: {
+          buffer: buffer.buffer as ArrayBuffer,
+          byteOffset: buffer.byteOffset,
+          byteLength: buffer.byteLength,
+        },
+        transferList: [buffer.buffer as ArrayBuffer],
+      });
+
+      const timeout = setTimeout(() => {
+        void worker.terminate();
+        reject(new Error("PDF parsing timed out"));
+      }, 30_000);
+
+      worker.on("message", (msg: { text?: string; error?: string }) => {
+        clearTimeout(timeout);
+        if (msg.error) reject(new Error(msg.error));
+        else resolve(msg.text ?? "");
+      });
+
+      worker.on("error", (err: Error) => {
+        clearTimeout(timeout);
+        reject(err);
+      });
+
+      worker.on("exit", (code: number) => {
+        clearTimeout(timeout);
+        if (code !== 0) reject(new Error(`PDF worker exited with code ${code}`));
+      });
+    });
   }
 
   private async callAI(
@@ -276,7 +281,7 @@ No specific job description provided. Evaluate the resume for general ATS compat
 using common industry standards for software/tech roles.
 `;
 
-    return `You are an expert ATS (Applicant Tracking System) resume analyzer. Analyze the following resume text and provide a detailed ATS compatibility score.
+    return `You are a ruthless, senior technical recruiter and ATS (Applicant Tracking System) auditor. You have screened 10,000+ resumes and reject roughly 90% of them at first pass. You are deliberately HARSH and evidence-based. Your scores are used to push candidates to improve, so grade inflation is a failure on your part.
 
 ${jobContext}
 
@@ -285,69 +290,63 @@ RESUME TEXT:
 ${resumeText}
 ---
 
-Evaluate the resume across these categories and provide scores from 0-100:
+SCORING DISCIPLINE (read carefully, this is the most important part):
+- Scores are 0-100. Be strict. The MEDIAN real resume scores 45-60. Scores of 85+ are reserved for the top ~5% of resumes you have ever seen and must be EARNED with concrete, verifiable evidence on every dimension. Do NOT give 85+ unless the resume is genuinely outstanding.
+- Default to a LOW score and add points only when the resume proves merit. Do not award points for merely having a section or for generic, unquantified content.
+- Score what is actually written. Never give benefit of the doubt, never assume unstated skills, never reward intent or potential.
+- Be decisive and use the full range. A weak resume should score in the 20s-40s. Do not cluster everything in the 70s-80s.
 
-1. **Formatting** (0-100): How well-structured is the resume for ATS parsing? Consider:
-   - Clear section headers (Experience, Education, Skills, etc.)
-   - Consistent date formats
-   - No tables, columns, or graphics that confuse ATS
-   - Proper use of bullet points
-   - Standard fonts and layout assumptions
+SCORE BANDS (apply to overallScore AND every category):
+- 90-100: Exceptional. Top 5%. Quantified impact in nearly every bullet, dense role-relevant keywords, flawless ATS formatting, clear senior-level signal. Almost no resume reaches this.
+- 75-89: Strong. Mostly quantified, well targeted, only minor gaps.
+- 60-74: Average / acceptable. Several real gaps (some unquantified bullets, thin keyword coverage, generic phrasing).
+- 40-59: Below average. Significant weaknesses (little quantification, weak targeting, vague responsibilities).
+- 20-39: Poor. Mostly duties not achievements, missing key sections, no metrics, poor keyword match.
+- 0-19: Unusable for ATS.
 
-2. **Keywords** (0-100): How well does the resume match relevant industry/role keywords?
-   - Technical skills mentioned
-   - Industry-standard terminology
-   - Action verbs
-   - Role-relevant buzzwords
-   ${jobDescription ? "- Match against the provided job description keywords" : "- General tech industry keyword coverage"}
+HARD CAPS (enforce these, they prevent inflation):
+- If the resume contains NO quantified metrics (numbers, %, $, scale), cap BOTH "experience" and "impact" at 45.
+- If bullets describe duties/responsibilities rather than achievements with outcomes, cap "impact" at 40.
+- If the skills section is a generic dump with no context or no evidence of use in experience, cap "skills" at 60.
+- If a target job description is provided and fewer than half its key skills/keywords appear in the resume, cap "keywords" at 50.
+- If there is no clear, parseable section structure, cap "formatting" at 55.
+- A resume that is fewer than ~150 words or clearly incomplete cannot score above 50 overall.
 
-3. **Experience** (0-100): How effectively is work experience presented?
-   - Quantified achievements (numbers, percentages, metrics)
-   - Clear job titles and company names
-   - Relevant experience duration
-   - Progressive responsibility shown
+Evaluate these six categories. For each, START at 40 and adjust up only with concrete evidence, down for each weakness:
 
-4. **Skills** (0-100): How comprehensive and relevant is the skills section?
-   - Technical skills listed
-   - Soft skills demonstrated through experience
-   - Skills organization and categorization
-   - Relevance to target role
+1. **Formatting** (0-100): ATS parse-ability. Clear standard section headers, consistent date formats, no tables/columns/graphics/images, proper bullet usage, standard single-column layout. Penalize anything that confuses a parser.
+2. **Keywords** (0-100): ${jobDescription ? "Match against the PROVIDED job description. Count how many of the JD's actual required skills/tools/terms appear verbatim. Score the coverage ratio, not vague relevance." : "Coverage of concrete, industry-standard technical terms for the target role. Penalize buzzwords with no substance."}
+3. **Experience** (0-100): Achievements over duties. Reward quantified outcomes, clear titles/companies/dates, progression. Penalize vague responsibility lists and gaps.
+4. **Skills** (0-100): Relevant, specific, and corroborated by the experience section. Penalize laundry lists, soft-skill filler, and skills never demonstrated.
+5. **Education** (0-100): Degree, institution, dates clearly stated; relevant coursework/certs; notable GPA/achievements. A bare degree line is average, not high.
+6. **Impact** (0-100): Measurable results (metrics, %, $, scale), STAR structure, ownership and leadership. No metrics = low score, no exceptions.
 
-5. **Education** (0-100): How well is education presented?
-   - Degree and institution clearly stated
-   - Relevant coursework or certifications
-   - GPA if noteworthy
-   - Academic achievements
-
-6. **Impact** (0-100): How well does the resume demonstrate measurable impact?
-   - Use of metrics and data
-   - Clear outcomes and results
-   - STAR method usage (Situation, Task, Action, Result)
-   - Leadership and initiative examples
+Then provide 5-8 SPECIFIC, actionable suggestions. Each must name the exact weakness and how to fix it (e.g. "Quantify the StartupCo bullet: state users served, latency reduced, or revenue impacted"). No generic advice like "add more keywords".
 
 Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explanation) in this exact structure:
 {
-  "overallScore": <number 0-100, weighted average of categories>,
+  "overallScore": <integer 0-100. Compute as the weighted average: keywords 25%, experience 25%, impact 20%, skills 15%, formatting 10%, education 5%. Round to the nearest integer. This MUST equal the weighted math of your category scores, never higher.>,
   "categoryScores": {
-    "formatting": <number 0-100>,
-    "keywords": <number 0-100>,
-    "experience": <number 0-100>,
-    "skills": <number 0-100>,
-    "education": <number 0-100>,
-    "impact": <number 0-100>
+    "formatting": <integer 0-100>,
+    "keywords": <integer 0-100>,
+    "experience": <integer 0-100>,
+    "skills": <integer 0-100>,
+    "education": <integer 0-100>,
+    "impact": <integer 0-100>
   },
   "suggestions": [
     "<specific, actionable suggestion 1>",
     "<specific, actionable suggestion 2>",
-    "<specific, actionable suggestion 3>",
-    "<up to 8 suggestions total>"
+    "<up to 8 total, most impactful first>"
   ],
   "keywordAnalysis": {
-    "found": ["<keyword1>", "<keyword2>", "...up to 15 keywords fully present and prominent in the resume"],
-    "partial": ["<keyword1>", "<keyword2>", "...up to 8 keywords mentioned only once or under-represented"],
-    "missing": ["<missing keyword1>", "<missing keyword2>", "...up to 10 keywords from the JD completely absent from the resume"]
+    "found": ["<keyword>", "...up to 15 keywords fully present and prominent in the resume"],
+    "partial": ["<keyword>", "...up to 8 keywords mentioned only once or under-represented"],
+    "missing": ["<keyword>", "...up to 10 important keywords${jobDescription ? " from the job description" : " for this role"} completely absent from the resume"]
   }
-}`;
+}
+
+Final check before you answer: if your overallScore is above 75, re-read the resume and confirm it truly earns that against the bands above. If in doubt, lower it.`;
   }
 
   private parseAIResponse(responseText: string): AtsScoreResult {
@@ -419,7 +418,15 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
 
   private validateSuggestions(raw: unknown): string[] {
     if (!Array.isArray(raw)) return ["No specific suggestions available."];
-    return raw.filter((s): s is string => typeof s === "string").slice(0, 10);
+    return raw
+      .map((s) => {
+        if (typeof s === "string") return s;
+        if (s && typeof s === "object" && "suggestion" in s && typeof (s as Record<string, unknown>).suggestion === "string")
+          return (s as Record<string, string>).suggestion;
+        return null;
+      })
+      .filter((s): s is string => s !== null)
+      .slice(0, 10);
   }
 
   private validateKeywordAnalysis(raw: unknown): AtsKeywordAnalysis {
@@ -437,23 +444,5 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
         ? obj["missing"].filter((s): s is string => typeof s === "string")
         : [],
     };
-  }
-
-  /** Returns the latest 30 ATS scores for a student, sorted oldest-first for charting. */
-  async getScoreHistory(studentId: number) {
-    const rows = await prisma.atsScore.findMany({
-      where: { studentId },
-      select: {
-        id: true,
-        overallScore: true,
-        jobTitle: true,
-        jobDescription: true,
-        resumeUrl: true,
-        createdAt: true,
-      },
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      take: 30,
-    });
-    return rows.reverse();
   }
 }

@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import {
   User, Camera, Loader2, GraduationCap, MapPin,
-  Linkedin, Github, Globe, Check, Copy,
+  Linkedin, Github, Globe,
 } from "lucide-react";
 import { cardCls } from "./styles";
 
@@ -17,15 +17,10 @@ interface IdentityCardProps {
   linkedinUrl: string;
   githubUrl: string;
   portfolioUrl: string;
-  isProfilePublic: boolean;
   uploadingPic: boolean;
   uploadingCover: boolean;
-  profileUrlCopied: boolean;
-  userId: number | undefined;
   onProfilePicSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCoverImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onTogglePublic: () => void;
-  onCopyProfileUrl: () => void;
 }
 
 export function IdentityCard({
@@ -40,15 +35,10 @@ export function IdentityCard({
   linkedinUrl,
   githubUrl,
   portfolioUrl,
-  isProfilePublic,
   uploadingPic,
   uploadingCover,
-  profileUrlCopied,
-  userId,
   onProfilePicSelect,
   onCoverImageSelect,
-  onTogglePublic,
-  onCopyProfileUrl,
 }: IdentityCardProps) {
   const picInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -161,53 +151,6 @@ export function IdentityCard({
           </div>
         )}
 
-        {/* Share Profile URL */}
-        {isProfilePublic && (
-          <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
-            <div className="min-w-0">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                shareable profile
-              </p>
-              <p className="text-xs text-stone-600 dark:text-stone-400 mt-1 leading-snug truncate">
-                {`${window.location.origin}/student/profile/public/${userId}`}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={onCopyProfileUrl}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
-            >
-              {profileUrlCopied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
-              {profileUrlCopied ? "Copied!" : "Copy URL"}
-            </button>
-          </div>
-        )}
-
-        {/* Visibility */}
-        <div className="flex items-start justify-between gap-3 mt-4 pt-4 border-t border-stone-200 dark:border-white/10">
-          <div className="min-w-0">
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              recruiter visibility
-            </p>
-            <p className="text-xs text-stone-600 dark:text-stone-400 mt-1 leading-snug">
-              {isProfilePublic ? "Visible in talent search" : "Hidden from recruiters"}
-            </p>
-          </div>
-          <button
-            type="button"
-            aria-label="Toggle recruiter visibility"
-            onClick={onTogglePublic}
-            className={`relative w-10 h-5 rounded-full transition-colors shrink-0 border-0 cursor-pointer ${
-              isProfilePublic ? "bg-lime-400" : "bg-stone-300 dark:bg-stone-700"
-            }`}
-          >
-            <span
-              className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white dark:bg-stone-950 rounded-full transition-transform ${
-                isProfilePublic ? "translate-x-5" : "translate-x-0"
-              }`}
-            />
-          </button>
-        </div>
       </div>
     </div>
   );

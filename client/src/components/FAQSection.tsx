@@ -7,7 +7,7 @@ export const FAQ_ITEMS = [
   {
     question: "What is InternHack?",
     answer:
-      "InternHack is an AI-powered career platform built for students. It combines curated internship listings, an AI resume scorer (ATS checker), a LaTeX resume builder, cover letter generator, coding tutorials, DSA practice, aptitude tests, and direct recruiter connections  - all in one place.",
+      "InternHack is an AI-powered career platform built for students. It combines curated internship listings, an AI resume scorer (ATS checker), a LaTeX resume builder, cover letter generator, coding tutorials, DSA practice, and aptitude tests  - all in one place.",
   },
   {
     question: "Is InternHack free for students?",
@@ -28,11 +28,6 @@ export const FAQ_ITEMS = [
     question: "What coding tutorials and learning resources are available?",
     answer:
       "InternHack offers interactive tutorials for JavaScript, TypeScript, Python, React, Node.js, HTML, CSS, SQL, Django, Flask, and FastAPI. Each course includes in-browser code editors, exercises, and quizzes. We also have 300+ interview preparation questions, DSA problem tracking, and aptitude practice sets.",
-  },
-  {
-    question: "Can recruiters post jobs on InternHack?",
-    answer:
-      "Absolutely. Recruiters can create a free account (company email required), post internships and entry-level jobs, manage applications with a built-in ATS dashboard, configure custom interview rounds, search our talent pool, and run campus placement drives.",
   },
   {
     question: "How do I build a resume on InternHack?",

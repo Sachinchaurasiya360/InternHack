@@ -1,0 +1,71 @@
+# GSSoC 2026 Optimized Labeller Rules
+# This file is used by actions/labeler@v5 to apply ALL matching labels.
+# sync-labels: false should be set in the workflow to protect manual mentor overrides.
+
+"type:security":
+  - changed-files:
+    - any-glob-to-any-file: 
+      - "server/src/middleware/auth/**"
+      - "server/src/lib/auth/**"
+      - "**/security/**"
+      - "**/jwt/**"
+      - "**/token/**"
+      - "**/secret/**"
+      - "**/.env*"
+      - "**/package.json"
+      - "**/package-lock.json"
+      - "**/node_modules/**" # Dependency related
+
+"type:devops":
+  - changed-files:
+    - any-glob-to-any-file:
+      - ".github/workflows/**"
+      - ".github/actions/**"
+      - "infra/**"
+      - "scripts/deploy/**"
+      - "scripts/ci/**"
+      - ".do/**"
+
+"type:performance":
+  - changed-files:
+    - any-glob-to-any-file:
+      - ".github/workflows/**" # Bonus points stack for workflows as per strategy
+      - "**/cache/**"
+      - "**/optimize/**"
+      - "**/memo/**"
+      - "**/lazy/**"
+      - "**/perf/**"
+      - "vite.config.*"
+
+"type:testing":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "**/test/**"
+      - "**/tests/**"
+      - "**/__tests__/**"
+      - "**/*.spec.*"
+      - "**/*.test.*"
+      - "cypress/**"
+      - "jest.config.*"
+      - "vitest.config.*"
+
+"type:docs":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "**/*.md"
+      - "**/*.mdx"
+      - "docs/**"
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "AGENTS.md"
+
+"type:design":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "**/*.css"
+      - "**/*.scss"
+      - "**/*.sass"
+      - "**/tailwind.config.*"
+      - "**/theme.ts"
+      - "**/theme.js"
+      - "client/public/**"

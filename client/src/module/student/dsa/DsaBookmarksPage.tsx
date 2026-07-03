@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
@@ -8,10 +9,13 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaBookmarkItem } from "../../../lib/types";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
+import { useDsaLabels } from "./components/useDsaLabels";
+import { DsaLabelManager } from "./components/DsaLabelManager";
+import { DsaLabelFilter } from "./components/DsaLabelFilter";
 /**
  * Renders the DSA Bookmarks page displaying the user's saved problems.
- * Includes functionality to view and remove bookmarked problems, 
+ * Includes functionality to view and remove bookmarked problems,
  * and displays an empty state if no bookmarks exist.
  *
  * @returns {JSX.Element} The rendered bookmarks page component.
@@ -21,7 +25,8 @@ export default function DsaBookmarksPage() {
 
   const { data: bookmarks, isLoading } = useQuery({
     queryKey: queryKeys.dsa.bookmarks(),
-    queryFn: () => api.get<DsaBookmarkItem[]>("/dsa/bookmarks").then((r) => r.data),
+    queryFn: () =>
+      api.get<DsaBookmarkItem[]>("/dsa/bookmarks").then((r) => r.data),
     staleTime: 15 * 24 * 60 * 60 * 1000,
   });
 
@@ -30,7 +35,9 @@ export default function DsaBookmarksPage() {
       api.post(`/dsa/problems/${problemId}/bookmark`),
     onMutate: async (problemId) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.dsa.bookmarks() });
-      const prev = queryClient.getQueryData<DsaBookmarkItem[]>(queryKeys.dsa.bookmarks());
+      const prev = queryClient.getQueryData<DsaBookmarkItem[]>(
+        queryKeys.dsa.bookmarks(),
+      );
       queryClient.setQueryData(
         queryKeys.dsa.bookmarks(),
         prev?.filter((b) => b.problemId !== problemId),
@@ -44,6 +51,28 @@ export default function DsaBookmarksPage() {
       toast.error("Failed to remove bookmark");
     },
   });
+
+  const { allLabels, getLabels, addLabel, removeLabel } = useDsaLabels();
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+
+  const toggleLabelFilter = (label: string) =>
+    setSelectedLabels((prev) =>
+      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label],
+    );
+
+  // A bookmark matches when it carries at least one selected label (union).
+  // Labels live in the shared labels cache, so we read them via getLabels and
+  // fall back to any labels embedded in the bookmark payload.
+  const visibleBookmarks = useMemo(() => {
+    if (!bookmarks) return [];
+    if (selectedLabels.length === 0) return bookmarks;
+    return bookmarks.filter((b) => {
+      const labels = getLabels(b.problemId).length
+        ? getLabels(b.problemId)
+        : (b.labels ?? []);
+      return selectedLabels.some((sel) => labels.includes(sel));
+    });
+  }, [bookmarks, selectedLabels, getLabels]);
 
   const total = bookmarks?.length ?? 0;
   const solvedCount = bookmarks?.filter((b) => b.solved).length ?? 0;
@@ -72,13 +101,19 @@ export default function DsaBookmarksPage() {
                 Your saved problems.
               </h1>
               <p className="text-sm text-stone-600 dark:text-stone-400 max-w-2xl">
-                Quick access to problems you bookmarked. Revisit, review, and track progress.
+                Quick access to problems you bookmarked. Revisit, review, and
+                track progress.
               </p>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 flex-wrap">
               <span>
-                <span className="text-stone-900 dark:text-stone-50 tabular-nums">{total}</span>
-                <span className="text-stone-400 dark:text-stone-600"> saved</span>
+                <span className="text-stone-900 dark:text-stone-50 tabular-nums">
+                  {total}
+                </span>
+                <span className="text-stone-400 dark:text-stone-600">
+                  {" "}
+                  saved
+                </span>
               </span>
               {total > 0 && (
                 <>
@@ -92,18 +127,36 @@ export default function DsaBookmarksPage() {
           </div>
         </motion.div>
 
+        {/* Label filter */}
+        {allLabels.length > 0 && (
+          <div className="mb-5">
+            <DsaLabelFilter
+              allLabels={allLabels}
+              selected={selectedLabels}
+              onToggle={toggleLabelFilter}
+              onClear={() => setSelectedLabels([])}
+            />
+          </div>
+        )}
+
         {/* Section header */}
         <div className="flex items-center gap-2 mb-3">
           <div className="h-1 w-1 bg-lime-400"></div>
           <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-            bookmarks / {total}
+            bookmarks /{" "}
+            {selectedLabels.length > 0
+              ? `${visibleBookmarks.length} of ${total}`
+              : total}
           </span>
         </div>
 
         {isLoading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-16 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md animate-pulse" />
+              <div
+                key={i}
+                className="h-16 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md animate-pulse"
+              />
             ))}
           </div>
         ) : bookmarks?.length === 0 ? (
@@ -113,18 +166,32 @@ export default function DsaBookmarksPage() {
               No bookmarks yet
             </h2>
             <p className="text-sm text-stone-500 dark:text-stone-400 mb-6 max-w-sm">
-              Save problems from any topic to keep them here and track your progress.
+              Save problems from any topic to keep them here and track your
+              progress.
             </p>
             <Button asChild>
-              <Link to="/student/dsa">
-                Browse Problems
-              </Link>
+              <Link to="/student/dsa">Browse Problems</Link>
             </Button>
+          </div>
+        ) : visibleBookmarks.length === 0 ? (
+          <div className="py-16 text-center border border-dashed border-stone-300 dark:border-white/10 rounded-md">
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+              No bookmarks match the selected labels.
+            </p>
+            <button
+              onClick={() => setSelectedLabels([])}
+              className="mt-2 text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 hover:underline cursor-pointer"
+            >
+              clear label filter
+            </button>
           </div>
         ) : (
           <div className="space-y-2">
-            {bookmarks?.map((b, idx) => {
+            {visibleBookmarks.map((b, idx) => {
               const num = String(idx + 1).padStart(2, "0");
+              const labels = getLabels(b.problemId).length
+                ? getLabels(b.problemId)
+                : (b.labels ?? []);
               return (
                 <motion.div
                   key={b.id}
@@ -153,7 +220,9 @@ export default function DsaBookmarksPage() {
                       {b.title}
                     </Link>
                     <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <span className={`text-[10px] font-mono uppercase tracking-widest ${DIFF_COLOR[b.difficulty] || "text-stone-500"}`}>
+                      <span
+                        className={`text-[10px] font-mono uppercase tracking-widest ${DIFF_COLOR[b.difficulty] || "text-stone-500"}`}
+                      >
                         / {b.difficulty.toLowerCase()}
                       </span>
                       {b.acceptanceRate && (
@@ -162,10 +231,21 @@ export default function DsaBookmarksPage() {
                         </span>
                       )}
                       {b.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400">
+                        <span
+                          key={tag}
+                          className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400"
+                        >
                           {tag}
                         </span>
                       ))}
+                    </div>
+                    <div className="mt-2">
+                      <DsaLabelManager
+                        problemId={b.problemId}
+                        labels={labels}
+                        onAdd={addLabel}
+                        onRemove={removeLabel}
+                      />
                     </div>
                   </div>
 
@@ -185,6 +265,7 @@ export default function DsaBookmarksPage() {
                     onClick={() => removeMutation.mutate(b.problemId)}
                     variant="ghost"
                     mode="icon"
+                    aria-label="Remove bookmark"
                     size="sm"
                     className="text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 shrink-0"
                     title="Remove bookmark"

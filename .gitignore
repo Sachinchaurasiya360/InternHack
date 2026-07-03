@@ -1,3 +1,29 @@
 .env
 server/.env
 client/.env
+# Local env overrides (e.g. Vercel-generated .env.local with OIDC tokens)
+.env*.local
+node_modules/
+.local-postgres/
+
+# Backup files
+*.bak
+
+# Database dumps (never commit; may contain PII/secrets and bloat history)
+*.dump
+*.sql.gz
+
+# Test runner output logs (accidental commits)
+vitest-output.txt
+
+# No root lockfile: deps live in client/ and server/ subprojects
+/package-lock.json
+
+# Claude Code
+CLAUDE.md
+agents.md
+REPO_MAP.md
+
+# Windows reserved filenames
+nul
+.vercel

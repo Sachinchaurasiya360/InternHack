@@ -1,4 +1,4 @@
-import Groq from "groq-sdk";
+import { Groq } from "groq-sdk";
 import type { AIProvider, AIProviderResponse } from "../ai-provider.js";
 
 export class GroqProvider implements AIProvider {

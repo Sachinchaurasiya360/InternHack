@@ -1,15 +1,19 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  CheckCircle2, ArrowRight, Trophy,
-} from "lucide-react";
+import {CheckCircle2, ArrowRight, Trophy} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import { canonicalUrl } from "../../../../lib/seo.utils";
+import GuideCompletionSection from "./GuideCompletionSection";
+import { notifyLearningPathProgressChanged } from "../learning-paths.data";
+import { NextInPathCard } from "./NextInPathCard";
+import { issueCertificate, fetchGuideProgress, patchGuideProgress, type Certificate } from "../api/opensource.api";
+import { useAuthStore } from "../../../../lib/auth.store";
+import { useEffect } from "react";
 
-interface Step { step: number; id: string; title: string; description: string }
+interface Step { step: number; id: string; title: string; description: string ; estimatedMinutes?: number; }
 
 interface Props {
   steps: Step[];
@@ -21,36 +25,110 @@ interface Props {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
+  ogImage?: string;
   icon: LucideIcon;
   iconColor: string;         // e.g. "text-emerald-500"
+  certificateGuideName?: string;
 }
 
 export default function GuideListPage({
   steps, storageKey, basePath, title, titleAccent, subtitle,
   seoTitle, seoDescription, seoKeywords, icon: Icon, iconColor,
+  certificateGuideName,
+  ogImage,
 }: Props) {
-  const [completed, setCompleted] = useState<Set<string>>(() => {
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [cert, setCert] = useState<Certificate | null>(null);
+  const [syncCount, setSyncCount] = useState(0);
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    let isMounted = true;
+    let localSet = new Set<string>();
     try {
       const stored = localStorage.getItem(storageKey);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch { return new Set(); }
-  });
+      if (stored) localSet = new Set(JSON.parse(stored));
+    } catch {}
+
+    if (user) {
+      fetchGuideProgress(storageKey)
+        .then(async (serverCompleted) => {
+          if (!isMounted) return;
+          const serverSet = new Set(serverCompleted);
+          let changed = false;
+          localSet.forEach(id => {
+            if (!serverSet.has(id)) {
+              serverSet.add(id);
+              changed = true;
+            }
+          });
+          if (changed) {
+            try {
+              await patchGuideProgress(storageKey, Array.from(serverSet));
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          if (isMounted) setCompleted(serverSet);
+        })
+        .catch(() => {
+          if (isMounted) setCompleted(localSet);
+        });
+    } else {
+      setCompleted(localSet);
+    }
+    return () => { isMounted = false; };
+  }, [storageKey, user]);
 
   const toggle = useCallback((id: string) => {
-    setCompleted((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
-      return next;
-    });
-  }, [storageKey]);
+    const next = new Set(completed);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    try { localStorage.setItem(storageKey, JSON.stringify([...next])); } catch { /* */ }
+    setCompleted(next);
+    notifyLearningPathProgressChanged();
+    if (user) {
+      setSyncCount(c => c + 1);
+      patchGuideProgress(storageKey, Array.from(next))
+        .catch(console.error)
+        .finally(() => setSyncCount(c => c - 1));
+    }
+  }, [completed, storageKey, user]);
 
   const totalSteps = steps.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
+  const totalEstimatedTime = steps.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+  const completedMinutes = steps
+    .filter((s) => completed.has(s.id))
+    .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
+  const remainingMinutes = totalEstimatedTime - completedMinutes;
+
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": seoTitle,
+    "description": seoDescription,
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+    "totalTime": `PT${totalEstimatedTime}M`,
+    "step": steps.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.title,
+      "text": s.description || "Follow the visual walkthrough steps."
+    }))
+  };
+
+  useEffect(() => {
+    if (allDone && !cert && user && syncCount === 0) {
+      issueCertificate(title)
+        .then(setCert)
+        .catch(console.error);
+    }
+  }, [allDone, cert, title, user, syncCount]);
 
   // Split title around accent word
   const titleBefore = title.replace(titleAccent, "").trim();
+  const currentSlug = basePath.split("/").pop() as "git-guide" | "communication" | "read-codebase" | "cicd";
 
   return (
     <div className="relative pb-12">
@@ -59,6 +137,8 @@ export default function GuideListPage({
         description={seoDescription}
         keywords={seoKeywords}
         canonicalUrl={canonicalUrl(basePath)}
+        ogImage={ogImage}
+        structuredData={howToSchema}
       />
 
       {/* Atmospheric background */}
@@ -94,12 +174,13 @@ export default function GuideListPage({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-3 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
       >
         {[
           { icon: Icon, value: totalSteps, label: "Sections", iconColor },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
+          { icon: ArrowRight, value: allDone ? "Done!" : completed.size > 0 ? `${remainingMinutes} min left` : `${totalEstimatedTime} min total`, label: "Est. Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -117,17 +198,25 @@ export default function GuideListPage({
 
       {/* Completion banner */}
       <AnimatePresence>
-        {allDone && (
+        {allDone && certificateGuideName && (
+          <GuideCompletionSection
+            headline="All sections completed!"
+            subtitle={`You've completed all ${totalSteps} sections. Apply this knowledge to your next contribution!`}
+            certificateGuideName={certificateGuideName}
+            accentWord="completed"
+          />
+        )}
+        {allDone && !certificateGuideName && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 flex items-center gap-4"
+            className="mb-8 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900 p-5 flex items-center gap-4"
           >
-            <Trophy className="w-8 h-8 text-green-500 shrink-0" />
+            <Trophy className="w-8 h-8 text-lime-500 shrink-0" />
             <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">All sections completed!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">You've completed all {totalSteps} sections. Apply this knowledge to your next contribution!</p>
+              <p className="text-base font-bold text-stone-900 dark:text-stone-50">All sections completed!</p>
+              <p className="text-sm text-stone-600 dark:text-stone-400 mt-0.5">You've completed all {totalSteps} sections. Apply this knowledge to your next contribution!</p>
             </div>
           </motion.div>
         )}
@@ -155,25 +244,31 @@ export default function GuideListPage({
                 <Button
                   variant="ghost"
                   mode="icon"
+                  aria-label="Toggle completion"
                   size="sm"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
+                  onClick={(e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
                   className="shrink-0"
                 >
                   {done ? (
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   ) : (
                     <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
+                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
                     </div>
                   )}
                 </Button>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className={`text-sm font-bold mb-0.5 ${
-                    done ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-950 dark:text-white"
-                  }`}>
-                    {step.title}
-                  </h3>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className={`text-sm font-bold ${
+                      done ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-950 dark:text-white"
+                    }`}>
+                      {step.title}
+                    </h3>
+                    {step.estimatedMinutes != null && (
+                      <span className="text-xs font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>
+                      )}
+                  </div>
                   <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
                     {step.description}
                   </p>
@@ -185,6 +280,8 @@ export default function GuideListPage({
           );
         })}
       </div>
+
+      <NextInPathCard currentSlug={currentSlug} completed={allDone} />
     </div>
   );
 }

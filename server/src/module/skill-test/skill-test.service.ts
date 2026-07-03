@@ -1,5 +1,17 @@
 import { prisma } from "../../database/db.js";
 import { Prisma } from "@prisma/client";
+import {
+  generateVerifiedSkillToken,
+  verifyVerifiedSkillToken,
+} from "../../utils/jwt.utils.js";
+import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from "../../utils/cache.js";
+
+const TESTS_LIST_TTL = 600;    // 10 min â€” shared across all students
+const VERIFIED_TTL = 3600;   // 1 hour â€” verified skills rarely change
+const ATTEMPTS_TTL = 300;    // 5 min  â€” attempts change after each test
+
+const verifiedKey = (id: number) => `skill:verified:${id}`;
+const attemptsKey = (id: number) => `skill:attempts:${id}`;
 
 const QUESTIONS_PER_SESSION = 20;
 
@@ -14,17 +26,23 @@ function shuffle<T>(arr: T[]): T[] {
 
 export class SkillTestService {
   async listTests(skill?: string, difficulty?: string) {
+    const cacheKey = `skill:tests:list:${skill ?? ""}:${difficulty ?? ""}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return cached as never;
+
     const where: Record<string, unknown> = { isActive: true };
     if (skill) where.skillName = skill.toLowerCase().trim();
     if (difficulty) where.difficulty = difficulty;
 
-    return prisma.skillTest.findMany({
+    const result = await prisma.skillTest.findMany({
       where,
       include: {
         _count: { select: { questions: true, attempts: true } },
       },
       orderBy: { skillName: "asc" },
     });
+    await cacheSet(cacheKey, result, TESTS_LIST_TTL);
+    return result;
   }
 
   async getTestDetail(testId: number, studentId: number) {
@@ -76,20 +94,21 @@ export class SkillTestService {
 
     if (!test || !test.isActive) throw new Error("Test not found");
 
-    //  Cooldown check - 12 hours between retakes
+    // Failed attempts must wait 7 days before retaking
     const lastAttempt = await prisma.skillTestAttempt.findFirst({
-      where: { testId, studentId ,completedAt: { not: null }},
+      where: { testId, studentId, completedAt: { not: null } },
       orderBy: { completedAt: "desc" },
     });
 
-    if (lastAttempt?.completedAt) {
-      const hoursSince = (Date.now() - lastAttempt.completedAt.getTime()) / (1000 * 60 * 60);
-      if (hoursSince < 12) {
-        const retryAfter = new Date(lastAttempt.completedAt.getTime() + 12 * 60 * 60 * 1000);
-        throw Object.assign(new Error("Cooldown active. Please wait before retaking."), {
-          status: 429,
-          retryAfter,
-        });
+    if (lastAttempt && !lastAttempt.passed && lastAttempt.completedAt) {
+      const retryAfter = new Date(
+        lastAttempt.completedAt.getTime() + 7 * 24 * 60 * 60 * 1000,
+      );
+      if (new Date() < retryAfter) {
+        throw Object.assign(
+          new Error("Retake locked. Please try again later."),
+          { status: 429, retryAfter },
+        );
       }
     }
 
@@ -147,7 +166,7 @@ export class SkillTestService {
       };
     }
 
-    // New session — shuffle and pick subset
+    // New session â€” shuffle and pick subset
     const pool = shuffle([...test.questions]);
     const selected = pool.slice(
       0,
@@ -166,6 +185,8 @@ export class SkillTestService {
         completedAt: null,
       },
     });
+    // New attempt created â€” bust the student's attempts cache
+    await cacheDel(attemptsKey(studentId));
 
     const sanitizedQuestions = selected.map(
       ({ correctIndex, ...rest }) => rest,
@@ -199,7 +220,7 @@ export class SkillTestService {
     });
     if (!test) throw new Error("Test not found");
 
-    // Require an open session — prevents bypassing the timer by skipping /start
+    // Require an open session â€” prevents bypassing the timer by skipping /start
     const session = await prisma.skillTestAttempt.findFirst({
       where: { testId, studentId, completedAt: null },
       orderBy: { startedAt: "desc" },
@@ -256,11 +277,26 @@ export class SkillTestService {
       totalQuestions > 0
         ? Math.round((correctCount / totalQuestions) * 100)
         : 0;
-    const passed = score >= test.passThreshold;
 
-    // Calculate proctoring integrity score
-    const proctoringScore = this.calculateProctoringScore(proctorLog);
-    const autoTerminated = !!(proctorLog && (proctorLog as any).terminated);
+    // Merge the server-side incremental proctor log (appended during the test via
+    // /proctor-logs) into the client-submitted summary. The incremental events are
+    // the tamper-resistant record; the client payload can be under-reported, so we
+    // must not let submit clobber them.
+    const existingEvents = (session.proctorLog as Record<string, unknown> | null)?.[
+      "incrementalEvents"
+    ];
+    const serverEvents = Array.isArray(existingEvents) ? existingEvents : [];
+    const mergedProctorLog: Record<string, unknown> | undefined =
+      proctorLog || serverEvents.length > 0
+        ? { ...(proctorLog ?? {}), incrementalEvents: serverEvents }
+        : undefined;
+
+    // Calculate proctoring integrity score from the merged (server-authoritative) log
+    const proctoringScore = this.calculateProctoringScore(mergedProctorLog);
+    const autoTerminated = !!(mergedProctorLog && (mergedProctorLog as any).terminated);
+
+    const PROCTOR_MINIMUM = 60;
+    const passed = score >= test.passThreshold && proctoringScore >= PROCTOR_MINIMUM;
 
     // Update the existing session with graded results
     const attempt = await prisma.skillTestAttempt.update({
@@ -269,16 +305,16 @@ export class SkillTestService {
         score,
         passed,
         answers: gradedAnswers,
-        proctorLog: (proctorLog as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
+        proctorLog: (mergedProctorLog as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
         proctoringScore,
         autoTerminated,
         completedAt: new Date(),
       },
     });
 
-    // If passed, upsert verifiedSkill
+    let verificationToken: string | null = null;
     if (passed) {
-      await prisma.verifiedSkill.upsert({
+      const verified = await prisma.verifiedSkill.upsert({
         where: {
           studentId_skillName: {
             studentId,
@@ -298,7 +334,18 @@ export class SkillTestService {
           verifiedAt: new Date(),
         },
       });
+      verificationToken = generateVerifiedSkillToken({
+        vid: verified.id,
+        studentId,
+        skillName: verified.skillName,
+      });
     }
+
+    // Bust per-user caches â€” attempts always change, verified changes on pass
+    await Promise.all([
+      cacheDel(attemptsKey(studentId)),
+      ...(passed ? [cacheDel(verifiedKey(studentId))] : []),
+    ]);
 
     return {
       attempt: { id: attempt.id, score, passed },
@@ -307,31 +354,100 @@ export class SkillTestService {
       correctCount,
       totalQuestions,
       gradedAnswers,
+      token: verificationToken,
     };
   }
 
   async getMyAttempts(studentId: number) {
-    return prisma.skillTestAttempt.findMany({
+    const cached = await cacheGet(attemptsKey(studentId));
+    if (cached) return cached as never;
+
+    const result = await prisma.skillTestAttempt.findMany({
       where: { studentId },
       include: {
         test: { select: { title: true, skillName: true } },
       },
       orderBy: { startedAt: "desc" },
     });
+    await cacheSet(attemptsKey(studentId), result, ATTEMPTS_TTL);
+    return result;
   }
 
   async getMyVerified(studentId: number) {
-    return prisma.verifiedSkill.findMany({
+    const cached = await cacheGet(verifiedKey(studentId));
+    if (cached) return cached as never;
+
+    const result = await prisma.verifiedSkill.findMany({
       where: { studentId },
       orderBy: { verifiedAt: "desc" },
     });
+    const mapped = result.map((item) => ({
+      ...item,
+      token: generateVerifiedSkillToken({
+        vid: item.id,
+        studentId: item.studentId,
+        skillName: item.skillName,
+      }),
+    }));
+    await cacheSet(verifiedKey(studentId), mapped, VERIFIED_TTL);
+    return mapped;
   }
 
   async getStudentVerified(studentId: number) {
-    return prisma.verifiedSkill.findMany({
+    const cached = await cacheGet(verifiedKey(studentId));
+    if (cached) return cached as never;
+
+    const result = await prisma.verifiedSkill.findMany({
       where: { studentId },
       orderBy: { verifiedAt: "desc" },
     });
+    const mapped = result.map((item) => ({
+      ...item,
+      token: generateVerifiedSkillToken({
+        vid: item.id,
+        studentId: item.studentId,
+        skillName: item.skillName,
+      }),
+    }));
+    await cacheSet(verifiedKey(studentId), mapped, VERIFIED_TTL);
+    return mapped;
+  }
+
+  async verifyBadgeToken(token: string) {
+    let payload;
+    try {
+      payload = verifyVerifiedSkillToken(token);
+    } catch {
+      throw new Error("INVALID_VERIFICATION_TOKEN");
+    }
+
+    const verified = await prisma.verifiedSkill.findUnique({
+      where: { id: payload.vid },
+      include: {
+        student: { select: { id: true, name: true, profileSlug: true } },
+      },
+    });
+
+    if (
+      !verified ||
+      verified.studentId !== payload.studentId ||
+      verified.skillName !== payload.skillName
+    ) {
+      throw new Error("INVALID_VERIFICATION_TOKEN");
+    }
+
+    return {
+      student: {
+        id: verified.student.id,
+        name: verified.student.name,
+        profileSlug: verified.student.profileSlug,
+      },
+      skillName: verified.skillName,
+      score: verified.score,
+      verifiedAt: verified.verifiedAt,
+      token,
+      publicUrl: `/verify/${token}`,
+    };
   }
 
   async createTest(
@@ -347,7 +463,7 @@ export class SkillTestService {
   ) {
     const skillName = data.skillName.toLowerCase().trim();
 
-    return prisma.skillTest.create({
+    const test = await prisma.skillTest.create({
       data: {
         skillName,
         title: data.title,
@@ -358,6 +474,64 @@ export class SkillTestService {
         createdById: createdById ?? null,
       },
     });
+    await cacheDelPattern("skill:tests:list:");
+    return test;
+  }
+
+  /* ---- Incremental proctor-log flush (issue #2400) ---- */
+  async logProctorEvents(
+    testId: number,
+    studentId: number,
+    events: { type: string; timestamp: string; detail?: string }[],
+  ) {
+    const test = await prisma.skillTest.findUnique({
+      where: { id: testId },
+      select: { timeLimitSecs: true },
+    });
+    if (!test) throw new Error("Test not found");
+
+    await prisma.$transaction(async (tx) => {
+      // Use raw query to grab a row lock (FOR UPDATE) to prevent concurrent flushes from race conditions.
+      // We no longer select proctorLog here to avoid read amplification.
+      const sessions = await tx.$queryRaw<
+        { id: number; startedAt: Date }[]
+      >`
+        SELECT id, "startedAt"
+        FROM "skillTestAttempt"
+        WHERE "testId" = ${testId}
+          AND "studentId" = ${studentId}
+          AND "completedAt" IS NULL
+        ORDER BY "startedAt" DESC
+        LIMIT 1
+        FOR UPDATE
+      `;
+
+      if (!sessions || sessions.length === 0) {
+        throw new Error("NO_OPEN_SESSION");
+      }
+
+      const session = sessions[0]!;
+
+      const expiresAt = new Date(
+        session.startedAt.getTime() + test.timeLimitSecs * 1000,
+      );
+      if (new Date() > expiresAt) {
+        throw new Error("TEST_EXPIRED");
+      }
+
+      // Atomic JSONB array append using raw SQL to eliminate write amplification
+      await tx.$executeRaw`
+        UPDATE "skillTestAttempt"
+        SET "proctorLog" = jsonb_set(
+          COALESCE("proctorLog", '{}'::jsonb),
+          '{incrementalEvents}',
+          COALESCE("proctorLog"->'incrementalEvents', '[]'::jsonb) || CAST(${JSON.stringify(events)} AS jsonb)
+        )
+        WHERE id = ${session.id}
+      `;
+    });
+
+    return { accepted: events.length };
   }
 
   private calculateProctoringScore(
@@ -365,17 +539,62 @@ export class SkillTestService {
   ): number {
     if (!proctorLog) return 100;
     const log = proctorLog as any;
+
+    // Prefer the server-side, tamper-resistant incremental event log when present;
+    // fall back to the client-reported aggregate counts for older/partial sessions
+    // (e.g. a client that never flushed any incremental events).
+    const events: { type?: string }[] = Array.isArray(log.incrementalEvents)
+      ? log.incrementalEvents
+      : [];
+
+    let tabSwitches: number;
+    let focusLosses: number;
+    let fullscreenExits: number;
+    let devtoolsAttempts: number;
+    let copyPasteAttempts: number;
+    let rightClickAttempts: number;
+    let faceViolations: number;
+    let cameraDropped = log.cameraEnabled === false;
+
+    if (events.length > 0) {
+      tabSwitches = focusLosses = fullscreenExits = 0;
+      devtoolsAttempts = copyPasteAttempts = rightClickAttempts = faceViolations = 0;
+      for (const e of events) {
+        switch (e.type) {
+          case "tab_switch": tabSwitches++; break;
+          case "focus_loss": focusLosses++; break;
+          case "fullscreen_exit": fullscreenExits++; break;
+          case "devtools": devtoolsAttempts++; break;
+          case "copy_paste": copyPasteAttempts++; break;
+          case "right_click": rightClickAttempts++; break;
+          case "face_violation": faceViolations++; break;
+          case "camera_track_ended":
+          case "camera_track_muted": cameraDropped = true; break;
+        }
+      }
+    } else {
+      tabSwitches = log.tabSwitches ?? 0;
+      focusLosses = log.focusLosses ?? 0;
+      fullscreenExits = log.fullscreenExits ?? 0;
+      devtoolsAttempts = log.devtoolsAttempts ?? 0;
+      copyPasteAttempts = log.copyPasteAttempts ?? 0;
+      rightClickAttempts = log.rightClickAttempts ?? 0;
+      faceViolations = Array.isArray(log.faceViolations)
+        ? log.faceViolations.length
+        : 0;
+    }
+
     let s = 100;
-    s -= (log.tabSwitches ?? 0) * 15;
-    s -= (log.focusLosses ?? 0) * 5;
-    s -= (log.fullscreenExits ?? 0) * 20;
-    s -= (log.devtoolsAttempts ?? 0) * 25;
-    s -= (log.copyPasteAttempts ?? 0) * 10;
-    s -= (log.rightClickAttempts ?? 0) * 3;
-    s -=
-      (Array.isArray(log.faceViolations) ? log.faceViolations.length : 0) * 10;
+    s -= tabSwitches * 15;
+    s -= focusLosses * 5;
+    s -= fullscreenExits * 20;
+    s -= devtoolsAttempts * 25;
+    s -= copyPasteAttempts * 10;
+    s -= rightClickAttempts * 3;
+    s -= faceViolations * 10;
     if (log.terminated) s -= 30;
-    if (log.cameraEnabled === false) s -= 20;
+    // Camera dropped mid-test (hardware unplug / permission revoke) or never enabled.
+    if (cameraDropped) s -= 20;
     return Math.max(0, s);
   }
 
@@ -397,7 +616,7 @@ export class SkillTestService {
     });
     const startIndex = lastQuestion ? lastQuestion.orderIndex + 1 : 0;
 
-    return prisma.skillTestQuestion.createMany({
+    const result = await prisma.skillTestQuestion.createMany({
       data: questions.map((q, i) => ({
         testId,
         question: q.question,
@@ -407,5 +626,9 @@ export class SkillTestService {
         orderIndex: startIndex + i,
       })),
     });
+    // Question count changed â€” bust all test list variants
+    await cacheDelPattern("skill:tests:list:");
+    return result;
   }
 }
+

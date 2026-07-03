@@ -24,13 +24,11 @@ adminRouter.get("/users/:id", (req, res) => adminController.getUserById(req, res
 adminRouter.patch("/users/:id/status", (req, res) => adminController.updateUserStatus(req, res));
 adminRouter.delete("/users/:id", (req, res) => adminController.deleteUserById(req, res));
 
-// Job management
-adminRouter.get("/jobs", (req, res) => adminController.getAdminJobs(req, res));
-adminRouter.patch("/jobs/:id/status", (req, res) => adminController.updateAdminJobStatus(req, res));
-adminRouter.delete("/jobs/:id", (req, res) => adminController.deleteAdminJob(req, res));
-
 // Error logs
 adminRouter.get("/error-logs", (req, res) => adminController.getErrorLogs(req, res));
+
+// Sidebar stats (counts for nav badges)
+adminRouter.get("/sidebar-stats", (req, res) => adminController.getSidebarStats(req, res));
 
 // Admin creation (SUPER_ADMIN only - enforced in service)
 adminRouter.post("/admins", (req, res) => adminController.createNewAdmin(req, res));
@@ -117,3 +115,6 @@ adminRouter.post("/broadcast-email", (req, res) => adminController.sendBroadcast
 adminRouter.get("/ai/config", (req, res, next) => adminController.getAIServiceConfigs(req, res, next));
 adminRouter.put("/ai/switch", (req, res, next) => adminController.switchAIProvider(req, res, next));
 adminRouter.get("/ai/stats", (req, res, next) => adminController.getAIRequestStats(req, res, next));
+
+// Guide Feedback Analytics
+adminRouter.get("/guide-feedback", (req, res) => adminController.getGuideFeedbackAnalytics(req, res));

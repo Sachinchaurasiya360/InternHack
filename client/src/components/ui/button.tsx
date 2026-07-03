@@ -5,13 +5,15 @@ import { Slot } from '@radix-ui/react-slot';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'cursor-pointer group whitespace-nowrap focus-visible:outline-hidden inline-flex items-center justify-center has-data-[arrow=true]:justify-between whitespace-nowrap text-sm font-medium ring-offset-background transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0',
+  'cursor-pointer group whitespace-nowrap focus-visible:outline-hidden inline-flex items-center justify-center has-data-[arrow=true]:justify-between text-sm font-medium ring-offset-background transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
         primary: 'bg-primary text-primary-foreground hover:bg-primary/90 data-[state=open]:bg-primary/90',
         mono: 'bg-zinc-950 text-white dark:bg-zinc-300 dark:text-black hover:bg-zinc-950/90 dark:hover:bg-zinc-300/90 data-[state=open]:bg-zinc-950/90 dark:data-[state=open]:bg-zinc-300/90',
         destructive:
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90 data-[state=open]:bg-destructive/90',
+        danger:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90 data-[state=open]:bg-destructive/90',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/90 data-[state=open]:bg-secondary/90',
         outline: 'bg-background text-accent-foreground border border-input hover:bg-accent data-[state=open]:bg-accent',
@@ -28,10 +30,8 @@ const buttonVariants = cva(
         ghost: '',
       },
       underline: {
-        solid: '',
-        dashed: '',
-      },
-      underlined: {
+        hover: '',
+        'hover-dashed': '',
         solid: '',
         dashed: '',
       },
@@ -150,6 +150,12 @@ const buttonVariants = cva(
         className: 'shadow-xs shadow-black/5',
       },
       {
+        variant: 'danger',
+        mode: 'default',
+        appearance: 'default',
+        className: 'shadow-xs shadow-black/5',
+      },
+      {
         variant: 'primary',
         mode: 'icon',
         appearance: 'default',
@@ -186,86 +192,92 @@ const buttonVariants = cva(
         className: 'shadow-xs shadow-black/5',
       },
       {
+        variant: 'danger',
+        mode: 'icon',
+        appearance: 'default',
+        className: 'shadow-xs shadow-black/5',
+      },
+      {
         variant: 'primary',
         mode: 'link',
-        underline: 'solid',
+        underline: 'hover',
         className:
           'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-solid',
       },
       {
         variant: 'primary',
         mode: 'link',
-        underline: 'dashed',
+        underline: 'hover-dashed',
         className:
           'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
       },
       {
         variant: 'primary',
         mode: 'link',
-        underlined: 'solid',
+        underline: 'solid',
         className:
           'font-medium text-primary hover:text-primary/90 [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
       },
       {
         variant: 'primary',
         mode: 'link',
-        underlined: 'dashed',
+        underline: 'dashed',
         className:
           'font-medium text-primary hover:text-primary/90 [&_svg]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
       },
       {
         variant: 'inverse',
         mode: 'link',
-        underline: 'solid',
+        underline: 'hover',
         className:
           'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-solid',
       },
       {
         variant: 'inverse',
         mode: 'link',
-        underline: 'dashed',
+        underline: 'hover-dashed',
         className:
           'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
       },
       {
         variant: 'inverse',
         mode: 'link',
-        underlined: 'solid',
+        underline: 'solid',
         className:
           'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
       },
       {
         variant: 'inverse',
         mode: 'link',
-        underlined: 'dashed',
+        underline: 'dashed',
         className:
           'font-medium text-inherit [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
       },
       {
         variant: 'foreground',
         mode: 'link',
-        underline: 'solid',
+        underline: 'hover',
         className:
           'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-solid',
       },
       {
         variant: 'foreground',
         mode: 'link',
-        underline: 'dashed',
+        underline: 'hover-dashed',
         className:
           'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 hover:underline hover:underline-offset-4 hover:decoration-dashed decoration-1',
       },
       {
         variant: 'foreground',
         mode: 'link',
-        underlined: 'solid',
+        underline: 'solid',
         className:
           'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-solid',
       },
       {
         variant: 'foreground',
         mode: 'link',
-        underlined: 'dashed',
+        underline: 'dashed',
         className:
           'font-medium text-foreground [&_svg:not([role=img]):not([class*=text-])]:opacity-60 underline underline-offset-4 decoration-dashed decoration-1',
       },
@@ -276,6 +288,11 @@ const buttonVariants = cva(
       },
       {
         variant: 'destructive',
+        appearance: 'ghost',
+        className: 'bg-transparent text-destructive/90 hover:bg-destructive/5 data-[state=open]:bg-destructive/5',
+      },
+      {
+        variant: 'danger',
         appearance: 'ghost',
         className: 'bg-transparent text-destructive/90 hover:bg-destructive/5 data-[state=open]:bg-destructive/5',
       },
@@ -347,10 +364,10 @@ function Button({
   mode,
   size,
   autoHeight,
-  underlined,
   underline,
   asChild = false,
   placeholder = false,
+  type = "button",
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
@@ -361,6 +378,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
+      type={type}
       className={cn(
         buttonVariants({
           variant,
@@ -370,7 +388,6 @@ function Button({
           mode,
           autoHeight,
           placeholder,
-          underlined,
           underline,
           className,
         }),

@@ -4,7 +4,7 @@ import { AdminCompanyService } from "./admin-company.service.js";
 import { AdminOpensourceService } from "./admin-opensource.service.js";
 import { AdminLearningService } from "./admin-learning.service.js";
 import { AdminEventsService } from "./admin-events.service.js";
-import type { AdminTier, JobStatus, AIServiceType, AIProviderType } from "@prisma/client";
+import type { AdminTier, AIServiceType, AIProviderType } from "@prisma/client";
 
 export class AdminService {
   private authSvc = new AdminAuthService();
@@ -38,17 +38,11 @@ export class AdminService {
   deleteUser(...args: Parameters<AdminPlatformService["deleteUser"]>) {
     return this.platformSvc.deleteUser(...args);
   }
-  getAdminJobs(...args: Parameters<AdminPlatformService["getAdminJobs"]>) {
-    return this.platformSvc.getAdminJobs(...args);
-  }
-  updateJobStatus(...args: Parameters<AdminPlatformService["updateJobStatus"]>) {
-    return this.platformSvc.updateJobStatus(...args);
-  }
-  deleteJob(...args: Parameters<AdminPlatformService["deleteJob"]>) {
-    return this.platformSvc.deleteJob(...args);
-  }
   getErrorLogs(...args: Parameters<AdminPlatformService["getErrorLogs"]>) {
     return this.platformSvc.getErrorLogs(...args);
+  }
+  getSidebarStats() {
+    return this.platformSvc.getSidebarStats();
   }
 
   // ── Company ───────────────────────────────────────────────────────────
@@ -107,6 +101,9 @@ export class AdminService {
   }
   deleteRepo(...args: Parameters<AdminOpensourceService["deleteRepo"]>) {
     return this.opensourceSvc.deleteRepo(...args);
+  }
+  getGuideFeedbackAnalytics() {
+    return this.opensourceSvc.getGuideFeedbackAnalytics();
   }
 
   // ── Learning (DSA + Aptitude + Skill Tests) ───────────────────────────

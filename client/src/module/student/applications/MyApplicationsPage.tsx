@@ -1,32 +1,23 @@
-
+import { formatDate } from "../../../lib/date-utils";
+import DailyInterviewTipWidget from "./DailyInterviewTipWidget";
 import { Link } from "react-router";
+import { useClearFilters } from "../../../hooks/useClearFilters";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2, ArrowUpRight, Clock, Search, ExternalLink, X, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
 import api from "../../../lib/axios";
+import { getStatusBorderColor } from "../../../lib/application-colors";
 import { queryKeys } from "../../../lib/query-keys";
-import type { Application } from "../../../lib/types";
+import type { Application, ExternalApplication } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
+import { EmptyState } from "../../../components/ui/EmptyState";
+import { ApplicationNotes } from "./ApplicationNotes";
 import toast from "@/components/ui/toast";
-interface ExternalApplication {
-  id: number;
-  studentId: number;
-  adminJobId: number;
-  createdAt: string;
-  adminJob: {
-    id: number;
-    slug: string | null;
-    company: string | null;
-    role: string | null;
-    location: string | null;
-    salary: string | null;
-    tags: string[];
-    applyLink: string | null;
-  };
-}
+import type { PendingDelete } from "@/lib/types/actions.types";
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -37,32 +28,8 @@ function Kicker({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CompanyMark({ label }: { label: string }) {
-  return (
-    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../components/ui/CompanyMark";
 
-function statusClass(status: string) {
-  switch (status) {
-    case "APPLIED":
-      return "text-stone-900 dark:text-stone-50 border-stone-300 dark:border-white/20";
-    case "IN_PROGRESS":
-      return "text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-900/60";
-    case "SHORTLISTED":
-      return "text-lime-700 dark:text-lime-400 border-lime-400";
-    case "HIRED":
-      return "text-lime-700 dark:text-lime-400 border-lime-400 bg-lime-50 dark:bg-lime-950/40";
-    case "REJECTED":
-      return "text-red-600 dark:text-red-400 border-red-300 dark:border-red-900/60";
-    case "WITHDRAWN":
-      return "text-stone-400 border-stone-200 dark:border-white/10";
-    default:
-      return "text-stone-500 border-stone-200 dark:border-white/10";
-  }
-}
 
 const ApplicationCard = React.memo(function ApplicationCard({
   app,
@@ -77,7 +44,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
   return (
     <div className="group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors">
       <div className="flex items-start gap-4">
-        <CompanyMark label={app.job?.company || "?"} />
+        <CompanyMark name={app.job?.company || "?"} />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -98,7 +65,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
               </div>
             </div>
             <span
-              className={`inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border rounded-md ${statusClass(app.status)}`}
+              className={`inline-flex shrink-0 px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest border rounded-md ${getStatusBorderColor(app.status)}`}
             >
               {app.status.replace("_", " ")}
             </span>
@@ -111,11 +78,7 @@ const ApplicationCard = React.memo(function ApplicationCard({
           <span className="flex items-center gap-1.5">
             <Clock className="w-3 h-3" />
             Applied{" "}
-            {new Date(app.createdAt).toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })}
+            {formatDate(app.createdAt)}
           </span>
           {totalRounds > 0 && (
             <span className="flex items-center gap-1.5">
@@ -149,6 +112,12 @@ const ApplicationCard = React.memo(function ApplicationCard({
           </Link>
         </div>
       </div>
+
+      <ApplicationNotes
+        applicationId={app.id}
+        kind="internal"
+        notes={app.studentNotes}
+      />
     </div>
   );
 });
@@ -167,7 +136,7 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
         external
       </span>
       <div className="flex items-start gap-4 pr-16">
-        <CompanyMark label={app.adminJob.company || "?"} />
+        <CompanyMark name={app.adminJob.company || "?"} />
         <div className="flex-1 min-w-0">
           <Link
             to={app.adminJob.slug ? `/jobs/ext/${app.adminJob.slug}` : "#"}
@@ -196,11 +165,7 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
         <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500">
           <Clock className="w-3 h-3" />
           Applied{" "}
-          {new Date(app.createdAt).toLocaleDateString("en-IN", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
+          {formatDate(app.createdAt)}
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -221,30 +186,55 @@ const ExternalApplicationCard = React.memo(function ExternalApplicationCard({
           )}
         </div>
       </div>
+
+      <ApplicationNotes
+        applicationId={app.id}
+        kind="external"
+        notes={app.studentNotes}
+      />
     </div>
   );
 });
 
 const PAGE_SIZE = 10;
+const STATUS_ORDER: Record<string, number> = {
+  APPLIED: 0,
+  IN_PROGRESS: 1,
+  SHORTLISTED: 2,
+  HIRED: 3,
+  REJECTED: 4,
+  WITHDRAWN: 5,
+};
 
-type PendingDelete =
-  | { kind: "internal"; id: number }
-  | { kind: "external"; id: number };
+function sortApplications(
+  apps: Application[],
+  option: "newest" | "oldest" | "company" | "status"
+): Application[] {
+  return [...apps].sort((a, b) => {
+    if (option === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (option === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (option === "company") return (a.job?.company ?? "").localeCompare(b.job?.company ?? "");
+    if (option === "status") return (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99);
+    return 0;
+  });
+}
+
 
 export default function MyApplicationsPage() {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const { inputValue: search, setInputValue: setSearch, debouncedValue: debouncedSearch } =
+    useSearchWithDebounce({ delay: 200 });
   const [page, setPage] = useState(1);
-  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null);
+  const [sortOption, setSortOption] = useState<"newest" | "oldest" | "company" | "status">("newest");
+
+  const clearFilters = useClearFilters([
+    () => setSearch(""),
+    () => setPage(1),
+  ]);
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 200);
-    return () => clearTimeout(t);
-  }, [search]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset to first page when filters change
     setPage(1);
   }, [debouncedSearch]);
 
@@ -254,34 +244,44 @@ export default function MyApplicationsPage() {
       api.get("/student/applications").then(
         (res) => res.data as { applications: Application[]; externalApplications: ExternalApplication[] }
       ),
+    staleTime: 2 * 60 * 1000,
   });
 
   const applications = useMemo(() => data?.applications ?? [], [data]);
   const externalApplications = useMemo(() => data?.externalApplications ?? [], [data]);
 
   const filtered = useMemo(() => {
-    if (!debouncedSearch.trim()) return applications;
-    const q = debouncedSearch.toLowerCase();
-    return applications.filter(
-      (a) => a.job?.title?.toLowerCase().includes(q) || a.job?.company?.toLowerCase().includes(q)
-    );
-  }, [applications, debouncedSearch]);
+    let base = !debouncedSearch.trim()
+      ? applications
+      : applications.filter(
+        (a) => a.job?.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) || a.job?.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+      );
+
+    return sortApplications(base, sortOption);
+  }, [applications, debouncedSearch, sortOption]);
 
   const filteredExternal = useMemo(() => {
-    if (!debouncedSearch.trim()) return externalApplications;
-    const q = debouncedSearch.toLowerCase();
-    return externalApplications.filter(
-      (a) =>
-        a.adminJob.role?.toLowerCase().includes(q) ||
-        a.adminJob.company?.toLowerCase().includes(q)
-    );
-  }, [externalApplications, debouncedSearch]);
+    const base = !debouncedSearch.trim()
+      ? externalApplications
+      : externalApplications.filter(
+        (a) =>
+          a.adminJob.role?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          a.adminJob.company?.toLowerCase().includes(debouncedSearch.toLowerCase())
+      );
+
+    return [...base].sort((a, b) => {
+      if (sortOption === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (sortOption === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (sortOption === "company") return (a.adminJob.company ?? "").localeCompare(b.adminJob.company ?? "");
+      return 0;
+    });
+  }, [externalApplications, debouncedSearch, sortOption]);
 
   const totalAll = applications.length + externalApplications.length;
   const totalFiltered = filtered.length + filteredExternal.length;
 
   const deleteMutation = useMutation({
-    mutationFn: async (item: PendingDelete) => {
+    mutationFn: async (item: NonNullable<PendingDelete>) => {
       if (item.kind === "internal") {
         await api.delete(`/student/applications/${item.id}`);
       } else {
@@ -356,8 +356,6 @@ export default function MyApplicationsPage() {
 
   if (isLoading) return <LoadingScreen />;
 
- 
-
   const hasSearch = search.trim().length > 0;
 
   return (
@@ -399,19 +397,40 @@ export default function MyApplicationsPage() {
           </p>
         </div>
         {totalAll > 0 && (
-           <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-           {hasSearch ? "showing" : "total"}{" "}
-           <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
-           {hasSearch ? totalFiltered : totalAll}
-          </span>
-          {hasSearch && (
-          <span className="ml-1">of {totalAll}</span>
-           )}
-        </div>
-       )}
+          <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+            {hasSearch ? "showing" : "total"}{" "}
+            <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-1">
+              {hasSearch ? totalFiltered : totalAll}
+            </span>
+            {hasSearch && (
+              <span className="ml-1">of {totalAll}</span>
+            )}
+          </div>
+        )}
       </motion.div>
 
+      {/* Sort */}
+      <div className="mb-4 flex items-center gap-2">
+        <label htmlFor="sort" className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+          Sort by
+        </label>
+        <select
+          id="sort"
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value as typeof sortOption)}
+          className="text-xs font-mono bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-2 py-1.5 text-stone-900 dark:text-stone-50 focus:outline-none focus:border-lime-400 transition-colors cursor-pointer"
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="company">Company A–Z</option>
+          <option value="status">Status</option>
+        </select>
+      </div>
+
       {/* Search */}
+
+
+      <DailyInterviewTipWidget />
       <div className="mb-5 relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
         <input
@@ -426,7 +445,7 @@ export default function MyApplicationsPage() {
       {hasSearch && (
         <div className="mb-6">
           <button
-            onClick={() => setSearch("")}
+            onClick={clearFilters}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-red-500 transition-colors border-0 bg-transparent cursor-pointer"
           >
             <X className="w-3 h-3" /> clear search
@@ -454,16 +473,21 @@ export default function MyApplicationsPage() {
           </Link>
         </div>
       ) : filtered.length === 0 && filteredExternal.length === 0 ? (
-        <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-          <Search className="w-8 h-8 text-stone-400 mx-auto mb-3" />
-          <p className="text-sm text-stone-500">No applications match your search.</p>
-          <button
-            onClick={() => setSearch("")}
-            className="mt-3 text-[10px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 hover:text-lime-600 dark:hover:text-lime-400 bg-transparent border-0 cursor-pointer"
-          >
-            Clear search
-          </button>
-        </div>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <EmptyState
+            icon={<Search className="w-6 h-6 text-stone-400 dark:text-stone-600" />}
+            title="No applications match your search"
+            action={
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors border-0 cursor-pointer mt-2"
+              >
+                Clear search
+              </button>
+            }
+          />
+        </motion.div>
       ) : (
         (() => {
           const combined: Array<

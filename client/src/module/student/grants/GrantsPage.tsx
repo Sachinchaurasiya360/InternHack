@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -18,11 +18,14 @@ import {
   Bookmark,
   BookmarkCheck,
   ClipboardList,
+  Clock,
 } from "lucide-react";
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
-import { Link } from "react-router";
+import { GridBackground } from "../../../components/ui/GridBackground";
+import GrantTrackerDialog from "./GrantTrackerDialog";
+
 
 function resolveGrantLogo(logo: string, website: string): string {
   if (logo && !logo.includes("placehold.co")) return logo;
@@ -41,6 +44,25 @@ const STATUS_CONFIG = {
 };
 
 const ECOSYSTEMS = Array.from(new Set(grants.map((g) => g.ecosystem))).sort();
+// Derived from static data — computed once at module level, never recomputed
+const ACTIVE_COUNT = grants.filter((g) => g.status === "Active").length;
+
+function getDeadlineCountdown(deadline?: string | null) {
+  if (!deadline) return null;
+
+  const deadlineDate = new Date(deadline);
+  if (Number.isNaN(deadlineDate.getTime())) return null;
+
+  const now = new Date();
+  const utcToday = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const utcDeadline = Date.UTC(deadlineDate.getFullYear(), deadlineDate.getMonth(), deadlineDate.getDate());
+  const daysRemaining = Math.floor((utcDeadline - utcToday) / 86400000);
+
+  if (daysRemaining < 0) return "Expired";
+  if (daysRemaining === 0) return "Ends today";
+  if (daysRemaining === 1) return "1 day left";
+  return `${daysRemaining} days left`;
+}
 
 function getDeadlineBadge(deadline: string) {
   const now = new Date();
@@ -113,6 +135,7 @@ export default function GrantsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showTracker, setShowTracker] = useState(false);
   const [savedGrants, setSavedGrants] = useState<Set<number>>(() => {
     try {
       const stored = localStorage.getItem("savedGrants");
@@ -123,7 +146,7 @@ export default function GrantsPage() {
   });
   const [showSavedOnly, setShowSavedOnly] = useState(false);
 
-  const toggleSave = (grantId: number) => {
+  const toggleSave = useCallback((grantId: number) => {
     setSavedGrants((prev) => {
       const next = new Set(prev);
       if (next.has(grantId)) next.delete(grantId);
@@ -131,7 +154,11 @@ export default function GrantsPage() {
       localStorage.setItem("savedGrants", JSON.stringify([...next]));
       return next;
     });
-  };
+  }, []);
+
+  // Stable callbacks passed into memo'd GrantCard — never recreated between renders
+  const handleCardSelect = useCallback((grant: Grant) => setSelectedGrant(grant), []);
+  const handleCloseModal = useCallback(() => setSelectedGrant(null), []);
 
   const filtered = useMemo(() => {
     let result = grants.filter((g) => {
@@ -170,8 +197,6 @@ export default function GrantsPage() {
     setSearch("");
   };
 
-  const activeCount = grants.filter((g) => g.status === "Active").length;
-
   return (
     <div className="relative text-stone-900 dark:text-stone-50 pb-12">
       <SEO
@@ -181,14 +206,7 @@ export default function GrantsPage() {
         canonicalUrl={canonicalUrl("/grants")}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Editorial header */}
@@ -230,7 +248,7 @@ export default function GrantsPage() {
             <span>
               active
               <span className="text-stone-900 dark:text-stone-50 text-sm font-bold tabular-nums ml-2">
-                {activeCount}
+                {ACTIVE_COUNT}
               </span>
             </span>
             <span>
@@ -249,9 +267,10 @@ export default function GrantsPage() {
           transition={{ delay: 0.05 }}
           className="mb-6"
         >
-          <Link
-            to="/student/grants/tracker"
-            className="group flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors no-underline"
+          <button
+            type="button"
+            onClick={() => setShowTracker(true)}
+            className="group w-full flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md hover:border-stone-400 dark:hover:border-white/30 transition-colors text-left cursor-pointer"
           >
             <div className="w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0">
               <ClipboardList className="w-4 h-4 text-stone-600 dark:text-stone-400" />
@@ -265,7 +284,7 @@ export default function GrantsPage() {
               </p>
             </div>
             <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </Link>
+          </button>
         </motion.div>
 
         {/* Search + filters */}
@@ -448,9 +467,9 @@ export default function GrantsPage() {
                 key={grant.id}
                 grant={grant}
                 index={i}
-                onClick={() => setSelectedGrant(grant)}
+                onSelect={handleCardSelect}
                 saved={savedGrants.has(grant.id)}
-                onToggleSave={() => toggleSave(grant.id)}
+                onToggleSave={toggleSave}
               />
             ))}
           </div>
@@ -459,29 +478,36 @@ export default function GrantsPage() {
 
       <AnimatePresence>
         {selectedGrant && (
-          <GrantDetailModal grant={selectedGrant} onClose={() => setSelectedGrant(null)} />
+          <GrantDetailModal grant={selectedGrant} onClose={handleCloseModal} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showTracker && (
+          <GrantTrackerDialog onClose={() => setShowTracker(false)} />
         )}
       </AnimatePresence>
     </div>
   );
 }
 
-function GrantCard({
+const GrantCard = memo(function GrantCard({
   grant,
   index,
-  onClick,
+  onSelect,
   saved,
   onToggleSave,
 }: {
   grant: Grant;
   index: number;
-  onClick: () => void;
+  onSelect: (grant: Grant) => void;
   saved: boolean;
-  onToggleSave: () => void;
+  onToggleSave: (id: number) => void;
 }) {
   const statusCfg = STATUS_CONFIG[grant.status];
   const StatusIcon = statusCfg.icon;
   const logoSrc = resolveGrantLogo(grant.logo, grant.website);
+  const countdown = getDeadlineCountdown(grant.deadline);
   const deadlineBadge = getDeadlineBadge(grant.deadline);
 
   return (
@@ -491,16 +517,16 @@ function GrantCard({
       transition={{ delay: index * 0.03 }}
     >
       <div
-        onClick={onClick}
+        onClick={() => onSelect(grant)}
         className={`group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full cursor-pointer ${
   deadlineBadge.isClosed ? "opacity-60" : ""
-}`} 
+}`}
       >
         <span
           role="button"
           onClick={(e) => {
             e.stopPropagation();
-            onToggleSave();
+            onToggleSave(grant.id);
           }}
           className="absolute top-4 right-4 p-1 rounded hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
         >
@@ -548,6 +574,14 @@ function GrantCard({
           >
             {grant.status}
           </MetaChip>
+          {countdown && (
+            <MetaChip
+              icon={<Clock className="w-3 h-3" />}
+              className="text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-stone-800"
+            >
+              {countdown}
+            </MetaChip>
+          )}
           <MetaChip icon={<DollarSign className="w-3 h-3" />}>{grant.fundingAmount}</MetaChip>
           <MetaChip icon={<Globe className="w-3 h-3" />}>{grant.ecosystem}</MetaChip>
           <MetaChip icon={<Tag className="w-3 h-3" />}>{grant.category}</MetaChip>
@@ -567,7 +601,7 @@ function GrantCard({
       </div>
     </motion.div>
   );
-}
+});
 
 function GrantDetailModal({ grant, onClose }: { grant: Grant; onClose: () => void }) {
   const statusCfg = STATUS_CONFIG[grant.status];

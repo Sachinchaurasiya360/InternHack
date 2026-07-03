@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
+import { useAuthStore } from "../lib/auth.store";
 
 function useCountUp(target: number, isInView: boolean, duration = 2000) {
   const [count, setCount] = useState(0);
@@ -60,6 +61,8 @@ function StatItem({ target, label, isInView, duration }: StatItemProps) {
 export function CTASection() {
   const statsRef = useRef(null);
   const isInView = useInView(statsRef, { once: true, margin: "-100px" });
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const ctaHref = isAuthenticated ? "/student/applications" : "/register";
 
   return (
     <section className="relative py-24 md:py-32 bg-stone-50 dark:bg-stone-950 border-t border-stone-200 dark:border-white/10">
@@ -103,7 +106,7 @@ export function CTASection() {
               </p>
 
               <div className="mt-10 flex flex-col sm:flex-row gap-3">
-                <Link to="/register" className="no-underline">
+                <Link to={ctaHref} className="no-underline">
                   <button className="group inline-flex items-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-lg text-sm font-bold hover:bg-lime-300 transition-colors cursor-pointer border-0">
                     Start free
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

@@ -1,14 +1,21 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2, Award, ArrowRight,
   Trophy,
+  Clock
 } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
+import GuideCompletionSection from "./components/GuideCompletionSection";
+import { notifyLearningPathProgressChanged } from "./learning-paths.data";
+import { NextInPathCard } from "./components/NextInPathCard";
+import { issueCertificate, fetchGuideProgress, patchGuideProgress, type Certificate } from "./api/opensource.api";
+import { useAuthStore } from "../../../lib/auth.store";
+import GSoCProposalAIReview from "./GSoCProposalAIReview";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Step {
@@ -16,6 +23,7 @@ interface Step {
   id: string;
   title: string;
   description: string;
+  estimatedMinutes?: number;
   level: string;
 }
 
@@ -43,27 +51,95 @@ const LEVEL_BG: Record<string, string> = {
 
 // ─── Page ──────────────────────────────────────────────────────
 export default function GSoCProposalPage() {
-  const [completed, setCompleted] = useState<Set<string>>(() => {
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [cert, setCert] = useState<Certificate | null>(null);
+  const [syncCount, setSyncCount] = useState(0);
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    let isMounted = true;
+    let localSet = new Set<string>();
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch {
-      return new Set();
+      if (stored) localSet = new Set(JSON.parse(stored));
+    } catch {}
+
+    if (user) {
+      fetchGuideProgress(STORAGE_KEY)
+        .then(async (serverCompleted) => {
+          if (!isMounted) return;
+          const serverSet = new Set(serverCompleted);
+          let changed = false;
+          localSet.forEach(id => {
+            if (!serverSet.has(id)) {
+              serverSet.add(id);
+              changed = true;
+            }
+          });
+          if (changed) {
+            try {
+              await patchGuideProgress(STORAGE_KEY, Array.from(serverSet));
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          if (isMounted) setCompleted(serverSet);
+        })
+        .catch(() => {
+          if (isMounted) setCompleted(localSet);
+        });
+    } else {
+      setCompleted(localSet);
     }
-  });
+    return () => { isMounted = false; };
+  }, [user]);
 
   const toggle = useCallback((id: string) => {
-    setCompleted((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
-      return next;
-    });
-  }, []);
+    const next = new Set(completed);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
+    setCompleted(next);
+    notifyLearningPathProgressChanged();
+    if (user) {
+      setSyncCount(c => c + 1);
+      patchGuideProgress(STORAGE_KEY, Array.from(next))
+        .catch(console.error)
+        .finally(() => setSyncCount(c => c - 1));
+    }
+  }, [completed, user]);
 
   const totalSteps = STEPS.length;
   const pct = Math.round((completed.size / totalSteps) * 100);
   const allDone = completed.size === totalSteps;
+  const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
+  const completedMinutes = STEPS
+    .filter((s) => completed.has(s.id))
+    .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
+  const remainingMinutes = totalEstimatedMinutes - completedMinutes;
+
+  useEffect(() => {
+    if (allDone && !cert && user && syncCount === 0) {
+      issueCertificate("GSoC Proposal Guide")
+        .then(setCert)
+        .catch(console.error);
+    }
+  }, [allDone, cert, user, syncCount]);
+
+
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "GSoC Proposal Writing Guide - Step by Step",
+    "description": "Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure.",
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+    "totalTime": `PT${totalEstimatedMinutes}M`,
+    "step": STEPS.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.title,
+      "text": s.description || "Follow the visual walkthrough steps."
+    }))
+  };
 
   return (
     <div className="relative pb-12">
@@ -72,6 +148,8 @@ export default function GSoCProposalPage() {
         description="Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure."
         keywords="GSoC proposal guide, Google Summer of Code, GSoC tips, open source proposal, GSoC application"
         canonicalUrl={canonicalUrl("/student/opensource/gsoc-proposal")}
+        ogImage="/og/og-gsoc-proposal.png"
+        structuredData={howToSchema}
       />
 
       {/* Atmospheric background */}
@@ -113,6 +191,7 @@ export default function GSoCProposalPage() {
           { icon: Award, value: totalSteps, label: "Steps", iconColor: "text-red-500" },
           { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
           { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
+          { icon: Clock, value: allDone ? "Done!" : completed.size > 0 ? `${remainingMinutes} min left` : `${totalEstimatedMinutes} min total`, label: "Est. Time", iconColor: "text-indigo-500" },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -131,18 +210,12 @@ export default function GSoCProposalPage() {
       {/* Completion banner */}
       <AnimatePresence>
         {allDone && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 flex items-center gap-4"
-          >
-            <Trophy className="w-8 h-8 text-green-500 shrink-0" />
-            <div>
-              <p className="text-base font-bold text-green-900 dark:text-green-300">You've completed the guide!</p>
-              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline.</p>
-            </div>
-          </motion.div>
+          <GuideCompletionSection
+            headline="You've completed the guide!"
+            subtitle="Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline."
+            certificateGuideName="GSoC Proposal Guide"
+            accentWord="guide"
+          />
         )}
       </AnimatePresence>
 
@@ -169,6 +242,7 @@ export default function GSoCProposalPage() {
                 <Button
                   variant="ghost"
                   mode="icon"
+                  aria-label="Toggle completion"
                   size="sm"
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
                   className="shrink-0"
@@ -192,6 +266,9 @@ export default function GSoCProposalPage() {
                     }`}>
                       {step.title}
                     </h3>
+                    {step.estimatedMinutes && (
+                      <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>
+                      )}
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${LEVEL_BG[step.level] || "bg-gray-100 dark:bg-gray-800"} ${LEVEL_COLOR[step.level] || "text-gray-500"}`}>
                       {step.level}
                     </span>
@@ -208,6 +285,12 @@ export default function GSoCProposalPage() {
           );
         })}
       </div>
+
+      {/* AI Proposal Reviewer Panel */}
+      <GSoCProposalAIReview />
+
+      <NextInPathCard currentSlug="gsoc-proposal" completed={allDone} />
     </div>
   );
 }
+

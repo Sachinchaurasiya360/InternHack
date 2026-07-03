@@ -8,16 +8,16 @@ import {
   Star,
   AlertTriangle,
   Info,
-  Copy,
-  Check,
   ArrowRight,
   RotateCcw,
   Lightbulb,
   Eye,
   Code2,
 } from "lucide-react";
+import { CodeBlock } from "../../../components/ui/CodeBlock";
+import LessonCodeRunner from "../../../components/LessonCodeRunner";
 import { sections, lessons } from "./data";
-import type { JsProgress, CodeExample, PracticeExercise } from "./data/types";
+import type { JsProgress, PracticeExercise } from "./data/types";
 import { jsEngine } from "./lib/js-engine";
 import type { JsRunResult } from "./lib/js-engine";
 import JsEditor from "./components/JsEditor";
@@ -26,7 +26,8 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
-import { DIFF_COLOR } from "../../../lib/difficulty-colors";
+import { DIFF_COLOR } from "../../../lib/difficulty-styles";
+import { Button } from "../../../components/ui/button";
 
 const FREE_LIMIT = 5;
 
@@ -42,54 +43,10 @@ function toggleProgress(lessonId: string): boolean {
   const progress = getLocalProgress();
   const current = progress[lessonId]?.completed ?? false;
   progress[lessonId] = { ...progress[lessonId], completed: !current };
-  localStorage.setItem("js-progress", JSON.stringify(progress));
+  try { localStorage.setItem("js-progress", JSON.stringify(progress)); } catch { console.warn("Failed to persist to localStorage: js-progress"); }
   return !current;
 }
 
-function CodeBlock({ example }: { example: CodeExample }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(example.code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [example.code]);
-
-  return (
-    <div className="rounded-md border border-stone-200 dark:border-white/10 overflow-hidden bg-white dark:bg-stone-900">
-      <div className="flex items-center justify-between px-4 py-2.5 bg-stone-50 dark:bg-stone-950/40 border-b border-stone-200 dark:border-white/10">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="h-1 w-1 bg-lime-400 shrink-0"></div>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 truncate">
-            {example.title}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
-        >
-          {copied ? <Check className="w-3 h-3 text-lime-500" /> : <Copy className="w-3 h-3" />}
-          {copied ? "copied" : "copy"}
-        </button>
-      </div>
-      <pre className="p-4 overflow-x-auto bg-stone-950 text-stone-100 text-sm leading-relaxed">
-        <code>{example.code}</code>
-      </pre>
-      {example.output && (
-        <div className="px-4 py-2.5 bg-stone-900 border-t border-stone-800">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1">output</span>
-          <pre className="text-sm text-lime-400 whitespace-pre-wrap">{example.output}</pre>
-        </div>
-      )}
-      {example.explanation && (
-        <div className="px-4 py-3 bg-stone-50 dark:bg-stone-950/40 border-t border-stone-200 dark:border-white/10">
-          <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">{example.explanation}</p>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function ExerciseSection({
   exercises,
@@ -312,6 +269,10 @@ export default function JsLessonDetailPage() {
     return !!p[lessonId ?? ""]?.completed;
   });
 
+  const [playgroundCode, setPlaygroundCode] = useState("");
+  const [showPlayground, setShowPlayground] = useState(false);
+  const [playgroundResult, setPlaygroundResult] = useState<JsRunResult | null>(null);
+
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
   const sectionLessons = useMemo(
@@ -493,7 +454,34 @@ export default function JsLessonDetailPage() {
             </div>
             <div className="space-y-3">
               {content.codeExamples.map((example, i) => (
-                <CodeBlock key={i} example={example} />
+                <div 
+                  key={`${lesson.id}-${example.title || i}`}
+                  className="space-y-3"
+                >
+                <CodeBlock
+                  example={example}
+                  language="javascript"
+                  onTryIt={(code) => {
+                   setPlaygroundCode(code);
+                   setPlaygroundResult(null);
+                   setShowPlayground(true);
+
+                   setTimeout(() => {
+                    document
+                      .getElementById("lesson-playground")
+                      ?.scrollIntoView({
+                       behavior: "smooth",
+                       block: "start",
+                      });
+                   }, 100);
+                  }}
+                />
+
+                <LessonCodeRunner
+                  initialCode={example.code}
+                  language="javascript"
+                />
+            </div>
               ))}
             </div>
           </motion.div>
@@ -582,6 +570,43 @@ export default function JsLessonDetailPage() {
             </motion.div>
           )}
 
+          {showPlayground && (
+            <div
+              id="lesson-playground"
+              className="mb-8 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md p-5"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold">JavaScript Playground</h3>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowPlayground(false)}
+                >
+                  Close
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                <JsEditor
+                  value={playgroundCode}
+                  onChange={setPlaygroundCode}
+                  onRun={async () => {
+                    const result = await jsEngine.execute(playgroundCode);
+                    setPlaygroundResult(result);
+                  }}
+                />
+
+                {playgroundResult && (
+                  <JsConsoleOutput
+                    result={playgroundResult}
+                    expectedOutput=""
+                    isCorrect={null}
+                  />
+                )}
+              </div>
+            </div>
+          )}
           {/* Practice exercises */}
           {exercises.length > 0 && (
             <>

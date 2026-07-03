@@ -7,10 +7,32 @@ import { createUniqueS3Key, deleteFromS3, getS3KeyFromUrl, signUrl, signUrls, ge
 import { hashGuestIp, guestResumeKeyPrefix } from "../../utils/guest-ip.utils.js";
 import { prisma } from "../../database/db.js";
 import { createLogger } from "../../utils/logger.js";
+import { cacheDel, cacheDelPattern } from "../../utils/cache.js";
 
 const logger = createLogger("UploadController");
 
 const MAX_RESUMES = 2;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB — must match s3.utils.ts UPLOAD_POLICIES
+
+/**
+ * Server-side allowlist of permitted MIME types for presigned URL generation.
+ * Scoped to the four upload targets the application actually uses:
+ * resumes (PDF), profile-pics, cover-images, and company-logos (images + SVG).
+ * Executables, scripts, HTML, and other dangerous types are excluded.
+ */
+const ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+]);
+
+/**
+ * SVG is an XSS risk when served from S3, so it is excluded from the general
+ * allowlist. The company-logos folder intentionally permits SVG because the
+ * existing per-folder policy in s3.utils.ts already allows it there.
+ */
+const SVG_ALLOWED_FOLDERS = new Set(["company-logos"]);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,8 +44,23 @@ function getExpectedS3UrlPrefix(): string {
   return `https://${bucketName}.s3.${region}.amazonaws.com/`;
 }
 
-function isValidS3FileUrl(url: unknown): url is string {
-  return typeof url === "string" && url.startsWith(getExpectedS3UrlPrefix());
+function isValidS3FileUrl(url: unknown, userId?: number): url is string {
+  if (typeof url !== "string" || !url.startsWith(getExpectedS3UrlPrefix())) {
+    return false;
+  }
+  
+  if (userId !== undefined) {
+    const key = getS3KeyFromUrl(url);
+    if (!key) return false;
+    
+    // Key format is <folder>/<userId>/<uuid>-<filename>
+    const parts = key.split('/');
+    if (parts.length < 3 || parts[1] !== String(userId)) {
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 /** Delete a file - keeps local fallback support just in case users have legacy local files */
@@ -85,6 +122,12 @@ export class UploadController {
         return res.status(400).json({ message: "fileName, fileType, and folder are required" });
       }
 
+      const isSvgForLogoFolder =
+        fileType === "image/svg+xml" && SVG_ALLOWED_FOLDERS.has(folder as string);
+      if (!ALLOWED_MIME_TYPES.has(fileType as string) && !isSvgForLogoFolder) {
+        return res.status(400).json({ message: "File type not allowed." });
+      }
+
       const fileKey = createUniqueS3Key(folder, String(req.user.id), fileName);
       
       let presignedData;
@@ -122,8 +165,8 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl } = req.body;
-      if (!isValidS3FileUrl(fileUrl)) {
-        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      if (!isValidS3FileUrl(fileUrl, req.user.id)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin or ownership" });
       }
 
       const userId = req.user.id;
@@ -132,10 +175,17 @@ export class UploadController {
       const user = await prisma.user.update({
         where: { id: userId },
         data: { profilePic: fileUrl },
-        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true },
+        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true, profileSlug: true },
       });
 
       if (current?.profilePic) deleteFile(current.profilePic);
+
+      // Bust cached profiles so public viewers see the new avatar immediately.
+      await Promise.all([
+        cacheDel(`profile:me:${userId}`),
+        cacheDelPattern(`profile:public:${userId}:`),
+        user.profileSlug ? cacheDelPattern(`profile:public:${(user as any).profileSlug}:`) : Promise.resolve(),
+      ]);
 
       if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
       if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
@@ -154,8 +204,8 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl } = req.body;
-      if (!isValidS3FileUrl(fileUrl)) {
-        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      if (!isValidS3FileUrl(fileUrl, req.user.id)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin or ownership" });
       }
 
       const userId = req.user.id;
@@ -164,10 +214,17 @@ export class UploadController {
       const user = await prisma.user.update({
         where: { id: userId },
         data: { coverImage: fileUrl },
-        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true },
+        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true, profileSlug: true },
       });
 
       if (current?.coverImage) deleteFile(current.coverImage);
+
+      // Bust cached profiles so public viewers see the new cover image immediately.
+      await Promise.all([
+        cacheDel(`profile:me:${userId}`),
+        cacheDelPattern(`profile:public:${userId}:`),
+        (user as any).profileSlug ? cacheDelPattern(`profile:public:${(user as any).profileSlug}:`) : Promise.resolve(),
+      ]);
 
       if (user.profilePic) (user as Record<string, unknown>).profilePic = await signUrl(user.profilePic);
       if (user.coverImage) (user as Record<string, unknown>).coverImage = await signUrl(user.coverImage);
@@ -186,8 +243,11 @@ export class UploadController {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       
       const { fileUrl, originalName, size, mimeType } = req.body;
-      if (!isValidS3FileUrl(fileUrl)) {
-        return res.status(400).json({ message: "Invalid fileUrl origin" });
+      if (!isValidS3FileUrl(fileUrl, req.user.id)) {
+        return res.status(400).json({ message: "Invalid fileUrl origin or ownership" });
+      }
+      if (typeof size === "number" && size > MAX_FILE_SIZE) {
+        return res.status(400).json({ message: `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} MB limit` });
       }
 
       const userId = req.user.id;
@@ -208,15 +268,14 @@ export class UploadController {
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
-      // Log daily quota usage for resume generation/upload
-      await prisma.usageLog.create({
-        data: {
-          userId: req.user.id,
-          action: "GENERATE_RESUME",
-        },
-      });
-
       const signedResumes = await signUrls(user.resumes);
+
+      // Bust cached profiles so public viewers see the latest resume list.
+      await Promise.all([
+        cacheDel(`profile:me:${userId}`),
+        cacheDelPattern(`profile:public:${userId}:`),
+      ]);
+
       return res.status(200).json({
         message: "Resume updated",
         user: { ...user, resumes: signedResumes },
@@ -253,7 +312,13 @@ export class UploadController {
 
       deleteFile(url);
       const signedResumes = await signUrls(user.resumes);
-      
+
+      // Bust cached profiles so public viewers no longer see the deleted resume.
+      await Promise.all([
+        cacheDel(`profile:me:${userId}`),
+        cacheDelPattern(`profile:public:${userId}:`),
+      ]);
+
       return res.status(200).json({ message: "Resume deleted", user: { ...user, resumes: signedResumes } });
     } catch (error) {
       console.error(error);

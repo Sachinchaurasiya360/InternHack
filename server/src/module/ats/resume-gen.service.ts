@@ -77,14 +77,6 @@ export class ResumeGenService {
       }
     }
 
-    if (profile.achievements.length > 0) {
-      parts.push("Achievements:");
-      for (const a of profile.achievements) {
-        let line = `  - ${a.title}: ${a.description}`;
-        if (a.date) line += ` (${a.date})`;
-        parts.push(line);
-      }
-    }
 
     return parts.join("\n");
   }

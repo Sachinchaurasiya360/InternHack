@@ -21,6 +21,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
+import { SafeHtml } from "../../../components/common/SafeHtml";
 
 const COMPANY_LOGOS: Record<string, string> = {
   "TCS": "https://companieslogo.com/img/orig/TCS.NS_BIG-89c50e39.png?t=1740792736",
@@ -57,20 +58,6 @@ const COMPANY_LOGOS: Record<string, string> = {
   "Samsung": "https://www.logo.wine/a/logo/Samsung/Samsung-Logo.wine.svg",
 };
 
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<img[^>]*src=["']\/[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<img[^>]*src=["'][^"']*indiabix[^"']*["'][^>]*\/?>/gi, "")
-    .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, "")
-    .replace(/Video\s*Explanation[\s\S]*?(?=<\/div>|$)/gi, "")
-    .replace(/<a[^>]*(?:youtube|youtu\.be|video)[^>]*>[\s\S]*?<\/a>/gi, "")
-    .replace(/\s*style=["'][^"']*["']/gi, "")
-    .replace(/<(div|span|p|font)\s*>\s*<\/\1>/gi, "")
-    .replace(/<\/?font[^>]*>/gi, "")
-    .replace(/\s*class=["'][^"']*["']/gi, "")
-    .trim();
-}
-
 function Kicker({ label }: { label: string }) {
   return (
     <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -96,6 +83,7 @@ export default function AptitudeCompaniesPage() {
   const { data: companies, isLoading } = useQuery({
     queryKey: queryKeys.aptitude.companies(),
     queryFn: () => api.get<AptitudeCompany[]>("/aptitude/companies").then((r) => r.data),
+    staleTime: 30 * 60 * 1000,
   });
 
   const { data: companyData, isLoading: loadingQuestions } = useQuery({
@@ -103,6 +91,7 @@ export default function AptitudeCompaniesPage() {
     queryFn: () =>
       api.get<AptitudeCompanyQuestions>(`/aptitude/companies/${encodeURIComponent(selectedCompany!)}?page=${page}&limit=10`).then((r) => r.data),
     enabled: !!selectedCompany,
+    staleTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {
@@ -302,9 +291,10 @@ export default function AptitudeCompaniesPage() {
                         {String(qNum).padStart(2, "0")}
                       </span>
                       <div className="flex-1 min-w-0 pt-1">
-                        <div
+                        <SafeHtml
                           className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed wrap-break-word"
-                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.question) }}
+                          html={q.question}
+                          method="sanitize-html"
                         />
                         {q.topicName && (
                           <Link
@@ -380,9 +370,10 @@ export default function AptitudeCompaniesPage() {
                             <Kicker label="explanation" />
                           </div>
                           <div className="bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-white/10 rounded-md p-4">
-                            <div
+                            <SafeHtml
                               className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed"
-                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.explanation) }}
+                              html={q.explanation}
+                              method="sanitize-html"
                             />
                           </div>
                         </motion.div>
@@ -544,7 +535,7 @@ export default function AptitudeCompaniesPage() {
           <div className="min-w-0">
             <Kicker label={`companies / ${search ? "filtered" : "all"}`} />
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-              Pick a recruiter
+              Pick a company
             </h2>
           </div>
           <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hidden sm:block tabular-nums">

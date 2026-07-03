@@ -123,20 +123,30 @@ async function fetchLcProfile(username: string): Promise<{
     }
   }
 
-  return { exists: true, isPrivate: false, submissions: Array.from(seen.values()) };
+  return {
+    exists: true,
+    isPrivate: false,
+    submissions: Array.from(seen.values()),
+  };
 }
 
 // ── Problem catalog helpers ────────────────────────────────────────────────
 
 async function loadCatalog() {
   const problems = await prisma.dsaProblem.findMany({
-    select: { id: true, leetcodeId: true, slug: true, title: true, difficulty: true },
+    select: {
+      id: true,
+      leetcodeId: true,
+      slug: true,
+      title: true,
+      difficulty: true,
+    },
   });
 
-  const byLcId = new Map<number, typeof problems[0]>();
-  const bySlug = new Map<string, typeof problems[0]>();
-  const byNormTitle = new Map<string, typeof problems[0]>();
-  const byId = new Map<number, typeof problems[0]>();
+  const byLcId = new Map<number, (typeof problems)[0]>();
+  const bySlug = new Map<string, (typeof problems)[0]>();
+  const byNormTitle = new Map<string, (typeof problems)[0]>();
+  const byId = new Map<number, (typeof problems)[0]>();
 
   for (const p of problems) {
     if (p.leetcodeId) byLcId.set(p.leetcodeId, p);
@@ -192,7 +202,7 @@ async function buildPreview(
   username?: string,
 ) {
   // Deduplicate rows by problemId to prevent duplicate stats from skewed/duplicate CSV rows
-  const uniqueRowsMap = new Map<number, typeof rows[0]>();
+  const uniqueRowsMap = new Map<number, (typeof rows)[0]>();
   for (const r of rows) {
     if (!uniqueRowsMap.has(r.problemId)) {
       uniqueRowsMap.set(r.problemId, r);
@@ -203,10 +213,16 @@ async function buildPreview(
 
   // Find already-solved problem IDs for this user
   const existingSolved = await prisma.studentDsaProgress.findMany({
-    where: { studentId: userId, solved: true, problemId: { in: uniqueRows.map((r) => r.problemId) } },
+    where: {
+      studentId: userId,
+      solved: true,
+      problemId: { in: uniqueRows.map((r) => r.problemId) },
+    },
     select: { problemId: true },
   });
-  const solvedSet = new Set(existingSolved.map((s: { problemId: number }) => s.problemId));
+  const solvedSet = new Set(
+    existingSolved.map((s: { problemId: number }) => s.problemId),
+  );
 
   const newRows = uniqueRows.filter((r) => !solvedSet.has(r.problemId));
 
@@ -248,7 +264,11 @@ async function buildPreview(
     token,
     preview,
     lastImport: lastImport
-      ? { importedAt: lastImport.importedAt.toISOString(), username: lastImport.username, source: lastImport.source }
+      ? {
+          importedAt: lastImport.importedAt.toISOString(),
+          username: lastImport.username,
+          source: lastImport.source,
+        }
       : null,
   };
 }
@@ -266,33 +286,56 @@ export class DsaImportService {
     } catch (err: unknown) {
       const code = (err as { code?: string }).code;
       if (code === "LEETCODE_DOWN") {
-        throw Object.assign(new Error("LEETCODE_DOWN"), { code: "LEETCODE_DOWN" });
+        throw Object.assign(new Error("LEETCODE_DOWN"), {
+          code: "LEETCODE_DOWN",
+        });
       }
       throw err;
     }
 
     if (!lcResult.exists) {
-      throw Object.assign(new Error("USER_NOT_FOUND"), { code: "USER_NOT_FOUND" });
+      throw Object.assign(new Error("USER_NOT_FOUND"), {
+        code: "USER_NOT_FOUND",
+      });
     }
     if (lcResult.isPrivate) {
-      throw Object.assign(new Error("PRIVATE_PROFILE"), { code: "PRIVATE_PROFILE" });
+      throw Object.assign(new Error("PRIVATE_PROFILE"), {
+        code: "PRIVATE_PROFILE",
+      });
     }
 
     const catalog = await loadCatalog();
-    const submissionsMap = new Map(lcResult.submissions.map((s) => [s.titleSlug, s]));
+    const submissionsMap = new Map(
+      lcResult.submissions.map((s) => [s.titleSlug, s]),
+    );
 
     const rows: Array<{ problemId: number; solvedAt: Date }> = [];
     for (const sub of lcResult.submissions) {
-      const hit = matchSubmission({ titleSlug: sub.titleSlug, normTitle: normalizeTitle(sub.titleSlug.replace(/-/g, " ")) }, catalog);
+      const hit = matchSubmission(
+        {
+          titleSlug: sub.titleSlug,
+          normTitle: normalizeTitle(sub.titleSlug.replace(/-/g, " ")),
+        },
+        catalog,
+      );
       if (hit) {
         rows.push({
           problemId: hit.id,
-          solvedAt: sub.timestamp ? new Date(Number(sub.timestamp) * 1000) : new Date(),
+          solvedAt: sub.timestamp
+            ? new Date(Number(sub.timestamp) * 1000)
+            : new Date(),
         });
       }
     }
 
-    return buildPreview(userId, rows, catalog, submissionsMap, "LEETCODE_USERNAME", username);
+    return buildPreview(
+      userId,
+      rows,
+      catalog,
+      submissionsMap,
+      "LEETCODE_USERNAME",
+      username,
+    );
   }
 
   // ── CSV import preview ────────────────────────────────────────────────────
@@ -305,13 +348,22 @@ export class DsaImportService {
     const catalog = await loadCatalog();
 
     const lines = csvContent.split(/\r?\n/).filter((l) => l.trim());
-    if (lines.length < 2) throw Object.assign(new Error("INVALID_CSV"), { code: "INVALID_CSV" });
+    if (lines.length < 2)
+      throw Object.assign(new Error("INVALID_CSV"), { code: "INVALID_CSV" });
 
     // Detect header columns (case-insensitive)
-    const header = lines[0]!.split(",").map((h) => h.replace(/"/g, "").trim().toLowerCase());
-    const slugIdx = header.findIndex((h) => ["slug", "titleslug", "question slug", "title slug"].includes(h));
-    const titleIdx = header.findIndex((h) => ["title", "question title", "question name"].includes(h));
-    const tsIdx = header.findIndex((h) => ["timestamp", "date", "solved at", "solvedat"].includes(h));
+    const header = lines[0]!
+      .split(",")
+      .map((h) => h.replace(/"/g, "").trim().toLowerCase());
+    const slugIdx = header.findIndex((h) =>
+      ["slug", "titleslug", "question slug", "title slug"].includes(h),
+    );
+    const titleIdx = header.findIndex((h) =>
+      ["title", "question title", "question name"].includes(h),
+    );
+    const tsIdx = header.findIndex((h) =>
+      ["timestamp", "date", "solved at", "solvedat"].includes(h),
+    );
     const statusIdx = header.findIndex((h) => ["status", "state"].includes(h));
 
     if (slugIdx === -1 && titleIdx === -1) {
@@ -327,27 +379,39 @@ export class DsaImportService {
         if (!["ac", "accepted", "done"].includes(status)) continue;
       }
 
-      const slug = slugIdx !== -1 ? (cols[slugIdx] ?? "").trim().toLowerCase() : "";
+      const slug =
+        slugIdx !== -1 ? (cols[slugIdx] ?? "").trim().toLowerCase() : "";
       const title = titleIdx !== -1 ? (cols[titleIdx] ?? "").trim() : "";
       const tsRaw = tsIdx !== -1 ? (cols[tsIdx] ?? "") : "";
 
       let solvedAt = new Date();
       if (tsRaw) {
-        const parsed = isNaN(Number(tsRaw)) ? new Date(tsRaw) : new Date(Number(tsRaw) * 1000);
+        const parsed = isNaN(Number(tsRaw))
+          ? new Date(tsRaw)
+          : new Date(Number(tsRaw) * 1000);
         if (!isNaN(parsed.getTime())) solvedAt = parsed;
       }
 
-      const hit = matchSubmission({
-        titleSlug: slug || normalizeTitle(title).replace(/[^a-z0-9]/g, "-"),
-        normTitle: normalizeTitle(title),
-      }, catalog);
+      const hit = matchSubmission(
+        {
+          titleSlug: slug || normalizeTitle(title).replace(/[^a-z0-9]/g, "-"),
+          normTitle: normalizeTitle(title),
+        },
+        catalog,
+      );
 
       if (hit) {
         rows.push({ problemId: hit.id, solvedAt });
-        submissionsMap.set(slug || title, { titleSlug: slug, timestamp: String(solvedAt.getTime() / 1000) });
+        submissionsMap.set(slug || title, {
+          titleSlug: slug,
+          timestamp: String(solvedAt.getTime() / 1000),
+        });
       } else {
         unmatchedCount.value++;
-        submissionsMap.set(`unmatched-${i}`, { titleSlug: slug, timestamp: "" });
+        submissionsMap.set(`unmatched-${i}`, {
+          titleSlug: slug,
+          timestamp: "",
+        });
       }
     }
 
@@ -359,10 +423,14 @@ export class DsaImportService {
     await checkRateLimit(userId);
     evictExpired();
     const pending = pendingImports.get(token);
-    if (!pending) throw Object.assign(new Error("TOKEN_EXPIRED"), { code: "TOKEN_EXPIRED" });
-    if (pending.userId !== userId) throw Object.assign(new Error("TOKEN_EXPIRED"), { code: "TOKEN_EXPIRED" });
-
-    pendingImports.delete(token);
+    if (!pending)
+      throw Object.assign(new Error("TOKEN_EXPIRED"), {
+        code: "TOKEN_EXPIRED",
+      });
+    if (pending.userId !== userId)
+      throw Object.assign(new Error("TOKEN_EXPIRED"), {
+        code: "TOKEN_EXPIRED",
+      });
 
     if (pending.rows.length === 0) {
       return { imported: 0, skipped: 0, importedAt: new Date().toISOString() };
@@ -389,6 +457,8 @@ export class DsaImportService {
         },
       });
 
+      pendingImports.delete(token);
+
       return created;
     });
 
@@ -404,7 +474,13 @@ export class DsaImportService {
     const last = await prisma.leetcodeImportLog.findFirst({
       where: { userId },
       orderBy: { importedAt: "desc" },
-      select: { importedAt: true, username: true, source: true, matched: true, imported: true },
+      select: {
+        importedAt: true,
+        username: true,
+        source: true,
+        matched: true,
+        imported: true,
+      },
     });
     return { lastImport: last ?? null };
   }
@@ -418,8 +494,10 @@ function parseCSVLine(line: string): string[] {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i]!;
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
-      else inQuotes = !inQuotes;
+      if (inQuotes && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else inQuotes = !inQuotes;
     } else if (ch === "," && !inQuotes) {
       result.push(cur.trim());
       cur = "";

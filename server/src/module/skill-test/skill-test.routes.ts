@@ -3,6 +3,8 @@ import { SkillTestService } from "./skill-test.service.js";
 import { SkillTestController } from "./skill-test.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
+import { validateBody } from "../../middleware/validation.middleware.js";
+import { proctorLogBatchSchema } from "./skill-test.validation.js";
 
 const service = new SkillTestService();
 const controller = new SkillTestController(service);
@@ -23,11 +25,11 @@ skillTestRouter.get(
   (req, res, next) => controller.getMyVerified(req, res, next)
 );
 
-// ── Recruiter route ──
+// ── Admin route ──
 skillTestRouter.get(
   "/verified/:studentId",
   authMiddleware,
-  requireRole("RECRUITER"),
+  requireRole("ADMIN"),
   (req, res, next) => controller.getStudentVerified(req, res, next)
 );
 
@@ -37,6 +39,10 @@ skillTestRouter.get(
   authMiddleware,
   requireRole("STUDENT"),
   (req, res, next) => controller.listTests(req, res, next)
+);
+skillTestRouter.get(
+  "/verify/:token",
+  (req, res, next) => controller.verifyBadge(req, res, next)
 );
 skillTestRouter.get(
   "/:id",
@@ -55,6 +61,13 @@ skillTestRouter.post(
   authMiddleware,
   requireRole("STUDENT"),
   (req, res, next) => controller.submitTest(req, res, next)
+);
+skillTestRouter.post(
+  "/:id/proctor-logs",
+  authMiddleware,
+  requireRole("STUDENT"),
+  validateBody(proctorLogBatchSchema),
+  (req, res, next) => controller.logProctorEvents(req, res, next)
 );
 
 // ── Admin routes ──

@@ -1,11 +1,52 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { gsocListQuerySchema, gsocSlugSchema } from "./gsoc.validation.js";
+import { cacheMiddleware } from "../../middleware/cache.middleware.js";
+import { authMiddleware } from "../../middleware/auth.middleware.js";
+import { requireRole } from "../../middleware/role.middleware.js";
+import { usageLimit } from "../../middleware/usage-limit.middleware.js";
+import { GsocReviewService } from "./gsoc-review.service.js";
+import { gsocReviewSchema } from "./gsoc-review.validation.js";
+
+const gsocReviewService = new GsocReviewService();
 
 export const gsocRouter = Router();
 
+// ── Authenticated: AI proposal review (POST /api/gsoc/proposal-review) ────────
+gsocRouter.post(
+  "/proposal-review",
+  authMiddleware,
+  requireRole("STUDENT"),
+  usageLimit("ATS_SCORE", "monthly"),
+  async (req, res, next) => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
+      const parsed = gsocReviewSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ message: "Validation failed", errors: parsed.error.flatten() });
+        return;
+      }
+
+      const review = await gsocReviewService.review(parsed.data);
+
+      const usageInfo = req.usageInfo
+        ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit, tier: req.usageInfo.tier }
+        : undefined;
+
+      res.json({ review, usage: usageInfo });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
 // Public: list organizations with filters & pagination
 gsocRouter.get("/organizations", async (req, res, next) => {
+
   try {
     const parsed = gsocListQuerySchema.safeParse(req.query);
     if (!parsed.success) {
@@ -108,7 +149,7 @@ gsocRouter.get("/organizations/:slug/repos", async (req, res, next) => {
 });
 
 // Public: stats for filters
-gsocRouter.get("/stats", async (_req, res, next) => {
+gsocRouter.get("/stats", cacheMiddleware(3600, "gsoc:stats"), async (_req, res, next) => {
   try {
     const orgs = await prisma.gsocOrganization.findMany({
       select: {

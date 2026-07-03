@@ -55,7 +55,8 @@ export function AssessmentTestView({
     });
   }, 1000);
   return () => clearInterval(interval);
-}, []); // ← runs once on mount, functional update handles the rest
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []); // runs once on mount; functional update inside setInterval handles secondsLeft
 
   // Auto-submit when timer hits 0
   useEffect(() => {

@@ -1,8 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
+import { validateRequestData } from "../../utils/validation.utils.js";
 import type { AdminService } from "./admin.service.js";
 import { setTokenCookie } from "../../utils/cookie.utils.js";
 import { createLogger } from "../../utils/logger.js";
 import { parsePagination } from "../../utils/pagination.utils.js";
+import { clearCache } from "../../middleware/cache.middleware.js";
+import { cacheDelPattern } from "../../utils/cache.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 
 const logger = createLogger("AdminController");
 import {
@@ -10,8 +14,6 @@ import {
   createAdminSchema,
   userQuerySchema,
   updateUserStatusSchema,
-  adminJobQuerySchema,
-  adminUpdateJobStatusSchema,
   createCompanySchema,
   updateCompanySchema,
   updateReviewStatusSchema,
@@ -107,7 +109,8 @@ export class AdminController {
 
   async getUsers(req: Request, res: Response) {
     try {
-      const query = userQuerySchema.parse(req.query);
+      const query = validateRequestData(res, userQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.getUsers(query);
       return res.status(200).json(data);
     } catch (error) {
@@ -172,63 +175,26 @@ export class AdminController {
     }
   }
 
-  // ==================== JOB MANAGEMENT ====================
-
-  async getAdminJobs(req: Request, res: Response) {
-    try {
-      const query = adminJobQuerySchema.parse(req.query);
-      const data = await this.adminService.getAdminJobs(query);
-      return res.status(200).json(data);
-    } catch (error) {
-      logger.error("Failed to get admin jobs", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  async updateAdminJobStatus(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
-
-      const result = adminUpdateJobStatusSchema.safeParse(req.body);
-      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-
-      const job = await this.adminService.updateJobStatus(id, result.data.status, req.user.id, result.data.reason);
-      return res.status(200).json({ message: "Job status updated", job });
-    } catch (error) {
-      if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
-      logger.error("Failed to update admin job status", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
-  async deleteAdminJob(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
-
-      await this.adminService.deleteJob(id, req.user.id);
-      return res.status(200).json({ message: "Job deleted successfully" });
-    } catch (error) {
-      if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
-      logger.error("Failed to delete admin job", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-
   // ==================== ERROR LOGS ====================
 
   async getErrorLogs(req: Request, res: Response) {
     try {
-      const query = errorLogQuerySchema.parse(req.query);
+      const query = validateRequestData(res, errorLogQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.getErrorLogs(query);
       return res.status(200).json(data);
     } catch (error) {
       logger.error("Failed to get error logs", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async getSidebarStats(req: Request, res: Response) {
+    try {
+      const data = await this.adminService.getSidebarStats();
+      return res.status(200).json(data);
+    } catch (error) {
+      logger.error("Failed to get sidebar stats", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -265,6 +231,8 @@ export class AdminController {
       }
 
       const company = await this.adminService.createCompany(req.user.id, result.data);
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.status(201).json({ message: "Company created", company });
     } catch (err) {
       next(err);
@@ -283,6 +251,9 @@ export class AdminController {
       }
 
       const company = await this.adminService.updateCompany(id, result.data as Parameters<typeof this.adminService.updateCompany>[1]);
+      clearCache("companies:detail");
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.json({ message: "Company updated", company });
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
@@ -298,6 +269,9 @@ export class AdminController {
       if (isNaN(id)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       const company = await this.adminService.approveCompany(id);
+      clearCache("companies:detail");
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.json({ message: "Company approved", company });
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
@@ -313,6 +287,9 @@ export class AdminController {
       if (isNaN(id)) { res.status(400).json({ message: "Invalid company ID" }); return; }
 
       await this.adminService.deleteCompany(id);
+      clearCache("companies:detail");
+      clearCache("companies:cities");
+      void cacheDelPattern("companies:list:");
       res.json({ message: "Company deleted" });
     } catch (err) {
       if (err instanceof Error && err.message === "Company not found") {
@@ -346,6 +323,10 @@ export class AdminController {
       }
 
       const review = await this.adminService.updateReviewStatus(id, result.data.status);
+      // Review approval updates avgRating/reviewCount on the company — bust detail and list caches
+      clearCache("companies:reviews");
+      clearCache("companies:detail");
+      void cacheDelPattern("companies:list:");
       res.json({ message: `Review ${result.data.status.toLowerCase()}`, review });
     } catch (err) {
       if (err instanceof Error && err.message === "Review not found") {
@@ -454,7 +435,8 @@ export class AdminController {
 
   async listRepos(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = repoQuerySchema.parse(req.query);
+      const query = validateRequestData(res, repoQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listRepos(query);
       res.json(data);
     } catch (err) {
@@ -532,7 +514,8 @@ export class AdminController {
 
   async listDsaTopics(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = dsaTopicQuerySchema.parse(req.query);
+      const query = validateRequestData(res, dsaTopicQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listDsaTopics(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -624,7 +607,8 @@ export class AdminController {
 
   async listAptitudeCategories(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = aptitudeCategoryQuerySchema.parse(req.query);
+      const query = validateRequestData(res, aptitudeCategoryQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listAptitudeCategories(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -714,7 +698,8 @@ export class AdminController {
 
   async listAptitudeQuestions(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = aptitudeQuestionQuerySchema.parse(req.query);
+      const query = validateRequestData(res, aptitudeQuestionQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listAptitudeQuestions(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -759,7 +744,8 @@ export class AdminController {
 
   async listAdminSkillTests(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = adminSkillTestQuerySchema.parse(req.query);
+      const query = validateRequestData(res, adminSkillTestQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listAdminSkillTests(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -831,7 +817,8 @@ export class AdminController {
 
   async listHackathons(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = hackathonQuerySchema.parse(req.query);
+      const query = validateRequestData(res, hackathonQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listHackathons(query);
       res.json(data);
     } catch (err) { next(err); }
@@ -945,7 +932,8 @@ export class AdminController {
 
   async listExternalJobs(req: Request, res: Response) {
     try {
-      const query = adminExternalJobQuerySchema.parse(req.query);
+      const query = validateRequestData(res, adminExternalJobQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.listExternalJobs(query);
       return res.status(200).json(data);
     } catch (error) {
@@ -984,7 +972,8 @@ export class AdminController {
 
   async getPublicExternalJobs(req: Request, res: Response) {
     try {
-      const query = adminExternalJobQuerySchema.parse(req.query);
+      const query = validateRequestData(res, adminExternalJobQuerySchema, req.query);
+      if (!query) return;
       const data = await this.adminService.getPublicExternalJobs(query);
       return res.status(200).json(data);
     } catch (error) {
@@ -1073,8 +1062,6 @@ export class AdminController {
     }
   }
 
-  private broadcastInFlight = false;
-
   async sendBroadcastEmail(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -1083,22 +1070,58 @@ export class AdminController {
         return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
       }
       const isTest = !!result.data.testEmail;
-      if (!isTest && this.broadcastInFlight) {
-        return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
-      }
-      if (!isTest) this.broadcastInFlight = true;
-      try {
+      // Test emails skip the distributed lock — they target a single address
+      if (isTest) {
         const data = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user.id });
         return res.status(200).json({
           success: true,
-          message: data.test ? "Test email sent" : `Broadcast complete: ${data.sent}/${data.recipients} sent, ${data.failed} failed`,
+          message: "Test email sent",
           ...data,
         });
-      } finally {
-        if (!isTest) this.broadcastInFlight = false;
       }
+
+      // Use a PostgreSQL advisory lock so only one instance can broadcast at a time.
+      // withAdvisoryLock silently returns if the lock is already held by another pod.
+      let broadcastResult: Awaited<ReturnType<typeof this.adminService.sendBroadcastEmail>> | null = null;
+      let lockAcquired = false;
+      let callbackError: unknown = null;
+
+      await withAdvisoryLock("admin-broadcast-email", async () => {
+        lockAcquired = true;
+        try {
+          broadcastResult = await this.adminService.sendBroadcastEmail({ ...result.data, adminId: req.user!.id });
+        } catch (err) {
+          callbackError = err;
+        }
+      });
+
+      if (!lockAcquired) {
+        return res.status(409).json({ message: "A broadcast is already in progress. Wait for it to finish." });
+      }
+
+      if (callbackError) {
+        throw callbackError;
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Broadcast complete: ${broadcastResult!.sent}/${broadcastResult!.recipients} sent, ${broadcastResult!.failed} failed`,
+        ...broadcastResult!,
+      });
     } catch (error) {
       logger.error("Failed to send broadcast email", error);
+      if (!res.headersSent) {
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+    }
+  }
+
+  async getGuideFeedbackAnalytics(req: Request, res: Response) {
+    try {
+      const data = await this.adminService.getGuideFeedbackAnalytics();
+      return res.status(200).json(data);
+    } catch (error) {
+      logger.error("Failed to get guide feedback analytics", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

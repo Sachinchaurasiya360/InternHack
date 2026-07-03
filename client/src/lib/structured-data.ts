@@ -147,20 +147,26 @@ export function courseSchema(course: {
     },
     url: course.url,
     isAccessibleForFree: true,
+    numberOfCredits: "0",
+    educationalLevel: "Beginner to Advanced",
+    inLanguage: "en",
     hasCourseInstance: [
       {
         "@type": "CourseInstance",
-        courseMode: "online",
+        courseMode: "Online",
         instructor: {
           "@type": "Organization",
           name: "InternHack",
           url: SITE_URL,
         },
+        courseSchedule: {
+          "@type": "Schedule",
+          repeatFrequency: "P1D",
+        },
       },
     ],
   };
 }
-
 export function breadcrumbSchema(
   items: { name: string; url: string }[],
 ): JsonLd {
@@ -197,7 +203,7 @@ export function websiteSchema(): JsonLd {
     name: "InternHack",
     url: SITE_URL,
     description:
-      "AI-powered career platform for students, curated internships, ATS resume scoring, learning tracks, and direct recruiter connections.",
+      "AI-powered career platform for students, curated internships, ATS resume scoring, learning tracks, and placement preparation.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -223,11 +229,11 @@ export function platformOrganizationSchema(): JsonLd {
       height: 630,
     },
     description:
-      "AI-powered career platform for students and recruiters, internships, ATS resume scoring, learning tracks, open source, skill verification.",
+      "AI-powered career platform for students, internships, ATS resume scoring, learning tracks, open source, skill verification.",
     sameAs: [
       "https://twitter.com/internhack",
       "https://www.linkedin.com/company/internhack",
-      "https://github.com/SachinChaurasiya/InternHack",
+      "https://github.com/SachinChaurasiya360/InternHack",
     ],
   };
 }

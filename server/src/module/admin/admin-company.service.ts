@@ -5,7 +5,6 @@ import type { Prisma } from "@prisma/client";
 interface CreateCompanyInput {
   name: string;
   description: string;
-  mission?: string | undefined;
   industry: string;
   size: "STARTUP" | "SMALL" | "MEDIUM" | "LARGE" | "ENTERPRISE";
   city: string;
@@ -105,7 +104,6 @@ export class AdminCompanyService {
         name: input.name,
         slug,
         description: input.description,
-        mission: input.mission ?? null,
         industry: input.industry,
         size: input.size,
         city: input.city,
@@ -140,7 +138,6 @@ export class AdminCompanyService {
     const data: Prisma.companyUpdateInput = {};
     if (input.name !== undefined) data.name = input.name;
     if (input.description !== undefined) data.description = input.description;
-    if (input.mission !== undefined) data.mission = input.mission || null;
     if (input.industry !== undefined) data.industry = input.industry;
     if (input.size !== undefined) data.size = input.size;
     if (input.city !== undefined) data.city = input.city;
@@ -308,7 +305,6 @@ export class AdminCompanyService {
             name: data["name"] as string,
             slug,
             description: data["description"] as string,
-            mission: (data["mission"] as string) ?? null,
             industry: data["industry"] as string,
             size: data["size"] as CreateCompanyInput["size"],
             city: data["city"] as string,

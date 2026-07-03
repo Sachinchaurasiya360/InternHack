@@ -12,6 +12,7 @@ interface FaceDetectionConfig {
   onSnapshot: () => void;
   onReady: () => void;
   onError: (err: string) => void;
+  onTrackDrop?: (type: "camera_track_ended" | "camera_track_muted") => void;
 }
 
 /* ------------------------------------------------------------------ */
@@ -26,6 +27,7 @@ export function useFaceDetection(config: FaceDetectionConfig) {
     onSnapshot,
     onReady,
     onError,
+    onTrackDrop,
   } = config;
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -41,13 +43,16 @@ export function useFaceDetection(config: FaceDetectionConfig) {
   const onSnapshotRef = useRef(onSnapshot);
   const onReadyRef = useRef(onReady);
   const onErrorRef = useRef(onError);
+  const onTrackDropRef = useRef(onTrackDrop);
 
   useEffect(() => {
     onViolationRef.current = onViolation;
     onSnapshotRef.current = onSnapshot;
     onReadyRef.current = onReady;
     onErrorRef.current = onError;
-  }, [onViolation, onSnapshot, onReady, onError]);
+    onTrackDropRef.current = onTrackDrop;
+  }, [onViolation, onSnapshot, onReady, onError, onTrackDrop]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +70,16 @@ export function useFaceDetection(config: FaceDetectionConfig) {
         video: { width: 320, height: 240, facingMode: "user" },
       });
       streamRef.current = stream;
+
+      // Listen for camera track drops
+      stream.getVideoTracks().forEach((track) => {
+        track.onended = () => {
+          onTrackDropRef.current?.("camera_track_ended");
+        };
+        track.onmute = () => {
+          onTrackDropRef.current?.("camera_track_muted");
+        };
+      });
     } catch (err: unknown) {
       const e = err as { name?: string; message?: string };
       let msg: string;
@@ -187,7 +202,11 @@ export function useFaceDetection(config: FaceDetectionConfig) {
       detectorRef.current = null;
     }
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current.getTracks().forEach((t) => {
+        t.onended = null;
+        t.onmute = null;
+        t.stop();
+      });
       streamRef.current = null;
     }
     setIsActive(false);

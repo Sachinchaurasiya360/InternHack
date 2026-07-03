@@ -1,4 +1,6 @@
 import CoverLetterHistoryPanel from "./CoverLetterHistoryPanel";
+import { CopyButton } from "../../../components/ui/CopyButton";
+
 import { useState, useRef, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -8,7 +10,7 @@ import {
   FileText,
   Search,
   CheckCircle,
-  Copy,
+
   Download,
   RefreshCw,
   Briefcase,
@@ -20,7 +22,6 @@ import {
   User,
   GraduationCap,
   FolderGit2,
-  Trophy,
   AlignLeft,
   AlertCircle,
   Loader2,
@@ -135,6 +136,8 @@ export default function CoverLetterPage() {
 const [coverLetter, setCoverLetter] = useState("");
 const [originalCoverLetter, setOriginalCoverLetter] = useState("");
 const [isModified, setIsModified] = useState(false);
+const wordCount = coverLetter.trim() === "" ? 0 : coverLetter.trim().split(/\s+/).filter(Boolean).length;
+const charCount = coverLetter.length;
 
 const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -172,10 +175,6 @@ const [toneManuallySelected, setToneManuallySelected] = useState(false);
       parts.push(
         `${String(user.projects.length)} project${user.projects.length > 1 ? "s" : ""}`,
       );
-    if (user.achievements && user.achievements.length > 0)
-      parts.push(
-        `${String(user.achievements.length)} achievement${user.achievements.length > 1 ? "s" : ""}`,
-      );
     return parts;
   }, [user]);
 
@@ -189,6 +188,7 @@ const [toneManuallySelected, setToneManuallySelected] = useState(false);
     if (
       /\bvp\b|vice president|director|executive|c-suite|cto|ceo|cfo/.test(jd)
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTone("formal");
     } else if (
       /engineer|developer|architect|backend|frontend|fullstack|devops|sre|infrastructure/.test(
@@ -264,14 +264,7 @@ queryClient.invalidateQueries({
   };
 
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(coverLetter);
-      toast.success("Copied to clipboard!");
-    } catch {
-      toast.error("Failed to copy");
-    }
-  };
+
   const handleLoadFromHistory = (letter: {
   jobTitle: string;
   companyName: string;
@@ -298,6 +291,7 @@ useEffect(() => {
   const savedDraft = localStorage.getItem(STORAGE_KEY);
 
   if (savedDraft) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCoverLetter(savedDraft);
     setIsModified(true);
   }
@@ -333,69 +327,87 @@ useEffect(() => {
     if (!coverLetter) return;
     setShowDownloadMenu(false);
 
-    // Build a slug-safe company name for the filename
+    const { jsPDF } = await import("jspdf");
+
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
     const safeCompany = (companyName || "company")
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-    const dateStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+
     const filename = `cover-letter-${safeCompany}-${dateStr}.pdf`;
 
-    const html2pdf = (await import("html2pdf.js")).default;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Build a nicely formatted HTML container
-    const container = document.createElement("div");
-    container.style.cssText =
-      "font-family:Georgia,serif;max-width:680px;padding:48px 52px;color:#1a1a1a;font-size:13.5px;line-height:1.75;";
+    const marginX = 20;
+    const maxWidth = pageWidth - marginX * 2;
 
-    // Header block
-    const header = document.createElement("div");
-    header.style.cssText = "margin-bottom:24px;";
+    let cursorY = 24;
+
+    // HEADER
 
     if (user?.name) {
-      const nameEl = document.createElement("p");
-      nameEl.style.cssText =
-        "font-size:22px;font-weight:700;margin:0 0 4px 0;letter-spacing:-0.3px;";
-      nameEl.textContent = user.name;
-      header.appendChild(nameEl);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+
+      doc.text(user.name, marginX, cursorY);
+
+      cursorY += 8;
     }
 
-    if (companyName || jobTitle) {
-      const subEl = document.createElement("p");
-      subEl.style.cssText =
-        "font-size:12px;color:#666;margin:0 0 16px 0;letter-spacing:0.5px;text-transform:uppercase;";
-      const parts = [jobTitle, companyName].filter(Boolean);
-      subEl.textContent = parts.join(" · ");
-      header.appendChild(subEl);
+    if (jobTitle || companyName) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+
+      const subtitle = [jobTitle, companyName]
+        .filter(Boolean)
+        .join(" - ")
+        .toUpperCase();
+
+      doc.setTextColor(100);
+
+      doc.text(subtitle, marginX, cursorY);
+
+      doc.setTextColor(0);
+
+      cursorY += 8;
     }
+    // Divider line
+    doc.setDrawColor(30);
+    doc.setLineWidth(0.5);
+    doc.line(marginX, cursorY, pageWidth - marginX, cursorY);
+    cursorY += 10;
 
-    const divider = document.createElement("hr");
-    divider.style.cssText =
-      "border:none;border-top:2px solid #1a1a1a;margin:0 0 24px 0;";
-    header.appendChild(divider);
+    // BODY
 
-    container.appendChild(header);
+    doc.setFont("times", "normal");
+    doc.setFontSize(12);
 
-    // Body — preserve line breaks
-    const body = document.createElement("div");
-    body.style.cssText = "white-space:pre-wrap;";
-    body.textContent = coverLetter;
-    container.appendChild(body);
+    const paragraphs = coverLetter.split("\n");
 
-    document.body.appendChild(container);
+    paragraphs.forEach((paragraph) => {
+      const lines = doc.splitTextToSize(paragraph, maxWidth);
 
-    await html2pdf()
-      .set({
-        margin: [14, 14, 14, 14],
-        filename,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      })
-      .from(container)
-      .save();
+      // Page break check
+      if (cursorY + lines.length * 7 > pageHeight - 20) {
+        doc.addPage();
+        cursorY = 24;
+      }
 
-    document.body.removeChild(container);
+      doc.text(lines, marginX, cursorY);
+
+      cursorY += lines.length * 7 + 4;
+    });
+
+    doc.save(filename);
   };
 
   const handleDownloadDocx = async () => {
@@ -498,6 +510,7 @@ useEffect(() => {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
         {/* ─── Left column: form ─── */}
         <div className="lg:col-span-2 space-y-6">
+          <CoverLetterHistoryPanel onLoad={handleLoadFromHistory} />
           <div className={cardCls}>
             <CardHeader kicker="step 01" title="Job details" />
             <div className="p-5 space-y-4">
@@ -587,95 +600,117 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* ─── Tone card ─── */}
+          {/* ─── Writing style card (tone + length merged) ─── */}
           <div className={cardCls}>
-            <CardHeader kicker="step 02" title="Tone" />
-            <div className="p-5">
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
-                {TONES.map((t, i) => {
-                  const isActive = tone === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => {
-                        setTone(t.id);
-                        setToneManuallySelected(true);
-                      }}
-                      className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
-                        isActive
-                          ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
-                          : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
-                      }`}
-                    >
-                      <span
-                        className={`text-[10px] font-mono uppercase tracking-widest ${
-                          isActive ? "text-lime-400" : "text-stone-500"
-                        }`}
-                      >
-                        / {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="text-sm font-bold">{t.label}</span>
-                      <span
-                        className={`text-[11px] ${
+            <CardHeader kicker="step 02" title="Writing style" />
+            <div className="p-5 space-y-5">
+              {/* Tone */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className={sectionKickerCls}>
+                    <span className="h-1 w-1 bg-stone-300 dark:bg-stone-600" />
+                    tone
+                  </span>
+                  {!toneManuallySelected && tone !== "professional" && (
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400">
+                      auto-suggested
+                    </span>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                  {TONES.map((t, i) => {
+                    const isActive = tone === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => {
+                          setTone(t.id);
+                          setToneManuallySelected(true);
+                        }}
+                        className={`group relative flex flex-col gap-1 p-3 text-left transition-colors border-0 cursor-pointer ${
                           isActive
-                            ? "text-stone-300 dark:text-stone-600"
-                            : "text-stone-500"
+                            ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                            : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
                         }`}
                       >
-                        {t.description}
-                      </span>
-                    </button>
-                  );
-                })}
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${
+                            isActive ? "text-lime-400" : "text-stone-400 dark:text-stone-600"
+                          }`}
+                        >
+                          /{String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="text-xs font-bold leading-snug mt-0.5">{t.label}</span>
+                        <span
+                          className={`text-[10px] leading-snug ${
+                            isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
+                          }`}
+                        >
+                          {t.description}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Length */}
+              <div>
+                <div className="mb-2.5">
+                  <span className={sectionKickerCls}>
+                    <span className="h-1 w-1 bg-stone-300 dark:bg-stone-600" />
+                    length
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 rounded-md overflow-hidden">
+                  {LENGTHS.map((l, i) => {
+                    const isActive = length === l.id;
+                    return (
+                      <button
+                        key={l.id}
+                        type="button"
+                        onClick={() => setLength(l.id)}
+                        className={`group relative flex flex-col gap-1 p-3.5 text-left transition-colors border-0 cursor-pointer ${
+                          isActive
+                            ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900"
+                            : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-950/60"
+                        }`}
+                      >
+                        <span
+                          className={`text-[10px] font-mono uppercase tracking-widest ${
+                            isActive ? "text-lime-400" : "text-stone-400 dark:text-stone-600"
+                          }`}
+                        >
+                          /{String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="text-sm font-bold mt-0.5">{l.label}</span>
+                        <span
+                          className={`text-[10px] font-mono tabular-nums ${
+                            isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-400 dark:text-stone-600"
+                          }`}
+                        >
+                          {l.words}
+                        </span>
+                        <span
+                          className={`text-[10px] leading-snug mt-0.5 ${
+                            isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
+                          }`}
+                        >
+                          {l.description}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* ─── Length card ─── */}
-          <div className={cardCls}>
-  <CardHeader kicker="step 03" title="Length" />
-  <div className="p-5">
-    <div className="grid grid-cols-3 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10">
-      {LENGTHS.map((l, i) => {
-        const isActive = length === l.id;
-        return (
-          <button
-            key={l.id}
-            type="button"
-            onClick={() => setLength(l.id)}
-            className={`group relative flex flex-col gap-1.5 p-3.5 text-left transition-colors border-0 cursor-pointer ${
-              isActive
-                ? "bg-stone-900 text-stone-50 dark:text-stone-50"
-                : "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 hover:bg-stone-50 dark:hover:bg-stone-800"
-            }`}
-          >
-            <span
-              className={`text-[10px] font-mono uppercase tracking-widest ${
-                isActive ? "text-lime-400" : "text-stone-500"
-              }`}
-            >
-              / {String(i + 1).padStart(2, "0")}
-            </span>
-            <span className="text-sm font-bold">{l.label}</span>
-            <span
-              className={`text-[11px] ${
-                isActive ? "text-stone-300 dark:text-stone-600" : "text-stone-500"
-              }`}
-            >
-              {l.words}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  </div>
-</div>
-
           {/* ─── Profile toggle ─── */}
           <div className={cardCls}>
             <CardHeader
-              kicker="step 04"
+              kicker="step 03"
               title="Use my profile"
               right={
                 <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
@@ -778,14 +813,6 @@ useEffect(() => {
                             </p>
                           </div>
                         )}
-                        {user?.achievements && user.achievements.length > 0 && (
-                          <div className="flex items-start gap-2">
-                            <Trophy className="w-3 h-3 text-stone-500 mt-0.5 shrink-0" />
-                            <p className="text-[11px] text-stone-600 dark:text-stone-400">
-                              {user.achievements.map((a) => a.title).join(", ")}
-                            </p>
-                          </div>
-                        )}
                       </div>
                       <Link
                         to="/student/profile"
@@ -799,10 +826,6 @@ useEffect(() => {
               </AnimatePresence>
             </div>
           </div>
-
-          <CoverLetterHistoryPanel onLoad={handleLoadFromHistory} />
-
-          
 
           <button
             type="button"
@@ -977,21 +1000,12 @@ useEffect(() => {
                   kicker="result"
                   title="Cover letter ready"
                   right={
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={handleGenerate}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
-                      >
-                        <RefreshCw className="w-3 h-3" /> Regenerate
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleCopy}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
-                      >
-                        <Copy className="w-3 h-3" /> Copy
-                      </button>
+                    <div className="flex items-center gap-2">
+                      <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-600">
+                        {tone} · {length}
+                      </span>
+                      <div className="w-px h-4 bg-stone-200 dark:bg-white/10 hidden sm:block" />
+                      <CopyButton text={coverLetter} />
                       <div className="relative" ref={downloadMenuRef}>
                         <button
                           type="button"
@@ -1032,32 +1046,51 @@ useEffect(() => {
                           )}
                         </AnimatePresence>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCoverLetter(originalCoverLetter);
-                          setIsModified(false);
-                          localStorage.setItem(STORAGE_KEY, originalCoverLetter);
-                        }}
-                        disabled={!isModified}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                      >
-                        Reset
-                      </button>
+                      {isModified && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCoverLetter(originalCoverLetter);
+                            setIsModified(false);
+                            localStorage.setItem(STORAGE_KEY, originalCoverLetter);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-transparent border border-stone-300 dark:border-white/15 hover:bg-stone-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                        >
+                          Reset
+                        </button>
+                      )}
                     </div>
                   }
                 />
+                {(jobTitle || companyName) && (
+                  <div className="px-6 pt-5 pb-0 flex flex-wrap items-center gap-x-4 gap-y-1">
+                    {jobTitle && (
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                        <span className="text-stone-400 dark:text-stone-600 mr-1.5">role</span>
+                        {jobTitle}
+                      </span>
+                    )}
+                    {companyName && (
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                        <span className="text-stone-400 dark:text-stone-600 mr-1.5">company</span>
+                        {companyName}
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className="p-6">
                   <textarea
                     className="w-full min-h-100 text-sm text-stone-700 dark:text-stone-300 leading-relaxed border-none outline-none resize-y bg-transparent font-serif"
                     value={coverLetter}
-                   onChange={(e) => {
-  const updatedValue = e.target.value;
-
-  setCoverLetter(updatedValue);
-  setIsModified(updatedValue !== originalCoverLetter);
-}}
+                    onChange={(e) => {
+                      const updatedValue = e.target.value;
+                      setCoverLetter(updatedValue);
+                      setIsModified(updatedValue !== originalCoverLetter);
+                    }}
                   />
+                  <p className="mt-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 tabular-nums">
+  {wordCount} words · {charCount} characters
+</p>
                 </div>
               </motion.div>
             )

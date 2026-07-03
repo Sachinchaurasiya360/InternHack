@@ -1,7 +1,10 @@
 import { prisma } from "../../database/db.js";
 import { invalidateRecommendations } from "../recommendation/recommendation.service.js";
-import type { Prisma } from "@prisma/client";
+import { appCache } from "../../middleware/cache.middleware.js";
+import { Prisma } from "@prisma/client";
 import type { EnrollInput } from "./roadmap.validation.js";
+
+const ROADMAP_STRUCTURE_TTL = 300; // 5 minutes
 
 interface WeeklyPlanWeek {
   week: number;
@@ -10,7 +13,65 @@ interface WeeklyPlanWeek {
   topicSlugs: string[];
   totalHours: number;
 }
+const STOP_WORDS = new Set([
+  "want", "learn", "how", "for", "the", "and", "get", "become",
+  "need", "use", "can", "know", "like", "just", "all", "any",
+  "are", "but", "not", "out", "new", "way", "its", "has",
+  "was", "had", "his", "her", "she", "him", "who", "why",
+  "yes", "maybe", "also", "every", "able", "make", "take",
+  "some", "such", "than", "that", "them", "then", "they",
+  "this", "will", "with", "have", "from", "which", "were",
+  "study", "about", "what", "being", "done", "each", "else",
+  "over", "should", "into", "more", "much", "must", "only",
+  "other", "same", "well", "does", "doing", "would", "could",
+  "most", "still", "thing", "things", "help",
+]);
 
+const SIMILARITY_THRESHOLD = 0.3;
+
+export async function findDuplicateRoadmap(
+  goalDescription: string,
+  userId: number,
+) {
+  const normalizedGoal = goalDescription.toLowerCase().trim();
+  if (!normalizedGoal) return null;
+
+  const keywords = normalizedGoal
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !STOP_WORDS.has(w));
+
+  if (keywords.length === 0) return null;
+
+  const candidates = await prisma.roadmap.findMany({
+    where: {
+      ownerUserId: userId,
+      isAiGenerated: true,
+      slug: { startsWith: "ai-" },
+      OR: keywords.map(kw => ({
+        title: { contains: kw, mode: 'insensitive' }
+      })),
+    },
+    orderBy: { updatedAt: 'desc' },
+  });
+
+  if (candidates.length === 0) return null;
+
+  let bestMatch: typeof candidates[0] | null = null;
+  let bestScore = 0;
+
+  for (const roadmap of candidates) {
+    const title = roadmap.title.toLowerCase();
+    const matchCount = keywords.filter(kw => title.includes(kw)).length;
+    const score = matchCount / keywords.length;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = roadmap;
+    }
+  }
+
+  return bestScore >= SIMILARITY_THRESHOLD ? bestMatch : null;
+}
 export interface EnrolledRoadmap {
   enrollment: Prisma.roadmapEnrollmentGetPayload<{
     include: {
@@ -92,30 +153,29 @@ export async function listPublishedRoadmaps(opts: {
   search?: string | undefined;
   tag?: string | undefined;
   category?: string | undefined;
+  userId?: number | undefined;
 }) {
-  const where: Prisma.roadmapWhereInput = { isPublished: true };
+  // Build the visibility condition: public roadmaps + caller's own unpublished ones
+  const visibilityCondition: Prisma.roadmapWhereInput = opts.userId
+    ? { OR: [{ isPublished: true }, { isPublished: false, ownerUserId: opts.userId }] }
+    : { isPublished: true };
+
+  // Build additional AND filters
   const andConditions: Prisma.roadmapWhereInput[] = [];
 
   if (opts.level && opts.level !== "ALL_LEVELS") {
-    where.level = opts.level as
-      | "BEGINNER"
-      | "INTERMEDIATE"
-      | "ADVANCED"
-      | "ALL_LEVELS";
+    andConditions.push({
+      level: opts.level as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "ALL_LEVELS",
+    });
   }
-  // if (opts.tag) {
-  //   andConditions.push({ tags: { has: opts.tag } });
-  // }
-  // if (opts.category) {
-  //   andConditions.push({ tags: { has: opts.category } });
-  // }
-  const tagFilters: string[] = [];
-  if (opts.tag) tagFilters.push(opts.tag);
-  if (opts.category) tagFilters.push(opts.category);
 
+  const tagFilters: string[] = [];
+  if (opts.tag) tagFilters.push(opts.tag.toLowerCase());
+  if (opts.category) tagFilters.push(opts.category.toLowerCase());
   if (tagFilters.length > 0) {
     andConditions.push({ tags: { hasSome: tagFilters } });
   }
+
   if (opts.search) {
     const s = opts.search.trim();
     if (s) {
@@ -129,9 +189,10 @@ export async function listPublishedRoadmaps(opts: {
     }
   }
 
-  if (andConditions.length > 0) {
-    where.AND = andConditions;
-  }
+  const where: Prisma.roadmapWhereInput =
+    andConditions.length > 0
+      ? { AND: [visibilityCondition, ...andConditions] }
+      : visibilityCondition;
 
   const [roadmaps, total] = await Promise.all([
     prisma.roadmap.findMany({
@@ -152,6 +213,8 @@ export async function listPublishedRoadmaps(opts: {
         enrolledCount: true,
         tags: true,
         updatedAt: true,
+        isAiGenerated: true,
+        ownerUserId: true,
       },
     }),
     prisma.roadmap.count({ where }),
@@ -168,8 +231,55 @@ export async function listPublishedRoadmaps(opts: {
   };
 }
 
-export async function getRoadmapBySlug(slug: string) {
-  return prisma.roadmap.findUnique({
+export async function listCommunityRoadmaps(limit = 24) {
+  const rows = await prisma.roadmap.findMany({
+    where: { isPubliclyShared: true, isAiGenerated: true },
+    orderBy: { updatedAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      shortDescription: true,
+      level: true,
+      estimatedHours: true,
+      coverImage: true,
+      ogImage: true,
+      topicCount: true,
+      enrolledCount: true,
+      tags: true,
+      updatedAt: true,
+      isAiGenerated: true,
+      ownerUserId: true,
+      owner: { select: { name: true } },
+    },
+  });
+  return rows.map(({ owner, ...r }) => ({
+    ...r,
+    creatorName: owner?.name ?? null,
+  }));
+}
+
+type RoadmapStructure = Prisma.roadmapGetPayload<{
+  include: {
+    sections: {
+      orderBy: { orderIndex: "asc" }
+      include: {
+        topics: {
+          orderBy: { orderIndex: "asc" }
+          include: { resources: { orderBy: { orderIndex: "asc" } } }
+        }
+      }
+    }
+  }
+}> | null;
+
+export async function getRoadmapBySlug(slug: string): Promise<RoadmapStructure> {
+  const cacheKey = `roadmap:structure:${slug}`;
+  const cached = appCache.get<RoadmapStructure>(cacheKey);
+  if (cached) return cached;
+
+  const roadmap = await prisma.roadmap.findUnique({
     where: { slug },
     include: {
       sections: {
@@ -183,6 +293,11 @@ export async function getRoadmapBySlug(slug: string) {
       },
     },
   });
+
+  if (roadmap?.isPublished) {
+    appCache.set(cacheKey, roadmap, ROADMAP_STRUCTURE_TTL);
+  }
+  return roadmap;
 }
 
 export async function getTopicBySlug(roadmapSlug: string, topicSlug: string) {
@@ -218,7 +333,9 @@ export async function enrollUser(args: {
   input: EnrollInput;
 }): Promise<EnrolledRoadmap> {
   const roadmap = await prisma.roadmap.findFirst({
-    where: { slug: args.roadmapSlug, isPublished: true },
+    where: { slug: args.roadmapSlug, 
+      OR: [{ isPublished: true }, { ownerUserId:args.userId }],
+     },
     include: {
       sections: {
         orderBy: { orderIndex: "asc" },
@@ -312,14 +429,45 @@ export async function getEnrollmentForUser(args: {
   return enrollment;
 }
 
-export async function deleteEnrollment(args: { userId: number; enrollmentId: number }) {
+export async function getEnrollmentByRoadmapSlugForUser(args: {
+  userId: number;
+  slug: string;
+}) {
+  return prisma.roadmapEnrollment.findFirst({
+    where: {
+      userId: args.userId,
+      roadmap: {
+        slug: args.slug,
+      },
+    },
+    select: {
+      id: true,
+      status: true,
+      shareToken: true,
+      roadmap: {
+        select: {
+          id: true,
+          slug: true,
+        },
+      },
+    },
+  });
+}
+
+export async function deleteEnrollment(args: {
+  userId: number;
+  enrollmentId: number;
+}) {
   const enrollment = await prisma.roadmapEnrollment.findFirst({
     where: { id: args.enrollmentId, userId: args.userId },
   });
-  if (!enrollment) throw Object.assign(new Error("Enrollment not found"), { status: 404 });
+  if (!enrollment)
+    throw Object.assign(new Error("Enrollment not found"), { status: 404 });
 
   await prisma.$transaction(async (tx) => {
-    await tx.roadmapTopicProgress.deleteMany({ where: { enrollmentId: enrollment.id } });
+    await tx.roadmapTopicProgress.deleteMany({
+      where: { enrollmentId: enrollment.id },
+    });
     await tx.roadmapEnrollment.delete({ where: { id: enrollment.id } });
     await tx.roadmap.update({
       where: { id: enrollment.roadmapId },
@@ -342,6 +490,7 @@ export async function listEnrollmentsForUser(userId: number) {
           coverImage: true,
           topicCount: true,
           estimatedHours: true,
+          ownerUserId: true,
         },
       },
       topicProgress: true,
@@ -350,6 +499,49 @@ export async function listEnrollmentsForUser(userId: number) {
 }
 
 type TopicStatusValue = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
+
+export async function updateEnrollmentStreak(enrollmentId: number) {
+  const enrollment = await prisma.roadmapEnrollment.findUnique({
+    where: { id: enrollmentId },
+    select: { currentStreak: true, bestStreak: true, lastStreakDate: true },
+  });
+
+  if (!enrollment) return;
+
+  const now = new Date();
+  const todayKey = toUtcDayKey(now);
+  let { currentStreak, bestStreak, lastStreakDate } = enrollment;
+
+  if (!lastStreakDate) {
+    currentStreak = 1;
+    bestStreak = Math.max(bestStreak, 1);
+  } else {
+    const lastKey = toUtcDayKey(lastStreakDate);
+    const yesterdayKey = toUtcDayKey(addUtcDays(now, -1));
+
+    if (todayKey === lastKey) {
+      // Already completed a topic today, streak doesn't increase
+    } else if (lastKey === yesterdayKey) {
+      // Completed yesterday, streak continues
+      currentStreak += 1;
+      bestStreak = Math.max(bestStreak, currentStreak);
+    } else {
+      // Streak broken (missed days)
+      currentStreak = 1;
+    }
+  }
+
+  await prisma.roadmapEnrollment.update({
+    where: { id: enrollmentId },
+    data: {
+      currentStreak,
+      bestStreak,
+      lastStreakDate: now,
+      weeklyStreak: currentStreak >= 7 ? Math.floor(currentStreak / 7) : 0,
+      lastWeeklyStreakAt: currentStreak >= 7 ? now : null,
+    },
+  });
+}
 
 export async function updateTopicProgress(args: {
   userId: number;
@@ -387,7 +579,7 @@ export async function updateTopicProgress(args: {
     if (args.status === "COMPLETED") {
       data.completedAt = new Date();
       create.completedAt = new Date();
-    } else if (args.status === "NOT_STARTED" || args.status === "IN_PROGRESS") {
+    } else if (args.status === "NOT_STARTED" || args.status === "IN_PROGRESS" || args.status === "SKIPPED") {
       data.completedAt = null;
     }
   }
@@ -408,18 +600,29 @@ export async function updateTopicProgress(args: {
     create,
   });
 
-  // Check if all topics are now complete
-  let roadmapCompleted = false;
   if (args.status === "COMPLETED") {
-    const fullEnrollment = await getEnrollmentForUser({
-      userId: args.userId,
-      enrollmentId: args.enrollmentId,
-    });
-    if (fullEnrollment) {
-      const summary = summarizeProgress(fullEnrollment);
-      roadmapCompleted = summary.percentComplete === 100;
-    }
+    await updateEnrollmentStreak(enrollment.id);
   }
+
+  let roadmapCompleted = false;
+  if (args.status === "COMPLETED" || args.status === "SKIPPED") {
+    const [topicCount, completedCount, skippedCount] = await Promise.all([
+      prisma.roadmap.findUnique({
+        where: { id: enrollment.roadmapId },
+        select: { topicCount: true },
+      }).then((r) => r?.topicCount ?? 0),
+      prisma.roadmapTopicProgress.count({
+        where: { enrollmentId: enrollment.id, status: "COMPLETED" },
+      }),
+      prisma.roadmapTopicProgress.count({
+        where: { enrollmentId: enrollment.id, status: "SKIPPED" },
+      }),
+    ]);
+
+    const adjustedTotal = topicCount - skippedCount;
+    roadmapCompleted = adjustedTotal > 0 && completedCount >= adjustedTotal;
+  }
+
   void invalidateRecommendations(args.userId).catch((error) => {
     console.warn("[RoadmapService] Recommendation invalidation failed", {
       userId: args.userId,
@@ -486,20 +689,541 @@ export interface ProgressSummary {
   hoursTotal: number;
 }
 
+export type RoadmapTrackStatus = "AHEAD" | "ON_TRACK" | "BEHIND";
+
+export interface RoadmapProgressTrendPoint {
+  date: string;
+  completed: number;
+  cumulative: number;
+}
+
+export interface RoadmapEnrollmentAnalytics {
+  enrollmentId: number;
+  currentStreak: number;
+  longestStreak: number;
+  onTrackStatus: RoadmapTrackStatus;
+  paceDeviation: number;
+  expectedTopicsCompleted: number;
+  actualTopicsCompleted: number;
+  topicsCompletedThisWeek: number;
+  weeklyTarget: number;
+  estimatedCompletionDate: string;
+  targetEndDate: string;
+  progressTrend: RoadmapProgressTrendPoint[];
+}
+
+type AnalyticsRow = {
+  enrollmentId: number;
+  startDate: Date;
+  targetEndDate: Date;
+  weeklyPlan: Prisma.JsonValue;
+  totalTopics: number;
+  actualCompletedTopics: number;
+  completedEvents: { completedAt: string | Date }[];
+  progressTrend: RoadmapProgressTrendPoint[];
+};
+
+const toUtcDayKey = (date: Date): string => date.toISOString().slice(0, 10);
+
+const utcDateFromDayKey = (dayKey: string): Date =>
+  new Date(`${dayKey}T00:00:00.000Z`);
+
+const addUtcDays = (date: Date, days: number): Date =>
+  new Date(
+    Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate() + days,
+    ),
+  );
+
+const startOfUtcWeek = (date: Date): Date => {
+  const start = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
+  const day = start.getUTCDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  start.setUTCDate(start.getUTCDate() + mondayOffset);
+  return start;
+};
+
+function getActivePlanWeek(
+  weeklyPlan: WeeklyPlanWeek[],
+  now: Date,
+): WeeklyPlanWeek | null {
+  for (const week of weeklyPlan) {
+    const startDate = new Date(week.startDate);
+    const endDate = new Date(week.endDate);
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      continue;
+    }
+
+    if (now >= startDate && now <= endDate) {
+      return week;
+    }
+  }
+
+  return null;
+}
+
+function getCompletedUtcDays(
+  completedEvents: { completedAt: string | Date }[],
+): string[] {
+  return Array.from(
+    new Set(
+      completedEvents.map((event) =>
+        toUtcDayKey(
+          event.completedAt instanceof Date
+            ? event.completedAt
+            : new Date(event.completedAt),
+        ),
+      ),
+    ),
+  ).sort();
+}
+
+function calculateStreaks(completedDayKeys: string[]): {
+  currentStreak: number;
+  longestStreak: number;
+} {
+  if (completedDayKeys.length === 0) {
+    return { currentStreak: 0, longestStreak: 0 };
+  }
+
+  const completedDays = new Set(completedDayKeys);
+  let longestStreak = 0;
+  let runningStreak = 0;
+  let previousDay: Date | null = null;
+
+  for (const dayKey of completedDayKeys) {
+    const day = utcDateFromDayKey(dayKey);
+    if (previousDay && day.getTime() - previousDay.getTime() === MS_PER_DAY) {
+      runningStreak += 1;
+    } else {
+      runningStreak = 1;
+    }
+    longestStreak = Math.max(longestStreak, runningStreak);
+    previousDay = day;
+  }
+
+  const today = new Date();
+  const todayKey = toUtcDayKey(today);
+  const yesterdayKey = toUtcDayKey(addUtcDays(today, -1));
+  const currentAnchor = completedDays.has(todayKey)
+    ? today
+    : completedDays.has(yesterdayKey)
+      ? addUtcDays(today, -1)
+      : null;
+
+  if (!currentAnchor) {
+    return { currentStreak: 0, longestStreak };
+  }
+
+  let currentStreak = 0;
+  let cursor = currentAnchor;
+  while (completedDays.has(toUtcDayKey(cursor))) {
+    currentStreak += 1;
+    cursor = addUtcDays(cursor, -1);
+  }
+
+  return { currentStreak, longestStreak };
+}
+
+function parseWeeklyPlan(value: Prisma.JsonValue): WeeklyPlanWeek[] {
+  if (!Array.isArray(value)) return [];
+  const weeks: WeeklyPlanWeek[] = [];
+  for (const week of value) {
+    if (!week || typeof week !== "object" || Array.isArray(week)) continue;
+    const maybeWeek = week as Partial<WeeklyPlanWeek>;
+    if (
+      typeof maybeWeek.week === "number" &&
+      typeof maybeWeek.startDate === "string" &&
+      typeof maybeWeek.endDate === "string" &&
+      Array.isArray(maybeWeek.topicSlugs)
+    ) {
+      weeks.push({
+        week: maybeWeek.week,
+        startDate: maybeWeek.startDate,
+        endDate: maybeWeek.endDate,
+        topicSlugs: maybeWeek.topicSlugs.filter(
+          (slug): slug is string => typeof slug === "string",
+        ),
+        totalHours:
+          typeof maybeWeek.totalHours === "number" ? maybeWeek.totalHours : 0,
+      });
+    }
+  }
+  return weeks;
+}
+
+function getPlanStats(weeklyPlan: WeeklyPlanWeek[], now: Date) {
+  let expectedTopicsCompleted = 0;
+  let weeklyTarget = 0;
+
+  for (const week of weeklyPlan) {
+    const startDate = new Date(week.startDate);
+    const endDate = new Date(week.endDate);
+    const topicCount = week.topicSlugs.length;
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      continue;
+    }
+
+    if (now >= startDate && now <= endDate) {
+      weeklyTarget = topicCount;
+      expectedTopicsCompleted += topicCount;
+    } else if (endDate < now) {
+      expectedTopicsCompleted += topicCount;
+    }
+  }
+
+  return { expectedTopicsCompleted, weeklyTarget };
+}
+
+function getOnTrackStatus(
+  actualCompletedTopics: number,
+  expectedTopicsCompleted: number,
+): {
+  paceDeviation: number;
+  onTrackStatus: RoadmapTrackStatus;
+} {
+  if (expectedTopicsCompleted <= 0) {
+    return {
+      paceDeviation: 0,
+      onTrackStatus: actualCompletedTopics > 0 ? "AHEAD" : "ON_TRACK",
+    };
+  }
+
+  const paceDeviation =
+    (expectedTopicsCompleted - actualCompletedTopics) / expectedTopicsCompleted;
+
+  if (actualCompletedTopics > expectedTopicsCompleted) {
+    return { paceDeviation, onTrackStatus: "AHEAD" };
+  }
+
+  if (paceDeviation > 0.15) {
+    return { paceDeviation, onTrackStatus: "BEHIND" };
+  }
+
+  return { paceDeviation, onTrackStatus: "ON_TRACK" };
+}
+
+function getEstimatedCompletionDate(args: {
+  startDate: Date;
+  targetEndDate: Date;
+  totalTopics: number;
+  actualCompletedTopics: number;
+  now: Date;
+}): string {
+  if (args.totalTopics <= args.actualCompletedTopics) {
+    return args.now.toISOString();
+  }
+
+  if (args.actualCompletedTopics <= 0) {
+    return args.targetEndDate.toISOString();
+  }
+
+  const elapsedDays = Math.max(
+    1,
+    Math.ceil((args.now.getTime() - args.startDate.getTime()) / MS_PER_DAY),
+  );
+  const topicsPerDay = args.actualCompletedTopics / elapsedDays;
+  if (topicsPerDay <= 0) {
+    return args.targetEndDate.toISOString();
+  }
+
+  const remainingTopics = Math.max(
+    0,
+    args.totalTopics - args.actualCompletedTopics,
+  );
+  const daysRemaining = Math.ceil(remainingTopics / topicsPerDay);
+  return addUtcDays(args.now, daysRemaining).toISOString();
+}
+
+export async function getEnrollmentAnalyticsForUser(args: {
+  userId: number;
+  enrollmentId: number;
+}): Promise<RoadmapEnrollmentAnalytics | null> {
+  const rows = await prisma.$queryRaw<AnalyticsRow[]>`
+    WITH enrollment AS (
+      SELECT
+        e.id AS "enrollmentId",
+        e."startDate" AS "startDate",
+        e."targetEndDate" AS "targetEndDate",
+        e."weeklyPlan" AS "weeklyPlan",
+        r."topicCount" AS "totalTopics"
+      FROM "roadmapEnrollment" e
+      INNER JOIN "roadmap" r ON r.id = e."roadmapId"
+      WHERE e.id = ${args.enrollmentId}
+        AND e."userId" = ${args.userId}
+      LIMIT 1
+    ),
+    completed AS (
+      SELECT
+        p."completedAt" AS "completedAt",
+        (p."completedAt" AT TIME ZONE 'UTC')::date AS day
+      FROM "roadmapTopicProgress" p
+      INNER JOIN enrollment e ON e."enrollmentId" = p."enrollmentId"
+      WHERE p.status = 'COMPLETED'
+        AND p."completedAt" IS NOT NULL
+    ),
+    daily AS (
+      SELECT
+        day,
+        COUNT(*)::int AS completed
+      FROM completed
+      GROUP BY day
+    ),
+    trend AS (
+      SELECT
+        day,
+        completed,
+        SUM(completed) OVER (ORDER BY day)::int AS cumulative
+      FROM daily
+    )
+    SELECT
+      e."enrollmentId",
+      e."startDate",
+      e."targetEndDate",
+      e."weeklyPlan",
+      e."totalTopics",
+      COALESCE((SELECT COUNT(*)::int FROM completed), 0) AS "actualCompletedTopics",
+      COALESCE(
+        (
+          SELECT jsonb_agg(jsonb_build_object('completedAt', c."completedAt") ORDER BY c."completedAt")
+          FROM completed c
+        ),
+        '[]'::jsonb
+      ) AS "completedEvents",
+      COALESCE(
+        (
+          SELECT jsonb_agg(
+            jsonb_build_object(
+              'date', t.day::text,
+              'completed', t.completed,
+              'cumulative', t.cumulative
+            )
+            ORDER BY t.day
+          )
+          FROM trend t
+        ),
+        '[]'::jsonb
+      ) AS "progressTrend"
+    FROM enrollment e
+  `;
+
+  const row = rows[0];
+  if (!row) return null;
+
+  const now = new Date();
+  const completedDayKeys = getCompletedUtcDays(row.completedEvents);
+  const { currentStreak, longestStreak } = calculateStreaks(completedDayKeys);
+  const weeklyPlan = parseWeeklyPlan(row.weeklyPlan);
+  const { expectedTopicsCompleted, weeklyTarget } = getPlanStats(
+    weeklyPlan,
+    now,
+  );
+  const { paceDeviation, onTrackStatus } = getOnTrackStatus(
+    row.actualCompletedTopics,
+    expectedTopicsCompleted,
+  );
+  const activePlanWeek = getActivePlanWeek(weeklyPlan, now);
+  const topicsCompletedThisWeek = activePlanWeek
+    ? row.completedEvents.filter((event) => {
+        const completedAt =
+          event.completedAt instanceof Date
+            ? event.completedAt
+            : new Date(event.completedAt);
+        const weekStart = new Date(activePlanWeek.startDate);
+        const weekEnd = new Date(activePlanWeek.endDate);
+        return (
+          completedAt >= weekStart &&
+          completedAt <= weekEnd &&
+          completedAt <= now
+        );
+      }).length
+    : 0;
+
+  return {
+    enrollmentId: row.enrollmentId,
+    currentStreak,
+    longestStreak,
+    onTrackStatus,
+    paceDeviation,
+    expectedTopicsCompleted,
+    actualTopicsCompleted: row.actualCompletedTopics,
+    topicsCompletedThisWeek,
+    weeklyTarget,
+    estimatedCompletionDate: getEstimatedCompletionDate({
+      startDate: row.startDate,
+      targetEndDate: row.targetEndDate,
+      totalTopics: row.totalTopics,
+      actualCompletedTopics: row.actualCompletedTopics,
+      now,
+    }),
+    targetEndDate: row.targetEndDate.toISOString(),
+    progressTrend: row.progressTrend,
+  };
+}
+
+function buildProgressTrend(
+  completedEvents: { completedAt: string | Date }[],
+): RoadmapProgressTrendPoint[] {
+  const dailyCounts = new Map<string, number>();
+
+  for (const event of completedEvents) {
+    const date =
+      event.completedAt instanceof Date
+        ? event.completedAt
+        : new Date(event.completedAt);
+
+    const day = date.toISOString().split("T")[0];
+
+    dailyCounts.set(
+      day,
+      (dailyCounts.get(day) ?? 0) + 1,
+    );
+  }
+
+  let cumulative = 0;
+
+  return [...dailyCounts.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, completed]) => {
+      cumulative += completed;
+
+      return {
+        date,
+        completed,
+        cumulative,
+      };
+    });
+}
+
+export async function getEnrollmentAnalyticsBatchForUser(args: {
+  userId: number;
+}): Promise<RoadmapEnrollmentAnalytics[]> {
+  const enrollments = await listEnrollmentsForUser(args.userId);
+
+  const now = new Date();
+
+  return enrollments.map((enrollment) => {
+    const completedEvents = enrollment.topicProgress
+      .filter(
+        (p) =>
+          p.status === "COMPLETED" &&
+          p.completedAt,
+      )
+      .map((p) => ({
+        completedAt: p.completedAt!,
+      }));
+
+    const progressTrend = buildProgressTrend(completedEvents);  
+
+    const completedDayKeys =
+      getCompletedUtcDays(completedEvents);
+
+    const {
+      currentStreak,
+      longestStreak,
+    } = calculateStreaks(completedDayKeys);
+
+    const weeklyPlan = parseWeeklyPlan(
+      enrollment.weeklyPlan,
+    );
+
+    const {
+      expectedTopicsCompleted,
+      weeklyTarget,
+    } = getPlanStats(
+      weeklyPlan,
+      now,
+    );
+
+    const {
+      paceDeviation,
+      onTrackStatus,
+    } = getOnTrackStatus(
+      completedEvents.length,
+      expectedTopicsCompleted,
+    );
+
+    const activePlanWeek =
+      getActivePlanWeek(
+        weeklyPlan,
+        now,
+      );
+
+    const topicsCompletedThisWeek =
+      activePlanWeek
+        ? completedEvents.filter((event) => {
+            const completedAt =
+              event.completedAt instanceof Date
+                ? event.completedAt
+                : new Date(event.completedAt);
+
+            const weekStart =
+              new Date(
+                activePlanWeek.startDate,
+              );
+
+            const weekEnd =
+              new Date(
+                activePlanWeek.endDate,
+              );
+
+            return (
+              completedAt >= weekStart &&
+              completedAt <= weekEnd &&
+              completedAt <= now
+            );
+          }).length
+        : 0;
+
+    return {
+      enrollmentId: enrollment.id,
+      currentStreak,
+      longestStreak,
+      onTrackStatus,
+      paceDeviation,
+      expectedTopicsCompleted,
+      actualTopicsCompleted:
+        completedEvents.length,
+      topicsCompletedThisWeek,
+      weeklyTarget,
+      estimatedCompletionDate:
+        getEstimatedCompletionDate({
+          startDate:
+            enrollment.startDate,
+          targetEndDate:
+            enrollment.targetEndDate,
+          totalTopics:
+            enrollment.roadmap.topicCount,
+          actualCompletedTopics:
+            completedEvents.length,
+          now,
+        }),
+      targetEndDate:
+        enrollment.targetEndDate.toISOString(),
+      progressTrend,
+    };
+  });
+}
+
 export function summarizeProgress(
   enrollment: NonNullable<Awaited<ReturnType<typeof getEnrollmentForUser>>>,
 ): ProgressSummary {
   const allTopics = enrollment.roadmap.sections.flatMap((s) => s.topics);
-  const totalTopics = allTopics.length;
-  const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0);
-
   const progressByTopicId = new Map(
     enrollment.topicProgress.map((p) => [p.topicId, p]),
   );
   let completedTopics = 0;
   let inProgressTopics = 0;
   let bookmarkedTopics = 0;
+  let skippedTopics = 0;
   let hoursDone = 0;
+  let skippedHours = 0;
 
   for (const t of allTopics) {
     const p = progressByTopicId.get(t.id);
@@ -510,8 +1234,19 @@ export function summarizeProgress(
       hoursDone += t.estimatedHours;
     } else if (p.status === "IN_PROGRESS") {
       inProgressTopics += 1;
+    } else if (p.status === "SKIPPED") {
+      skippedTopics += 1;
+      skippedHours += t.estimatedHours;
     }
   }
+
+  const totalTopics = allTopics.length;
+  const hoursTotal = allTopics.reduce((sum, t) => sum + t.estimatedHours, 0);
+
+  // Skipped topics count toward 100%: they stay in the denominator (totalTopics)
+  // and are treated as accounted-for in the numerator, so a learner who completes
+  // every non-skipped topic still reaches 100%.
+  const accountedTopics = completedTopics + skippedTopics;
 
   return {
     totalTopics,
@@ -519,8 +1254,9 @@ export function summarizeProgress(
     inProgressTopics,
     bookmarkedTopics,
     percentComplete:
-      totalTopics === 0 ? 0 : Math.round((completedTopics / totalTopics) * 100),
-    hoursDone,
+      totalTopics === 0 ? 0 : Math.round((accountedTopics / totalTopics) * 100),
+    hoursDone: hoursDone + skippedHours,
     hoursTotal,
   };
 }
+

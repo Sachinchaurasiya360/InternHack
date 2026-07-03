@@ -1,15 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
-  MapPin,
-  DollarSign,
   ChevronDown,
   Globe,
   Filter,
-  ArrowUpRight,
 } from "lucide-react";
 import { LocationDropdown } from "../../components/ui/LocationDropdown";
 import { PaginationControls } from "../../components/ui/PaginationControls";
@@ -23,17 +19,7 @@ import type { ScrapedJob, ScrapedJobSource, Pagination } from "../../lib/types";
 import { Button } from "../../components/ui/button";
 import toast from "@/components/ui/toast";
 import { getSourceBadgeColor, getSourceLabel } from "./scraped-jobs.utils";
-
-const cardBase =
-  "group relative flex flex-col bg-white dark:bg-stone-900 p-6 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
-
-function CompanyMark({ label }: { label: string }) {
-  return (
-    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { GenericJobCard } from "../../components/ui/GenericJobCard";
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
@@ -146,7 +132,7 @@ export default function ScrapedJobsPage() {
           Jobs scraped from top job boards across the web, updated every 6 hours
         </p>
 
-        <div className="flex flex-wrap items-center gap-3 mb-8">
+        <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="flex-1 min-w-0 relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
             <input
@@ -166,7 +152,9 @@ export default function ScrapedJobsPage() {
             placeholder="Location"
             className="w-full sm:w-52"
           />
-          <div className="relative">
+          
+          {/* Mobile Source Dropdown (hidden on desktop) */}
+          <div className="relative flex-1 sm:hidden">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
             <select
               value={source}
@@ -176,7 +164,7 @@ export default function ScrapedJobsPage() {
                 setPage(1);
               }}
               disabled={sourcesLoading && !sources.length}
-              className="pl-10 pr-8 py-3 border border-stone-200 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 text-sm appearance-none bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 w-full sm:w-44 disabled:opacity-60"
+              className="pl-10 pr-8 py-3 border border-stone-200 dark:border-white/10 rounded-md focus:outline-none focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 text-sm appearance-none bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-50 w-full disabled:opacity-60"
             >
               <option value="">
                 {sourcesError ? "Sources unavailable" : "All Sources"}
@@ -189,9 +177,48 @@ export default function ScrapedJobsPage() {
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
           </div>
-          <Button variant="mono" size="lg" onClick={flushSearch} className="rounded-md">
+
+          <Button variant="mono" size="lg" onClick={flushSearch} className="rounded-md shrink-0">
             Search
           </Button>
+        </div>
+
+        {/* Desktop Source Chips (hidden on mobile) */}
+        <div className="hidden sm:flex items-center gap-3 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+          <span className="text-sm text-stone-500 mr-1 flex items-center gap-1.5 shrink-0"><Filter className="w-4 h-4" /> Source:</span>
+          <button
+            onClick={() => {
+              commitFilters();
+              setSource("");
+              setPage(1);
+            }}
+            className={`px-5 py-3 rounded-md text-sm font-medium transition-all shrink-0 border ${
+              source === ""
+                ? "border-lime-500 ring-1 ring-lime-500/20 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-stone-50"
+                : "border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-white/20"
+            }`}
+          >
+            All
+          </button>
+          {!sourcesError &&
+            sources.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  commitFilters();
+                  setSource(s.id);
+                  setPage(1);
+                }}
+                disabled={sourcesLoading}
+                className={`px-5 py-3 rounded-md text-sm font-medium transition-all shrink-0 border disabled:opacity-50 ${
+                  source === s.id
+                    ? "border-lime-500 ring-1 ring-lime-500/20 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-stone-50"
+                    : "border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-white/20"
+                }`}
+              >
+                {s.name}
+              </button>
+            ))}
         </div>
 
         {isError ? (
@@ -233,57 +260,17 @@ export default function ScrapedJobsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03 }}
                   >
-                    <Link to={`/external-jobs/${String(job.id)}`} className={cardBase}>
-                      <span
-                        className={`absolute top-4 right-4 text-[10px] px-2 py-0.5 rounded font-medium shrink-0 ${getSourceBadgeColor(job.source)}`}
-                      >
-                        {getSourceLabel(job.source, sources)}
-                      </span>
-                      <div className="flex items-start gap-3 mb-3 pr-16">
-                        <CompanyMark label={job.company || "?"} />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1">
-                            {job.title}
-                          </h3>
-                          <span className="text-xs font-mono uppercase tracking-widest text-stone-500 mt-0.5 block truncate">
-                            {job.company}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">
-                        {job.description}
-                      </p>
-                      <div className="flex flex-wrap gap-3 text-xs text-stone-500 mb-3">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {job.location}
-                        </span>
-                        {job.salary && (
-                          <span className="flex items-center gap-1">
-                            <DollarSign className="w-3 h-3" />
-                            {job.salary}
-                          </span>
-                        )}
-                      </div>
-                      {job.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {job.tags.slice(0, 4).map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded text-[10px] font-mono uppercase tracking-wider"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-stone-500">
-                          view role
-                        </span>
-                        <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
-                      </div>
-                    </Link>
+                    <GenericJobCard
+                      href={`/external-jobs/${String(job.id)}`}
+                      company={job.company}
+                      title={job.title}
+                      description={job.description}
+                      tags={job.tags}
+                      location={job.location}
+                      salary={job.salary}
+                      badge={getSourceLabel(job.source, sources)}
+                      badgeClassName={getSourceBadgeColor(job.source)}
+                    />
                   </motion.div>
                 ))}
               </div>

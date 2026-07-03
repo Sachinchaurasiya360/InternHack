@@ -53,6 +53,7 @@ export interface VerifiedSkill {
   skillName: string;
   score: number;
   verifiedAt: string;
+  token?: string;
 }
 
 export interface SkillTestWithQuestions extends SkillTest {
@@ -108,27 +109,6 @@ export interface SkillTestSubmitResult {
   correctCount: number;
   totalQuestions: number;
   gradedAnswers: GradedAnswer[];
+  token?: string;
 }
 
-// Badges
-export type BadgeCategory = "CAREER" | "QUIZ" | "SKILL" | "CONTRIBUTION" | "MILESTONE";
-
-export interface Badge {
-  id: number;
-  name: string;
-  slug: string;
-  description: string;
-  iconUrl?: string;
-  category: BadgeCategory;
-  criteria: Record<string, unknown>;
-  isActive: boolean;
-  createdAt: string;
-}
-
-export interface StudentBadge {
-  id: number;
-  studentId: number;
-  badgeId: number;
-  badge: Badge;
-  earnedAt: string;
-}

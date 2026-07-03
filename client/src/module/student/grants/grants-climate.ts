@@ -1,10 +1,9 @@
-import type { Grant } from "./grantsData";
+﻿import type { Grant } from "./grantsData";
 
 export const grantsClimate: Grant[] = [
   {
     id: 111,
     name: "Breakthrough Energy Fellows",
-     deadline: "2026-07-20",
     organization: "Breakthrough Energy",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
@@ -20,6 +19,7 @@ export const grantsClimate: Grant[] = [
       "Nominations from partner universities and labs",
     ],
     status: "Active",
+    deadline: "2026-10-23",
     ecosystem: "USA",
     highlights: [
       "Founded by Bill Gates",
@@ -30,7 +30,6 @@ export const grantsClimate: Grant[] = [
   {
     id: 112,
     name: "EIT Climate-KIC Accelerator",
-     deadline: "2026-07-20",
     organization: "EIT Climate-KIC",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -46,6 +45,7 @@ export const grantsClimate: Grant[] = [
       "Open to pre-seed and seed-stage ventures",
     ],
     status: "Active",
+    deadline: "2026-10-28",
     ecosystem: "EU",
     highlights: [
       "Europe's largest climate innovation network",
@@ -56,7 +56,6 @@ export const grantsClimate: Grant[] = [
   {
     id: 113,
     name: "Green Climate Fund",
-     deadline: "2026-07-20",
     organization: "UNFCCC",
     logo: "https://placehold.co/100x100/EEE/999?text=G",
     description:
@@ -72,6 +71,7 @@ export const grantsClimate: Grant[] = [
       "Readiness grants available for project preparation",
     ],
     status: "Active",
+    deadline: "2026-11-02",
     ecosystem: "Global",
     highlights: [
       "$12.8B pledged from 49 countries",
@@ -82,7 +82,6 @@ export const grantsClimate: Grant[] = [
   {
     id: 114,
     name: "ARPA-E (Clean Energy Innovation)",
-     deadline: "2026-07-20",
     organization: "US Department of Energy",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
@@ -98,6 +97,7 @@ export const grantsClimate: Grant[] = [
       "International teams eligible if partnered with US entity",
     ],
     status: "Active",
+    deadline: "2026-11-07",
     ecosystem: "USA",
     highlights: [
       "Funded 1,600+ projects across 40+ programs",
@@ -108,7 +108,6 @@ export const grantsClimate: Grant[] = [
   {
     id: 115,
     name: "Shell GameChanger",
-     deadline: "2026-07-20",
     organization: "Shell",
     logo: "https://placehold.co/100x100/EEE/999?text=S",
     description:
@@ -124,6 +123,7 @@ export const grantsClimate: Grant[] = [
       "Global applicants welcome",
     ],
     status: "Active",
+    deadline: "2026-11-12",
     ecosystem: "Global",
     highlights: [
       "Access to Shell's R&D labs and engineers",
@@ -134,7 +134,6 @@ export const grantsClimate: Grant[] = [
   {
     id: 116,
     name: "Bloomberg Philanthropies Environment Grants",
-     deadline: "2026-07-20",
     organization: "Bloomberg Philanthropies",
     logo: "https://placehold.co/100x100/EEE/999?text=B",
     description:
@@ -150,6 +149,7 @@ export const grantsClimate: Grant[] = [
       "Invitation-based for large grants; open RFPs for smaller ones",
     ],
     status: "Invite Only",
+    deadline: "2026-11-17",
     ecosystem: "USA",
     highlights: [
       "$500M+ committed to environmental causes",
@@ -160,7 +160,6 @@ export const grantsClimate: Grant[] = [
   {
     id: 117,
     name: "Climate50 Innovation Fund",
-     deadline: "2026-07-20",
     organization: "Climate50",
     logo: "https://placehold.co/100x100/EEE/999?text=C",
     description:
@@ -176,6 +175,7 @@ export const grantsClimate: Grant[] = [
       "Strong technical founding team preferred",
     ],
     status: "Active",
+    deadline: "2026-11-22",
     ecosystem: "Global",
     highlights: [
       "Focus on the 50 most impactful climate solutions",
@@ -186,7 +186,6 @@ export const grantsClimate: Grant[] = [
   {
     id: 118,
     name: "Earthshot Prize",
-     deadline: "2026-07-20",
     organization: "Royal Foundation",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -202,6 +201,7 @@ export const grantsClimate: Grant[] = [
       "Nominations from global network of nominators",
     ],
     status: "Active",
+    deadline: "2026-11-27",
     ecosystem: "UK",
     highlights: [
       "5 winners each receive £1M annually until 2030",
@@ -212,7 +212,6 @@ export const grantsClimate: Grant[] = [
   {
     id: 119,
     name: "Elemental Excelerator",
-     deadline: "2026-07-20",
     organization: "Elemental Excelerator",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
@@ -228,6 +227,7 @@ export const grantsClimate: Grant[] = [
       "Sectors: energy, water, agriculture, mobility, circular economy",
     ],
     status: "Active",
+    deadline: "2026-12-02",
     ecosystem: "USA",
     highlights: [
       "$1M grants for real-world deployment projects",
@@ -238,7 +238,6 @@ export const grantsClimate: Grant[] = [
   {
     id: 120,
     name: "Patagonia Environmental Grants",
-     deadline: "2026-07-20",
     organization: "Patagonia",
     logo: "https://placehold.co/100x100/EEE/999?text=P",
     description:
@@ -254,6 +253,7 @@ export const grantsClimate: Grant[] = [
       "Applications accepted twice yearly (April and August)",
     ],
     status: "Active",
+    deadline: "2026-12-07",
     ecosystem: "Global",
     highlights: [
       "Patagonia gives 1% of sales to environmental causes",

@@ -154,3 +154,42 @@ export interface MockInterviewFeedbackResponse {
   feedback: MockInterviewFeedback;
   fallbackUsed: boolean;
 }
+
+export type PeerMockInterviewStatus = "PENDING_SCHEDULE" | "SCHEDULED" | "COMPLETED" | "CANCELLED";
+
+export interface PeerMockInterview {
+  id: number;
+  topic: string;
+  studentAId: number | null;
+  studentBId: number | null;
+  assignedProblemId: number | null;
+  status: PeerMockInterviewStatus;
+  sharedAvailability: string[];
+  proposedTime: string | null;
+  proposedById: number | null;
+  scheduledAt: string | null;
+  schedulingConfirmed: boolean;
+  meetingLink: string | null;
+  ratingAForB: number | null;
+  feedbackAForB: string | null;
+  ratingBForA: number | null;
+  feedbackBForA: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  studentA: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null } | null;
+  studentB: { id: number; name: string; email: string; college: string | null; linkedinUrl: string | null } | null;
+  assignedProblem: { id: number; title: string; slug: string; difficulty: string } | null;
+  preparationMaterial?: MockInterviewPreparationMaterial | null;
+}
+
+export interface MockInterviewPreparationMaterial {
+  type: string;
+  dsaProblem?: { id: number; title: string; slug: string; difficulty: string } | null;
+  generic?: {
+    prompt: string;
+    requirements: string[];
+    objectives?: string[];
+    followUpQuestions: string[];
+  };
+}

@@ -1,22 +1,23 @@
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate,Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, MapPin, GraduationCap, Linkedin, Github, Globe,
-  ExternalLink, FileText, ShieldCheck, Trophy, FolderGit2, Briefcase, Calendar,
-  Phone, Mail, Clock, User,
+  ExternalLink, FileText, ShieldCheck, FolderGit2, Briefcase, Calendar,
+  Phone, Mail, Clock, User, Lock
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
-import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import GitHubStatsCard from "./GitHubStatsCard";
-import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/types";
+import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
+import type { ProjectItem, VerifiedSkill } from "../../../lib/types";
 
 interface PublicProfile {
   id: number;
+  profileSlug?: string | null;
   name: string;
   email: string;
   profilePic?: string;
@@ -32,9 +33,7 @@ interface PublicProfile {
   contactNo?: string;
   company?: string;
   designation?: string;
-  jobStatus?: string | null;
   projects: ProjectItem[];
-  achievements: AchievementItem[];
   resumes: string[];
   bestAtsScore: number | null;
   verifiedSkills: VerifiedSkill[];
@@ -49,15 +48,6 @@ const fadeInUp = {
     transition: { delay: i * 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
-
-function getJobStatusInfo(status: string | null | undefined) {
-  const map: Record<string, { label: string; cls: string }> = {
-    LOOKING: { label: "Looking for job", cls: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400" },
-    OPEN_TO_OFFER: { label: "Open to offer", cls: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400" },
-    NO_OFFER: { label: "No offer", cls: "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400" },
-  };
-  return status ? map[status] ?? null : null;
-}
 
 function getFileNameFromUrl(url: string): string {
   try {
@@ -76,38 +66,62 @@ function formatDate(dateStr: string) {
 }
 
 export default function PublicProfilePage() {
-  const { id } = useParams();
+  const { id, identifier } = useParams();
   const navigate = useNavigate();
 
+  const finalId = identifier || id;
+
   const { data: profile, isLoading, error } = useQuery({
-    queryKey: ["public-profile", id],
-    queryFn: () => api.get(`/auth/profile/${id}`).then((res) => res.data.profile as PublicProfile),
-    enabled: !!id,
+    queryKey: ["public-profile", finalId],
+    queryFn: () => api.get(`/auth/profile/${finalId}`).then((res) => res.data.profile as PublicProfile),
+    enabled: !!finalId,
+    staleTime: 5 * 60 * 1000,   // 5 min – matches server PROFILE_TTL; no refetch on revisit
+    gcTime: 30 * 60 * 1000,     // 30 min – keep data alive across navigations within the session
   });
 
   if (isLoading) return <LoadingScreen />;
+  
+  if (error) {
+    const status = (error as { response?: { status?: number } })?.response?.status;
+    if (status === 403) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+          <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-md p-8 max-w-md w-full shadow-sm space-y-6">
+            <Lock className="w-12 h-12 text-stone-400 mx-auto" />
+            <div>
+              <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50 mb-2">This profile is private.</h2>
+              <p className="text-stone-500 dark:text-stone-400">The owner has chosen not to share their profile publicly.</p>
+            </div>
+            <Link to="/" className="inline-block bg-lime-500 hover:bg-lime-600 text-stone-900 font-semibold px-6 py-2.5 rounded-md transition-colors">
+              Return Home
+            </Link>
+          </div>
+        </div>
+      );
+    }
+  }
+
   if (error || !profile) {
     return (
-      <div className="text-center py-20">
-        <h2 className="text-xl font-bold text-gray-950 dark:text-white mb-2">Profile not found</h2>
-        <p className="text-gray-500 mb-4">This student profile doesn't exist or you don't have permission to view it.</p>
-        <Button variant="primary" mode="link" onClick={() => navigate(-1)} className="text-indigo-600 dark:text-indigo-400 hover:underline">Go back</Button>
+      <div className="text-center py-20 space-y-6 p-6">
+        <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-2">Profile not found</h2>
+        <p className="text-stone-500 mb-4">This student profile doesn't exist.</p>
+        <Button variant="primary" mode="link" onClick={() => navigate(-1)} className="text-lime-600 dark:text-lime-500 hover:underline">Go back</Button>
       </div>
     );
   }
 
   const verifiedMap = new Map(profile.verifiedSkills.map((v) => [v.skillName.toLowerCase(), v]));
-  const jobStatusInfo = getJobStatusInfo(profile.jobStatus);
 
   return (
     <div className="relative pb-12 max-w-5xl mx-auto">
       <SEO
-  title={`${profile.name} — InternHack Profile`}
-  description={`${profile.name}'s skills: ${profile.skills.slice(0, 5).join(", ")}${profile.skills.length > 5 ? " and more" : ""}. ${profile.bio ? profile.bio.slice(0, 100) : "View their projects, achievements, and verified skills on InternHack."}`}
-  ogImage={profile.profilePic || undefined}
-  ogType="profile"
-  canonicalUrl={`https://internhack.xyz/student/profile/${profile.id}`}
-/>
+        title={`${profile.name} — InternHack Profile`}
+        description={`${profile.name}'s skills: ${profile.skills.slice(0, 5).join(", ")}${profile.skills.length > 5 ? " and more" : ""}. ${profile.bio ? profile.bio.slice(0, 100) : "View their projects, achievements, and verified skills on InternHack."}`}
+        ogImage={profile.profilePic || undefined}
+        ogType="profile"
+        canonicalUrl={`https://internhack.xyz/student/profile/${profile.id}`}
+      />
 
       {/* Back button */}
       <motion.button
@@ -146,9 +160,6 @@ export default function PublicProfilePage() {
             <div className="pb-1 min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl font-bold text-gray-950 dark:text-white">{profile.name}</h1>
-                {jobStatusInfo && (
-                  <span className={`text-xs font-medium px-2.5 py-0.5 rounded-lg ${jobStatusInfo.cls}`}>{jobStatusInfo.label}</span>
-                )}
               </div>
               {(profile.designation || profile.company) && (
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
@@ -234,12 +245,19 @@ export default function PublicProfilePage() {
               <div className="flex flex-wrap gap-1.5">
                 {profile.skills.map((skill) => {
                   const v = verifiedMap.get(skill.toLowerCase());
-                  return (
-                    <span key={skill} className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"}`}>
+                  const badge = (
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"}`}>
                       {v && <ShieldCheck className="w-3 h-3" />}
                       {skill}
                       {v && <span className="text-[10px] opacity-70">{v.score}%</span>}
                     </span>
+                  );
+                  return v?.token ? (
+                    <Link key={skill} to={`/verify/${v.token}`} className="no-underline" title="View verified skill details">
+                      {badge}
+                    </Link>
+                  ) : (
+                    <span key={skill}>{badge}</span>
                   );
                 })}
               </div>
@@ -268,12 +286,6 @@ export default function PublicProfilePage() {
             </motion.div>
           )}
 
-          {/* Badges */}
-          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
-            <BadgesSection studentId={profile.id} />
-          </motion.div>
-
           <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible">
             <GitHubStatsCard githubUrl={profile.githubUrl} compact />
           </motion.div>
@@ -290,22 +302,31 @@ export default function PublicProfilePage() {
             </motion.div>
           )}
 
+          {/* Open Source Contribution Heatmap */}
+          <motion.div custom={2.5} variants={fadeInUp} initial="hidden" animate="visible">
+            <OssContributionHeatmap compact studentId={profile.id} />
+          </motion.div>
+
           {/* Projects */}
           {profile.projects.length > 0 && (
             <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible"
               className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white mb-4 flex items-center gap-2">
-                <FolderGit2 className="w-4 h-4 text-amber-500" /> Projects
+                {/* GSSoC '26: Updated title to Featured Projects */}
+                <FolderGit2 className="w-4 h-4 text-amber-500" /> Featured Projects
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {profile.projects.map((p) => (
                   <div key={p.id} className="px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                    <h4 className="text-sm font-semibold text-gray-950 dark:text-white">{p.title}</h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{p.description}</p>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <h4 className="text-sm font-semibold text-gray-950 dark:text-white truncate">{p.title}</h4>
+                      {p.builtAt && <span className="text-xs text-gray-500 font-mono flex items-center gap-1 shrink-0"><Calendar className="w-3 h-3" /> {p.builtAt}</span>}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{p.description}</p>
                     {p.techStack.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {p.techStack.map((t, i) => (
-                          <span key={i} className="px-2 py-0.5 text-[10px] font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-md">{t}</span>
+                          <span key={i} className="px-2 py-0.5 text-xs font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-md">{t}</span>
                         ))}
                       </div>
                     )}
@@ -315,30 +336,6 @@ export default function PublicProfilePage() {
                         {p.repoUrl && <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 dark:text-gray-400 hover:underline flex items-center gap-1"><Github className="w-3 h-3" /> Code</a>}
                       </div>
                     )}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Achievements */}
-          {profile.achievements.length > 0 && (
-            <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white mb-4 flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-rose-500" /> Achievements & Leadership
-              </h3>
-              <div className="space-y-3">
-                {profile.achievements.map((a) => (
-                  <div key={a.id} className="flex items-start gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                    <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center shrink-0">
-                      <Trophy className="w-4 h-4 text-rose-500 dark:text-rose-400" />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-sm font-semibold text-gray-950 dark:text-white">{a.title}</h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{a.description}</p>
-                      {a.date && <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 flex items-center gap-1"><Calendar className="w-3 h-3" /> {a.date}</p>}
-                    </div>
                   </div>
                 ))}
               </div>

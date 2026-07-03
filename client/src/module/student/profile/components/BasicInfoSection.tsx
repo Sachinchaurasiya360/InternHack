@@ -1,12 +1,5 @@
-import { User, Mail, Phone, MapPin, AlignLeft, Search as SearchIcon } from "lucide-react";
+import { User, Mail, Phone, MapPin, AlignLeft } from "lucide-react";
 import { inputClass, inputErrorClass, labelClass } from "./styles";
-
-const JOB_STATUS_OPTIONS = [
-  { value: "", label: "Not specified" },
-  { value: "NO_OFFER", label: "No offer" },
-  { value: "LOOKING", label: "Looking for job" },
-  { value: "OPEN_TO_OFFER", label: "Open to offer" },
-] as const;
 
 interface BasicInfoSectionProps {
   name: string;
@@ -14,7 +7,6 @@ interface BasicInfoSectionProps {
   bio: string;
   contactNo: string;
   location: string;
-  jobStatus: string | null;
   fieldErrors: Record<string, string[]>;
   onChange: (field: string, value: string | null) => void;
 }
@@ -30,7 +22,6 @@ export function BasicInfoSection({
   bio,
   contactNo,
   location,
-  jobStatus,
   fieldErrors,
   onChange,
 }: BasicInfoSectionProps) {
@@ -59,24 +50,23 @@ export function BasicInfoSection({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelClass}><Phone className="w-3.5 h-3.5" /> Phone</label>
-          <input type="tel" value={contactNo} onChange={(e) => onChange("contactNo", e.target.value)} className={inputClass} placeholder="+91 98765 43210" />
+          <input
+            type="tel"
+            value={contactNo}
+            onChange={(e) => {
+              const val = e.target.value.replace(/[^\d\s+-]/g, "");
+              onChange("contactNo", val);
+            }}
+            className={fieldErrors.contactNo ? inputErrorClass : inputClass}
+            placeholder="+91 98765 43210"
+            maxLength={15}
+          />
+          <FieldError errs={fieldErrors.contactNo} />
         </div>
         <div>
           <label className={labelClass}><MapPin className="w-3.5 h-3.5" /> Location</label>
           <input type="text" value={location} onChange={(e) => onChange("location", e.target.value)} className={inputClass} placeholder="e.g. Mumbai, India" />
         </div>
-      </div>
-      <div>
-        <label className={labelClass}><SearchIcon className="w-3.5 h-3.5" /> Job status</label>
-        <select
-          value={jobStatus ?? ""}
-          onChange={(e) => onChange("jobStatus", e.target.value || null)}
-          className={inputClass}
-        >
-          {JOB_STATUS_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
       </div>
     </div>
   );

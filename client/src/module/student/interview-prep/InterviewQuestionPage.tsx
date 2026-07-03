@@ -7,18 +7,20 @@ import {
   CheckCircle2,
   Star,
   Info,
-  Copy,
-  Check,
   ArrowUpRight,
   MessageSquare,
 } from "lucide-react";
 import { sections, questions } from "./data";
-import type { CodeExample } from "./data/types";
+
 import { SEO } from "../../../components/SEO";
+import { CodeBlock } from "../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { reportMilestone } from "../../../lib/milestone.utils";
 import api from "../../../lib/axios";
+import { GridBackground } from "../../../components/ui/GridBackground";
+import { NotesPanel } from "../../../components/learning/NotesPanel";
+
 
 async function getServerProgress() {
   const { data } = await api.get("/interview-progress");
@@ -55,57 +57,6 @@ function MetaChip({ children, className = "" }: { children: React.ReactNode; cla
   );
 }
 
-function CodeBlock({ example }: { example: CodeExample }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(example.code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [example.code]);
-
-  return (
-    <div className="rounded-md border border-stone-200 dark:border-white/10 overflow-hidden bg-white dark:bg-stone-900">
-      <div className="flex items-center justify-between px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border-b border-stone-200 dark:border-white/10">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-          {example.title}
-        </span>
-        <button
-          onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 px-2 py-1 text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-lime-600 dark:hover:text-lime-400 transition-colors bg-transparent border-0 cursor-pointer"
-        >
-          {copied ? (
-            <>
-              <Check className="w-3 h-3 text-lime-500" /> copied
-            </>
-          ) : (
-            <>
-              <Copy className="w-3 h-3" /> copy
-            </>
-          )}
-        </button>
-      </div>
-      <pre className="p-4 overflow-x-auto bg-stone-950 text-stone-100 text-sm leading-relaxed font-mono">
-        <code>{example.code}</code>
-      </pre>
-      {example.output && (
-        <div className="px-4 py-3 bg-stone-900 border-t border-stone-800">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1">
-            output
-          </span>
-          <pre className="text-sm text-lime-400 whitespace-pre-wrap font-mono">{example.output}</pre>
-        </div>
-      )}
-      {example.explanation && (
-        <div className="px-4 py-3 bg-stone-50 dark:bg-stone-900/50 border-t border-stone-200 dark:border-white/10">
-          <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
-            {example.explanation}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function SectionLabel({ icon, children, accent = "lime" }: { icon: React.ReactNode; children: React.ReactNode; accent?: "lime" | "blue" | "amber" | "violet" }) {
   const dotColor = {
@@ -131,13 +82,9 @@ export default function InterviewQuestionPage() {
 
   const [completed, setCompleted] = useState(false);
 
-  const section = sections.find((s) => s.id === sectionSlug);
-  const sectionQuestions = useMemo(
-    () => questions.filter((q) => q.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex),
-    [sectionSlug],
-  );
-
-  const question = sectionQuestions.find((q) => q.id === questionId);
+  const section = useMemo( () => sections.find((s) => s.id === sectionSlug) || null, [sectionSlug]);
+  const sectionQuestions = useMemo(() => { return questions.filter((q) => q.sectionId === sectionSlug).sort((a, b) => a.orderIndex - b.orderIndex);}, [sectionSlug]);
+  const question = useMemo(() => { return sectionQuestions.find((q) => q.id === questionId) || null;}, [sectionQuestions, questionId]);
 
   const currentIndex = question
     ? sectionQuestions.findIndex((q) => q.id === question.id)
@@ -182,6 +129,20 @@ export default function InterviewQuestionPage() {
     return () => clearTimeout(timeout);
   }, [isAuthenticated, questionId]);
 
+  // Analytics: fire-and-forget view ping (1 s after mount to avoid bounce noise)
+  useEffect(() => {
+    if (!questionId) return;
+    const t = setTimeout(() => {
+      api.post("/analytics/track", {
+        contentType: "INTERVIEW_QUESTION",
+        contentId: questionId,
+        timeSpentMs: 0,
+        completed: false,
+      }).catch(() => {});
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [questionId]);
+
   const handleToggleComplete = useCallback(async () => {
     if (!questionId || !isAuthenticated) return;
 
@@ -199,6 +160,16 @@ export default function InterviewQuestionPage() {
         updatedProgress.completedIds.includes(questionId);
 
       setCompleted(isNowCompleted);
+
+      // Analytics: track completion state change — fire-and-forget
+      if (isNowCompleted) {
+        api.post("/analytics/track", {
+          contentType: "INTERVIEW_QUESTION",
+          contentId: questionId,
+          timeSpentMs: 0,
+          completed: true,
+        }).catch(() => {});
+      }
 
       if (
         isNowCompleted &&
@@ -226,25 +197,69 @@ export default function InterviewQuestionPage() {
     sectionQuestions,
   ]);
 
+  const language = useMemo(() => {
+    if (!sectionSlug) return "javascript";
+    if (sectionSlug.includes("javascript") || sectionSlug.includes("nodejs") || sectionSlug.includes("system-design") || sectionSlug.includes("behavioral")) return "javascript";
+    if (sectionSlug.includes("react")) return "tsx";
+    if (sectionSlug.includes("typescript")) return "typescript";
+    if (sectionSlug.includes("python") || sectionSlug.includes("fastapi")) return "python";
+    if (sectionSlug.includes("sql")) return "sql";
+    if (sectionSlug.includes("html-css")) return "html";
+    if (sectionSlug.includes("git-devops")) return "bash";
+    return "javascript";
+  }, [sectionSlug]);
+
   if (section && !section.freeTier && !isAuthenticated) {
     return <Navigate to={basePath} replace />;
   }
 
   if (!question || !section) {
-    return (
-      <div className="relative max-w-6xl mx-auto py-20 text-center">
-        <p className="text-sm text-stone-600 dark:text-stone-400">Question not found.</p>
+  return (
+    <div className="relative max-w-3xl mx-auto py-24 px-6 text-center">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-xl p-8">
+        <h2 className="text-2xl font-bold text-stone-900 dark:text-stone-50 mb-3">
+          Question not found
+        </h2>
+
+        <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+          This interview question may have been moved, deleted,
+          or the URL might be incorrect.
+        </p>
+
         <Link
           to={basePath}
-          className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline"
+          className="mt-6 inline-flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest text-stone-900 dark:text-stone-50 border border-stone-300 dark:border-white/15 rounded-md hover:bg-lime-400 hover:border-lime-400 hover:text-stone-900 transition-colors no-underline"
         >
-          back to interview prep <ArrowUpRight className="w-3 h-3" />
+          Browse all questions
+          <ArrowUpRight className="w-3 h-3" />
         </Link>
+      </div>
+    </div>
+  );
+  }
+
+  const content = question.content;
+  const hasValidContent = content && typeof content.question === "string" && typeof content.answer === "string";
+  
+  if (!hasValidContent) {
+    console.error("Malformed interview question payload", {
+      sectionSlug,
+      questionId,
+    });
+
+  return (
+      <div className="relative max-w-3xl mx-auto py-24 px-6 text-center">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-xl p-8">
+          <h2 className="text-2xl font-bold">Question not found</h2>
+          <p className="text-sm text-stone-600 dark:text-stone-400">
+            Invalid or corrupted question data.
+          </p>
+          <Link to={basePath}>Go back</Link>
+        </div>
       </div>
     );
   }
-
-  const { content } = question;
+  
   const codeExamples = content.codeExamples ?? [];
 
   return (
@@ -255,14 +270,7 @@ export default function InterviewQuestionPage() {
         canonicalUrl={canonicalUrl(`/learn/interview/${sectionSlug}/${questionId}`)}
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.05] z-0"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(120,113,108,0.25) 1px, transparent 1px)",
-          backgroundSize: "120px 100%",
-        }}
-      />
+      <GridBackground />
 
       <div className="relative max-w-4xl mx-auto">
         {/* Editorial header */}
@@ -362,7 +370,7 @@ export default function InterviewQuestionPage() {
               <SectionLabel icon={null}>code examples</SectionLabel>
               <div className="space-y-4">
                 {codeExamples.map((example, i) => (
-                  <CodeBlock key={i} example={example} />
+                  <CodeBlock key={i} example={example} language={language} />
                 ))}
               </div>
             </motion.div>
@@ -444,6 +452,17 @@ export default function InterviewQuestionPage() {
                   </div>
                 ))}
               </div>
+            </motion.div>
+          )}
+
+          {/* Personal Notes */}
+          {isAuthenticated && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.32 }}
+            >
+              <NotesPanel contentType="INTERVIEW_QUESTION" contentId={question.id} />
             </motion.div>
           )}
 

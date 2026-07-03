@@ -13,6 +13,7 @@ const SERVICE_LABELS: Record<AIServiceType, string> = {
   RESUME_GEN: "LaTeX Resume Generation",
   LATEX_CHAT: "LaTeX Chat Assistant",
   EMAIL_CHAT: "Email Chat Assistant",
+  AI_ROADMAP_GENERATION: "AI Roadmap Generation",
 };
 
 const PROVIDER_INFO: Record<AIProviderType, { label: string; color: string; models: string[] }> = {
@@ -35,15 +36,10 @@ const PROVIDER_INFO: Record<AIProviderType, { label: string; color: string; mode
     label: "Codestral (Mistral)",
     color: "text-emerald-400",
     models: ["codestral-latest", "mistral-large-latest"],
-  },
-  CLAUDE: {
-    label: "Anthropic Claude",
-    color: "text-amber-400",
-    models: ["claude-sonnet-4-20250514", "claude-haiku-4-20250414", "claude-opus-4-20250514"],
-  },
+  }
 };
 
-const PROVIDERS: AIProviderType[] = ["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL", "CLAUDE"];
+const PROVIDERS: AIProviderType[] = ["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL"];
 
 interface ConfigResponse {
   configs: AIServiceConfig[];
@@ -91,7 +87,6 @@ export default function AdminAIProvidersPage() {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-gray-500">{p === "CLAUDE" ? "CLAUDE_API" : `${p}_API_KEY`}</p>
             </div>
           );
         })}

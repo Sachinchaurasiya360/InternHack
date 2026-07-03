@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import prerender from '@prerenderer/rollup-plugin'
@@ -11,7 +11,6 @@ const PRERENDER_ROUTES = [
   '/login',
   '/register',
   '/forgot-password',
-  '/for-recruiters',
   '/terms',
   '/privacy',
   '/refund',
@@ -43,8 +42,8 @@ const PRERENDER_ROUTES = [
 // so puppeteer can't launch and the prerender plugin hard-fails the build.
 // Skip the plugin on Vercel and rely on local prerendering (or skip SEO snapshot
 // for that deploy). Override via SKIP_PRERENDER=1 to disable elsewhere.
-const skipPrerender =
-  process.env.SKIP_PRERENDER === '1' || process.env.VERCEL === '1'
+const skipPrerender = true // Temporarily disabled due to Puppeteer connection timeout
+  // process.env.SKIP_PRERENDER === '1' || process.env.VERCEL === '1'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -98,8 +97,12 @@ server: {
     },
   },
 },
+  test: {
+    globals: true,
+    environment: "node",
+  },
   build: {
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
         // Use function form so we can split both vendor AND lesson-data into

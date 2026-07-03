@@ -1,0 +1,665 @@
+[
+  {
+    "id": "security-owasp-top-10",
+    "sectionId": "web-security",
+    "orderIndex": 0,
+    "title": "OWASP Top 10 Overview",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["OWASP", "Vulnerabilities", "Injection", "Broken Access Control", "XSS"],
+    "content": {
+      "question": "What is the OWASP Top 10 and why is it important?",
+      "answer": "The **OWASP Top 10** is a standard awareness document for developers and web application security. It represents a broad consensus about the most critical security risks to web applications."
+    }
+  },
+  {
+    "id": "security-jwt-structure",
+    "sectionId": "web-security",
+    "orderIndex": 1,
+    "title": "JWT Security",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["JWT", "Header", "Payload", "Signature", "XSS", "CSRF"],
+    "content": {
+      "question": "What is a JWT? How do you store it safely on the client?",
+      "answer": "JWT consists of Header, Payload, and Signature. Store in **HTTP-only, Secure, SameSite=Strict cookies** to protect against XSS and CSRF. LocalStorage is vulnerable to XSS."
+    }
+  },
+  {
+    "id": "security-xss-mitigation",
+    "sectionId": "web-security",
+    "orderIndex": 2,
+    "title": "XSS: Cross-Site Scripting",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["XSS", "Reflected", "Stored", "DOM-based", "Sanitization"],
+    "content": {
+      "question": "What is XSS and how do you prevent it?",
+      "answer": "XSS occurs when scripts are injected into web content. Prevent by sanitizing input (DOMPurify), escaping output (standard in React), and using Content Security Policy (CSP) headers."
+    }
+  },
+  {
+    "id": "security-csrf-explanation",
+    "sectionId": "web-security",
+    "orderIndex": 3,
+    "title": "CSRF: Cross-Site Request Forgery",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["CSRF", "SameSite Cookie", "Anti-CSRF Token", "State-changing"],
+    "content": {
+      "question": "What is CSRF and how do you stop it?",
+      "answer": "CSRF tricks a user's browser into performing actions on another site. Stop it using **SameSite=Lax/Strict** cookies and manual Anti-CSRF tokens for POST requests."
+    }
+  },
+  {
+    "id": "security-cors-fundamentals",
+    "sectionId": "web-security",
+    "orderIndex": 4,
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["CORS", "Preflight", "OPTIONS", "Origin", "Access-Control-Allow-Origin"],
+    "content": {
+      "question": "What is CORS?",
+      "answer": "A browser mechanism to relax the Same-Origin Policy, allowing resources on a server to be requested from another domain. Managed via `Access-Control-Allow-Origin` headers."
+    }
+  },
+  {
+    "id": "security-sql-injection-prevention",
+    "sectionId": "web-security",
+    "orderIndex": 5,
+    "title": "SQL Injection (SQLi)",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["SQLi", "Parameterized Queries", "ORM", "Input Validation"],
+    "content": {
+      "question": "How do you prevent SQL injection?",
+      "answer": "Always use **parameterized queries** or an ORM. Never concatenate user input into SQL strings. Implement input validation and limit DB user permissions."
+    }
+  },
+  {
+    "id": "security-hashing-vs-encryption",
+    "sectionId": "web-security",
+    "orderIndex": 6,
+    "title": "Hashing vs. Encryption",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Hashing", "Encryption", "Salt", "Bcrypt", "AES"],
+    "content": {
+      "question": "What is the difference between Hashing and Encryption?",
+      "answer": "Hashing is a one-way transformation (for passwords). Encryption is two-way and requires a key to decrypt (for sensitive data like SSNs)."
+    }
+  },
+  {
+    "id": "security-https-tls-handshake",
+    "sectionId": "web-security",
+    "orderIndex": 7,
+    "title": "HTTPS & TLS",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["HTTPS", "TLS", "SSL", "Handshake", "Certificates", "CA"],
+    "content": {
+      "question": "How does HTTPS work at a high level?",
+      "answer": "It uses SSL/TLS to encrypt data between client and server. The server provides a certificate verified by a CA, and they negotiate a symmetric session key for the connection."
+    }
+  },
+  {
+    "id": "security-brute-force-rate-limiting",
+    "sectionId": "web-security",
+    "orderIndex": 8,
+    "title": "Rate Limiting & Brute Force",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Rate Limiting", "Throttling", "Brute Force", "Redis", "Middleware"],
+    "content": {
+      "question": "How do you protect a login from brute-force?",
+      "answer": "Rate limiting (middleware), CAPTCHA after failed attempts, account lockout, and mandating Multi-Factor Authentication (MFA)."
+    }
+  },
+  {
+    "id": "security-secure-headers",
+    "sectionId": "web-security",
+    "orderIndex": 9,
+    "title": "Security Headers (Helmet)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Helmet", "HSTS", "X-Frame-Options", "Content-Security-Policy"],
+    "content": {
+      "question": "Name three HTTP security headers.",
+      "answer": "1. HSTS (forces HTTPS). 2. X-Frame-Options (prevents clickjacking). 3. Content-Security-Policy (restricts resource loading)."
+    }
+  },
+  {
+    "id": "security-bcrypt-salting-work-factor",
+    "sectionId": "web-security",
+    "orderIndex": 10,
+    "title": "Bcrypt: Salt & Cost",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Bcrypt", "Salt", "Cost Factor", "Rainbow Tables"],
+    "content": {
+      "question": "Why is Bcrypt better than SHA-256 for passwords?",
+      "answer": "It has an adaptive work factor (it's deliberately slow) and automatic salting, which makes brute-forcing computationally expensive."
+    }
+  },
+  {
+    "id": "security-oauth2-flows",
+    "sectionId": "web-security",
+    "orderIndex": 11,
+    "title": "OAuth 2.0 & OpenID Connect",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["OAuth2", "OIDC", "Authorization Code", "Scopes"],
+    "content": {
+      "question": "OAuth 2.0 vs. OIDC.",
+      "answer": "OAuth 2.0 is for **Authorization** (Access Tokens). OpenID Connect is built on top of it for **Authentication** (Identity/ID Tokens)."
+    }
+  },
+  {
+    "id": "security-session-fixation",
+    "sectionId": "web-security",
+    "orderIndex": 12,
+    "title": "Session Fixation",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Session ID", "Authentication", "Session Hijacking"],
+    "content": {
+      "question": "How do you prevent Session Fixation?",
+      "answer": "Always rotate/regenerate the Session ID immediately after a user successfully logs in."
+    }
+  },
+  {
+    "id": "security-ssrf-vulnerability",
+    "sectionId": "web-security",
+    "orderIndex": 13,
+    "title": "SSRF (Server-Side Request Forgery)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["SSRF", "Metadata API", "Cloud Security", "Internal Network"],
+    "content": {
+      "question": "What is SSRF?",
+      "answer": "An attack where the server is tricked into making requests to internal or private resources that shouldn't be reachable from the outside."
+    }
+  },
+  {
+    "id": "security-clickjacking-protection",
+    "sectionId": "web-security",
+    "orderIndex": 14,
+    "title": "Clickjacking",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Clickjacking", "UI Redressing", "Iframe", "X-Frame-Options"],
+    "content": {
+      "question": "How to prevent Clickjacking?",
+      "answer": "Use the `X-Frame-Options: DENY` header or `Content-Security-Policy: frame-ancestors` to prevent your site from being nested in an iframe."
+    }
+  },
+  {
+    "id": "security-sanitizing-inputs",
+    "sectionId": "web-security",
+    "orderIndex": 15,
+    "title": "Sanitizing vs. Validating",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Sanitization", "Validation", "Security"],
+    "content": {
+      "question": "What is the difference between data validation and data sanitization?",
+      "answer": "Validation checks if data meets a format (e.g., is this an email?). Sanitization removes or escapes dangerous parts of the data (e.g., stripping `<script>` tags)."
+    }
+  },
+  {
+    "id": "security-broken-access-control",
+    "sectionId": "web-security",
+    "orderIndex": 16,
+    "title": "Broken Access Control",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["AuthZ", "RBAC", "IDOR"],
+    "content": {
+      "question": "What is IDOR (Insecure Direct Object Reference)?",
+      "answer": "When an application provides direct access to objects based on user-supplied input (e.g., `api/users/123`), but fails to check if the current user has permission to see user 123."
+    }
+  },
+  {
+    "id": "security-password-complexity",
+    "sectionId": "web-security",
+    "orderIndex": 17,
+    "title": "Password Complexity",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Passwords", "Entropy"],
+    "content": {
+      "question": "What is better: a complex password or a long passphrase?",
+      "answer": "Generally, a long passphrase (e.g., `correct-horse-battery-staple`) provides more entropy and is harder to crack than a short but complex password (e.g., `P@ss12!`)."
+    }
+  },
+  {
+    "id": "security-dos-vs-ddos",
+    "sectionId": "web-security",
+    "orderIndex": 18,
+    "title": "DoS vs. DDoS",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Denial of Service", "Availability"],
+    "content": {
+      "question": "What is the difference between DoS and DDoS?",
+      "answer": "DoS comes from a single source. DDoS (Distributed Denial of Service) comes from thousands of distinct sources (a botnet), making it much harder to block."
+    }
+  },
+  {
+    "id": "security-man-in-the-middle",
+    "sectionId": "web-security",
+    "orderIndex": 19,
+    "title": "Man-in-the-Middle (MITM)",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["MITM", "Sniffing"],
+    "content": {
+      "question": "What is a MITM attack?",
+      "answer": "When an attacker secretly intercepts and possibly alters the communication between two parties who believe they are communicating directly with each other."
+    }
+  },
+  {
+    "id": "security-homograph-attack",
+    "sectionId": "web-security",
+    "orderIndex": 20,
+    "title": "Homograph Attack",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Phishing", "DNS", "Unicode"],
+    "content": {
+      "question": "What is a homograph attack?",
+      "answer": "Using similar-looking characters from different alphabets to create a deceptive URL (e.g., using a Cyrillic 'а' instead of a Latin 'a' in `apple.com`)."
+    }
+  },
+  {
+    "id": "security-salting-passwords",
+    "sectionId": "web-security",
+    "orderIndex": 21,
+    "title": "The Purpose of Salt",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Hashing", "Rainbow Tables"],
+    "content": {
+      "question": "Why do we add 'salt' to passwords before hashing?",
+      "answer": "To ensure that two users with the same password have different hashes, and to protect against pre-computed 'Rainbow Table' attacks."
+    }
+  },
+  {
+    "id": "security-peppering-passwords",
+    "sectionId": "web-security",
+    "orderIndex": 22,
+    "title": "Pepper vs. Salt",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Hashing", "Application Secret"],
+    "content": {
+      "question": "What is a password 'pepper'?",
+      "answer": "A secret string added to all passwords before hashing, stored in the application code or environment, NOT in the database like the salt."
+    }
+  },
+  {
+    "id": "security-insecure-deserialization",
+    "sectionId": "web-security",
+    "orderIndex": 23,
+    "title": "Insecure Deserialization",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["OWASP", "RCE"],
+    "content": {
+      "question": "What is insecure deserialization?",
+      "answer": "When an application takes untrusted data and uses it to recreate an object. Attackers can manipulate the data to execute arbitrary code (RCE) during the object creation process."
+    }
+  },
+  {
+    "id": "security-json-poisoning",
+    "sectionId": "web-security",
+    "orderIndex": 24,
+    "title": "JSON Poisoning",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["JSON", "Injection"],
+    "content": {
+      "question": "What is JSON poisoning?",
+      "answer": "Injecting duplicate keys or large amounts of data into a JSON payload to bypass filters or cause a denial of service (DoS) on the parser."
+    }
+  },
+  {
+    "id": "security-directory-traversal",
+    "sectionId": "web-security",
+    "orderIndex": 25,
+    "title": "Directory Traversal",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Filesystem", "Path Injection"],
+    "content": {
+      "question": "What is directory traversal (dot-dot-slash)?",
+      "answer": "An attack that uses `../` sequences to access files outside the intended web root directory (e.g., `../../etc/passwd`)."
+    }
+  },
+  {
+    "id": "security-least-privilege",
+    "sectionId": "web-security",
+    "orderIndex": 26,
+    "title": "Principle of Least Privilege",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Security Policy", "Access Control"],
+    "content": {
+      "question": "Define the Principle of Least Privilege.",
+      "answer": "A security concept where a user or process is given only the minimum levels of access or permissions needed to perform its job."
+    }
+  },
+  {
+    "id": "security-zero-trust-architecture",
+    "sectionId": "web-security",
+    "orderIndex": 27,
+    "title": "Zero Trust",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Network Security", "AuthN/AuthZ"],
+    "content": {
+      "question": "What is Zero Trust Architecture?",
+      "answer": "A security model that requires strict identity verification for every person and device trying to access resources on a private network, regardless of whether they are inside or outside the network perimeter."
+    }
+  },
+  {
+    "id": "security-content-security-policy",
+    "sectionId": "web-security",
+    "orderIndex": 28,
+    "title": "CSP: Content Security Policy",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["XSS", "Headers"],
+    "content": {
+      "question": "How does CSP prevent XSS?",
+      "answer": "It informs the browser of trusted sources for scripts, styles, and other resources. It can disable inline scripts and the use of `eval()`, making most XSS attacks impossible."
+    }
+  },
+  {
+    "id": "security-subresource-integrity",
+    "sectionId": "web-security",
+    "orderIndex": 29,
+    "title": "Subresource Integrity (SRI)",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["CDN", "Hashing"],
+    "content": {
+      "question": "What is Subresource Integrity (SRI)?",
+      "answer": "A security feature that enables browsers to verify that resources fetched from a third-party (like a CDN) haven't been tampered with, by checking their hash."
+    }
+  },
+  {
+    "id": "security-same-origin-policy",
+    "sectionId": "web-security",
+    "orderIndex": 30,
+    "title": "Same-Origin Policy (SOP)",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["Browser Security", "Origins"],
+    "content": {
+      "question": "What defines an 'Origin' in the Same-Origin Policy?",
+      "answer": "The combination of the **Protocol** (http/https), **Host** (domain), and **Port**."
+    }
+  },
+  {
+    "id": "security-brute-force-vulnerability",
+    "sectionId": "web-security",
+    "orderIndex": 31,
+    "title": "Brute Force Protection",
+    "difficulty": "Beginner",
+    "type": "Experience",
+    "concepts": ["Auth", "Security"],
+    "content": {
+      "question": "Why is it important to use a delay or lockout after failed login attempts?",
+      "answer": "To significantly increase the time it takes for an automated tool to guess a password (brute-forcing), making the attack impractical."
+    }
+  },
+  {
+    "id": "security-cryptographically-secure-random",
+    "sectionId": "web-security",
+    "orderIndex": 32,
+    "title": "CSPRNG",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Entropy", "Randomness"],
+    "content": {
+      "question": "What is a CSPRNG and why use it for security tokens?",
+      "answer": "A Cryptographically Secure Pseudo-Random Number Generator. Standard `Math.random()` in JS is predictable; a CSPRNG (like `crypto.getRandomValues`) is not, making tokens un-guessable."
+    }
+  },
+  {
+    "id": "security-sensitive-data-rest",
+    "sectionId": "web-security",
+    "orderIndex": 33,
+    "title": "Data at Rest",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Encryption", "Storage"],
+    "content": {
+      "question": "How do you protect sensitive data 'at rest'?",
+      "answer": "By encrypting database columns, using encrypted filesystems, and ensuring that backup tapes/disks are also encrypted."
+    }
+  },
+  {
+    "id": "security-security-misconfiguration",
+    "sectionId": "web-security",
+    "orderIndex": 34,
+    "title": "Security Misconfiguration",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["OWASP", "Hardening"],
+    "content": {
+      "question": "Give an example of a security misconfiguration.",
+      "answer": "Leaving default passwords on admin accounts, keeping detailed error messages enabled in production, or leaving AWS S3 buckets public."
+    }
+  },
+  {
+    "id": "security-phishing-prevention",
+    "sectionId": "web-security",
+    "orderIndex": 35,
+    "title": "Phishing Protection",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Social Engineering", "Email Security"],
+    "content": {
+      "question": "What technical controls help prevent phishing?",
+      "answer": "Email filtering/spam detection, mandatory MFA, and modern browser protections that flag known malicious websites."
+    }
+  },
+  {
+    "id": "security-social-engineering-basics",
+    "sectionId": "web-security",
+    "orderIndex": 36,
+    "title": "Social Engineering",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Human Element", "Security Awareness"],
+    "content": {
+      "question": "What is social engineering?",
+      "answer": "The act of tricking people into giving up confidential information or access (e.g., a phone call pretending to be IT support)."
+    }
+  },
+  {
+    "id": "security-buffer-overflow-intro",
+    "sectionId": "web-security",
+    "orderIndex": 37,
+    "title": "Buffer Overflow",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Memory Corruption", "C/C++"],
+    "content": {
+      "question": "What is a buffer overflow?",
+      "answer": "When a program attempts to write more data to a fixed-length block of memory (a buffer) than it is allocated to hold, overwriting adjacent memory."
+    }
+  },
+  {
+    "id": "security-sql-blind-injection",
+    "sectionId": "web-security",
+    "orderIndex": 38,
+    "title": "Blind SQL Injection",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["SQLi", "Exfiltration"],
+    "content": {
+      "question": "What is Blind SQL injection?",
+      "answer": "An attack where the server doesn't return data in the response, but the attacker can infer information by observing differences in server behavior (e.g., response time or page status)."
+    }
+  },
+  {
+    "id": "security-api-security-best-practices",
+    "sectionId": "web-security",
+    "orderIndex": 39,
+    "title": "API Security",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Rest", "Security"],
+    "content": {
+      "question": "List 2 ways to secure a public REST API.",
+      "answer": "1. Use API Keys or OAuth tokens for authentication. 2. Implement Rate Limiting to prevent abuse."
+    }
+  },
+  {
+    "id": "security-xml-external-entity-xxe",
+    "sectionId": "web-security",
+    "orderIndex": 40,
+    "title": "XXE Attack",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["XML", "Injection"],
+    "content": {
+      "question": "What is an XXE injection?",
+      "answer": "When an XML parser incorrectly processes external entities, potentially allowing attackers to read internal files or perform port scanning on the server."
+    }
+  },
+  {
+    "id": "security-broken-auth-overview",
+    "sectionId": "web-security",
+    "orderIndex": 41,
+    "title": "Broken Auth",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["OWASP", "Auth"],
+    "content": {
+      "question": "What is meant by 'Broken Authentication'?",
+      "answer": "A broad category of vulnerabilities related to poor password management, session handling, or lack of 2FA that allows attackers to compromise user identities."
+    }
+  },
+  {
+    "id": "security-least-info-disclosure",
+    "sectionId": "web-security",
+    "orderIndex": 42,
+    "title": "Information Disclosure",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Privacy", "Hardening"],
+    "content": {
+      "question": "Why should you disable the 'Server' header (e.g., 'Server: nginx/1.14.0')?",
+      "answer": "To prevent attackers from knowing your exact server version, which helps them find specific exploits for that version."
+    }
+  },
+  {
+    "id": "security-side-channel-attack",
+    "sectionId": "web-security",
+    "orderIndex": 43,
+    "title": "Side-Channel Attack",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["Timing", "Encryption"],
+    "content": {
+      "question": "What is a timing attack?",
+      "answer": "A side-channel attack where the attacker tries to compromise a system by analyzing the time it takes to execute cryptographic algorithms."
+    }
+  },
+  {
+    "id": "security-nonce-explanation",
+    "sectionId": "web-security",
+    "orderIndex": 44,
+    "title": "Nonces",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Cryptography", "Replay Protection"],
+    "content": {
+      "question": "What is a 'nonce'?",
+      "answer": "A 'number used once'. It is a random or semi-random value used in cryptographic protocols to prevent replay attacks."
+    }
+  },
+  {
+    "id": "security-mfa-types",
+    "sectionId": "web-security",
+    "orderIndex": 45,
+    "title": "MFA Factors",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Multi-factor Authorization"],
+    "content": {
+      "question": "What are the three common factors of MFA?",
+      "answer": "1. Something you know (password). 2. Something you have (phone/key). 3. Something you are (fingerprint)."
+    }
+  },
+  {
+    "id": "security-honey-tokens",
+    "sectionId": "web-security",
+    "orderIndex": 46,
+    "title": "Honey Tokens",
+    "difficulty": "Advanced",
+    "type": "Experience",
+    "concepts": ["Detection", "Security Monitoring"],
+    "content": {
+      "question": "What are honey tokens?",
+      "answer": "Fake credentials or data placed in a system to trap or alert you when an attacker attempts to use them."
+    }
+  },
+  {
+    "id": "security-penetration-testing-levels",
+    "sectionId": "web-security",
+    "orderIndex": 47,
+    "title": "Penetration Testing",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["White box", "Black box", "Grey box"],
+    "content": {
+      "question": "What is 'Black Box' testing?",
+      "answer": "Testing where the pentester has no prior knowledge of the system's internal workings, simulating an outside attacker."
+    }
+  },
+  {
+    "id": "security-reentrancy-vulnerability",
+    "sectionId": "web-security",
+    "orderIndex": 48,
+    "title": "Reentrancy",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Smart Contracts", "Concurrency"],
+    "content": {
+      "question": "What is a reentrancy attack (commonly seen in Ethereum)?",
+      "answer": "When a function makes an external call to an untrusted contract, and that contract calls back into the original function before the first execution is finished."
+    }
+  },
+  {
+    "id": "security-cold-boot-attack",
+    "sectionId": "web-security",
+    "orderIndex": 49,
+    "title": "Cold Boot Attack",
+    "difficulty": "Advanced",
+    "type": "Theory",
+    "concepts": ["RAM", "Physical Security"],
+    "content": {
+      "question": "What is a cold boot attack?",
+      "answer": "A physical attack where encryption keys or sensitive data are retrieved from a computer's RAM after it has been powered down (RAM data persists briefly)."
+    }
+  },
+  {
+    "id": "security-cloud-tenant-isolation",
+    "sectionId": "web-security",
+    "orderIndex": 50,
+    "title": "Cloud Isolation",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["Cloud Security", "Virtualization"],
+    "content": {
+      "question": "Why is tenant isolation critical in cloud computing?",
+      "answer": "To ensure that one customer cannot access another customer's data or resources, even though they are running on the same physical hardware."
+    }
+  }
+]

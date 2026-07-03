@@ -1,20 +1,17 @@
 import { User } from "lucide-react";
 import StarRating from "./StarRating";
 import type { CompanyReview } from "../../../lib/types";
+import { formatDate } from "../../../lib/date-utils";
 
 export default function ReviewCard({ review }: { review: CompanyReview }) {
-  const date = new Date(review.createdAt).toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const date = formatDate(review.createdAt);
 
   return (
     <div className="bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-100 dark:border-gray-800">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           {review.user?.profilePic ? (
-            <img src={review.user.profilePic} alt="" className="w-10 h-10 rounded-full object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+            <img src={review.user.profilePic} alt={review.user?.name ?? "User"} className="w-10 h-10 rounded-full object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
               <User className="w-5 h-5 text-gray-400 dark:text-gray-500" />

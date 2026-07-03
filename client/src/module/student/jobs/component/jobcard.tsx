@@ -1,17 +1,10 @@
 import React from "react";
 import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
+import { TagList } from "../../../../components/ui/TagList";
+import { CARD_BASE } from "../../../../lib/card-styles";
 
-const cardBase =
-  "group relative flex flex-col bg-white dark:bg-stone-900 p-5 rounded-md border border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/30 transition-colors h-full no-underline";
-
-function CompanyMark({ label }: { label: string }) {
-  return (
-    <div className="w-10 h-10 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center shrink-0 text-stone-900 dark:text-stone-50 text-sm font-bold">
-      {label?.charAt(0)?.toUpperCase() || "?"}
-    </div>
-  );
-}
+import { CompanyMark } from "../../../../components/ui/CompanyMark";
 
 export interface JobCardProps {
   /** Internal route (use `to`) or external URL (use `href`) */
@@ -53,7 +46,7 @@ const JobCard = React.memo(function JobCard({
 
       {/* Header row */}
       <div className={`flex items-start gap-3 mb-3 ${badge ? "pr-16" : ""}`}>
-        <CompanyMark label={company} />
+        <CompanyMark name={company} />
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-50 line-clamp-1 leading-tight">
             {title}
@@ -80,18 +73,7 @@ const JobCard = React.memo(function JobCard({
       {metaChips && <div className="flex flex-wrap gap-1.5 mb-4">{metaChips}</div>}
 
       {/* Tags */}
-      {tags && tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-lg text-xs font-mono uppercase tracking-wider"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      <TagList tags={tags} tagClassName="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-lg text-xs font-mono uppercase tracking-wider" />
 
       {/* Footer */}
       <div className="mt-auto flex items-center justify-between pt-3 border-t border-stone-100 dark:border-white/5">
@@ -107,14 +89,14 @@ const JobCard = React.memo(function JobCard({
 
   if (href) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={cardBase}>
+      <a href={href} target="_blank" rel="noopener noreferrer" className={CARD_BASE}>
         {inner}
       </a>
     );
   }
 
   return (
-    <Link to={to ?? "#"} className={cardBase}>
+    <Link to={to ?? "#"} className={CARD_BASE}>
       {inner}
     </Link>
   );

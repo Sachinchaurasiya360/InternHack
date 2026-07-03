@@ -7,7 +7,7 @@ import {
 } from "./skill-test.validation.js";
 
 export class SkillTestController {
-  constructor(private readonly service: SkillTestService) {}
+  constructor(private readonly service: SkillTestService) { }
 
   async listTests(req: Request, res: Response, next: NextFunction) {
     try {
@@ -75,11 +75,11 @@ export class SkillTestController {
         return;
       }
       if (err instanceof Error && (err as any).status === 429) {
-  res.status(429).json({ 
-    error: err.message, 
-    retryAfter: (err as any).retryAfter 
-  }); return;
-}
+        res.status(429).json({
+          error: err.message,
+          retryAfter: (err as any).retryAfter
+        }); return;
+      }
       next(err);
     }
   }
@@ -132,6 +132,68 @@ export class SkillTestController {
           .json({
             error: "No active test session found. Please start the test first.",
           });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  /* ---- Incremental proctor-log flush (issue #2400) ---- */
+  async logProctorEvents(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: "Authentication required" });
+        return;
+      }
+
+      const testId = parseInt(String(req.params["id"]), 10);
+      if (isNaN(testId)) {
+        res.status(400).json({ error: "Invalid test ID" });
+        return;
+      }
+
+      const result = await this.service.logProctorEvents(
+        testId,
+        req.user.id,
+        req.body.events,
+      );
+      res.json(result);
+    } catch (err) {
+      if (err instanceof Error && err.message === "Test not found") {
+        res.status(404).json({ error: err.message });
+        return;
+      }
+      if (err instanceof Error && err.message === "TEST_EXPIRED") {
+        res
+          .status(403)
+          .json({ error: "Time is up. Your session has expired." });
+        return;
+      }
+      if (err instanceof Error && err.message === "NO_OPEN_SESSION") {
+        res
+          .status(400)
+          .json({
+            error: "No active test session found. Please start the test first.",
+          });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  async verifyBadge(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = String(req.params["token"] || "");
+      if (!token) {
+        res.status(400).json({ error: "Verification token is required" });
+        return;
+      }
+
+      const data = await this.service.verifyBadgeToken(token);
+      res.json(data);
+    } catch (err) {
+      if (err instanceof Error && err.message === "INVALID_VERIFICATION_TOKEN") {
+        res.status(404).json({ error: "Verification token is invalid or expired" });
         return;
       }
       next(err);

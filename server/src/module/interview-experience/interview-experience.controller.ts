@@ -6,13 +6,11 @@ import {
   listExperiencesSchema,
   listCompaniesSchema,
 } from "./interview-experience.validation.js";
-import { BadgeService } from "../badge/badge.service.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { interviewExperienceApprovedHtml } from "../../utils/email-templates.js";
 import { prisma } from "../../database/db.js";
 
 const service = new InterviewExperienceService();
-const badgeService = new BadgeService();
 
 export class InterviewExperienceController {
   /** GET /api/interviews */
@@ -108,9 +106,6 @@ export class InterviewExperienceController {
       }
       const experience = await service.create(req.user.id, parsed.data);
 
-      // Fire-and-forget: award badges for submissions
-      badgeService.checkAndAwardBadges(req.user.id, "interview_share").catch(() => {});
-
       res.status(201).json({ experience });
     } catch (err) {
       next(err);
@@ -142,7 +137,7 @@ export class InterviewExperienceController {
       );
 
       // Side-effect: when an admin approves a previously-non-approved experience,
-      // re-check badges and email the author with the result.
+      // email the author that it is live.
       if (
         req.user.role === "ADMIN" &&
         previousStatus !== "APPROVED" &&
@@ -150,7 +145,7 @@ export class InterviewExperienceController {
         experience.user
       ) {
         void notifyApproval(experience).catch((err) => {
-          console.error("[interview-experience] approval notify failed:", err);
+          console.error("[interview-experience] approval notify failed for experience %d: %o", experience.id, err);
         });
       }
 
@@ -215,20 +210,6 @@ async function notifyApproval(experience: ApprovalNotifyTarget): Promise<void> {
   });
   if (!author?.email) return;
 
-  // Re-check badges so spam/rejected drafts don't earn badges; awarded counts
-  // here reflect approved experiences after the new approval.
-  const newlyAwarded = await badgeService
-    .checkAndAwardBadges(experience.user.id, "interview_share")
-    .catch(() => [] as { name: string; slug: string; category: string }[]);
-
-  const earnedBadges =
-    newlyAwarded.length > 0
-      ? await prisma.badge.findMany({
-          where: { slug: { in: newlyAwarded.map((b) => b.slug) } },
-          select: { name: true, description: true },
-        })
-      : [];
-
   await sendEmail({
     to: author.email,
     subject: `Your interview experience for ${experience.company?.name ?? "a company"} is approved`,
@@ -237,10 +218,6 @@ async function notifyApproval(experience: ApprovalNotifyTarget): Promise<void> {
       companyName: experience.company?.name ?? "Unknown Company",
       role: experience.role,
       experienceId: experience.id,
-      earnedBadges: earnedBadges.map((b) => ({
-        name: b.name,
-        description: b.description,
-      })),
     }),
   });
 }

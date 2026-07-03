@@ -46,26 +46,16 @@ export const registerSchema = z.object({
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[\W_]/, "Password must contain at least one special character"),
-  role: z.enum(["STUDENT", "RECRUITER"]).default("STUDENT"),
-  company: z.string().optional(),
-  designation: z.string().optional(),
   contactNo: z.string().optional(),
-}).superRefine((data, ctx) => {
-  if (data.role === "RECRUITER") {
-    const domain = data.email.split("@")[1]?.toLowerCase();
-    if (domain && PERSONAL_EMAIL_DOMAINS.includes(domain)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.",
-        path: ["email"],
-      });
-    }
-  }
 });
 
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
+});
+
+export const deleteAccountSchema = z.object({
+  password: z.string().min(1, "Password is required to confirm account deletion"),
 });
 
 export const importGitHubSchema = z.object({
@@ -80,13 +70,12 @@ export const updateProfileSchema = z.object({
   bio: z.string().max(500).optional(),
   college: z.string().optional(),
   graduationYear: z.coerce.number().int().min(1990).max(2040).optional().nullable(),
-  skills: z.array(z.string()).max(20).optional(),
+  skills: z.array(z.string().min(1).max(50, "Skill name too long")).max(20).optional(),
   location: z.string().optional(),
   linkedinUrl: z.string().url().or(z.literal("")).optional(),
   githubUrl: z.string().url().or(z.literal("")).optional(),
   portfolioUrl: z.string().url().or(z.literal("")).optional(),
   leetcodeUrl: z.string().url().or(z.literal("")).optional(),
-  jobStatus: z.enum(["NO_OFFER", "LOOKING", "OPEN_TO_OFFER"]).nullable().optional(),
   projects: z.array(z.object({
     id: z.string(),
     title: z.string().min(1).max(100),
@@ -94,14 +83,9 @@ export const updateProfileSchema = z.object({
     techStack: z.array(z.string()).max(10),
     liveUrl: z.string().url().or(z.literal("")).optional(),
     repoUrl: z.string().url().or(z.literal("")).optional(),
+    // Featured Projects (GSSoC '26): YYYY-MM or ISO-8601, normalized in the service
+    builtAt: z.string().optional(),
   })).max(10).optional(),
-  achievements: z.array(z.object({
-    id: z.string(),
-    title: z.string().min(1).max(100),
-    description: z.string().max(300),
-    date: z.string().max(20).optional(),
-  })).max(10).optional(),
-  isProfilePublic: z.boolean().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -115,7 +99,14 @@ export const forgotPasswordSchema = z.object({
 export const resetPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
   otp: z.string().min(1, "OTP is required"),
-  newPassword: z.string().min(6, "Password must be at least 6 characters"),
+  newPassword: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password must not exceed 128 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[\W_]/, "Password must contain at least one special character"),
 });
 
 export const verifyEmailSchema = z.object({
@@ -130,7 +121,6 @@ export const resendOtpSchema = z.object({
 export const googleAuthSchema = z.object({
   credential: z.string().optional(),
   accessToken: z.string().optional(),
-  role: z.enum(["STUDENT", "RECRUITER"]).default("STUDENT"),
 }).superRefine((data, ctx) => {
   if (!data.credential && !data.accessToken) {
     ctx.addIssue({

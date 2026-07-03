@@ -21,8 +21,8 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, "..", "dist");
 
-// ── Public routes to prerender ──────────────────────────────────────
-const ROUTES = [
+// ── Static public routes to prerender ───────────────────────────────
+const STATIC_ROUTES = [
   "/",
   "/jobs",
   "/companies",
@@ -40,6 +40,35 @@ const ROUTES = [
   "/privacy",
   "/contact",
 ];
+
+const API_URL = process.env.PRERENDER_API_URL || "https://api.internhack.xyz/api";
+
+async function fetchRepoRoutes() {
+  const routes = [];
+  let page = 1;
+
+  try {
+    while (true) {
+      const res = await fetch(`${API_URL}/opensource?limit=100&page=${page}`);
+      if (!res.ok) break;
+
+      const data = await res.json();
+      for (const repo of data.repos ?? []) {
+        routes.push(
+          `/opensource/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}`,
+        );
+      }
+
+      const totalPages = data.pagination?.totalPages ?? 1;
+      if (page >= totalPages) break;
+      page += 1;
+    }
+  } catch (err) {
+    console.warn(`[prerender] Could not fetch repo routes: ${err.message}`);
+  }
+
+  return routes;
+}
 
 // ── Tiny static file server ─────────────────────────────────────────
 function startServer(port) {
@@ -113,6 +142,10 @@ async function main() {
   const PORT = 4173;
   const server = await startServer(PORT);
   console.log(`Static server running on http://localhost:${PORT}`);
+
+  const repoRoutes = await fetchRepoRoutes();
+  const ROUTES = [...STATIC_ROUTES, ...repoRoutes];
+  console.log(`Prerendering ${ROUTES.length} routes (${repoRoutes.length} repo pages)...`);
 
   let rendered = 0;
 

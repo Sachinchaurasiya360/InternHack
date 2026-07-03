@@ -1,7 +1,8 @@
+import { formatDate } from "../../../lib/date-utils";
 import { useState, useRef } from "react";
 import { getStatusColor } from "../../../lib/application-colors";
 import { useParams, useNavigate, Link } from "react-router";
-import { ArrowLeft, CheckCircle, Clock, Circle, Send, ExternalLink, Calendar as CalendarIcon, Download } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock, Circle, Send, ExternalLink, Calendar as CalendarIcon, Download, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
@@ -13,6 +14,17 @@ import type { Application, CustomFieldDefinition, AssessmentQuestion } from "../
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Button } from "../../../components/ui/button";
 import { googleCalendarUrl, downloadICS } from "../../../lib/calendar";
+
+function getDeadlineBanner(deadline: string): { level: "warning" | "critical" | null; daysLeft: number } {
+  const now = new Date();
+  const deadlineDate = new Date(deadline);
+  const diffMs = deadlineDate.getTime() - now.getTime();
+  const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  if (daysLeft < 0) return { level: null, daysLeft };
+  if (daysLeft <= 2) return { level: "critical", daysLeft };
+  if (daysLeft <= 7) return { level: "warning", daysLeft };
+  return { level: null, daysLeft };
+}
 
 export default function ApplicationProgressPage() {
   const { applicationId } = useParams();
@@ -75,7 +87,7 @@ export default function ApplicationProgressPage() {
           {application.job?.deadline && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500 flex items-center gap-1">
-                <Clock className="w-4 h-4" /> Deadline: {new Date(application.job.deadline).toLocaleDateString()}
+                <Clock className="w-4 h-4" /> Deadline: {formatDate(application.job.deadline)}
               </span>
               <Button
                 variant="outline"
@@ -103,6 +115,41 @@ export default function ApplicationProgressPage() {
         </div>
       </div>
 
+      {/* Deadline urgency banner */}
+      {application.job?.deadline && (() => {
+        const banner = getDeadlineBanner(application.job!.deadline!);
+        if (!banner.level) return null;
+        const isCritical = banner.level === "critical";
+        return (
+          <div className={`mb-6 p-4 rounded-lg border ${isCritical ? "border-red-300 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400" : "border-amber-300 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"}`}>
+            <div className="flex items-start gap-3">
+              {isCritical ? <Clock className="w-5 h-5 mt-0.5 text-red-500" /> : <AlertTriangle className="w-5 h-5 mt-0.5 text-amber-500" />}
+              <div className="flex-1">
+                <p className="font-medium">
+                  {isCritical
+                    ? `Deadline ${banner.daysLeft === 0 ? "is today" : `is in ${banner.daysLeft} day${banner.daysLeft !== 1 ? "s" : ""}`}`
+                    : `Deadline is in ${banner.daysLeft} day${banner.daysLeft !== 1 ? "s" : ""}`}
+                </p>
+                <p className="text-sm mt-1 opacity-80">Submit your rounds before the deadline to avoid missing this opportunity.</p>
+              </div>
+              <Button
+                variant={isCritical ? "mono" : "outline"}
+                size="sm"
+                className="shrink-0 h-8 text-xs flex items-center gap-1"
+                onClick={() => window.open(googleCalendarUrl({
+                  title: `${application.job?.title} @ ${application.job?.company} — Application Deadline`,
+                  details: `Applied via InternHack: https://internhack.xyz/student/applications/${application.id}\\nCompany: ${application.job?.company}\\nRole: ${application.job?.title}\\nLocation: ${application.job?.location || "Remote"}`,
+                  start: new Date(application.job?.deadline ?? ""),
+                  end: new Date(new Date(application.job?.deadline ?? "").getTime() + 30 * 60000),
+                }), '_blank')}
+              >
+                <CalendarIcon className="w-3.5 h-3.5" /> Add to Calendar
+              </Button>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Round Progress Timeline */}
       <div className="space-y-4">
         {rounds.map((round, i) => {
@@ -129,8 +176,8 @@ export default function ApplicationProgressPage() {
                   )}
                   <h3 className="font-semibold text-gray-900 dark:text-white">Round {i + 1}: {round.name}</h3>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${isCompleted ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
-                      isActive ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
-                        "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500"
+                    isActive ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                      "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500"
                     }`}>
                     {isCompleted ? "Completed" : isActive ? "In Progress" : "Pending"}
                   </span>
@@ -184,6 +231,21 @@ export default function ApplicationProgressPage() {
                 {/* Active round: show form or assessment */}
                 {isActive && !isCompleted && (
                   <div className="ml-8 mt-4">
+                    {/* Error banner shown for BOTH assessment and custom field submissions */}
+                    {submitError && (
+                      <div aria-live="polite" className="flex items-center gap-3 p-3 mb-3 bg-red-50 dark:bg-red-900/30 rounded-lg text-sm text-red-600 dark:text-red-400">
+                        <span>{submitError}</span>
+                        <Button
+                          variant="mono"
+                          size="sm"
+                          aria-label="Retry submission"
+                          disabled={submitting}
+                          onClick={() => lastPayload.current && handleSubmitRound(lastPayload.current.roundId, lastPayload.current.answers)}
+                        >
+                          {submitting ? "Retrying..." : "Retry"}
+                        </Button>
+                      </div>
+                    )}
                     {activeRoundId === round.id ? (
                       hasAssessment ? (
                         <AssessmentTestView
@@ -203,28 +265,12 @@ export default function ApplicationProgressPage() {
                               onChange={(fieldId, value) => setFieldAnswers({ ...fieldAnswers, [fieldId]: value })}
                             />
                           )}
-                          <div className="space-y-2">
-                            {submitError && (
-                              <div aria-live="polite" className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg text-sm text-red-600 dark:text-red-400">
-                                <span>{submitError}</span>
-                                <Button
-                                  variant="mono"
-                                  size="sm"
-                                  aria-label="Retry submission"
-                                  disabled={submitting}
-                                  onClick={() => lastPayload.current && handleSubmitRound(lastPayload.current.roundId, lastPayload.current.answers)}
-                                >
-                                  {submitting ? "Retrying..." : "Retry"}
-                                </Button>
-                              </div>
-                            )}
-                            <div className="flex items-center gap-3">
-                              <Button variant="mono" onClick={() => handleSubmitRound(round.id)} disabled={submitting}>
-                                <Send className="w-4 h-4" />
-                                {submitting ? "Submitting..." : "Submit Round"}
-                              </Button>
-                              <Button variant="ghost" onClick={() => { setActiveRoundId(null); setSubmitError(null); }} className="text-gray-500 hover:text-black dark:hover:text-white">Cancel</Button>
-                            </div>
+                          <div className="flex items-center gap-3">
+                            <Button variant="mono" onClick={() => handleSubmitRound(round.id)} disabled={submitting}>
+                              <Send className="w-4 h-4" />
+                              {submitting ? "Submitting..." : "Submit Round"}
+                            </Button>
+                            <Button variant="ghost" onClick={() => { setActiveRoundId(null); setSubmitError(null); }} className="text-gray-500 hover:text-black dark:hover:text-white">Cancel</Button>
                           </div>
                         </div>
                       )

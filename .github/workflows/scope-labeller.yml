@@ -1,0 +1,186 @@
+name: PR Scope Labeler
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  assign-scope-label:
+    name: Assign scope label(s)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Detect and apply scope labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const prNumber = pr.number;
+            const repo = {
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            };
+
+            // ── Label definitions ──────────────────────────────────────────
+            const scopeLabels = [
+              'scope:frontend',
+              'scope:backend',
+              'scope:database',
+              'scope:ci-cd',
+              'scope:docs',
+              'scope:config',
+            ];
+
+            const labelMeta = {
+              'scope:frontend':  { color: '1D76DB', description: 'Changes to client-side / UI code' },
+              'scope:backend':   { color: '0075CA', description: 'Changes to server-side / API code' },
+              'scope:database':  { color: 'E4E669', description: 'Database schema or migration changes' },
+              'scope:ci-cd':     { color: 'BFD4F2', description: 'CI/CD pipeline, GitHub Actions, or Docker changes' },
+              'scope:docs':      { color: 'C5DEF5', description: 'Documentation changes' },
+              'scope:config':    { color: 'F9D0C4', description: 'Project configuration or dependency changes' },
+            };
+
+            // ── File path rules ────────────────────────────────────────────
+            const fileRules = [
+              {
+                label: 'scope:frontend',
+                patterns: [
+                  /^client\//,
+                  /^src\//,
+                  /\.(css|scss|sass|less)$/i,
+                  /tailwind\.config/i,
+                  /^public\//,
+                ]
+              },
+              {
+                label: 'scope:backend',
+                patterns: [
+                  /^server\/src\//,
+                  /^server\/(?!src\/database)/,
+                  /^api\//,
+                ]
+              },
+              {
+                label: 'scope:database',
+                patterns: [
+                  /^server\/src\/database\//,
+                  /prisma\//,
+                  /\.prisma$/,
+                  /migration/i,
+                  /schema\.prisma/,
+                ]
+              },
+              {
+                label: 'scope:ci-cd',
+                patterns: [
+                  /^\.github\//,
+                  /dockerfile/i,
+                  /docker-compose/i,
+                  /^\.docker\//,
+                ]
+              },
+              {
+                label: 'scope:docs',
+                patterns: [
+                  /^docs\//,
+                  /\.md$/i,
+                  /\.mdx$/i,
+                  /readme/i,
+                  /changelog/i,
+                  /^wiki\//,
+                  /^\.Codex\//,
+                ]
+              },
+              {
+                label: 'scope:config',
+                patterns: [
+                  /^package\.json$/,
+                  /^package-lock\.json$/,
+                  /pnpm-lock\.yaml$/,
+                  /^tsconfig/,
+                  /\.env/,
+                  /vite\.config/,
+                  /eslint\.config/,
+                  /vitest\.config/,
+                  /^\.gitignore$/,
+                  /^\.prettierrc/,
+                  /^\.editorconfig$/,
+                ]
+              },
+            ];
+
+            // ── Helpers ────────────────────────────────────────────────────
+            async function ensureScopeLabelsExist() {
+              for (const [name, { color, description }] of Object.entries(labelMeta)) {
+                try {
+                  await github.rest.issues.getLabel({ ...repo, name });
+                } catch (err) {
+                  if (err.status !== 404) throw err;
+                  await github.rest.issues.createLabel({ ...repo, name, color, description });
+                  console.log(`✅ Created label: ${name}`);
+                }
+              }
+            }
+
+            async function getChangedFiles() {
+              return github.paginate(github.rest.pulls.listFiles, {
+                ...repo,
+                pull_number: prNumber,
+                per_page: 100,
+              });
+            }
+
+            async function getCurrentLabels() {
+              const { data } = await github.rest.issues.get({ ...repo, issue_number: prNumber });
+              return data.labels.map(l => (typeof l === 'string' ? l : l.name));
+            }
+
+            function detectScopeLabels(filenames) {
+              const matched = new Set();
+              for (const rule of fileRules) {
+                if (filenames.some(f => rule.patterns.some(p => p.test(f)))) {
+                  matched.add(rule.label);
+                }
+              }
+              return matched;
+            }
+
+            // ── Main ───────────────────────────────────────────────────────
+            const files = await getChangedFiles();
+            const filenames = files.map(f => f.filename);
+            const detectedLabels = detectScopeLabels(filenames);
+
+            console.log(`PR #${prNumber} files: ${filenames.join(', ')}`);
+            console.log(`Detected scope labels: ${[...detectedLabels].join(', ') || 'none'}`);
+
+            await ensureScopeLabelsExist();
+
+            const currentLabels = await getCurrentLabels();
+
+            // Remove stale scope labels that no longer apply
+            const staleLabels = currentLabels.filter(
+              l => scopeLabels.includes(l) && !detectedLabels.has(l)
+            );
+            await Promise.all(
+              staleLabels.map(name =>
+                github.rest.issues.removeLabel({ ...repo, issue_number: prNumber, name })
+                  .then(() => console.log(`🗑 Removed stale scope label: ${name}`))
+              )
+            );
+
+            // Add newly detected scope labels
+            const newLabels = [...detectedLabels].filter(l => !currentLabels.includes(l));
+            if (newLabels.length > 0) {
+              await github.rest.issues.addLabels({
+                ...repo,
+                issue_number: prNumber,
+                labels: newLabels,
+              });
+              console.log(`🏷 Applied scope labels: ${newLabels.join(', ')}`);
+            } else {
+              console.log('No new scope labels to apply.');
+            }

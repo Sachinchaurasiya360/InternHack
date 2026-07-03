@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { QueryClient } from "@tanstack/react-query";
+import { API_BASE } from "./axios";
 import type { User } from "./types";
 
 // Shared query client reference for cache invalidation on auth changes
@@ -24,7 +25,7 @@ export const useAuthStore = create<AuthState>((set) => {
     isAuthenticated: !!storedUser && (() => { try { return !!JSON.parse(storedUser); } catch { return false; } })(),
 
     login: (user) => {
-      localStorage.setItem("user", JSON.stringify(user));
+      try { localStorage.setItem("user", JSON.stringify(user)); } catch { console.warn("Failed to persist to localStorage: user"); }
       set({ user, isAuthenticated: true });
       _queryClient?.clear();
     },
@@ -37,14 +38,11 @@ export const useAuthStore = create<AuthState>((set) => {
       set({ user: null, isAuthenticated: false });
       _queryClient?.clear();
       // Clear httpOnly cookie server-side (fire-and-forget)
-      fetch(
-        `${(import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000/api"}/auth/logout`,
-        { method: "POST", credentials: "include" },
-      ).catch(() => {});
+      fetch(`${API_BASE}/auth/logout`, { method: "POST", credentials: "include" }).catch(() => {});
     },
 
     setUser: (user) => {
-      localStorage.setItem("user", JSON.stringify(user));
+      try { localStorage.setItem("user", JSON.stringify(user)); } catch { console.warn("Failed to persist to localStorage: user"); }
       set({ user });
     },
   };

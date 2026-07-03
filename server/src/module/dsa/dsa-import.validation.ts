@@ -9,7 +9,10 @@ export const leetcodeImportSchema = z.object({
 });
 
 export const csvImportSchema = z.object({
-  csvContent: z.string().min(1, "CSV content is required").max(5 * 1024 * 1024, "CSV too large (max 5 MB)"),
+  csvContent: z
+    .string()
+    .min(1, "CSV content is required")
+    .max(5 * 1024 * 1024, "CSV too large (max 5 MB)"),
 });
 
 export const confirmImportSchema = z.object({

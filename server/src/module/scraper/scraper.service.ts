@@ -1,5 +1,6 @@
 import cron from "node-cron";
 import { prisma } from "../../database/db.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 import type { BaseScraper } from "./scrapers/base.scraper.js";
 import type { ScrapedJobData } from "./scrapers/base.scraper.js";
 import { ArbeitnowScraper } from "./scrapers/arbeitnow.scraper.js";
@@ -36,7 +37,9 @@ export class ScraperService {
     }
 
     this.cronJob = cron.schedule(schedule, () => {
-      void this.runAllScrapers();
+      void withAdvisoryLock("external-job-scraper", async () => {
+        await this.runAllScrapers();
+      });
     });
 
     console.log(`[Scraper] Cron scheduled: ${schedule}`);
@@ -48,6 +51,11 @@ export class ScraperService {
       this.cronJob = null;
       console.log("[Scraper] Cron stopped");
     }
+  }
+
+  /** Run the scrape pass once (used by the Vercel daily cron endpoint). */
+  async runOnce() {
+    return this.runAllScrapers();
   }
 
   /** Run all scrapers and upsert results */
@@ -173,70 +181,58 @@ export class ScraperService {
     for (const job of jobs) dedupedMap.set(job.sourceId, job);
     const uniqueJobs = Array.from(dedupedMap.values());
 
-    // Batch-fetch all existing jobs for this source in one query
-    const sourceIds = uniqueJobs.map((j) => j.sourceId);
-    const existing = await prisma.scrapedJob.findMany({
-      where: { source, sourceId: { in: sourceIds } },
-      select: { id: true, sourceId: true },
-    });
-    const existingMap = new Map(existing.map((e) => [e.sourceId, e.id]));
+    // Single bulk upsert: one INSERT ... ON CONFLICT DO UPDATE for the whole
+    // source. The (source, sourceId) unique constraint drives the conflict, so
+    // create + update + in-DB dedup all happen in one round-trip instead of one
+    // query per job. `jsonb_to_recordset` expands the payload into rows; the
+    // `xmax = 0` system-column trick lets RETURNING tell inserts from updates so
+    // we still get accurate created/updated counts for the scrape log.
+    const payload = JSON.stringify(
+      uniqueJobs.map((job) => ({
+        title: job.title,
+        description: job.description,
+        company: job.company,
+        location: job.location,
+        salary: job.salary ?? null,
+        tags: job.tags ?? [],
+        applicationUrl: job.applicationUrl,
+        sourceId: job.sourceId,
+        sourceUrl: job.sourceUrl ?? null,
+        metadata: job.metadata ?? {},
+      }))
+    );
 
-    let created = 0;
-    let updated = 0;
+    const rows = await prisma.$queryRaw<{ inserted: boolean }[]>`
+      INSERT INTO "scrapedJob"
+        (title, description, company, location, salary, tags, "applicationUrl",
+         source, "sourceId", "sourceUrl", status, metadata, "lastSeenAt", "updatedAt")
+      SELECT
+        d.title, d.description, d.company, d.location, d.salary, d.tags,
+        d."applicationUrl", ${source}, d."sourceId", d."sourceUrl",
+        'ACTIVE'::"ScrapedJobStatus", d.metadata, now(), now()
+      FROM jsonb_to_recordset(${payload}::jsonb) AS d(
+        title text, description text, company text, location text, salary text,
+        tags text[], "applicationUrl" text, "sourceId" text, "sourceUrl" text,
+        metadata jsonb
+      )
+      ON CONFLICT (source, "sourceId") DO UPDATE SET
+        title = EXCLUDED.title,
+        description = EXCLUDED.description,
+        company = EXCLUDED.company,
+        location = EXCLUDED.location,
+        salary = EXCLUDED.salary,
+        tags = EXCLUDED.tags,
+        "applicationUrl" = EXCLUDED."applicationUrl",
+        "sourceUrl" = EXCLUDED."sourceUrl",
+        status = 'ACTIVE'::"ScrapedJobStatus",
+        metadata = EXCLUDED.metadata,
+        "lastSeenAt" = now(),
+        "updatedAt" = now()
+      RETURNING (xmax::text = '0') AS inserted;
+    `;
 
-    // Process in parallel batches, no transaction needed since ops are independent upserts
-    const BATCH_SIZE = 15;
-    for (let i = 0; i < uniqueJobs.length; i += BATCH_SIZE) {
-      const batch = uniqueJobs.slice(i, i + BATCH_SIZE);
-      const ops: Promise<unknown>[] = [];
-
-      for (const job of batch) {
-        const existingId = existingMap.get(job.sourceId);
-        if (existingId) {
-          ops.push(
-            prisma.scrapedJob.update({
-              where: { id: existingId },
-              data: {
-                title: job.title,
-                description: job.description,
-                company: job.company,
-                location: job.location,
-                salary: job.salary ?? null,
-                tags: job.tags,
-                applicationUrl: job.applicationUrl,
-                sourceUrl: job.sourceUrl ?? null,
-                status: "ACTIVE",
-                lastSeenAt: new Date(),
-                metadata: (job.metadata as Prisma.InputJsonValue) ?? {},
-              },
-            })
-          );
-          updated++;
-        } else {
-          ops.push(
-            prisma.scrapedJob.create({
-              data: {
-                title: job.title,
-                description: job.description,
-                company: job.company,
-                location: job.location,
-                salary: job.salary ?? null,
-                tags: job.tags,
-                applicationUrl: job.applicationUrl,
-                source,
-                sourceId: job.sourceId,
-                sourceUrl: job.sourceUrl ?? null,
-                status: "ACTIVE",
-                metadata: (job.metadata as Prisma.InputJsonValue) ?? {},
-              },
-            })
-          );
-          created++;
-        }
-      }
-
-      await Promise.all(ops);
-    }
+    const created = rows.filter((r) => r.inserted).length;
+    const updated = rows.length - created;
 
     return { created, updated };
   }

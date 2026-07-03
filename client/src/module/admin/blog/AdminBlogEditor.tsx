@@ -15,6 +15,8 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import type { BlogPost, BlogCategory } from "@/lib/types";
 import { SEO } from "../../../components/SEO";
+import { escapeHtml } from "../../../lib/sanitize";
+import { SafeHtml } from "../../../components/common/SafeHtml";
 
 const CATEGORY_OPTIONS: { value: BlogCategory; label: string }[] = [
   { value: "CAREER_ADVICE", label: "Career Advice" },
@@ -24,16 +26,6 @@ const CATEGORY_OPTIONS: { value: BlogCategory; label: string }[] = [
   { value: "RESUME_TIPS", label: "Resume Tips" },
   { value: "TECH_TRENDS", label: "Tech Trends" },
 ];
-
-// ─── HTML escaping helper ───────────────────────────────────────
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
 
 // ─── Simple markdown preview renderer ───────────────────────────
 function renderPreview(md: string): string {
@@ -387,7 +379,7 @@ export default function AdminBlogEditor() {
             <div className={!previewMode ? "hidden lg:block" : ""}>
               <div className="bg-gray-900 border border-gray-700 rounded-xl p-5 min-h-[576px] overflow-y-auto">
                 {form.content.trim() ? (
-                  <div dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                  <SafeHtml html={previewHtml} method="dompurify" />
                 ) : (
                   <p className="text-gray-500 text-sm italic">
                     Start writing to see a preview...

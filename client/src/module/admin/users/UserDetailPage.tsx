@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, Mail, Phone, Building2, Briefcase, FileText, ScanSearch, MapPin, GraduationCap, Globe, ExternalLink, Crown, Shield, Award, Star, MessageCircle, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Building2, Briefcase, FileText, MapPin, GraduationCap, Globe, ExternalLink, Crown, Shield, Award, Star, MessageCircle, CheckCircle, XCircle } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "@/components/ui/toast";
 import { SEO } from "../../../components/SEO";
@@ -15,20 +15,12 @@ interface ProjectItem {
   repoUrl?: string;
 }
 
-interface AchievementItem {
-  id: string;
-  title: string;
-  description: string;
-  date?: string;
-}
-
 interface UserDetail {
   id: number;
   name: string;
   email: string;
   role: string;
   isActive: boolean;
-  isProfilePublic: boolean;
   isVerified: boolean;
   contactNo?: string;
   profilePic?: string;
@@ -47,19 +39,16 @@ interface UserDetail {
   graduationYear?: number;
   skills: string[];
   location?: string;
-  jobStatus?: string;
   linkedinUrl?: string;
   githubUrl?: string;
   portfolioUrl?: string;
   leetcodeUrl?: string;
   projects: ProjectItem[];
-  achievements: AchievementItem[];
   createdAt: string;
   updatedAt: string;
   _count: {
     applications: number;
     postedJobs: number;
-    atsScores: number;
     companyReviews: number;
     contributions: number;
     usageLogs: number;
@@ -120,7 +109,6 @@ export default function UserDetailPage() {
   }
 
   const projects = (Array.isArray(user.projects) ? user.projects : []) as ProjectItem[];
-  const achievements = (Array.isArray(user.achievements) ? user.achievements : []) as AchievementItem[];
 
   return (
     <div>
@@ -162,9 +150,6 @@ export default function UserDetailPage() {
                       <XCircle className="w-3 h-3" /> Unverified
                     </span>
                   )}
-                  {user.isProfilePublic && (
-                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-cyan-900/50 text-cyan-400">Public Profile</span>
-                  )}
                   {user.adminProfile && (
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-900/50 text-indigo-400">
                       {user.adminProfile.tier}
@@ -205,7 +190,6 @@ export default function UserDetailPage() {
               {user.location && <InfoRow icon={MapPin} label="Location" value={user.location} />}
               {user.college && <InfoRow icon={GraduationCap} label="College" value={user.college} />}
               {user.graduationYear && <InfoRow icon={GraduationCap} label="Graduation Year" value={String(user.graduationYear)} />}
-              {user.jobStatus && <InfoRow icon={Briefcase} label="Job Status" value={user.jobStatus} />}
             </div>
           </div>
 
@@ -280,7 +264,6 @@ export default function UserDetailPage() {
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
             <StatItem icon={FileText} value={user._count.applications} label="Applications" color="text-blue-400" />
             <StatItem icon={Briefcase} value={user._count.postedJobs} label="Jobs Posted" color="text-purple-400" />
-            <StatItem icon={ScanSearch} value={user._count.atsScores} label="ATS Scores" color="text-green-400" />
             <StatItem icon={Star} value={user._count.companyReviews} label="Reviews" color="text-yellow-400" />
             <StatItem icon={MessageCircle} value={user._count.contributions} label="Contributions" color="text-cyan-400" />
             <StatItem icon={Award} value={user._count.studentBadges} label="Badges" color="text-orange-400" />
@@ -310,22 +293,6 @@ export default function UserDetailPage() {
                     {p.repoUrl && <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-400 hover:underline">Repo</a>}
                     {p.liveUrl && <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-400 hover:underline">Live</a>}
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Achievements */}
-        {achievements.length > 0 && (
-          <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Achievements ({achievements.length})</h2>
-            <div className="space-y-3">
-              {achievements.map((a) => (
-                <div key={a.id} className="bg-gray-800/50 rounded-lg p-4">
-                  <h3 className="text-sm font-semibold text-white">{a.title}</h3>
-                  {a.description && <p className="text-xs text-gray-400 mt-1">{a.description}</p>}
-                  {a.date && <p className="text-xs text-gray-500 mt-1">{a.date}</p>}
                 </div>
               ))}
             </div>
@@ -373,10 +340,6 @@ export default function UserDetailPage() {
               <span className="text-gray-500">Last Updated</span>
               <p className="text-gray-300">{new Date(user.updatedAt).toLocaleString()}</p>
             </div>
-            <div>
-              <span className="text-gray-500">Profile Visibility</span>
-              <p className="text-gray-300">{user.isProfilePublic ? "Public" : "Private"}</p>
-            </div>
           </div>
         </div>
       </motion.div>
@@ -420,7 +383,6 @@ function StatItem({ icon: Icon, value, label, color }: { icon: typeof FileText; 
 function getRoleBadge(role: string) {
   switch (role) {
     case "STUDENT": return "bg-blue-900/50 text-blue-400";
-    case "RECRUITER": return "bg-purple-900/50 text-purple-400";
     case "ADMIN": return "bg-red-900/50 text-red-400";
     default: return "bg-gray-800 text-gray-400";
   }

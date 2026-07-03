@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../../database/db.js";
+import { withAdvisoryLock } from "../../utils/cron-lock.js";
 import { BaseSignalSource } from "./sources/base.source.js";
 import type { FundingSignalData } from "./sources/base.source.js";
 import { YcLaunchesSource } from "./sources/yc-launches.source.js";
@@ -78,7 +79,9 @@ export class SignalsService {
   startCron(schedule = "0 */6 * * *") {
     if (this.cronJob) this.cronJob.stop();
     this.cronJob = cron.schedule(schedule, () => {
-      void this.ingestAll();
+      void withAdvisoryLock("signals-ingestion", async () => {
+        await this.ingestAll();
+      });
     });
     console.log(`[Signals] Cron scheduled: ${schedule}`);
   }
@@ -89,6 +92,11 @@ export class SignalsService {
       this.cronJob = null;
       console.log("[Signals] Cron stopped");
     }
+  }
+
+  /** Run the ingest pass once (used by the Vercel daily cron endpoint). */
+  async runOnce() {
+    return this.ingestAll();
   }
 
   async ingestAll(): Promise<{
@@ -120,11 +128,16 @@ export class SignalsService {
 
     for (const src of this.sources) {
       const startTime = Date.now();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), SOURCE_TIMEOUT);
       try {
-        const timeoutPromise = new Promise<never>((_r, reject) =>
-          setTimeout(() => reject(new Error("Source timeout exceeded")), SOURCE_TIMEOUT),
-        );
-        const result = await Promise.race([src.fetch(), timeoutPromise]);
+        const result = await Promise.race([
+          src.fetch(controller.signal),
+          new Promise<never>((_r, reject) =>
+            setTimeout(() => reject(new Error("Source timeout exceeded")), SOURCE_TIMEOUT)
+          )
+        ]);
+        clearTimeout(timeoutId);
         const { created, updated } = await this.upsertSignals(result.source, result.signals);
         const duration = Date.now() - startTime;
 
@@ -206,6 +219,32 @@ export class SignalsService {
     });
     const existingMap = new Map(existing.map((e) => [e.sourceId, e.id]));
 
+    // Cross-source dedup: one row per normalized (company, round). News outlets
+    // report the same raise many times, so without this every article would
+    // become its own card. Look up any existing row matching this batch's
+    // companies (one batched query) and update it instead of inserting a twin.
+    const normKey = (name: string, round?: string | null) =>
+      `${name.trim().toLowerCase()}|${(round ?? "").trim().toLowerCase()}`;
+    const normNames = [...new Set(uniqueSignals.map((s) => s.companyName.trim().toLowerCase()))];
+    const normRows = await prisma.$queryRaw<
+      { id: number; c: string; r: string; status: string }[]
+    >`
+      SELECT id, lower(btrim("companyName")) AS c, coalesce(lower(btrim("fundingRound")), '') AS r, status::text AS status
+      FROM "fundingSignal"
+      WHERE lower(btrim("companyName")) = ANY(${normNames})`;
+    // Keep the best existing row per normKey: prefer ACTIVE, then lowest id.
+    const normMap = new Map<string, number>();
+    for (const row of normRows) {
+      const key = `${row.c}|${row.r}`;
+      const current = normMap.get(key);
+      if (current === undefined) {
+        normMap.set(key, row.id);
+      } else if (row.status === "ACTIVE" && row.id < current) {
+        normMap.set(key, row.id);
+      }
+    }
+    const seenNormKeys = new Set<string>();
+
     let created = 0;
     let updated = 0;
 
@@ -216,6 +255,25 @@ export class SignalsService {
 
       for (const s of batch) {
         const existingId = existingMap.get(s.sourceId);
+        const key = normKey(s.companyName, s.fundingRound);
+        // Same (company, round) already handled this run, or present under a
+        // different source: refresh the canonical row, never insert a duplicate.
+        if (existingId === undefined) {
+          if (seenNormKeys.has(key)) continue;
+          const twinId = normMap.get(key);
+          if (twinId !== undefined) {
+            ops.push(
+              prisma.fundingSignal.update({
+                where: { id: twinId },
+                data: { status: "ACTIVE", lastSeenAt: new Date() },
+              }),
+            );
+            updated++;
+            seenNormKeys.add(key);
+            continue;
+          }
+        }
+        seenNormKeys.add(key);
         const data = {
           companyName: s.companyName,
           companyWebsite: s.companyWebsite ?? null,
@@ -246,7 +304,7 @@ export class SignalsService {
         } else {
           ops.push(
             prisma.fundingSignal.create({
-              data: { ...data, source, sourceId: s.sourceId, status: "ACTIVE" },
+              data: { ...data, source, sourceId: s.sourceId, status: "ACTIVE", lastSeenAt: new Date() },
             }),
           );
           created++;
@@ -383,6 +441,7 @@ export class SignalsService {
         careersUrl: input.careersUrl ?? null,
         hiringSignal: input.hiringSignal ?? false,
         status: "ACTIVE",
+        lastSeenAt: new Date(),
       },
     });
     return { ...row, amountUsd: row.amountUsd?.toString() ?? null };

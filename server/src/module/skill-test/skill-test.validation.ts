@@ -20,7 +20,7 @@ export const submitTestSchema = z.object({
       faceViolations: z.array(z.object({
         type: z.enum(["NO_FACE", "MULTIPLE_FACES"]),
         timestamp: z.string(),
-        duration: z.number().optional(),
+        duration: z.number().min(0).optional(),
       })).default([]),
       warnings: z.array(z.any()).default([]),
       terminated: z.boolean().default(false),
@@ -49,4 +49,39 @@ export const createQuestionSchema = z.object({
 
 export const addQuestionsSchema = z.object({
   questions: z.array(createQuestionSchema).min(1),
+});
+
+/* ---- Incremental proctor-log flush (issue #2400) ---- */
+
+const proctorEventTypeEnum = z.enum([
+  "tab_switch",
+  "focus_loss",
+  "fullscreen_exit",
+  "devtools",
+  "copy_paste",
+  "right_click",
+  "face_violation",
+  "camera_track_ended",
+  "camera_track_muted",
+]);
+
+export const proctorLogBatchSchema = z.object({
+  events: z
+    .array(
+      z.object({
+        type: proctorEventTypeEnum,
+        timestamp: z
+          .string()
+          .refine(
+            (t) => {
+              const ms = new Date(t).getTime();
+              return !isNaN(ms) && ms > 0 && ms <= Date.now() + 60_000;
+            },
+            "Timestamp must be a valid ISO date string and not far in the future",
+          ),
+        detail: z.string().max(200).optional(),
+      }),
+    )
+    .min(1)
+    .max(200),
 });

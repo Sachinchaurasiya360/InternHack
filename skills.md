@@ -140,7 +140,7 @@ export const MyCard = React.memo(function MyCard({ data }: Props) {
 Only apply to components that: (1) are rendered in `.map()` lists, (2) receive primitive or stable object props, (3) don't have frequently-changing internal state.
 
 ### SEO on internal pages
-All admin and recruiter pages must have `<SEO title="..." noIndex />`. Public-facing pages use full SEO props (title, description, keywords).
+All admin pages must have `<SEO title="..." noIndex />`. Public-facing pages use full SEO props (title, description, keywords).
 
 ### File upload validation
 Client-side file uploads must validate size (default 5 MB) and allowed MIME types before sending. See `DynamicFieldRenderer.tsx` FILE_UPLOAD case for the pattern.

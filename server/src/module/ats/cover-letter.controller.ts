@@ -3,7 +3,6 @@ import type { CoverLetterService } from "./cover-letter.service.js";
 import { generateCoverLetterSchema } from "./cover-letter.validation.js";
 import type { UserProfile } from "./cover-letter.validation.js";
 import { prisma } from "../../database/db.js";
-import type { UsageAction } from "@prisma/client";
 
 export class CoverLetterController {
   constructor(private readonly coverLetterService: CoverLetterService) {}
@@ -36,7 +35,6 @@ export class CoverLetterController {
             company: true,
             designation: true,
             projects: true,
-            achievements: true,
           },
         });
 
@@ -51,7 +49,6 @@ export class CoverLetterController {
             company: user.company,
             designation: user.designation,
             projects: (user.projects as UserProfile["projects"]) ?? [],
-            achievements: (user.achievements as UserProfile["achievements"]) ?? [],
           };
         }
       }
@@ -69,9 +66,7 @@ export class CoverLetterController {
         keySkills:      result.data.keySkills,
         length:         result.data.length,
         targetWords:    result.data.targetWords ?? 300,
-      }).catch(() => {});
-
-      await prisma.usageLog.create({ data: { userId: req.user.id, action: "COVER_LETTER" as UsageAction } });
+      }).catch((err) => console.error("Failed to log cover letter usage:", err));
 
       const usage = req.usageInfo
         ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit }
@@ -102,8 +97,10 @@ export class CoverLetterController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
+      const id = Number(req.params["id"]);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid cover letter ID" });
       const letter = await this.coverLetterService.getOne(
-        Number(req.params["id"]),
+        id,
         req.user.id
       );
       if (!letter) {
@@ -122,8 +119,10 @@ export class CoverLetterController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
+      const id = Number(req.params["id"]);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid cover letter ID" });
       await this.coverLetterService.deleteOne(
-        Number(req.params["id"]),
+        id,
         req.user.id
       );
       res.json({ success: true });

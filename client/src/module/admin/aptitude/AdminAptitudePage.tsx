@@ -13,6 +13,7 @@ import {
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
+import { SafeHtml } from "../../../components/common/SafeHtml";
 import { SEO } from "../../../components/SEO";
 import toast from "@/components/ui/toast";
 
@@ -114,9 +115,8 @@ export default function AdminAptitudePage() {
       .catch(() => setLoading(false));
   }, [search]);
 
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
   const fetchQuestions = useCallback((topicId: number, page: number = 1) => {
     setQuestionsLoading(true);
@@ -258,7 +258,9 @@ export default function AdminAptitudePage() {
   // Question management view
   if (view === "questions" && selectedTopic) {
     return (
-      <div className="max-w-5xl">
+      <>
+        <SEO title="Manage Aptitude" noIndex />
+        <div className="max-w-5xl">
         <div className="flex items-center justify-between mb-6">
           <div>
             <button
@@ -492,8 +494,8 @@ export default function AdminAptitudePage() {
                 </div>
                 {expandedQ === i && (
                   <div className="px-4 pb-4 border-t border-gray-800 pt-3 text-sm text-gray-300 space-y-2">
-                    <div
-                      dangerouslySetInnerHTML={{ __html: q.question }}
+                    <SafeHtml
+                      html={q.question}
                       className="prose prose-invert prose-sm max-w-none"
                     />
                     <div className="grid grid-cols-2 gap-2 text-xs">
@@ -537,9 +539,7 @@ export default function AdminAptitudePage() {
                     {q.explanation && (
                       <div className="text-xs text-gray-400 mt-2">
                         <strong>Explanation:</strong>{" "}
-                        <span
-                          dangerouslySetInnerHTML={{ __html: q.explanation }}
-                        />
+                        <SafeHtml as="span" html={q.explanation} />
                       </div>
                     )}
                     {q.companies.length > 0 && (
@@ -572,13 +572,16 @@ export default function AdminAptitudePage() {
           onPageChange={(p) => fetchQuestions(selectedTopic.id, p)}
         />
       </div>
+      </>
     );
   }
 
   // Category/topic edit view
   if (view === "category" && editingCat) {
     return (
-      <div className="max-w-3xl">
+      <>
+        <SEO title="Manage Aptitude" noIndex />
+        <div className="max-w-3xl">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-white">
             {creatingCat ? "Create Category" : `Edit: ${editingCat.name}`}
@@ -805,6 +808,7 @@ export default function AdminAptitudePage() {
           </div>
         )}
       </div>
+      </>
     );
   }
 
