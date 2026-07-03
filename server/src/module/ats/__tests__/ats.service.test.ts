@@ -6,11 +6,6 @@ import { getProviderForService } from "../../../lib/ai-provider-registry.js";
 vi.mock("../../../database/db.js", () => ({
   prisma: {
     user: { findUnique: vi.fn() },
-    atsScore: {
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      findMany: vi.fn(),
-    },
   },
 }));
 
@@ -89,6 +84,6 @@ describe("AtsService.scoreResumeGuest", () => {
     expect(result.overallScore).toBe(78);
     expect(result.studentId).toBe(0);
     expect(result.id).toBe(0);
-    expect(prisma.atsScore.create).not.toHaveBeenCalled();
+    expect(prisma.user.findUnique).not.toHaveBeenCalled();
   });
 });

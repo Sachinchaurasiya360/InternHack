@@ -88,7 +88,11 @@ const StudentLayout = lazyWithRetry(() => import("./module/student/StudentLayout
 const MyApplicationsPage = lazyWithRetry(() => import("./module/student/applications/MyApplicationsPage"));
 const ApplicationProgressPage = lazyWithRetry(() => import("./module/student/applications/ApplicationProgressPage"));
 const AtsLandingPage = lazyWithRetry(() => import("./module/student/ats/AtsLandingPage"));
-const AtsScorePage = lazyWithRetry(() => import("./module/student/ats/AtsScorePage"));
+const AtsScorePage = lazyWithRetry(() =>
+  import("./module/student/ats/AtsScorePage").then((m) => ({
+    default: m.default as ComponentType<unknown>,
+  })),
+);
 const ResumeBuilderPage = lazyWithRetry(() => import("./module/student/ats/ResumeBuilderPage"));
 const CoverLetterPage = lazyWithRetry(() => import("./module/student/ats/CoverLetterPage"));
 const LatexResumeEditor = lazyWithRetry(() => import("./module/student/ats/LatexResumeEditor"));

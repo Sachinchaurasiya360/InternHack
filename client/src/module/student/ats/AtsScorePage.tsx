@@ -14,6 +14,7 @@ import {
   BarChart2,
   Lightbulb,
   Search,
+  TrendingUp,
   RefreshCw,
   ScanSearch,
   AlignLeft,
@@ -25,9 +26,21 @@ import {
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
+import { useDebounce } from "../../../hooks/useDebounce";
 import type { AtsScore, UsageStats } from "../../../lib/types";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
+import { ScoreTooltip } from "./components/ScoreTooltip";
 import { CardHeader } from "./components/CardHeader";
 import { ScoreCircle, getScoreTier } from "./components/ScoreCircle";
 import { ScoreBreakdownPanel } from "./components/ScoreBreakdownPanel";
@@ -49,10 +62,41 @@ type ResultTab = "suggestions" | "breakdown" | "keywords";
 const JD_MAX_CHARS = 5000;
 const JD_WARN_CHARS = 4500;
 
+type AtsHistoryItem = {
+  id: number;
+  overallScore: number;
+  jobTitle: string | null;
+  jobDescription?: string | null;
+  resumeUrl: string;
+  createdAt: string;
+};
+
 function getResumeName(resumeUrl: string) {
   return decodeURIComponent(
     (resumeUrl.split("?")[0] ?? resumeUrl).split("/").pop() ?? "resume.pdf",
   );
+}
+
+function getCompanyFromJobDescription(jobDescription?: string | null) {
+  if (!jobDescription) return "";
+
+  const firstLines = jobDescription
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  const text = firstLines.join(" ");
+  const patterns = [
+    /\bcompany\s*[:|-]\s*([A-Za-z0-9&.,'() -]{2,80})/i,
+    /\bat\s+([A-Z][A-Za-z0-9&.,'() -]{2,80})\b/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern)?.[1]?.trim();
+    if (match) return match.replace(/\s{2,}/g, " ");
+  }
+
+  return "";
 }
 
 // ── Main Page ────────────────────────────────────────────────────────────
@@ -68,6 +112,8 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState<ResultTab>("suggestions");
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
+  const [historySearch, setHistorySearch] = useState("");
+  const debouncedHistorySearch = useDebounce(historySearch, 300);
   const navigate = useNavigate();
 
   const handleDownloadPdf = async () => {
@@ -276,6 +322,9 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
       setResult(score);
       setEmailSent(emailQueued);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
+      if (!guestMode) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.ats.history() });
+      }
     },
     onError: (err: unknown) => {
       const errorObj = err as { response?: { status?: number; data?: { message?: string } } };

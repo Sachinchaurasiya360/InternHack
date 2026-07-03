@@ -1,6 +1,5 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { createRateLimitStore } from "../../utils/rate-limit-store.js";
 import { UploadController } from "./upload.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import {
@@ -19,7 +18,6 @@ const presignedUrlRateLimit = rateLimit({
   message: { message: "Too many upload requests, please try again after 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRateLimitStore("upload"),
 });
 
 const guestPresignedUrlRateLimit = rateLimit({
@@ -28,7 +26,6 @@ const guestPresignedUrlRateLimit = rateLimit({
   message: { message: "Too many guest upload requests, please try again after 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRateLimitStore("upload-guest"),
 });
 
 // Public guest upload (before auth middleware)

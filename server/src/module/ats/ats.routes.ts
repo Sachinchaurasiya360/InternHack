@@ -11,7 +11,6 @@ import { LatexChatService } from "./latex-chat.service.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
-import { createRateLimitStore } from "../../utils/rate-limit-store.js";
 
 const atsService = new AtsService();
 const atsController = new AtsController(atsService);
@@ -35,7 +34,6 @@ const guestScoreRateLimit = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRateLimitStore("ats-guest-score"),
 });
 
 // Public guest scoring (before auth middleware)
