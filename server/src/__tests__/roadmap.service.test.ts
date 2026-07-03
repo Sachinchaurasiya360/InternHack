@@ -32,6 +32,7 @@ vi.mock("../database/db.js", () => ({
     roadmapTopic: { findFirst: vi.fn() },
     roadmapTopicProgress: {
       upsert: vi.fn(),
+      findFirst: vi.fn(),
       findMany: vi.fn(),
       update: vi.fn(),
       count: vi.fn(),
@@ -649,20 +650,17 @@ describe("updateEnrollmentStreak", () => {
     vi.useRealTimers();
   });
 
-  it("handles same-day completion: does not increment currentStreak", async () => {
+  it("handles same-day completion: returns early without updating", async () => {
     vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
       id: ENROLLMENT_ID,
       currentStreak: 5,
       bestStreak: 10,
-      lastStreakDate: new Date("2026-06-19T08:00:00.000Z"), // Same day UTC
+      lastStreakDate: new Date("2026-06-19T08:00:00.000Z"), // same day UTC
     } as any);
 
     await updateEnrollmentStreak(ENROLLMENT_ID);
 
-    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
-    expect(updateArg.data.currentStreak).toBe(5);
-    expect(updateArg.data.bestStreak).toBe(10);
-    expect(updateArg.data.lastStreakDate).toEqual(mockNow);
+    expect(prisma.roadmapEnrollment.update).not.toHaveBeenCalled();
   });
 
   it("handles consecutive days: increments currentStreak", async () => {
@@ -670,7 +668,7 @@ describe("updateEnrollmentStreak", () => {
       id: ENROLLMENT_ID,
       currentStreak: 5,
       bestStreak: 10,
-      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // Yesterday UTC
+      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // yesterday UTC
     } as any);
 
     await updateEnrollmentStreak(ENROLLMENT_ID);
@@ -686,7 +684,7 @@ describe("updateEnrollmentStreak", () => {
       id: ENROLLMENT_ID,
       currentStreak: 5,
       bestStreak: 5,
-      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // Yesterday UTC
+      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // yesterday UTC
     } as any);
 
     await updateEnrollmentStreak(ENROLLMENT_ID);
@@ -701,14 +699,14 @@ describe("updateEnrollmentStreak", () => {
       id: ENROLLMENT_ID,
       currentStreak: 5,
       bestStreak: 10,
-      lastStreakDate: new Date("2026-06-17T20:00:00.000Z"), // Before yesterday UTC
+      lastStreakDate: new Date("2026-06-17T20:00:00.000Z"), // 2 days ago UTC
     } as any);
 
     await updateEnrollmentStreak(ENROLLMENT_ID);
 
     const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
     expect(updateArg.data.currentStreak).toBe(1);
-    expect(updateArg.data.bestStreak).toBe(10); // bestStreak remains
+    expect(updateArg.data.bestStreak).toBe(10);
     expect(updateArg.data.lastStreakDate).toEqual(mockNow);
   });
 
@@ -733,7 +731,7 @@ describe("updateEnrollmentStreak", () => {
       id: ENROLLMENT_ID,
       currentStreak: 6,
       bestStreak: 6,
-      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // Yesterday UTC
+      lastStreakDate: new Date("2026-06-18T20:00:00.000Z"), // yesterday UTC
     } as any);
 
     await updateEnrollmentStreak(ENROLLMENT_ID);
@@ -742,6 +740,29 @@ describe("updateEnrollmentStreak", () => {
     expect(updateArg.data.currentStreak).toBe(7);
     expect(updateArg.data.weeklyStreak).toBe(1);
     expect(updateArg.data.lastWeeklyStreakAt).toEqual(mockNow);
+  });
+
+  it("returns early when the enrollment is not found", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue(null);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    expect(prisma.roadmapEnrollment.update).not.toHaveBeenCalled();
+  });
+
+  it("preserves bestStreak across multiple streak cycles", async () => {
+    vi.mocked(prisma.roadmapEnrollment.findUnique).mockResolvedValue({
+      id: ENROLLMENT_ID,
+      currentStreak: 3,
+      bestStreak: 14,
+      lastStreakDate: new Date("2026-06-17T20:00:00.000Z"), // 2 days ago
+    } as any);
+
+    await updateEnrollmentStreak(ENROLLMENT_ID);
+
+    const updateArg = vi.mocked(prisma.roadmapEnrollment.update).mock.calls[0][0];
+    expect(updateArg.data.currentStreak).toBe(1);
+    expect(updateArg.data.bestStreak).toBe(14);
   });
 });
 

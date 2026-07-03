@@ -125,6 +125,7 @@ model roadmapTopicProgress {
   topic        roadmapTopic       @relation(fields: [topicId], references: [id], onDelete: Cascade)
 
   @@unique([enrollmentId, topicId])
+  // Used by updateEnrollmentStreak bounded window query
   @@index([enrollmentId, status, completedAt])
   @@index([topicId])
 }
