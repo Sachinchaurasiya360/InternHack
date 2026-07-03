@@ -509,27 +509,27 @@ export async function updateEnrollmentStreak(enrollmentId: number) {
   if (!enrollment) return;
 
   const now = new Date();
-  const todayKey = toUtcDayKey(now);
+  const todayDayKey = toUtcDayKey(now);
   let { currentStreak, bestStreak, lastStreakDate } = enrollment;
 
   if (!lastStreakDate) {
     currentStreak = 1;
-    bestStreak = Math.max(bestStreak, 1);
   } else {
-    const lastKey = toUtcDayKey(lastStreakDate);
+    const lastDayKey = toUtcDayKey(lastStreakDate);
     const yesterdayKey = toUtcDayKey(addUtcDays(now, -1));
 
-    if (todayKey === lastKey) {
-      // Already completed a topic today, streak doesn't increase
-    } else if (lastKey === yesterdayKey) {
-      // Completed yesterday, streak continues
+    if (todayDayKey === lastDayKey) {
+      return;
+    }
+
+    if (lastDayKey === yesterdayKey) {
       currentStreak += 1;
-      bestStreak = Math.max(bestStreak, currentStreak);
     } else {
-      // Streak broken (missed days)
       currentStreak = 1;
     }
   }
+
+  bestStreak = Math.max(bestStreak, currentStreak);
 
   await prisma.roadmapEnrollment.update({
     where: { id: enrollmentId },
