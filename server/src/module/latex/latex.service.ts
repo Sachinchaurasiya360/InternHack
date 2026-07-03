@@ -7,6 +7,21 @@ import crypto from "crypto";
 const COMPILE_TIMEOUT = 30_000; // 30 seconds
 const ONLINE_API = "https://latex.ytotech.com/builds/sync";
 
+const MAX_SOURCE_SIZE = 500 * 1024; // 500 KB
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB per supporting file
+const MAX_TOTAL_SIZE = 10 * 1024 * 1024; // 10 MB total
+
+const SAFE_FILENAME_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/;
+const ALLOWED_EXTENSIONS = new Set([".sty", ".cls", ".bib", ".bst", ".png", ".jpg", ".jpeg", ".eps"]);
+
+const DANGEROUS_PATTERNS: RegExp[] = [
+  /\\write18/,
+  /\\immediate\s*\\write18/,
+  /\\input\s*\{\s*\|/,
+  /\\openin/,
+  /\\catcode.*\\active/,
+  /\\csname\s*shellescape/i,
+];
 export interface SupportingFile {
   filename: string;
   content: string;
@@ -14,8 +29,59 @@ export interface SupportingFile {
 
 export class LatexService {
   private pdflatexAvailable: boolean | null = null;
+private validateFilename(filename: string): void {
+    if (!SAFE_FILENAME_REGEX.test(filename)) {
+      throw new Error(`Invalid supporting file name: "${filename}"`);
+    }
+    const ext = path.extname(filename).toLowerCase();
+    if (!ALLOWED_EXTENSIONS.has(ext)) {
+      throw new Error(`Unsupported file type: "${filename}"`);
+    }
+    const resolved = path.join(os.tmpdir(), filename);
+    if (path.dirname(resolved) !== path.normalize(os.tmpdir())) {
+      throw new Error(`Invalid file path: "${filename}"`);
+    }
+  }
 
+  private validateSupportingFiles(supportingFiles: SupportingFile[]): void {
+    const seen = new Set<string>();
+    let totalSize = 0;
+
+    for (const sf of supportingFiles) {
+      this.validateFilename(sf.filename);
+
+      if (seen.has(sf.filename)) {
+        throw new Error(`Duplicate supporting file name: "${sf.filename}"`);
+      }
+      seen.add(sf.filename);
+
+      const size = Buffer.byteLength(sf.content, "utf-8");
+      if (size > MAX_FILE_SIZE) {
+        throw new Error(`Supporting file "${sf.filename}" exceeds the 2 MB size limit`);
+      }
+      totalSize += size;
+    }
+
+    if (totalSize > MAX_TOTAL_SIZE) {
+      throw new Error("Total size of supporting files exceeds the 10 MB limit");
+    }
+  }
+
+  private validateSource(source: string): void {
+    const size = Buffer.byteLength(source, "utf-8");
+    if (size > MAX_SOURCE_SIZE) {
+      throw new Error("LaTeX source exceeds the 500 KB size limit");
+    }
+
+    for (const pattern of DANGEROUS_PATTERNS) {
+      if (pattern.test(source)) {
+        throw new Error("LaTeX source contains a disallowed command");
+      }
+    }
+  }
   async compile(source: string, supportingFiles: SupportingFile[] = []): Promise<Buffer> {
+    this.validateSource(source);
+    this.validateSupportingFiles(supportingFiles);
     // Try local pdflatex first (if not already known to be missing)
     if (this.pdflatexAvailable !== false) {
       try {
