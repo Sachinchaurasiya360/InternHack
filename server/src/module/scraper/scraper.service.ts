@@ -91,13 +91,13 @@ export class ScraperService {
     for (const scraper of this.scrapers) {
       const startTime = Date.now();
 
+      let timer: ReturnType<typeof setTimeout> | undefined;
       try {
-        let timer: ReturnType<typeof setTimeout>;
         const timeoutPromise = new Promise<never>((_resolve, reject) => {
           timer = setTimeout(() => reject(new Error("Scraper timeout exceeded")), SCRAPER_TIMEOUT);
         });
         const result = await Promise.race([scraper.scrape(), timeoutPromise]);
-        clearTimeout(timer!);
+        clearTimeout(timer);
         const { created, updated } = await this.upsertJobs(result.source, result.jobs);
 
         const duration = Date.now() - startTime;
@@ -128,7 +128,7 @@ export class ScraperService {
           `[Scraper] ${result.source}: found=${String(result.jobs.length)}, created=${String(created)}, updated=${String(updated)}, duration=${String(duration)}ms`
         );
       } catch (err) {
-        clearTimeout(timer!);
+        if (timer) clearTimeout(timer);
         const duration = Date.now() - startTime;
         const errorMsg = err instanceof Error ? err.message : "Unknown error";
 
