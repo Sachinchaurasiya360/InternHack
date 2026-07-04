@@ -4,11 +4,11 @@ import type { Request } from "express";
 const GUEST_IP_SALT = process.env.GUEST_IP_SALT || "internhack-guest-salt";
 
 export function getClientIp(req: Request): string {
-  const forwarded = req.headers["x-forwarded-for"];
-  if (typeof forwarded === "string" && forwarded.length > 0) {
-    return forwarded.split(",")[0]!.trim();
-  }
-  return req.ip || req.socket.remoteAddress || "unknown";
+  // req.ip already respects the app.set("trust proxy", 1) in index.ts,
+  // returning the leftmost untrusted address from X-Forwarded-For.
+  // Do NOT re-parse the header manually — that bypasses trust-proxy and lets
+  // clients forge their identity.
+  return req.ip || "unknown";
 }
 
 export function hashGuestIp(req: Request): string {

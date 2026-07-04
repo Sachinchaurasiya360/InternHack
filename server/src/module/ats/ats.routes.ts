@@ -1,5 +1,5 @@
 import { Router } from "express";
-import rateLimit from "express-rate-limit";
+import { guestUsageLimit } from "../../middleware/guest-usage-limit.middleware.js";
 import { AtsController } from "./ats.controller.js";
 import { AtsService } from "./ats.service.js";
 import { CoverLetterController } from "./cover-letter.controller.js";
@@ -26,20 +26,11 @@ const latexChatController = new LatexChatController(latexChatService);
 
 export const atsRouter = Router();
 
-const guestScoreRateLimit = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000,
-  max: 2,
-  message: {
-    message: "Daily guest limit reached. Create a free account for more ATS scores.",
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-// Public guest scoring (before auth middleware)
+// Public guest scoring (before auth middleware).
+// Rate-limited via Postgres-backed counter (survives Vercel cold starts).
 atsRouter.post(
   "/guest/score",
-  guestScoreRateLimit,
+  guestUsageLimit(),
   (req, res, next) => atsController.scoreResumeGuest(req, res, next),
 );
 
