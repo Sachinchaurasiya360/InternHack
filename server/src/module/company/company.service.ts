@@ -66,8 +66,10 @@ export class CompanyService {
     const cached = await cacheGet(cacheKey);
     if (cached) return cached as never;
 
-    const page = Math.max(1, parseInt(params.page || "1", 10));
-    const limit = Math.min(50, Math.max(1, parseInt(params.limit || "12", 10)));
+    const parsedPage = Number.parseInt(params.page ?? "1", 10);
+    const page = Number.isNaN(parsedPage) ? 1 : Math.max(1, parsedPage);
+    const parsedLimit = Number.parseInt(params.limit ?? "12", 10);
+    const limit = Number.isNaN(parsedLimit)? 12: Math.min(50, Math.max(1, parsedLimit));
     const skip = (page - 1) * limit;
 
     const where: Prisma.companyWhereInput = { isApproved: true };
