@@ -39,8 +39,17 @@ export function guestScoreResumeSchema(ipHash: string) {
       .min(1, "Resume URL is required")
       .refine(
         (url) => {
-          const normalized = url.split("?")[0] ?? url;
-          return normalized.startsWith("https://") && normalized.includes(prefix);
+          try {
+            const parsed = new URL(url);
+            if (parsed.protocol !== "https:") return false;
+            if (!isAllowedUrl(url)) return false;
+            const s3Key = parsed.pathname.startsWith("/")
+              ? parsed.pathname.slice(1)
+              : parsed.pathname;
+            return s3Key.startsWith(prefix);
+          } catch {
+            return false;
+          }
         },
         "Resume URL must be a guest upload from this session",
       ),

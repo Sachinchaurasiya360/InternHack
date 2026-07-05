@@ -20,13 +20,33 @@ export class AtsController {
         return;
       }
 
+      // Check daily guest limit before initiating costly AI processing
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      const usageLog = await prisma.guestUsage.findUnique({
+        where: { ipHash_date: { ipHash, date: today } },
+      });
+      if (usageLog && usageLog.count >= 2) {
+        res.status(429).json({
+          message: "Daily guest limit reached. Create a free account for more ATS scores.",
+        });
+        return;
+      }
+
       const score = await this.atsService.scoreResumeGuest(ipHash, result.data);
+
+      // Increment usage count only after successful analysis
+      const updatedLog = await prisma.guestUsage.upsert({
+        where: { ipHash_date: { ipHash, date: today } },
+        update: { count: { increment: 1 } },
+        create: { ipHash, date: today, count: 1 },
+      });
 
       res.json({
         message: "Resume scored successfully",
         score,
         guest: true,
-        usage: { used: 1, limit: 2 },
+        usage: { used: updatedLog.count, limit: 2 },
       });
     } catch (err) {
       if (err instanceof Error) {
