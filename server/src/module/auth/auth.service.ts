@@ -77,7 +77,7 @@ function buildAuthUser(user: AuthUser): AuthUser {
 
 /** Generate a 6-digit OTP with its hash and expiry timestamp. */
 async function generateOtp() {
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otp = crypto.randomInt(100000, 1000000).toString();
   const hashedOtp = await hashPassword(otp);
   const expiresAt = new Date(Date.now() + OTP_TTL_MS);
   return { otp, hashedOtp, expiresAt };
