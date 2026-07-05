@@ -3,7 +3,10 @@ import { Prisma } from "@prisma/client";
 import { sendEmail } from "../../utils/email.utils.js";
 import { buildUnsubscribeUrl } from "../../utils/unsubscribe.utils.js";
 import { milestoneEmailHtml } from "../../utils/email-templates.js";
+import { createLogger } from "../../utils/logger.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const logger = createLogger("StudentService");
 
 interface MockInterviewTranscriptEntry {
   question: string;
@@ -29,6 +32,7 @@ export class StudentService {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
+      logger.warn("GEMINI_API_KEY not configured, falling back to generic mock interview feedback");
       return { feedback: fallbackFeedback, fallbackUsed: true };
     }
 
