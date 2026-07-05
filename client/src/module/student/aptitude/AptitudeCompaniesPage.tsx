@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
@@ -94,15 +94,31 @@ export default function AptitudeCompaniesPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const endTimeRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (!selectedCompany || !timerRunning || !companyData?.questions.length) return;
+    if (!selectedCompany || !timerRunning || !companyData?.questions.length) {
+      endTimeRef.current = null;
+      return;
+    }
+    
+    if (endTimeRef.current === null) {
+      endTimeRef.current = Date.now() + timeLeft * 1000;
+    }
+    
     const id = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) { setTimerRunning(false); return 0; }
-        return t - 1;
+      setTimeLeft(() => {
+        const remaining = Math.max(0, Math.ceil((endTimeRef.current! - Date.now()) / 1000));
+        if (remaining <= 0) {
+          setTimerRunning(false);
+          clearInterval(id);
+          return 0;
+        }
+        return remaining;
       });
     }, 1000);
     return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCompany, timerRunning, companyData?.questions.length]);
 
   useEffect(() => {
