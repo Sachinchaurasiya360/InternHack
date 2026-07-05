@@ -1,7 +1,10 @@
 import { prisma } from "../../database/db.js";
 import { cacheDel } from "../../utils/cache.js";
+import { createLogger } from "../../utils/logger.js";
 import { LANGUAGES_CACHE_KEY } from "../opensource/opensource.service.js";
 import type { Prisma } from "@prisma/client";
+
+const logger = createLogger("AdminOpensourceService");
 
 export class AdminOpensourceService {
   async listRepos(query: {
@@ -124,7 +127,9 @@ export class AdminOpensourceService {
         hacktoberfest: input.hacktoberfest ?? false,
       },
     });
-    cacheDel(LANGUAGES_CACHE_KEY).catch(() => {});
+    cacheDel(LANGUAGES_CACHE_KEY).catch((error) => {
+      logger.error("Failed to clear languages cache after repo creation", error);
+    });
     return repo;
   }
 
@@ -172,7 +177,11 @@ export class AdminOpensourceService {
       data.hacktoberfest = input["hacktoberfest"] as boolean;
 
     const updated = await prisma.opensourceRepo.update({ where: { id: repoId }, data });
-    if (languageChanged) cacheDel(LANGUAGES_CACHE_KEY).catch(() => {});
+    if (languageChanged) {
+      cacheDel(LANGUAGES_CACHE_KEY).catch((error) => {
+        logger.error("Failed to clear languages cache after repo update", error, { repoId });
+      });
+    }
     return updated;
   }
 
@@ -182,7 +191,9 @@ export class AdminOpensourceService {
     });
     if (!repo) throw new Error("Repository not found");
     const result = await prisma.opensourceRepo.delete({ where: { id: repoId } });
-    cacheDel(LANGUAGES_CACHE_KEY).catch(() => {});
+    cacheDel(LANGUAGES_CACHE_KEY).catch((error) => {
+      logger.error("Failed to clear languages cache after repo deletion", error, { repoId });
+    });
     return result;
   }
 
