@@ -1,15 +1,12 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import { OpensourceController } from "./opensource.controller.js";
-import { OpensourceStreakController } from "./opensource-streak.controller.js";
 import { OpensourceProgramController } from "./opensource-program.controller.js";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { requireRole } from "../../middleware/role.middleware.js";
-import { usageLimit } from "../../middleware/usage-limit.middleware.js";
 
 export const opensourceRouter = Router();
 const controller = new OpensourceController();
-const streakController = new OpensourceStreakController();
 const programController = new OpensourceProgramController();
 
 // ─── Public Routes ─────────────────────────────────────────────
@@ -119,15 +116,6 @@ opensourceRouter.post("/bookmarks/migrate", authMiddleware, requireRole("STUDENT
 
 opensourceRouter.delete("/bookmarks/:repoId", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
   controller.removeBookmark(req, res, next),
-);
-
-// ─── Streak ─────────────────────────────────────────────────────
-opensourceRouter.get("/streak", authMiddleware, requireRole("STUDENT"), (req, res, next) =>
-  streakController.getStreak(req, res, next),
-);
-
-opensourceRouter.post("/streak/tick", authMiddleware, requireRole("STUDENT"), usageLimit("STREAK_TICK"),
-  (req, res, next) => streakController.tickStreak(req, res, next),
 );
 
 // ─── Programs ────────────────────────────────────────────────────

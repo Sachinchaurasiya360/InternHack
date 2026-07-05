@@ -43,6 +43,7 @@ import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
+import { emailPrefsRouter } from "./module/email-prefs/email-prefs.routes.js";
 import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
 import { recommendationRouter } from "./module/recommendation/recommendation.routes.js";
@@ -255,6 +256,7 @@ app.use("/api/job-agent", jobAgentRouter);
 
 // ── HR routes removed (recruiter/HR feature archived to /archived) ──
 app.use("/api/email-inbound", emailInboundRouter);
+app.use("/api/email", emailPrefsRouter);
 app.use("/api/milestones", milestoneRouter);
 app.use("/api/roadmaps", roadmapRouter);
 app.use("/api/analytics", analyticsRouter);

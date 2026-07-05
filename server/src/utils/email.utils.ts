@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { withUnsubscribeFooter } from "./unsubscribe.utils.js";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -18,6 +19,12 @@ export async function sendEmail(options: {
   html: string;
   text?: string;
   attachments?: EmailAttachment[];
+  /**
+   * For non-transactional email (digests, reminders, announcements): adds an
+   * unsubscribe footer link and RFC 8058 List-Unsubscribe headers. Callers must
+   * also filter recipients on user.unsubscribeDigest before sending.
+   */
+  unsubscribeUrl?: string;
 }): Promise<boolean> {
   if (!resend) {
     console.warn(`[Email] RESEND_API_KEY not set — skipping email "${options.subject}" to ${options.to}`);
@@ -56,8 +63,16 @@ export async function sendEmail(options: {
       from,
       to,
       subject: options.subject,
-      html: options.html,
+      html: options.unsubscribeUrl
+        ? withUnsubscribeFooter(options.html, options.unsubscribeUrl)
+        : options.html,
     };
+    if (options.unsubscribeUrl) {
+      payload.headers = {
+        "List-Unsubscribe": `<${options.unsubscribeUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      };
+    }
     if (options.text) {
       payload.text = options.text;
     }
@@ -89,7 +104,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * Retries the whole batch on 429 with exponential backoff.
  */
 export async function sendEmailBatch(
-  emails: { to: string; subject: string; html: string }[],
+  emails: { to: string; subject: string; html: string; unsubscribeUrl?: string }[],
   opts: { maxRetries?: number } = {},
 ): Promise<{ sent: number; failed: number; errors: string[] }> {
   if (emails.length === 0) return { sent: 0, failed: 0, errors: [] };
@@ -107,7 +122,15 @@ export async function sendEmailBatch(
     from,
     to: isSandboxDev ? testTo : e.to,
     subject: e.subject,
-    html: e.html,
+    html: e.unsubscribeUrl ? withUnsubscribeFooter(e.html, e.unsubscribeUrl) : e.html,
+    ...(e.unsubscribeUrl
+      ? {
+          headers: {
+            "List-Unsubscribe": `<${e.unsubscribeUrl}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          },
+        }
+      : {}),
   }));
   const maxRetries = opts.maxRetries ?? 4;
 

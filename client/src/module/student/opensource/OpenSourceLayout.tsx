@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import { Outlet, useLocation, Link } from "react-router";
 import { ChevronRight } from "lucide-react";
 import { LearningPathProvider } from "./learning-paths.context";
-import StreakFlame from "./StreakFlame";
 
 const SEGMENT_NAMES: Record<string, string> = {
   opensource: "Open Source",
@@ -80,9 +79,6 @@ export default function OpenSourceLayout() {
             <OpenSourceBreadcrumb />
             <Outlet />
           </main>
-        </div>
-        <div className="fixed bottom-4 right-4 z-40">
-          <StreakFlame />
         </div>
       </div>
     </LearningPathProvider>

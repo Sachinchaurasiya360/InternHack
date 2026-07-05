@@ -10,8 +10,7 @@ export type UsageAction =
   | "AI_JOB_CHAT"
   | "CODE_RUN"
   | "GITHUB_STATS"
-  | "ROADMAP_GENERATION"
-  | "STREAK_TICK";
+  | "ROADMAP_GENERATION";
 
 export type PlanTier = "FREE" | "PREMIUM";
 
@@ -26,7 +25,6 @@ export const DAILY_LIMITS: Record<UsageAction, Record<PlanTier, number>> = {
   CODE_RUN:        { FREE: 0,  PREMIUM: 50 },
   GITHUB_STATS:    { FREE: 20, PREMIUM: 9999 },
   ROADMAP_GENERATION: { FREE: 0, PREMIUM: 10 }, // placeholder — actual limits in MONTHLY_LIMITS
-  STREAK_TICK: { FREE: 1, PREMIUM: 10 },
 };
 
 export function getPlanTier(

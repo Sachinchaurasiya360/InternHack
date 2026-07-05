@@ -78,7 +78,6 @@ model user {
   leetcodeImports          leetcodeImportLog[]            @relation("UserLeetcodeImports")
   milestoneEmails          milestoneEmail[]               @relation("StudentMilestoneEmails")
   ossBookmarks             opensourceBookmark[]           @relation("UserOssBookmarks")
-  opensourceStreak         opensourceStreak?
   payments                 payment[]                      @relation("UserPayments")
   programInterests         programInterest[]
   repoRequests             repoRequest[]                  @relation("UserRepoRequests")
@@ -1233,18 +1232,6 @@ model contentView {
   @@index([createdAt])
 }
 
-model opensourceStreak {
-  id             Int       @id @default(autoincrement())
-  userId         Int       @unique
-  currentStreak  Int       @default(0)
-  longestStreak  Int       @default(0)
-  lastActivityAt DateTime?
-  totalDays      Int       @default(0)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  user           user      @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 model ossProgram {
   id                  Int       @id @default(autoincrement())
   slug                String    @unique
@@ -1483,7 +1470,6 @@ enum UsageAction {
   GITHUB_STATS
   ROADMAP_GENERATION
   BEHAVIORAL_EVAL
-  STREAK_TICK
 }
 
 enum EmailCampaignStatus {

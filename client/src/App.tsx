@@ -127,7 +127,6 @@ const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/openso
 const HackathonGuidePage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuidePage"));
 const HackathonGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
-const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
 const SkillVerificationPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillVerificationPage"));
@@ -530,7 +529,6 @@ function App() {
                 <Route path="cicd/:sectionSlug" element={<CICDGuideSectionPage />} />
                 <Route path="hackathon-prep" element={<HackathonGuidePage />} />
                 <Route path="hackathon-prep/:sectionSlug" element={<HackathonGuideSectionPage />} />
-                <Route path="my-submissions" element={<MySubmissionsPage />} />
               </Route>
               <Route path="ai-agent" element={<JobAgentPage />} />
               <Route path="signals" element={<SignalsPage />} />

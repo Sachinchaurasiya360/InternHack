@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
+import { buildUnsubscribeUrl } from "../utils/unsubscribe.utils.js";
 import { followUpEmailHtml } from "../utils/email-templates.js";
 import { withAdvisoryLock } from "../utils/cron-lock.js";
 
@@ -20,6 +21,7 @@ export async function runFollowUpEmails(): Promise<void> {
     where: {
       isVerified: true,
       isActive: true,
+      unsubscribeDigest: false,
       createdAt: { gte: elevenDaysAgo, lt: tenDaysAgo },
     },
     select: { id: true, name: true, email: true },
@@ -34,6 +36,7 @@ export async function runFollowUpEmails(): Promise<void> {
       to: user.email,
       subject: `${user.name.split(" ")[0]}, how's InternHack treating you?`,
       html: followUpEmailHtml(user.name),
+      unsubscribeUrl: buildUnsubscribeUrl(user.id),
     }).catch((err) =>
       console.error(`[FollowUpCron] Failed to send to ${user.email}:`, err)
     );
