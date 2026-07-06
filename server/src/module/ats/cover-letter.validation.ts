@@ -13,6 +13,10 @@ export const generateCoverLetterSchema = z.object({
 
 export type GenerateCoverLetterInput = z.infer<typeof generateCoverLetterSchema>;
 
+export const extractJobUrlSchema = z.object({
+  url: z.string().url("Must be a valid URL"),
+});
+
 export interface UserProfile {
   name: string;
   bio?: string | null;

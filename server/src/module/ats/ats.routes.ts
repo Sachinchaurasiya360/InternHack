@@ -31,6 +31,7 @@ atsRouter.get("/usage", (req, res, next) => atsController.getUsageStats(req, res
 atsRouter.post("/score", usageLimit("ATS_SCORE", "monthly"), (req, res, next) => atsController.scoreResume(req, res, next));
 atsRouter.post("/apply-suggestions", usageLimit("GENERATE_RESUME"), (req, res, next) => atsController.applySuggestions(req, res, next));
 atsRouter.post("/cover-letter", usageLimit("COVER_LETTER"), (req, res, next) => coverLetterController.generate(req, res, next));
+atsRouter.post("/extract-job-url", usageLimit("COVER_LETTER"), (req, res, next) => coverLetterController.extractJobUrl(req, res, next));
 atsRouter.get("/cover-letter/history", (req, res, next) => coverLetterController.getHistory(req, res, next));
 atsRouter.get("/cover-letter/history/:id", (req, res, next) => coverLetterController.getOne(req, res, next));
 atsRouter.delete("/cover-letter/history/:id", (req, res, next) => coverLetterController.deleteOne(req, res, next));

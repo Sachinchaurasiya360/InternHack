@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import type { CoverLetterService } from "./cover-letter.service.js";
-import { generateCoverLetterSchema } from "./cover-letter.validation.js";
+import { generateCoverLetterSchema, extractJobUrlSchema } from "./cover-letter.validation.js";
 import type { UserProfile } from "./cover-letter.validation.js";
 import { prisma } from "../../database/db.js";
 
@@ -73,6 +73,31 @@ export class CoverLetterController {
         : undefined;
 
       res.json({ message: "Cover letter generated successfully", coverLetter, usage });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async extractJobUrl(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
+      const result = extractJobUrlSchema.safeParse(req.body);
+      if (!result.success) {
+        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+        return;
+      }
+
+      const extracted = await this.coverLetterService.extractJobUrl(result.data.url, req.user.id);
+
+      const usage = req.usageInfo
+        ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit }
+        : undefined;
+
+      res.json({ extracted, usage });
     } catch (err) {
       next(err);
     }

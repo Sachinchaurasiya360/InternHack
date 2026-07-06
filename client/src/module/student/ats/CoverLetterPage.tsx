@@ -139,11 +139,14 @@ const [isModified, setIsModified] = useState(false);
 const wordCount = coverLetter.trim() === "" ? 0 : coverLetter.trim().split(/\s+/).filter(Boolean).length;
 const charCount = coverLetter.length;
 
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState("");
   const [length, setLength] = useState("medium");
-const [toneManuallySelected, setToneManuallySelected] = useState(false);
+  const [toneManuallySelected, setToneManuallySelected] = useState(false);
+
+  const [jobUrl, setJobUrl] = useState("");
+  const [isExtractingUrl, setIsExtractingUrl] = useState(false);
 
   const user = useAuthStore((s) => s.user);
 
@@ -209,6 +212,32 @@ const [toneManuallySelected, setToneManuallySelected] = useState(false);
     }
   }, [jobDescription, toneManuallySelected]);
   
+  const handleExtractUrl = async () => {
+    if (!jobUrl || !jobUrl.trim()) return;
+    try {
+      new URL(jobUrl.trim());
+    } catch (_) {
+      toast.error("Please enter a valid URL");
+      return;
+    }
+
+    setIsExtractingUrl(true);
+    try {
+      const { data } = await api.post("/ats/extract-job-url", { url: jobUrl.trim() });
+      if (data.extracted) {
+        if (data.extracted.jobTitle) setJobTitle(data.extracted.jobTitle);
+        if (data.extracted.companyName) setCompanyName(data.extracted.companyName);
+        if (data.extracted.jobDescription) setJobDescription(data.extracted.jobDescription);
+        toast.success("Job details extracted successfully!");
+        setJobUrl(""); // Clear URL input on success
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to extract job details from URL");
+    } finally {
+      setIsExtractingUrl(false);
+    }
+  };
+
  const handleGenerate = async () => {
   if (jobDescription.trim().length < JD_MIN_CHARS) {
     toast.error(`Job description must be at least ${JD_MIN_CHARS} characters`);
@@ -514,6 +543,30 @@ useEffect(() => {
           <div className={cardCls}>
             <CardHeader kicker="step 01" title="Job details" />
             <div className="p-5 space-y-4">
+              <div className="flex flex-col gap-2 p-4 bg-stone-50 dark:bg-white/5 border border-stone-200 dark:border-white/10 rounded-md">
+                <label className={labelCls}>
+                  <Zap className="w-3 h-3 text-amber-500" /> Auto-fill from URL (Optional)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    className={`${inputCls} flex-1`}
+                    placeholder="Paste a Greenhouse, Lever, or LinkedIn job URL..."
+                    value={jobUrl}
+                    onChange={(e) => setJobUrl(e.target.value)}
+                    disabled={isExtractingUrl}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleExtractUrl}
+                    disabled={isExtractingUrl || !jobUrl.trim()}
+                    className="px-4 py-2 bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 rounded-md text-sm font-bold disabled:opacity-50 transition-opacity hover:opacity-90 flex items-center justify-center min-w-[80px]"
+                  >
+                    {isExtractingUrl ? <Loader2 className="w-4 h-4 animate-spin" /> : "Extract"}
+                  </button>
+                </div>
+                <p className="text-xs text-stone-500 mt-1">Our AI will fetch the page and extract the job description, title, and company.</p>
+              </div>
+
               <div>
                 <label className={labelCls}>
                   <AlignLeft className="w-3 h-3" /> job description{" "}

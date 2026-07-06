@@ -5,6 +5,7 @@ import type {
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
 import { prisma } from "../../database/db.js";
+import * as cheerio from "cheerio";
 
 export class CoverLetterService {
   async generate(
@@ -17,6 +18,63 @@ export class CoverLetterService {
     const response = await provider.generateText(prompt);
     logAIRequest("COVER_LETTER", response, true, undefined, userId);
     return response.text.trim();
+  }
+
+  async extractJobUrl(url: string, userId: number) {
+    let html = "";
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" },
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      html = await res.text();
+    } catch (e) {
+      throw new Error("Failed to fetch the URL. Please make sure the link is publicly accessible.");
+    }
+
+    const $ = cheerio.load(html);
+    $('script, style, noscript, iframe, img, svg').remove();
+    let text = $('body').text();
+    text = text.replace(/\s+/g, ' ').trim();
+    if (text.length > 20000) {
+      text = text.substring(0, 20000);
+    }
+
+    const provider = getProviderForService("COVER_LETTER");
+    const prompt = `You are an AI assistant helping a job seeker. Extract the job details from the following raw website text.
+    Return ONLY a raw valid JSON object with the following keys, no markdown blocks, no other text:
+    - jobTitle: the title of the role (or null if not found)
+    - companyName: the name of the company (or null if not found)
+    - jobDescription: the core job description, requirements, and responsibilities. Exclude boilerplate headers, footers, or unrelated text.
+
+    Website Text:
+    ${text}`;
+
+    const response = await provider.generateText(prompt);
+    logAIRequest("COVER_LETTER", response, true, undefined, userId);
+    
+    let rawJson = response.text.trim();
+    if (rawJson.startsWith("\`\`\`json")) {
+      rawJson = rawJson.substring(7);
+      if (rawJson.endsWith("\`\`\`")) {
+        rawJson = rawJson.substring(0, rawJson.length - 3);
+      }
+    }
+    rawJson = rawJson.trim();
+
+    try {
+      const parsed = JSON.parse(rawJson);
+      return {
+        jobTitle: parsed.jobTitle ?? "",
+        companyName: parsed.companyName ?? "",
+        jobDescription: parsed.jobDescription ?? ""
+      };
+    } catch (e) {
+      throw new Error("Failed to parse extracted details from the page. Please try manual copy-paste.");
+    }
   }
 
   async saveGenerated(
