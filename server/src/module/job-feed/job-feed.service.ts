@@ -1,4 +1,5 @@
-﻿import { prisma } from "../../database/db.js";
+﻿import { Prisma } from "@prisma/client";
+import { prisma } from "../../database/db.js";
 import { jobIndexService } from "../job-index/job-index.service.js";
 import { cacheGet, cacheSet, cacheDel } from "../../utils/cache.js";
 
@@ -59,7 +60,12 @@ export class JobFeedService {
     await prisma.userJobPreference.update({
       where: { userId },
       data: { dismissedJobIds: { push: match.jobIndexId } },
-    }).catch((err) => console.error("Failed to dismiss job:", err)); // pref may not exist yet
+    }).catch((err) => {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+        return;
+      }
+      throw err;
+    });
   }
 
   async save(userId: number, matchId: number) {
