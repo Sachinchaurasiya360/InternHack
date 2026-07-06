@@ -129,15 +129,18 @@ export class SignalsService {
     for (const src of this.sources) {
       const startTime = Date.now();
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), SOURCE_TIMEOUT);
+      const abortTimeoutId = setTimeout(() => controller.abort(), SOURCE_TIMEOUT);
+      let raceTimeoutId = undefined as NodeJS.Timeout | undefined;
+      const raceTimeout = new Promise<never>((_r, reject) => {
+        raceTimeoutId = setTimeout(() => reject(new Error("Source timeout exceeded")), SOURCE_TIMEOUT);
+      });
       try {
         const result = await Promise.race([
           src.fetch(controller.signal),
-          new Promise<never>((_r, reject) =>
-            setTimeout(() => reject(new Error("Source timeout exceeded")), SOURCE_TIMEOUT)
-          )
+          raceTimeout,
         ]);
-        clearTimeout(timeoutId);
+        clearTimeout(abortTimeoutId);
+        if (raceTimeoutId) clearTimeout(raceTimeoutId);
         const { created, updated } = await this.upsertSignals(result.source, result.signals);
         const duration = Date.now() - startTime;
 
@@ -166,6 +169,8 @@ export class SignalsService {
           `[Signals] ${result.source}: found=${String(result.signals.length)}, created=${String(created)}, updated=${String(updated)}, duration=${String(duration)}ms`,
         );
       } catch (err) {
+        clearTimeout(abortTimeoutId);
+        if (raceTimeoutId) clearTimeout(raceTimeoutId);
         const duration = Date.now() - startTime;
         const message = err instanceof Error ? err.message : "Unknown error";
         results.push({
