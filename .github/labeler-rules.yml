@@ -21,8 +21,6 @@
     - any-glob-to-any-file:
       - ".github/workflows/**"
       - ".github/actions/**"
-      - "**/docker-compose.yml"
-      - "**/Dockerfile*"
       - "infra/**"
       - "scripts/deploy/**"
       - "scripts/ci/**"
@@ -38,7 +36,6 @@
       - "**/lazy/**"
       - "**/perf/**"
       - "vite.config.*"
-      - "server/src/config/redis.ts"
 
 "type:testing":
   - changed-files:

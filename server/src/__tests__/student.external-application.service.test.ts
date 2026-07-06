@@ -21,19 +21,10 @@ const mocks = vi.hoisted(() => ({
       create: vi.fn(),
     },
   },
-  badgeService: {
-    checkAndAwardBadges: vi.fn().mockResolvedValue(undefined),
-  },
 }));
 
 vi.mock("../database/db.js", () => ({
   prisma: mocks.prisma,
-}));
-
-vi.mock("../module/badge/badge.service.js", () => ({
-  BadgeService: class {
-    checkAndAwardBadges = mocks.badgeService.checkAndAwardBadges;
-  },
 }));
 
 const { StudentService } = await import("../module/student/student.service.js");
@@ -89,7 +80,6 @@ describe("StudentService.applyToExternalJob", () => {
     mocks.tx.externalJobApplication.create.mockRejectedValue(new Error("DB write failed"));
 
     await expect(service.applyToExternalJob(44, 23)).rejects.toThrow("DB write failed");
-    expect(mocks.badgeService.checkAndAwardBadges).not.toHaveBeenCalled();
     expect(checkApplicationMilestoneSpy).not.toHaveBeenCalled();
   });
 });

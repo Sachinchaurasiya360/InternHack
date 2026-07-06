@@ -2,6 +2,16 @@ import sanitize from "sanitize-html";
 
 const CODE_CLASS = "px-1.5 py-0.5 bg-stone-200 dark:bg-white/10 rounded-md text-sm font-mono";
 
+export function escapeHtml(str: string): string {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export function sanitizeHtml(html: string): string {
   if (!html) return "";
   return sanitize(html, {

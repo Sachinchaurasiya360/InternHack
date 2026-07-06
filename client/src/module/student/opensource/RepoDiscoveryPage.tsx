@@ -38,7 +38,6 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge, buildLanguageParam } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
-import { GuidanceCards } from "./GuidanceCards";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
 import { Button } from "../../../components/ui/button";
 import { markLearningPathMilestone } from "./learning-paths.data";
@@ -364,14 +363,14 @@ export default function RepoDiscoveryPage() {
               ? selectedRepo.description.slice(0, 160)
               : `Contribute to ${selectedRepo.owner}/${selectedRepo.name} on InternHack. Discover beginner-friendly open-source projects curated for students.`
           }
-          canonicalUrl={canonicalUrl(`/student/opensource?repo=${selectedRepo.id}`)}
+          canonicalUrl={canonicalUrl(`/student/opensource/discover?repo=${selectedRepo.id}`)}
         />
       ) : (
         <SEO
           title="Open Source Projects, Find Beginner-Friendly Repos"
           description="Discover beginner-friendly open-source projects, track trending repos, and make your first contribution. Curated by engineers for students."
           keywords="open source, first contribution, good first issue, github, beginner friendly, GSoC, hacktoberfest"
-          canonicalUrl={canonicalUrl("/student/opensource")}
+          canonicalUrl={canonicalUrl("/student/opensource/discover")}
         />
       )}
 
@@ -381,7 +380,7 @@ export default function RepoDiscoveryPage() {
           <div className="flex items-center gap-2 mb-2">
             <div className="h-1 w-1 bg-lime-400"></div>
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-              learning / open source
+              open source / repo catalog
             </span>
           </div>
           <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -421,10 +420,6 @@ export default function RepoDiscoveryPage() {
             /
           </kbd>
         </div>
-
-        {/* Guidance Cards */}
-        <GuidanceCards />
-
 
         {/* Filter bar */}
         <div className="flex items-center gap-2 mb-4 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">

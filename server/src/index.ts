@@ -9,7 +9,6 @@ import type { HelmetOptions } from "helmet";
 import type { RequestHandler } from "express";
 import morgan from "morgan";
 import { rateLimit } from "express-rate-limit";
-import { createRateLimitStore } from "./utils/rate-limit-store.js";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { studentRouter } from "./module/student/student.routes.js";
 import { peerMockInterviewRouter } from "./module/peer-mock-interview/peer-mock-interview.routes.js";
@@ -37,7 +36,6 @@ import { interviewProgressRouter } from "./module/interview-progress/interview-p
 import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
-import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
 // ── Recruiter + HR modules archived to /archived (feature removed) ──
 import { contactRouter } from "./module/contact/contact.routes.js";
@@ -45,13 +43,13 @@ import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
 import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
 import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
 import { emailInboundRouter } from "./module/email-inbound/email-inbound.routes.js";
+import { emailPrefsRouter } from "./module/email-prefs/email-prefs.routes.js";
 import { milestoneRouter } from "./module/milestone/milestone.routes.js";
 import { roadmapRouter } from "./module/roadmap/roadmap.routes.js";
 import { recommendationRouter } from "./module/recommendation/recommendation.routes.js";
 import { learnRouter } from "./module/learn/learn.routes.js";
 import { notesRouter } from "./module/notes/notes.routes.js";
 import { behavioralRouter } from "./module/behavioral/behavioral.routes.js";
-import { ambassadorRouter } from "./module/ambassador/ambassador.routes.js";
 import analyticsRouter from "./module/analytics/analytics.routes.js";
 import { healthRouter } from "./module/health/health.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
@@ -67,13 +65,11 @@ import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cro
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron.js";
 import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
-import { startAmbassadorEligibilityCron, stopAmbassadorEligibilityCron } from "./cron/ambassador-eligibility.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { startPeerMockInterviewMatchCron, stopPeerMockInterviewMatchCron } from "./cron/peer-mock-interview-match.cron.js";
 import { startPeerMockInterviewRemindersCron, stopPeerMockInterviewRemindersCron } from "./cron/peer-mock-interview-reminders.cron.js";
 import { cronRouter } from "./cron/daily-cron.route.js";
 import { shutdownManager } from "./utils/graceful-shutdown.js";
-import { redis } from "./config/redis.js";
 import { createLogger } from "./utils/logger.js";
 
 const logger = createLogger("Index");
@@ -93,18 +89,6 @@ for (const key of REQUIRED_ENV) {
   if (!process.env[key]) {
     throw new Error(`Missing required environment variable: ${key}`);
   }
-}
-
-// ── Redis is optional ──
-// Without REDIS_URL, rate limiters fall back to per-process MemoryStore. That
-// is fine for a single instance; behind a load balancer the limits are
-// per-process (not shared), so set REDIS_URL when running multiple instances.
-if (process.env["NODE_ENV"] === "production" && !process.env["REDIS_URL"]) {
-  console.warn(
-    "[Redis] Running in production without REDIS_URL. " +
-    "Rate-limit stores are per-process and not shared across instances. " +
-    "Set REDIS_URL for shared rate limiting behind a load balancer.",
-  );
 }
 
 
@@ -215,7 +199,6 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRateLimitStore("global"),
   skip: (req) => {
     const path = req.originalUrl.split("?")[0];
     return path === PAYMENT_WEBHOOK_PATH || path === "/api/email-inbound/webhook";
@@ -231,7 +214,6 @@ app.use("/api/admin/login", authIpLimiter, authEmailLimiter);
 const latexLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
-  store: createRateLimitStore("latex"),
   message: { message: "LaTeX compilation limit reached. Try again later." },
 });
 app.use("/api/latex/compile", latexLimiter);
@@ -266,7 +248,6 @@ app.use("/api/interview-progress", interviewProgressRouter);
 app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/internships", internshipRouter);
-app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
 
 // ── InternHack AI Routes ──
@@ -275,13 +256,13 @@ app.use("/api/job-agent", jobAgentRouter);
 
 // ── HR routes removed (recruiter/HR feature archived to /archived) ──
 app.use("/api/email-inbound", emailInboundRouter);
+app.use("/api/email", emailPrefsRouter);
 app.use("/api/milestones", milestoneRouter);
 app.use("/api/roadmaps", roadmapRouter);
 app.use("/api/analytics", analyticsRouter);
 app.use("/api/behavioral", behavioralRouter);
 app.use("/api/learn", learnRouter);
 app.use("/api/notes", notesRouter);
-app.use("/api/ambassador", ambassadorRouter);
 
 // ── Consolidated daily cron (triggered by Vercel Cron; bearer-authed) ──
 app.use("/api/cron", cronRouter);
@@ -442,14 +423,6 @@ const server = app.listen(PORT, async () => {
     fn: () => stopDeadlineAlertCron(),
   });
 
-  // Start the daily ambassador eligibility cron
-  startAmbassadorEligibilityCron();
-  shutdownManager.register({
-    name: "Ambassador Eligibility Cron",
-    priority: 10,
-    fn: () => stopAmbassadorEligibilityCron(),
-  });
-
   // Start weekly peer mock interview matching from one owner only in production.
   const runPeerMockInterviewCron =
     process.env["RUN_PEER_MOCK_INTERVIEW_MATCH_CRON"] === "true" ||
@@ -484,18 +457,6 @@ const server = app.listen(PORT, async () => {
     });
   } else {
     logger.info("GitHub contributions cron disabled on this process");
-  }
-
-  // Register Redis disconnect
-  if (redis) {
-    shutdownManager.register({
-      name: "Redis Disconnect",
-      priority: 20,
-      fn: async () => {
-        await redis!.quit();
-        logger.info("Redis Disconnected");
-      },
-    });
   }
 
   // Register Prisma disconnect

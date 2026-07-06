@@ -19,9 +19,9 @@ function resolveSsl():
   if (process.env["DATABASE_SSL"] === "false") {
     return false;
   }
-  // Local Postgres (including the docker-compose "postgres" service) does not
-  // serve TLS. Match on the resolved hostname so a remote URL whose scheme or
-  // database name contains "postgres" does not accidentally disable TLS.
+  // Local Postgres does not serve TLS. Match on the resolved hostname so a
+  // remote URL whose scheme or database name contains "postgres" does not
+  // accidentally disable TLS.
   let sslHost = "";
   try {
     sslHost = new URL(rawConnectionString).hostname;

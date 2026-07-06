@@ -7,7 +7,12 @@ import {
   repoRequestSubmittedHtml,
   repoRequestApprovedHtml,
 } from "../../utils/email-templates.js";
-import { UserService } from "../user/user.service.js";
+import {
+  CERTIFICATE_GUIDES,
+  FIRST_PR_STEP_IDS,
+  GUIDE_STEP_IDS,
+  hasCompletedAllSteps,
+} from "./guide-steps.constants.js";
 
 interface ListReposQuery {
   page: number;
@@ -51,8 +56,6 @@ interface GsocOrgsQuery {
   technology?: string;
   year?: number;
 }
-
-const userService = new UserService();
 
 const REPO_CACHE_TTL = 300; // 5 minutes - single-repo cache
 const STATS_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -481,8 +484,6 @@ export class OpensourceService {
     this.updateGithubStats(repo.id, repo.url, repo.name).catch((err) =>
       console.error("[github] approval stats fetch failed:", err),
     );
-    // Re-sync stored ossTier for the contributor (fire-and-forget)
-    userService.calculateOssTier(request.userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return repo;
   }
 
@@ -672,8 +673,6 @@ export class OpensourceService {
       },
       select: { completedStepIds: true },
     });
-    // Re-sync stored ossTier when First PR roadmap progress changes (fire-and-forget)
-    userService.calculateOssTier(userId).catch((err) => console.error("Failed to calculate OSS tier:", err));
     return progress.completedStepIds;
   }
 
@@ -728,6 +727,29 @@ export class OpensourceService {
       select: { name: true },
     });
     if (!user) throw new Error("User not found");
+
+    const guide = CERTIFICATE_GUIDES[guideName];
+    if (!guide) {
+      throw new Error(`Invalid guide name for certification: ${guideName}`);
+    }
+
+    // Verify against the canonical step ids, not just the array length: a
+    // client can submit arbitrary strings to the progress endpoint, so a
+    // length check alone is bypassable. Require every documented step.
+    if (guide.type === "first-pr") {
+      const progress = await prisma.studentFirstPrProgress.findUnique({ where: { userId } });
+      if (!progress || !hasCompletedAllSteps(FIRST_PR_STEP_IDS, progress.completedStepIds)) {
+        throw new Error("You must complete all steps in the guide before claiming your certificate.");
+      }
+    } else {
+      const requiredStepIds = GUIDE_STEP_IDS[guide.slug];
+      const progress = await prisma.guideProgress.findUnique({
+        where: { userId_guideSlug: { userId, guideSlug: guide.slug } },
+      });
+      if (!progress || !hasCompletedAllSteps(requiredStepIds, progress.completedStepIds)) {
+        throw new Error("You must complete all steps in the guide before claiming your certificate.");
+      }
+    }
 
     return prisma.guideCertificate.upsert({
       where: { userId_guideName: { userId, guideName } },

@@ -1,5 +1,14 @@
 import { workerData, parentPort } from "worker_threads";
+import { DOMMatrix } from "@napi-rs/canvas";
 import { PDFParse } from "pdf-parse";
+
+// pdfjs-dist (used internally by pdf-parse) reads DOMMatrix off the global scope
+// even for plain text extraction. Node has no such global, so provide one here
+// before pdf-parse touches pdfjs-dist internals (see: ReferenceError: DOMMatrix
+// is not defined, thrown from pdfjs-dist/legacy/build/pdf.mjs on Vercel).
+if (typeof globalThis.DOMMatrix === "undefined") {
+  Object.assign(globalThis, { DOMMatrix });
+}
 
 interface WorkerData {
   buffer: ArrayBuffer;

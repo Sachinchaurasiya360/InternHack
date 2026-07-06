@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
+import { buildUnsubscribeUrl } from "../utils/unsubscribe.utils.js";
 import { roadmapDay10EmailHtml } from "../utils/email-templates.js";
 import { withAdvisoryLock } from "../utils/cron-lock.js";
 
@@ -30,7 +31,7 @@ export async function drainScheduledEmails(): Promise<void> {
     orderBy: { sendAt: "asc" },
     take: BATCH_SIZE,
     include: {
-      user: { select: { id: true, name: true, email: true, isActive: true } },
+      user: { select: { id: true, name: true, email: true, isActive: true, unsubscribeDigest: true } },
     },
   });
 
@@ -38,11 +39,11 @@ export async function drainScheduledEmails(): Promise<void> {
   console.log(`[ScheduledEmail] Processing ${due.length} due email(s)`);
 
   for (const row of due) {
-    if (!row.user.isActive) {
+    if (!row.user.isActive || row.user.unsubscribeDigest) {
       // Skip and mark sent so we don't keep retrying
       await prisma.scheduledEmail.update({
         where: { id: row.id },
-        data: { sentAt: now, lastError: "user inactive" },
+        data: { sentAt: now, lastError: row.user.isActive ? "user unsubscribed" : "user inactive" },
       });
       continue;
     }
@@ -131,6 +132,7 @@ async function sendDay10(
       plannedTopics,
       nextTopicSlug: nextTopic?.slug ?? null,
     }),
+    unsubscribeUrl: buildUnsubscribeUrl(user.id),
   });
 }
 

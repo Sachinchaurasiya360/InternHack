@@ -16,9 +16,10 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import { sanitizeHtml, cleanHint } from "../../../lib/sanitize";
+import { cleanHint } from "../../../lib/sanitize";
 import { Button } from "../../../components/ui/button";
 import { DIFF_COLOR } from "../../../lib/difficulty-styles";
+import { SafeHtml } from "../../../components/common/SafeHtml";
 
 /* ── Company tier classification ─────────────────────────────────────── */
 
@@ -807,7 +808,7 @@ export default function DsaCompaniesPage() {
                                     {problem.hints.map((hint, i) => (
                                       <div key={i} className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed flex gap-1">
                                         {problem.hints.length > 1 && <span className="font-mono font-medium text-stone-500 dark:text-stone-400 shrink-0">{i + 1}.</span>}
-                                        <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(cleanHint(hint)) }} />
+                                        <SafeHtml className="flex-1 min-w-0" html={cleanHint(hint)} method="sanitize-html" />
                                       </div>
                                     ))}
                                   </div>

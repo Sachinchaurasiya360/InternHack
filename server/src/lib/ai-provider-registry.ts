@@ -15,6 +15,11 @@ interface ServiceEntry {
 }
 
 const serviceCache = new Map<AIServiceType, ServiceEntry>();
+const INIT_RETRY_DELAYS_MS = [500, 1_500, 3_000];
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function createProvider(type: AIProviderType, modelName: string): AIProvider {
   switch (type) {
@@ -35,15 +40,32 @@ function createProvider(type: AIProviderType, modelName: string): AIProvider {
 
 /** Load all service configs from DB into memory. Call once at server startup. */
 export async function initServiceProviders(): Promise<void> {
-  const configs = await prisma.aiServiceConfig.findMany();
-  for (const cfg of configs) {
-    serviceCache.set(cfg.service, {
-      configId: cfg.id,
-      provider: createProvider(cfg.provider, cfg.modelName),
-      modelName: cfg.modelName,
-    });
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= INIT_RETRY_DELAYS_MS.length; attempt++) {
+    try {
+      const configs = await prisma.aiServiceConfig.findMany();
+      serviceCache.clear();
+      for (const cfg of configs) {
+        serviceCache.set(cfg.service, {
+          configId: cfg.id,
+          provider: createProvider(cfg.provider, cfg.modelName),
+          modelName: cfg.modelName,
+        });
+      }
+      console.log(`[AI] Loaded ${configs.length} service provider configs`);
+      return;
+    } catch (err) {
+      lastError = err;
+      const retryDelay = INIT_RETRY_DELAYS_MS[attempt];
+      if (retryDelay === undefined) break;
+      console.warn(
+        `[AI] Failed to load service provider configs; retrying in ${retryDelay}ms`,
+      );
+      await wait(retryDelay);
+    }
   }
-  console.log(`[AI] Loaded ${configs.length} service provider configs`);
+
+  throw lastError;
 }
 
 /** Get the cached provider for a service. Falls back to Gemini if not in cache. */

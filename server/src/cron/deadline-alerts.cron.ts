@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
+import { buildUnsubscribeUrl } from "../utils/unsubscribe.utils.js";
 import { deadlineAlertEmailHtml } from "../utils/email-templates.js";
 import { withAdvisoryLock } from "../utils/cron-lock.js";
 
@@ -49,6 +50,7 @@ export async function runDeadlineAlerts(): Promise<void> {
         to: user.email,
         subject: `${program.name} deadline ${diffDays === 0 ? "today" : `in ${diffDays} day${diffDays > 1 ? "s" : ""}`}`,
         html: deadlineAlertEmailHtml(user.name, program.name, diffDays, program.applicationDeadline),
+        unsubscribeUrl: buildUnsubscribeUrl(user.id),
       }).catch((err) =>
         console.error(`[DeadlineAlert] Failed to send to ${user.email}:`, err)
       );

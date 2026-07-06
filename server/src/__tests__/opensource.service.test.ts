@@ -24,10 +24,6 @@ vi.mock("../database/db.js", () => ({
       deleteMany: vi.fn(),
       createMany: vi.fn(),
     },
-    opensourceStreak: {
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
-    },
     $transaction: vi.fn(),
   },
 }));
@@ -55,13 +51,6 @@ vi.mock("../lib/github.js", () => ({
   }),
   fetchGithubGoodFirstIssues: vi.fn().mockResolvedValue([]),
 }));
-
-vi.mock("../module/user/user.service.js", () => {
-  class MockUserService {
-    calculateOssTier = vi.fn().mockResolvedValue(undefined);
-  }
-  return { UserService: MockUserService };
-});
 
 const service = new OpensourceService();
 const USER_ID = 42;

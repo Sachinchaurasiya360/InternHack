@@ -36,7 +36,7 @@ const sections: PolicySection[] = [
     list: [
       {
         label: "Account Information",
-        text: "Name, email address, password (hashed), role (Student/Recruiter), company name, designation",
+        text: "Name, email address, password (hashed), role, company name, designation",
       },
       {
         label: "Profile Information",

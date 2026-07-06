@@ -35,14 +35,6 @@ vi.mock("../utils/email.utils.js", () => ({
   sendEmailBatch: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock("../module/badge/badge.service.js", () => {
-  return {
-    BadgeService: class {
-      checkAndAwardBadges = vi.fn().mockResolvedValue([]);
-    },
-  };
-});
-
 describe("PeerMockInterviewService", () => {
   let service: PeerMockInterviewService;
 

@@ -327,9 +327,13 @@ export class PaymentService {
     });
     if (!payment) return;
 
+    const billing = sub.metadata["billing"] ?? "monthly";
+    const plan = billing === "yearly" ? "YEARLY" : "MONTHLY";
+
     await prisma.user.update({
       where: { id: payment.userId },
       data: {
+        subscriptionPlan: plan,
         subscriptionStatus: "ACTIVE",
         subscriptionEndDate: new Date(sub.next_billing_date),
       },

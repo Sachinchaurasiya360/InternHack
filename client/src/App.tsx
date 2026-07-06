@@ -122,8 +122,6 @@ const CICDGuideSectionPage = lazyWithRetry(() => import("./module/student/openso
 const HackathonGuidePage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuidePage"));
 const HackathonGuideSectionPage = lazyWithRetry(() => import("./module/student/opensource/HackathonGuideSectionPage"));
 const OpenSourceLayout = lazyWithRetry(() => import("./module/student/opensource/OpenSourceLayout"));
-const AmbassadorPage = lazyWithRetry(() => import("./module/student/opensource/AmbassadorPage"));
-const MySubmissionsPage = lazyWithRetry(() => import("./module/student/opensource/MySubmissionsPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
 const SkillVerificationPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillVerificationPage"));
@@ -223,7 +221,6 @@ const AdminBlogEditor = lazyWithRetry(() => import("./module/admin/blog/AdminBlo
 const AdminDsaPage = lazyWithRetry(() => import("./module/admin/dsa/AdminDsaPage"));
 const AdminAptitudePage = lazyWithRetry(() => import("./module/admin/aptitude/AdminAptitudePage"));
 const AdminSkillTestsPage = lazyWithRetry(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
-const AdminBadgesPage = lazyWithRetry(() => import("./module/admin/AdminBadgesPage"));
 const AdminAIProvidersPage = lazyWithRetry(() => import("./module/admin/ai/AdminAIProvidersPage"));
 const AdminExternalJobsPage = lazyWithRetry(() => import("./module/admin/external-jobs/AdminExternalJobsPage"));
 const AdminRepoRequestsPage = lazyWithRetry(() => import("./module/admin/repo-requests/AdminRepoRequestsPage"));
@@ -231,7 +228,6 @@ const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broad
 const AdminSignalsPage = lazyWithRetry(() => import("./module/admin/signals/AdminSignalsPage"));
 const AdminInterviewsPage = lazyWithRetry(() => import("./module/admin/interviews/AdminInterviewsPage"));
 const GuideFeedbackDashboard = lazyWithRetry(() => import("./module/admin/GuideFeedbackDashboard"));
-const AdminAmbassadorPage = lazyWithRetry(() => import("./module/admin/ambassador/AdminAmbassadorPage"));
 
 function JobBrowseOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -528,8 +524,6 @@ function App() {
                 <Route path="cicd/:sectionSlug" element={<CICDGuideSectionPage />} />
                 <Route path="hackathon-prep" element={<HackathonGuidePage />} />
                 <Route path="hackathon-prep/:sectionSlug" element={<HackathonGuideSectionPage />} />
-                <Route path="my-submissions" element={<MySubmissionsPage />} />
-                <Route path="ambassador" element={<AmbassadorPage />} />
               </Route>
               <Route path="ai-agent" element={<JobAgentPage />} />
               <Route path="signals" element={<SignalsPage />} />
@@ -565,7 +559,6 @@ function App() {
               <Route path="dsa" element={<AdminDsaPage />} />
               <Route path="aptitude" element={<AdminAptitudePage />} />
               <Route path="skill-tests" element={<AdminSkillTestsPage />} />
-              <Route path="badges" element={<AdminBadgesPage />} />
               <Route path="ai-providers" element={<AdminAIProvidersPage />} />
               <Route path="external-jobs" element={<AdminExternalJobsPage />} />
               <Route path="repo-requests" element={<AdminRepoRequestsPage />} />
@@ -575,7 +568,6 @@ function App() {
               <Route path="blog" element={<AdminBlogPage />} />
               <Route path="blog/editor" element={<AdminBlogEditor />} />
               <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
-              <Route path="ambassadors" element={<AdminAmbassadorPage />} />
               <Route path="guide-feedback" element={<GuideFeedbackDashboard />} />
               <Route path="profile/:identifier" element={<PublicProfilePage />} />
             </Route>

@@ -1,23 +1,7 @@
-import { useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  CheckCircle2, Award, ArrowRight,
-  Trophy,
-  Clock
-} from "lucide-react";
-import { Link } from "react-router";
-import { SEO } from "../../../components/SEO";
-import { Button } from "../../../components/ui/button";
-import { canonicalUrl } from "../../../lib/seo.utils";
-import guideData from "./data/gsoc-proposal-guide.json";
-import GuideCompletionSection from "./components/GuideCompletionSection";
-import { notifyLearningPathProgressChanged } from "./learning-paths.data";
-import { NextInPathCard } from "./components/NextInPathCard";
-import { issueCertificate, type Certificate } from "./api/opensource.api";
-import { useAuthStore } from "../../../lib/auth.store";
+import GuideListPage from "./components/GuideListPage";
 import GSoCProposalAIReview from "./GSoCProposalAIReview";
+import guideData from "./data/gsoc-proposal-guide.json";
 
-// ─── Types ─────────────────────────────────────────────────────
 interface Step {
   step: number;
   id: string;
@@ -27,235 +11,27 @@ interface Step {
   level: string;
 }
 
-// ─── Data ──────────────────────────────────────────────────────
 const STEPS: Step[] = guideData.gsocProposalRoadmap as Step[];
-const STORAGE_KEY = "gsoc-proposal-roadmap-completed";
 
-const LEVEL_COLOR: Record<string, string> = {
-  Foundation: "text-blue-600 dark:text-blue-400",
-  Research: "text-violet-600 dark:text-violet-400",
-  Engagement: "text-amber-600 dark:text-amber-400",
-  Writing: "text-emerald-600 dark:text-emerald-400",
-  Review: "text-red-600 dark:text-red-400",
-  Final: "text-green-600 dark:text-green-400",
-};
-
-const LEVEL_BG: Record<string, string> = {
-  Foundation: "bg-blue-100 dark:bg-blue-900/40",
-  Research: "bg-violet-100 dark:bg-violet-900/40",
-  Engagement: "bg-amber-100 dark:bg-amber-900/40",
-  Writing: "bg-emerald-100 dark:bg-emerald-900/40",
-  Review: "bg-red-100 dark:bg-red-900/40",
-  Final: "bg-green-100 dark:bg-green-900/40",
-};
-
-// ─── Page ──────────────────────────────────────────────────────
 export default function GSoCProposalPage() {
-  const [completed, setCompleted] = useState<Set<string>>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
-
-  const [cert, setCert] = useState<Certificate | null>(null);
-  const { user } = useAuthStore();
-
-  const toggle = useCallback((id: string) => {
-    setCompleted((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* */ }
-      notifyLearningPathProgressChanged();
-      return next;
-    });
-  }, []);
-
-  const totalSteps = STEPS.length;
-  const pct = Math.round((completed.size / totalSteps) * 100);
-  const allDone = completed.size === totalSteps;
-  const totalEstimatedMinutes = STEPS.reduce((sum, step) => sum + (step.estimatedMinutes || 0), 0);
-  const completedMinutes = STEPS
-    .filter((s) => completed.has(s.id))
-    .reduce((sum, s) => sum + (s.estimatedMinutes || 0), 0);
-  const remainingMinutes = totalEstimatedMinutes - completedMinutes;
-
-  useEffect(() => {
-    if (allDone && !cert && user) {
-      issueCertificate("GSoC Proposal Guide")
-        .then(setCert)
-        .catch(console.error);
-    }
-  }, [allDone, cert, user]);
-
-
-  const howToSchema = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    "name": "GSoC Proposal Writing Guide - Step by Step",
-    "description": "Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure.",
-    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
-    "totalTime": `PT${totalEstimatedMinutes}M`,
-    "step": STEPS.map((s, i) => ({
-      "@type": "HowToStep",
-      "position": i + 1,
-      "name": s.title,
-      "text": s.description || "Follow the visual walkthrough steps."
-    }))
-  };
-
   return (
-    <div className="relative pb-12">
-      <SEO
-        title="GSoC Proposal Writing Guide - Step by Step"
-        description="Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure."
-        keywords="GSoC proposal guide, Google Summer of Code, GSoC tips, open source proposal, GSoC application"
-        canonicalUrl={canonicalUrl("/student/opensource/gsoc-proposal")}
-        ogImage="/og/og-gsoc-proposal.png"
-        structuredData={howToSchema}
-      />
-
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-red-100 dark:bg-red-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-orange-100 dark:bg-orange-900/20 rounded-full blur-3xl opacity-40" />
-        <div
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-10 mt-6"
-      >
-        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-          GSoC <span className="text-gradient-accent">Proposal Guide</span>
-        </h1>
-        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-          A mentor-guided journey from understanding GSoC to writing a proposal that gets accepted
-        </p>
-      </motion.div>
-
-      {/* Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-3 gap-4 mb-8"
-      >
-        {[
-          { icon: Award, value: totalSteps, label: "Steps", iconColor: "text-red-500" },
-          { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
-          { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
-          { icon: Clock, value: allDone ? "Done!" : completed.size > 0 ? `${remainingMinutes} min left` : `${totalEstimatedMinutes} min total`, label: "Est. Time", iconColor: "text-indigo-500" },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
-          >
-            <stat.icon className={`w-6 h-6 ${stat.iconColor} mx-auto mb-3`} />
-            <p className="font-display text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-0.5">{stat.label}</p>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* Completion banner */}
-      <AnimatePresence>
-        {allDone && (
-          <GuideCompletionSection
-            headline="You've completed the guide!"
-            subtitle="Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline."
-            certificateGuideName="GSoC Proposal Guide"
-            accentWord="guide"
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Section Cards */}
-      <div className="space-y-3">
-        {STEPS.map((step, i) => {
-          const done = completed.has(step.id);
-          return (
-            <motion.div
-              key={step.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + i * 0.04, duration: 0.5 }}
-            >
-              <Link
-                to={`/student/opensource/gsoc-proposal/${step.id}`}
-                className={`group flex items-center gap-4 bg-white dark:bg-gray-900 px-5 py-5 rounded-2xl border transition-all duration-300 no-underline ${
-                  done
-                    ? "border-green-200 dark:border-green-800 hover:shadow-lg hover:shadow-green-100/50 dark:hover:shadow-green-900/20"
-                    : "border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50"
-                }`}
-              >
-                {/* Step number / check */}
-                <Button
-                  variant="ghost"
-                  mode="icon"
-                  aria-label="Toggle completion"
-                  size="sm"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(step.id); }}
-                  className="shrink-0"
-                >
-                  {done ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">{step.step}</span>
-                    </div>
-                  )}
-                </Button>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className={`text-sm font-bold ${
-                      done
-                        ? "text-gray-400 dark:text-gray-500 line-through"
-                        : "text-gray-950 dark:text-white"
-                    }`}>
-                      {step.title}
-                    </h3>
-                    {step.estimatedMinutes && (
-                      <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500">~{step.estimatedMinutes} min</span>
-                      )}
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${LEVEL_BG[step.level] || "bg-gray-100 dark:bg-gray-800"} ${LEVEL_COLOR[step.level] || "text-gray-500"}`}>
-                      {step.level}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1">
-                    {step.description}
-                  </p>
-                </div>
-
-                {/* Arrow */}
-                <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-1 transition-all shrink-0" />
-              </Link>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* AI Proposal Reviewer Panel */}
+    <GuideListPage
+      steps={STEPS}
+      storageKey="gsoc-proposal-roadmap-completed"
+      basePath="/student/opensource/gsoc-proposal"
+      title="GSoC Proposal Guide"
+      titleAccent="Proposal"
+      subtitle="A mentor-guided journey from understanding GSoC to writing a proposal that gets accepted"
+      seoTitle="GSoC Proposal Writing Guide - Step by Step"
+      seoDescription="Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure."
+      seoKeywords="GSoC proposal guide, Google Summer of Code, GSoC tips, open source proposal, GSoC application"
+      ogImage="/og/og-gsoc-proposal.png"
+      certificateGuideName="GSoC Proposal Guide"
+      completionHeadline="You've completed the guide!"
+      completionSubtitle="Now start writing your proposal and share a draft with your mentor at least 7 days before the deadline."
+      completionAccentWord="guide"
+    >
       <GSoCProposalAIReview />
-
-      <NextInPathCard currentSlug="gsoc-proposal" completed={allDone} />
-    </div>
+    </GuideListPage>
   );
 }
-

@@ -43,19 +43,27 @@ export function AssessmentTestView({
 
   // Countdown timer
   useEffect(() => {
-  if (secondsLeft === null || secondsLeft <= 0) return;
-  const interval = setInterval(() => {
-    setSecondsLeft((prev) => {
-      if (prev === null) return null;
-      if (prev <= 1) {
-        clearInterval(interval);
-        return 0;
-      }
-      return prev - 1;
-    });
-  }, 1000);
-  return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (secondsLeft === null || secondsLeft <= 0) return;
+    
+    const effectStartTime = Date.now();
+    let endTime: number | null = null;
+    
+    const interval = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev === null) return null;
+        if (endTime === null) {
+          endTime = effectStartTime + prev * 1000;
+        }
+        const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+        if (remaining <= 0) {
+          clearInterval(interval);
+          return 0;
+        }
+        return remaining;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
 }, []); // runs once on mount; functional update inside setInterval handles secondsLeft
 
   // Auto-submit when timer hits 0

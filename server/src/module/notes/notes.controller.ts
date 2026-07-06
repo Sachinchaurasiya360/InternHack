@@ -6,7 +6,9 @@ export class NotesController {
 
   async getNotes(req: Request, res: Response, next: NextFunction) {
     try {
-      const notes = await this.notesService.getNotes(req.user!.id, req.query as any);
+      const userId = req.user?.id;
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
+      const notes = await this.notesService.getNotes(userId, req.query as any);
       res.json({ notes });
     } catch (err) {
       next(err);
@@ -15,9 +17,11 @@ export class NotesController {
 
   async getNote(req: Request, res: Response, next: NextFunction) {
     try {
+      const userId = req.user?.id;
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
       const { contentType, contentId } = req.params;
       const note = await this.notesService.getNote(
-        req.user!.id,
+        userId,
         contentType as any,
         contentId as string
       );
@@ -29,10 +33,12 @@ export class NotesController {
 
   async saveNote(req: Request, res: Response, next: NextFunction) {
     try {
+      const userId = req.user?.id;
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
       const { contentType, contentId } = req.params;
       const { note } = req.body;
       const saved = await this.notesService.saveNote(
-        req.user!.id,
+        userId,
         contentType as any,
         contentId as string,
         note
@@ -45,9 +51,11 @@ export class NotesController {
 
   async deleteNote(req: Request, res: Response, next: NextFunction) {
     try {
+      const userId = req.user?.id;
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
       const { contentType, contentId } = req.params;
       const result = await this.notesService.deleteNote(
-        req.user!.id,
+        userId,
         contentType as any,
         contentId as string
       );

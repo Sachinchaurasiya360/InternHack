@@ -15,7 +15,6 @@ import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 import GitHubImportModal from "./GitHubImportModal";
 import GitHubStatsCard from "./GitHubStatsCard";
-import { BadgesSection } from "../badges/BadgesSection";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import { SectionHeader } from "./components/SectionHeader";
 import { IdentityCard } from "./components/IdentityCard";
@@ -593,11 +592,6 @@ export default function StudentProfilePage() {
             />
           </motion.div>
 
-          {user?.id && (
-            <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible">
-              <BadgesSection studentId={user.id} />
-            </motion.div>
-          )}
 
           <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible">
             <GitHubStatsCard githubUrl={form.githubUrl} />

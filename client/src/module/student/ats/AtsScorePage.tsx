@@ -396,20 +396,6 @@ export default function AtsScorePage() {
             gaps and concrete rewrite suggestions.
           </p>
         </div>
-        {atsUsage && (
-          <div className="flex flex-col items-end gap-1">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-              daily usage
-            </span>
-            <span className="text-sm font-bold tabular-nums text-stone-900 dark:text-stone-50">
-              {atsUsage.used}
-              <span className="text-stone-400 dark:text-stone-600 font-normal">
-                {" "}
-                / {atsUsage.limit}
-              </span>
-            </span>
-          </div>
-        )}
       </motion.div>
 
       <AtsToolsNav />

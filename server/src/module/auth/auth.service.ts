@@ -4,16 +4,11 @@ import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
 import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
-import { BadgeService } from "../badge/badge.service.js";
-import { UserService } from "../user/user.service.js";
 import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from "../../utils/cache.js";
-
-const userService = new UserService();
 
 // TTL shorter than S3 presigned URL expiry (S3 default â‰¥15 min)
 const PROFILE_TTL = 300;
 
-const badgeService = new BadgeService();
 import { signUrl, signUrls } from "../../utils/s3.utils.js";
 import { createUniqueProfileSlug } from "../../lib/slug.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -55,7 +50,6 @@ const AUTH_USER_SELECT = {
   subscriptionPlan: true,
   subscriptionStatus: true,
   subscriptionEndDate: true,
-  ossTier: true,
 } as const;
 
 type AuthUser = Pick<User, keyof typeof AUTH_USER_SELECT>;
@@ -78,13 +72,12 @@ function buildAuthUser(user: AuthUser): AuthUser {
     subscriptionPlan: user.subscriptionPlan,
     subscriptionStatus: user.subscriptionStatus,
     subscriptionEndDate: user.subscriptionEndDate,
-    ossTier: user.ossTier,
   };
 }
 
 /** Generate a 6-digit OTP with its hash and expiry timestamp. */
 async function generateOtp() {
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otp = crypto.randomInt(100000, 1000000).toString();
   const hashedOtp = await hashPassword(otp);
   const expiresAt = new Date(Date.now() + OTP_TTL_MS);
   return { otp, hashedOtp, expiresAt };
@@ -226,36 +219,7 @@ export class AuthService {
       html: otpEmailHtml(user.name, otp),
     }).catch((err) => console.error("Failed to send OTP email:", err));
 
-    // Record referral conversion if a ref code was provided
-    if (data.ref) {
-      this.recordReferral(data.ref, user.id).catch((err) =>
-        console.error("Failed to record referral during registration:", err)
-      );
-    }
-
     return { user };
-  }
-
-  private async recordReferral(code: string, userId: number) {
-    try {
-      const link = await prisma.referralLink.findUnique({
-        where: { code },
-        select: { id: true },
-      });
-      if (!link) return;
-
-      try {
-        await prisma.referralConversion.upsert({
-          where: { referredUserId: userId },
-          update: {},
-          create: { referralLinkId: link.id, referredUserId: userId },
-        });
-      } catch (err: any) {
-        console.error("Failed to write referral conversion (likely duplicate/unique violation):", err);
-      }
-    } catch (err: any) {
-      console.error("Failed to record referral:", err);
-    }
   }
 
   async googleAuth(data: GoogleAuthInput) {
@@ -381,7 +345,7 @@ export class AuthService {
       throw new Error("Invalid email or password");
     }
 
-    // Block unverified students/recruiters, admins skip verification
+    // Block unverified students, admins skip verification
     if (!user.isVerified && user.role !== "ADMIN") {
       const { otp, hashedOtp, expiresAt } = await generateOtp();
       await prisma.user.update({
@@ -444,7 +408,6 @@ export class AuthService {
     subscriptionPlan: true,
     subscriptionStatus: true,
     subscriptionEndDate: true,
-    ossTier: true,
   } as const;
 
   async getProfile(userId: number) {
@@ -516,9 +479,6 @@ export class AuthService {
       select: this.profileSelect,
     });
 
-    // Check profile_complete badge (fire-and-forget)
-    badgeService.checkAndAwardBadges(userId, "profile_complete").catch((err) => console.error("Badge check failed (profile_complete):", err));
-
     await signProfileMedia(user as Record<string, any>);
 
     // Bust cached profile so next GET /auth/me and public profile returns fresh data.
@@ -536,7 +496,7 @@ export class AuthService {
    * Fetch the public profile for a given identifier (slug or numeric id).
    *
    * DB query count per request:
-   *   CACHED  – 0 Prisma queries (served from Redis / in-process fallback)
+   *   CACHED  – 0 Prisma queries (served from the in-process cache)
    *   UNCACHED – 1-2 Prisma queries:
    *     • 1 × user.findUnique (by profileSlug)
    *     • +1 × user.findUnique (by id, only when slug lookup returns null and identifier is numeric)
@@ -584,20 +544,16 @@ export class AuthService {
 
     await signProfileMedia(rest as Record<string, any>);
 
-    // Fetch lightweight badge display list — no heavy criteria JSON
-    const badges = await badgeService.getStudentBadgesDisplay(user.id);
-
     // Full view (includes email/contactNo). Only the owner and authorized
     // viewers ever receive this; it is never written to the shared guest key.
     const fullResult = {
       ...rest,
-      badges,
     };
     // Guest-safe view: strip PII regardless of who triggered the request.
     const { email: _email, contactNo: _contactNo, ...guestRest } = fullResult as any;
     const guestResult = guestRest;
 
-    // Authorized tier (admin/recruiter): cache and return the full view under
+    // Authorized tier (admin): cache and return the full view under
     // the ":auth" key, which is only ever served back to authorized viewers.
     if (isVisitorAuthorized) {
       await cacheSet(cacheKey, fullResult, PROFILE_TTL);

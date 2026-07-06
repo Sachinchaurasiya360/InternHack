@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,7 +15,7 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "@/components/ui/toast";
-import { sanitizeHtml } from "../../../lib/sanitize";
+import { SafeHtml } from "../../../components/common/SafeHtml";
 import { GridBackground } from "../../../components/ui/GridBackground";
 import { NotesPanel } from "../../../components/learning/NotesPanel";
 
@@ -80,15 +80,31 @@ export default function AptitudeTopicPage() {
     onError: () => toast.error("Failed to reset progress"),
   });
 
+  const endTimeRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (!timerRunning || !topic?.questions.length) return;
+    if (!timerRunning || !topic?.questions.length) {
+      endTimeRef.current = null;
+      return;
+    }
+    
+    if (endTimeRef.current === null) {
+      endTimeRef.current = Date.now() + timeLeft * 1000;
+    }
+    
     const id = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) { setTimerRunning(false); return 0; }
-        return t - 1;
+      setTimeLeft(() => {
+        const remaining = Math.max(0, Math.ceil((endTimeRef.current! - Date.now()) / 1000));
+        if (remaining <= 0) {
+          setTimerRunning(false);
+          clearInterval(id);
+          return 0;
+        }
+        return remaining;
       });
     }, 1000);
     return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timerRunning, topic?.questions.length]);
 
   useEffect(() => {
@@ -397,9 +413,10 @@ export default function AptitudeTopicPage() {
                 <span className="shrink-0 w-9 h-9 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-white/10 flex items-center justify-center text-[11px] font-mono font-bold tabular-nums text-stone-900 dark:text-stone-50">
                   {String(qNum).padStart(2, "0")}
                 </span>
-                <div
+                <SafeHtml
                   className="text-sm text-stone-800 dark:text-stone-200 leading-relaxed flex-1 min-w-0 pt-1 wrap-break-word"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.question) }}
+                  html={q.question}
+                  method="sanitize-html"
                 />
               </div>
 
@@ -484,11 +501,10 @@ export default function AptitudeTopicPage() {
                     explanation
                   </div>
                   <div className="bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-white/10 rounded-md p-4">
-                    <div
+                    <SafeHtml
                       className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed"
-                      dangerouslySetInnerHTML={{
-                        __html: sanitizeHtml(resultsMap[q.id]?.explanation || q.explanation || ""),
-                      }}
+                      html={resultsMap[q.id]?.explanation || q.explanation || ""}
+                      method="sanitize-html"
                     />
                   </div>
                 </motion.div>

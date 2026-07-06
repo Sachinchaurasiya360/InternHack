@@ -399,6 +399,3 @@ body::-webkit-scrollbar-thumb:hover {
     margin: 0.5in;
   }
 }
-/* Hide scrollbar for horizontal scroll chips */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

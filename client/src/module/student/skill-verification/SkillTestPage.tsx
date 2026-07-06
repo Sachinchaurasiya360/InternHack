@@ -46,15 +46,16 @@ function useCountdown(totalSeconds: number | null, onExpire: () => void) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setRemaining(totalSeconds);
 
+    const endTime = Date.now() + totalSeconds * 1000;
+
     const interval = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          onExpireRef.current();
-          return 0;
-        }
-        return prev - 1;
-      });
+      const now = Date.now();
+      const timeLeft = Math.max(0, Math.ceil((endTime - now) / 1000));
+      setRemaining(timeLeft);
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        onExpireRef.current();
+      }
     }, 1000);
 
     return () => clearInterval(interval);

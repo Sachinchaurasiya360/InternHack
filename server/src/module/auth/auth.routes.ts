@@ -4,7 +4,6 @@ import { AuthService } from "./auth.service.js";
 import { authMiddleware, optionalAuthMiddleware } from "../../middleware/auth.middleware.js";
 import { usageLimit } from "../../middleware/usage-limit.middleware.js";
 import { rateLimit } from "express-rate-limit";
-import { createRateLimitStore } from "../../utils/rate-limit-store.js";
 import {
   validateBody,
   registerSchema,
@@ -23,22 +22,21 @@ import {
 // Rate limiters
 // ---------------------------------------------------------------------------
 
-const createOtpRateLimit = (max: number, message: string, prefix: string) => rateLimit({
+const createOtpRateLimit = (max: number, message: string) => rateLimit({
   windowMs: 15 * 60 * 1000,
   max,
   message: { message },
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRateLimitStore(prefix),
 });
 
-const verifyEmailRateLimit = createOtpRateLimit(5, "Too many attempts, please try again after 15 minutes", "verify-email");
-const resendOtpRateLimit = createOtpRateLimit(3, "Too many resend attempts, please try again after 15 minutes", "resend-otp");
+const verifyEmailRateLimit = createOtpRateLimit(5, "Too many attempts, please try again after 15 minutes");
+const resendOtpRateLimit = createOtpRateLimit(3, "Too many resend attempts, please try again after 15 minutes");
 
 // Recovery endpoints are unauthenticated – stricter limits prevent OTP
 // brute-forcing and SMTP quota exhaustion.
-const forgotPasswordRateLimit = createOtpRateLimit(3, "Too many password reset requests, please try again after 15 minutes", "forgot-password");
-const resetPasswordRateLimit = createOtpRateLimit(5, "Too many password reset attempts, please try again after 15 minutes", "reset-password");
+const forgotPasswordRateLimit = createOtpRateLimit(3, "Too many password reset requests, please try again after 15 minutes");
+const resetPasswordRateLimit = createOtpRateLimit(5, "Too many password reset attempts, please try again after 15 minutes");
 
 // Profile enumeration protection: 10 requests per minute per IP
 const publicProfileRateLimit = rateLimit({
@@ -47,7 +45,6 @@ const publicProfileRateLimit = rateLimit({
   message: { message: "Too many requests, please slow down" },
   standardHeaders: true,
   legacyHeaders: false,
-  store: createRateLimitStore("public-profile"),
 });
 
 // ---------------------------------------------------------------------------

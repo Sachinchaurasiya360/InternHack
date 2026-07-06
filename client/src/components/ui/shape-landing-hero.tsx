@@ -115,7 +115,7 @@ function HeroGeometric() {
           className="mt-8 text-base md:text-lg text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed"
         >
           InternHack scores your resume, sharpens your DSA, runs mock
-          interviews, and sends your application straight to recruiters hiring.
+          interviews, and sends your application straight to companies hiring.
         </motion.p>
 
         <motion.div

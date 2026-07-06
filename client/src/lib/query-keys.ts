@@ -98,7 +98,6 @@ export const queryKeys = {
     trend: (startDate?: string, endDate?: string) =>
       ["opensource", "trend", startDate, endDate] as const,
     hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
-    streak: () => ["opensource", "streak"] as const,
     githubConnection: () => ["opensource", "github-connection"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
@@ -166,14 +165,6 @@ export const queryKeys = {
     status: (id: string | number) => ["external-job-status", id] as const,
   },
 
-  // Badges
-  badges: {
-    all: () => ["badges", "all"] as const,
-    my: () => ["badges", "my"] as const,
-    student: (id: number) => ["badges", "student", id] as const,
-    admin: (params?: Record<string, string | number>) =>
-      ["badges", "admin", params] as const,
-  },
 
   // Saved Candidates
   savedCandidates: {

@@ -18,7 +18,7 @@ interface SEOProps {
 
 const SITE_NAME = "InternHack";
 const DEFAULT_DESCRIPTION =
-  "InternHack is an AI-powered career platform for students. Browse curated internships, score your resume with ATS AI, follow career roadmaps, and connect directly with recruiters.";
+  "InternHack is an AI-powered career platform for students. Browse curated internships, score your resume with ATS AI, follow career roadmaps, and prepare for placements.";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 const DEFAULT_OG_IMAGE_DARK = `${SITE_URL}/og-image-dark.png`;
 

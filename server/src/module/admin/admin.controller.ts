@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import crypto from "crypto";
 import { validateRequestData } from "../../utils/validation.utils.js";
 import type { AdminService } from "./admin.service.js";
 import { setTokenCookie } from "../../utils/cookie.utils.js";
@@ -1008,7 +1009,12 @@ export class AdminController {
 
       const apiKey = req.headers["x-api-key"];
       const expectedKey = process.env["EXTERNAL_JOB_API_KEY"];
-      if (!expectedKey || apiKey !== expectedKey) {
+      const keyValid =
+        typeof apiKey === "string" &&
+        !!expectedKey &&
+        apiKey.length === expectedKey.length &&
+        crypto.timingSafeEqual(Buffer.from(apiKey), Buffer.from(expectedKey));
+      if (!keyValid) {
         logger.warn("[ingestExternalJob] auth failed", {
           expectedKeySet: !!expectedKey,
           receivedKeyPresent: !!apiKey,

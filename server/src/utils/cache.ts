@@ -1,53 +1,45 @@
-import { redis } from "../config/redis.js";
-
-interface FallbackEntry {
+interface CacheEntry {
   val: string;
   exp: number;
 }
 
-const fallback = new Map<string, FallbackEntry>();
+const store = new Map<string, CacheEntry>();
+const MAX_ENTRIES = 10_000;
+const SWEEP_INTERVAL_MS = 60_000;
+
+function sweepExpired(): void {
+  const now = Date.now();
+  for (const [key, entry] of store) {
+    if (now > entry.exp) store.delete(key);
+  }
+}
+
+const sweepTimer = setInterval(sweepExpired, SWEEP_INTERVAL_MS);
+if (sweepTimer.unref) sweepTimer.unref();
 
 export async function cacheGet<T>(key: string): Promise<T | null> {
-  if (redis) {
-    const raw = await redis.get(key);
-    return raw ? (JSON.parse(raw) as T) : null;
-  }
-  const entry = fallback.get(key);
+  const entry = store.get(key);
   if (!entry || Date.now() > entry.exp) {
-    fallback.delete(key);
+    store.delete(key);
     return null;
   }
   return JSON.parse(entry.val) as T;
 }
 
 export async function cacheSet(key: string, value: unknown, ttlSeconds: number): Promise<void> {
-  const serialized = JSON.stringify(value);
-  if (redis) {
-    await redis.set(key, serialized, "EX", ttlSeconds);
-    return;
+  if (store.size >= MAX_ENTRIES && !store.has(key)) {
+    sweepExpired();
+    if (store.size >= MAX_ENTRIES) return;
   }
-  fallback.set(key, { val: serialized, exp: Date.now() + ttlSeconds * 1000 });
+  store.set(key, { val: JSON.stringify(value), exp: Date.now() + ttlSeconds * 1000 });
 }
 
 export async function cacheDel(key: string): Promise<void> {
-  if (redis) {
-    await redis.del(key);
-    return;
-  }
-  fallback.delete(key);
+  store.delete(key);
 }
 
 export async function cacheDelPattern(prefix: string): Promise<void> {
-  if (redis) {
-    let cursor = "0";
-    do {
-      const [next, keys] = await redis.scan(cursor, "MATCH", `${prefix}*`, "COUNT", 100);
-      cursor = next;
-      if (keys.length > 0) await redis.del(...keys);
-    } while (cursor !== "0");
-    return;
-  }
-  for (const key of fallback.keys()) {
-    if (key.startsWith(prefix)) fallback.delete(key);
+  for (const key of store.keys()) {
+    if (key.startsWith(prefix)) store.delete(key);
   }
 }

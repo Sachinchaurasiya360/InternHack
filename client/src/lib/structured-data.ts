@@ -203,7 +203,7 @@ export function websiteSchema(): JsonLd {
     name: "InternHack",
     url: SITE_URL,
     description:
-      "AI-powered career platform for students, curated internships, ATS resume scoring, learning tracks, and direct recruiter connections.",
+      "AI-powered career platform for students, curated internships, ATS resume scoring, learning tracks, and placement preparation.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -229,7 +229,7 @@ export function platformOrganizationSchema(): JsonLd {
       height: 630,
     },
     description:
-      "AI-powered career platform for students and recruiters, internships, ATS resume scoring, learning tracks, open source, skill verification.",
+      "AI-powered career platform for students, internships, ATS resume scoring, learning tracks, open source, skill verification.",
     sameAs: [
       "https://twitter.com/internhack",
       "https://www.linkedin.com/company/internhack",

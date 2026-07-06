@@ -3,9 +3,15 @@ import { execSync } from "child_process";
 import * as net from "net";
 import * as path from "path";
 
-dotenv.config({
-  path: path.resolve(process.cwd(), "../.env"),
-});
+const envFiles = [
+  path.resolve(process.cwd(), "../.env"),
+  path.resolve(process.cwd(), ".env"),
+  path.resolve(process.cwd(), ".env.local"),
+];
+
+for (const envFile of envFiles) {
+  dotenv.config({ path: envFile, override: true });
+}
 
 let passed = 0;
 let failed = 0;
@@ -50,49 +56,12 @@ function checkEnvVariables() {
   }
 }
 
-function checkDockerInstalled() {
-  try {
-    execSync("docker --version", { stdio: "ignore" });
-    success("Docker installed");
-  } catch {
-    fail("Docker not installed");
-  }
-}
-
-function checkDockerRunning() {
-  try {
-    execSync("docker ps", { stdio: "ignore" });
-    success("Docker Engine running");
-  } catch {
-    fail("Docker Engine not running");
-  }
-}
-
 function checkPrisma() {
   try {
     execSync("npx prisma --version", { stdio: "ignore" });
     success("Prisma available");
   } catch {
     fail("Prisma not available");
-  }
-}
-
-function checkPostgresContainer() {
-  try {
-    const output = execSync("docker ps --format \"{{.Names}}\"", {
-      encoding: "utf8",
-    });
-
-    if (
-      output.toLowerCase().includes("postgres") ||
-      output.toLowerCase().includes("internhack-postgres")
-    ) {
-      success("PostgreSQL container running");
-    } else {
-      warn("PostgreSQL container not detected");
-    }
-  } catch {
-    warn("Unable to verify PostgreSQL container");
   }
 }
 
@@ -123,10 +92,7 @@ async function main() {
 
   checkNodeVersion();
   checkEnvVariables();
-  checkDockerInstalled();
-  checkDockerRunning();
   checkPrisma();
-  checkPostgresContainer();
 
   await checkPort(3000);
   await checkPort(5173);

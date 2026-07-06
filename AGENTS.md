@@ -1,7 +1,7 @@
 # InternHack, Codex Instructions
 
 ## Project Overview
-InternHack is a full-stack internship/career platform for students with AI-powered tools, learning modules, and recruiter features.
+InternHack is a full-stack internship/career platform for students with AI-powered tools and learning modules.
 
 ## Quick Start
 - **Server:** `cd server && npm run dev` (runs `tsx watch src/index.ts`)
@@ -72,7 +72,7 @@ Config in `server/src/config/usage-limits.ts`.
 ### Adding a New Client Page
 1. Create page component in `client/src/module/<area>/<PageName>.tsx`
 2. Add lazy import in `client/src/App.tsx`
-3. Add route in the appropriate route group (public/student/recruiter/admin)
+3. Add route in the appropriate route group (public/student/admin)
 
 ### AI Integration (Gemini)
 - Use `GoogleGenerativeAI` from `@google/generative-ai`
@@ -89,7 +89,7 @@ Use the reusable `Button` from `client/src/components/ui/button.tsx` (CVA-based)
 - Import: `import { Button } from "../../components/ui/button"`
 
 ### SEO on Internal Pages
-All admin and recruiter pages must include `<SEO title="Page Title" noIndex />`. Public pages use full SEO props.
+All admin pages must include `<SEO title="Page Title" noIndex />`. Public pages use full SEO props.
 
 ### File Upload Validation
 `DynamicFieldRenderer.tsx` validates file uploads client-side (size ≤ 5 MB, allowed types). Follow this pattern for any new file upload UI.
