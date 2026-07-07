@@ -47,6 +47,31 @@ interface ProfileData {
   projects: ProjectItem[];
 }
 
+type ProfileUserPayload = Partial<ProfileData> & { createdAt?: string | null };
+
+function toProfileData(u: ProfileUserPayload): ProfileData {
+  return {
+    name: u.name ?? "",
+    email: u.email ?? "",
+    contactNo: u.contactNo ?? "",
+    company: u.company ?? "",
+    designation: u.designation ?? "",
+    resumes: u.resumes ?? [],
+    profilePic: u.profilePic ?? "",
+    coverImage: u.coverImage ?? "",
+    bio: u.bio ?? "",
+    college: u.college ?? "",
+    graduationYear: u.graduationYear ?? null,
+    skills: u.skills ?? [],
+    location: u.location ?? "",
+    linkedinUrl: u.linkedinUrl ?? "",
+    githubUrl: u.githubUrl ?? "",
+    portfolioUrl: u.portfolioUrl ?? "",
+    leetcodeUrl: u.leetcodeUrl ?? "",
+    projects: u.projects ?? [],
+  };
+}
+
 // Display labels for skillName slugs from GET /skill-tests (same source the
 // skill-verification page uses). Falls back to a hyphen-to-space title-case
 // for any future skill test added before this map is updated.
@@ -111,6 +136,7 @@ export default function StudentProfilePage() {
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [cropType, setCropType] = useState<"profile" | "cover" | null>(null);
   const [showGitHubImport, setShowGitHubImport] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const queryClient = useQueryClient();
   const formInitialized = useRef(false);
@@ -168,19 +194,8 @@ export default function StudentProfilePage() {
   useEffect(() => {
     if (!profileUser || formInitialized.current) return;
     formInitialized.current = true;
-    const u = profileUser;
-    setForm({
-      name: u.name ?? "", email: u.email ?? "", contactNo: u.contactNo ?? "",
-      company: u.company ?? "", designation: u.designation ?? "",
-      resumes: u.resumes ?? [], profilePic: u.profilePic ?? "",
-      coverImage: u.coverImage ?? "", bio: u.bio ?? "", college: u.college ?? "",
-      graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
-      location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
-      githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
-      leetcodeUrl: u.leetcodeUrl ?? "",
-      projects: u.projects ?? [],
-    });
-    setMemberSince(u.createdAt ?? null);
+    setForm(toProfileData(profileUser));
+    setMemberSince(profileUser.createdAt ?? null);
   }, [profileUser]);
 
   const verifiedSkills: VerifiedSkill[] = verifiedData?.verified ?? [];
@@ -269,9 +284,9 @@ export default function StudentProfilePage() {
     setForm((prev) => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }));
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<boolean> => {
     if (!form.name.trim() || form.name.trim().length < 2) {
-      toast.error("Name must be at least 2 characters"); return;
+      toast.error("Name must be at least 2 characters"); return false;
     }
     if (form.contactNo && form.contactNo.trim()) {
       const normalizedPhone = form.contactNo.replace(/[\s-]/g, "");
@@ -279,7 +294,7 @@ export default function StudentProfilePage() {
         toast.error("Phone must include country code (e.g. +91 9876543210)");
         setFieldErrors((prev) => ({ ...prev, contactNo: ["Phone must include country code (e.g. +91 9876543210)"] }));
         setOpenSections((prev) => ({ ...prev, basic: true }));
-        return;
+        return false;
       }
     }
     setFieldErrors({});
@@ -310,6 +325,8 @@ export default function StudentProfilePage() {
       syncUser(updated);
       void queryClient.invalidateQueries({ queryKey: queryKeys.profile.me() });
       toast.success("Profile updated!");
+      setIsEditing(false);
+      return true;
     } catch (err: unknown) {
       const errData = (err as { response?: { data?: { errors?: { fieldErrors?: Record<string, string[]> } } } })?.response?.data;
       if (errData?.errors?.fieldErrors) {
@@ -335,9 +352,19 @@ export default function StudentProfilePage() {
       } else {
         toast.error("Failed to update profile");
       }
+      return false;
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCancelEdit = () => {
+    if (profileUser) setForm(toProfileData(profileUser));
+    setFieldErrors({});
+    setSkillInput("");
+    setShowSkillSuggestions(false);
+    setShowCollegeSuggestions(false);
+    setIsEditing(false);
   };
 
   const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
@@ -446,7 +473,14 @@ export default function StudentProfilePage() {
     <div className="relative pb-16">
       <SEO title="My Profile" description="Update your InternHack student profile details." noIndex />
 
-      <ProfilePageHeader profileCompletion={profileCompletion} saving={saving} onSave={handleSave} />
+      <ProfilePageHeader
+        profileCompletion={profileCompletion}
+        saving={saving}
+        isEditing={isEditing}
+        onEdit={() => setIsEditing(true)}
+        onCancel={handleCancelEdit}
+        onSave={handleSave}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Identity sidebar */}
@@ -466,6 +500,7 @@ export default function StudentProfilePage() {
               portfolioUrl={form.portfolioUrl}
               uploadingPic={uploadingPic}
               uploadingCover={uploadingCover}
+              isEditing={isEditing}
               onProfilePicSelect={handleProfilePicSelect}
               onCoverImageSelect={handleCoverImageSelect}
             />
@@ -499,6 +534,7 @@ export default function StudentProfilePage() {
                 contactNo={form.contactNo}
                 location={form.location}
                 fieldErrors={fieldErrors}
+                isEditing={isEditing}
                 onChange={(field, value) => handleChange(field as keyof ProfileData, value)}
               />
             )}
@@ -524,6 +560,7 @@ export default function StudentProfilePage() {
                 showCollegeSuggestions={showCollegeSuggestions}
                 collegeInputRef={collegeInputRef}
                 collegeDropdownRef={collegeDropdownRef}
+                isEditing={isEditing}
                 onCollegeChange={(value) => { handleChange("college", value); searchColleges(value); }}
                 onCollegeFocus={() => { if (collegeSuggestions.length > 0) setShowCollegeSuggestions(true); }}
                 onSelectCollege={(name) => { handleChange("college", name); setShowCollegeSuggestions(false); setCollegeSuggestions([]); }}
@@ -550,6 +587,7 @@ export default function StudentProfilePage() {
                 verifiedMap={verifiedMap}
                 skillInputRef={skillInputRef}
                 skillDropdownRef={skillDropdownRef}
+                isEditing={isEditing}
                 onSkillInputChange={(value) => { setSkillInput(value); setShowSkillSuggestions(value.trim().length > 0); }}
                 onSkillInputFocus={() => { if (skillInput.trim().length > 0) setShowSkillSuggestions(true); }}
                 onAddSkill={handleAddSkill}
@@ -567,18 +605,21 @@ export default function StudentProfilePage() {
               open={openSections.projects}
               onToggle={() => toggleSection("projects")}
               right={
-                <button
-                  type="button"
-                  onClick={() => setShowGitHubImport(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-stone-300 dark:border-white/10 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-white/30 transition-colors bg-transparent cursor-pointer"
-                >
-                  <Github className="w-3.5 h-3.5" /> import
-                </button>
+                isEditing ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowGitHubImport(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-stone-300 dark:border-white/10 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-white/30 transition-colors bg-transparent cursor-pointer"
+                  >
+                    <Github className="w-3.5 h-3.5" /> import
+                  </button>
+                ) : null
               }
             />
             {openSections.projects && (
               <ProjectsSection
                 projects={form.projects}
+                isEditing={isEditing}
                 onChange={(projects) => {
                   setForm((prev) => ({ ...prev, projects }));
                   if (fieldErrors.projects) setFieldErrors((prev) => { const next = { ...prev }; delete next.projects; return next; });
@@ -608,6 +649,7 @@ export default function StudentProfilePage() {
                 portfolioUrl={form.portfolioUrl}
                 leetcodeUrl={form.leetcodeUrl}
                 fieldErrors={fieldErrors}
+                isEditing={isEditing}
                 onChange={(field, value) => handleChange(field as keyof ProfileData, value)}
               />
             )}
@@ -627,6 +669,7 @@ export default function StudentProfilePage() {
                 resumes={form.resumes}
                 uploadingResume={uploadingResume}
                 deletingResume={deletingResume}
+                isEditing={isEditing}
                 onUpload={handleResumeUpload}
                 onDelete={handleResumeDelete}
               />
@@ -643,6 +686,7 @@ export default function StudentProfilePage() {
           </motion.div>
 
           {/* Save (bottom) */}
+          {isEditing && (
           <motion.div custom={10} variants={fadeInUp} initial="hidden" animate="visible" className="pt-2">
             <button
               type="button"
@@ -653,6 +697,7 @@ export default function StudentProfilePage() {
               {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save all changes</>}
             </button>
           </motion.div>
+          )}
         </div>
       </div>
 

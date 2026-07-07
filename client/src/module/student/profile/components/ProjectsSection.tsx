@@ -151,12 +151,72 @@ function SortableProjectItem({
   );
 }
 
+function ProjectSummaryItem({ project }: { project: ProjectItem }) {
+  return (
+    <div className="flex items-start gap-3 px-4 py-3 border border-stone-200 dark:border-white/10 rounded-md bg-white dark:bg-transparent">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <h4 className="text-sm font-bold text-stone-900 dark:text-stone-50 truncate">
+            {project.title}
+          </h4>
+          {project.builtAt && (
+            <span className="text-xs text-stone-500 font-mono flex items-center gap-1 shrink-0">
+              <Calendar className="w-3 h-3" /> {project.builtAt}
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-stone-500 mt-1 line-clamp-2 leading-relaxed">
+          {project.description || "No description added."}
+        </p>
+        {project.techStack.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {project.techStack.map((t, i) => (
+              <span
+                key={i}
+                className="px-2 py-0.5 text-xs font-mono uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-md border border-stone-200 dark:border-white/10"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+        {(project.liveUrl || project.repoUrl) && (
+          <div className="flex gap-3 mt-2.5">
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline"
+              >
+                <ExternalLink className="w-3 h-3" /> live
+              </a>
+            )}
+            {project.repoUrl && (
+              <a
+                href={project.repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 flex items-center gap-1 no-underline"
+              >
+                <Github className="w-3 h-3" /> code
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function ProjectsSection({
   projects,
+  isEditing,
   onChange,
   errors,
 }: {
   projects: ProjectItem[];
+  isEditing: boolean;
   onChange: (p: ProjectItem[]) => void;
   errors?: string[];
 }) {
@@ -281,30 +341,42 @@ export function ProjectsSection({
         </p>
       )}
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={projects.map((p) => p.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="space-y-3">
-            {projects.map((p) => (
-              <SortableProjectItem
-                key={p.id}
-                project={p}
-                isEditing={editing === p.id}
-                onEdit={() => startEdit(p)}
-                onRemove={() => remove(p.id)}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+      {projects.length === 0 && !isEditing && (
+        <p className="text-sm text-stone-400 dark:text-stone-600">No featured projects added yet.</p>
+      )}
 
-      {editing && (
+      {isEditing ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={projects.map((p) => p.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-3">
+              {projects.map((p) => (
+                <SortableProjectItem
+                  key={p.id}
+                  project={p}
+                  isEditing={editing === p.id}
+                  onEdit={() => startEdit(p)}
+                  onRemove={() => remove(p.id)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      ) : (
+        <div className="space-y-3">
+          {projects.map((p) => (
+            <ProjectSummaryItem key={p.id} project={p} />
+          ))}
+        </div>
+      )}
+
+      {isEditing && editing && (
         <div className="px-4 py-4 border border-lime-300 dark:border-lime-700/40 bg-lime-50/40 dark:bg-lime-900/5 rounded-md space-y-3 mt-3 shadow-sm transition-all">
           <div>
             <label className={labelClass}>Title</label>
@@ -484,7 +556,7 @@ export function ProjectsSection({
         </div>
       )}
 
-      {projects.length < 4 && !editing && (
+      {isEditing && projects.length < 4 && !editing && (
         <Button
           type="button"
           onClick={startAdd}

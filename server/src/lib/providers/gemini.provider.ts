@@ -22,4 +22,20 @@ export class GeminiProvider implements AIProvider {
       outputTokens: result.response.usageMetadata?.candidatesTokenCount,
     };
   }
+
+  async generateWithInlinePdf(pdfBase64: string, prompt: string): Promise<AIProviderResponse> {
+    const start = Date.now();
+    const model = this.genAI.getGenerativeModel({ model: this.modelName });
+    const result = await model.generateContent([
+      { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
+      { text: prompt },
+    ]);
+    const text = result.response.text();
+    return {
+      text,
+      latencyMs: Date.now() - start,
+      inputTokens: result.response.usageMetadata?.promptTokenCount,
+      outputTokens: result.response.usageMetadata?.candidatesTokenCount,
+    };
+  }
 }

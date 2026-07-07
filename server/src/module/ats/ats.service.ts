@@ -1,7 +1,6 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Worker } from "worker_threads";
 import { prisma } from "../../database/db.js";
 import { getBufferFromS3, getS3KeyFromUrl } from "../../utils/s3.utils.js";
 import { guestResumeKeyPrefix } from "../../utils/guest-ip.utils.js";
@@ -15,8 +14,7 @@ import type {
   ApplySuggestionsInput,
 } from "./ats.types.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class AtsService {
   private normalizeResumeUrl(resumeUrl: string): string {
@@ -38,16 +36,10 @@ export class AtsService {
       throw new Error("Resume does not belong to this user");
     }
 
-    const resumeText = await this.extractPdfText(resumeUrl);
+    const pdfBuffer = await this.getResumeBuffer(resumeUrl);
 
-    if (!resumeText || resumeText.trim().length < 50) {
-      throw new Error(
-        "Could not extract sufficient text from the resume PDF. Make sure it is not a scanned image.",
-      );
-    }
-
-    const result = await this.callAI(
-      resumeText,
+    const result = await this.callAIWithPdf(
+      pdfBuffer,
       studentId,
       input.jobTitle,
       input.jobDescription,
@@ -74,15 +66,9 @@ export class AtsService {
       throw new Error("Invalid resume URL for guest scoring");
     }
 
-    const resumeText = await this.extractPdfText(resumeUrl);
+    const pdfBuffer = await this.getResumeBuffer(resumeUrl);
 
-    if (!resumeText || resumeText.trim().length < 50) {
-      throw new Error(
-        "Could not extract sufficient text from the resume PDF. Make sure it is not a scanned image.",
-      );
-    }
-
-    const result = await this.callAI(resumeText, 0, input.jobTitle, input.jobDescription);
+    const result = await this.callAIWithPdf(pdfBuffer, 0, input.jobTitle, input.jobDescription);
     const now = new Date();
 
     return {
@@ -115,34 +101,26 @@ export class AtsService {
       throw new Error("Resume does not belong to this user");
     }
 
-    const resumeText = await this.extractPdfText(resumeUrl);
-
-    if (!resumeText || resumeText.trim().length < 50) {
-      throw new Error(
-        "Could not extract sufficient text from the resume PDF. Make sure it is not a scanned image.",
-      );
-    }
+    const pdfBuffer = await this.getResumeBuffer(resumeUrl);
 
     const provider = getProviderForService("ATS_SCORE");
-    const prompt = this.buildApplySuggestionsPrompt(resumeText, input);
-    const response = await provider.generateText(prompt);
+    const prompt = this.buildApplySuggestionsPrompt(input);
+    const pdfBase64 = pdfBuffer.toString("base64");
+    const response = await provider.generateWithInlinePdf!(pdfBase64, prompt);
     logAIRequest("ATS_SCORE", response, true, undefined, studentId);
 
     return this.parseApplySuggestionsResponse(response.text.trim());
   }
 
-  private buildApplySuggestionsPrompt(resumeText: string, input: ApplySuggestionsInput): string {
+  private buildApplySuggestionsPrompt(input: ApplySuggestionsInput): string {
     const jobContext =
       input.jobTitle || input.jobDescription
         ? `\nTARGET JOB INFORMATION:\n${input.jobTitle ? `Job Title: ${input.jobTitle}` : ""}\n${input.jobDescription ? `Job Description: ${input.jobDescription}` : ""}\n`
         : "";
 
-    return `You are an expert ATS resume optimizer. Your task is to rewrite a resume by applying specific improvement suggestions, and output the result as a complete, compile-ready LaTeX document.
+    return `You are an expert ATS resume optimizer. Your task is to rewrite the attached resume PDF by applying specific improvement suggestions, and output the result as a complete, compile-ready LaTeX document.
 
-CURRENT RESUME TEXT:
----
-${resumeText}
----${jobContext}
+The resume to optimize is provided as an attached PDF document.${jobContext}
 SUGGESTIONS TO APPLY:
 ${input.suggestions.map((s, i) => `${i + 1}. ${s}`).join("\n")}
 
@@ -184,14 +162,12 @@ RESPONSE FORMAT:
     };
   }
 
-  private async extractPdfText(resumeUrl: string): Promise<string> {
-    let buffer: Buffer;
-
+  private async getResumeBuffer(resumeUrl: string): Promise<Buffer> {
     const s3Key = getS3KeyFromUrl(resumeUrl);
     if (s3Key) {
-      buffer = await getBufferFromS3(s3Key);
+      return getBufferFromS3(s3Key);
     } else if (resumeUrl.startsWith("/uploads/")) {
-      // Local uploads - sanitize to prevent path traversal
+      // Local uploads (dev only) — sanitize to prevent path traversal
       const uploadsDir = path.resolve(__dirname, "../../../uploads");
       const resolved = path.resolve(
         uploadsDir,
@@ -200,69 +176,27 @@ RESPONSE FORMAT:
       if (!resolved.startsWith(uploadsDir)) {
         throw new Error("Invalid resume path");
       }
-      buffer = await readFile(resolved);
+      return readFile(resolved);
     } else {
       throw new Error("Invalid resume URL format");
     }
-
-    return new Promise<string>((resolve, reject) => {
-      // Detect dev (tsx) vs production (compiled JS) to resolve the worker path
-      // and register the tsx ESM loader when needed.
-      const isDev = import.meta.url.endsWith(".ts");
-      const workerFile = isDev
-        ? "../../workers/pdf-parse.worker.ts"
-        : "../../workers/pdf-parse.worker.js";
-      const workerUrl = new URL(workerFile, import.meta.url);
-      const execArgv = isDev ? ["--import", "tsx"] : [];
-
-      const worker = new Worker(workerUrl, {
-        execArgv,
-        workerData: {
-          buffer: buffer.buffer as ArrayBuffer,
-          byteOffset: buffer.byteOffset,
-          byteLength: buffer.byteLength,
-        },
-        transferList: [buffer.buffer as ArrayBuffer],
-      });
-
-      const timeout = setTimeout(() => {
-        void worker.terminate();
-        reject(new Error("PDF parsing timed out"));
-      }, 30_000);
-
-      worker.on("message", (msg: { text?: string; error?: string }) => {
-        clearTimeout(timeout);
-        if (msg.error) reject(new Error(msg.error));
-        else resolve(msg.text ?? "");
-      });
-
-      worker.on("error", (err: Error) => {
-        clearTimeout(timeout);
-        reject(err);
-      });
-
-      worker.on("exit", (code: number) => {
-        clearTimeout(timeout);
-        if (code !== 0) reject(new Error(`PDF worker exited with code ${code}`));
-      });
-    });
   }
 
-  private async callAI(
-    resumeText: string,
+  private async callAIWithPdf(
+    pdfBuffer: Buffer,
     userId: number,
     jobTitle?: string | undefined,
     jobDescription?: string | undefined,
   ): Promise<AtsScoreResult> {
     const provider = getProviderForService("ATS_SCORE");
-    const prompt = this.buildPrompt(resumeText, jobTitle, jobDescription);
-    const response = await provider.generateText(prompt);
+    const prompt = this.buildPrompt(jobTitle, jobDescription);
+    const pdfBase64 = pdfBuffer.toString("base64");
+    const response = await provider.generateWithInlinePdf!(pdfBase64, prompt);
     logAIRequest("ATS_SCORE", response, true, undefined, userId);
     return this.parseAIResponse(response.text);
   }
 
   private buildPrompt(
-    resumeText: string,
     jobTitle?: string | undefined,
     jobDescription?: string | undefined,
   ): string {
@@ -285,10 +219,7 @@ using common industry standards for software/tech roles.
 
 ${jobContext}
 
-RESUME TEXT:
----
-${resumeText}
----
+The resume to evaluate is provided as an attached PDF document.
 
 SCORING DISCIPLINE (read carefully, this is the most important part):
 - Scores are 0-100. Be strict. The MEDIAN real resume scores 45-60. Scores of 85+ are reserved for the top ~5% of resumes you have ever seen and must be EARNED with concrete, verifiable evidence on every dimension. Do NOT give 85+ unless the resume is genuinely outstanding.

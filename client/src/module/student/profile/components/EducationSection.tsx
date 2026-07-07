@@ -18,6 +18,7 @@ interface EducationSectionProps {
   showCollegeSuggestions: boolean;
   collegeInputRef: React.RefObject<HTMLInputElement | null>;
   collegeDropdownRef: React.RefObject<HTMLDivElement | null>;
+  isEditing: boolean;
   onCollegeChange: (value: string) => void;
   onCollegeFocus: () => void;
   onSelectCollege: (name: string) => void;
@@ -27,6 +28,25 @@ interface EducationSectionProps {
 function FieldError({ errs }: { errs?: string[] }) {
   if (!errs?.length) return null;
   return <p className="text-xs text-red-500 dark:text-red-400 mt-1.5 font-mono">{errs[0]}</p>;
+}
+
+function ReadField({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div>
+      <div className={labelClass}>{icon} {label}</div>
+      <p className="text-sm text-stone-900 dark:text-stone-50 truncate">
+        {value || <span className="text-stone-400 dark:text-stone-600">Not added</span>}
+      </p>
+    </div>
+  );
 }
 
 export function EducationSection({
@@ -40,11 +60,27 @@ export function EducationSection({
   showCollegeSuggestions,
   collegeInputRef,
   collegeDropdownRef,
+  isEditing,
   onCollegeChange,
   onCollegeFocus,
   onSelectCollege,
   onChange,
 }: EducationSectionProps) {
+  if (!isEditing) {
+    return (
+      <div className="px-5 py-5 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <ReadField icon={<GraduationCap className="w-3.5 h-3.5" />} label="College" value={college} />
+          <ReadField icon={<Calendar className="w-3.5 h-3.5" />} label="Graduation year" value={graduationYear ? String(graduationYear) : ""} />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <ReadField icon={<Building2 className="w-3.5 h-3.5" />} label="Company" value={company} />
+          <ReadField icon={<Briefcase className="w-3.5 h-3.5" />} label="Role" value={designation} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-5 py-5 space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

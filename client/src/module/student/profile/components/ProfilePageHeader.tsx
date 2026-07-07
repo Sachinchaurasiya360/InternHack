@@ -1,14 +1,25 @@
 import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
-import { Save, Loader2 } from "lucide-react";
+import { Loader2, Pencil, Save, X } from "lucide-react";
+import { Button } from "../../../../components/ui/button";
 
 interface ProfilePageHeaderProps {
   profileCompletion: number;
   saving: boolean;
-  onSave: () => Promise<void>;
+  isEditing: boolean;
+  onEdit: () => void;
+  onCancel: () => void;
+  onSave: () => Promise<boolean>;
 }
 
-export function ProfilePageHeader({ profileCompletion, saving, onSave }: ProfilePageHeaderProps) {
+export function ProfilePageHeader({
+  profileCompletion,
+  saving,
+  isEditing,
+  onEdit,
+  onCancel,
+  onSave,
+}: ProfilePageHeaderProps) {
   const [showSuccess, setShowSuccess] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -18,9 +29,11 @@ export function ProfilePageHeader({ profileCompletion, saving, onSave }: Profile
 
   const handleSave = async () => {
     try {
-      await onSave();
-      setShowSuccess(true);
-      timerRef.current = setTimeout(() => setShowSuccess(false), 3000);
+      const saved = await onSave();
+      if (saved) {
+        setShowSuccess(true);
+        timerRef.current = setTimeout(() => setShowSuccess(false), 3000);
+      }
     } catch (error) {
       console.error("Save failed:", error);
     }
@@ -49,15 +62,38 @@ export function ProfilePageHeader({ profileCompletion, saving, onSave }: Profile
         <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
           strength / {profileCompletion}%
         </span>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="group inline-flex items-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-950 rounded-md"
-        >
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          {saving ? "Saving..." : "Save changes"}
-        </button>
+        {isEditing ? (
+          <>
+            <Button
+              type="button"
+              onClick={onCancel}
+              disabled={saving}
+              variant="outline"
+              className="gap-2 text-stone-700 dark:text-stone-300"
+            >
+              <X className="w-4 h-4" />
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="gap-2 bg-lime-400 text-stone-950 hover:bg-lime-300"
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              {saving ? "Saving..." : "Save changes"}
+            </Button>
+          </>
+        ) : (
+          <Button
+            type="button"
+            onClick={onEdit}
+            className="gap-2 bg-lime-400 text-stone-950 hover:bg-lime-300"
+          >
+            <Pencil className="w-4 h-4" />
+            Edit profile
+          </Button>
+        )}
 
         {showSuccess && (
           <span className="text-green-500 text-sm font-medium">

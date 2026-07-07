@@ -19,6 +19,7 @@ interface ResumesSectionProps {
   resumes: string[];
   uploadingResume: boolean;
   deletingResume: string | null;
+  isEditing: boolean;
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDelete: (url: string) => void;
 }
@@ -27,6 +28,7 @@ export function ResumesSection({
   resumes,
   uploadingResume,
   deletingResume,
+  isEditing,
   onUpload,
   onDelete,
 }: ResumesSectionProps) {
@@ -45,30 +47,40 @@ export function ResumesSection({
               <a href={url} target="_blank" rel="noopener noreferrer" className="text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-colors shrink-0">
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
-              <button
-                type="button"
-                onClick={() => onDelete(url)}
-                disabled={deletingResume === url}
-                aria-label="Delete resume"
-                className="text-stone-400 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 bg-transparent border-0 cursor-pointer p-1"
-              >
-                {deletingResume === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-              </button>
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={() => onDelete(url)}
+                  disabled={deletingResume === url}
+                  aria-label="Delete resume"
+                  className="text-stone-400 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 bg-transparent border-0 cursor-pointer p-1"
+                >
+                  {deletingResume === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                </button>
+              )}
             </div>
           ))}
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => resumeInputRef.current?.click()}
-        disabled={uploadingResume || resumes.length >= MAX_RESUMES}
-        className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-stone-300 dark:border-white/15 rounded-md text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent cursor-pointer disabled:opacity-50"
-      >
-        {uploadingResume ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload resume (PDF)</>}
-      </button>
-      <input ref={resumeInputRef} type="file" accept=".pdf" onChange={onUpload} className="hidden" />
-      <p className="text-[10px] font-mono text-stone-500">PDF only, max 5 MB each.</p>
+      {resumes.length === 0 && !isEditing && (
+        <p className="text-sm text-stone-400 dark:text-stone-600">No resume uploaded yet.</p>
+      )}
+
+      {isEditing && (
+        <>
+          <button
+            type="button"
+            onClick={() => resumeInputRef.current?.click()}
+            disabled={uploadingResume || resumes.length >= MAX_RESUMES}
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-stone-300 dark:border-white/15 rounded-md text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50 transition-colors bg-transparent cursor-pointer disabled:opacity-50"
+          >
+            {uploadingResume ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload resume (PDF)</>}
+          </button>
+          <input ref={resumeInputRef} type="file" accept=".pdf" onChange={onUpload} className="hidden" />
+          <p className="text-[10px] font-mono text-stone-500">PDF only, max 5 MB each.</p>
+        </>
+      )}
     </div>
   );
 }

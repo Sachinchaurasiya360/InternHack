@@ -13,6 +13,7 @@ interface SkillsSectionProps {
   verifiedMap: Map<string, VerifiedSkill>;
   skillInputRef: React.RefObject<HTMLInputElement | null>;
   skillDropdownRef: React.RefObject<HTMLDivElement | null>;
+  isEditing: boolean;
   onSkillInputChange: (value: string) => void;
   onSkillInputFocus: () => void;
   onAddSkill: (name?: string) => void;
@@ -27,6 +28,7 @@ export function SkillsSection({
   verifiedMap,
   skillInputRef,
   skillDropdownRef,
+  isEditing,
   onSkillInputChange,
   onSkillInputFocus,
   onAddSkill,
@@ -34,7 +36,7 @@ export function SkillsSection({
 }: SkillsSectionProps) {
   const anchorRef = useRef<HTMLDivElement>(null);
   const [dropdownRect, setDropdownRect] = useState<{ top: number; left: number; width: number } | null>(null);
-  const showDropdown = showSkillSuggestions && filteredSkillSuggestions.length > 0;
+  const showDropdown = isEditing && showSkillSuggestions && filteredSkillSuggestions.length > 0;
 
   // Rendered via a portal (below) so the dropdown escapes this section's own
   // stacking context — otherwise it gets painted over by the next section,
@@ -75,19 +77,25 @@ export function SkillsSection({
                 {v && <ShieldCheck className="w-3 h-3" />}
                 <span className="font-medium">{skill}</span>
                 {v && <span className="text-[9px] font-mono opacity-70">{v.score}%</span>}
-                <button
-                  type="button"
-                  onClick={() => onRemoveSkill(i)}
-                  aria-label={`Remove ${skill}`}
-                  className="opacity-60 hover:opacity-100 bg-transparent border-0 cursor-pointer p-0"
-                >
-                  <X className="w-3 h-3" />
-                </button>
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={() => onRemoveSkill(i)}
+                    aria-label={`Remove ${skill}`}
+                    className="opacity-60 hover:opacity-100 bg-transparent border-0 cursor-pointer p-0"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
               </span>
             );
           })}
         </div>
       )}
+      {skills.length === 0 && !isEditing && (
+        <p className="text-sm text-stone-400 dark:text-stone-600">No skills added yet.</p>
+      )}
+      {isEditing && (
       <div ref={anchorRef} className="relative">
         <div className="flex gap-2">
           <input
@@ -129,6 +137,7 @@ export function SkillsSection({
           document.body,
         )}
       </div>
+      )}
       {skills.length > 0 && (
         <Link to="/student/skill-verification" className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 no-underline transition-colors">
           <ShieldCheck className="w-3.5 h-3.5" /> verify skills with proctored tests

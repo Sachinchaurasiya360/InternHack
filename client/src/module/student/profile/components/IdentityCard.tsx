@@ -19,6 +19,7 @@ interface IdentityCardProps {
   portfolioUrl: string;
   uploadingPic: boolean;
   uploadingCover: boolean;
+  isEditing: boolean;
   onProfilePicSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCoverImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -37,6 +38,7 @@ export function IdentityCard({
   portfolioUrl,
   uploadingPic,
   uploadingCover,
+  isEditing,
   onProfilePicSelect,
   onCoverImageSelect,
 }: IdentityCardProps) {
@@ -62,15 +64,19 @@ export function IdentityCard({
             <span className="absolute top-3 right-3 h-1.5 w-1.5 bg-lime-400" />
           </>
         )}
-        <button
-          type="button"
-          onClick={() => coverInputRef.current?.click()}
-          disabled={uploadingCover}
-          className="absolute inset-0 bg-stone-950/50 hover:bg-stone-950/60 text-stone-50 flex items-center justify-center opacity-0 group-hover/banner:opacity-100 transition-opacity border-0 cursor-pointer"
-        >
-          {uploadingCover ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
-        </button>
-        <input ref={coverInputRef} type="file" accept=".jpg, .jpeg, .png" onChange={onCoverImageSelect} className="hidden" />
+        {isEditing && (
+          <>
+            <button
+              type="button"
+              onClick={() => coverInputRef.current?.click()}
+              disabled={uploadingCover}
+              className="absolute inset-0 bg-stone-950/50 hover:bg-stone-950/60 text-stone-50 flex items-center justify-center opacity-0 group-hover/banner:opacity-100 transition-opacity border-0 cursor-pointer"
+            >
+              {uploadingCover ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
+            </button>
+            <input ref={coverInputRef} type="file" accept=".jpg, .jpeg, .png" onChange={onCoverImageSelect} className="hidden" />
+          </>
+        )}
       </div>
 
       <div className="px-5 pb-5 -mt-10 relative">
@@ -85,15 +91,19 @@ export function IdentityCard({
               </div>
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => picInputRef.current?.click()}
-            disabled={uploadingPic}
-            className="absolute inset-0 w-20 h-20 bg-stone-950/60 text-stone-50 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border-0 cursor-pointer"
-          >
-            {uploadingPic ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-          </button>
-          <input ref={picInputRef} type="file" accept=".jpg, .jpeg, .png" onChange={onProfilePicSelect} className="hidden" />
+          {isEditing && (
+            <>
+              <button
+                type="button"
+                onClick={() => picInputRef.current?.click()}
+                disabled={uploadingPic}
+                className="absolute inset-0 w-20 h-20 bg-stone-950/60 text-stone-50 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border-0 cursor-pointer"
+              >
+                {uploadingPic ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+              </button>
+              <input ref={picInputRef} type="file" accept=".jpg, .jpeg, .png" onChange={onProfilePicSelect} className="hidden" />
+            </>
+          )}
         </div>
 
         <h2 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50 truncate leading-tight">
