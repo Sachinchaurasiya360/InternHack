@@ -1,13 +1,11 @@
 import { workerData, parentPort } from "worker_threads";
-// Side-effect only: registers globalThis.pdfjsWorker so pdfjs-dist's Node
-// fallback picks up the worker handler synchronously instead of dynamically
-// `import()`-ing "./pdf.worker.mjs" at runtime. That dynamic import isn't
-// statically analyzable, so Vercel's build-time file tracer prunes the file
-// from the deployment bundle, producing "Cannot find module .../pdf.worker.mjs"
-// in production even though it works locally. A static import here is traced
-// and bundled, and short-circuits pdfjs-dist's fake-worker setup entirely.
-import "pdfjs-dist/legacy/build/pdf.worker.mjs";
-import { PDFParse } from "pdf-parse";
+// NOTE: pdfjs-dist and pdf-parse are loaded via dynamic import() inside run()
+// so the DOMMatrix polyfill below is registered before pdfjs-dist's module-level
+// code runs. Static ESM imports are hoisted and execute before any module body,
+// so a static import here would cause "DOMMatrix is not defined" even with the
+// polyfill class defined in this file.
+// Dynamic imports are still statically analyzable string literals, so Vercel's
+// build-time file tracer will still bundle pdf.worker.mjs into the deployment.
 
 type MatrixLike = { a: number; b: number; c: number; d: number; e: number; f: number };
 
@@ -106,6 +104,11 @@ async function run() {
   const { buffer, byteOffset, byteLength } = workerData as WorkerData;
   // Reconstruct Buffer from the transferred ArrayBuffer (preserves offset/length).
   const buf = Buffer.from(buffer, byteOffset, byteLength);
+
+  // Dynamic imports: load pdfjs-dist and pdf-parse only after the DOMMatrix
+  // polyfill above has been registered in globalThis.
+  await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
+  const { PDFParse } = await import("pdf-parse");
 
   const parser = new PDFParse({ data: buf });
   try {
