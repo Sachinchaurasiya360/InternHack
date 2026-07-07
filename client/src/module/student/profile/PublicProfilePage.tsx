@@ -11,7 +11,6 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
 import ContributionGraphs from "../../../components/ContributionGraphs";
-import GitHubStatsCard from "./GitHubStatsCard";
 import { OssContributionHeatmap } from "../../../components/OssContributionHeatmap";
 import type { ProjectItem, VerifiedSkill } from "../../../lib/types";
 
@@ -285,10 +284,6 @@ export default function PublicProfilePage() {
               </div>
             </motion.div>
           )}
-
-          <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible">
-            <GitHubStatsCard githubUrl={profile.githubUrl} compact />
-          </motion.div>
         </div>
 
         {/* Right Column */}

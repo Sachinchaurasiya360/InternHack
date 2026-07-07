@@ -1132,9 +1132,9 @@ export default function RoadmapCanvasPage() {
         >
           <div className="flex items-center gap-4 px-5 py-3">
             <Link
-              to="/student/roadmaps"
+              to="/roadmaps"
               className="p-2 -ml-2 text-stone-400 hover:text-stone-50 hover:bg-white/5 rounded-md transition-colors no-underline"
-              aria-label="Back to dashboard"
+              aria-label="Back to roadmaps"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>

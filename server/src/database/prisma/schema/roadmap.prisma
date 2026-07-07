@@ -246,14 +246,17 @@ enum MockInterviewStatus {
 }
 
 model peerMockInterviewPreference {
-  id           Int                @id @default(autoincrement())
-  userId       Int                @unique
-  user         user               @relation("UserMockInterviewPreference", fields: [userId], references: [id], onDelete: Cascade)
-  enabled      Boolean            @default(true)
-  topic        MockInterviewTopic
-  availability String[]           @default([])
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  id              Int                @id @default(autoincrement())
+  userId          Int                @unique
+  user            user               @relation("UserMockInterviewPreference", fields: [userId], references: [id], onDelete: Cascade)
+  enabled         Boolean            @default(true)
+  topic           MockInterviewTopic
+  availability    String[]           @default([])
+  targetRole      String?
+  experienceLevel String?
+  focusAreas      String[]           @default([])
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
   @@index([userId])
 }
@@ -287,4 +290,46 @@ model peerMockInterview {
   @@index([studentAId])
   @@index([studentBId])
   @@index([status])
+}
+
+enum ExpertSessionStatus {
+  PENDING_PAYMENT
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model expertAvailabilityBlock {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @db.Date
+  startTime String? // "HH:mm" IST; null + null endTime = whole day blocked
+  endTime   String?
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([date])
+}
+
+model expertSession {
+  id              Int                 @id @default(autoincrement())
+  userId          Int
+  user            user                @relation("UserExpertSessions", fields: [userId], references: [id], onDelete: Cascade)
+  status          ExpertSessionStatus @default(PENDING_PAYMENT)
+  scheduledAt     DateTime
+  targetRole      String?
+  experienceLevel String?
+  focusAreas      String[]            @default([])
+  notes           String?             @db.Text
+  meetingLink     String?             @db.Text
+  dodoCheckoutUrl String?
+  dodoPaymentId   String?             @unique
+  amount          Int                 @default(4900)
+  currency        String              @default("INR")
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([dodoPaymentId])
 }

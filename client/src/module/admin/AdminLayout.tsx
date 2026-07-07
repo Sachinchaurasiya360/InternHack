@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, AlertTriangle, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Cpu, ExternalLink, Menu, X, Radar, MessageCircle, TrendingUp } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, AlertTriangle, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Cpu, ExternalLink, Menu, X, Radar, MessageCircle, TrendingUp, CalendarClock } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 import { SEO } from "../../components/SEO";
@@ -126,6 +126,10 @@ export default function AdminLayout() {
         <NavLink to="/admin/interview-experiences" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <MessageCircle className="w-4 h-4" />
           Interview Experiences
+        </NavLink>
+        <NavLink to="/admin/expert-availability" className={linkClass} onClick={() => setSidebarOpen(false)}>
+          <CalendarClock className="w-4 h-4" />
+          Expert Availability
         </NavLink>
         <NavLink to="/admin/broadcast-email" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <Mail className="w-4 h-4" />

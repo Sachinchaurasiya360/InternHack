@@ -13,12 +13,13 @@ import {
   Target,
   ChevronRight,
   Compass,
+  ListChecks,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { SEO } from "../../../../components/SEO";
 import { Button } from "../../../../components/ui/button";
 import api from "../../../../lib/axios";
-import { PREP_PLANS, type PrepTask, type PrepDay, type TaskType } from "./placementPrepData";
+import { PREP_PLANS, type PrepTask, type PrepDay, type TaskType, type PlacementPrepPlan } from "./placementPrepData";
 import type { DsaProgress, AptitudeCategory } from "../../../../lib/types/learning.types";
 
 interface InterviewProgress {
@@ -30,6 +31,7 @@ export default function PlacementPrepPlansPage() {
     localStorage.getItem("active-placement-prep-plan")
   );
   const [selectedDayNum, setSelectedDayNum] = useState<number>(1);
+  const [showSyllabus, setShowSyllabus] = useState(false);
   const [manualCompletions, setManualCompletions] = useState<Record<string, boolean>>(() => {
     const activeId = localStorage.getItem("active-placement-prep-plan");
     if (activeId) {
@@ -258,6 +260,10 @@ export default function PlacementPrepPlansPage() {
     }
   };
 
+  const getDifficultyLevel = (difficulty: PlacementPrepPlan["difficulty"]): number => {
+    return difficulty === "Beginner" ? 1 : difficulty === "Intermediate" ? 2 : 3;
+  };
+
   return (
     <div className="relative text-stone-900 dark:text-stone-50 pb-16 min-h-[80vh]">
       <SEO
@@ -272,8 +278,18 @@ export default function PlacementPrepPlansPage() {
             <span className="h-1.5 w-1.5 bg-lime-400" />
             learn / placement prep plans
           </div>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
-            Placement Prep <span className="text-lime-500 dark:text-lime-400">Plans.</span>
+          <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-none">
+            Placement Prep{" "}
+            <span className="relative inline-block">
+              <span className="relative z-10">Plans.</span>
+              <motion.span
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+                aria-hidden
+                className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-lime-400 origin-left z-0"
+              />
+            </span>
           </h1>
           <p className="mt-3 text-sm text-stone-500 max-w-xl">
             Choose a structured roadmap matching your interview timeline to master core concepts, practice targeted questions, and clear company-specific mock criteria.
@@ -282,6 +298,14 @@ export default function PlacementPrepPlansPage() {
 
         {activePlan && (
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setShowSyllabus((s) => !s)}
+              className="text-stone-500 hover:text-stone-900 dark:hover:text-stone-50 text-xs gap-1.5"
+            >
+              <ListChecks className="w-3.5 h-3.5" />
+              {showSyllabus ? "Hide Syllabus" : "View Syllabus"}
+            </Button>
             <Button
               variant="ghost"
               onClick={handleLeavePlan}
@@ -321,36 +345,62 @@ export default function PlacementPrepPlansPage() {
                   transition={{ delay: index * 0.05 }}
                   className="group relative flex flex-col bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-xl p-6 hover:border-lime-400 dark:hover:border-lime-400 transition-all shadow-sm"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-lg bg-lime-50 dark:bg-lime-900/10 border border-lime-200 dark:border-lime-900/30 flex items-center justify-center">
+                  <div className="flex items-start justify-between mb-5">
+                    <div className="w-12 h-12 rounded-lg bg-lime-50 dark:bg-lime-900/10 border border-lime-200 dark:border-lime-900/30 flex items-center justify-center shrink-0">
                       <Icon className="w-6 h-6 text-lime-600 dark:text-lime-400" />
                     </div>
-                    <span className="text-xs font-mono uppercase tracking-wider text-stone-400">
-                      {plan.durationDays} Days
-                    </span>
+                    <div className="text-right">
+                      <p className="text-2xl font-extrabold text-stone-900 dark:text-stone-50 tabular-nums leading-none">
+                        {plan.durationDays}
+                      </p>
+                      <p className="text-[10px] font-mono uppercase tracking-widest text-stone-400 mt-1">
+                        Days
+                      </p>
+                    </div>
                   </div>
 
                   <h3 className="text-xl font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors">
                     {plan.title}
                   </h3>
-                  <p className="text-xs font-semibold text-stone-500 mt-1 uppercase tracking-wider">
-                    Difficulty: {plan.difficulty}
-                  </p>
+                  <div className="flex items-center gap-1.5 mt-2.5">
+                    {[1, 2, 3].map((n) => (
+                      <span
+                        key={n}
+                        className={`h-1.5 w-5 rounded-full ${
+                          n <= getDifficultyLevel(plan.difficulty) ? "bg-lime-400" : "bg-stone-200 dark:bg-white/10"
+                        }`}
+                      />
+                    ))}
+                    <span className="text-xs font-semibold text-stone-500 ml-1">{plan.difficulty}</span>
+                  </div>
 
-                  <p className="text-sm text-stone-500 dark:text-stone-400 mt-4 flex-grow leading-relaxed">
-                    {plan.description}
-                  </p>
+                  <div className="flex flex-col flex-grow mt-4">
+                    <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
+                      {plan.description}
+                    </p>
 
-                  <div className="border-t border-stone-100 dark:border-white/5 pt-4 mt-6 space-y-2 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-stone-400">Target Role</span>
-                      <span className="font-semibold text-stone-700 dark:text-stone-300">{plan.targetRole}</span>
+                    <div className="flex flex-wrap gap-1.5 mt-5">
+                      {plan.syllabus.map((group, gi) => (
+                        <span
+                          key={`${group.type}-${gi}`}
+                          className={`text-[10px] px-2 py-1 rounded-md font-mono uppercase tracking-wider font-semibold ${getTaskBadgeStyle(group.type)}`}
+                        >
+                          {group.label}
+                        </span>
+                      ))}
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-stone-400">Target Tier</span>
-                      <span className="font-semibold text-stone-700 dark:text-stone-300 truncate max-w-[200px]" title={plan.targetTier}>
-                        {plan.targetTier}
-                      </span>
+
+                    <div className="border-t border-stone-100 dark:border-white/5 pt-4 mt-auto space-y-2 text-xs">
+                      <div className="flex justify-between gap-3">
+                        <span className="text-stone-400 shrink-0">Target Role</span>
+                        <span className="font-semibold text-stone-700 dark:text-stone-300 text-right">{plan.targetRole}</span>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-stone-400 shrink-0">Target Tier</span>
+                        <span className="font-semibold text-stone-700 dark:text-stone-300 text-right truncate max-w-[200px]" title={plan.targetTier}>
+                          {plan.targetTier}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -376,7 +426,7 @@ export default function PlacementPrepPlansPage() {
             <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-xl p-6 shadow-sm">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                  <div className="text-xs font-mono uppercase tracking-widest text-lime-500 font-semibold">
+                  <div className="text-xs font-mono uppercase tracking-widest text-lime-600 dark:text-lime-400 font-semibold">
                     active track
                   </div>
                   <h2 className="text-2xl font-bold text-stone-900 dark:text-stone-50 mt-1">
@@ -413,6 +463,44 @@ export default function PlacementPrepPlansPage() {
                 />
               </div>
             </div>
+
+            {/* Full Syllabus Panel (collapsible) */}
+            <AnimatePresence initial={false}>
+              {showSyllabus && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="overflow-hidden"
+                >
+                  <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-xl p-6 shadow-sm">
+                    <div className="text-xs font-bold font-mono uppercase tracking-widest text-stone-400 mb-4">
+                      Full Curriculum
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {activePlan.syllabus.map((group, gi) => (
+                        <div key={`${group.type}-${gi}`}>
+                          <span
+                            className={`inline-block text-[10px] px-2 py-1 rounded-md font-mono uppercase tracking-wider font-semibold ${getTaskBadgeStyle(group.type)}`}
+                          >
+                            {group.label}
+                          </span>
+                          <ul className="text-xs text-stone-500 dark:text-stone-400 space-y-1.5 mt-2.5">
+                            {group.topics.map((topic) => (
+                              <li key={topic} className="flex items-start gap-1.5">
+                                <span className="text-stone-300 dark:text-stone-600 mt-0.5">·</span>
+                                <span>{topic}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Grid Layout: Left Day Navigator, Right Task Checklist */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

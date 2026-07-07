@@ -98,7 +98,6 @@ export const queryKeys = {
     trend: (startDate?: string, endDate?: string) =>
       ["opensource", "trend", startDate, endDate] as const,
     hacktoberfest: () => ["opensource", "hacktoberfest"] as const,
-    githubConnection: () => ["opensource", "github-connection"] as const,
     allRequests: (params?: Record<string, string | number>) =>
       ["opensource", "all-requests", params] as const,
     stats: () => ["opensource", "stats"] as const,
@@ -260,5 +259,21 @@ export const queryKeys = {
   notes: {
     list: (filters?: Record<string, string | undefined>) => ["notes", "list", filters] as const,
     detail: (contentType: string, contentId: string | number) => ["notes", "detail", contentType, contentId] as const,
+  },
+
+  // Peer Mock Interview
+  peerMockInterview: {
+    preferences: () => ["peer-mock-interview", "preferences"] as const,
+    upcoming: () => ["peer-mock-interview", "upcoming"] as const,
+    history: (userId?: number) => ["peer-mock-interview", "history", userId] as const,
+  },
+
+  // Expert Mock Interview Sessions
+  expertSession: {
+    availableSlots: () => ["expert-session", "available-slots"] as const,
+    status: (id: number) => ["expert-session", "status", id] as const,
+    mySessions: () => ["expert-session", "my-sessions"] as const,
+    adminAvailabilityBlocks: () => ["admin", "expert-session", "availability-blocks"] as const,
+    adminBookings: () => ["admin", "expert-session", "bookings"] as const,
   },
 };

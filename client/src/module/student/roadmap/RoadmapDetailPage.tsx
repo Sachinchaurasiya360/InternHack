@@ -174,7 +174,7 @@ export default function RoadmapDetailPage() {
               className="mb-6"
             >
               <Link
-                to="/student/roadmaps"
+                to="/roadmaps"
                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-lime-400 dark:hover:border-lime-600 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-50 transition-colors no-underline"
               >
                 <MapIcon className="w-3.5 h-3.5 text-lime-500" />
@@ -349,7 +349,7 @@ export default function RoadmapDetailPage() {
             </Button>
             {isStudent && enrollments.length > 0 && (
               <Link
-                to="/student/roadmaps"
+                to="/roadmaps"
                 className="mt-3 block text-center text-xs font-mono uppercase tracking-widest opacity-70 hover:opacity-100 no-underline"
               >
                 view my roadmaps

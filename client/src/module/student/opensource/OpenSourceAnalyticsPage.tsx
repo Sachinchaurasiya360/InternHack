@@ -1,27 +1,14 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link, useSearchParams } from "react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertCircle,
   Filter,
   X,
   Maximize2,
-  Flame,
-  TrendingUp,
-  Download,
   ChevronDown,
   ArrowLeft,
-  BarChart3,
-  CheckCircle2,
-  ExternalLink,
-  GitPullRequest,
-  Github,
-  Loader2,
-  RefreshCw,
-  ShieldCheck,
-  Star,
-  Trash2,
 } from "lucide-react";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PremiumUpgradeCTA } from "../../../components/PremiumUpgradeCTA";
@@ -48,14 +35,11 @@ import {
 } from "recharts";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import { Button } from "../../../components/ui/button";
 import { SEO } from "../../../components/SEO";
 import { markLearningPathMilestone } from "./learning-paths.data";
 import type {
   GSoCOrganization,
   GSoCStats,
-  GithubConnectionResponse,
-  GithubConnectionSummary,
   OpenSourceContributionTrendResponse,
 } from "../../../lib/types";
 import { isHacktoberfestMode } from "./_shared/hacktoberfest.utils";
@@ -220,276 +204,6 @@ function ChartCard({ title, subtitle, index, children, expandedChildren, classNa
   );
 }
 
-function TrendSkeleton() {
-  return (
-    <div className="animate-pulse space-y-4">
-      <div className="flex items-end gap-3 h-64">
-        {[42, 68, 58, 88, 54, 76].map((height, index) => (
-          <div key={index} className="flex-1 flex flex-col items-center gap-2">
-            <div className="w-full rounded-t-xl bg-stone-100 dark:bg-stone-800" style={{ height: `${height}%` }} />
-            <div className="h-3 w-14 rounded-full bg-stone-100 dark:bg-stone-800" />
-          </div>
-        ))}
-      </div>
-      <div className="h-4 w-48 rounded-full bg-stone-100 dark:bg-stone-800" />
-    </div>
-  );
-}
-
-function TrendEmptyState({
-  message,
-  showButton = false,
-}: {
-  message: string;
-  showButton?: boolean;
-}) {
-  return (
-    <div className="flex h-64 flex-col items-center justify-center rounded-md border border-dashed border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900 px-6 text-center">
-      <BarChart3 className="w-10 h-10 text-lime-500 mb-3" />
-
-      <p className="text-base font-semibold text-stone-900 dark:text-stone-50">
-        No contributions tracked yet
-      </p>
-
-      <p className="mt-2 max-w-sm text-sm text-stone-500 dark:text-stone-400">
-        {message}
-      </p>
-
-      {showButton && (
-        <Link to="/student/opensource">
-          <Button className="mt-4">
-            Discover Repositories
-          </Button>
-        </Link>
-      )}
-    </div>
-  );
-}
-
-function formatDate(value: string | null) {
-  if (!value) return "Never";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
-function GithubMetricCard({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: string | number;
-  icon: React.ComponentType<{ className?: string }>;
-}) {
-  return (
-    <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-4">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-          {label}
-        </p>
-        <Icon className="h-4 w-4 text-lime-500" />
-      </div>
-      <p className="mt-3 text-2xl font-bold text-stone-900 dark:text-stone-50">
-        {typeof value === "number" ? value.toLocaleString() : value}
-      </p>
-    </div>
-  );
-}
-
-function GithubEmptyConnection({
-  onConnect,
-  connecting,
-}: {
-  onConnect: () => void;
-  connecting: boolean;
-}) {
-  return (
-    <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-8 text-center">
-      <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-md border border-stone-200 bg-stone-50 dark:border-white/10 dark:bg-white/5">
-        <Github className="h-7 w-7 text-stone-900 dark:text-stone-50" />
-      </div>
-      <h2 className="text-xl font-bold text-stone-900 dark:text-stone-50">
-        Verify your real open-source work
-      </h2>
-      <p className="mx-auto mt-2 max-w-xl text-sm text-stone-500 dark:text-stone-400">
-        Connect GitHub to sync merged public pull requests, contributed repositories, and stars from non-fork projects.
-      </p>
-      <Button onClick={onConnect} disabled={connecting} className="mt-6">
-        {connecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Github className="h-4 w-4" />}
-        Connect GitHub
-      </Button>
-    </div>
-  );
-}
-
-function RealContributionsView({
-  data,
-  isLoading,
-  onConnect,
-  onSync,
-  onDisconnect,
-  connecting,
-  syncing,
-  disconnecting,
-}: {
-  data?: GithubConnectionResponse;
-  isLoading: boolean;
-  onConnect: () => void;
-  onSync: () => void;
-  onDisconnect: () => void;
-  connecting: boolean;
-  syncing: boolean;
-  disconnecting: boolean;
-}) {
-  if (isLoading) {
-    return (
-      <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-8">
-        <div className="flex items-center gap-3 text-sm text-stone-500 dark:text-stone-400">
-          <Loader2 className="h-4 w-4 animate-spin text-lime-500" />
-          Loading GitHub connection...
-        </div>
-      </div>
-    );
-  }
-
-  if (!data?.connected || !data.connection) {
-    return <GithubEmptyConnection onConnect={onConnect} connecting={connecting} />;
-  }
-
-  const connection: GithubConnectionSummary = data.connection;
-  const isSyncing = syncing || connection.syncStatus === "SYNCING";
-
-  return (
-    <div className="space-y-6">
-      <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="min-w-0">
-            <div className="mb-2 flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-              <ShieldCheck className="h-3.5 w-3.5 text-lime-500" />
-              verified github connection
-            </div>
-            <h2 className="truncate text-xl font-bold text-stone-900 dark:text-stone-50">
-              @{connection.githubUsername}
-            </h2>
-            <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
-              Last synced {formatDate(connection.lastSyncAt)}
-              {connection.syncStatus === "FAILED" && connection.syncError ? ` · ${connection.syncError}` : ""}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button asChild variant="secondary" size="sm">
-              <a href={connection.profileUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-4 w-4" />
-                Profile
-              </a>
-            </Button>
-            <Button onClick={onSync} disabled={isSyncing} variant="secondary" size="sm">
-              {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-              Sync
-            </Button>
-            <Button onClick={onDisconnect} disabled={disconnecting} variant="destructive" size="sm">
-              {disconnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-              Disconnect
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <GithubMetricCard label="merged prs" value={connection.prsMerged} icon={GitPullRequest} />
-        <GithubMetricCard label="repos contributed" value={connection.reposContributed} icon={CheckCircle2} />
-        <GithubMetricCard label="public repos" value={connection.publicRepos} icon={Github} />
-        <GithubMetricCard label="stars on repos" value={connection.contributedStars} icon={Star} />
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_0.7fr]">
-        <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
-          <div className="mb-4 flex items-center gap-1.5">
-            <div className="h-1 w-1 bg-lime-400" />
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-              recent merged pull requests
-            </p>
-          </div>
-          {connection.recentPullRequests.length === 0 ? (
-            <p className="rounded-md border border-dashed border-stone-200 dark:border-white/10 p-6 text-center text-sm text-stone-500 dark:text-stone-400">
-              No merged public pull requests found in non-fork repositories yet.
-            </p>
-          ) : (
-            <div className="divide-y divide-stone-100 dark:divide-white/10">
-              {connection.recentPullRequests.map((pr) => (
-                <a
-                  key={pr.id}
-                  href={pr.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block py-3 no-underline transition-colors hover:bg-stone-50 dark:hover:bg-white/5"
-                >
-                  <div className="flex items-start justify-between gap-4 px-2">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-50">
-                        {pr.title}
-                      </p>
-                      <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                        {pr.repoName} #{pr.number} · merged {formatDate(pr.mergedAt)}
-                      </p>
-                    </div>
-                    <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-stone-400" />
-                  </div>
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-5">
-          <div className="mb-4 flex items-center gap-1.5">
-            <div className="h-1 w-1 bg-lime-400" />
-            <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-              contributed repositories
-            </p>
-          </div>
-          {connection.contributedRepos.length === 0 ? (
-            <p className="rounded-md border border-dashed border-stone-200 dark:border-white/10 p-6 text-center text-sm text-stone-500 dark:text-stone-400">
-              Repositories will appear here after GitHub sync finds merged PRs.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {connection.contributedRepos.slice(0, 12).map((repo) => (
-                <a
-                  key={repo.id}
-                  href={repo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block rounded-md border border-stone-100 p-3 no-underline transition-colors hover:border-stone-300 dark:border-white/10 dark:hover:border-white/25"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-50">
-                        {repo.nameWithOwner}
-                      </p>
-                      <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                        {repo.mergedPrs} merged PR{repo.mergedPrs === 1 ? "" : "s"}
-                        {repo.language ? ` · ${repo.language}` : ""}
-                      </p>
-                    </div>
-                    <span className="inline-flex shrink-0 items-center gap-1 text-xs font-mono text-stone-500 dark:text-stone-400">
-                      <Star className="h-3 w-3 text-lime-500" />
-                      {repo.stars.toLocaleString()}
-                    </span>
-                  </div>
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── Page ───────────────────────────────────────────────────────
 
 
@@ -499,11 +213,6 @@ export default function OpenSourceAnalyticsPage() {
   }, []);
 
   const { user } = useAuthStore();
-  const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<"internhack" | "github">(
-    searchParams.get("github") === "connected" ? "github" : "internhack",
-  );
   const isPremium =
     user?.subscriptionStatus === "ACTIVE" &&
     user?.subscriptionPlan !== "FREE" &&
@@ -519,10 +228,8 @@ export default function OpenSourceAnalyticsPage() {
 
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-  const defaultStart = sixMonthsAgo.toISOString().slice(0, 7);
-  const today = new Date().toISOString().slice(0, 7);
-  const [startMonth, setStartMonth] = useState(defaultStart);
-  const [endMonth, setEndMonth] = useState(today);
+  const startMonth = sixMonthsAgo.toISOString().slice(0, 7);
+  const endMonth = new Date().toISOString().slice(0, 7);
 
   const { data: stats } = useQuery<GSoCStats>({
     queryKey: queryKeys.gsoc.stats(),
@@ -549,104 +256,13 @@ export default function OpenSourceAnalyticsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIsError } = useQuery<OpenSourceContributionTrendResponse>({
+const { data: contributionTrendData, isLoading: trendIsLoading } = useQuery<OpenSourceContributionTrendResponse>({
     queryKey: queryKeys.opensource.trend(startMonth, endMonth),
     queryFn: () => api.get("/opensource/analytics/trend", { params: { startDate: startMonth, endDate: endMonth } }).then((r) => r.data),
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: githubConnectionData, isLoading: githubConnectionIsLoading } = useQuery<GithubConnectionResponse>({
-    queryKey: queryKeys.opensource.githubConnection(),
-    queryFn: () => api.get("/github/connection").then((r) => r.data),
-    staleTime: 60 * 1000,
-  });
-
-  const connectGithubMutation = useMutation({
-    mutationFn: async () => {
-      const res = await api.post<{ authUrl: string }>("/github/connect");
-      return res.data.authUrl;
-    },
-    onSuccess: (authUrl) => {
-      window.location.href = authUrl;
-    },
-  });
-
-  const syncGithubMutation = useMutation({
-    mutationFn: async () => api.post<GithubConnectionResponse>("/github/sync").then((r) => r.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
-    },
-  });
-
-  const disconnectGithubMutation = useMutation({
-    mutationFn: async () => api.delete<GithubConnectionResponse>("/github/connection").then((r) => r.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
-    },
-  });
-
-  useEffect(() => {
-    if (searchParams.get("github") === "connected") {
-      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
-      const next = new URLSearchParams(searchParams);
-      next.delete("github");
-      setSearchParams(next, { replace: true });
-    }
-  }, [queryClient, searchParams, setSearchParams]);
-
   const allOrgs = useMemo(() => orgsData ?? [], [orgsData]);
-  const contributionTrend = contributionTrendData?.trend ?? [];
-  const contributionTotal = contributionTrendData?.total ?? 0;
-  const hasContributionActivity = contributionTrend.some((entry) => entry.count > 0);
-  const showContributionEmptyState =
-    contributionTotal === 0 &&
-    contributionTrend.length > 0 &&
-    contributionTrend.every((entry) => entry.count === 0);
-
-  const downloadBlob = (content: string, filename: string, type: string) => {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-  const handleExportCSV = () => {
-    if (!contributionTrend || contributionTrend.length === 0) return;
-    const header = "Month,Label,Contributions";
-    const rows = contributionTrend.map(m => `${m.month},${m.label},${m.count}`);
-    downloadBlob([header, ...rows].join("\n"), `oss-contributions-${startMonth}-${endMonth}.csv`, "text/csv;charset=utf-8;");
-  };
-  const handleExportJSON = () => {
-    if (!contributionTrend || contributionTrend.length === 0) return;
-    const json = JSON.stringify({ range: { start: startMonth, end: endMonth }, contributions: contributionTrend }, null, 2);
-    downloadBlob(json, `oss-contributions-${startMonth}-${endMonth}.json`, "application/json");
-  };
-
-  const currentStreak = (() => {
-    let count = 0;
-    let i = contributionTrend.length - 1;
-    // The most recent month is still in progress: a zero there shouldn't break an
-    // otherwise active streak, so skip it before counting backwards.
-    if (i >= 0 && contributionTrend[i].count === 0) i--;
-    for (; i >= 0; i--) {
-      if (contributionTrend[i].count > 0) count++;
-      else break;
-    }
-    return count;
-  })();
-
-  const longestStreak = (() => {
-    let max = 0, cur = 0;
-    for (const point of contributionTrend) {
-      cur = point.count > 0 ? cur + 1 : 0;
-      max = Math.max(max, cur);
-    }
-    return max;
-  })();
 
   // ─── Derive filter options ──────────────────────────────────
 
@@ -791,7 +407,7 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
               open source / analytics
             </div>
             <h1 className="mt-3 text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 leading-tight">
-              Open Source Analytics
+              Open Source <span className="underline decoration-lime-500 underline-offset-4">Analytics</span>
             </h1>
             <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
               {allOrgs.length > 0
@@ -810,171 +426,6 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
         </div>
 
         {showHacktoberfestTracker && <HacktoberfestTracker />}
-
-        <div className="mb-8 flex flex-wrap items-center gap-2 rounded-md border border-stone-200 bg-white p-1 dark:border-white/10 dark:bg-stone-900">
-          <button
-            type="button"
-            onClick={() => setActiveTab("internhack")}
-            className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
-              activeTab === "internhack"
-                ? "bg-stone-900 text-white dark:bg-white dark:text-stone-950"
-                : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-stone-50"
-            }`}
-          >
-            <BarChart3 className="h-4 w-4" />
-            InternHack Tracked
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("github")}
-            className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
-              activeTab === "github"
-                ? "bg-stone-900 text-white dark:bg-white dark:text-stone-950"
-                : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-stone-50"
-            }`}
-          >
-            <ShieldCheck className="h-4 w-4" />
-            Real Contributions
-          </button>
-        </div>
-
-        {activeTab === "github" ? (
-          <RealContributionsView
-            data={githubConnectionData}
-            isLoading={githubConnectionIsLoading}
-            onConnect={() => connectGithubMutation.mutate()}
-            onSync={() => syncGithubMutation.mutate()}
-            onDisconnect={() => disconnectGithubMutation.mutate()}
-            connecting={connectGithubMutation.isPending}
-            syncing={syncGithubMutation.isPending}
-            disconnecting={disconnectGithubMutation.isPending}
-          />
-        ) : (
-          <>
-
-        {/* ── Monthly Contribution Activity ────────────────── */}
-        <div className="mb-8">
-          <div className="mb-3 flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
-              From
-              <input
-                type="month"
-                value={startMonth}
-                onChange={(e) => setStartMonth(e.target.value)}
-                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
-              />
-            </label>
-            <label className="flex items-center gap-1.5 text-xs font-mono text-stone-500">
-              To
-              <input
-                type="month"
-                value={endMonth}
-                onChange={(e) => setEndMonth(e.target.value)}
-                className="border border-stone-200 dark:border-white/10 rounded px-2 py-1.5 text-xs bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100"
-              />
-            </label>
-            <button
-              onClick={handleExportCSV}
-              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
-              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              CSV
-            </button>
-            <button
-              onClick={handleExportJSON}
-              disabled={trendIsLoading || !contributionTrend || contributionTrend.length === 0}
-              className="border border-stone-200 dark:border-white/10 text-xs font-mono uppercase tracking-widest px-3 py-2 rounded-md hover:border-stone-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 shadow-sm cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              JSON
-            </button>
-          </div>
-          <ChartCard
-            title="Monthly Contribution Activity"
-            subtitle={
-              trendIsLoading
-                ? "loading your approved open source contribution history"
-                : `approved repo requests ${startMonth}–${endMonth}${contributionTotal ? ` · ${contributionTotal} total` : ""}`
-            }
-            index={0}
-            expandedChildren={
-              trendIsLoading ? (
-                <TrendSkeleton />
-              ) : trendIsError ? (
-                <TrendEmptyState message="We could not load your contribution trend right now. Try again in a moment." />
-              ) : showContributionEmptyState ? (
-                <TrendEmptyState
-                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
-                  showButton
-                />
-              ) : hasContributionActivity ? (
-                <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
-                    <XAxis dataKey="label" tick={{ fill: "#78716c", fontSize: 12 }} />
-                    <YAxis allowDecimals={false} tick={{ fill: "#78716c", fontSize: 12 }} />
-                    <Tooltip {...tooltipStyle} />
-                    <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
-                  </BarChart>
-                </ResponsiveContainer>
-                </AccessibleChart>
-              ) : (
-                <TrendEmptyState
-                  message="Submit a repo suggestion and get it approved to start tracking your open source journey."
-                  showButton
-                />
-              )
-            }
-          >
-            {!trendIsLoading && !trendIsError && contributionTrend.length > 0 && (
-              <div className="mb-4">
-                {currentStreak === 0 ? (
-                  <div className="flex items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
-                    <Flame className="w-4 h-4 text-stone-400" />
-                    No active streak. Contribute this month to start one.
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-3">
-                    <div className="flex items-center gap-2 bg-stone-100 dark:bg-white/5 px-3 py-2 rounded-md text-sm font-medium text-stone-700 dark:text-stone-300">
-                      <Flame className="w-4 h-4 text-lime-500" />
-                      Current streak: {currentStreak} month{currentStreak !== 1 ? "s" : ""}
-                    </div>
-                    <div className="flex items-center gap-2 bg-stone-100 dark:bg-white/5 px-3 py-2 rounded-md text-sm font-medium text-stone-700 dark:text-stone-300">
-                      <TrendingUp className="w-4 h-4 text-lime-500" />
-                      Longest streak: {longestStreak} month{longestStreak !== 1 ? "s" : ""}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-            {trendIsLoading ? (
-              <TrendSkeleton />
-            ) : hasContributionActivity ? (
-              <AccessibleChart label="Bar chart showing monthly contribution activity over the last 6 months" caption="Bar chart displaying the number of approved open source contributions for each month over the past six months.">
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={contributionTrend} margin={{ left: 8, right: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,113,108,0.15)" />
-                  <XAxis dataKey="label" tick={{ fill: "#78716c", fontSize: 12 }} />
-                  <YAxis allowDecimals={false} tick={{ fill: "#78716c", fontSize: 12 }} />
-                  <Tooltip {...tooltipStyle} />
-                  <Bar dataKey="count" fill="#a3e635" radius={[4, 4, 0, 0]} name="Approved contributions" />
-                </BarChart>
-              </ResponsiveContainer>
-              </AccessibleChart>
-            ) : trendIsError ? (
-              <TrendEmptyState
-                message="We could not load your contribution trend right now. Try again in a moment."
-              />
-            ) : (
-              <TrendEmptyState
-                message="Submit a repo suggestion and get it approved to start tracking your open source journey."
-                showButton
-              />
-            )}
-          </ChartCard>
-        </div>
 
           {/* Contributions by Domain */}
           {(trendIsLoading || (contributionTrendData?.domains && contributionTrendData.domains.length > 0) || (contributionTrendData && contributionTrendData.total === 0)) && (
@@ -1400,8 +851,6 @@ const { data: contributionTrendData, isLoading: trendIsLoading, isError: trendIs
                 </div>
               </>
             )}
-          </>
-        )}
           </>
         )}
       </div>

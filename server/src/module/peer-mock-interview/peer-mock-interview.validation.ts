@@ -4,6 +4,9 @@ export const mockInterviewPreferenceSchema = z.object({
   topic: z.enum(["DSA", "SYSTEM_DESIGN", "FRONTEND"]),
   availability: z.array(z.enum(["WEEKDAYS_MORNING", "WEEKDAYS_AFTERNOON", "WEEKDAYS_EVENING", "WEEKENDS"])).default([]),
   enabled: z.boolean().default(true),
+  targetRole: z.string().trim().max(120).optional(),
+  experienceLevel: z.enum(["STUDENT", "FRESHER", "0_2_YEARS", "2_PLUS_YEARS"]).optional(),
+  focusAreas: z.array(z.string().trim().max(60)).max(10).default([]),
 });
 
 export const mockInterviewFeedbackSchema = z.object({

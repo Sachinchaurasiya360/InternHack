@@ -796,7 +796,7 @@ export class OpensourceService {
     since.setDate(since.getDate() - 89);
     since.setHours(0, 0, 0, 0);
 
-    const [repoRequests, guideProgressRecords, guideFeedbackRecords, pullRequestRecords] = await Promise.all([
+    const [repoRequests, guideProgressRecords, guideFeedbackRecords] = await Promise.all([
       prisma.repoRequest.findMany({
         where: {
           userId,
@@ -812,10 +812,6 @@ export class OpensourceService {
       prisma.guideFeedback.findMany({
         where: { userId, createdAt: { gte: since } },
         select: { createdAt: true },
-      }),
-      prisma.githubPullRequest.findMany({
-        where: { connection: { userId }, mergedAt: { gte: since } },
-        select: { mergedAt: true },
       }),
     ]);
 
@@ -840,13 +836,6 @@ export class OpensourceService {
       const key = dateKey(r.createdAt);
       const entry = detailsMap.get(key) ?? { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
       entry.guideSteps += 1;
-      detailsMap.set(key, entry);
-    }
-
-    for (const r of pullRequestRecords) {
-      const key = dateKey(r.mergedAt);
-      const entry = detailsMap.get(key) ?? { guideSteps: 0, repoSuggestions: 0, prsMerged: 0 };
-      entry.prsMerged += 1;
       detailsMap.set(key, entry);
     }
 

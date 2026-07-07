@@ -19,16 +19,6 @@ export const submitRoundSchema = z.object({
   attachments: z.array(z.string()).default([]),
 });
 
-export const mockInterviewTranscriptSchema = z.object({
-  question: z.string().min(1),
-  answer: z.string().min(1),
-});
-
-export const mockInterviewFeedbackSchema = z.object({
-  topic: z.string().min(1),
-  transcript: z.array(mockInterviewTranscriptSchema).min(1),
-});
-
 export const updateApplicationNotesSchema = z.object({
   notes: z.string().max(4000),
 });

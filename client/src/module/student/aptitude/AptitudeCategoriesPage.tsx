@@ -13,6 +13,7 @@ import { canonicalUrl } from "../../../lib/seo.utils";
 import { Button } from "../../../components/ui/button";
 import { CircularProgress } from "../../../components/ui/CircularProgress";
 import { GridBackground } from "../../../components/ui/GridBackground";
+import { FilterChip } from "../../../components/ui/FilterChip";
 
 
 // — Streak Banner ———————————————————————————————————————————
@@ -333,25 +334,20 @@ const clearFilters = () => {
               category /
             </span>
             {[{ key: "all", label: "All" }, ...(categories?.map((c) => ({ key: c.slug, label: c.name })) ?? [])].map(
-              (tab, i) => {
-                const active = activeTab === tab.key;
-                return (
-                  <motion.button
-                    key={tab.key}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.02, duration: 0.2 }}
+              (tab, i) => (
+                <motion.div
+                  key={tab.key}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.02, duration: 0.2 }}
+                >
+                  <FilterChip
+                    label={tab.label}
+                    active={activeTab === tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
-                      active
-                        ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                        : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                    }`}
-                  >
-                    {tab.label}
-                  </motion.button>
-                );
-              },
+                  />
+                </motion.div>
+              ),
             )}
             {hasFilters && (
               <Button onClick={clearFilters} variant="ghost" size="sm">

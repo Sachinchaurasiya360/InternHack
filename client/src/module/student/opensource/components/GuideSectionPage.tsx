@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, Link, Navigate, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import {
@@ -12,8 +12,10 @@ import { CodeBlock } from "../../../../components/ui/CodeBlock";
 import { canonicalUrl } from "../../../../lib/seo.utils";
 import { QuizBlock, type QuizQuestion } from "../../../../components/quiz/QuizBlock";
 import api from "../../../../lib/axios";
+import { fetchGuideProgress, patchGuideProgress } from "../api/opensource.api";
 import { useAuthStore } from "../../../../lib/auth.store";
 import { notifyLearningPathProgressChanged } from "../learning-paths.data";
+import { type GuideProgressAdapter } from "./GuideListPage";
 
 
 interface Resource { title: string; url: string; type: string }
@@ -36,63 +38,80 @@ interface Step {
 
 interface Props {
   steps: Step[];
-  storageKey: string;
+  /** Storage key for the default progress adapter. Required unless `adapter` is given. */
+  storageKey?: string;
+  /** Server-backed progress adapter for guides that don't use the generic array-based storage (e.g. First PR). */
+  adapter?: GuideProgressAdapter;
   basePath: string;
   seoSuffix: string;
 }
 
 
-export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffix }: Props) {
+export default function GuideSectionPage({ steps, storageKey, adapter: adapterProp, basePath, seoSuffix }: Props) {
   const { sectionSlug } = useParams<{ sectionSlug: string }>();
   const navigate = useNavigate();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const stepIndex = steps.findIndex((s) => s.id === sectionSlug);
   const step = steps[stepIndex];
 
-  const [completed, setCompleted] = useState<Set<string>>(() => {
-    try {
-      const stored = localStorage.getItem(storageKey);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch { return new Set(); }
-  });
-  const hydratingRef = useRef(false);
+  const adapter = useMemo<GuideProgressAdapter>(() => {
+    if (adapterProp) return adapterProp;
+    if (!storageKey) throw new Error("GuideSectionPage requires either storageKey or adapter");
+    const readLocal = (): string[] => {
+      try {
+        const stored = localStorage.getItem(storageKey);
+        const parsed = stored ? JSON.parse(stored) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch { return []; }
+    };
+    const writeLocal = (ids: string[]) => {
+      try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { console.warn("Failed to persist guide progress to localStorage"); }
+    };
+    return {
+      load: async () => {
+        const localIds = readLocal();
+        if (!isAuthenticated) return localIds;
+        try {
+          const serverIds = await fetchGuideProgress(storageKey);
+          const merged = new Set(serverIds);
+          let changed = false;
+          for (const id of localIds) {
+            if (!merged.has(id)) { merged.add(id); changed = true; }
+          }
+          if (changed) {
+            try { await patchGuideProgress(storageKey, [...merged]); } catch { console.warn("Failed to sync guide progress to server"); }
+          }
+          writeLocal([...merged]);
+          return [...merged];
+        } catch {
+          return localIds;
+        }
+      },
+      persist: async (_stepId, _completed, nextIds) => {
+        if (isAuthenticated) await patchGuideProgress(storageKey, nextIds);
+        writeLocal(nextIds);
+      },
+      reset: async () => {
+        if (isAuthenticated) await patchGuideProgress(storageKey, []);
+        writeLocal([]);
+      },
+    };
+  }, [adapterProp, storageKey, isAuthenticated]);
+
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(true);
   const [rating, setRating] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [showReasons, setShowReasons] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-
-    hydratingRef.current = true;
     let cancelled = false;
-
-    api.get<{ completedStepIds: string[] }>(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`)
-      .then((res) => {
-        if (cancelled) return;
-        const serverIds = new Set(res.data.completedStepIds ?? []);
-
-        setCompleted((prev) => {
-          const localIds = new Set(prev);
-          const union = new Set([...localIds, ...serverIds]);
-
-          const hasLocalIds = [...localIds].some((id) => !serverIds.has(id));
-          if (hasLocalIds) {
-            api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, {
-              completedStepIds: [...union],
-            }).catch(() => { console.warn("Failed to sync guide progress to server"); });
-          }
-
-          try { localStorage.setItem(storageKey, JSON.stringify([...union])); } catch { console.warn("Failed to persist guide progress to localStorage"); }
-          return union;
-        });
-      })
-      .catch(() => { console.warn("No server progress found — using localStorage default"); })
-      .finally(() => {
-        if (!cancelled) hydratingRef.current = false;
-      });
-
+    adapter.load()
+      .then((ids) => { if (!cancelled) setCompleted(new Set(ids)); })
+      .catch(() => { if (!cancelled) setCompleted(new Set()); })
+      .finally(() => { if (!cancelled) setIsLoading(false); });
     return () => { cancelled = true; };
-  }, [isAuthenticated, storageKey]);
+  }, [adapter]);
   const [showShortcutHint, setShowShortcutHint] = useState(() => {
   try {
     return localStorage.getItem("guide-hint-dismissed") !== "true";
@@ -104,22 +123,26 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
 
 
   const toggleComplete = useCallback(() => {
-    setCompleted((prev) => {
-      if (!step) return prev;
-      const next = new Set(prev);
-      if (next.has(step.id)) next.delete(step.id); else next.add(step.id);
-      const ids = [...next];
-      try { localStorage.setItem(storageKey, JSON.stringify(ids)); } catch { console.warn("Failed to persist guide progress to localStorage"); }
-      notifyLearningPathProgressChanged();
+    if (!step) return;
+    const wasCompleted = completed.has(step.id);
+    const nowCompleted = !wasCompleted;
+    const next = new Set(completed);
+    if (nowCompleted) next.add(step.id); else next.delete(step.id);
+    setCompleted(next);
+    notifyLearningPathProgressChanged();
 
-      if (isAuthenticated && !hydratingRef.current) {
-        api.patch(`/opensource/guide-progress/${encodeURIComponent(storageKey)}`, { completedStepIds: ids })
-          .catch(() => { console.warn("Failed to sync guide progress to server"); });
-      }
-
-      return next;
-    });
-  }, [step, storageKey, isAuthenticated]);
+    void adapter.persist(step.id, nowCompleted, [...next])
+      .then(() => notifyLearningPathProgressChanged())
+      .catch(() => {
+        setCompleted((prev) => {
+          const rolledBack = new Set(prev);
+          if (wasCompleted) rolledBack.add(step.id); else rolledBack.delete(step.id);
+          return rolledBack;
+        });
+        notifyLearningPathProgressChanged();
+        console.warn("Failed to sync guide progress to server");
+      });
+  }, [adapter, completed, step]);
 
   const dismissShortcutHint = () => {
   try {
@@ -156,6 +179,27 @@ export default function GuideSectionPage({ steps, storageKey, basePath, seoSuffi
   });
 
 if (!step) return <Navigate to={basePath} replace />;
+
+  if (isLoading) {
+    return (
+      <div className="relative pb-28 sm:pb-12">
+        <SEO
+          title={`${step.title} - ${seoSuffix}`}
+          description={step.description}
+          canonicalUrl={canonicalUrl(`${basePath}/${sectionSlug}`)}
+        />
+        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+          <div className="absolute -top-32 -right-32 w-150 h-150 bg-stone-100 dark:bg-stone-900/20 rounded-full blur-3xl opacity-40" />
+          <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
+        </div>
+        <div className="mb-6 h-17 animate-pulse rounded-md border border-stone-100 bg-white dark:border-stone-800 dark:bg-stone-900" />
+        <div className="space-y-5">
+          <div className="h-40 animate-pulse rounded-md border border-stone-100 bg-white dark:border-stone-800 dark:bg-stone-900" />
+          <div className="h-32 animate-pulse rounded-md border border-stone-100 bg-white dark:border-stone-800 dark:bg-stone-900" />
+        </div>
+      </div>
+    );
+  }
 
   const handleThumbsDown = () => {
     if (!step || submitted) return;
@@ -226,12 +270,19 @@ if (!step) return <Navigate to={basePath} replace />;
               <h1 className="font-display text-xl font-bold text-stone-950 dark:text-white truncate">
                 {step.title}
               </h1>
-              {isDone && (
-                <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 mt-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Completed
-                </span>
-              )}
+              <div className="flex items-center gap-2 mt-1">
+                {step.estimatedMinutes != null && (
+                  <span className="text-xs font-mono text-stone-400 dark:text-stone-500">
+                    ~{step.estimatedMinutes} min
+                  </span>
+                )}
+                {isDone && (
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Completed
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

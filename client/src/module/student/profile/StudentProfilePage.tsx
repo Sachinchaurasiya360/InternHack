@@ -1,20 +1,18 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../lib/query-keys";
 import { motion } from "framer-motion";
-import { CheckCircle2, ExternalLink, RefreshCw, Save, Loader2, Github, ShieldCheck, Trash2 } from "lucide-react";
+import { Save, Loader2, Github } from "lucide-react";
 import { ProfilePageHeader } from "./components/ProfilePageHeader";
-import type { GithubConnectionResponse, VerifiedSkill, ProjectItem } from "../../../lib/types";
+import type { VerifiedSkill, ProjectItem, SkillTest } from "../../../lib/types";
 import api from "../../../lib/axios";
 import { uploadDirectToS3 } from "../../../utils/upload";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
-import { Button } from "../../../components/ui/button";
 import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 import GitHubImportModal from "./GitHubImportModal";
-import GitHubStatsCard from "./GitHubStatsCard";
 import ContributionGraphs from "../../../components/ContributionGraphs";
 import { SectionHeader } from "./components/SectionHeader";
 import { IdentityCard } from "./components/IdentityCard";
@@ -49,119 +47,34 @@ interface ProfileData {
   projects: ProjectItem[];
 }
 
-const VERIFIABLE_SKILLS = [
-  "JavaScript", "Python", "React", "Node.js", "SQL", "Java", "TypeScript",
-  "HTML/CSS", "Git", "Data Structures", "Express.js", "MongoDB", "Docker",
-  "Redis", "WebSocket", "GraphQL", "Next.js", "AWS", "REST API", "Linux",
-  "C++", "Go", "Rust", "Kubernetes", "System Design", "Cybersecurity",
-  "Machine Learning", "DevOps", "Tailwind CSS", "Vue.js",
-];
+// Display labels for skillName slugs from GET /skill-tests (same source the
+// skill-verification page uses). Falls back to a hyphen-to-space title-case
+// for any future skill test added before this map is updated.
+const SKILL_DISPLAY_NAMES: Record<string, string> = {
+  javascript: "JavaScript", python: "Python", react: "React", nodejs: "Node.js",
+  sql: "SQL", java: "Java", typescript: "TypeScript", "html-css": "HTML/CSS",
+  git: "Git", "data-structures": "Data Structures", express: "Express.js",
+  mongodb: "MongoDB", docker: "Docker", redis: "Redis", websocket: "WebSocket",
+  graphql: "GraphQL", nextjs: "Next.js", aws: "AWS", "rest-api": "REST API",
+  linux: "Linux", cpp: "C++", go: "Go", rust: "Rust", kubernetes: "Kubernetes",
+  "system-design": "System Design", cybersecurity: "Cybersecurity",
+  "machine-learning": "Machine Learning", devops: "DevOps",
+  tailwindcss: "Tailwind CSS", vue: "Vue.js", angular: "Angular",
+  csharp: "C#", django: "Django", flutter: "Flutter", kotlin: "Kotlin",
+  "spring-boot": "Spring Boot", swift: "Swift", terraform: "Terraform",
+};
+
+function skillDisplayName(skillName: string): string {
+  return SKILL_DISPLAY_NAMES[skillName] ?? skillName
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
 
 interface CollegeSuggestion {
   name: string;
   country: string;
   stateProvince: string | null;
-}
-
-function formatGithubDate(value: string | null) {
-  if (!value) return "Never";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
-function GithubConnectionSettings({
-  data,
-  isLoading,
-  onConnect,
-  onSync,
-  onDisconnect,
-  connecting,
-  syncing,
-  disconnecting,
-}: {
-  data?: GithubConnectionResponse;
-  isLoading: boolean;
-  onConnect: () => void;
-  onSync: () => void;
-  onDisconnect: () => void;
-  connecting: boolean;
-  syncing: boolean;
-  disconnecting: boolean;
-}) {
-  const connection = data?.connection;
-  const connected = Boolean(data?.connected && connection);
-
-  return (
-    <div className="mt-5 rounded-md border border-stone-200 bg-stone-50 p-4 dark:border-white/10 dark:bg-white/5">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="min-w-0">
-          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400">
-            <ShieldCheck className="h-3.5 w-3.5 text-lime-500" />
-            verified contributions
-          </div>
-          {isLoading ? (
-            <p className="flex items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Loading GitHub connection...
-            </p>
-          ) : connected && connection ? (
-            <>
-              <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-50">
-                @{connection.githubUsername} connected
-              </p>
-              <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                {connection.prsMerged.toLocaleString()} merged PRs · {connection.reposContributed.toLocaleString()} repos · synced {formatGithubDate(connection.lastSyncAt)}
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-sm font-semibold text-stone-900 dark:text-stone-50">
-                Connect GitHub OAuth
-              </p>
-              <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                Verify merged public PRs from non-fork open-source repositories.
-              </p>
-            </>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {connected && connection ? (
-            <>
-              <Button asChild variant="secondary" size="sm">
-                <a href="/student/opensource/analytics?github=connected">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Analytics
-                </a>
-              </Button>
-              <Button asChild variant="secondary" size="sm">
-                <a href={connection.profileUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4" />
-                  Profile
-                </a>
-              </Button>
-              <Button onClick={onSync} disabled={syncing || connection.syncStatus === "SYNCING"} variant="secondary" size="sm">
-                {syncing || connection.syncStatus === "SYNCING" ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                Sync
-              </Button>
-              <Button onClick={onDisconnect} disabled={disconnecting} variant="destructive" size="sm">
-                {disconnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                Disconnect
-              </Button>
-            </>
-          ) : (
-            <Button onClick={onConnect} disabled={connecting || isLoading} size="sm">
-              {connecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Github className="h-4 w-4" />}
-              Connect GitHub
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
 }
 
 const MAX_RESUMES = 2;
@@ -202,41 +115,6 @@ export default function StudentProfilePage() {
   const queryClient = useQueryClient();
   const formInitialized = useRef(false);
 
-  const { data: githubConnectionData, isLoading: githubConnectionIsLoading } = useQuery<GithubConnectionResponse>({
-    queryKey: queryKeys.opensource.githubConnection(),
-    queryFn: () => api.get("/github/connection").then((r) => r.data),
-    staleTime: 60 * 1000,
-  });
-
-  const connectGithubMutation = useMutation({
-    mutationFn: async () => {
-      const res = await api.post<{ authUrl: string }>("/github/connect");
-      return res.data.authUrl;
-    },
-    onSuccess: (authUrl) => {
-      window.location.href = authUrl;
-    },
-    onError: () => toast.error("Could not start GitHub connection"),
-  });
-
-  const syncGithubMutation = useMutation({
-    mutationFn: async () => api.post<GithubConnectionResponse>("/github/sync").then((r) => r.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
-      toast.success("GitHub contributions synced");
-    },
-    onError: () => toast.error("GitHub sync failed"),
-  });
-
-  const disconnectGithubMutation = useMutation({
-    mutationFn: async () => api.delete<GithubConnectionResponse>("/github/connection").then((r) => r.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.opensource.githubConnection() });
-      toast.success("GitHub disconnected");
-    },
-    onError: () => toast.error("Could not disconnect GitHub"),
-  });
-
   const [collegeSuggestions, setCollegeSuggestions] = useState<CollegeSuggestion[]>([]);
   const [collegeLoading, setCollegeLoading] = useState(false);
   const [showCollegeSuggestions, setShowCollegeSuggestions] = useState(false);
@@ -248,14 +126,6 @@ export default function StudentProfilePage() {
   const skillInputRef = useRef<HTMLInputElement>(null);
   const skillDropdownRef = useRef<HTMLDivElement>(null);
   const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
-
-  const filteredSkillSuggestions = skillInput.trim().length > 0
-    ? VERIFIABLE_SKILLS.filter((s) => {
-        const q = skillInput.trim().toLowerCase();
-        const alreadyAdded = form.skills.some((fs) => fs.toLowerCase() === s.toLowerCase());
-        return !alreadyAdded && s.toLowerCase().includes(q);
-      })
-    : [];
 
   // ── React Query: profile, verified skills, job prefs ─────────────────
   useEffect(() => {
@@ -275,6 +145,24 @@ export default function StudentProfilePage() {
     queryFn: () => api.get("/skill-tests/my-verified").then((r) => r.data),
     staleTime: 60 * 60 * 1000,
   });
+
+  // Same source (and query key) as /student/skill-verification, so the
+  // suggestion dropdown always matches the skills that are actually verifiable.
+  const { data: skillTests } = useQuery({
+    queryKey: queryKeys.skillTests.list(),
+    queryFn: () => api.get("/skill-tests").then((r) => r.data.tests as SkillTest[]),
+    staleTime: 60 * 60 * 1000,
+  });
+
+  const verifiableSkillNames = (skillTests ?? []).map((t) => skillDisplayName(t.skillName));
+
+  const filteredSkillSuggestions = skillInput.trim().length > 0
+    ? verifiableSkillNames.filter((s) => {
+        const q = skillInput.trim().toLowerCase();
+        const alreadyAdded = form.skills.some((fs) => fs.toLowerCase() === s.toLowerCase());
+        return !alreadyAdded && s.toLowerCase().includes(q);
+      })
+    : [];
 
   // Initialise form once when profile data first arrives
   useEffect(() => {
@@ -591,11 +479,6 @@ export default function StudentProfilePage() {
               isPremium={isPremium}
             />
           </motion.div>
-
-
-          <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible">
-            <GitHubStatsCard githubUrl={form.githubUrl} />
-          </motion.div>
         </aside>
 
         {/* Right: Editable sections */}
@@ -719,26 +602,14 @@ export default function StudentProfilePage() {
               onToggle={() => toggleSection("links")}
             />
             {openSections.links && (
-              <>
-                <SocialLinksSection
-                  linkedinUrl={form.linkedinUrl}
-                  githubUrl={form.githubUrl}
-                  portfolioUrl={form.portfolioUrl}
-                  leetcodeUrl={form.leetcodeUrl}
-                  fieldErrors={fieldErrors}
-                  onChange={(field, value) => handleChange(field as keyof ProfileData, value)}
-                />
-                <GithubConnectionSettings
-                  data={githubConnectionData}
-                  isLoading={githubConnectionIsLoading}
-                  onConnect={() => connectGithubMutation.mutate()}
-                  onSync={() => syncGithubMutation.mutate()}
-                  onDisconnect={() => disconnectGithubMutation.mutate()}
-                  connecting={connectGithubMutation.isPending}
-                  syncing={syncGithubMutation.isPending}
-                  disconnecting={disconnectGithubMutation.isPending}
-                />
-              </>
+              <SocialLinksSection
+                linkedinUrl={form.linkedinUrl}
+                githubUrl={form.githubUrl}
+                portfolioUrl={form.portfolioUrl}
+                leetcodeUrl={form.leetcodeUrl}
+                fieldErrors={fieldErrors}
+                onChange={(field, value) => handleChange(field as keyof ProfileData, value)}
+              />
             )}
           </motion.div>
 

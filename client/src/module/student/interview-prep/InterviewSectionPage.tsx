@@ -1,9 +1,8 @@
-import { SELECT_CLASS } from "@/lib/form-styles";
 import { ProgressBar } from "../../../components/ui/ProgressBar";
 import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowUpRight } from "lucide-react";
+import { CheckCircle2, ArrowUpRight, Building2, ArrowUpDown } from "lucide-react";
 import { sections, questions } from "./data";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -13,6 +12,7 @@ import api from "../../../lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { MetaChip } from "../../../components/ui/MetaChip";
 import { GridBackground } from "../../../components/ui/GridBackground";
+import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
 
 
 
@@ -237,32 +237,32 @@ export default function InterviewSectionPage() {
             {/* Company Dropdown */}
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Company</span>
-              <select
+              <EditorialDropdown
+                icon={<Building2 className="w-3.5 h-3.5" />}
+                label="company"
                 value={selectedCompany}
-                onChange={(e) => setSelectedCompany(e.target.value)}
-                className={SELECT_CLASS}
-              >
-                <option value="All">All Companies</option>
-                {availableCompanies.map((company) => (
-                  <option key={company} value={company}>
-                    {company}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedCompany}
+                options={[
+                  { value: "All", label: "All Companies" },
+                  ...availableCompanies.map((company) => ({ value: company, label: company })),
+                ]}
+              />
             </div>
           </div>
 
           {/* Sort Dropdown */}
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Sort</span>
-            <select
+            <EditorialDropdown
+              icon={<ArrowUpDown className="w-3.5 h-3.5" />}
+              label="sort"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className={SELECT_CLASS}
-            >
-              <option value="frequency">Most Frequent</option>
-              <option value="order">Curated Order</option>
-            </select>
+              onChange={setSortBy}
+              options={[
+                { value: "frequency", label: "Most Frequent" },
+                { value: "order", label: "Curated Order" },
+              ]}
+            />
           </div>
         </div>
 

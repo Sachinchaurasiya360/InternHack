@@ -4,11 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search, ExternalLink, GraduationCap, ChevronDown, ChevronUp,
-  Globe, DollarSign, Calendar, Users, CheckCircle2, X, Filter, CalendarPlus,
+  Globe, DollarSign, Calendar, Users, CheckCircle2, X, CalendarPlus,
   Bookmark, Download,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Button } from "../../../components/ui/button";
+import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { markLearningPathMilestone } from "./learning-paths.data";
 import api from "../../../lib/axios";
@@ -2066,33 +2067,19 @@ export default function ProgramTrackerPage() {
         </div>
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           {[
-            { label: "Status", value: selectedStatus, options: STATUS_OPTIONS, set: setSelectedStatus },
-            { label: "Eligibility", value: selectedEligibility, options: ELIGIBILITY_OPTIONS, set: setSelectedEligibility },
-            { label: "Focus", value: activeFocus, options: FOCUS_AREA_OPTIONS, set: setActiveFocus },
-            { label: "Stipend", value: selectedStipend, options: STIPEND_OPTIONS, set: setSelectedStipend },
-          ].map(({ label, value, options, set }) => (
-            <div key={label} className="relative group">
-              <Button variant="secondary" size="sm">
-                <Filter className="w-3 h-3" />
-                <span className="text-stone-400">{label}:</span>
-                <span className="font-semibold text-stone-900 dark:text-white">
-                  {value}
-                </span>
-                <ChevronDown className="w-3 h-3 opacity-50" />
-              </Button>
-              <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[170px] max-h-[200px] overflow-y-auto rounded-md border border-stone-100 dark:border-stone-700 bg-white dark:bg-stone-800 p-1 shadow-xl group-hover:block">
-                {options.map((opt) => (
-                  <button
-                    key={opt}
-                    type="button"
-                    onClick={() => set(opt)}
-                    className={`w-full justify-start ${value === opt ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium" : "text-stone-600 dark:text-stone-300"}`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
+            { label: "Status", icon: <CheckCircle2 className="w-3.5 h-3.5" />, value: selectedStatus, options: STATUS_OPTIONS, set: setSelectedStatus },
+            { label: "Eligibility", icon: <Users className="w-3.5 h-3.5" />, value: selectedEligibility, options: ELIGIBILITY_OPTIONS, set: setSelectedEligibility },
+            { label: "Focus", icon: <GraduationCap className="w-3.5 h-3.5" />, value: activeFocus, options: FOCUS_AREA_OPTIONS, set: setActiveFocus },
+            { label: "Stipend", icon: <DollarSign className="w-3.5 h-3.5" />, value: selectedStipend, options: STIPEND_OPTIONS, set: setSelectedStipend },
+          ].map(({ label, icon, value, options, set }) => (
+            <EditorialDropdown
+              key={label}
+              icon={icon}
+              label={label.toLowerCase()}
+              value={value}
+              options={options.map((opt) => ({ value: opt, label: opt }))}
+              onChange={set}
+            />
           ))}
           {!!user && (
             <Button

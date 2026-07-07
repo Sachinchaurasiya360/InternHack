@@ -26,8 +26,12 @@ export class PeerMockInterviewController {
         res.status(401).json({ message: "Authentication required" });
         return;
       }
-      const { topic, availability, enabled } = req.body;
-      const pref = await service.upsertPreference(req.user.id, topic, availability, enabled);
+      const { topic, availability, enabled, targetRole, experienceLevel, focusAreas } = req.body;
+      const pref = await service.upsertPreference(req.user.id, topic, availability, enabled, {
+        targetRole,
+        experienceLevel,
+        focusAreas,
+      });
       res.json(pref);
     } catch (err: any) {
       res.status(err.status || 500).json({ message: err.message || "Failed to update preferences" });

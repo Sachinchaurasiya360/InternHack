@@ -4,7 +4,6 @@ import {
   Search,
   X,
   DollarSign,
-  ChevronDown,
   Globe,
   MapPin,
   Calendar,
@@ -27,6 +26,8 @@ import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { Link, useSearchParams } from "react-router";
 import { useSearchWithDebounce } from "../../../hooks/useSearchWithDebounce";
+import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
+import { FilterChip } from "../../../components/ui/FilterChip";
 type ParticipationStatus = "INTERESTED" | "PARTICIPATING";
 
 interface MyParticipation {
@@ -384,68 +385,42 @@ export default function HackathonCalendarPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Filter bar */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
+        <div className="flex flex-wrap items-center gap-3 mb-6 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
           {user && (
-  <button
-    onClick={toggleShowMine}
-    className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
-      showMine
-        ? "bg-indigo-600 text-white border-indigo-600"
-        : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-    }`}
-  >
-    My Hackathons
-  </button>
-)}
+            <FilterChip label="My Hackathons" active={showMine} onClick={toggleShowMine} />
+          )}
           {/* Status chips */}
           <div className="flex flex-wrap gap-2">
             {STATUS_OPTIONS.map((opt) => (
-              <button
+              <FilterChip
                 key={opt.value}
+                label={opt.label}
+                active={statusFilter === opt.value}
                 onClick={() => applyStatusFilter(opt.value)}
-                className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
-                  statusFilter === opt.value
-                    ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 border-gray-950 dark:border-white"
-                    : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-                }`}
-              >
-                {opt.label}
-              </button>
+              />
             ))}
           </div>
 
           {/* Location dropdown */}
-          <div className="relative">
-            <select
-              value={locationFilter}
-              onChange={(e) => applyLocationFilter(e.target.value as LocationType | "ALL")}
-              className="appearance-none px-3.5 py-2 pr-8 rounded-xl text-sm font-medium border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
-            >
-              {LOCATION_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-          </div>
+          <EditorialDropdown
+            icon={<MapPin className="w-3.5 h-3.5" />}
+            label="location"
+            value={locationFilter}
+            onChange={(v) => applyLocationFilter(v as LocationType | "ALL")}
+            options={LOCATION_OPTIONS}
+          />
 
           {/* Ecosystem dropdown */}
-          <div className="relative">
-            <select
-              value={ecosystemFilter}
-              onChange={(e) => applyEcosystemFilter(e.target.value)}
-              className="appearance-none px-3.5 py-2 pr-8 rounded-xl text-sm font-medium border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
-            >
-              <option value="ALL">All Ecosystems</option>
-              {HACKATHON_ECOSYSTEMS.map((eco) => (
-                <option key={eco} value={eco}>
-                  {eco}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-          </div>
+          <EditorialDropdown
+            icon={<Tag className="w-3.5 h-3.5" />}
+            label="ecosystem"
+            value={ecosystemFilter}
+            onChange={applyEcosystemFilter}
+            options={[
+              { value: "ALL", label: "All Ecosystems" },
+              ...HACKATHON_ECOSYSTEMS.map((eco) => ({ value: eco, label: eco })),
+            ]}
+          />
         </div>
 
         {/* Results count */}

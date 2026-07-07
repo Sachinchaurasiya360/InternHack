@@ -7,7 +7,6 @@ import {
   Search,
   ExternalLink,
   Trophy,
-  ChevronDown,
   X,
   Code2,
   Globe,
@@ -26,6 +25,7 @@ import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
+import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
@@ -135,146 +135,6 @@ function EmptyState() {
         <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
           try different search criteria
         </p>
-      </div>
-    </div>
-  );
-}
-
-function FilterDropdown({
-  label,
-  icon,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  icon: ReactNode;
-  value: string;
-  options: string[];
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className="relative group">
-      <button
-        type="button"
-        className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-stone-300 bg-white px-3 text-xs font-mono uppercase tracking-widest text-stone-600 transition-colors hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
-      >
-        <span className="text-stone-400">{icon}</span>
-        <span>{label}</span>
-        <span className="max-w-28 truncate font-bold normal-case tracking-normal text-stone-900 dark:text-stone-50">
-          {value}
-        </span>
-        <ChevronDown className="h-3.5 w-3.5 opacity-60" />
-      </button>
-      <div className="absolute left-0 top-full z-20 mt-1 hidden max-h-80 min-w-56 overflow-y-auto rounded-md border border-stone-200 bg-white p-1 shadow-xl group-hover:block dark:border-white/10 dark:bg-stone-900">
-        {options.map((opt) => {
-          const active = opt === value;
-          return (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => onChange(opt)}
-              className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${active
-                ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
-                : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
-                }`}
-            >
-              <span className="truncate">{opt}</span>
-              {active && <span className="h-1 w-1 bg-lime-400" />}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function SearchableFilterDropdown({
-  label,
-  icon,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  icon: ReactNode;
-  value: string;
-  options: string[];
-  onChange: (v: string) => void;
-}) {
-  const [query, setQuery] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const filtered = options.filter((opt) =>
-    opt.toLowerCase().includes(query.toLowerCase())
-  );
-
-  return (
-    <div className="relative group">
-      <button
-        type="button"
-        className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-stone-300 bg-white px-3 text-xs font-mono uppercase tracking-widest text-stone-600 transition-colors hover:border-stone-500 dark:border-white/10 dark:bg-stone-900 dark:text-stone-400 dark:hover:border-white/30"
-      >
-        <span className="text-stone-400">{icon}</span>
-        <span>{label}</span>
-        <span className="max-w-28 truncate font-bold normal-case tracking-normal text-stone-900 dark:text-stone-50">
-          {value}
-        </span>
-        <ChevronDown className="h-3.5 w-3.5 opacity-60" />
-      </button>
-      <div className="absolute left-0 top-full z-20 mt-1 hidden max-h-96 min-w-64 flex-col rounded-md border border-stone-200 bg-white p-1 shadow-xl group-hover:flex dark:border-white/10 dark:bg-stone-900">
-        <div className="sticky top-0 z-10 border-b border-stone-100 bg-white p-2 dark:border-white/5 dark:bg-stone-900">
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-stone-400" />
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={`Search ${label}...`}
-              className="w-full rounded bg-stone-100 py-1.5 pl-7 pr-7 text-xs outline-none focus:ring-1 focus:ring-lime-400 dark:bg-white/5"
-              autoFocus
-            />
-            {query && (
-              <button
-                onClick={() => setQuery("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="overflow-y-auto max-h-64 flex-1 p-1">
-          {filtered.length === 0 ? (
-            <div className="px-3 py-4 text-center">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                No matches found
-              </p>
-            </div>
-          ) : (
-            filtered.map((opt) => {
-              const active = opt === value;
-              return (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() => {
-                    onChange(opt);
-                    setQuery("");
-                  }}
-                  className={`flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors ${active
-                    ? "bg-stone-900 font-medium text-stone-50 dark:bg-stone-50 dark:text-stone-900"
-                    : "text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5"
-                    }`}
-                >
-                  <span className="truncate">{opt}</span>
-                  {active && <span className="h-1 w-1 bg-lime-400" />}
-                </button>
-              );
-            })
-          )}
-        </div>
       </div>
     </div>
   );
@@ -1140,26 +1000,28 @@ const organizations: GSoCOrganization[] = data?.organizations ?? [];
               className="w-full rounded-md border border-stone-300 bg-white py-3 pl-11 pr-4 text-sm text-stone-900 transition-colors placeholder:text-stone-400 focus:border-lime-400 focus:outline-none dark:border-white/10 dark:bg-stone-900 dark:text-stone-50 dark:placeholder:text-stone-600"
             />
           </div>
-          <FilterDropdown
+          <EditorialDropdown
             icon={<Globe className="h-3.5 w-3.5" />}
             label="category"
             value={selectedCategory}
-            options={categoryOptions}
+            options={categoryOptions.map((o) => ({ value: o, label: o }))}
             onChange={(value) => updateFilter("category", value)}
           />
-          <FilterDropdown
+          <EditorialDropdown
             icon={<Calendar className="h-3.5 w-3.5" />}
             label="year"
             value={selectedYear}
-            options={yearOptions}
+            options={yearOptions.map((o) => ({ value: o, label: o }))}
             onChange={(value) => updateFilter("year", value)}
           />
-          <SearchableFilterDropdown
+          <EditorialDropdown
             icon={<Code2 className="h-3.5 w-3.5" />}
             label="tech"
             value={selectedTech}
-            options={techOptions}
+            options={techOptions.map((o) => ({ value: o, label: o }))}
             onChange={(value) => updateFilter("tech", value)}
+            searchable
+            searchPlaceholder="Search tech..."
           />
           {hasFilters && (
             <button

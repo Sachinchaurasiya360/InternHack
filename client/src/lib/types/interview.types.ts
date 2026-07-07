@@ -137,24 +137,6 @@ export interface InterviewCompanyListResponse {
 }
 
 // Mock Interview
-export interface MockInterviewTranscriptEntry {
-  question: string;
-  answer: string;
-}
-
-export interface MockInterviewFeedback {
-  communication: string;
-  technicalAccuracy: string;
-  areasToImprove: string[];
-  strengths: string[];
-  overallRating: number;
-}
-
-export interface MockInterviewFeedbackResponse {
-  feedback: MockInterviewFeedback;
-  fallbackUsed: boolean;
-}
-
 export type PeerMockInterviewStatus = "PENDING_SCHEDULE" | "SCHEDULED" | "COMPLETED" | "CANCELLED";
 
 export interface PeerMockInterview {

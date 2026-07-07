@@ -53,7 +53,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/student/ats/score", icon: ScanSearch, label: "Resume" },
       { to: "/learn", icon: GraduationCap, label: "Learning Hub" },
       { to: "/student/skill-verification", icon: ShieldCheck, label: "Skill Tests" },
-      { to: "/student/mock-interview", icon: Video, label: "Mock Interview", premium: true },
+      { to: "/student/mock-interview", icon: Video, label: "Mock Interview" },
     ],
   },
   {

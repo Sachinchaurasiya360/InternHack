@@ -12,6 +12,7 @@ import { rateLimit } from "express-rate-limit";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { studentRouter } from "./module/student/student.routes.js";
 import { peerMockInterviewRouter } from "./module/peer-mock-interview/peer-mock-interview.routes.js";
+import { expertSessionRouter, expertSessionAdminRouter } from "./module/expert-session/expert-session.routes.js";
 import { uploadRouter } from "./module/upload/upload.routes.js";
 import { scraperRouter, scraperController } from "./module/scraper/scraper.routes.js";
 import { signalsRouter, signalsController } from "./module/signals/signals.routes.js";
@@ -24,10 +25,10 @@ import { AdminService } from "./module/admin/admin.service.js";
 import { AdminController } from "./module/admin/admin.controller.js";
 import { newsletterRouter } from "./module/newsletter/newsletter.routes.js";
 import { opensourceRouter } from "./module/opensource/opensource.routes.js";
-import { githubRouter } from "./module/github/github.routes.js";
 import { paymentRouter } from "./module/payment/payment.routes.js";
 import { blogRouter } from "./module/blog/blog.routes.js";
 import { gsocRouter } from "./module/gsoc/gsoc.routes.js";
+import { universityRouter } from "./module/university/university.routes.js";
 import { ycRouter } from "./module/yc/yc.routes.js";
 import { dsaRouter } from "./module/dsa/dsa.routes.js";
 import { aptitudeRouter } from "./module/aptitude/aptitude.routes.js";
@@ -64,7 +65,7 @@ import { startScheduledEmailWorker, stopScheduledEmailWorker } from "./cron/sche
 import { startWeeklyRoadmapDigestCron, stopWeeklyRoadmapDigestCron } from "./cron/roadmap-weekly-digest.js";
 import { startSignalsCleanupCron, stopSignalsCleanupCron } from "./cron/signals-cleanup.js";
 import { startJobCleanupCron, stopJobCleanupCron } from "./cron/job-cleanup.cron.js";
-import { startGithubContributionsCron, stopGithubContributionsCron } from "./cron/github-contributions.cron.js";
+import { startOpensourceRepoStatsCron, stopOpensourceRepoStatsCron } from "./cron/opensource-repo-stats.cron.js";
 import { startDeadlineAlertCron, stopDeadlineAlertCron } from "./cron/deadline-alerts.cron.js";
 import { startPeerMockInterviewMatchCron, stopPeerMockInterviewMatchCron } from "./cron/peer-mock-interview-match.cron.js";
 import { startPeerMockInterviewRemindersCron, stopPeerMockInterviewRemindersCron } from "./cron/peer-mock-interview-reminders.cron.js";
@@ -226,6 +227,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/student/recommendations", recommendationRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/student/peer-mock-interview", peerMockInterviewRouter);
+app.use("/api/student/expert-session", expertSessionRouter);
+app.use("/api/admin/expert-session", expertSessionAdminRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/scraped-jobs", scraperRouter);
 app.use("/api/signals", signalsRouter);
@@ -236,10 +239,10 @@ app.use("/api/companies", companyRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/opensource", opensourceRouter);
-app.use("/api/github", githubRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/blog", blogRouter);
 app.use("/api/gsoc", gsocRouter);
+app.use("/api/universities", universityRouter);
 app.use("/api/yc", ycRouter);
 app.use("/api/dsa", dsaRouter);
 app.use("/api/aptitude", aptitudeRouter);
@@ -445,18 +448,21 @@ const server = app.listen(PORT, async () => {
     logger.info("Peer mock interview match cron disabled on this process");
   }
 
-  const runGithubContributionsCron =
+  // Env var names kept as-is (RUN_GITHUB_CONTRIBUTIONS_CRON / GITHUB_CONTRIBUTIONS_CRON)
+  // for deploy compatibility with existing Vercel config, even though this cron
+  // no longer does any GitHub sync — it only refreshes opensource repo stats now.
+  const runOpensourceRepoStatsCron =
     process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] === "true" ||
     (process.env["NODE_ENV"] !== "production" && process.env["RUN_GITHUB_CONTRIBUTIONS_CRON"] !== "false");
-  if (runGithubContributionsCron) {
-    startGithubContributionsCron(process.env["GITHUB_CONTRIBUTIONS_CRON"] || "0 2 * * *");
+  if (runOpensourceRepoStatsCron) {
+    startOpensourceRepoStatsCron(process.env["GITHUB_CONTRIBUTIONS_CRON"] || "0 2 * * *");
     shutdownManager.register({
-      name: "GitHub Contributions Cron",
+      name: "Opensource Repo Stats Cron",
       priority: 10,
-      fn: () => stopGithubContributionsCron(),
+      fn: () => stopOpensourceRepoStatsCron(),
     });
   } else {
-    logger.info("GitHub contributions cron disabled on this process");
+    logger.info("Opensource repo stats cron disabled on this process");
   }
 
   // Register Prisma disconnect

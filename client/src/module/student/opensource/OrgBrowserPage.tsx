@@ -6,9 +6,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  Code2,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { EmptyState } from "../../../components/ui/EmptyState";
+import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
 
 // Program Type Enum
 export type ProgramType = "OUTREACHY" | "LFX" | "MLH" | "SEASON_OF_DOCS";
@@ -484,48 +486,34 @@ export default function OrgBrowserPage({ programType }: OrgBrowserPageProps) {
 
           <div className="flex flex-wrap items-center gap-3">
             {/* Tech Stack Dropdown */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono uppercase tracking-wider text-stone-400">
-                Tech Stack:
-              </span>
-              <select
-                value={selectedTech}
-                onChange={(e) => {
-                  setSelectedTech(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="px-3 py-1.5 text-xs bg-stone-50 dark:bg-stone-950 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-white/10 rounded-md focus:outline-none focus:ring-1 focus:ring-lime-500"
-              >
-                <option value="ALL">All Languages</option>
-                {techOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <EditorialDropdown
+              icon={<Code2 className="w-3.5 h-3.5" />}
+              label="Tech Stack"
+              value={selectedTech}
+              onChange={(v) => {
+                setSelectedTech(v);
+                setCurrentPage(1);
+              }}
+              options={[
+                { value: "ALL", label: "All Languages" },
+                ...techOptions.map((opt) => ({ value: opt, label: opt })),
+              ]}
+            />
 
             {/* Program Specific Dropdown */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono uppercase tracking-wider text-stone-400">
-                {criteriaLabel}:
-              </span>
-              <select
-                value={criteriaFilter}
-                onChange={(e) => {
-                  setCriteriaFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="px-3 py-1.5 text-xs bg-stone-50 dark:bg-stone-950 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-white/10 rounded-md focus:outline-none focus:ring-1 focus:ring-lime-500"
-              >
-                <option value="ALL">All Options</option>
-                {criteriaOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <EditorialDropdown
+              icon={<Filter className="w-3.5 h-3.5" />}
+              label={criteriaLabel}
+              value={criteriaFilter}
+              onChange={(v) => {
+                setCriteriaFilter(v);
+                setCurrentPage(1);
+              }}
+              options={[
+                { value: "ALL", label: "All Options" },
+                ...criteriaOptions.map((opt) => ({ value: opt, label: opt })),
+              ]}
+            />
           </div>
 
         </div>

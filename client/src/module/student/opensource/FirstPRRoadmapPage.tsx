@@ -1,5 +1,5 @@
-import GuideListPage, { type GuideProgressAdapter } from "./components/GuideListPage";
-import { fetchFirstPRProgress, patchFirstPRProgress } from "./api/opensource.api";
+import GuideListPage from "./components/GuideListPage";
+import { firstPrAdapter } from "./first-pr.adapter";
 import guideData from "./data/open-source-guide.json";
 
 interface Step {
@@ -11,14 +11,6 @@ interface Step {
 }
 
 const STEPS: Step[] = guideData.openSourceRoadmap as Step[];
-
-// First PR progress is server-backed per step, unlike the other guides which
-// sync a full id array through the guide-progress API.
-const firstPrAdapter: GuideProgressAdapter = {
-  load: fetchFirstPRProgress,
-  persist: (stepId, completed) => patchFirstPRProgress(stepId, completed),
-  reset: (completedIds) => Promise.all(completedIds.map((id) => patchFirstPRProgress(id, false))),
-};
 
 export default function FirstPRRoadmapPage() {
   return (

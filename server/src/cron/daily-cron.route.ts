@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { runJobCleanup } from "./job-cleanup.cron.js";
 import { runDeadlineAlerts } from "./deadline-alerts.cron.js";
-import { runGithubContributionsSync } from "./github-contributions.cron.js";
+import { runOpensourceRepoStatsRefresh } from "./opensource-repo-stats.cron.js";
 import { runAiPipelineDaily } from "./internhack-ai.cron.js";
 import { sendWeeklyRoadmapDigests } from "./roadmap-weekly-digest.js";
 import { drainScheduledEmails } from "./scheduled-email-worker.js";
@@ -9,6 +9,7 @@ import { runFollowUpEmails } from "./scheduled-emails.js";
 import { runSignalsCleanup } from "./signals-cleanup.js";
 import { runSubscriptionExpiry } from "./subscription-expiry.js";
 import { runPeerMockInterviewMatching } from "./peer-mock-interview-match.cron.js";
+import { runPeerMockInterviewReminders } from "./peer-mock-interview-reminders.cron.js";
 import { scraperController } from "../module/scraper/scraper.routes.js";
 import { signalsController } from "../module/signals/signals.routes.js";
 import { withAdvisoryLock } from "../utils/cron-lock.js";
@@ -53,6 +54,7 @@ const LIGHT_JOBS: CronJob[] = [
   { name: "subscription-expiry", lockKey: "subscription-expiry", run: runSubscriptionExpiry },
   { name: "job-cleanup", lockKey: "job-cleanup", run: runJobCleanup },
   { name: "deadline-alerts", lockKey: "deadline-alerts", run: runDeadlineAlerts },
+  { name: "peer-mock-interview-reminders", lockKey: "peer-mock-interview-reminders", run: runPeerMockInterviewReminders },
   { name: "follow-up-emails", lockKey: "scheduled-emails-followup", run: runFollowUpEmails },
   { name: "scheduled-email-worker", lockKey: "scheduled-email-worker", run: drainScheduledEmails },
   // Weekly: signals cleanup ran Sundays.
@@ -64,7 +66,7 @@ const HEAVY_JOBS: CronJob[] = [
   { name: "scraper", lockKey: "external-job-scraper", run: () => scraperController.getService().runOnce() },
   { name: "signals", lockKey: "signals-ingestion", run: () => signalsController.getService().runOnce() },
   { name: "ai-pipeline", lockKey: "internhack-ai-daily", run: runAiPipelineDaily },
-  { name: "github-contributions", lockKey: "github-contributions-sync", run: runGithubContributionsSync },
+  { name: "opensource-repo-stats", lockKey: "opensource-repo-stats-refresh", run: runOpensourceRepoStatsRefresh },
   // Weekly: roadmap progress digest ran Mondays.
   { name: "roadmap-weekly-digest", lockKey: "roadmap-weekly-digest", onlyOnUtcDay: 1, run: sendWeeklyRoadmapDigests },
   // Weekly: peer mock interview matching ran Sundays.

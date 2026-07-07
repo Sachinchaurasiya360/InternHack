@@ -63,10 +63,11 @@ describe("PeerMockInterviewService", () => {
       vi.mocked(prisma.peerMockInterview.findMany).mockResolvedValue([]);
 
       const res = await service.upsertPreference(1, "DSA", ["WEEKENDS"], true);
+      const prepFields = { targetRole: undefined, experienceLevel: undefined, focusAreas: [] };
       expect(prisma.peerMockInterviewPreference.upsert).toHaveBeenCalledWith({
         where: { userId: 1 },
-        update: { topic: "DSA", availability: ["WEEKENDS"], enabled: true },
-        create: { userId: 1, topic: "DSA", availability: ["WEEKENDS"], enabled: true },
+        update: { topic: "DSA", availability: ["WEEKENDS"], enabled: true, ...prepFields },
+        create: { userId: 1, topic: "DSA", availability: ["WEEKENDS"], enabled: true, ...prepFields },
       });
       expect(res).toEqual(mockPref);
     });

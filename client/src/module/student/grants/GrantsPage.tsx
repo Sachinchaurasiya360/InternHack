@@ -19,12 +19,15 @@ import {
   BookmarkCheck,
   ClipboardList,
   Clock,
+  Activity,
 } from "lucide-react";
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { GridBackground } from "../../../components/ui/GridBackground";
 import GrantTrackerDialog from "./GrantTrackerDialog";
+import { FilterChip } from "../../../components/ui/FilterChip";
+import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
 
 
 function resolveGrantLogo(logo: string, website: string): string {
@@ -312,24 +315,22 @@ export default function GrantsPage() {
             {(["ALL", ...GRANT_CATEGORIES] as const).map((cat, i) => {
               const active = selectedCategory === cat;
               return (
-                <motion.button
+                <motion.div
                   key={cat}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.02, duration: 0.2 }}
-                  onClick={() =>
-                    setSelectedCategory(
-                      cat === "ALL" ? "ALL" : cat === selectedCategory ? "ALL" : cat,
-                    )
-                  }
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
-                    active
-                      ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                      : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                  }`}
                 >
-                  {cat === "ALL" ? "All" : cat}
-                </motion.button>
+                  <FilterChip
+                    label={cat === "ALL" ? "All" : cat}
+                    active={active}
+                    onClick={() =>
+                      setSelectedCategory(
+                        cat === "ALL" ? "ALL" : cat === selectedCategory ? "ALL" : cat,
+                      )
+                    }
+                  />
+                </motion.div>
               );
             })}
           </div>
@@ -392,38 +393,28 @@ export default function GrantsPage() {
                 className="overflow-hidden"
               >
                 <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-stone-900 rounded-md border border-stone-200 dark:border-white/10">
-                  <div>
-                    <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2 block">
-                      ecosystem
-                    </label>
-                    <select
-                      value={selectedEcosystem}
-                      onChange={(e) => setSelectedEcosystem(e.target.value)}
-                      className="px-3 py-2 rounded-md text-sm border border-stone-300 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-50 focus:outline-none focus:border-lime-400 transition-colors"
-                    >
-                      <option value="ALL">All ecosystems</option>
-                      {ECOSYSTEMS.map((eco) => (
-                        <option key={eco} value={eco}>
-                          {eco}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2 block">
-                      status
-                    </label>
-                    <select
-                      value={selectedStatus}
-                      onChange={(e) => setSelectedStatus(e.target.value)}
-                      className="px-3 py-2 rounded-md text-sm border border-stone-300 dark:border-white/10 bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-50 focus:outline-none focus:border-lime-400 transition-colors"
-                    >
-                      <option value="ALL">All statuses</option>
-                      <option value="Active">Active</option>
-                      <option value="Paused">Paused</option>
-                      <option value="Invite Only">Invite Only</option>
-                    </select>
-                  </div>
+                  <EditorialDropdown
+                    icon={<Globe className="w-3.5 h-3.5" />}
+                    label="ecosystem"
+                    value={selectedEcosystem}
+                    onChange={setSelectedEcosystem}
+                    options={[
+                      { value: "ALL", label: "All ecosystems" },
+                      ...ECOSYSTEMS.map((eco) => ({ value: eco, label: eco })),
+                    ]}
+                  />
+                  <EditorialDropdown
+                    icon={<Activity className="w-3.5 h-3.5" />}
+                    label="status"
+                    value={selectedStatus}
+                    onChange={setSelectedStatus}
+                    options={[
+                      { value: "ALL", label: "All statuses" },
+                      { value: "Active", label: "Active" },
+                      { value: "Paused", label: "Paused" },
+                      { value: "Invite Only", label: "Invite Only" },
+                    ]}
+                  />
                 </div>
               </motion.div>
             )}

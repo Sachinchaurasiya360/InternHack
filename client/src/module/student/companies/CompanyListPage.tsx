@@ -14,7 +14,6 @@ import {
   X,
   Rocket,
   ExternalLink,
-  ChevronDown,
   Lock,
   ArrowUpRight,
   Plus,
@@ -29,6 +28,7 @@ import { ResultCount } from "../../../components/ui/ResultCount";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { cn } from "@/lib/utils";
+import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
 import type {
   Company,
   CityCount,
@@ -379,74 +379,6 @@ const InterviewCompanyCard = React.memo(function InterviewCompanyCard({
     </Link>
   );
 });
-
-// ─── Dropdown (hover-driven select) ───────────────────────
-interface DropdownOption {
-  value: string;
-  label: string;
-  count?: number;
-}
-
-function EditorialDropdown({
-  icon,
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  options: DropdownOption[];
-  onChange: (value: string) => void;
-}) {
-  const current = options.find((o) => o.value === value);
-  return (
-    <div className="relative group">
-      <button
-        type="button"
-        className="inline-flex items-center gap-2 h-10 px-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:border-stone-500 dark:hover:border-white/30 transition-colors cursor-pointer"
-      >
-        <span className="text-stone-400">{icon}</span>
-        <span>{label}</span>
-        <span className="text-stone-900 dark:text-stone-50 font-bold normal-case tracking-normal truncate max-w-28">
-          {current?.label ?? "All"}
-        </span>
-        <ChevronDown className="w-3.5 h-3.5 opacity-60" />
-      </button>
-      <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-55 max-h-80 overflow-y-auto rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl group-hover:block">
-        {options.map((opt) => {
-          const active = opt.value === value;
-          return (
-            <button
-              key={opt.value || "__all"}
-              type="button"
-              onClick={() => onChange(opt.value)}
-              className={cn(
-                "flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm transition-colors",
-                active
-                  ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 font-medium"
-                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-50"
-              )}
-            >
-              <span className="truncate">{opt.label}</span>
-              {typeof opt.count === "number" && (
-                <span
-                  className={cn(
-                    "text-[10px] font-mono tabular-nums shrink-0",
-                    active ? "text-stone-300 dark:text-stone-500" : "text-stone-400"
-                  )}
-                >
-                  {opt.count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 // ─── Tab type ─────────────────────────────────────────────
 type Tab = "all" | "interviews" | "yc";

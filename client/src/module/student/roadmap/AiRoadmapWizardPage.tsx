@@ -371,7 +371,7 @@ const res = await api.post<{
           toast.error(
             <div className="flex flex-col gap-2 p-1 text-left">
               <p>You have reached the limit of 5 active AI roadmaps. Please complete or delete existing ones first.</p>
-              <Link to="/student/roadmaps" className="text-sm font-bold text-stone-950 dark:text-stone-50 hover:underline">
+              <Link to="/roadmaps" className="text-sm font-bold text-stone-950 dark:text-stone-50 hover:underline">
                 Manage roadmaps →
               </Link>
             </div>,
@@ -658,7 +658,7 @@ const res = await api.post<{
             className="mb-6 mt-2"
           >
             <Link
-              to="/student/roadmaps"
+              to="/roadmaps"
               className="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-lime-400 dark:hover:border-lime-600 rounded-md text-[10px] font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 transition-colors"
             >
               <MapIcon className="w-3.5 h-3.5 text-lime-500" />

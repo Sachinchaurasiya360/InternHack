@@ -22,6 +22,7 @@ import { LeetcodeImportModal } from "./components/LeetcodeImportModal";
 import { DsaHeatmap } from "./components/DsaHeatmap";
 import { DsaStreakWidget } from "./components/DsaStreakWidget";
 import { ResultCount } from "../../../components/ui/ResultCount";
+import { FilterChip } from "../../../components/ui/FilterChip";
 import { buildTopicAccuracy } from "./topic-accuracy";
 
 const TOPICS_PER_PAGE = 20;
@@ -612,21 +613,14 @@ const clearFilters = () => {
             <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mr-1">
               difficulty /
             </span>
-            {tabs.map((tab) => {
-              const active = activeTab === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => { setActiveTab(tab.key); setPage(1); }}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${active
-                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                    : "bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-white/10 hover:border-stone-500 dark:hover:border-white/30 hover:text-stone-900 dark:hover:text-stone-50"
-                    }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
+            {tabs.map((tab) => (
+              <FilterChip
+                key={tab.key}
+                label={tab.label}
+                active={activeTab === tab.key}
+                onClick={() => { setActiveTab(tab.key); setPage(1); }}
+              />
+            ))}
 {hasFilters && (
               <Button onClick={clearFilters} variant="ghost" size="sm">
                 <X className="w-3 h-3" /> clear

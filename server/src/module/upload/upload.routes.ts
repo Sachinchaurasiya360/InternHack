@@ -27,8 +27,6 @@ const guestPresignedUrlRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-import { validateBody, presignRequestSchema, uploadProfilePicSchema, uploadCoverImageSchema, uploadResumeSchema, deleteResumeSchema } from "./upload.validation.js";
-
 
 // Public guest upload (before auth middleware)
 uploadRouter.post(

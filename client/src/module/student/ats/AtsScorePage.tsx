@@ -230,9 +230,6 @@ export default function AtsScorePage({ guestMode = false }: { guestMode?: boolea
       setResult(score);
       setEmailSent(emailQueued);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
-      if (!guestMode) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.ats.history() });
-      }
     },
     onError: (err: unknown) => {
       const errorObj = err as { response?: { status?: number; data?: { message?: string } } };

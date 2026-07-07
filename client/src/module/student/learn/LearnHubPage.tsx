@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Search, ArrowUpRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { Search, ArrowUpRight, ArrowUpDown } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl, SITE_URL } from "../../../lib/seo.utils";
 import { itemListSchema, breadcrumbSchema } from "../../../lib/structured-data";
@@ -13,12 +12,8 @@ import {
   type TrackCategory,
 } from "./tracks";
 import { TrackCard } from "./TrackCard";
-import {
-  RecommendationCard,
-  type WeakArea,
-} from "./components/RecommendationCard";
-import api from "../../../lib/axios";
 import { Button } from "../../../components/ui/button";
+import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
 import { useTrackProgress } from "./useTrackProgress";
 
 const CATEGORY_DESCRIPTION: Record<TrackCategory, string> = {
@@ -51,13 +46,6 @@ export default function LearnHubPage() {
   const [activeCategory, setActiveCategory] = useState<TrackCategory | "All">("All");
   const [activeDifficulty, setActiveDifficulty] = useState("All");
   const [sortBy, setSortBy] = useState("popular");
-  const { data: recData, isLoading: loadingRecs } = useQuery<{ weakAreas: WeakArea[] }>({
-    queryKey: ["learn-recommendations"],
-    queryFn: () => api.get<{ weakAreas: WeakArea[] }>("/student/recommendations").then((r) => r.data),
-    staleTime: 30 * 60 * 1000,
-    retry: false,
-  });
-  const weakAreas = recData?.weakAreas ?? [];
   const { progressMap } = useTrackProgress();
   const completedTrackIds = useMemo(() => getCompletedTrackIds(), []);
 const grouped = useMemo(() => {
@@ -176,61 +164,12 @@ const grouped = useMemo(() => {
         </div>
       </motion.div>
 
-      {/* Recommended for you */}
-      {!loadingRecs && weakAreas.length > 0 && (
-        <motion.section
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="mb-14"
-        >
-          <div className="flex items-end justify-between gap-4 flex-wrap mb-6 pb-4 border-b border-stone-200 dark:border-white/10">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-              <span className="h-1.5 w-1.5 bg-lime-400" />
-              recommended for you
-            </div>
-            <span className="text-xs font-mono uppercase tracking-widest text-stone-400">
-              {weakAreas.length} area{weakAreas.length !== 1 ? "s" : ""} to strengthen
-            </span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {weakAreas.slice(0, 6).map((area, i) => (
-              <RecommendationCard
-                key={`${area.type}-${area.topic}-${i}`}
-                area={area}
-                index={i}
-              />
-            ))}
-          </div>
-        </motion.section>
-      )}
-
-      {/* Build Challenges callout */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="mb-6 space-y-3"
       >
-        <Link
-          to="/learn/challenges"
-          className="group flex items-center justify-between bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-5 py-4 hover:border-lime-400 dark:hover:border-lime-400 transition-colors no-underline"
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-md bg-lime-100 dark:bg-lime-900/20 border border-lime-300 dark:border-lime-800 flex items-center justify-center shrink-0">
-              <span className="text-sm font-bold text-lime-700 dark:text-lime-400">5</span>
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-bold text-stone-900 dark:text-stone-50 group-hover:text-lime-700 dark:group-hover:text-lime-400 transition-colors">
-                Build Challenges
-              </p>
-              <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
-                5 hands-on projects to test your skills — from portfolio sites to smart contracts
-              </p>
-            </div>
-          </div>
-          <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-lime-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0" />
-        </Link>
         <Link
           to="/learn/placement-prep"
           className="group flex items-center justify-between bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-md px-5 py-4 hover:border-lime-400 dark:hover:border-lime-400 transition-colors no-underline"
@@ -312,17 +251,18 @@ const grouped = useMemo(() => {
           </div>
 
           {/* Sort Dropdown */}
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-xs font-mono uppercase tracking-widest text-stone-500">Sort By</span>
-            <select
+          <div className="shrink-0">
+            <EditorialDropdown
+              icon={<ArrowUpDown className="w-3.5 h-3.5" />}
+              label="sort by"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="text-sm bg-white dark:bg-stone-900 border border-stone-300 dark:border-white/10 rounded-md px-3 py-1.5 focus:outline-none focus:border-lime-400 cursor-pointer"
-            >
-              <option value="popular">Most Popular</option>
-              <option value="alphabetical">Alphabetical</option>
-              <option value="recent">Recently Added</option>
-            </select>
+              onChange={setSortBy}
+              options={[
+                { value: "popular", label: "Most Popular" },
+                { value: "alphabetical", label: "Alphabetical" },
+                { value: "recent", label: "Recently Added" },
+              ]}
+            />
           </div>
         </div>
 

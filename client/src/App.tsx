@@ -134,11 +134,12 @@ const SkillVerificationBadgePage = lazyWithRetry(() => import("./module/student/
 const SkillTestPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillTestPage"));
 const SqlExercisePage = lazyWithRetry(() => import("./module/student/sql/SqlExercisePage"));
 const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPlaygroundPage"));
-const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewPage"));
+const MockInterviewLandingPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewLandingPage"));
+const ExpertSessionPage = lazyWithRetry(() => import("./module/student/mock-interview/ExpertSessionPage"));
+const PeerMockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/PeerMockInterviewPage"));
 const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
 const NotesDashboardPage = lazyWithRetry(() => import("./module/student/learn/NotesDashboardPage"));
-const BuildChallengesPage = lazyWithRetry(() => import("./module/student/learn/challenges/BuildChallengesPage"));
 const ExamPrepHubPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamPrepHubPage"));
 const ExamDetailPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamDetailPage"));
 const ExamMockPage = lazyWithRetry(() => import("./module/student/exam-prep/ExamRunnerPage").then((m) => ({ default: m.ExamMockPage })));
@@ -199,7 +200,6 @@ const RoadmapCanvasPage = lazyWithRetry(() => import("./module/student/roadmap/R
 const RoadmapCertificatePage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapCertificatePage"));
 const RoadmapCertificatesGalleryPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapCertificatesGalleryPage"));
 const RoadmapTopicPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapTopicPage"));
-const RoadmapDashboardPage = lazyWithRetry(() => import("./module/student/roadmap/RoadmapDashboardPage"));
 const AiRoadmapWizardPage = lazyWithRetry(() => import("./module/student/roadmap/AiRoadmapWizardPage"));
 
 // Student new feature pages
@@ -232,6 +232,7 @@ const AdminRepoRequestsPage = lazyWithRetry(() => import("./module/admin/repo-re
 const AdminBroadcastEmailPage = lazyWithRetry(() => import("./module/admin/broadcast/AdminBroadcastEmailPage"));
 const AdminSignalsPage = lazyWithRetry(() => import("./module/admin/signals/AdminSignalsPage"));
 const AdminInterviewsPage = lazyWithRetry(() => import("./module/admin/interviews/AdminInterviewsPage"));
+const AdminExpertAvailabilityPage = lazyWithRetry(() => import("./module/admin/expert-availability/AdminExpertAvailabilityPage"));
 const GuideFeedbackDashboard = lazyWithRetry(() => import("./module/admin/GuideFeedbackDashboard"));
 
 function JobBrowseOrRedirect() {
@@ -365,7 +366,6 @@ function App() {
             {/* Learning Hub - all learning content under /learn */}
             <Route path="/learn" element={<LearnLayout />}>
               <Route index element={<LearnHubPage />} />
-              <Route path="challenges" element={<BuildChallengesPage />} />
               <Route path="skill-tests" element={<ProtectedRoute role="STUDENT"><SkillVerificationPage /></ProtectedRoute>} />
               <Route path="javascript" element={<JsLessonsPage />} />
               <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
@@ -502,7 +502,9 @@ function App() {
               <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
               <Route path="ats/latex-templates" element={<LatexTemplatesGallery />} />
               <Route path="skill-verification" element={<SkillVerificationPage />} />
-              <Route path="mock-interview" element={<MockInterviewPage />} />
+              <Route path="mock-interview" element={<MockInterviewLandingPage />} />
+              <Route path="mock-interview/expert" element={<ExpertSessionPage />} />
+              <Route path="mock-interview/peer" element={<PeerMockInterviewPage />} />
               <Route path="companies/add" element={<AddCompanyPage />} />
               <Route path="grants" element={<GrantsPage />} />
               <Route path="opensource" element={<OpenSourceLayout />}>
@@ -538,7 +540,6 @@ function App() {
               <Route path="interviews/:id" element={<InterviewExperienceDetailPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
               <Route path="profile" element={<StudentProfilePage />} />
-              <Route path="roadmaps" element={<RoadmapDashboardPage />} />
               <Route path="learn/readiness" element={<InterviewReadinessPage />} />
             </Route>
 
@@ -568,6 +569,7 @@ function App() {
               <Route path="external-jobs" element={<AdminExternalJobsPage />} />
               <Route path="repo-requests" element={<AdminRepoRequestsPage />} />
               <Route path="interview-experiences" element={<AdminInterviewsPage />} />
+              <Route path="expert-availability" element={<AdminExpertAvailabilityPage />} />
               <Route path="signals" element={<AdminSignalsPage />} />
               <Route path="broadcast-email" element={<AdminBroadcastEmailPage />} />
               <Route path="blog" element={<AdminBlogPage />} />

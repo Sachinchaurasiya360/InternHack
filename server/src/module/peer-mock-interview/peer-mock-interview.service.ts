@@ -57,11 +57,22 @@ export class PeerMockInterviewService {
    * Creates or updates the mock interview preferences.
    * If disabling, cancels active scheduled pairings and notifies the partners.
    */
-  async upsertPreference(userId: number, topic: MockInterviewTopic, availability: string[], enabled: boolean) {
+  async upsertPreference(
+    userId: number,
+    topic: MockInterviewTopic,
+    availability: string[],
+    enabled: boolean,
+    prep?: { targetRole?: string; experienceLevel?: string; focusAreas?: string[] },
+  ) {
+    const prepFields = {
+      targetRole: prep?.targetRole,
+      experienceLevel: prep?.experienceLevel,
+      focusAreas: prep?.focusAreas ?? [],
+    };
     const preference = await prisma.peerMockInterviewPreference.upsert({
       where: { userId },
-      update: { topic, availability, enabled },
-      create: { userId, topic, availability, enabled },
+      update: { topic, availability, enabled, ...prepFields },
+      create: { userId, topic, availability, enabled, ...prepFields },
     });
 
     if (!enabled) {
@@ -378,13 +389,37 @@ export class PeerMockInterviewService {
       throw Object.assign(new Error("The proposed time has already passed. Please propose a new time."), { status: 400 });
     }
 
+    // Prefer an auto-generated Google Meet link over a manually-supplied one.
+    // createGoogleMeetEvent returns null (rather than throwing) when the
+    // calendar integration isn't configured, so this falls back to whatever
+    // link the accepting student pasted in, and to no link at all if neither
+    // is available.
+    let resolvedMeetingLink = meetingLink;
+    const attendeeEmails = [pairing.studentA?.email, pairing.studentB?.email].filter(
+      (email): email is string => !!email,
+    );
+    try {
+      const { createGoogleMeetEvent } = await import("../../utils/google-calendar.utils.js");
+      const event = await createGoogleMeetEvent({
+        summary: `InternHack Mock Interview (${pairing.topic})`,
+        description: "Peer mock interview practice session, scheduled via InternHack.",
+        startTime: new Date(pairing.proposedTime),
+        attendeeEmails,
+      });
+      if (event) {
+        resolvedMeetingLink = event.meetingLink;
+      }
+    } catch (err) {
+      console.error("Failed to create Google Calendar event, falling back to manual link:", err);
+    }
+
     const updated = await prisma.peerMockInterview.update({
       where: { id: pairingId },
       data: {
         scheduledAt: pairing.proposedTime,
         schedulingConfirmed: true,
         status: "SCHEDULED",
-        meetingLink,
+        meetingLink: resolvedMeetingLink,
       },
       include: {
         studentA: true,
@@ -395,7 +430,7 @@ export class PeerMockInterviewService {
     const emailUtils = await import("../../utils/email.utils.js");
     const html = `<h3>Mock Interview Scheduled!</h3>
       <p>Your mock interview has been scheduled for <strong>${formatUtc(pairing.proposedTime)}</strong>.</p>
-      ${meetingLink ? `<p>Meeting Link: <a href="${meetingLink}">${meetingLink}</a></p>` : ""}
+      ${resolvedMeetingLink ? `<p>Meeting Link: <a href="${resolvedMeetingLink}">${resolvedMeetingLink}</a></p>` : ""}
       <p>Please mark your calendar!</p>`;
 
     try {

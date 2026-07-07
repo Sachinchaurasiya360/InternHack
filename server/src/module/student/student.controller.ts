@@ -1,83 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
 import { StudentService } from "./student.service.js";
-import { mockInterviewFeedbackSchema, updateApplicationNotesSchema } from "./student.validation.js";
-import { prisma } from "../../database/db.js";
-import { getPlanTier } from "../../config/usage-limits.js";
+import { updateApplicationNotesSchema } from "./student.validation.js";
 import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("StudentController");
 
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
-
-  async getMockInterviewInfo(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
-
-      // Fetch user plan and usage count in parallel.
-      const [user, used] = await Promise.all([
-        prisma.user.findUnique({
-          where: { id: req.user.id },
-          select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
-        }),
-        prisma.usageLog.count({
-          where: { userId: req.user.id, action: "MOCK_INTERVIEW", createdAt: { gte: startOfMonth } },
-        }),
-      ]);
-      if (!user) return res.status(401).json({ message: "User not found" });
-
-      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
-
-      if (tier === "FREE") {
-        return res.json({ allowed: false, tier, calendlyUrl: null, used: 0, limit: 0 });
-      }
-
-      return res.json({
-        allowed: used < 1,
-        tier,
-        calendlyUrl: used < 1 ? process.env["CALENDLY_URL"] || null : null,
-        used,
-        limit: 1,
-      });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async bookMockInterview(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const usage = req.usageInfo;
-      const used = usage ? usage.used + 1 : 1;
-      const limit = usage ? usage.limit : 1;
-
-      return res.json({ message: "Mock interview booked successfully", used, limit });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async generateMockInterviewFeedback(req: Request, res: Response) {
-    try {
-      if (!req.user) return res.status(401).json({ message: "Authentication required" });
-
-      const result = mockInterviewFeedbackSchema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-      }
-
-      const feedback = await this.studentService.generateMockInterviewFeedback(result.data.topic, result.data.transcript);
-      return res.status(200).json(feedback);
-    } catch (error) {
-      logger.error("Failed to generate mock interview feedback", error);
-      return res.status(500).json({ message: "Failed to generate feedback" });
-    }
-  }
 
   async getMyApplications(req: Request, res: Response) {
     try {

@@ -14,6 +14,7 @@ import {
   TrendingUp,
   Filter,
   Code2,
+  BarChart3,
   Wand2,
   Flame,
   BookOpen,
@@ -33,13 +34,14 @@ import toast from "../../../components/ui/toast";
 import { canonicalUrl } from "../../../lib/seo.utils";
 import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { EmptyState } from "../../../components/ui/EmptyState";
+import { FilterChip } from "../../../components/ui/FilterChip";
+import { EditorialDropdown } from "../../../components/ui/EditorialDropdown";
 import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { REPO_DOMAINS, DIFFICULTY_OPTIONS, SORT_OPTIONS, LANGUAGE_COLORS } from "./reposData";
 import { formatCount, difficultyBadge, buildLanguageParam } from "./_shared/repo-utils";
 import { RepoCard, RepoCardSkeleton } from "./RepoCard";
 import { useRecentlyViewedRepos } from "./useRecentlyViewedRepos";
-import { Button } from "../../../components/ui/button";
 import { markLearningPathMilestone } from "./learning-paths.data";
 
 const BOOKMARK_KEY = "oss_bookmarks";
@@ -424,23 +426,14 @@ export default function RepoDiscoveryPage() {
         {/* Filter bar */}
         <div className="flex items-center gap-2 mb-4 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           {/* Domain chips */}
-          {REPO_DOMAINS.map((d) => {
-            const active = selectedDomain === d.key;
-            return (
-              <button
-                key={d.key}
-                type="button"
-                onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
-                className={`inline-flex items-center px-3 py-2.5 rounded-md text-xs font-bold border transition-colors cursor-pointer ${
-                  active
-                    ? "bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 border-stone-900 dark:border-stone-50"
-                    : "bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10 hover:border-stone-400 dark:hover:border-white/25"
-                }`}
-              >
-                {d.label}
-              </button>
-            );
-          })}
+          {REPO_DOMAINS.map((d) => (
+            <FilterChip
+              key={d.key}
+              label={d.label}
+              active={selectedDomain === d.key}
+              onClick={() => updateFilter("domain", d.key === selectedDomain ? "ALL" : d.key)}
+            />
+          ))}
 
           {/* Saved toggle */}
           <button
@@ -551,53 +544,13 @@ export default function RepoDiscoveryPage() {
           </button>
 
           {/* Sort dropdown */}
-          <div className="relative" ref={sortDropdownRef}>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setSortOpen(!sortOpen)}
-              aria-haspopup="listbox"
-              aria-expanded={sortOpen}
-            >
-              <TrendingUp className="w-3 h-3" />
-              {SORT_OPTIONS.find((s) => s.key === sortKey)?.label ?? "Sort"}
-              <ChevronDown className={`w-3 h-3 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
-            </Button>
-            <AnimatePresence>
-              {sortOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-20 mt-1 min-w-44 rounded-md border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-900 p-1 shadow-xl origin-top"
-                  role="listbox"
-                >
-                  {SORT_OPTIONS.map((opt) => (
-                    <Button
-                      key={opt.key}
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      role="option"
-                      aria-selected={sortKey === opt.key}
-                      onClick={() => {
-                        updateFilter("sort", opt.key);
-                        setSortOpen(false);
-                      }}
-                      className={`w-full justify-start text-left px-2.5 py-1.5 rounded-md text-xs font-normal transition-colors cursor-pointer ${sortKey === opt.key
-                        ? "bg-stone-900 dark:bg-stone-50 text-lime-400 hover:bg-stone-900 dark:hover:bg-stone-50 hover:text-lime-400"
-                        : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-white/5"
-                        }`}
-                    >
-                      {opt.label}
-                    </Button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <EditorialDropdown
+            icon={<TrendingUp className="w-3.5 h-3.5" />}
+            label="sort"
+            value={sortKey}
+            options={SORT_OPTIONS.map((opt) => ({ value: opt.key, label: opt.label }))}
+            onChange={(value) => updateFilter("sort", value)}
+          />
         </div>
 
         {/* Expanded filters */}
@@ -623,23 +576,25 @@ export default function RepoDiscoveryPage() {
         <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-4">Filters</p>
         <div className="flex flex-col gap-4">
           <div>
-            <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">difficulty</label>
-            <select
+            <EditorialDropdown
+              icon={<BarChart3 className="w-3.5 h-3.5" />}
+              label="difficulty"
               value={selectedDifficulty}
-              onChange={(e) => updateFilter("difficulty", e.target.value)}
-              className="w-full px-3 py-3 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none"
-            >
-              {DIFFICULTY_OPTIONS.map((d) => (
-                <option key={d.key} value={d.key}>{d.label}</option>
-              ))}
-            </select>
+              options={DIFFICULTY_OPTIONS.map((d) => ({ value: d.key, label: d.label }))}
+              onChange={(value) => updateFilter("difficulty", value)}
+              className="w-full"
+            />
           </div>
           <div>
-            <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5 block">language</label>
-            <select
-              value={selectedLanguage}
-              onChange={(e) => {
-                const value = e.target.value;
+            <EditorialDropdown
+              icon={<Code2 className="w-3.5 h-3.5" />}
+              label="language"
+              value={selectedLanguage[0] ?? "ALL"}
+              options={[
+                { value: "ALL", label: "All Languages" },
+                ...languages.map((lang) => ({ value: lang, label: lang })),
+              ]}
+              onChange={(value) => {
                 setSearchParams((prev) => {
                   const params = new URLSearchParams(prev);
                   params.delete("language");
@@ -648,13 +603,8 @@ export default function RepoDiscoveryPage() {
                   return params;
                 }, { replace: true });
               }}
-              className="w-full px-3 py-3 rounded-md text-sm border border-stone-200 dark:border-white/15 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 focus:outline-none"
-            >
-              <option value="ALL">All Languages</option>
-              {languages.map((lang) => (
-                <option key={lang} value={lang}>{lang}</option>
-              ))}
-            </select>
+              className="w-full"
+            />
           </div>
           {activeFilters > 0 && (
             <button

@@ -173,30 +173,6 @@ export class AuthController {
     }
   }
 
-  async getGitHubStats(req: Request, res: Response) {
-    try {
-      if (!ensureAuthenticated(req, res)) return;
-
-      const username = typeof req.query["username"] === "string" ? req.query["username"] : "";
-      if (!username.trim()) {
-        return res.status(400).json({ message: "GitHub username is required" });
-      }
-
-      const stats = await this.authService.getGitHubStats(username, req.user!.id);
-      return res.status(200).json({ stats });
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === "GitHub user not found") {
-          return res.status(404).json({ message: error.message });
-        }
-        if (error.message === "GitHub username is required") {
-          return res.status(400).json({ message: error.message });
-        }
-      }
-      console.error(error);
-      return res.status(500).json({ message: "Failed to fetch GitHub stats" });
-    }
-  }
 
   async verifyEmail(req: Request, res: Response) {
     // Body is already validated & typed by route-level validateBody(verifyEmailSchema)

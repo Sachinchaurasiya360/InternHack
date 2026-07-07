@@ -65,7 +65,6 @@ model user {
   externalApplications     externalJobApplication[]       @relation("StudentExternalApplications")
   generatedCoverLetters    generatedCoverLetter[]         @relation("StudentCoverLetters")
   generatedResumes         generatedResume[]              @relation("UserGeneratedResumes")
-  githubConnection         githubConnection?              @relation("UserGithubConnection")
   guideCertificates        guideCertificate[]             @relation("UserCertificates")
   guideFeedbacks           guideFeedback[]
   guideProgress            guideProgress[]                @relation("UserGuideProgress")
@@ -89,6 +88,7 @@ model user {
   mockInterviewPreference  peerMockInterviewPreference?   @relation("UserMockInterviewPreference")
   studentAMockInterviews   peerMockInterview[]            @relation("StudentAMockInterviews")
   studentBMockInterviews   peerMockInterview[]            @relation("StudentBMockInterviews")
+  expertSessions           expertSession[]                @relation("UserExpertSessions")
   scheduledEmails          scheduledEmail[]               @relation("UserScheduledEmails")
   createdSkillTests        skillTest[]                    @relation("SkillTestCreator")
   skillTestAttempts        skillTestAttempt[]             @relation("StudentSkillTestAttempts")
@@ -469,60 +469,6 @@ model repoRequest {
   @@index([userId, status])
   @@index([userId, status, createdAt])
   @@index([repoId])
-}
-
-model githubConnection {
-  id                 Int                     @id @default(autoincrement())
-  userId             Int                     @unique
-  githubUsername     String
-  accessToken        String
-  connectedAt        DateTime                @default(now())
-  lastSyncAt         DateTime?
-  syncStatus         GithubSyncStatus        @default(PENDING)
-  syncError          String?
-  prsMerged          Int                     @default(0)
-  reposContributed   Int                     @default(0)
-  publicRepos        Int                     @default(0)
-  contributedStars   Int                     @default(0)
-  user               user                    @relation("UserGithubConnection", fields: [userId], references: [id], onDelete: Cascade)
-  contributedRepos   githubContributedRepo[] @relation("GithubConnectionRepos")
-  recentPullRequests githubPullRequest[]     @relation("GithubConnectionPullRequests")
-
-  @@index([githubUsername])
-  @@index([lastSyncAt])
-}
-
-model githubPullRequest {
-  id           Int              @id @default(autoincrement())
-  connectionId Int
-  githubId     String
-  title        String
-  url          String
-  number       Int
-  mergedAt     DateTime
-  repoName     String
-  repoUrl      String
-  repoStars    Int              @default(0)
-  language     String?
-  connection   githubConnection @relation("GithubConnectionPullRequests", fields: [connectionId], references: [id], onDelete: Cascade)
-
-  @@unique([connectionId, githubId])
-  @@index([connectionId, mergedAt])
-}
-
-model githubContributedRepo {
-  id            Int              @id @default(autoincrement())
-  connectionId  Int
-  nameWithOwner String
-  url           String
-  stars         Int              @default(0)
-  language      String?
-  mergedPrs     Int              @default(0)
-  lastMergedAt  DateTime?
-  connection    githubConnection @relation("GithubConnectionRepos", fields: [connectionId], references: [id], onDelete: Cascade)
-
-  @@unique([connectionId, nameWithOwner])
-  @@index([connectionId, stars])
 }
 
 model blogPost {
@@ -1413,13 +1359,6 @@ enum RepoRequestStatus {
   REJECTED
 }
 
-enum GithubSyncStatus {
-  PENDING
-  SYNCING
-  SUCCESS
-  FAILED
-}
-
 enum RepoDomain {
   AI
   WEB
@@ -1535,4 +1474,18 @@ model guestUsage {
 
   @@unique([ipHash, date])
   @@index([date])
+}
+
+/// Indian higher-education institutions from the AISHE (All India Survey on
+/// Higher Education) directory, seeded from data/aishe-colleges.csv. Backs the
+/// college autocomplete on the student profile page. Name search uses a
+/// pg_trgm GIN index (added in the migration) for fast ILIKE '%term%' lookups.
+model college {
+  id        Int     @id @default(autoincrement())
+  aisheCode String
+  name      String
+  state     String
+  district  String?
+
+  @@index([state])
 }
