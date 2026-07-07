@@ -18,7 +18,7 @@ const presignedUrlRateLimit = rateLimit({
   legacyHeaders: false,
 });
 
-import { validateBody, presignRequestSchema, uploadProfilePicSchema, uploadCoverImageSchema, uploadResumeSchema } from "./upload.validation.js";
+import { validateBody, presignRequestSchema, uploadProfilePicSchema, uploadCoverImageSchema, uploadResumeSchema, deleteResumeSchema } from "./upload.validation.js";
 
 
 // NEW: Route to generate pre-signed URL for direct client-to-S3 uploads
@@ -48,4 +48,4 @@ uploadRouter.post(
   validateBody(uploadResumeSchema),
   (req, res) => uploadController.uploadProfileResume(req, res)
 );
-uploadRouter.delete("/profile-resume", (req, res) => uploadController.deleteProfileResume(req, res));
+uploadRouter.delete("/profile-resume", validateBody(deleteResumeSchema), (req, res) => uploadController.deleteProfileResume(req, res));

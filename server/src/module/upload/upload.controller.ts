@@ -257,6 +257,9 @@ export class UploadController {
 
       const { url: rawUrl } = req.body as { url?: string };
       if (!rawUrl) return res.status(400).json({ message: "Resume URL is required" });
+      if (!isValidS3FileUrl(rawUrl, req.user.id)) {
+        return res.status(400).json({ message: "Resume URL must be from authorized S3 bucket" });
+      }
 
       const url = rawUrl.split("?")[0]!;
       const userId = req.user.id;
