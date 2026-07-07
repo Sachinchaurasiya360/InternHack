@@ -156,29 +156,6 @@ function HeroGeometric() {
       </div>
 
       <WinsMarquee />
-
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-10 border-t border-stone-200 dark:border-white/10">
-        <div className="text-xs font-mono uppercase tracking-widest text-stone-500 mb-4 text-center">
-          Trusted by students at
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-semibold text-stone-500 dark:text-stone-500">
-          <span>IITs</span>
-          <span className="text-stone-300 dark:text-stone-700">/</span>
-          <span>NITs</span>
-          <span className="text-stone-300 dark:text-stone-700">/</span>
-          <span>BITS Pilani</span>
-          <span className="text-stone-300 dark:text-stone-700">/</span>
-          <span>IIITs</span>
-          <span className="text-stone-300 dark:text-stone-700">/</span>
-          <span>VIT</span>
-          <span className="text-stone-300 dark:text-stone-700">/</span>
-          <span>SRM</span>
-          <span className="text-stone-300 dark:text-stone-700">/</span>
-          <span>Manipal</span>
-          <span className="text-stone-300 dark:text-stone-700">/</span>
-          <span>200+ colleges</span>
-        </div>
-      </div>
     </section>
   );
 }
