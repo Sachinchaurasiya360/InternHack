@@ -10,6 +10,7 @@ import { uploadDirectToS3 } from "../../../utils/upload";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { Button } from "../../../components/ui/button";
 import toast from "@/components/ui/toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 import GitHubImportModal from "./GitHubImportModal";
@@ -131,7 +132,7 @@ export default function StudentProfilePage() {
   const [deletingResume, setDeletingResume] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    basic: true, education: true, skills: true, projects: true, links: false, resumes: true,
+    basic: true, education: true, skills: true, projects: true, links: true, resumes: true,
   });
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [cropType, setCropType] = useState<"profile" | "cover" | null>(null);
@@ -606,13 +607,15 @@ export default function StudentProfilePage() {
               onToggle={() => toggleSection("projects")}
               right={
                 isEditing ? (
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setShowGitHubImport(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-stone-300 dark:border-white/10 rounded-md text-xs font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 hover:border-stone-400 dark:hover:border-white/30 transition-colors bg-transparent cursor-pointer"
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 font-mono uppercase tracking-widest text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50"
                   >
                     <Github className="w-3.5 h-3.5" /> import
-                  </button>
+                  </Button>
                 ) : null
               }
             />
@@ -687,16 +690,17 @@ export default function StudentProfilePage() {
 
           {/* Save (bottom) */}
           {isEditing && (
-          <motion.div custom={10} variants={fadeInUp} initial="hidden" animate="visible" className="pt-2">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="group w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors border-0 cursor-pointer disabled:opacity-50"
-            >
-              {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save all changes</>}
-            </button>
-          </motion.div>
+            <motion.div custom={10} variants={fadeInUp} initial="hidden" animate="visible" className="pt-2">
+              <Button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                autoHeight
+                className="w-full gap-2 px-6 py-3.5 bg-lime-400 text-stone-950 text-sm font-bold hover:bg-lime-300"
+              >
+                {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save all changes</>}
+              </Button>
+            </motion.div>
           )}
         </div>
       </div>

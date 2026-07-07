@@ -114,10 +114,8 @@ export default function RepoDiscoveryPage() {
   // Debounced search state & ref
   const [inputValue, setInputValue] = useState(search);
   const searchRef = useRef<HTMLInputElement>(null);
-  const sortDropdownRef = useRef<HTMLDivElement>(null);
 
   const [showFilters, setShowFilters] = useState(false);
-  const [sortOpen, setSortOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<OpenSourceRepo | null>(null);
 
   useEffect(() => {
@@ -138,7 +136,7 @@ export default function RepoDiscoveryPage() {
     return () => clearTimeout(timer);
   }, [inputValue, search, setSearchParams]);
 
-  // Keyboard shortcut & click outside bindings
+  // Keyboard shortcut binding
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
@@ -146,22 +144,11 @@ export default function RepoDiscoveryPage() {
         e.preventDefault();
         searchRef.current?.focus();
       }
-      if (e.key === "Escape") {
-        setSortOpen(false);
-      }
-    };
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
-        setSortOpen(false);
-      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
