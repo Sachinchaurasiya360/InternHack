@@ -42,6 +42,7 @@ const ScrapedJobDetailPage = lazyWithRetry(() => import("./module/scraped-jobs/S
 const CompanyListPage = lazyWithRetry(() => import("./module/student/companies/CompanyListPage"));
 const CompanyDetailPage = lazyWithRetry(() => import("./module/student/companies/CompanyDetailPage"));
 const PublicAtsPage = lazyWithRetry(() => import("./module/student/ats/PublicAtsPage"));
+const PublicAtsTryPage = lazyWithRetry(() => import("./module/student/ats/PublicAtsTryPage"));
 const GrantsPage = lazyWithRetry(() => import("./module/student/grants/GrantsPage"));
 const PublicOpenSourcePage = lazyWithRetry(() => import("./module/student/opensource/PublicOpenSourcePage"));
 const RepoPublicPage = lazyWithRetry(() => import("./module/student/opensource/RepoPublicPage"));
@@ -87,7 +88,11 @@ const StudentLayout = lazyWithRetry(() => import("./module/student/StudentLayout
 const MyApplicationsPage = lazyWithRetry(() => import("./module/student/applications/MyApplicationsPage"));
 const ApplicationProgressPage = lazyWithRetry(() => import("./module/student/applications/ApplicationProgressPage"));
 const AtsLandingPage = lazyWithRetry(() => import("./module/student/ats/AtsLandingPage"));
-const AtsScorePage = lazyWithRetry(() => import("./module/student/ats/AtsScorePage"));
+const AtsScorePage = lazyWithRetry(() =>
+  import("./module/student/ats/AtsScorePage").then((m) => ({
+    default: m.default as ComponentType<unknown>,
+  })),
+);
 const ResumeBuilderPage = lazyWithRetry(() => import("./module/student/ats/ResumeBuilderPage"));
 const CoverLetterPage = lazyWithRetry(() => import("./module/student/ats/CoverLetterPage"));
 const LatexResumeEditor = lazyWithRetry(() => import("./module/student/ats/LatexResumeEditor"));
@@ -307,10 +312,9 @@ function App() {
       <AuthExpiredRedirect />
       <Toaster />
       <ErrorBoundary>
-        <BackToTopButton />
-        <Suspense fallback={<LoadingScreen />}>
-          <Routes>
-            {/* Public routes */}
+      <BackToTopButton />
+      <Suspense fallback={<LoadingScreen />}>
+        <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -331,6 +335,7 @@ function App() {
 
 
             <Route path="/ats-score" element={<PublicAtsPage />} />
+            <Route path="/ats-score/try" element={<PublicAtsTryPage />} />
             <Route path="/grants" element={<GrantsPage />} />
 
             {/* Public Profile without auth wrapper */}

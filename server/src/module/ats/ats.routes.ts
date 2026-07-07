@@ -25,6 +25,13 @@ const latexChatController = new LatexChatController(latexChatService);
 
 export const atsRouter = Router();
 
+// Public guest scoring (before auth middleware).
+// Rate-limited via Postgres-backed counter (survives Vercel cold starts) handled in the controller.
+atsRouter.post(
+  "/guest/score",
+  (req, res, next) => atsController.scoreResumeGuest(req, res, next),
+);
+
 atsRouter.use(authMiddleware, requireRole("STUDENT"));
 
 atsRouter.get("/usage", (req, res, next) => atsController.getUsageStats(req, res, next));

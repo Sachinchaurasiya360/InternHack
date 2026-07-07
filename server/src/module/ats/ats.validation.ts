@@ -30,3 +30,30 @@ export const scoreResumeSchema = z.object({
 export const applySuggestionsSchema = scoreResumeSchema.extend({
   suggestions: z.array(z.string()).min(1, "At least one suggestion is required"),
 });
+
+export function guestScoreResumeSchema(ipHash: string) {
+  const prefix = `guest-resumes/${ipHash}/`;
+  return z.object({
+    resumeUrl: z
+      .string()
+      .min(1, "Resume URL is required")
+      .refine(
+        (url) => {
+          try {
+            const parsed = new URL(url);
+            if (parsed.protocol !== "https:") return false;
+            if (!isAllowedUrl(url)) return false;
+            const s3Key = parsed.pathname.startsWith("/")
+              ? parsed.pathname.slice(1)
+              : parsed.pathname;
+            return s3Key.startsWith(prefix);
+          } catch {
+            return false;
+          }
+        },
+        "Resume URL must be a guest upload from this session",
+      ),
+    jobTitle: z.string().max(200).optional(),
+    jobDescription: z.string().max(5000).optional(),
+  });
+}

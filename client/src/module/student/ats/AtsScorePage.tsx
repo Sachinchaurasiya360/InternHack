@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import toast from "@/components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { uploadDirectToS3 } from "../../../utils/upload";
-import { CopyButton } from "../../../components/ui/CopyButton";
+import { uploadDirectToS3, uploadGuestResume } from "../../../utils/upload";
 import {
   Upload,
   FileText,
@@ -26,6 +25,7 @@ import {
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
+import { CopyButton } from "../../../components/ui/CopyButton";
 import AtsToolsNav from "./AtsToolsNav";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AtsScore, UsageStats } from "../../../lib/types";
@@ -57,7 +57,7 @@ function getResumeName(resumeUrl: string) {
 }
 
 // ── Main Page ────────────────────────────────────────────────────────────
-export default function AtsScorePage() {
+export default function AtsScorePage({ guestMode = false }: { guestMode?: boolean }) {
   const queryClient = useQueryClient();
   const printRef = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -171,16 +171,25 @@ export default function AtsScorePage() {
     doc.save(filename);
   };
 
+  const [guestLimitReached, setGuestLimitReached] = useState(false);
+
   const { data: usageData } = useQuery<UsageStats>({
     queryKey: queryKeys.ats.usage(),
     queryFn: () => api.get("/ats/usage").then((r) => r.data),
     staleTime: 60_000,
     refetchOnWindowFocus: true,
+    enabled: !guestMode,
   });
 
+
+
   const atsUsage = usageData?.usage.find((u) => u.action === "ATS_SCORE");
-  const limitReached = atsUsage ? atsUsage.used >= atsUsage.limit : false;
-  const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+  const limitReached = guestMode
+    ? guestLimitReached
+    : atsUsage
+      ? atsUsage.used >= atsUsage.limit
+      : false;
+  const MAX_SIZE = guestMode ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
 
   const [analyzedFileName, setAnalyzedFileName] = useState("");
   const [analyzedFileSize, setAnalyzedFileSize] = useState(0);
@@ -193,33 +202,45 @@ export default function AtsScorePage() {
     }> => {
       let url = resumeUrl;
       if (file) {
-        const uploadRes = await uploadDirectToS3({
-          file,
-          folder: "resumes",
-          endpoint: "/profile-resume",
-        });
-        url = uploadRes.file?.url || uploadRes.fileUrl || uploadRes.url || url;
+        if (guestMode) {
+          const uploadRes = await uploadGuestResume(file);
+          url = uploadRes.fileUrl;
+        } else {
+          const uploadRes = await uploadDirectToS3({
+            file,
+            folder: "resumes",
+            endpoint: "/profile-resume",
+          });
+          url = uploadRes.file?.url || uploadRes.fileUrl || uploadRes.url || url;
+        }
         setResumeUrl(url);
       }
       if (!url) throw new Error("Please upload a resume PDF first.");
       const body: Record<string, string> = { resumeUrl: url };
       if (jobTitle.trim()) body["jobTitle"] = jobTitle.trim();
       if (jobDescription.trim()) body["jobDescription"] = jobDescription.trim();
-      const res = await api.post("/ats/score", body);
+      const scoreEndpoint = guestMode ? "/ats/guest/score" : "/ats/score";
+      const res = await api.post(scoreEndpoint, body);
       return {
         score: res.data.score as AtsScore,
-        emailQueued: Boolean(res.data.emailQueued),
+        emailQueued: guestMode ? false : Boolean(res.data.emailQueued),
       };
     },
     onSuccess: ({ score, emailQueued }) => {
       setResult(score);
       setEmailSent(emailQueued);
       queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
+      if (!guestMode) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.ats.history() });
+      }
     },
     onError: (err: unknown) => {
+      const errorObj = err as { response?: { status?: number; data?: { message?: string } } };
+      if (guestMode && errorObj?.response?.status === 429) {
+        setGuestLimitReached(true);
+      }
       const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ||
+        errorObj?.response?.data?.message ||
         (err instanceof Error
           ? err.message
           : "Failed to analyze resume. Please try again.");
@@ -361,8 +382,12 @@ export default function AtsScorePage() {
   return (
     <div className="relative pb-16">
       <SEO
-        title="Resume"
-        description="Your resume toolkit - ATS scoring, resume builder, LaTeX editor, and cover letter generator."
+        title={guestMode ? "Try Free ATS Score" : "Resume"}
+        description={
+          guestMode
+            ? "Upload your resume and get a free ATS compatibility score. No signup required."
+            : "Your resume toolkit - ATS scoring, resume builder, LaTeX editor, and cover letter generator."
+        }
         noIndex
       />
 
@@ -392,13 +417,39 @@ export default function AtsScorePage() {
             </span>
           </h1>
           <p className="mt-3 text-sm text-stone-500 max-w-md">
-            Upload a PDF, add a target role, and get an ATS score with keyword
-            gaps and concrete rewrite suggestions.
+            {guestMode
+              ? "Try the ATS scorer free — no account needed. Upload a PDF and get your score in seconds."
+              : "Upload a PDF, add a target role, and get an ATS score with keyword gaps and concrete rewrite suggestions."}
           </p>
         </div>
+        {guestMode ? (
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+              free try
+            </span>
+            <span className="text-sm font-bold text-stone-900 dark:text-stone-50">
+              No signup
+            </span>
+          </div>
+        ) : (
+          atsUsage && (
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
+                daily usage
+              </span>
+              <span className="text-sm font-bold tabular-nums text-stone-900 dark:text-stone-50">
+                {atsUsage.used}
+                <span className="text-stone-400 dark:text-stone-600 font-normal">
+                  {" "}
+                  / {atsUsage.limit}
+                </span>
+              </span>
+            </div>
+          )
+        )}
       </motion.div>
 
-      <AtsToolsNav />
+      {!guestMode && <AtsToolsNav />}
 
       {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
@@ -472,7 +523,7 @@ export default function AtsScorePage() {
                             {isDragging ? "Drop to upload" : "Drop PDF here"}
                           </p>
                           <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mt-1">
-                            or click to browse · max 10 mb
+                            or click to browse · max {guestMode ? "5" : "10"} mb
                           </p>
                         </div>
                       )}
@@ -565,7 +616,7 @@ export default function AtsScorePage() {
                       <Loader2 className="w-4 h-4 animate-spin" /> Analyzing...
                     </>
                   ) : limitReached ? (
-                    "Daily limit reached"
+                    guestMode ? "Daily guest limit reached" : "Daily limit reached"
                   ) : (
                     <>
                       <ScanSearch className="w-4 h-4" /> Analyze resume
@@ -575,13 +626,28 @@ export default function AtsScorePage() {
                 </button>
                 {limitReached && (
                   <p className="text-center text-xs text-stone-500">
-                    You've hit today's free limit.{" "}
-                    <Link
-                      to="/student/checkout"
-                      className="font-bold text-stone-900 dark:text-stone-50 underline decoration-lime-400 decoration-2 underline-offset-4 hover:decoration-lime-300"
-                    >
-                      Upgrade for more
-                    </Link>
+                    {guestMode ? (
+                      <>
+                        You've used today's free guest scores.{" "}
+                        <Link
+                          to="/register?from=/student/ats/score"
+                          className="font-bold text-stone-900 dark:text-stone-50 underline decoration-lime-400 decoration-2 underline-offset-4 hover:decoration-lime-300"
+                        >
+                          Create a free account
+                        </Link>{" "}
+                        for more.
+                      </>
+                    ) : (
+                      <>
+                        You've hit today's free limit.{" "}
+                        <Link
+                          to="/student/checkout"
+                          className="font-bold text-stone-900 dark:text-stone-50 underline decoration-lime-400 decoration-2 underline-offset-4 hover:decoration-lime-300"
+                        >
+                          Upgrade for more
+                        </Link>
+                      </>
+                    )}
                   </p>
                 )}
               </motion.div>
@@ -885,6 +951,21 @@ export default function AtsScorePage() {
                   </div>
                 </div>
 
+                {guestMode && (
+                  <div className="rounded-md border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-stone-900 px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <p className="text-sm text-stone-600 dark:text-stone-400">
+                      Create a free account to save scores, apply AI suggestions, and unlock more resume tools.
+                    </p>
+                    <Link
+                      to="/register?from=/student/ats/score"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-lime-400 text-stone-950 rounded-md text-sm font-bold hover:bg-lime-300 transition-colors no-underline shrink-0"
+                    >
+                      Create free account
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                )}
+
                 {/* Tabbed Results */}
                 <div className={cardCls}>
                   {/* Tab strip with print button */}
@@ -951,6 +1032,7 @@ export default function AtsScorePage() {
                           }}
                           onApply={() => applyMutation.mutate()}
                           isApplying={applyMutation.isPending}
+                          readOnly={guestMode}
                         />
                       )}
                     </AnimatePresence>

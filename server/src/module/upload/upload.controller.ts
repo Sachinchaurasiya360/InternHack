@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
+import { randomUUID } from "crypto";
 import * as path from "path";
 import * as fs from "fs";
 import { fileURLToPath } from "url";
 import { createUniqueS3Key, deleteFromS3, getS3KeyFromUrl, signUrl, signUrls, generatePresignedUploadUrl } from "../../utils/s3.utils.js";
+import { hashGuestIp, guestResumeKeyPrefix } from "../../utils/guest-ip.utils.js";
 import { prisma } from "../../database/db.js";
 import { createLogger } from "../../utils/logger.js";
 import { cacheDel, cacheDelPattern } from "../../utils/cache.js";
@@ -73,7 +75,42 @@ function deleteFile(url: string): void {
 }
 
 export class UploadController {
-  
+  /** Public guest upload — no auth; files scoped to guest-resumes/{ipHash}/ */
+  async getGuestPresignedUrl(req: Request, res: Response) {
+    try {
+      const { fileName, fileType } = req.body as { fileName?: string; fileType?: string };
+      if (!fileName || !fileType) {
+        return res.status(400).json({ message: "fileName and fileType are required" });
+      }
+      if (fileType !== "application/pdf") {
+        return res.status(400).json({ message: "Only PDF resumes are allowed for guest uploads" });
+      }
+
+      const ipHash = hashGuestIp(req);
+      const cleanFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, "_");
+      const fileKey = `${guestResumeKeyPrefix(ipHash)}${randomUUID()}-${cleanFileName}`;
+
+      let presignedData;
+      try {
+        presignedData = await generatePresignedUploadUrl(fileKey, fileType, "guest-resumes");
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Failed to generate upload URL";
+        logger.error("Guest presigned URL generation failed:", err);
+        return res.status(msg.startsWith("Invalid") ? 400 : 500).json({ message: msg });
+      }
+
+      const { url: uploadUrl, fields: uploadFields } = presignedData;
+      const bucketName = process.env.AWS_S3_BUCKET || process.env.AWS_BUCKET_NAME || "";
+      const region = process.env.AWS_REGION || "ap-south-1";
+      const fileUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${fileKey}`;
+
+      return res.status(200).json({ uploadUrl, uploadFields, fileKey, fileUrl });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   /** * NEW: Generate Pre-signed URL for direct client-to-S3 uploads 
    */
   async getPresignedUrl(req: Request, res: Response) {

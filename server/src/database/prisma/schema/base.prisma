@@ -1522,3 +1522,17 @@ enum NoteContentType {
   INTERVIEW_QUESTION
   APTITUDE_QUESTION
 }
+
+/// Lightweight daily counter for unauthenticated guest endpoints that incur
+/// billed AI-provider calls (e.g. guest ATS scoring).  Keyed on the hashed IP
+/// so raw IPs are never stored.  The @@unique makes Postgres upsert atomic.
+model guestUsage {
+  id        Int      @id @default(autoincrement())
+  ipHash    String
+  date      DateTime @db.Date
+  count     Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@unique([ipHash, date])
+  @@index([date])
+}

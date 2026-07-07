@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import type { AtsService } from "./ats.service.js";
-import { applySuggestionsSchema, scoreResumeSchema } from "./ats.validation.js";
+import { applySuggestionsSchema, scoreResumeSchema, guestScoreResumeSchema } from "./ats.validation.js";
+import { hashGuestIp } from "../../utils/guest-ip.utils.js";
 import { prisma } from "../../database/db.js";
 import { DAILY_LIMITS, getPlanTier } from "../../config/usage-limits.js";
 import { sendEmail } from "../../utils/email.utils.js";
@@ -9,6 +10,62 @@ import { isPremiumUser } from "../../utils/premium.utils.js";
 
 export class AtsController {
   constructor(private readonly atsService: AtsService) {}
+
+  async scoreResumeGuest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const ipHash = hashGuestIp(req);
+      const result = guestScoreResumeSchema(ipHash).safeParse(req.body);
+      if (!result.success) {
+        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+        return;
+      }
+
+      // Check daily guest limit before initiating costly AI processing
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      const usageLog = await prisma.guestUsage.findUnique({
+        where: { ipHash_date: { ipHash, date: today } },
+      });
+      if (usageLog && usageLog.count >= 2) {
+        res.status(429).json({
+          message: "Daily guest limit reached. Create a free account for more ATS scores.",
+        });
+        return;
+      }
+
+      const score = await this.atsService.scoreResumeGuest(ipHash, result.data);
+
+      // Increment usage count only after successful analysis
+      const updatedLog = await prisma.guestUsage.upsert({
+        where: { ipHash_date: { ipHash, date: today } },
+        update: { count: { increment: 1 } },
+        create: { ipHash, date: today, count: 1 },
+      });
+
+      res.json({
+        message: "Resume scored successfully",
+        score,
+        guest: true,
+        usage: { used: updatedLog.count, limit: 2 },
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message.includes("Could not extract")) {
+          res.status(400).json({ message: err.message });
+          return;
+        }
+        if (err.message.includes("Invalid resume URL") || err.message.includes("does not belong")) {
+          res.status(403).json({ message: err.message });
+          return;
+        }
+        if (err.message.includes("ENOENT")) {
+          res.status(404).json({ message: "Resume file not found. Please upload again." });
+          return;
+        }
+      }
+      next(err);
+    }
+  }
 
   async scoreResume(req: Request, res: Response, next: NextFunction) {
     try {

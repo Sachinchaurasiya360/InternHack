@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { Worker } from "worker_threads";
 import { prisma } from "../../database/db.js";
 import { getBufferFromS3, getS3KeyFromUrl } from "../../utils/s3.utils.js";
+import { guestResumeKeyPrefix } from "../../utils/guest-ip.utils.js";
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
 import type {
@@ -61,6 +62,42 @@ export class AtsService {
       categoryScores: result.categoryScores,
       suggestions: result.suggestions,
       keywordAnalysis: result.keywordAnalysis,
+    };
+  }
+
+  async scoreResumeGuest(ipHash: string, input: ScoreResumeInput) {
+    const resumeUrl = this.normalizeResumeUrl(input.resumeUrl);
+    const expectedPrefix = guestResumeKeyPrefix(ipHash);
+    const s3Key = getS3KeyFromUrl(resumeUrl);
+
+    if (!s3Key?.startsWith(expectedPrefix)) {
+      throw new Error("Invalid resume URL for guest scoring");
+    }
+
+    const resumeText = await this.extractPdfText(resumeUrl);
+
+    if (!resumeText || resumeText.trim().length < 50) {
+      throw new Error(
+        "Could not extract sufficient text from the resume PDF. Make sure it is not a scanned image.",
+      );
+    }
+
+    const result = await this.callAI(resumeText, 0, input.jobTitle, input.jobDescription);
+    const now = new Date();
+
+    return {
+      id: 0,
+      studentId: 0,
+      resumeUrl,
+      jobTitle: input.jobTitle ?? null,
+      jobDescription: input.jobDescription ?? null,
+      overallScore: result.overallScore,
+      categoryScores: result.categoryScores,
+      suggestions: result.suggestions,
+      keywordAnalysis: result.keywordAnalysis,
+      rawResponse: result,
+      createdAt: now,
+      updatedAt: now,
     };
   }
 
