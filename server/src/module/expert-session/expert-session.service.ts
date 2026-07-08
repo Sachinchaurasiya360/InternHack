@@ -8,7 +8,7 @@ const BUSINESS_END_HOUR = 18; // last slot starts 17:30, ends 18:00 IST
 const LOOKAHEAD_DAYS = 14;
 const MIN_LEAD_HOURS = 12;
 
-const ADMIN_ALERT_EMAIL = process.env["ADMIN_ALERT_EMAIL"] ?? "mrsachinchaurasiya@gmail.com";
+const ADMIN_ALERT_EMAIL = process.env["ADMIN_ALERT_EMAIL"] ?? "";
 
 interface IstParts {
   year: number;
