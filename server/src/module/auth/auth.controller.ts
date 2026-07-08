@@ -35,7 +35,7 @@ export class AuthController {
       const input = req.body as z.infer<typeof registerSchema>;
 
       const data = await this.authService.register(input);
-      return res.status(201).json({ message: "Registration successful. Please verify your email to continue.", user: data.user });
+      return res.status(201).json({ message: "Registration successful. Please verify your email to continue." });
     } catch (error) {
       if (error instanceof Error && error.message === "Email already registered") {
         return res.status(201).json({ message: "Registration successful. Please verify your email to continue." });
