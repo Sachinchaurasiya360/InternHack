@@ -5,6 +5,7 @@ import type {
 import { getProviderForService } from "../../lib/ai-provider-registry.js";
 import { logAIRequest } from "../../lib/ai-request-logger.js";
 import { prisma } from "../../database/db.js";
+import { safeFetchText } from "../../utils/safe-fetch.js";
 import * as cheerio from "cheerio";
 
 export class CoverLetterService {
@@ -23,16 +24,9 @@ export class CoverLetterService {
   async extractJobUrl(url: string, userId: number) {
     let html = "";
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-      const res = await fetch(url, {
-        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" },
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
-      html = await res.text();
-    } catch (e) {
-      throw new Error("Failed to fetch the URL. Please make sure the link is publicly accessible.");
+      html = await safeFetchText(url, 200000);
+    } catch (e: any) {
+      throw new Error("Failed to fetch the URL. " + e.message);
     }
 
     const $ = cheerio.load(html);

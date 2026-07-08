@@ -1,4 +1,3 @@
-import React from "react";
 import { Check, X, Circle, MinusCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import type { ApplicationStatus } from "../../../lib/types";
