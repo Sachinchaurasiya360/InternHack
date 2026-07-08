@@ -629,6 +629,9 @@ model dsaProblemReport {
   problemId Int
   problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
   user      user       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([problemId])
 }
 
 model studentDsaProgress {
