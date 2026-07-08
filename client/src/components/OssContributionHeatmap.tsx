@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ActivityCalendar } from "react-activity-calendar";
 import api from "../lib/axios";
@@ -57,6 +57,10 @@ export const OssContributionHeatmap = React.memo(function OssContributionHeatmap
   }, [data]);
 
   const [selectedYear, setSelectedYear] = useState<number>(availableYears[0] ?? new Date().getFullYear());
+
+  useEffect(() => {
+    setSelectedYear((prev) => (availableYears.includes(prev) ? prev : (availableYears[0] ?? new Date().getFullYear())));
+  }, [availableYears]);
 
   const heatmapData = useMemo(() => {
     if (!data || data.length === 0) return null;
