@@ -339,8 +339,8 @@ export class JobIndexService {
         limit,
       );
       return jobs;
-    } catch {
-      // pgvector / embedding column not set up yet, fall back to empty
+    } catch (err) {
+      console.error("[JobIndex] semanticSearch failed:", err);
       return [];
     }
   }
