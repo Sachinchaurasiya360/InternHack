@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import type { UserRole } from "@prisma/client";
 
 const JWT_SECRET: string = process.env["JWT_SECRET"] ?? (() => { throw new Error("JWT_SECRET environment variable is required"); })();
-const VERIFICATION_SECRET: string = process.env["VERIFICATION_SECRET"] ?? JWT_SECRET;
+const VERIFICATION_SECRET: string = process.env["VERIFICATION_SECRET"] ?? (() => { throw new Error("VERIFICATION_SECRET environment variable is required"); })();
 
 const JWT_EXPIRES_IN = "7d";
 const VERIFICATION_EXPIRES_IN = "365d";
