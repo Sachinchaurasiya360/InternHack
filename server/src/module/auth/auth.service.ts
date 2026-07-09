@@ -492,10 +492,6 @@ export class AuthService {
     const fullResult = {
       ...rest,
     };
-    // Guest-safe view: strip PII regardless of who triggered the request.
-    const { email: _email, contactNo: _contactNo, ...guestRest } = fullResult as any;
-    const guestResult = guestRest;
-
     // Authorized tier (admin): cache and return the full view under
     // the ":auth" key, which is only ever served back to authorized viewers.
     if (isVisitorAuthorized) {
@@ -506,7 +502,7 @@ export class AuthService {
     // Only the owner reaches this point (non-owner, non-authorized visitors are
     // rejected above). Return the owner's full view; never cache under the
     // shared key so it can't be served to another visitor.
-    return { profile: isOwner ? fullResult : guestResult, cacheHit: false };
+    return { profile: fullResult, cacheHit: false };
   }
 
   async verifyEmail(email: string, otp: string) {
