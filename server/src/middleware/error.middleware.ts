@@ -4,7 +4,7 @@ import { prisma } from "../database/db.js";
 import { sendEmail } from "../utils/email.utils.js";
 import { FileUploadError } from "../lib/errors.js";
 
-const ADMIN_ALERT_EMAIL = process.env["ADMIN_ALERT_EMAIL"] ?? "mrsachinchaurasiya@gmail.com";
+const ADMIN_ALERT_EMAIL = process.env["ADMIN_ALERT_EMAIL"] ?? "";
 
 const SENSITIVE_KEYS = new Set([
   "password", "newPassword", "confirmPassword", "currentPassword",
