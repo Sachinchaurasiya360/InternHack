@@ -393,8 +393,8 @@ export class OpensourceService {
           request.owner,
         ),
       });
-    } catch {
-      /* email failure is non-blocking */
+      } catch (err) {
+      console.error("Failed to send repo request email:", err);
     }
     return request;
   }
@@ -474,8 +474,8 @@ export class OpensourceService {
           request.owner,
         ),
       });
-    } catch {
-      /* email failure is non-blocking */
+      } catch (err) {
+      console.error("Failed to send repo approval email:", err);
     }
 
     // Invalidate language list — new repo may introduce a new language
