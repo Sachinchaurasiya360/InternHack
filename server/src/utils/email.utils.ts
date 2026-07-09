@@ -148,7 +148,12 @@ export async function sendEmailBatch(
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const result = await resend.batch.send(payload);
+      const result = await Promise.race([
+        resend.batch.send(payload),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Resend batch.send timed out after 30s")), 30_000)
+        ),
+      ]);
       if (result.error) {
         const status = (result.error as { statusCode?: number }).statusCode;
         if (status === 429 && attempt < maxRetries) {
