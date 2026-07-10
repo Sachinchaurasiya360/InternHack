@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams, useLocation } from "react-router";
 import { useDebounce } from "./useDebounce";
 
 interface UseSearchWithDebounceOptions {
@@ -40,23 +40,30 @@ export function useSearchWithDebounce({
   resetParams = [],
 }: UseSearchWithDebounceOptions = {}): UseSearchWithDebounceReturn {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const initialPathnameRef = useRef(location.pathname);
   const paramValue = paramName ? searchParams.get(paramName) ?? "" : "";
 
   const [inputValue, setInputValue] = useState<string>(() => paramValue);
 
   const debouncedValue = useDebounce(inputValue, delay);
 
+  const resetParamsRef = useRef(resetParams);
+  resetParamsRef.current = resetParams;
+
   useEffect(() => {
     if (!paramName) return;
+    if (location.pathname !== initialPathnameRef.current) return;
     if (paramValue !== inputValue) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputValue(paramValue);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramName, paramValue]);
+  }, [paramName, paramValue, location.pathname]);
 
   useEffect(() => {
     if (!paramName) return;
+    if (location.pathname !== initialPathnameRef.current) return;
 
     setSearchParams(
       (prev) => {
@@ -66,7 +73,7 @@ export function useSearchWithDebounce({
         } else {
           next.delete(paramName);
         }
-        for (const key of resetParams) {
+        for (const key of resetParamsRef.current) {
           next.delete(key);
         }
         return next.toString() === prev.toString() ? prev : next;
@@ -74,7 +81,7 @@ export function useSearchWithDebounce({
       { replace: true },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue, paramName, resetParams]);
+  }, [debouncedValue, paramName, location.pathname]);
 
   return { inputValue, setInputValue, debouncedValue };
 }

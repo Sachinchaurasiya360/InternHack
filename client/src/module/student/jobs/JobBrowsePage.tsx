@@ -130,8 +130,10 @@ const ScrapedJobCard = React.memo(function ScrapedJobCard({ job }: { job: Scrape
 });
 
 export default function JobBrowsePage() {
-  const isInsideLayout = useLocation().pathname.startsWith("/student/");
+  const location = useLocation();
+  const isInsideLayout = location.pathname.startsWith("/student/");
   const [searchParams, setSearchParams] = useSearchParams();
+  const initialPathnameRef = React.useRef(location.pathname);
 
   const { inputValue: search, setInputValue: setSearch, debouncedValue: debouncedSearch } =
     useSearchWithDebounce({ paramName: "search", delay: 400, resetParams: [] });
@@ -150,6 +152,7 @@ export default function JobBrowsePage() {
 
   // Sync location filter to URL and reset pages when it or search changes
   useEffect(() => {
+    if (location.pathname !== initialPathnameRef.current) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reset pagination when filters/search change
     setExtPage(1);
     setScrPage(1);
@@ -158,7 +161,7 @@ export default function JobBrowsePage() {
     else next.delete("location");
     setSearchParams(next, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedLocation, debouncedSearch]);
+  }, [debouncedLocation, debouncedSearch, location.pathname]);
 
   const { data: extData } = useQuery({
     queryKey: queryKeys.externalJobs.list({
@@ -487,6 +490,7 @@ export default function JobBrowsePage() {
               />
             </motion.div>
           ))}
+
 
             <AnimatePresence>
               {hasFilters && (
