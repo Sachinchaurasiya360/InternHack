@@ -101,12 +101,11 @@ export class BlogService {
       throw new Error("Post not found");
     }
 
-    await prisma.blogPost.update({
+    return prisma.blogPost.update({
       where: { id: post.id },
       data: { viewCount: { increment: 1 } },
+      include: { author: { select: authorSelect } },
     });
-
-    return { ...post, viewCount: post.viewCount + 1 };
   }
 
   async listAll(query: ListAllParams) {
